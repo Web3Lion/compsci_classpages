@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('cs2-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vocabulary — AP Cyber Security 2</title>
@@ -8,102 +9,110 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+
+:root{--bg:#0a0e14;--panel:#0d1410;--panel2:#0d1a12;--panel3:#0f2318;--border:#1e3a2e;--border2:#17281f;--border3:#244d38;--border-hi:#2f5d44;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe3d8;--bright:#eafff2;--muted:#a9c4b6;--dim:#7fa896;--faint:#5c7a6b;--fainter:#3d5749;--accent:#39ff88;--accent2:#7dffb3;--amber:#ffcf5c;}
+:root[data-theme="light"]{--bg:#e9efe9;--panel:#ffffff;--panel2:#f2f7f2;--panel3:#e8f6ee;--border:#cdddd2;--border2:#dde8e0;--border3:#b6d4c1;--border-hi:#8fbfa2;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#2b3a31;--bright:#0e1a13;--muted:#48594f;--dim:#5f7568;--faint:#839a8c;--fainter:#a6b8ac;--accent:#0f9d58;--accent2:#0b7e45;--amber:#9a7d16;}
+body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+
   * { box-sizing: border-box; }
-  body { margin: 0; background: #0a0e14; font-family: 'Inter', sans-serif; color: #cfe3d8; }
+  body { margin: 0; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); }
   .mono { font-family: 'JetBrains Mono', monospace; }
-  a { color: #39ff88; text-decoration: none; }
+  a { color: var(--accent); text-decoration: none; }
   .wrap { max-width: 1000px; margin: 0 auto; padding: 28px 20px 70px; }
   @keyframes blink { 0%,49%{opacity:1;} 50%,100%{opacity:0;} }
   @keyframes pop { 0%{transform:scale(0.4);opacity:0;} 60%{transform:scale(1.15);} 100%{transform:scale(1);opacity:1;} }
   @keyframes flash { 0%{background:#123; } 100%{} }
 
-  .banner { position: relative; overflow: hidden; border: 1px solid #1e3a2e; border-radius: 14px; background: linear-gradient(135deg,#0d1a12 0%,#0a0e14 60%); padding: 30px 32px; margin-bottom: 22px; }
-  .banner .grain { position:absolute; inset:0; opacity:.06; background-image:repeating-linear-gradient(0deg,#39ff88 0,#39ff88 1px,transparent 1px,transparent 4px); pointer-events:none; }
-  .kick { font-size: 12px; letter-spacing: 2px; color: #39ff88; text-transform: uppercase; }
-  h1 { font-weight: 800; font-size: 34px; margin: 8px 0 6px; color: #eafff2; letter-spacing: -.5px; }
-  .lead { color: #a9c4b6; font-size: 15px; line-height: 1.6; max-width: 640px; margin: 0; }
-  .cursor { display:inline-block; width:11px; height:26px; background:#39ff88; margin-left:6px; vertical-align:middle; animation:blink 1.1s step-end infinite; }
+  .banner { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(135deg,var(--panel2) 0%,var(--bg) 60%); padding: 30px 32px; margin-bottom: 22px; }
+  .banner .grain { position:absolute; inset:0; opacity:.06; background-image:repeating-linear-gradient(0deg,var(--accent) 0,var(--accent) 1px,transparent 1px,transparent 4px); pointer-events:none; }
+  .kick { font-size: 12px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+  h1 { font-weight: 800; font-size: 34px; margin: 8px 0 6px; color: var(--bright); letter-spacing: -.5px; }
+  .lead { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 640px; margin: 0; }
+  .cursor { display:inline-block; width:11px; height:26px; background:var(--accent); margin-left:6px; vertical-align:middle; animation:blink 1.1s step-end infinite; }
 
-  .card { border: 1px solid #1e3a2e; border-radius: 14px; background: #0d1410; padding: 22px; }
-  .label { font-size: 12px; letter-spacing: 1.5px; color: #39ff88; margin-bottom: 14px; }
+  .card { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 22px; }
+  .label { font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 14px; }
 
   .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
   .modgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; }
   @media (max-width: 620px){ .modgrid { grid-template-columns: 1fr; } }
-  .chip { font-size: 12px; padding: 10px 13px; border-radius: 999px; border: 1px solid #1e3a2e; background: #0a0e14; color: #7fa896; cursor: pointer; user-select: none; transition: all .12s; }
-  .chip:hover { border-color: #2f5d44; color: #cfe3d8; }
-  .chip.on { border-color: #39ff88; color: #0a0e14; background: #39ff88; font-weight: 700; }
-  .chip.all { color: #ffcf5c; border-color: #4a3d1a; writing-mode: vertical-rl; text-orientation: mixed; display: flex; align-items: center; justify-content: center; border-radius: 14px; padding: 12px 14px; letter-spacing: 3px; font-weight: 700; }
-  .chip.all.on { background: #ffcf5c; color: #1a150a; border-color: #ffcf5c; }
-  .count { margin-top: 12px; font-size: 12px; color: #5c7a6b; }
+  .chip { font-size: 12px; padding: 10px 13px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); color: var(--dim); cursor: pointer; user-select: none; transition: all .12s; }
+  .chip:hover { border-color: var(--border-hi); color: var(--text); }
+  .chip.on { border-color: var(--accent); color: var(--bg); background: var(--accent); font-weight: 700; }
+  .chip.all { color: var(--amber); border-color: var(--amber-bd); writing-mode: vertical-rl; text-orientation: mixed; display: flex; align-items: center; justify-content: center; border-radius: 14px; padding: 12px 14px; letter-spacing: 3px; font-weight: 700; }
+  .chip.all.on { background: var(--amber); color: var(--amber-bg); border-color: var(--amber); }
+  .count { margin-top: 12px; font-size: 12px; color: var(--faint); }
 
   .tabs { display: flex; gap: 8px; margin: 22px 0 18px; flex-wrap: wrap; }
-  .tab { flex: 1; min-width: 130px; text-align: center; padding: 14px; border-radius: 12px; border: 1px solid #1e3a2e; background: #0d1410; color: #a9c4b6; cursor: pointer; font-size: 14px; font-weight: 700; letter-spacing: .5px; transition: all .12s; }
-  .tab:hover { border-color: #2f5d44; }
-  .tab.on { border-color: #39ff88; color: #eafff2; background: linear-gradient(160deg,#0f2318,#0d1410); box-shadow: 0 0 22px -10px #39ff88; }
-  .tab small { display: block; font-weight: 400; font-size: 11px; color: #5c7a6b; margin-top: 3px; letter-spacing: 0; }
+  .tab { flex: 1; min-width: 130px; text-align: center; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel); color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 700; letter-spacing: .5px; transition: all .12s; }
+  .tab:hover { border-color: var(--border-hi); }
+  .tab.on { border-color: var(--accent); color: var(--bright); background: linear-gradient(160deg,var(--panel3),var(--panel)); box-shadow: 0 0 22px -10px var(--accent); }
+  .tab small { display: block; font-weight: 400; font-size: 11px; color: var(--faint); margin-top: 3px; letter-spacing: 0; }
 
-  .empty { text-align: center; padding: 46px 16px; color: #7fa896; font-size: 14px; }
+  .empty { text-align: center; padding: 46px 16px; color: var(--dim); font-size: 14px; }
 
   /* flashcards */
   .fc { perspective: 1400px; }
   .fc-card { position: relative; height: 300px; cursor: pointer; }
   .fc-inner { position: absolute; inset: 0; transition: transform .5s; transform-style: preserve-3d; }
   .fc-card.flip .fc-inner { transform: rotateY(180deg); }
-  .fc-face { position: absolute; inset: 0; backface-visibility: hidden; border: 1px solid #244d38; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-  .fc-front { background: linear-gradient(160deg,#0f2318,#0d1410); }
-  .fc-back { background: #0d1410; transform: rotateY(180deg); }
-  .fc-modtag { position: absolute; top: 16px; left: 16px; font-size: 11px; color: #39ff88; }
-  .fc-hint { position: absolute; bottom: 16px; font-size: 11px; color: #3d5749; }
-  .fc-term { font-size: 30px; font-weight: 800; color: #eafff2; letter-spacing: -.5px; }
-  .fc-def { font-size: 18px; line-height: 1.55; color: #cfe3d8; max-width: 640px; }
+  .fc-face { position: absolute; inset: 0; backface-visibility: hidden; border: 1px solid var(--border3); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+  .fc-front { background: linear-gradient(160deg,var(--panel3),var(--panel)); }
+  .fc-back { background: var(--panel); transform: rotateY(180deg); }
+  .fc-modtag { position: absolute; top: 16px; left: 16px; font-size: 11px; color: var(--accent); }
+  .fc-hint { position: absolute; bottom: 16px; font-size: 11px; color: var(--fainter); }
+  .fc-term { font-size: 30px; font-weight: 800; color: var(--bright); letter-spacing: -.5px; }
+  .fc-def { font-size: 18px; line-height: 1.55; color: var(--text); max-width: 640px; }
   .fc-ctrl { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
-  .btn { font-family:'JetBrains Mono',monospace; font-size: 13px; padding: 11px 18px; border-radius: 10px; border: 1px solid #244d38; background: #0a0e14; color: #39ff88; cursor: pointer; transition: all .12s; }
-  .btn:hover { background: #0f2318; }
+  .btn { font-family:'JetBrains Mono',monospace; font-size: 13px; padding: 11px 18px; border-radius: 10px; border: 1px solid var(--border3); background: var(--bg); color: var(--accent); cursor: pointer; transition: all .12s; }
+  .btn:hover { background: var(--panel3); }
   .btn:disabled { opacity: .35; cursor: default; }
-  .btn.primary { background: #39ff88; color: #0a0e14; border-color: #39ff88; font-weight: 700; }
-  .btn.primary:hover { background: #7dffb3; }
-  .prog { font-size: 13px; color: #7fa896; }
+  .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
+  .btn.primary:hover { background: var(--accent2); }
+  .prog { font-size: 13px; color: var(--dim); }
 
   /* decrypt game */
   .g-top { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
-  .g-stat { font-size: 12px; color: #5c7a6b; }
-  .g-stat b { display: block; font-size: 22px; color: #eafff2; margin-top: 2px; }
-  .g-stat.amber b { color: #ffcf5c; }
-  .timerbar { height: 6px; background: #17281f; border-radius: 999px; overflow: hidden; margin-bottom: 18px; }
-  .timerfill { height: 100%; width: 100%; background: #39ff88; transition: width .1s linear; }
-  .g-def { font-size: 19px; line-height: 1.55; color: #eafff2; background: #0a0e14; border: 1px solid #17281f; border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+  .g-stat { font-size: 12px; color: var(--faint); }
+  .g-stat b { display: block; font-size: 22px; color: var(--bright); margin-top: 2px; }
+  .g-stat.amber b { color: var(--amber); }
+  .timerbar { height: 6px; background: var(--border2); border-radius: 999px; overflow: hidden; margin-bottom: 18px; }
+  .timerfill { height: 100%; width: 100%; background: var(--accent); transition: width .1s linear; }
+  .g-def { font-size: 19px; line-height: 1.55; color: var(--bright); background: var(--bg); border: 1px solid var(--border2); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
   .g-boxes { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-bottom: 20px; min-height: 46px; }
-  .lb { width: 32px; height: 42px; border-radius: 7px; border: 1px solid #244d38; background: #0d1410; display: flex; align-items: center; justify-content: center; font-family:'JetBrains Mono',monospace; font-weight: 700; font-size: 20px; color: #39ff88; text-transform: uppercase; }
-  .lb.rev { animation: pop .3s ease; border-color: #39ff88; }
+  .lb { width: 32px; height: 42px; border-radius: 7px; border: 1px solid var(--border3); background: var(--panel); display: flex; align-items: center; justify-content: center; font-family:'JetBrains Mono',monospace; font-weight: 700; font-size: 20px; color: var(--accent); text-transform: uppercase; }
+  .lb.rev { animation: pop .3s ease; border-color: var(--accent); }
   .sep { width: 14px; }
   .g-in { display: flex; gap: 10px; }
-  .g-in input { flex: 1; font-family:'JetBrains Mono',monospace; font-size: 16px; padding: 13px 15px; border-radius: 10px; border: 1px solid #244d38; background: #0a0e14; color: #eafff2; outline: none; }
-  .g-in input:focus { border-color: #39ff88; }
+  .g-in input { flex: 1; font-family:'JetBrains Mono',monospace; font-size: 16px; padding: 13px 15px; border-radius: 10px; border: 1px solid var(--border3); background: var(--bg); color: var(--bright); outline: none; }
+  .g-in input:focus { border-color: var(--accent); }
   .g-msg { text-align: center; margin-top: 14px; font-family:'JetBrains Mono',monospace; font-size: 14px; min-height: 20px; }
   .g-summary { text-align: center; padding: 30px 10px; }
-  .g-summary .big { font-size: 46px; font-weight: 800; color: #39ff88; }
+  .g-summary .big { font-size: 46px; font-weight: 800; color: var(--accent); }
 
   /* quiz */
-  .q-def { font-size: 19px; line-height: 1.55; color: #eafff2; background: #0a0e14; border: 1px solid #17281f; border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+  .q-def { font-size: 19px; line-height: 1.55; color: var(--bright); background: var(--bg); border: 1px solid var(--border2); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
   .q-opts { display: grid; gap: 10px; }
-  .q-opt { text-align: left; padding: 15px 18px; border-radius: 10px; border: 1px solid #1e3a2e; background: #0a0e14; color: #cfe3d8; cursor: pointer; font-size: 16px; transition: all .12s; }
-  .q-opt:hover { border-color: #2f5d44; }
-  .q-opt.correct { border-color: #39ff88; background: #0f2318; color: #eafff2; }
+  .q-opt { text-align: left; padding: 15px 18px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; font-size: 16px; transition: all .12s; }
+  .q-opt:hover { border-color: var(--border-hi); }
+  .q-opt.correct { border-color: var(--accent); background: var(--panel3); color: var(--bright); }
   .q-opt.wrong { border-color: #ff5c5c; background: #1a0d0d; color: #ffb3b3; }
   .q-opt:disabled { cursor: default; }
 
   /* handshake (matching) */
   .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .m-col { display: flex; flex-direction: column; gap: 10px; }
-  .m-item { text-align: left; padding: 13px 15px; border-radius: 10px; border: 1px solid #1e3a2e; background: #0a0e14; color: #cfe3d8; cursor: pointer; font-size: 14px; line-height: 1.4; transition: all .12s; }
-  .m-item:hover { border-color: #2f5d44; }
-  .m-item.sel { border-color: #39ff88; background: #0f2318; color: #eafff2; }
-  .m-item.done { border-color: #244d38; opacity: .35; cursor: default; }
+  .m-item { text-align: left; padding: 13px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; font-size: 14px; line-height: 1.4; transition: all .12s; }
+  .m-item:hover { border-color: var(--border-hi); }
+  .m-item.sel { border-color: var(--accent); background: var(--panel3); color: var(--bright); }
+  .m-item.done { border-color: var(--border3); opacity: .35; cursor: default; }
   .m-item.bad { border-color: #ff5c5c; background: #1a0d0d; color: #ffb3b3; }
 </style>
 </head>
 <body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
 
   <div class="banner">
@@ -111,7 +120,7 @@
     <div style="position:relative;z-index:1;">
       <div class="kick mono">&gt; ./vocab --course=cybersec-2</div>
       <h1 class="mono">Vocabulary Lab<span class="cursor"></span></h1>
-      <p class="lead">Master the terms that matter. Filter by module, drill with flashcards, then prove it in <b style="color:#39ff88;">DECRYPT</b> and the quiz. <a href="index.html">&larr; back to course home</a></p>
+      <p class="lead">Master the terms that matter. Filter by module, drill with flashcards, then prove it in <b style="color:var(--accent);">DECRYPT</b> and the quiz. <a href="index.html">&larr; back to course home</a></p>
     </div>
   </div>
 
@@ -130,7 +139,7 @@
 
   <div id="panel"></div>
 
-  <div class="mono" style="text-align:center;margin-top:30px;font-size:12px;color:#3d5749;">&gt; knowledge is the best exploit_</div>
+  <div class="mono" style="text-align:center;margin-top:30px;font-size:12px;color:var(--fainter);">&gt; knowledge is the best exploit_</div>
 </div>
 
 <script>
@@ -356,15 +365,15 @@ function startRound(){
   const isAl = c => /[a-z0-9]/i.test(c);
   gRevealed = gChars.map(c => !isAl(c));
   gPhase = "grace"; gLeaked = 0;
-  $("#gDef").innerHTML = `<span class="mono" style="color:#39ff88;font-size:12px;">MODULE ${String(v.m).padStart(2,"0")}</span><br>${v.d}`;
+  $("#gDef").innerHTML = `<span class="mono" style="color:var(--accent);font-size:12px;">MODULE ${String(v.m).padStart(2,"0")}</span><br>${v.d}`;
   $("#gRound").textContent = (gRound+1)+" / "+gQueue.length;
   $("#gMsg").innerHTML = "&gt; decrypting… you have 5 seconds before the leak starts";
-  $("#gMsg").style.color = "#7fa896";
+  $("#gMsg").style.color = "var(--dim)";
   const inp = $("#gInput"); inp.value=""; inp.disabled=false; inp.focus();
   renderBoxes();
   // grace countdown
   let t = gGraceMs;
-  $("#gFill").style.background = "#39ff88";
+  $("#gFill").style.background = "var(--accent)";
   gTimers.push(setInterval(()=>{
     t -= 100; $("#gFill").style.width = Math.max(0,(t/gGraceMs*100))+"%";
     if(t<=0){ stopTimers(); beginLeak(); }
@@ -372,9 +381,9 @@ function startRound(){
 }
 function beginLeak(){
   gPhase="leak";
-  $("#gFill").style.background="#ffcf5c"; $("#gFill").style.width="100%";
+  $("#gFill").style.background="var(--amber)"; $("#gFill").style.width="100%";
   $("#gMsg").innerHTML = "&gt; LEAK ACTIVE — letters incoming, answer fast!";
-  $("#gMsg").style.color = "#ffcf5c";
+  $("#gMsg").style.color = "var(--amber)";
   leakOne();
   gTimers.push(setInterval(leakOne, gHintMs));
 }
@@ -392,7 +401,7 @@ function renderBoxes(animateIdx, idx){
       const rev = gRevealed[i];
       html += `<div class="lb ${rev?'rev':''}" data-i="${i}">${rev?c:""}</div>`;
     } else if(c===" "){ html += `<div class="sep"></div>`; }
-    else { html += `<div class="lb" style="border-color:#17281f;color:#5c7a6b;">${c}</div>`; }
+    else { html += `<div class="lb" style="border-color:var(--border2);color:var(--faint);">${c}</div>`; }
   });
   box.innerHTML = html;
 }
@@ -416,11 +425,11 @@ function endRound(correct){
     pts = gLeaked===0 ? 100 : Math.max(15, 100 - gLeaked*15);
     gScore += pts; gStreak += 1; gBest=Math.max(gBest,gStreak);
     $("#gMsg").innerHTML = `&gt; ACCESS GRANTED — +${pts} pts${gLeaked===0?" · clean crack!":""}`;
-    $("#gMsg").style.color = "#39ff88";
+    $("#gMsg").style.color = "var(--accent)";
   } else {
     gStreak = 0;
-    $("#gMsg").innerHTML = `&gt; skipped — the term was "<b style="color:#eafff2;">${gAnswer}</b>"`;
-    $("#gMsg").style.color = "#7fa896";
+    $("#gMsg").innerHTML = `&gt; skipped — the term was "<b style="color:var(--bright);">${gAnswer}</b>"`;
+    $("#gMsg").style.color = "var(--dim)";
   }
   revealAll();
   $("#gScore").textContent = gScore;
@@ -436,10 +445,10 @@ function gameOver(){
   const max = gQueue.length*100;
   panel.querySelector(".card").innerHTML = `
     <div class="g-summary">
-      <div class="mono" style="color:#39ff88;font-size:12px;letter-spacing:2px;">// SESSION COMPLETE</div>
+      <div class="mono" style="color:var(--accent);font-size:12px;letter-spacing:2px;">// SESSION COMPLETE</div>
       <div class="big mono">${gScore}</div>
-      <div style="color:#7fa896;font-size:14px;margin-bottom:6px;">out of ${max} possible · best streak ${gBest}</div>
-      <div style="color:#a9c4b6;font-size:15px;margin-bottom:22px;">${gScore>=max*0.8?"Elite. You cracked the system.":gScore>=max*0.5?"Solid work, keep drilling.":"Run it again — repetition is the exploit."}</div>
+      <div style="color:var(--dim);font-size:14px;margin-bottom:6px;">out of ${max} possible · best streak ${gBest}</div>
+      <div style="color:var(--muted);font-size:15px;margin-bottom:22px;">${gScore>=max*0.8?"Elite. You cracked the system.":gScore>=max*0.5?"Solid work, keep drilling.":"Run it again — repetition is the exploit."}</div>
       <button class="btn primary" onclick="renderDecrypt()">play again</button>
     </div>`;
 }
@@ -458,7 +467,7 @@ function renderMatch(){
       </div>
       <div class="g-msg mono" id="mMsg" style="margin:0 0 16px;text-align:left;">&gt; click a term, then its matching definition</div>
       <div class="m-grid">
-        <div class="m-col">${terms.map(t=>`<button class="m-item mono" style="font-weight:700;color:#39ff88;" data-side="t" data-id="${t.id}">${t.txt}</button>`).join("")}</div>
+        <div class="m-col">${terms.map(t=>`<button class="m-item mono" style="font-weight:700;color:var(--accent);" data-side="t" data-id="${t.id}">${t.txt}</button>`).join("")}</div>
         <div class="m-col">${defs.map(d=>`<button class="m-item" data-side="d" data-id="${d.id}">${d.txt}</button>`).join("")}</div>
       </div>
     </div>`;
@@ -466,10 +475,10 @@ function renderMatch(){
   function finish(){
     panel.querySelector(".card").innerHTML = `
       <div class="g-summary">
-        <div class="mono" style="color:#39ff88;font-size:12px;letter-spacing:2px;">// ALL PAIRS LINKED</div>
+        <div class="mono" style="color:var(--accent);font-size:12px;letter-spacing:2px;">// ALL PAIRS LINKED</div>
         <div class="big mono">${moves}</div>
-        <div style="color:#7fa896;font-size:14px;margin-bottom:6px;">attempts for ${total} pairs</div>
-        <div style="color:#a9c4b6;font-size:15px;margin-bottom:22px;">${moves===total?"Flawless handshake — zero errors!":moves<=Math.ceil(total*1.5)?"Sharp pairing.":"Good — run it again to sharpen up."}</div>
+        <div style="color:var(--dim);font-size:14px;margin-bottom:6px;">attempts for ${total} pairs</div>
+        <div style="color:var(--muted);font-size:15px;margin-bottom:22px;">${moves===total?"Flawless handshake — zero errors!":moves<=Math.ceil(total*1.5)?"Sharp pairing.":"Good — run it again to sharpen up."}</div>
         <button class="btn primary" onclick="renderMatch()">shuffle &amp; replay</button>
       </div>`;
   }
@@ -485,7 +494,7 @@ function renderMatch(){
       if(first.id===id){
         first.el.classList.remove("sel"); first.el.classList.add("done"); btn.classList.add("done");
         matched++; $("#mPairs").textContent=matched+" / "+total;
-        $("#mMsg").innerHTML="&gt; handshake complete"; $("#mMsg").style.color="#39ff88";
+        $("#mMsg").innerHTML="&gt; handshake complete"; $("#mMsg").style.color="var(--accent)";
         sel=null;
         if(matched===total) finish();
       } else {
@@ -520,7 +529,7 @@ function showQuestion(){
   const distractPool = (pool().length>=4 ? pool() : VOCAB).filter(x=>x.t!==v.t);
   const opts = shuffle([v, ...shuffle(distractPool).slice(0,3)]);
   $("#qNum").textContent = (qIdx+1)+" / "+qQueue.length;
-  $("#qDef").innerHTML = `<span class="mono" style="color:#39ff88;font-size:12px;">MODULE ${String(v.m).padStart(2,"0")} — what term fits?</span><br>${v.d}`;
+  $("#qDef").innerHTML = `<span class="mono" style="color:var(--accent);font-size:12px;">MODULE ${String(v.m).padStart(2,"0")} — what term fits?</span><br>${v.d}`;
   $("#qMsg").textContent="";
   const box = $("#qOpts");
   box.innerHTML = opts.map(o=>`<button class="q-opt" data-t="${encodeURIComponent(o.t)}">${o.t}</button>`).join("");
@@ -531,7 +540,7 @@ function showQuestion(){
         x.disabled=true;
         if(decodeURIComponent(x.dataset.t)===v.t) x.classList.add("correct");
       });
-      if(chosen===v.t){ qScore++; $("#qMsg").innerHTML="&gt; correct"; $("#qMsg").style.color="#39ff88"; }
+      if(chosen===v.t){ qScore++; $("#qMsg").innerHTML="&gt; correct"; $("#qMsg").style.color="var(--accent)"; }
       else { b.classList.add("wrong"); $("#qMsg").innerHTML="&gt; not quite"; $("#qMsg").style.color="#ff7b7b"; }
       $("#qScore").textContent=qScore;
       setTimeout(()=>{ qIdx++; qIdx>=qQueue.length ? quizOver() : showQuestion(); }, 1100);
@@ -541,9 +550,9 @@ function showQuestion(){
 function quizOver(){
   panel.querySelector(".card").innerHTML = `
     <div class="g-summary">
-      <div class="mono" style="color:#39ff88;font-size:12px;letter-spacing:2px;">// QUIZ COMPLETE</div>
+      <div class="mono" style="color:var(--accent);font-size:12px;letter-spacing:2px;">// QUIZ COMPLETE</div>
       <div class="big mono">${qScore} / ${qQueue.length}</div>
-      <div style="color:#a9c4b6;font-size:15px;margin:8px 0 22px;">${qScore===qQueue.length?"Perfect run!":qScore>=qQueue.length*0.7?"Strong — review the misses.":"Hit the flashcards and run it back."}</div>
+      <div style="color:var(--muted);font-size:15px;margin:8px 0 22px;">${qScore===qQueue.length?"Perfect run!":qScore>=qQueue.length*0.7?"Strong — review the misses.":"Hit the flashcards and run it back."}</div>
       <button class="btn primary" onclick="renderQuiz()">try again</button>
     </div>`;
 }
@@ -551,5 +560,6 @@ function quizOver(){
 renderChips();
 render();
 </script>
+<script>(function(){var K='cs2-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 </body>
 </html>
