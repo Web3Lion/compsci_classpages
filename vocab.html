@@ -27,11 +27,13 @@
   .card { border: 1px solid #1e3a2e; border-radius: 14px; background: #0d1410; padding: 22px; }
   .label { font-size: 12px; letter-spacing: 1.5px; color: #39ff88; margin-bottom: 14px; }
 
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { font-size: 12px; padding: 8px 13px; border-radius: 999px; border: 1px solid #1e3a2e; background: #0a0e14; color: #7fa896; cursor: pointer; user-select: none; transition: all .12s; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+  .modgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; }
+  @media (max-width: 620px){ .modgrid { grid-template-columns: 1fr; } }
+  .chip { font-size: 12px; padding: 10px 13px; border-radius: 999px; border: 1px solid #1e3a2e; background: #0a0e14; color: #7fa896; cursor: pointer; user-select: none; transition: all .12s; }
   .chip:hover { border-color: #2f5d44; color: #cfe3d8; }
   .chip.on { border-color: #39ff88; color: #0a0e14; background: #39ff88; font-weight: 700; }
-  .chip.all { color: #ffcf5c; border-color: #4a3d1a; }
+  .chip.all { color: #ffcf5c; border-color: #4a3d1a; writing-mode: vertical-rl; text-orientation: mixed; display: flex; align-items: center; justify-content: center; border-radius: 14px; padding: 12px 14px; letter-spacing: 3px; font-weight: 700; }
   .chip.all.on { background: #ffcf5c; color: #1a150a; border-color: #ffcf5c; }
   .count { margin-top: 12px; font-size: 12px; color: #5c7a6b; }
 
@@ -90,6 +92,15 @@
   .q-opt.correct { border-color: #39ff88; background: #0f2318; color: #eafff2; }
   .q-opt.wrong { border-color: #ff5c5c; background: #1a0d0d; color: #ffb3b3; }
   .q-opt:disabled { cursor: default; }
+
+  /* handshake (matching) */
+  .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .m-col { display: flex; flex-direction: column; gap: 10px; }
+  .m-item { text-align: left; padding: 13px 15px; border-radius: 10px; border: 1px solid #1e3a2e; background: #0a0e14; color: #cfe3d8; cursor: pointer; font-size: 14px; line-height: 1.4; transition: all .12s; }
+  .m-item:hover { border-color: #2f5d44; }
+  .m-item.sel { border-color: #39ff88; background: #0f2318; color: #eafff2; }
+  .m-item.done { border-color: #244d38; opacity: .35; cursor: default; }
+  .m-item.bad { border-color: #ff5c5c; background: #1a0d0d; color: #ffb3b3; }
 </style>
 </head>
 <body>
@@ -113,6 +124,7 @@
   <div class="tabs" id="tabs">
     <div class="tab on" data-mode="cards">FLASHCARDS<small>flip &amp; review</small></div>
     <div class="tab" data-mode="decrypt">DECRYPT<small>beat the leak</small></div>
+    <div class="tab" data-mode="match">HANDSHAKE<small>match the pair</small></div>
     <div class="tab" data-mode="quiz">QUIZ<small>test yourself</small></div>
   </div>
 
@@ -226,10 +238,11 @@ const gameAnswer = t => t.replace(/\(.*?\)/g,"").split("/")[0].trim();
 function renderChips(){
   const c = $("#chips");
   const allOn = selected.size === Object.keys(MODULES).length;
-  let html = `<div class="chip all ${allOn?'on':''}" data-all="1">ALL MODULES</div>`;
+  let html = `<div class="chip all ${allOn?'on':''}" data-all="1">ALL MODULES</div><div class="modgrid">`;
   Object.entries(MODULES).forEach(([n,name]) => {
     html += `<div class="chip ${selected.has(+n)?'on':''}" data-m="${n}">${n}. ${name}</div>`;
   });
+  html += `</div>`;
   c.innerHTML = html;
   $("#count").textContent = `// ${pool().length} terms across ${selected.size} module${selected.size===1?'':'s'} selected`;
 }
@@ -258,6 +271,7 @@ function render(){
   if(pool().length === 0){ panel.innerHTML = `<div class="card empty">Select at least one module above to begin.</div>`; return; }
   if(mode==="cards") renderCards();
   else if(mode==="decrypt") renderDecrypt();
+  else if(mode==="match") renderMatch();
   else renderQuiz();
 }
 
@@ -428,6 +442,60 @@ function gameOver(){
       <div style="color:#a9c4b6;font-size:15px;margin-bottom:22px;">${gScore>=max*0.8?"Elite. You cracked the system.":gScore>=max*0.5?"Solid work, keep drilling.":"Run it again — repetition is the exploit."}</div>
       <button class="btn primary" onclick="renderDecrypt()">play again</button>
     </div>`;
+}
+
+/* ================= HANDSHAKE (matching) ================= */
+function renderMatch(){
+  const items = shuffle(pool()).slice(0, Math.min(6, pool().length));
+  const total = items.length;
+  const terms = shuffle(items.map((v,i)=>({id:i, txt:v.t})));
+  const defs = shuffle(items.map((v,i)=>({id:i, txt:v.d})));
+  panel.innerHTML = `
+    <div class="card">
+      <div class="g-top">
+        <div class="g-stat">PAIRS LINKED<b id="mPairs">0 / ${total}</b></div>
+        <div class="g-stat">ATTEMPTS<b id="mMoves">0</b></div>
+      </div>
+      <div class="g-msg mono" id="mMsg" style="margin:0 0 16px;text-align:left;">&gt; click a term, then its matching definition</div>
+      <div class="m-grid">
+        <div class="m-col">${terms.map(t=>`<button class="m-item mono" style="font-weight:700;color:#39ff88;" data-side="t" data-id="${t.id}">${t.txt}</button>`).join("")}</div>
+        <div class="m-col">${defs.map(d=>`<button class="m-item" data-side="d" data-id="${d.id}">${d.txt}</button>`).join("")}</div>
+      </div>
+    </div>`;
+  let sel=null, matched=0, moves=0, lock=false;
+  function finish(){
+    panel.querySelector(".card").innerHTML = `
+      <div class="g-summary">
+        <div class="mono" style="color:#39ff88;font-size:12px;letter-spacing:2px;">// ALL PAIRS LINKED</div>
+        <div class="big mono">${moves}</div>
+        <div style="color:#7fa896;font-size:14px;margin-bottom:6px;">attempts for ${total} pairs</div>
+        <div style="color:#a9c4b6;font-size:15px;margin-bottom:22px;">${moves===total?"Flawless handshake — zero errors!":moves<=Math.ceil(total*1.5)?"Sharp pairing.":"Good — run it again to sharpen up."}</div>
+        <button class="btn primary" onclick="renderMatch()">shuffle &amp; replay</button>
+      </div>`;
+  }
+  panel.querySelectorAll(".m-item").forEach(btn=>{
+    btn.onclick=()=>{
+      if(lock || btn.classList.contains("done")) return;
+      const side=btn.dataset.side, id=+btn.dataset.id;
+      if(sel && sel.el===btn){ btn.classList.remove("sel"); sel=null; return; }
+      if(sel && sel.side===side){ sel.el.classList.remove("sel"); sel={side,id,el:btn}; btn.classList.add("sel"); return; }
+      if(!sel){ sel={side,id,el:btn}; btn.classList.add("sel"); return; }
+      moves++; $("#mMoves").textContent=moves;
+      const first=sel;
+      if(first.id===id){
+        first.el.classList.remove("sel"); first.el.classList.add("done"); btn.classList.add("done");
+        matched++; $("#mPairs").textContent=matched+" / "+total;
+        $("#mMsg").innerHTML="&gt; handshake complete"; $("#mMsg").style.color="#39ff88";
+        sel=null;
+        if(matched===total) finish();
+      } else {
+        lock=true; first.el.classList.add("bad"); btn.classList.add("bad","sel");
+        $("#mMsg").innerHTML="&gt; no match — try again"; $("#mMsg").style.color="#ff7b7b";
+        const a=first.el, b=btn;
+        setTimeout(()=>{ a.classList.remove("bad","sel"); b.classList.remove("bad","sel"); sel=null; lock=false; }, 650);
+      }
+    };
+  });
 }
 
 /* ================= QUIZ ================= */
