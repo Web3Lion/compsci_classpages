@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Reasey — Course Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0e141d;--panel2:#121a26;--border:#20304a;--text:#c6d4e6;--bright:#eef4ff;--muted:#9db0cc;--dim:#6f88a8;--faint:#4c627e;}
+:root[data-theme="light"]{--bg:#eaeef4;--panel:#ffffff;--panel2:#f3f6fb;--border:#d3dce8;--text:#2a3646;--bright:#0d1826;--muted:#4a5a70;--dim:#6a7c93;--faint:#93a3b8;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{text-decoration:none;color:inherit;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:100;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--muted);cursor:pointer;transition:.2s;}
+.themebtn:hover{border-color:var(--dim);color:var(--bright);}
+.wrap{max-width:1120px;margin:0 auto;padding:72px 24px 80px;}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:44px;}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:640px){.grid{grid-template-columns:1fr;}}
+.card{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:340px;border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:28px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.card:hover{transform:translateY(-4px);border-color:var(--ac);box-shadow:0 24px 60px -34px var(--ac);}
+.chip{align-self:flex-start;max-width:100%;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;padding:6px 12px;border-radius:999px;border:1px solid var(--ac);color:var(--ac);white-space:nowrap;}
+.enter{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--ac);}
+.tex{position:absolute;inset:0;opacity:.5;pointer-events:none;}
+.card:hover .chip{box-shadow:0 0 16px -2px var(--ac);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div class="mono" style="font-size:13px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;">South Fayette High School</div>
+  <h1 style="font-weight:800;font-size:clamp(34px,5vw,52px);letter-spacing:-1px;margin:12px 0 10px;color:var(--bright);">Mr. Reasey&rsquo;s Courses</h1>
+  <p style="font-size:17px;line-height:1.6;max-width:620px;margin:0;color:var(--muted);">Pick a course to open its live home page &mdash; weekly schedule, syllabus, and study tools, all updated automatically.</p>
+
+  <div class="grid">
+    <!-- WEB 3.0 -->
+    <a class="card" href="web3/index.html" style="--ac:#f7a01f;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(247,160,31,.16), transparent 60%);"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ELECTIVE · BLOCKCHAIN</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#f7a01f;margin-bottom:6px;">00 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Intro to Web 3.0</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">Blockchain, crypto &amp; smart contracts &mdash; how the decentralized web is built.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- CYBER 1 -->
+    <a class="card" href="cyber1/index.html" style="--ac:#00b3ff;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(0,179,255,.14), transparent 60%);"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip" style="letter-spacing:1px;">CHS · ROBERT MORRIS</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#00b3ff;margin-bottom:6px;">01 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cyber Security 1</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">College-credit foundations: networks, systems, threats, and defense.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- CYBER 2 -->
+    <a class="card" href="cyber2/index.html" style="--ac:#39ff88;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(57,255,136,.14), transparent 60%);"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ADVANCED PLACEMENT</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#39ff88;margin-bottom:6px;">02 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cyber Security 2</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">Think like an attacker, defend like a pro &mdash; the advanced, hands-on course.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- AP CSP -->
+    <a class="card" href="apcsp/index.html" style="--ac:#a855f7;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(168,85,247,.18), transparent 60%);opacity:.7;"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ADVANCED PLACEMENT</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#a855f7;margin-bottom:6px;">03 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Computer Science Principles</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">The big ideas of computing &mdash; create, analyze data, and explore algorithms.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="mono" style="margin-top:40px;font-size:12px;color:var(--faint);">rnreasey@southfayette.org &middot; Room 688</div>
+</div>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

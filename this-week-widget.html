@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Cyber Security 2 — Tentative Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: transparent; }
+  body {
+    font-family: 'Inter', sans-serif;
+    color: #cfe3d8;
+    padding: 10px;
+  }
+  a { color: #39ff88; text-decoration: none; }
+  @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(220%); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .panel {
+    position: relative;
+    overflow: hidden;
+    max-width: 720px;
+    margin: 0 auto;
+    border: 1px solid #244d38;
+    border-radius: 14px;
+    background: linear-gradient(160deg, #0f2318 0%, #0d1410 60%, #0a0e14 100%);
+    padding: 26px 28px 28px;
+  }
+  .grain {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.05;
+    background-image: repeating-linear-gradient(0deg, #39ff88 0, #39ff88 1px, transparent 1px, transparent 4px);
+  }
+  .scanline {
+    position: absolute; top: 0; left: 0; right: 0; height: 46px; pointer-events: none;
+    background: linear-gradient(180deg, rgba(57,255,136,0.12), transparent);
+    animation: scan 4s linear infinite;
+  }
+  .head { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .kicker { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px; color: #39ff88; text-transform: uppercase; }
+  .title { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 26px; color: #eafff2; margin: 6px 0 0; letter-spacing: -0.5px; }
+  .cursor { display: inline-block; width: 10px; height: 22px; background: #39ff88; margin-left: 6px; vertical-align: middle; animation: blink 1.1s step-end infinite; }
+  .week { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #ffcf5c; border: 1px solid #4a3d1a; background: #1a150a; padding: 8px 14px; border-radius: 999px; white-space: nowrap; }
+
+  .rows { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+  .row {
+    display: grid; grid-template-columns: 92px 1fr auto; align-items: center; gap: 16px;
+    padding: 14px 16px; background: #0a0e14; border: 1px solid #17281f; border-radius: 10px;
+  }
+  .row.today { border-color: #39ff88; box-shadow: 0 0 0 1px #39ff88 inset, 0 0 22px -8px #39ff88; }
+  .day { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #39ff88; font-weight: 700; }
+  .topic { font-size: 15px; color: #eafff2; }
+  .topic .sub { display: block; font-size: 12px; color: #7fa896; margin-top: 3px; }
+  .due { font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; color: #7fa896; }
+  .due.hot { color: #ffcf5c; }
+
+  .foot { position: relative; z-index: 1; margin-top: 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #3d5749; }
+
+  .state { position: relative; z-index: 1; text-align: center; padding: 30px 10px; font-family: 'JetBrains Mono', monospace; color: #7fa896; }
+  .spinner { width: 22px; height: 22px; border: 2px solid #17281f; border-top-color: #39ff88; border-radius: 50%; margin: 0 auto 14px; animation: spin 0.8s linear infinite; }
+  .setup { text-align: left; font-size: 13px; line-height: 1.7; color: #a9c4b6; max-width: 560px; margin: 0 auto; }
+  .setup code { background: #0a0e14; border: 1px solid #17281f; padding: 2px 6px; border-radius: 5px; color: #39ff88; font-size: 12px; word-break: break-all; }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <div class="grain"></div>
+    <div class="scanline"></div>
+    <div class="head">
+      <div>
+        <div class="kicker">&gt; ./schedule --status=tentative</div>
+        <h1 class="title" id="title">Tentative Schedule<span class="cursor"></span></h1>
+      </div>
+      <div class="week" id="week">loading…</div>
+    </div>
+    <div id="content">
+      <div class="state">
+        <div class="spinner"></div>
+        reading live schedule…
+      </div>
+    </div>
+    <div class="foot">
+      <span id="updated">// syncing</span>
+      <span>AP cyber security 2 // stay curious, stay safe_</span>
+    </div>
+  </div>
+
+<script>
+/* ============================================================
+   SETUP — paste your Google Sheet ID between the quotes below.
+   From your sheet URL:
+   https://docs.google.com/spreadsheets/d/THIS_LONG_ID_HERE/edit
+   The sheet must be shared: "Anyone with the link → Viewer".
+   ============================================================ */
+const SHEET_ID = "1QK16rbnhGoegU101VnkfikWIeu54L_eKm3zfNQnqbPU";
+const SHEET_GID = "118090459";  // the tab (gid) to read
+
+/* Sheet layout expected (tab named "Schedule"):
+   Row 1:  A1 = week label, e.g.  Week of Oct 6–10
+   Row 2:  headers ->  Day | Topic | Details | Due
+   Row 3+: one row per day, e.g.
+           Mon | Threat Landscape | Intro lecture | —
+           Tue | Password Cracking | Lab in class | Lab due Fri
+   The "Due" column: type the word HOT anywhere in it to make it amber,
+   or just leave normal text.  Add a column header "Today" = Y to ring a row. */
+
+const TITLE = "Tentative Schedule";
+const REFRESH_MINUTES = 5;
+
+function parseCSV(text){
+  const rows=[]; let row=[], cur='', q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else { if(c==='"')q=true; else if(c===','){row.push(cur);cur='';}
+      else if(c==='\n'){row.push(cur);rows.push(row);row=[];cur='';}
+      else if(c==='\r'){} else cur+=c; } }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function render(rows){
+  const clean=rows.filter(r=>r.some(c=>c&&c.trim()!==''));
+  if(!clean.length){ showState('Sheet is empty — add your schedule rows.'); return; }
+  document.getElementById('week').textContent = (clean[0][0]||'This Week').trim();
+  document.getElementById('title').firstChild.textContent = TITLE + ' ';
+
+  // find header row (contains "day")
+  let hi = clean.findIndex(r=>r.map(c=>c.toLowerCase()).some(c=>c.trim()==='day'));
+  if(hi<0) hi=0;
+  const header = clean[hi].map(c=>c.trim().toLowerCase());
+  const col = n=>header.indexOf(n);
+  const dayC=col('day'), topicC=col('topic'), detC=col('details'), dueC=col('due'), todayC=col('today');
+  const data = clean.slice(hi+1);
+
+  let html='<div class="rows">';
+  data.forEach(r=>{
+    const day=esc((r[dayC]||'').trim());
+    const topic=esc((r[topicC]||'').trim());
+    const det=detC>-1?esc((r[detC]||'').trim()):'';
+    let due=dueC>-1?(r[dueC]||'').trim():'';
+    const hot=/hot/i.test(due); due=esc(due.replace(/\bhot\b/i,'').trim());
+    const today=todayC>-1 && /^y(es)?$/i.test((r[todayC]||'').trim());
+    html+=`<div class="row${today?' today':''}">
+      <div class="day">${day}</div>
+      <div class="topic">${topic}${det?`<span class="sub">${det}</span>`:''}</div>
+      <div class="due${hot?' hot':''}">${due||'—'}</div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('content').innerHTML=html;
+  const t=new Date();
+  document.getElementById('updated').textContent='// synced '+t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+function showState(msg,setup){
+  document.getElementById('week').textContent='—';
+  document.getElementById('content').innerHTML=
+    `<div class="state">${setup?`<div class="setup">${msg}</div>`:esc(msg)}</div>`;
+}
+
+async function load(){
+  if(!SHEET_ID){
+    showState('<b style="color:#eafff2">Almost there — one setup step.</b><br><br>'+
+      'Open <code>this-week-widget.html</code> and paste your Google Sheet ID into '+
+      '<code>const SHEET_ID = ""</code>.<br><br>'+
+      'Find it in your sheet URL between <code>/d/</code> and <code>/edit</code>. '+
+      'Then share the sheet as <b>Anyone with the link → Viewer</b>.', true);
+    return;
+  }
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+  try{
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok) throw new Error(res.status);
+    const text=await res.text();
+    render(parseCSV(text));
+  }catch(e){
+    showState('Could not read the sheet. Check that it is shared "Anyone with the link → Viewer".');
+  }
+}
+load();
+setInterval(load, REFRESH_MINUTES*60*1000);
+</script>
+</body>
+</html>

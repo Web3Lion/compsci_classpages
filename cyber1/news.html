@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cybersecurity News — Cyber Security 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--via:rgba(0,179,255,.10);--trace:rgba(0,179,255,.035);}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--border-hi:#8fabc7;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--fainter:#a6b3c2;--accent:#0a74d6;--accent2:#075aa8;--amber:#9a7d16;--via:rgba(10,116,214,.16);--trace:rgba(10,116,214,.05);}
+body,.card{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+  * { box-sizing: border-box; }
+  body { margin: 0; background-color: var(--bg);
+    background-image: radial-gradient(var(--via) 1.4px, transparent 1.7px), linear-gradient(var(--trace) 1px, transparent 1px), linear-gradient(90deg, var(--trace) 1px, transparent 1px);
+    background-size: 52px 52px, 52px 52px, 52px 52px; font-family: 'Inter', sans-serif; color: var(--text); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent2); }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes led { 0%,100% { opacity: .28; } 50% { opacity: 1; } }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 60px; }
+  .spin { width: 22px; height: 22px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+  .ncard { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); overflow: hidden; text-decoration: none; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+  .ncard:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 18px 40px -22px var(--accent); }
+  .nimg { aspect-ratio: 16/9; width: 100%; object-fit: cover; background: var(--panel2); display: block; }
+  .nimg.ph { display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .nbody { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+  .nsrc { display: inline-flex; align-items: center; gap: 7px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--accent); text-transform: uppercase; }
+  .ntitle { font-size: 16px; font-weight: 700; color: var(--bright); line-height: 1.35; }
+  .ndesc { font-size: 13px; color: var(--dim); line-height: 1.5; flex: 1; }
+  .nmeta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--faint); margin-top: 4px; }
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+
+  <div style="margin-top: 28px; margin-bottom: 26px;">
+    <div class="mono" style="font-size: 12px; letter-spacing: 2px; color: var(--accent); margin-bottom: 10px;"><a href="index.html" style="color:var(--faint);">&larr; back to course</a></div>
+    <h1 class="mono" style="font-weight: 800; font-size: 40px; margin: 0 0 10px; color: var(--bright); letter-spacing: -1px;">Cybersecurity News Feed</h1>
+    <p style="margin: 0; font-size: 16px; color: var(--muted); max-width: 620px; line-height: 1.6;">The latest security headlines, gathered from top cybersecurity news outlets. Refreshes automatically each morning.</p>
+    <div id="status" class="mono" style="margin-top: 14px; font-size: 12px; color: var(--dim);"><span class="spin"></span> &nbsp;fetching latest headlines…</div>
+  </div>
+
+  <div style="margin-bottom:22px;position:relative;max-width:520px;">
+    <input id="search" type="search" placeholder="Search by keyword or source…" autocomplete="off"
+      style="width:100%;box-sizing:border-box;padding:13px 16px 13px 44px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:15px;font-family:'Inter',sans-serif;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="7" stroke="var(--dim)" stroke-width="1.8"/><path d="M20 20l-3.6-3.6" stroke="var(--dim)" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </div>
+
+  <div id="grid" class="grid"></div>
+
+  <div class="mono" style="margin-top: 34px; text-align: center; font-size: 11px; color: var(--fainter); line-height: 1.7;">Sources: The Hacker News · BleepingComputer · Krebs on Security · Dark Reading · SecurityWeek · The Record<br>Headlines are external links — always evaluate sources critically.</div>
+</div>
+
+<script>
+const FEEDS = [
+  { name: 'The Hacker News',   url: 'https://feeds.feedburner.com/TheHackersNews' },
+  { name: 'BleepingComputer',  url: 'https://www.bleepingcomputer.com/feed/' },
+  { name: 'Krebs on Security', url: 'https://krebsonsecurity.com/feed/' },
+  { name: 'Dark Reading',      url: 'https://www.darkreading.com/rss.xml' },
+  { name: 'SecurityWeek',      url: 'https://feeds.feedburner.com/securityweek' },
+  { name: 'The Record',        url: 'https://therecord.media/feed/' }
+];
+const CACHE_KEY = 'cyber1-news-cache-v1';
+const PER_FEED = 4;
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function stripTags(s){ const d=document.createElement('div'); d.innerHTML=s||''; return (d.textContent||'').trim(); }
+function timeAgo(dstr){ const d=new Date(dstr); if(isNaN(d)) return ''; const h=Math.floor((Date.now()-d)/3600000); if(h<1) return 'just now'; if(h<24) return h+'h ago'; const dd=Math.floor(h/24); return dd+'d ago'; }
+function imgFrom(item){
+  if(item.thumbnail) return item.thumbnail;
+  if(item.enclosure && item.enclosure.link) return item.enclosure.link;
+  const m=(item.content||item.description||'').match(/<img[^>]+src=["']([^"']+)["']/i);
+  return m?m[1]:'';
+}
+
+// refetch if we haven't fetched since today's 7am
+function needsRefresh(ts){
+  if(!ts) return true;
+  const now=new Date();
+  const seven=new Date(now.getFullYear(),now.getMonth(),now.getDate(),7,0,0,0);
+  const last=new Date(ts);
+  if(now>=seven && last<seven) return true;      // it's past 7am and last fetch was before today's 7am
+  if(now-last > 24*3600*1000) return true;        // safety: older than a day
+  return false;
+}
+
+var ALL_ITEMS=[];
+function cardHTML(it){
+  var img=it.img
+    ? '<img class="nimg" src="'+esc(it.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+    : '<div class="nimg ph"><div style="position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,var(--via),transparent 60%);"></div><span class="mono" style="position:relative;font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-.5px;text-align:center;padding:0 14px;line-height:1.2;">'+esc(it.source)+'</span></div>';
+  return '<a class="ncard" href="'+esc(it.link)+'" target="_blank" rel="noopener">'
+    + img
+    + '<div class="nbody">'
+    + '<span class="nsrc"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent);"></span>'+esc(it.source)+'</span>'
+    + '<div class="ntitle">'+esc(it.title)+'</div>'
+    + '<div class="ndesc">'+esc(it.desc)+'</div>'
+    + '<div class="nmeta">'+esc(it.ago)+'</div>'
+    + '</div></a>';
+}
+function applyFilter(){
+  var el=document.getElementById('search');
+  var q=(el&&el.value||'').toLowerCase().trim();
+  var items = q ? ALL_ITEMS.filter(function(it){ return (it.source+' '+it.title+' '+it.desc).toLowerCase().indexOf(q)>-1; }) : ALL_ITEMS;
+  var grid=document.getElementById('grid');
+  if(!items.length){ grid.innerHTML='<div class="mono" style="grid-column:1/-1;padding:34px;text-align:center;color:var(--dim);font-size:14px;">No headlines match your search.</div>'; return; }
+  grid.innerHTML = items.map(cardHTML).join('');
+}
+function render(items){
+  ALL_ITEMS = items||[];
+  var grid=document.getElementById('grid');
+  if(!ALL_ITEMS.length){ document.getElementById('status').innerHTML='Could not load headlines right now. Try again later.'; grid.innerHTML=''; return; }
+  applyFilter();
+}
+
+// ===== Content filters for a high-school audience =====
+// Any article whose title or text matches these is hidden entirely.
+var BLOCK_WORDS = [
+  // profanity / slurs (word-boundary matched)
+  "fuck","shit","bitch","bastard","asshole","dick","cunt","piss","whore","slut","douche","damn","crap","bollocks","wank","prick","twat",
+  // sexual / adult
+  "sex","sexual","porn","pornhub","nude","nudes","nsfw","onlyfans","escort","xxx","erotic","fetish","incest","rape","molest","pedophile","camgirl","brothel","strip club","sextortion",
+  // violence / harm
+  "murder","suicide","kill himself","kill herself","killed himself","self-harm","beheaded","massacre","terrorist","terrorism","shooting","gunman","gore","dismember","execution",
+  // drugs
+  "cocaine","heroin","meth","fentanyl","marijuana","cannabis","weed drug","ecstasy","narcotics","overdose","drug cartel",
+  // gambling / high-risk adult finance framing
+  "casino","gambling","porn site","adult industry"
+];
+var BLOCK_PHRASES = BLOCK_WORDS.filter(function(w){return w.indexOf(" ")>-1;});
+var BLOCK_SINGLE  = BLOCK_WORDS.filter(function(w){return w.indexOf(" ")===-1;});
+function isClean(text){
+  var t=(text||"").toLowerCase();
+  for(var i=0;i<BLOCK_PHRASES.length;i++){ if(t.indexOf(BLOCK_PHRASES[i])>-1) return false; }
+  for(var j=0;j<BLOCK_SINGLE.length;j++){ if(new RegExp("\\b"+BLOCK_SINGLE[j].replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b").test(t)) return false; }
+  return true;
+}
+
+function normalize(feedName, data){
+  const items=(data && data.items)||[];
+  const clean=[];
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    var full=stripTags(it.title)+" "+stripTags(it.description||it.content||"");
+    if(!isClean(full)) continue;              // drop flagged articles
+    var desc=stripTags(it.description||it.content||''); if(desc.length>150) desc=desc.slice(0,150).trim()+'…';
+    clean.push({ source:feedName, title:stripTags(it.title), link:it.link, desc:desc, img:imgFrom(it), ago:timeAgo(it.pubDate), pub:it.pubDate });
+    if(clean.length>=PER_FEED) break;
+  }
+  return clean;
+}
+
+async function fetchAll(){
+  const results=await Promise.all(FEEDS.map(function(f){
+    var api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url);
+    return fetch(api).then(function(r){return r.json();}).then(function(j){ return normalize(f.name,j); }).catch(function(){ return []; });
+  }));
+  var all=[].concat.apply([],results);
+  all.sort(function(a,b){ return new Date(b.pub)-new Date(a.pub); });
+  return all;
+}
+
+async function load(){
+  var cached=null;
+  try{ cached=JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); }catch(e){}
+  if(cached && cached.items && cached.items.length && !needsRefresh(cached.ts)){
+    render(cached.items);
+    document.getElementById('status').innerHTML='Updated '+new Date(cached.ts).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    return;
+  }
+  var items=await fetchAll();
+  if(items.length){
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(), items:items})); }catch(e){}
+    render(items);
+    document.getElementById('status').innerHTML='Updated '+new Date().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  } else if(cached && cached.items){
+    render(cached.items);
+    document.getElementById('status').innerHTML='Showing last saved headlines (couldn\u2019t refresh).';
+  } else {
+    render([]);
+  }
+}
+document.getElementById('search').addEventListener('input', applyFilter);
+load();
+</script>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

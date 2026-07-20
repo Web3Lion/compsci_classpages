@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syllabus — Cyber Security 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--border-hi:#8fabc7;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--fainter:#a6b3c2;--accent:#0a74d6;--accent2:#075aa8;--amber:#9a7d16;}
+body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  a { color: var(--accent); text-decoration: none; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 28px 20px 70px; }
+  @keyframes blink { 0%,49%{opacity:1;} 50%,100%{opacity:0;} }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .banner { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(135deg,var(--panel2) 0%,var(--bg) 60%); padding: 30px 32px; margin-bottom: 18px; }
+  .banner .grain { position:absolute; inset:0; opacity:.06; background-image:repeating-linear-gradient(0deg,var(--accent) 0,var(--accent) 1px,transparent 1px,transparent 4px); pointer-events:none; }
+  .kick { font-size: 12px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+  h1 { font-weight: 800; font-size: 34px; margin: 8px 0 6px; color: var(--bright); letter-spacing: -.5px; }
+  .lead { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 640px; margin: 0; }
+  .cursor { display:inline-block; width:11px; height:26px; background:var(--accent); margin-left:6px; vertical-align:middle; animation:blink 1.1s step-end infinite; }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .live { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--dim); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: blink 1.6s step-end infinite; }
+  .btn { font-family:'JetBrains Mono',monospace; font-size: 13px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border3); background: var(--bg); color: var(--accent); cursor: pointer; }
+  .btn:hover { background: var(--panel3); }
+
+  .docframe { position: relative; border: 1px solid var(--border3); border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 20px 60px -30px #000; }
+  .docframe iframe { display: block; width: 100%; height: 1400px; border: 0; background: #fff; }
+  .loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px; background: var(--panel); color: var(--dim); font-family:'JetBrains Mono',monospace; font-size: 13px; transition: opacity .4s; }
+  .spinner { width: 24px; height: 24px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+
+  <div class="banner">
+    <div class="grain"></div>
+    <div style="position:relative;z-index:1;">
+      <div class="kick mono">&gt; ./syllabus --course=cybersec-1</div>
+      <h1 class="mono">Course Syllabus<span class="cursor"></span></h1>
+      <p class="lead">The official syllabus, policies, and expectations for Cyber Security 1 (RMU College in High School). <a href="index.html">&larr; back to course home</a></p>
+    </div>
+  </div>
+
+  <div class="bar">
+    <span class="live mono"><span class="dot"></span> LIVE — updates automatically when the document is edited</span>
+    <a class="btn" href="https://docs.google.com/document/d/1lTdE2nVxgmZvZG8H5wLFJ1vLOvsU6eYn3A2OlYQWO-0/view" id="docLink" target="_blank" rel="noopener">open full document &nearr;</a>
+  </div>
+
+  <div class="docframe">
+    <div class="loading" id="loading"><div class="spinner"></div>loading live syllabus…</div>
+    <iframe id="doc"
+      src="https://docs.google.com/document/d/1lTdE2nVxgmZvZG8H5wLFJ1vLOvsU6eYn3A2OlYQWO-0/preview"
+      title="Course Syllabus"
+      onload="const l=document.getElementById('loading'); l.style.opacity=0; setTimeout(()=>l.remove(),400);"></iframe>
+  </div>
+
+  <p class="mono" style="text-align:center;margin-top:26px;font-size:12px;color:var(--fainter);">&gt; if the document doesn't appear, make sure it is shared: Anyone with the link &rarr; Viewer_</p>
+</div>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script src="../config.js"></script>
+<script>
+(function(){
+  var CFG=(window.COURSE_CONFIG&&window.COURSE_CONFIG.cyber1)||{};
+  var id=CFG.syllabusDocId; if(!id) return;
+  var base='https://docs.google.com/document/d/'+id;
+  var f=document.getElementById('doc'); if(f && f.src.indexOf(id)<0) f.src=base+'/preview';
+  var a=document.getElementById('docLink'); if(a) a.href=base+'/view';
+})();
+</script>
+</body>
+</html>
