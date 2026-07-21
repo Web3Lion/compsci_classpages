@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capture The Flag — AP Cyber Security 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#0a0e14;--panel:#0d1410;--panel2:#0d1a12;--panel3:#0f2318;--border:#1e3a2e;--border2:#17281f;--border3:#244d38;--border-hi:#2f5d44;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe3d8;--bright:#eafff2;--muted:#a9c4b6;--dim:#7fa896;--faint:#5c7a6b;--fainter:#3d5749;--accent:#39ff88;--accent2:#7dffb3;--amber:#ffcf5c;}
+:root[data-theme="light"]{--bg:#e9efe9;--panel:#ffffff;--panel2:#f2f7f2;--panel3:#e8f6ee;--border:#cdddd2;--border2:#dde8e0;--border3:#b6d4c1;--border-hi:#8fbfa2;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#2b3a31;--bright:#0e1a13;--muted:#48594f;--dim:#5f7568;--faint:#839a8c;--fainter:#a6b8ac;--accent:#0f9d58;--accent2:#0b7e45;--amber:#9a7d16;}
+body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+.qlink{transition:transform .08s ease,border-color .15s ease,box-shadow .15s ease;text-decoration:none;}
+.qlink:hover{border-color:var(--accent);box-shadow:0 6px 18px -12px var(--accent);}
+.qlink:active{transform:translateY(2px) scale(.992);border-color:var(--accent);box-shadow:inset 0 2px 6px -2px var(--accent);}
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent2); }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(220%); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+  .card { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 28px; }
+  .badge { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 8px 14px; border-radius: 999px; }
+  .mcard { padding: 18px; background: var(--bg); border: 1px solid var(--border2); border-radius: 10px; }
+  .grid2 { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 28px; }
+  .mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 820px) { .grid2 { grid-template-columns: 1fr; } .mgrid { grid-template-columns: 1fr; } }
+  .row { display: grid; grid-template-columns: 84px 1fr 150px; align-items: start; gap: 14px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--border2); border-radius: 10px; }
+  .spin { width: 20px; height: 20px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+  @keyframes glShake {0%,100%{transform:translate(0)}10%{transform:translate(-4px,2px)}20%{transform:translate(4px,-2px)}30%{transform:translate(-3px,-1px) skewX(3deg)}40%{transform:translate(3px,1px) skewX(-3deg)}50%{transform:translate(-2px,2px)}60%{transform:translate(2px,-2px)}70%{transform:translate(-3px,1px) skewX(2deg)}80%{transform:translate(3px,-1px)}90%{transform:translate(-1px,1px)}}
+  .glitching { animation: glShake .45s steps(3) 2; }
+  #glitch { position: fixed; inset: 0; z-index: 9999; display: none; pointer-events: none; overflow: hidden; }
+  #glitch.on { display: block; }
+  #glitch .scan { position:absolute; inset:0; background: repeating-linear-gradient(0deg, rgba(57,255,136,.14) 0, rgba(57,255,136,.14) 1px, transparent 2px, transparent 4px); mix-blend-mode: screen; }
+  #glitch .noise { position:absolute; inset:0; color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.15; opacity:.22; white-space:pre-wrap; word-break:break-all; overflow:hidden; }
+  #glitch .slice { position:absolute; left:0; right:0; height:16px; background:rgba(57,255,136,.10); }
+  #glitch .msg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'JetBrains Mono',monospace; font-weight:800; font-size:clamp(22px,5vw,48px); color:var(--bright); text-shadow: 2px 0 #ff2d5e, -2px 0 #2de2ff; letter-spacing:1px; text-align:center; }
+</style>
+</head>
+<body>
+<!-- flag{read_the_source_luke} -->
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap" style="padding-top:20px;">
+  <div id="ctfRoot"></div>
+</div>
+<script src="../config.js"></script>
+<script src="vocab-data.js"></script>
+<script>window.CTF_COURSE="cyber2";window.CTF_VOCAB=(window.CY2_VOCAB||{}).terms||[];</script>
+<script src="../ctf.js"></script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<style>@keyframes ctfShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}</style>
+</body>
+</html>
