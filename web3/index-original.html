@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#100e0b;--panel:#191510;--panel2:#1f1a13;--panel3:#26201a;--border:#3a3124;--border2:#2a231b;--border3:#4d3f2e;--border-hi:#6f5c42;--amber-bd:#6a4d20;--amber-bg:#241a0c;--text:#e6ddd0;--bright:#fff8ee;--muted:#c1b4a1;--dim:#93846f;--faint:#655849;--fainter:#40382d;--accent:#f7931a;--accent2:#ffb454;--amber:#f7931a;--via:rgba(247,147,26,.10);--trace:rgba(247,147,26,.035);}
-:root[data-theme="light"]{--bg:#f5f1ea;--panel:#ffffff;--panel2:#faf6f0;--panel3:#f5efe6;--border:#e2d8ca;--border2:#ece4d8;--border3:#c6b8a3;--border-hi:#8f7d64;--amber-bd:#d3ba7a;--amber-bg:#f8f0d6;--text:#2f2a22;--bright:#1a140c;--muted:#5c5244;--dim:#7a6e5b;--faint:#9a8c77;--fainter:#bcb09b;--accent:#c56b0c;--accent2:#9a5408;--amber:#b0710f;--via:rgba(197,107,12,.16);--trace:rgba(197,107,12,.05);}
+:root{--bg:#0c0a15;--panel:#15111f;--panel2:#1a1526;--panel3:#20192e;--border:#342a47;--border2:#241d33;--border3:#4a3b63;--border-hi:#6b5788;--amber-bd:#6a4d20;--amber-bg:#241a0c;--text:#ddd6ea;--bright:#f6f2ff;--muted:#b0a6c6;--dim:#877ba0;--faint:#5f5479;--fainter:#3f374f;--accent:#f7a01f;--accent2:#ffc25c;--amber:#f7a01f;--via:rgba(247,160,31,.10);--trace:rgba(247,160,31,.035);}
+:root[data-theme="light"]{--bg:#f1eef7;--panel:#ffffff;--panel2:#f6f3fb;--panel3:#f1ecf8;--border:#d7cfe4;--border2:#e4ddf0;--border3:#b8accf;--border-hi:#897ba8;--amber-bd:#d3ba7a;--amber-bg:#f8f0d6;--text:#2e2740;--bright:#150e26;--muted:#554a6a;--dim:#71668c;--faint:#8f83a6;--fainter:#aca3c0;--accent:#a56a0c;--accent2:#7d4f08;--amber:#8f6b12;--via:rgba(165,106,12,.16);--trace:rgba(165,106,12,.05);}
 body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
 .themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
 .themebtn:hover{border-color:var(--accent);}
@@ -34,7 +34,7 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
   @keyframes flowdash { to { stroke-dashoffset: -400; } }
   @keyframes tickerscroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
   @keyframes sheen { 0% { transform: translateX(-120%); } 60%,100% { transform: translateX(320%); } }
-  @keyframes ringpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(247,147,26,.5); } 50% { box-shadow: 0 0 0 7px rgba(247,147,26,0); } }
+  @keyframes ringpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(247,160,31,.5); } 50% { box-shadow: 0 0 0 7px rgba(247,160,31,0); } }
   .launchpill { transition: transform .08s ease, box-shadow .12s ease; }
   #tradeCard:active .launchpill { transform: translateY(2px) scale(.97); box-shadow: inset 0 2px 6px -2px rgba(0,0,0,.4); }
   :root[data-theme="light"] #tradeCard { background: linear-gradient(120deg,#f8efda 0%,#f3e6c8 42%,#f1ecf8 100%) !important; border-color:var(--border) !important; box-shadow:0 16px 40px -22px rgba(185,118,14,.5) !important; }
@@ -45,7 +45,7 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
   @keyframes drift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(7px,-11px); } }
   @keyframes consensusPulse { 0%,100% { opacity:.55; box-shadow:0 0 0 0 var(--via); } 50% { opacity:1; box-shadow:0 0 14px -2px var(--accent); } }
   .coins { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-  .coin { position: absolute; top: -70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #3d2a06; background: radial-gradient(circle at 34% 28%, #ffd089, #f7931a 56%, #b56a08); box-shadow: 0 5px 12px rgba(0,0,0,.28), inset 0 0 7px rgba(255,255,255,.45); animation: coinfall linear infinite; }
+  .coin { position: absolute; top: -70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #4a3408; background: radial-gradient(circle at 34% 28%, #ffe6a0, #f7a01f 58%, #b9760e); box-shadow: 0 5px 12px rgba(0,0,0,.28), inset 0 0 7px rgba(255,255,255,.45); animation: coinfall linear infinite; }
   .hashchip { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); background: var(--panel); border: 1px solid var(--border3); border-radius: 6px; padding: 3px 8px; opacity: .92; animation: drift ease-in-out infinite; }
   .consensus { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--accent); background: var(--panel); border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; display: flex; align-items: center; gap: 7px; animation: consensusPulse 2.6s ease-in-out infinite; }
   .consensus b { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }

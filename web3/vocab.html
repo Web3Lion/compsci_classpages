@@ -72,6 +72,17 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
   .btn.primary:hover { background: var(--accent2); }
   .prog { font-size: 13px; color: var(--dim); }
+  /* cascade */
+  .cas-top { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+  .cas-barwrap { height: 8px; background: var(--border2); border-radius: 999px; overflow: hidden; margin-bottom: 20px; }
+  .cas-bar { height: 100%; width: 0%; background: linear-gradient(90deg,var(--accent),var(--accent2)); transition: width .4s ease; }
+  .cas-ctrl { display: flex; gap: 12px; margin-top: 16px; }
+  .cas-ctrl .btn { flex: 1; padding: 15px; font-size: 15px; text-align: center; }
+  .cas-miss { color: #ff9b9b; border-color: #5a2a2a; }
+  .cas-miss:hover { background: #1a0d0d; }
+  .cas-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 14px; padding: 16px 18px; border: 1px solid var(--border3); border-radius: 12px; background: linear-gradient(160deg,var(--panel3),var(--panel)); }
+  .cas-cta .txt { font-size: 12.5px; color: var(--muted); line-height: 1.5; max-width: 560px; letter-spacing: .3px; }
+  .cas-cta .txt b { color: var(--accent); }
 
   /* decrypt game */
   .g-top { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -381,11 +392,12 @@ function render(){
   if(mode==="cards") renderCards();
   else if(mode==="decrypt") renderDecrypt();
   else if(mode==="match") renderMatch();
+  else if(mode==="cascade") renderCascade();
   else renderQuiz();
 }
 
 /* ================= FLASHCARDS ================= */
-let fcDeck=[], fcIdx=0, fcFlip=false;
+let fcDeck=[], fcIdx=0, fcFlip=false, fcDir='term';
 function renderCards(){
   fcDeck = shuffle(pool()); fcIdx=0; fcFlip=false;
   panel.innerHTML = `
@@ -409,23 +421,35 @@ function renderCards(){
       <button class="btn" id="fcPrev">&larr; prev</button>
       <div class="prog mono" id="fcProg"></div>
       <div style="display:flex;gap:8px;">
+        <button class="btn" id="fcDirBtn">mode: TERM &#8594; def</button>
         <button class="btn" id="fcShuf">shuffle</button>
         <button class="btn primary" id="fcNext">next &rarr;</button>
       </div>
+    </div>
+    <div class="cas-cta">
+      <div class="txt mono">&#9656; <b>CASCADE</b> &mdash; learn in waves. Master 3 terms and 3 more cascade in, growing your stack until every term in the selected module(s) is conquered.</div>
+      <button class="btn primary" id="fcCascade">START CASCADE &rarr;</button>
     </div>`;
   const card = $("#fcCard");
   card.addEventListener("click", ()=>{ fcFlip=!fcFlip; card.classList.toggle("flip",fcFlip); });
   $("#fcPrev").onclick = ()=>{ fcIdx=(fcIdx-1+fcDeck.length)%fcDeck.length; showCard(); };
   $("#fcNext").onclick = ()=>{ fcIdx=(fcIdx+1)%fcDeck.length; showCard(); };
   $("#fcShuf").onclick = ()=>{ fcDeck=shuffle(fcDeck); fcIdx=0; showCard(); };
+  $("#fcDirBtn").onclick = ()=>{ fcDir = fcDir==="term"?"def":"term"; $("#fcDirBtn").innerHTML = fcDir==="term"?"mode: TERM &#8594; def":"mode: DEF &#8594; term"; showCard(); };
+  $("#fcCascade").onclick = ()=>{ mode="cascade"; render(); };
   showCard();
 }
 function showCard(){
   const v = fcDeck[fcIdx]; fcFlip=false; $("#fcCard").classList.remove("flip");
   $("#fcMod").textContent = "MODULE "+String(v.m).padStart(2,"0");
   $("#fcMod2").textContent = "MODULE "+String(v.m).padStart(2,"0");
-  $("#fcTerm").textContent = v.t;
-  $("#fcDef").textContent = v.d;
+  const showDef = fcDir==="def";
+  const fEl=$("#fcTerm"), bEl=$("#fcDef");
+  fEl.textContent = showDef ? v.d : v.t;
+  bEl.textContent = showDef ? v.t : v.d;
+  fEl.className = showDef ? "fc-def" : "fc-term";
+  bEl.className = showDef ? "fc-term" : "fc-def";
+  const fh=$("#fcCard").querySelector(".fc-front .fc-hint"); if(fh) fh.textContent = showDef ? "click to reveal the term" : "click to reveal definition";
   $("#fcProg").textContent = (fcIdx+1)+" / "+fcDeck.length;
 }
 
@@ -707,6 +731,128 @@ function shareQuiz(){
       if(msgEl)msgEl.textContent="Result image saved to your downloads — attach it for participation credit.";
     }
   }, "image/png");
+}
+
+
+/* ================= CASCADE (mastery waves) ================= */
+let casDeck=[], casPtr=0, casSet=[], casReview=[], casCur=-1, casWave=1, casFlip=false, casReady=false, casDir='term';
+function casIntroduce(n){
+  let added=0;
+  for(let k=0;k<n && casPtr<casDeck.length;k++){
+    casSet.push({v:casDeck[casPtr++], mastered:false});
+    casReview.push(casSet.length-1);
+    added++;
+  }
+  return added;
+}
+function casMastered(){ return casSet.filter(function(c){return c.mastered;}).length; }
+function casStats(){
+  const total=casDeck.length, m=casMastered();
+  const w=document.getElementById('casWave'); if(w) w.textContent=casWave;
+  const st=document.getElementById('casStack'); if(st) st.textContent=casSet.length;
+  const md=document.getElementById('casMastered'); if(md) md.textContent=m+' / '+total;
+  const bar=document.getElementById('casBar'); if(bar) bar.style.width=(total?Math.round(m/total*100):0)+'%';
+}
+function renderCascade(){
+  casDeck=shuffle(pool()); casPtr=0; casSet=[]; casReview=[]; casCur=-1; casWave=1; casFlip=false; casReady=false;
+  casIntroduce(Math.min(3, casDeck.length));
+  casReview.push(-1);
+  panel.innerHTML =
+    '<div class="card cas">'+
+      '<div class="cas-top">'+
+        '<div class="g-stat">WAVE<b id="casWave">1</b></div>'+
+        '<div class="g-stat">STACK<b id="casStack">0</b></div>'+
+        '<div class="g-stat amber">MASTERED<b id="casMastered">0 / 0</b></div>'+
+      '</div>'+
+      '<div class="cas-barwrap"><div class="cas-bar" id="casBar"></div></div>'+
+      '<div style="display:flex;justify-content:center;margin-bottom:16px;"><button class="btn" id="casDirBtn">mode: TERM &#8594; definition</button></div>'+
+      '<div class="fc">'+
+        '<div class="fc-card" id="casCard">'+
+          '<div class="fc-inner">'+
+            '<div class="fc-face fc-front">'+
+              '<div class="fc-modtag mono" id="casMod"></div>'+
+              '<div class="fc-term" id="casTerm"></div>'+
+              '<div class="fc-hint mono">click to reveal definition</div>'+
+            '</div>'+
+            '<div class="fc-face fc-back">'+
+              '<div class="fc-modtag mono" id="casMod2"></div>'+
+              '<div class="fc-def" id="casDef"></div>'+
+              '<div class="fc-hint mono">did you know it?</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="cas-ctrl">'+
+        '<button class="btn cas-miss" id="casMiss" disabled>&#10007; missed it</button>'+
+        '<button class="btn cas-got primary" id="casGot" disabled>&#10003; got it</button>'+
+      '</div>'+
+      '<div class="g-msg mono" id="casMsg">&gt; flip the card, then mark yourself</div>'+
+      '<div style="text-align:center;margin-top:14px;"><button class="btn" id="casBack">&larr; back to flashcards</button></div>'+
+    '</div>';
+  const card=document.getElementById('casCard');
+  card.addEventListener('click', function(){
+    casFlip=!casFlip; card.classList.toggle('flip', casFlip);
+    if(casFlip){ casReady=true; document.getElementById('casGot').disabled=false; document.getElementById('casMiss').disabled=false; }
+  });
+  document.getElementById('casGot').onclick=function(){ if(!casReady) return; casSet[casCur].mastered=true; casStats(); casAdvance(); };
+  document.getElementById('casMiss').onclick=function(){ if(!casReady) return; casReview.push(casCur); casAdvance(); };
+  document.getElementById('casBack').onclick=function(){ mode='cards'; render(); };
+  document.getElementById('casDirBtn').onclick=function(){ casDir = casDir==='term'?'def':'term'; document.getElementById('casDirBtn').innerHTML = casDir==='term'?'mode: TERM &#8594; definition':'mode: DEFINITION &#8594; term'; casShow(); };
+  casStats();
+  casAdvance();
+}
+function casShow(){
+  const it=casSet[casCur]; casFlip=false; casReady=false;
+  const card=document.getElementById('casCard'); if(!card) return;
+  card.classList.remove('flip');
+  document.getElementById('casMod').textContent='MODULE '+String(it.v.m).padStart(2,'0');
+  document.getElementById('casMod2').textContent='MODULE '+String(it.v.m).padStart(2,'0');
+  const showDef = casDir==='def';
+  const fEl=document.getElementById('casTerm'), bEl=document.getElementById('casDef');
+  fEl.textContent = showDef ? it.v.d : it.v.t;
+  bEl.textContent = showDef ? it.v.t : it.v.d;
+  fEl.className = showDef ? 'fc-def' : 'fc-term';
+  bEl.className = showDef ? 'fc-term' : 'fc-def';
+  const fh=card.querySelector('.fc-front .fc-hint'); if(fh) fh.textContent = showDef ? 'click to reveal the term' : 'click to reveal definition';
+  document.getElementById('casGot').disabled=true;
+  document.getElementById('casMiss').disabled=true;
+}
+function casAdvance(){
+  let justExpanded=0;
+  while(true){
+    if(casReview.length===0){ casComplete(); return; }
+    const nxt=casReview.shift();
+    if(nxt===-1){
+      const added=casIntroduce(3);
+      const hasCards=casReview.some(function(x){return x!==-1;});
+      if(added>0 || hasCards){
+        casReview.push(-1);
+        if(added>0){ casWave++; justExpanded=added; casStats(); }
+        continue;
+      } else { casComplete(); return; }
+    }
+    casCur=nxt; casShow();
+    const msg=document.getElementById('casMsg');
+    if(msg){
+      if(justExpanded>0){ msg.innerHTML='&gt; WAVE '+casWave+' &mdash; +'+justExpanded+' new term'+(justExpanded>1?'s':'')+' cascaded in &middot; missed cards return for redemption'; msg.style.color='var(--accent)'; }
+      else { msg.innerHTML='&gt; flip the card, then mark yourself'; msg.style.color='var(--dim)'; }
+    }
+    return;
+  }
+}
+function casComplete(){
+  const total=casDeck.length;
+  panel.querySelector('.card').innerHTML=
+    '<div class="g-summary">'+
+      '<div class="mono" style="color:var(--accent);font-size:12px;letter-spacing:2px;">// CASCADE CLEARED</div>'+
+      '<div class="big mono">'+total+'</div>'+
+      '<div style="color:var(--dim);font-size:14px;margin-bottom:6px;">terms mastered across '+casWave+' wave'+(casWave>1?'s':'')+'</div>'+
+      '<div style="color:var(--muted);font-size:15px;margin-bottom:22px;">Full stack conquered. Run it again to lock it in.</div>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">'+
+        '<button class="btn primary" onclick="renderCascade()">restart cascade</button>'+
+        '<button class="btn" onclick="mode=\'cards\';render();">back to flashcards</button>'+
+      '</div>'+
+    '</div>';
 }
 
 renderChips();
