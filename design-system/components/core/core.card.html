@@ -1,0 +1,43 @@
+<!-- @dsCard group="Components" viewport="700x290" subtitle="Button, Badge, Card, Input" name="Core" -->
+<!DOCTYPE html><html lang="en" data-course="cyber1"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../styles.css">
+<style>html,body{margin:0;background:var(--bg);background-image:var(--field-image);background-size:var(--field-size) var(--field-size);color:var(--text);font-family:var(--font-ui);padding:18px;}
+.mono{font-family:var(--font-mono);}
+.btn{font-weight:600;border-radius:var(--r-md);padding:9px 15px;font-size:13px;background:var(--panel2);border:1px solid var(--border3);color:var(--text);}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--bg);}
+.btn.ghost{background:transparent;border-color:var(--border2);color:var(--dim);}
+.btn.danger{color:var(--bad);}
+.btn.sm{padding:5px 10px;font-size:11px;border-radius:var(--r-sm);}
+.btn.lg{padding:13px 22px;font-size:14px;}
+.btn[disabled]{opacity:.45;}
+.bdg{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:var(--r-sm);}
+.lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;color:var(--faint);text-transform:uppercase;margin-bottom:6px;}
+.in{width:100%;padding:10px 12px;border-radius:var(--r-md);border:1px solid var(--border3);background:var(--bg);color:var(--bright);font-size:14px;}
+</style></head><body>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+  <button class="btn pri lg mono">SUBMIT FLAG</button>
+  <button class="btn">Secondary</button>
+  <button class="btn ghost">Ghost</button>
+  <button class="btn danger">Delete class</button>
+  <button class="btn sm">Reset PIN</button>
+  <button class="btn" disabled>Disabled</button>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+  <span class="bdg" style="color:var(--ok);background:color-mix(in srgb,var(--ok) 13%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);">Easy</span>
+  <span class="bdg" style="color:var(--warn);background:color-mix(in srgb,var(--warn) 13%,transparent);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);">Medium</span>
+  <span class="bdg" style="color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);">Hard</span>
+  <span class="bdg" style="border-radius:var(--r-pill);padding:8px 14px;color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);">STATUS: ENROLLED</span>
+</div>
+<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-top:16px;">
+  <div style="background:var(--panel);border:var(--stroke);border-radius:var(--r-lg);padding:16px;">
+    <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">STANDARD CARD</div>
+    <div style="background:var(--bg);border:var(--stroke-quiet);border-radius:var(--r-md);padding:12px;margin-top:10px;">
+      <div class="mono" style="font-size:11px;color:var(--dim);">inner card — surface steps down</div>
+    </div>
+  </div>
+  <div>
+    <div class="lbl">Class code</div>
+    <input class="in mono" value="CSP-P3-2K8R" style="border-color:var(--accent);">
+  </div>
+</div>
+</body></html>

@@ -22,4 +22,9 @@
 ## Shared engine
 - `ctf.js` is loaded only by cyber1/ctf.html and cyber2/ctf.html. `nemesis-intro.js`
   adds the intruder glitch to other cyber pages.
+- Non-cyber page transitions: `apcsp/packet-intro.js` (Byte Bounty / ADA, purple —
+  RECEIVING PACKETS / ESTABLISHING CONNECTION / COMPILING PROGRAM) and
+  `web3/consensus-intro.js` (Proof of Work / ORACLE, orange — REACHING CONSENSUS /
+  MINING BLOCK / BROADCASTING TRANSACTION). Each picks a random variant per load and
+  is loaded on that course's ctf.html + index/vocab/syllabus/news (formal pages).
 - Vocab pool: `cyber2/vocab-data.js` (shared by vocab.html + ctf.html).

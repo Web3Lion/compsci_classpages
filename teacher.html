@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard — CTF Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d12;--panel:#111620;--panel2:#161d29;--panel3:#1c2432;--bg2:#0d1119;
+    --border:#26303e;--border2:#1d2531;--border3:#3a4658;--hi:#556274;
+    --text:#c6d0dc;--bright:#f0f5fb;--muted:#93a1b3;--dim:#6f7d8f;--faint:#4d5a6a;
+    --accent:#4ba3ff;--accent2:#7cc0ff;--ok:#3ecf8e;--warn:#ffb454;--bad:#ff6b6b;
+    --cyber1:#2ee6a6;--cyber2:#3fb2ff;--apcsp:#a855f7;--web3:#ff9838;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);
+    background-image:radial-gradient(circle at 15% -10%,rgba(75,163,255,.06),transparent 45%);}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+  button{font-family:inherit;cursor:pointer;}
+  input,select{font-family:inherit;}
+  ::-webkit-scrollbar{width:10px;height:10px;} ::-webkit-scrollbar-thumb{background:var(--border3);border-radius:6px;}
+  .btn{padding:9px 15px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);color:var(--text);font-size:13px;font-weight:600;transition:.15s;}
+  .btn:hover{border-color:var(--accent);color:var(--bright);}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#04121e;}
+  .btn.pri:hover{background:var(--accent2);border-color:var(--accent2);}
+  .btn.danger:hover{border-color:var(--bad);color:var(--bad);}
+  .btn.sm{padding:5px 10px;font-size:11px;border-radius:7px;}
+  .in{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border3);background:var(--bg2);color:var(--bright);font-size:14px;outline:none;}
+  .in:focus{border-color:var(--accent);}
+  .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;text-transform:uppercase;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;}
+  .pill{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:6px;text-transform:uppercase;}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;background:var(--panel3);border:1px solid var(--border2);font-size:12px;}
+  .spin{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .fade{animation:fade .25s ease;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--faint);text-transform:uppercase;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;user-select:none;}
+  th:hover{color:var(--muted);}
+  td{padding:11px 12px;border-bottom:1px solid var(--border2);vertical-align:middle;}
+  tr:hover td{background:var(--bg2);}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:2px;flex-wrap:wrap;}
+  .tab{padding:11px 16px;font-size:13px;font-weight:600;color:var(--dim);border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .tab:hover{color:var(--muted);}
+  .tab.on{color:var(--bright);border-bottom-color:var(--accent);}
+  .modal{position:fixed;inset:0;z-index:500;background:rgba(4,6,10,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;}
+  .empty{padding:48px 20px;text-align:center;color:var(--dim);font-size:14px;}
+  .stat{background:var(--bg2);border:1px solid var(--border2);border-radius:11px;padding:14px 16px;}
+  .stat .n{font-size:26px;font-weight:800;color:var(--bright);line-height:1;}
+  .stat .k{font-size:11px;color:var(--dim);margin-top:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;}
+  @media(max-width:900px){.layout{grid-template-columns:1fr !important;} .side{position:static !important;height:auto !important;}}
+</style>
+</head>
+<body>
+
+<!-- ============ SETUP NOTICE (no config) ============ -->
+<div id="noConfig" style="display:none;max-width:640px;margin:12vh auto;padding:0 22px;">
+  <div class="card" style="padding:32px;">
+    <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--faint);">CTF PLATFORM // TEACHER</div>
+    <h1 style="font-size:24px;color:var(--bright);margin:8px 0 6px;">Backend not connected yet</h1>
+    <p style="color:var(--muted);line-height:1.6;font-size:14px;">This dashboard needs Supabase. To turn it on:</p>
+    <ol style="color:var(--muted);line-height:1.9;font-size:14px;padding-left:20px;">
+      <li>Create a free project at <a href="https://supabase.com" target="_blank">supabase.com</a>.</li>
+      <li>Run <span class="mono" style="color:var(--accent);">supabase/schema.sql</span>, then <span class="mono" style="color:var(--accent);">supabase/google-auth.sql</span> in the SQL editor.</li>
+      <li>Enable the Google provider under Authentication → Providers.</li>
+      <li>Paste your Project URL + anon key into <span class="mono" style="color:var(--accent);">supabase-config.js</span>.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ============ LOGIN ============ -->
+<div id="login" style="display:none;">
+  <div style="max-width:420px;margin:16vh auto;padding:0 22px;">
+    <div class="card fade" style="padding:30px;">
+      <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--faint);">CTF PLATFORM</div>
+      <h1 style="font-size:23px;color:var(--bright);margin:6px 0 4px;">Teacher Dashboard</h1>
+      <p id="loginSub" style="color:var(--dim);font-size:13px;margin:0 0 20px;">Sign in with your school Google account.</p>
+      <button id="loginBtn" class="btn" onclick="doLogin()" style="width:100%;padding:13px;background:#fff;color:#1f2733;border-color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.7-2 5-4.4 6.6v5.5h7.1c4.1-3.8 6.6-9.4 6.6-16.3z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.2l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.3 15.5 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.4c-.4-1.3-.7-2.7-.7-4.4s.3-3.1.7-4.4v-5.7H4.5C2.9 17.1 2 20.4 2 24s.9 6.9 2.5 10.1l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.7 4.5 13.9l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>
+        Sign in with Google
+      </button>
+      <div id="loginErr" style="color:var(--bad);font-size:12px;min-height:16px;margin:12px 0 0;line-height:1.5;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" style="display:none;">
+  <div style="max-width:1240px;margin:0 auto;padding:20px 22px 60px;">
+    <!-- header -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap;">
+      <div>
+        <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--faint);">CTF PLATFORM // TEACHER</div>
+        <h1 style="font-size:22px;color:var(--bright);margin:2px 0 0;">Class Dashboard</h1>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <button class="btn" onclick="loadClasses(true)">↻ Refresh</button>
+        <button class="btn danger" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
+
+    <!-- minmax(0,…) overrides the grid item's default min-width:auto, so the
+         main column can shrink to the container and the roster table scrolls
+         inside its own overflow:auto wrapper instead of the whole page. -->
+    <div class="layout" style="display:grid;grid-template-columns:280px minmax(0,1fr);gap:22px;align-items:start;">
+      <!-- sidebar: classes -->
+      <div class="side card" style="padding:16px;position:sticky;top:20px;max-height:calc(100vh - 40px);overflow:auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">CLASSES</div>
+          <button class="btn sm pri" onclick="openCreate()">+ New</button>
+        </div>
+        <div id="classList"><div class="empty"><span class="spin"></span></div></div>
+      </div>
+
+      <!-- main -->
+      <div id="main" class="card" style="padding:22px;min-height:420px;">
+        <div class="empty">Select a class to view its roster, flag captures, and integrity log.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- create-class modal -->
+<div id="createModal" class="modal" style="display:none;">
+  <div class="card fade" style="width:min(460px,94vw);padding:26px;">
+    <h2 style="font-size:19px;color:var(--bright);margin:0 0 4px;">New class</h2>
+    <p style="color:var(--dim);font-size:13px;margin:0 0 18px;">Students join with the class code on the arena page.</p>
+    <div style="margin-bottom:14px;"><div class="lbl">Course</div>
+      <select id="ncCourse" class="in"></select></div>
+    <div style="margin-bottom:14px;"><div class="lbl">Class name</div>
+      <input id="ncName" class="in" placeholder="e.g. Period 3"></div>
+    <div style="margin-bottom:6px;"><div class="lbl">Join code</div>
+      <div style="display:flex;gap:8px;">
+        <input id="ncCode" class="in mono" style="text-transform:uppercase;letter-spacing:1px;" placeholder="CSP-P3-2K8R">
+        <button class="btn" onclick="genCode()">Generate</button>
+      </div></div>
+    <div id="ncErr" style="color:var(--bad);font-size:12px;min-height:16px;margin:8px 0;"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn" onclick="closeCreate()">Cancel</button>
+      <button class="btn pri" id="ncGo" onclick="createClass()">Create class</button>
+    </div>
+  </div>
+</div>
+
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
+<script src="name-filter.js"></script>
+<script>
+/* ---------------- boot / config ---------------- */
+var CFG = window.SUPABASE_CONFIG || {};
+var COURSES = {
+  cyber1:{label:"Cyber 1",  c:"var(--cyber1)"},
+  cyber2:{label:"Cyber 2",  c:"var(--cyber2)"},
+  apcsp: {label:"Byte Bounty · AP CSP", c:"var(--apcsp)"},
+  web3:  {label:"Web 3.0",  c:"var(--web3)"}
+};
+function courseMeta(c){ return COURSES[c] || {label:c,c:"var(--dim)"}; }
+
+var AUTH = window.CTF_AUTH;
+var ME = null;                                   // signed-in google user
+async function rpc(fn,args){ return AUTH.rpc(fn, args||{}); }
+
+/* ---------------- helpers ---------------- */
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function el(id){return document.getElementById(id);}
+function fmtSecs(s){ if(s==null||s<0) return "—"; if(s<60) return s+"s"; var m=Math.floor(s/60); return m+"m "+(s%60)+"s"; }
+function ago(ts){ if(!ts) return "never"; var d=(Date.now()-new Date(ts).getTime())/1000;
+  if(d<60)return "just now"; if(d<3600)return Math.floor(d/60)+"m ago"; if(d<86400)return Math.floor(d/3600)+"h ago"; return Math.floor(d/86400)+"d ago"; }
+function fmtDate(ts){ if(!ts) return "—"; var d=new Date(ts); return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})+" "+d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); }
+// No shared secret: the SQL functions check auth.jwt() email against the
+// teacher address, so a student's token simply gets 'not_teacher'.
+
+/* ---------------- auth ---------------- */
+async function doLogin(){
+  var b=el("loginBtn"); b.disabled=true;
+  try{ await AUTH.signIn(); }
+  catch(e){ el("loginErr").textContent="Couldn't reach Google. Check your connection."; b.disabled=false; }
+}
+async function signOut(){ await AUTH.signOut(); location.reload(); }
+function denied(email){
+  el("login").style.display="block";
+  el("loginSub").textContent="Signed in as "+email+".";
+  el("loginErr").innerHTML="That account isn't the teacher account for this site.<br>"+
+    '<a href="#" onclick="signOut();return false;">Sign in with a different account</a>';
+  el("loginBtn").style.display="none";
+}
+
+/* ---------------- classes ---------------- */
+var CLASSES=[], CUR=null;
+async function loadClasses(refresh){
+  try{
+    CLASSES=await rpc("ctf_t_classes")||[];
+    renderClassList();
+    if(refresh&&CUR){ var again=CLASSES.filter(function(c){return c.id===CUR.id;})[0]; if(again) selectClass(again); }
+  }catch(e){ el("classList").innerHTML='<div class="empty" style="color:var(--bad)">Failed to load.</div>'; }
+}
+function renderClassList(){
+  if(!CLASSES.length){ el("classList").innerHTML='<div class="empty" style="font-size:13px;">No classes yet.<br>Click <b>+ New</b> to make one.</div>'; return; }
+  var order=["cyber1","cyber2","apcsp","web3"], html="";
+  order.forEach(function(co){
+    var list=CLASSES.filter(function(c){return c.course===co;}); if(!list.length) return;
+    var m=courseMeta(co);
+    html+='<div class="mono" style="font-size:10px;letter-spacing:1px;color:'+m.c+';margin:12px 2px 6px;">'+esc(m.label).toUpperCase()+'</div>';
+    list.forEach(function(c){
+      var on=CUR&&CUR.id===c.id;
+      html+='<div onclick=\'selectClass('+JSON.stringify(c).replace(/'/g,"&#39;")+')\' style="padding:10px 12px;border-radius:9px;cursor:pointer;margin-bottom:5px;border:1px solid '+(on?"var(--accent)":"var(--border2)")+';background:'+(on?"var(--panel3)":"var(--bg2)")+';">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">'+
+          '<span style="font-weight:600;color:var(--bright);font-size:14px;">'+esc(c.name)+'</span>'+
+          '<span class="pill" style="background:var(--panel3);color:var(--muted);">'+c.student_count+'</span>'+
+        '</div>'+
+        '<div class="mono" style="font-size:11px;color:var(--dim);margin-top:3px;">'+esc(c.code)+'</div>'+
+      '</div>';
+    });
+  });
+  el("classList").innerHTML=html;
+}
+
+/* ---------------- class detail ---------------- */
+var TAB="roster", ROSTER=[], FLAGS=[], CHEATS=[], sortKey="points", sortDir=-1;
+function selectClass(c){ CUR=c; TAB="roster"; renderClassList(); renderMain(); loadDetail(); }
+
+async function loadDetail(){
+  ROSTER=[];FLAGS=[];CHEATS=[];
+  try{
+    ROSTER=await rpc("ctf_t_roster",{p_class:CUR.id})||[];
+    renderMain();
+    FLAGS=await rpc("ctf_t_flags",{p_class:CUR.id,p_limit:800})||[];
+    CHEATS=await rpc("ctf_t_cheats",{p_class:CUR.id,p_limit:800})||[];
+    if(TAB!=="roster") renderMain();
+  }catch(e){
+    var m=(e&&(e.message||""))+"";
+    el("main").innerHTML='<div class="empty" style="color:var(--bad)">'+
+      (/not_teacher/.test(m)?"This account isn't the teacher account.":"Failed to load class data.")+
+      '<div class="mono" style="font-size:11px;color:var(--dim);margin-top:8px;">'+esc(m)+'</div></div>'; }
+}
+
+function renderMain(){
+  if(!CUR){ el("main").innerHTML='<div class="empty">Select a class.</div>'; return; }
+  var m=courseMeta(CUR.course);
+  var cheatTotal=ROSTER.reduce(function(a,s){return a+(s.cheat_count||0);},0);
+  var avg=ROSTER.length?Math.round(ROSTER.reduce(function(a,s){return a+(s.points||0)+(s.bonus||0);},0)/ROSTER.length):0;
+  var h='<div class="fade">';
+  // header
+  h+='<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">'+
+      '<span class="pill" style="background:'+m.c+'22;color:'+m.c+';border:1px solid '+m.c+'55;">'+esc(m.label)+'</span>'+
+      '<h2 style="font-size:20px;color:var(--bright);margin:0;">'+esc(CUR.name)+'</h2>'+
+      '<span class="chip mono" style="font-size:12px;">code: <b style="color:var(--bright)">'+esc(CUR.code)+'</b>'+
+        ' <button class="btn sm" style="padding:2px 7px;" onclick="copyCode()">copy</button></span>'+
+    '</div>';
+  // stat strip
+  h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;">'+
+      stat(ROSTER.length,"STUDENTS")+stat(avg.toLocaleString(),"AVG XP")+
+      stat(FLAGS.length||"—","FLAG CAPTURES")+stat(cheatTotal,"INTEGRITY FLAGS")+
+    '</div>';
+  // tabs
+  h+='<div class="tabs">'+
+      tabBtn("roster","Roster")+tabBtn("flags","Flag Captures")+tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
+    '</div><div style="padding-top:16px;">';
+  if(TAB==="roster") h+=rosterView();
+  else if(TAB==="flags") h+=flagsView();
+  else if(TAB==="cheats") h+=cheatsView();
+  else h+=settingsView();
+  h+='</div></div>';
+  el("main").innerHTML=h;
+}
+function stat(n,k){ return '<div class="stat"><div class="n">'+n+'</div><div class="k">'+k+'</div></div>'; }
+function tabBtn(id,label){ return '<button class="tab '+(TAB===id?"on":"")+'" onclick="setTab(\''+id+'\')">'+label+'</button>'; }
+function setTab(t){ TAB=t; renderMain(); }
+function copyCode(){ navigator.clipboard&&navigator.clipboard.writeText(CUR.code); }
+
+/* ----- roster ----- */
+function setSort(k){ if(sortKey===k) sortDir=-sortDir; else{sortKey=k;sortDir=(k==="handle")?1:-1;} renderMain(); }
+function rosterView(){
+  if(!ROSTER.length) return '<div class="empty">No students have joined yet. Share the class code: <b class="mono" style="color:var(--bright)">'+esc(CUR.code)+'</b></div>';
+  var rows=ROSTER.slice().sort(function(a,b){
+    var av,bv;
+    if(sortKey==="handle"){av=(a.handle||"").toLowerCase();bv=(b.handle||"").toLowerCase();return av<bv?-sortDir:av>bv?sortDir:0;}
+    if(sortKey==="xp"){av=(a.points||0)+(a.bonus||0);bv=(b.points||0)+(b.bonus||0);}
+    else if(sortKey==="streak"){av=(a.streak&&a.streak.count)||0;bv=(b.streak&&b.streak.count)||0;}
+    else if(sortKey==="last"){av=a.updated_at?new Date(a.updated_at).getTime():0;bv=b.updated_at?new Date(b.updated_at).getTime():0;}
+    else if(sortKey==="cheat"){av=a.cheat_count||0;bv=b.cheat_count||0;}
+    else {av=a[sortKey]||0;bv=b[sortKey]||0;}
+    return (av-bv)*sortDir;
+  });
+  var h='<div style="overflow:auto;"><table><thead><tr>'+
+    th("handle","Handle")+'<th>School account</th>'+th("xp","XP")+th("solved_count","Solved")+th("streak","Streak")+
+    th("cheat","Integrity")+th("last","Last active")+'<th>Badges</th><th></th></tr></thead><tbody>';
+  rows.forEach(function(s){
+    var xp=(s.points||0)+(s.bonus||0);
+    var sc=(s.streak&&s.streak.count)||0, best=(s.streak&&s.streak.best)||0;
+    var badges=s.badges&&typeof s.badges==="object"?Object.keys(s.badges).filter(function(k){return s.badges[k];}).length:0;
+    var pctTot=s.total_count||0, pct=pctTot?Math.round((s.solved_count||0)/pctTot*100):0;
+    h+='<tr>'+
+      '<td><b style="color:var(--bright)">'+esc(s.handle)+'</b></td>'+
+      '<td class="mono" style="font-size:11px;color:var(--dim);">'+esc((s.email||"\u2014").replace(/@.*$/,""))+'</td>'+
+      '<td class="mono" style="color:var(--accent);font-weight:700;">'+xp.toLocaleString()+'</td>'+
+      '<td>'+(s.solved_count||0)+(pctTot?' <span style="color:var(--faint)">/ '+pctTot+'</span> <span class="mono" style="font-size:11px;color:var(--dim)">'+pct+'%</span>':'')+'</td>'+
+      '<td>'+(sc?'<span style="color:var(--warn);font-weight:700">🔥 '+sc+'</span>':'—')+(best>sc?' <span class="mono" style="font-size:10px;color:var(--faint)">best '+best+'</span>':'')+'</td>'+
+      '<td>'+(s.cheat_count?'<span class="pill" style="background:var(--bad)22;color:var(--bad)">'+s.cheat_count+'</span>':'<span style="color:var(--faint)">0</span>')+'</td>'+
+      '<td style="color:var(--dim)">'+ago(s.updated_at)+'</td>'+
+      '<td>'+(badges?'<span class="chip" style="font-size:11px">🏅 '+badges+'</span>':'<span style="color:var(--faint)">—</span>')+'</td>'+
+      '<td style="text-align:right;white-space:nowrap">'+
+        '<button class="btn sm" onclick=\'setHandle("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Rename</button> '+
+        '<button class="btn sm" onclick=\'resetHandle("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Reset name</button> '+
+        '<button class="btn sm danger" onclick=\'removeStudent("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Remove</button>'+
+      '</td>'+
+    '</tr>';
+  });
+  h+='</tbody></table></div>';
+  return h;
+}
+function th(k,label){ var arrow=sortKey===k?(sortDir>0?" ▲":" ▼"):""; return '<th onclick="setSort(\''+k+'\')">'+label+arrow+'</th>'; }
+
+/* ----- flag captures (with time-to-solve) ----- */
+function flagsView(){
+  if(!FLAGS.length) return '<div class="empty">No flag captures logged yet.</div>';
+  var h='<div style="overflow:auto;"><table><thead><tr>'+
+    '<th>When</th><th>Handle</th><th>Challenge</th><th>Level</th><th>XP</th><th>Time</th><th>Tries</th><th>Flags</th>'+
+    '</tr></thead><tbody>';
+  FLAGS.forEach(function(f){
+    var lvlC=f.level==="Hard"?"var(--bad)":f.level==="Medium"?"var(--warn)":"var(--ok)";
+    h+='<tr>'+
+      '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(f.created_at)+'</td>'+
+      '<td><b style="color:var(--bright)">'+esc(f.handle)+'</b></td>'+
+      '<td>'+esc(f.title||f.challenge_id)+'</td>'+
+      '<td>'+(f.level?'<span class="pill" style="background:'+lvlC+'22;color:'+lvlC+'">'+esc(f.level)+'</span>':'—')+'</td>'+
+      '<td class="mono" style="color:var(--accent);font-weight:700">'+(f.points||0)+'</td>'+
+      '<td class="mono" style="color:var(--bright)">'+fmtSecs(f.secs)+'</td>'+
+      '<td>'+(f.retries?'<span style="color:var(--warn)">'+f.retries+'</span>':'0')+'</td>'+
+      '<td>'+(f.tainted?'<span class="pill" style="background:var(--bad)22;color:var(--bad)">tainted</span>':'<span style="color:var(--ok)">clean</span>')+'</td>'+
+    '</tr>';
+  });
+  h+='</tbody></table></div>';
+  return h;
+}
+
+/* ----- integrity ----- */
+function cheatsView(){
+  if(!CHEATS.length) return '<div class="empty">No integrity events. 🎉<br><span style="font-size:12px">Looking things up is allowed — these only flag paste / focus-loss / honeypot / devtools activity.</span></div>';
+  var kindC={paste:"var(--warn)",focus:"var(--dim)",canary:"var(--bad)",copy:"var(--warn)",devtools:"var(--bad)",decoy:"var(--bad)"};
+  var h='<div style="overflow:auto;"><table><thead><tr><th>When</th><th>Handle</th><th>Event</th><th>Detail</th></tr></thead><tbody>';
+  CHEATS.forEach(function(c){
+    var col=kindC[c.kind]||"var(--dim)";
+    h+='<tr>'+
+      '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(c.created_at)+'</td>'+
+      '<td><b style="color:var(--bright)">'+esc(c.handle)+'</b></td>'+
+      '<td><span class="pill" style="background:'+col+'22;color:'+col+'">'+esc(c.kind)+'</span></td>'+
+      '<td style="color:var(--muted);font-size:12px">'+esc(c.detail||"")+'</td>'+
+    '</tr>';
+  });
+  h+='</tbody></table></div>';
+  return h;
+}
+
+/* ----- settings: streak-freeze, code, delete ----- */
+function settingsView(){
+  var frozen=(CUR.frozen_dates||[]).slice().sort();
+  var h='<div style="max-width:620px;">';
+  // streak freeze
+  h+='<div style="margin-bottom:26px;">'+
+    '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Streak freeze — no-class days</div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">Add holidays and days class isn\'t in session. Frozen days are skipped like weekends: students don\'t lose their streak for not logging in, and the day doesn\'t count against them.</div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:12px;">'+
+      '<input id="freezeDate" class="in" type="date" style="max-width:200px;">'+
+      '<button class="btn" onclick="addFreeze()">Add day</button>'+
+    '</div>'+
+    '<div id="freezeChips" style="display:flex;flex-wrap:wrap;gap:8px;">'+freezeChips(frozen)+'</div>'+
+    '<button class="btn pri sm" style="margin-top:14px;" id="freezeSave" onclick="saveFreeze()">Save freeze days</button>'+
+    '<span id="freezeMsg" class="mono" style="font-size:11px;color:var(--ok);margin-left:10px;"></span>'+
+  '</div>';
+  // danger
+  h+='<div style="border-top:1px solid var(--border);padding-top:18px;">'+
+    '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Danger zone</div>'+
+    '<div style="color:var(--dim);font-size:13px;margin-bottom:12px;">Deleting a class removes all its students, progress, flag captures, and integrity logs. This cannot be undone.</div>'+
+    '<button class="btn danger" onclick="deleteClass()">Delete this class</button>'+
+  '</div></div>';
+  return h;
+}
+var _freeze=[];
+function freezeChips(list){ _freeze=list.slice();
+  if(!list.length) return '<span style="color:var(--faint);font-size:13px;">No frozen days yet.</span>';
+  return list.map(function(d,i){ return '<span class="chip">'+esc(d)+' <span style="cursor:pointer;color:var(--dim);font-weight:700" onclick="rmFreeze('+i+')">×</span></span>'; }).join("");
+}
+function addFreeze(){ var v=el("freezeDate").value; if(!v) return; if(_freeze.indexOf(v)<0){_freeze.push(v);_freeze.sort();} el("freezeChips").innerHTML=freezeChips(_freeze); }
+function rmFreeze(i){ _freeze.splice(i,1); el("freezeChips").innerHTML=freezeChips(_freeze); }
+async function saveFreeze(){
+  var b=el("freezeSave"); b.disabled=true; b.textContent="Saving…";
+  try{ await rpc("ctf_t_freeze",{p_class:CUR.id,p_dates:_freeze});
+    CUR.frozen_dates=_freeze.slice(); el("freezeMsg").textContent="✓ saved"; }
+  catch(e){ el("freezeMsg").textContent="failed"; el("freezeMsg").style.color="var(--bad)"; }
+  b.disabled=false; b.textContent="Save freeze days";
+  setTimeout(function(){var m=el("freezeMsg"); if(m)m.textContent="";},2500);
+}
+async function deleteClass(){
+  if(!confirm('Delete "'+CUR.name+'" and ALL its data? This cannot be undone.')) return;
+  try{ await rpc("ctf_t_delete_class",{p_class:CUR.id});
+    CUR=null; await loadClasses(); el("main").innerHTML='<div class="empty">Class deleted.</div>'; }
+  catch(e){ alert("Delete failed."); }
+}
+
+/* ---------------- display names ---------------- */
+// The teacher is trusted, so this overwrites whatever the student chose. Still
+// runs the shared appropriateness filter as a courtesy warning.
+async function applyHandle(sid, name){
+  try{
+    var r=await rpc("ctf_t_set_handle",{p_student:sid,p_handle:name});
+    if(r&&r.error) throw new Error(r.error);
+    await loadClasses(true);
+  }catch(e){
+    var m=(e&&(e.message||""))+"";
+    alert(/handle_taken/.test(m)?"Another student in this class already uses that name."
+      :/bad_name/.test(m)?"Use 3\u201318 characters: letters, numbers, spaces, . _ - only."
+      :"Couldn't change the name.");
+  }
+}
+function setHandle(sid,handle){
+  var p=prompt('New display name for "'+handle+'":', handle); if(p==null) return;
+  p=p.trim(); if(!p) return;
+  var chk=window.CTF_NAME&&window.CTF_NAME.problem(p);
+  if(chk && !confirm(chk+"\n\nUse it anyway?")) return;
+  applyHandle(sid,p);
+}
+// "Reset" assigns a neutral placeholder so an inappropriate name can be cleared
+// instantly; the student can pick a new one from their profile page.
+function resetHandle(sid,handle){
+  var n="Student-"+(1000+Math.floor(Math.random()*9000));
+  if(!confirm('Reset "'+handle+'" to "'+n+'"?\n\nThe student can choose a new name on their profile page.')) return;
+  applyHandle(sid,n);
+}
+
+async function removeStudent(sid,handle){
+  if(!confirm('Remove "'+handle+'" from this class?\n\nTheir progress, captures, and integrity log are deleted. They can rejoin with the class code.')) return;
+  try{ await rpc("ctf_t_remove_student",{p_student:sid}); await loadClasses(true); }
+  catch(e){ alert("Couldn't remove that student."); }
+}
+
+/* ---------------- create class ---------------- */
+function openCreate(){
+  var sel=el("ncCourse"); sel.innerHTML=Object.keys(COURSES).map(function(k){return '<option value="'+k+'">'+esc(COURSES[k].label)+'</option>';}).join("");
+  el("ncName").value=""; el("ncCode").value=""; el("ncErr").textContent="";
+  el("createModal").style.display="flex"; setTimeout(function(){el("ncName").focus();},50);
+}
+function closeCreate(){ el("createModal").style.display="none"; }
+function genCode(){
+  var co=el("ncCourse").value, pre={cyber1:"CY1",cyber2:"CY2",apcsp:"CSP",web3:"WEB"}[co]||"CTF";
+  var ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789", r=""; for(var i=0;i<4;i++) r+=ch[Math.floor(Math.random()*ch.length)];
+  el("ncCode").value=pre+"-"+r;
+}
+async function createClass(){
+  var co=el("ncCourse").value, name=el("ncName").value.trim(), code=el("ncCode").value.trim().toUpperCase();
+  el("ncErr").textContent="";
+  if(!name) return el("ncErr").textContent="Enter a class name.";
+  if(!code) return el("ncErr").textContent="Enter or generate a join code.";
+  var b=el("ncGo"); b.disabled=true; b.textContent="Creating…";
+  try{
+    var c=await rpc("ctf_t_create_class",{p_course:co,p_name:name,p_code:code});
+    closeCreate(); await loadClasses(); selectClass(c);
+  }catch(e){
+    var m=(e&&(e.message||""))+"";
+    el("ncErr").textContent=/code_taken/.test(m)?"That code is already in use — pick another.":"Couldn't create class.";
+  }
+  b.disabled=false; b.textContent="Create class";
+}
+
+/* ---------------- init ---------------- */
+(async function(){
+  if(!AUTH || !AUTH.online){ el("noConfig").style.display="block"; return; }
+  var u=null;
+  try{ u=await AUTH.user(); }catch(e){}
+  if(!u){ el("login").style.display="block"; return; }
+  if(!AUTH.isTeacher(u)) return denied(AUTH.emailOf(u));
+  el("app").style.display="block";
+  loadClasses();
+})();
+</script>
+</body>
+</html>

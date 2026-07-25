@@ -1,0 +1,47 @@
+<!-- @dsCard group="Components" viewport="700x330" subtitle="StatTile, ProgressBar, ModuleBlock, DataTable, TelemetryStrip" name="Game" -->
+<!DOCTYPE html><html lang="en" data-course="web3"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../styles.css">
+<style>html,body{margin:0;background:var(--bg);background-image:var(--field-image);background-size:var(--field-size) var(--field-size);color:var(--text);font-family:var(--font-ui);padding:18px;}
+.mono{font-family:var(--font-mono);}
+.stat{background:var(--bg);border:var(--stroke-quiet);border-radius:var(--r-md);padding:14px 16px;}
+.stat .n{font-size:26px;font-weight:800;line-height:1;color:var(--bright);}
+.stat .k{font-family:var(--font-mono);font-size:11px;color:var(--dim);margin-top:6px;letter-spacing:.5px;}
+.block{position:relative;overflow:hidden;padding:16px;background:linear-gradient(158deg,var(--panel2),var(--panel));border:var(--stroke-quiet);border-radius:var(--r-md);}
+.block .led{position:absolute;top:13px;right:13px;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent);animation:led 1.9s ease-in-out infinite;}
+.block .lnk{position:absolute;left:-7px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:3px;border:1px solid var(--accent);background:var(--panel);transform:rotate(45deg);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--faint);text-transform:uppercase;padding:9px 12px;border-bottom:var(--stroke);}
+td{padding:10px 12px;border-bottom:var(--stroke-quiet);}
+</style></head><body>
+<div class="mono" style="display:flex;gap:16px;align-items:center;font-size:11px;letter-spacing:1px;color:var(--faint);margin-bottom:14px;">
+  <span style="display:inline-flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:var(--glow-sm);animation:led 1.5s ease-in-out infinite;"></span>CHAIN SYNCED</span>
+  <span>WEB3-2026</span><span>REV&nbsp;1.0</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+  <div class="stat"><div class="n" style="color:var(--accent)">1,240</div><div class="k">TOTAL XP</div></div>
+  <div class="stat"><div class="n">18</div><div class="k">FLAGS</div></div>
+  <div class="stat"><div class="n" style="color:var(--warn)">🔥 6</div><div class="k">STREAK</div></div>
+  <div class="stat"><div class="n">9</div><div class="k">BADGES</div></div>
+</div>
+<div style="margin-top:14px;">
+  <div class="mono" style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-bottom:6px;"><span>MODULE 03 · SMART CONTRACTS</span><span style="color:var(--accent);font-weight:700;">58%</span></div>
+  <div style="height:8px;background:var(--bg);border:var(--stroke-quiet);border-radius:var(--r-pill);overflow:hidden;"><div style="width:58%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:var(--glow-sm);"></div></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
+  <div class="block"><span class="led"></span>
+    <div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">MODULE 01</div>
+    <div class="mono" style="font-weight:700;font-size:15px;color:var(--bright);margin-top:4px;">What Is a Blockchain?</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:6px;">Blocks, hashes, and the chain that ties them.</div>
+    <div class="mono" style="font-size:10px;color:var(--faint);margin-top:10px;">0x9f3a2b8e00a1…</div></div>
+  <div class="block"><span class="lnk"></span><span class="led"></span>
+    <div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">MODULE 02</div>
+    <div class="mono" style="font-weight:700;font-size:15px;color:var(--bright);margin-top:4px;">Proof of Work</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:6px;">Mining, difficulty, and why it costs to lie.</div>
+    <div class="mono" style="font-size:10px;color:var(--faint);margin-top:10px;">0x2b8e551c9d04…</div></div>
+</div>
+<table style="margin-top:14px;"><thead><tr><th>Handle</th><th>XP</th><th>Solved</th><th>Time</th></tr></thead>
+<tbody>
+<tr><td><b style="color:var(--bright)">quietfalcon</b></td><td class="mono" style="color:var(--accent);font-weight:700;">1,240</td><td>18 / 31</td><td class="mono">4m 12s</td></tr>
+<tr><td><b style="color:var(--bright)">noderunner</b></td><td class="mono" style="color:var(--accent);font-weight:700;">980</td><td>14 / 31</td><td class="mono">7m 03s</td></tr>
+</tbody></table>
+</body></html>

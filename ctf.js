@@ -36,6 +36,18 @@
   const course = window.CTF_COURSE;
   const cfg = (window.COURSE_CONFIG && window.COURSE_CONFIG[course]) || {};
   const ctf = cfg.ctf || { title: "Capture The Flag", intro: "", challenges: [] };
+  const ADV = (ctf.adversary || "NEMESIS");
+  const ADVC = (ctf.adversaryColor || "var(--adv)");
+  const ADVC2 = (ctf.adversaryColor2 || "var(--adv2)");
+  const ADVGLOW = (ctf.adversaryGlow || "var(--advglow)");
+  try { var _de = document.documentElement; _de.style.setProperty("--adv", ADVC); _de.style.setProperty("--adv2", ADVC2); _de.style.setProperty("--advglow", ADVGLOW); } catch(e){}
+  function advize(x){ return String(x==null?"":x).replace(/nemesis/gi, ADV); }
+  /* MENTOR MODE — set ctf.mentor:true (e.g. Byte Bounty/ADA, Proof of Work/ORACLE).
+     Same integrity deterrents (still logged, still 1/3 XP on paste/canary), but the
+     character only ever encourages; focus loss becomes a neutral "connection lost"
+     screen with NO penalty; copy is disabled with a neutral system message. */
+  const MENTOR = !!(ctf.mentor || ctf.tone === "mentor");
+  const GLYPH = MENTOR ? "\u25c6" : "\u2620";
   const KEY = "ctf-" + course;
   const NKEY = "ctf-handle";
 
@@ -52,12 +64,175 @@
   function setHandle(v) { try { localStorage.setItem(NKEY, v); } catch (e) {} }
   let state = load();
 
+  /* ============================================================
+     DAILY LOGIN STREAK  —  +5 XP day 1, +10 day 2 … +50 at day 10,
+     then +50 every day after. Mon-Fri only: weekends are neutral (no
+     bonus, no reset), so Fri -> Mon counts as consecutive. Missing an
+     actual school day restarts at day 1.
+     Awarded once per calendar day (local time). Streak XP is real XP:
+     it flows into stats().pts via state.bonus.
+     ============================================================ */
+  function todayKey(){ const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+  function dayNum(k){ const p = String(k||"").split("-").map(Number); return Math.floor(Date.UTC(p[0], p[1]-1, p[2]) / 86400000); }
+  function streakBonusFor(count){ return Math.min(Math.max(count||1,1),10) * 5; }
+  // School-day streak: Mon-Fri only. Weekends are NEUTRAL (no bonus, no reset).
+  // dayNum 0 = 1970-01-01 (Thursday) -> dow: 0=Sun..6=Sat.
+  function dowOf(n){ return ((n % 7) + 4) % 7; }
+  // FUTURE (teacher page): also skip teacher-declared no-class/holiday dates here,
+  // so a streak freeze bridges the gap exactly like a weekend does.
+  function isSkipDay(n){ const d = dowOf(n); return d === 0 || d === 6; }
+  function prevSchoolDay(n){ let x = n - 1; while (isSkipDay(x)) x--; return x; }
+  function checkDailyLogin(){
+    const st = Object.assign({ last:null, count:0, best:0 }, state.streak || {});
+    const today = todayKey();
+    if (st.last === today) { state.streak = st; save(state); return null; }
+    const todN = dayNum(today);
+    // Weekend (or future frozen day): neutral. Don't award, don't reset, don't record.
+    if (isSkipDay(todN)) { state.streak = st; save(state); return null; }
+    const lastN = st.last ? dayNum(st.last) : null;
+    const cont = lastN != null && lastN === prevSchoolDay(todN); // Fri -> Mon counts as consecutive
+    st.count = cont ? (st.count||0) + 1 : 1;
+    st.last = today;
+    st.best = Math.max(st.best||0, st.count);
+    const bonus = streakBonusFor(st.count);
+    state.streak = st;
+    state.bonus = (state.bonus||0) + bonus;
+    save(state);
+    return { count: st.count, bonus: bonus };
+  }
+
+  /* ============================================================
+     BADGES  —  six multilevel achievements (3 tiers each), themed per
+     course. Tiers unlock automatically from progress; new tiers toast.
+     Purely motivational — badges carry no XP of their own.
+     ============================================================ */
+  function byModule(){ const by = {}; (ctf.challenges || []).forEach(c => { const m = c.module || 0; (by[m] = by[m] || []).push(c); }); return by; }
+  function incNeeds(a){ const o = []; let prev = 0; a.forEach(v => { v = Math.max(Math.round(v), prev + 1); o.push(v); prev = v; }); return o; }
+  function badgeThemes(){
+    const A = ADV;
+    const cyber = {
+      flags:{ name:"Flag Hunter",  tiers:["Recon","Infiltrator","Ghost"] },
+      xp:   { name:"Power Core",   tiers:["Charged","Overclocked","Singularity"] },
+      streak:{ name:"Daily Grind", tiers:["Regular","Relentless","Unbroken"] },
+      mods: { name:"Sector Sweep", tiers:["Breacher","Sweeper","Total Control"] },
+      vocab:{ name:"Cipher Mind",  tiers:["Decoder","Cryptographer","Codebreaker"] },
+      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", A + " Bane"] }
+    };
+    const csp = {
+      flags:{ name:"Bug Bounty",    tiers:["Tester","Debugger","Zero-Day"] },
+      xp:   { name:"Compile Power", tiers:["Booted","Optimized","Kernel"] },
+      streak:{ name:"Daily Commit", tiers:["Committer","Streaker","Green Board"] },
+      mods: { name:"Module Master", tiers:["Runner","Builder","Architect"] },
+      vocab:{ name:"Syntax Sage",   tiers:["Parser","Compiler","Interpreter"] },
+      boss: { name:"Boss Slayer",   tiers:["Challenger","Duelist", A + " Approved"] }
+    };
+    const web3 = {
+      flags:{ name:"Block Hunter", tiers:["Node","Validator","Whale"] },
+      xp:   { name:"Hash Power",   tiers:["Miner","Rig","ASIC Farm"] },
+      streak:{ name:"Daily Mint",  tiers:["Holder","Diamond Hands","HODLer"] },
+      mods: { name:"Chain Cleared",tiers:["Fork","Merge","Mainnet"] },
+      vocab:{ name:"Ledger Mind",  tiers:["Ledger","Smart Contract","Oracle"] },
+      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", A + " Consensus"] }
+    };
+    return course === "apcsp" ? csp : course === "web3" ? web3 : cyber;
+  }
+  function badgeDefs(){
+    const s = stats();
+    const by = byModule();
+    const modKeys = Object.keys(by);
+    const N = modKeys.length || 1;
+    const modsCleared = modKeys.filter(m => { const fl = by[m].flatMap(flagsOf); return fl.length && fl.every(f => state.solved[f.key]); }).length;
+    const vocabFlags = (ctf.challenges || []).filter(c => c.type === "vocab").flatMap(flagsOf);
+    const vocabSolved = vocabFlags.filter(f => state.solved[f.key]).length;
+    const Nv = vocabFlags.length || 9;
+    const bossWins = Object.keys(state.bossWins || {}).length;
+    const best = (state.streak && state.streak.best) || 0;
+    const th = badgeThemes();
+    const mk = (t, needs) => { needs = incNeeds(needs); return t.tiers.map((label, i) => ({ label: label, need: needs[i] })); };
+    return [
+      { id:"flags",  glyph:"\u2691", name:th.flags.name,  value:s.solvedCount, tiers:mk(th.flags,  [5, 15, 30]) },
+      { id:"xp",     glyph:"\u25c6", name:th.xp.name,     value:s.pts,         tiers:mk(th.xp,     [300, 900, 1800]) },
+      { id:"streak", glyph:"\u25b2", name:th.streak.name, value:best,          tiers:mk(th.streak, [3, 7, 10]) },
+      { id:"mods",   glyph:"\u25a3", name:th.mods.name,   value:modsCleared,   tiers:mk(th.mods,   [1, Math.ceil(N/2), N]) },
+      { id:"vocab",  glyph:"\u2726", name:th.vocab.name,  value:vocabSolved,   tiers:mk(th.vocab,  [3, Math.ceil(Nv/2), Nv]) },
+      { id:"boss",   glyph:"\u2620", name:th.boss.name,   value:bossWins,      tiers:mk(th.boss,   [1, Math.ceil(N/2), N]) }
+    ];
+  }
+  function tierColor(t){ return ["var(--faint)", "#cd8a3c", "#c3d0de", "var(--amber)"][t] || "var(--amber)"; }
+  function tierOf(d){ let t = 0; for (let i = 0; i < d.tiers.length; i++) if (d.value >= d.tiers[i].need) t = i + 1; return t; }
+  function checkBadgeUnlocks(){
+    const defs = badgeDefs();
+    const seed = !state.badges;
+    const prev = state.badges || {};
+    const newly = [];
+    defs.forEach(d => { const t = tierOf(d); const p = prev[d.id] || 0; if (t > p) { if (!seed) newly.push({ name:d.name, label:d.tiers[t-1].label, glyph:d.glyph, t:t }); prev[d.id] = t; } });
+    state.badges = prev; save(state);
+    return newly;
+  }
+  function announceBadges(list){ (list || []).forEach(b => nemesisToast((MENTOR ? "\u25c6" : "\u2605") + " BADGE UNLOCKED", b.glyph + " " + b.name + " \u2014 " + b.label, tierColor(b.t))); }
+  function badgesCard(){
+    const defs = badgeDefs();
+    const earned = defs.reduce((a, d) => a + tierOf(d), 0);
+    const tile = d => {
+      const t = tierOf(d), col = tierColor(t);
+      const cur = t > 0 ? d.tiers[t-1].label : "Locked";
+      const nextTier = d.tiers[t];
+      const prevNeed = t > 0 ? d.tiers[t-1].need : 0;
+      const goal = nextTier ? nextTier.need : d.tiers[d.tiers.length-1].need;
+      const pct = nextTier ? Math.max(0, Math.min(100, Math.round((d.value - prevNeed) / Math.max(1, goal - prevNeed) * 100))) : 100;
+      const sub = nextTier ? (d.value + " / " + nextTier.need + " \u2192 " + nextTier.label) : ("MAX \u00b7 " + d.value);
+      const pips = [0,1,2].map(i => `<span style="width:7px;height:7px;border-radius:50%;background:${i < t ? tierColor(i+1) : "var(--border3)"};display:inline-block;"></span>`).join("");
+      return `<div style="border:1px solid ${t > 0 ? col : "var(--border2)"};border-radius:12px;background:var(--bg);padding:14px;display:flex;flex-direction:column;gap:9px;${t === 0 ? "opacity:.68;" : ""}">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="flex:none;width:34px;height:34px;border-radius:9px;border:1px solid ${t > 0 ? col : "var(--border3)"};display:flex;align-items:center;justify-content:center;font-size:17px;color:${t > 0 ? col : "var(--faint)"};">${d.glyph}</span>
+          <div style="min-width:0;flex:1;">
+            <div style="font-size:13px;font-weight:700;color:var(--bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(d.name)}</div>
+            <div class="mono" style="font-size:10px;letter-spacing:.5px;color:${t > 0 ? col : "var(--faint)"};text-transform:uppercase;">${esc(cur)}</div>
+          </div>
+          <span style="flex:none;display:flex;gap:3px;">${pips}</span>
+        </div>
+        <div style="height:5px;border-radius:999px;background:var(--panel3);overflow:hidden;"><div style="height:100%;width:${pct}%;background:${t > 0 ? col : "var(--accent)"};transition:width .5s ease;"></div></div>
+        <div class="mono" style="font-size:10px;color:var(--dim);">${esc(sub)}</div>
+      </div>`;
+    };
+    return `<div class="card" style="margin-top:20px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px;">
+        <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">BADGES</div>
+        <div class="mono" style="font-size:11px;color:var(--dim);">${earned} / ${defs.length * 3} tiers earned · <a href="profile.html">MY PROFILE →</a></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">${defs.map(tile).join("")}</div>
+    </div>`;
+  }
+  function bootProgress(){
+    const ds = checkDailyLogin();
+    const nb = checkBadgeUnlocks();
+    render();
+    if (ds) setTimeout(function(){ nemesisToast("\u25b2 DAY " + ds.count + " STREAK", "+" + ds.bonus + " XP daily login bonus" + (ds.count >= 10 ? " \u00b7 max streak!" : ""), "var(--amber)"); }, 500);
+    if (nb.length) setTimeout(function(){ announceBadges(nb); }, 1100);
+  }
+
   async function sha256(str) {
     const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
     return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
   }
   // exposed helper for making new flag hashes from the console
   window.CTF = { hash: async (f) => { const h = await sha256(norm(f)); console.log(h); return h; } };
+  // integration surface for the Supabase sync layer (sync.js). Kept minimal so the
+  // engine stays backend-agnostic; sync.js reads/writes localStorage[stateKey] and
+  // re-renders through here after a cross-device merge.
+  window.CTF.course = course;
+  window.CTF.stateKey = KEY;
+  window.CTF.handleKey = NKEY;
+  window.CTF.getState = function () { return state; };
+  window.CTF.stats = function () { try { return stats(); } catch (e) { return null; } };
+  window.CTF.reloadState = function () { state = load(); };
+  window.CTF.rerender = function () { try { state = load(); render(); } catch (e) {} };
+  // profile page (profile.js) reuses the engine's badge + tier math so the two
+  // views can never disagree. Each entry carries its earned tier (0 = locked).
+  window.CTF.badges = function () {
+    try { return badgeDefs().map(d => Object.assign({}, d, { tier: tierOf(d) })); } catch (e) { return []; }
+  };
+  window.CTF.tierColor = tierColor;
 
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const norm = s => String(s == null ? "" : s).trim().toLowerCase();
@@ -70,7 +245,7 @@
     const flags = (ctf.challenges || []).flatMap(flagsOf);
     const total = flags.reduce((a, f) => a + f.points, 0);
     const solvedCount = flags.filter(f => !!state.solved[f.key]).length;
-    const pts = state.points || 0;
+    const pts = (state.points || 0) + (state.bonus || 0);
     return { total, solvedCount, pts, count: flags.length, rank: rankFor(pts, total), next: nextRank(pts, total) };
   }
 
@@ -112,7 +287,7 @@
     state.retry[key] = (state.retry[key] || 0) + 1;
     timers[key] = Date.now();
     save(state);
-    msg.textContent = txt; msg.style.color = "#ff5c7a";
+    msg.textContent = txt; msg.style.color = "var(--adv2)";
     card.style.animation = "none"; void card.offsetWidth; card.style.animation = "ctfShake .4s";
     updateTimers();
   }
@@ -174,11 +349,13 @@
     }
   }
   function nemesisTakeover(){
+    if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("focus", "left the arena (tab/window blur)"); } catch (e) {} }
+    if (MENTOR) { connectionLost(); return; }
     if (document.getElementById("nemTakeover")) return;
     injectGlitchStyle();
     if (!document.getElementById("nemTakeStyle")) {
       var ts = document.createElement("style"); ts.id = "nemTakeStyle";
-      ts.textContent = "@keyframes nemTakeIn{from{opacity:0}to{opacity:1}}@keyframes nemEyeGlow{0%,100%{filter:drop-shadow(0 0 8px #ff0033)}50%{filter:drop-shadow(0 0 26px #ff0033)}}@keyframes nemPulse{0%,100%{opacity:.85;letter-spacing:5px}50%{opacity:1;letter-spacing:9px}}@keyframes nemScan2{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}";
+      ts.textContent = "@keyframes nemTakeIn{from{opacity:0}to{opacity:1}}@keyframes nemEyeGlow{0%,100%{filter:drop-shadow(0 0 8px var(--advglow))}50%{filter:drop-shadow(0 0 26px var(--advglow))}}@keyframes nemPulse{0%,100%{opacity:.85;letter-spacing:5px}50%{opacity:1;letter-spacing:9px}}@keyframes nemScan2{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}";
       document.head.appendChild(ts);
     }
     var o = document.createElement("div"); o.id = "nemTakeover";
@@ -188,16 +365,16 @@
       + '<div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"><div style="position:absolute;left:0;right:0;height:38%;background:linear-gradient(180deg,transparent,rgba(255,0,40,.10));animation:nemScan2 3.2s linear infinite;"></div></div>'
       + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;">'
         + '<svg width="min(70vw,420px)" viewBox="0 0 420 150" style="animation:nemEyeGlow 1.6s ease-in-out infinite;margin-bottom:26px;">'
-          + '<defs><radialGradient id="nemIris" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffe08a"/><stop offset="32%" stop-color="#ff2b2b"/><stop offset="100%" stop-color="#3a0000"/></radialGradient></defs>'
-          + '<g fill="none" stroke="#ff2b2b" stroke-width="3">'
+          + '<defs><radialGradient id="nemIris" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffe08a"/><stop offset="32%" stop-color="var(--adv)"/><stop offset="100%" stop-color="#3a0000"/></radialGradient></defs>'
+          + '<g fill="none" stroke="var(--adv)" stroke-width="3">'
             + '<path d="M20 75 Q110 5 200 75 Q110 145 20 75 Z" fill="#120000"/>'
             + '<path d="M220 75 Q310 5 400 75 Q310 145 220 75 Z" fill="#120000"/></g>'
           + '<circle cx="110" cy="75" r="38" fill="url(#nemIris)"/><circle cx="110" cy="75" r="15" fill="#000"/>'
           + '<circle cx="310" cy="75" r="38" fill="url(#nemIris)"/><circle cx="310" cy="75" r="15" fill="#000"/>'
           + '<circle cx="122" cy="63" r="6" fill="#fff" opacity=".9"/><circle cx="322" cy="63" r="6" fill="#fff" opacity=".9"/></svg>'
-        + '<div style="font-size:min(9vw,58px);font-weight:800;color:#ff2b2b;text-shadow:0 0 22px #ff0033;animation:nemPulse 1.4s ease-in-out infinite;">NEMESIS has seized<br>this terminal</div>'
+        + '<div style="font-size:min(9vw,58px);font-weight:800;color:var(--adv);text-shadow:0 0 22px var(--advglow);animation:nemPulse 1.4s ease-in-out infinite;">' + ADV + ' has seized<br>this terminal</div>'
         + '<div style="font-size:min(3.6vw,17px);color:#ff8f8f;margin-top:16px;max-width:560px;line-height:1.6;opacity:.9;">You have left the arena.</div>'
-        + '<button id="nemTakeClose" style="margin-top:30px;font-family:inherit;font-weight:800;letter-spacing:2px;font-size:14px;padding:13px 26px;border-radius:10px;border:1px solid #ff2b2b;background:#ff2b2b;color:#050000;cursor:pointer;box-shadow:0 0 26px -4px #ff0033;">\u21bb RECLAIM TERMINAL</button>'
+        + '<button id="nemTakeClose" style="margin-top:30px;font-family:inherit;font-weight:800;letter-spacing:2px;font-size:14px;padding:13px 26px;border-radius:10px;border:1px solid var(--adv);background:var(--adv);color:#050000;cursor:pointer;box-shadow:0 0 26px -4px var(--advglow);">\u21bb RECLAIM TERMINAL</button>'
       + '</div>';
     document.body.appendChild(o);
     nemesisGlitch();
@@ -213,13 +390,26 @@
       for (var i = 0; i < drops.length; i++){
         var ch = String.fromCharCode(0x30 + Math.floor(Math.random() * 10));
         var x = i * fs, y = drops[i] * fs;
-        ctx.fillStyle = Math.random() < 0.03 ? "#ffdddd" : "#ff2b2b";
+        ctx.fillStyle = Math.random() < 0.03 ? "#ffdddd" : ADVC;
         ctx.fillText(ch, x, y);
         if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
         drops[i]++;
       }
     }, 55);
     document.getElementById("nemTakeClose").onclick = function(){ clearInterval(rain); try{ speechSynthesis.cancel(); }catch(e){} o.remove(); nemAgitated = true; nemesisMood(); nemesisToast("\u2620 NEMESIS // SYSTEM RESTORED", "nemesis blocked \u00b7 terminal reclaimed \u00b7 i am agitated now, do not test me again", "#39ff88"); nemesisSpeak("System restored. Nemesis blocked. I am agitated now. Do not test me again."); };
+  }
+  function connectionLost(){
+    if (document.getElementById("connLost")) return;
+    var o = document.createElement("div"); o.id = "connLost";
+    o.style.cssText = "position:fixed;inset:0;z-index:13500;overflow:hidden;background:#0a0f14;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:'JetBrains Mono',ui-monospace,monospace;";
+    o.innerHTML =
+      '<svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#7f9bb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:24px;"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><path d="M12 20h.01"/><line x1="2" y1="2" x2="22" y2="22" stroke="#e0684a"/></svg>'
+      + '<div style="font-size:min(7vw,34px);font-weight:800;color:#e6eef5;letter-spacing:1px;">CONNECTION LOST</div>'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-top:14px;color:#8fa6bb;font-size:min(3.6vw,15px);"><span style="width:16px;height:16px;border:2px solid #24313d;border-top-color:#7f9bb3;border-radius:50%;display:inline-block;animation:spin .8s linear infinite;"></span> Attempting to reconnect to the system\u2026</div>'
+      + '<div style="font-size:min(3.2vw,13px);color:#5f7688;margin-top:12px;max-width:440px;line-height:1.6;">Your progress is safe. Looking things up is fine \u2014 this does not cost you any points.</div>'
+      + '<button id="connBack" style="margin-top:28px;font-family:inherit;font-weight:800;letter-spacing:1px;font-size:14px;padding:13px 26px;border-radius:10px;border:1px solid #2f4658;background:#12202b;color:#cfe3f2;cursor:pointer;">\u21bb RECONNECT</button>';
+    document.body.appendChild(o);
+    document.getElementById("connBack").onclick = function(){ o.remove(); nemesisToast(GLYPH + " " + ADV + " // RECONNECTED", "welcome back \u2014 right where you left off.", "var(--adv2)"); };
   }
   var VKEY = "ctf-nemesis-voice";
   var nemVoices = [], nemMoodEl = null, nemBooted = false;
@@ -228,6 +418,7 @@
   function vSet(o){ try{ localStorage.setItem(VKEY, JSON.stringify(o)); }catch(e){} }
   function loadVoices(){ try{ nemVoices = (window.speechSynthesis ? speechSynthesis.getVoices() : []) || []; }catch(e){ nemVoices = []; } }
   function nemesisSpeak(text){
+    text = advize(text);
     try{
       if(!window.speechSynthesis) return;
       var cfg = vGet(); if(!cfg.enabled) return;
@@ -245,25 +436,27 @@
     document.head.appendChild(st);
   }
   function nemesisGlitch(){
+    if (MENTOR) return;
     var g = document.getElementById("nemGlitch");
     if(!g){ g = document.createElement("div"); g.id = "nemGlitch"; g.style.cssText = "position:fixed;inset:0;z-index:11999;pointer-events:none;mix-blend-mode:screen;opacity:0;background:repeating-linear-gradient(0deg,rgba(255,0,80,.10) 0,rgba(255,0,80,.10) 1px,transparent 1px,transparent 3px);"; document.body.appendChild(g); }
     g.style.animation = "none"; void g.offsetWidth; g.style.animation = "nemGlitchAnim .55s steps(2,end) 1";
   }
   function nemesisIntruder(){
+    if (MENTOR) return;
     injectGlitchStyle();
     var o = document.createElement("div"); o.id = "nemAlert";
     o.style.cssText = "position:fixed;inset:0;z-index:12500;pointer-events:none;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,0,60,.12),rgba(255,0,60,.30));opacity:0;animation:nemAlertBg .9s ease-out 1;";
-    o.innerHTML = '<div class="mono" style="font-weight:800;letter-spacing:3px;color:#ff5c7a;text-align:center;text-shadow:0 0 18px #ff0033;animation:nemAlertTxt .9s steps(2,end) 1;"><div style="font-size:min(9vw,64px);">\u26a0 INTRUDER DETECTED</div><div style="font-size:min(3.4vw,18px);margin-top:10px;opacity:.85;">NEMESIS DEFENSE GRID // TRACE INITIATED</div></div>';
+    o.innerHTML = '<div class="mono" style="font-weight:800;letter-spacing:3px;color:var(--adv2);text-align:center;text-shadow:0 0 18px var(--advglow);animation:nemAlertTxt .9s steps(2,end) 1;"><div style="font-size:min(9vw,64px);">\u26a0 INTRUDER DETECTED</div><div style="font-size:min(3.4vw,18px);margin-top:10px;opacity:.85;">' + ADV + ' DEFENSE GRID // TRACE INITIATED</div></div>';
     document.body.appendChild(o);
     nemesisGlitch();
     setTimeout(function(){ nemesisGlitch(); }, 260);
     setTimeout(function(){ o.remove(); }, 950);
   }
   function nemesisToast(title, body, color){
-    color = color || "#ff5c7a";
+    color = color || "var(--adv2)"; title = advize(title).replace(/\u2620/g, GLYPH); body = advize(body);
     var d = document.createElement("div"); d.className = "mono";
     d.innerHTML = '<div style="font-size:15px;font-weight:800;letter-spacing:1px;">' + title + '</div>' + (body ? '<div style="font-size:12px;font-weight:400;margin-top:4px;opacity:.92;">' + body + '</div>' : '');
-    d.style.cssText = "position:fixed;top:22px;left:50%;transform:translateX(-50%) translateY(-14px);z-index:12000;text-align:center;color:" + color + ";background:#160a0f;border:1px solid " + color + ";box-shadow:0 0 26px -4px " + color + ",inset 0 0 0 1px rgba(255,255,255,.05);padding:12px 22px;border-radius:10px;opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:90vw;";
+    d.style.cssText = "position:fixed;top:22px;left:50%;transform:translateX(-50%) translateY(-14px);z-index:12000;text-align:center;color:" + color + ";background:" + (MENTOR ? "#0e1512" : "#160a0f") + ";border:1px solid " + color + ";box-shadow:0 0 26px -4px " + color + ",inset 0 0 0 1px rgba(255,255,255,.05);padding:12px 22px;border-radius:10px;opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:90vw;";
     document.body.appendChild(d);
     requestAnimationFrame(function(){ d.style.opacity = "1"; d.style.transform = "translateX(-50%) translateY(0)"; });
     setTimeout(function(){ d.style.opacity = "0"; d.style.transform = "translateX(-50%) translateY(-14px)"; }, 3000);
@@ -275,14 +468,26 @@
     if(!nemMoodEl) return;
     var pct = 0; try{ var st = stats(); pct = st.total ? Math.round(st.pts/st.total*100) : 0; }catch(e){}
     var m = force || moodForPct(pct);
-    var labels = {smug:"amused", watchful:"watching", annoyed:"annoyed", rattled:"rattled", beaten:"defeated", agitated:"AGITATED"};
-    var colors = {smug:"#ffb3c2", watchful:"#ffb3c2", annoyed:"#ffcf5c", rattled:"#ff8f5c", beaten:"#39ff88", agitated:"#ff2b2b"};
+    var labels = MENTOR
+      ? {smug:"ready", watchful:"warming up", annoyed:"on a roll", rattled:"impressive", beaten:"brilliant!", agitated:"cheering"}
+      : {smug:"amused", watchful:"watching", annoyed:"annoyed", rattled:"rattled", beaten:"defeated", agitated:"AGITATED"};
+    var colors = MENTOR
+      ? {smug:ADVC2, watchful:ADVC2, annoyed:"#7dffb3", rattled:"#7dffb3", beaten:"#39ff88", agitated:ADVC}
+      : {smug:"#ffb3c2", watchful:"#ffb3c2", annoyed:"#ffcf5c", rattled:"#ff8f5c", beaten:"#39ff88", agitated:"var(--adv)"};
     nemMoodEl.textContent = labels[m] || "watching";
     nemMoodEl.style.color = colors[m] || "#ffb3c2";
   }
-  function rankBarb(r){ return pick(["a new rank. do not let it go to your head.","climbing the ladder. i am still ahead of you.","the system takes notice of you now. so do i.","rank up. impressive, for a human."]); }
-  function mileTitle(mk){ return mk>=100 ? "\u2620 NEMESIS // SYSTEM BREACHED" : "\u2620 NEMESIS // " + mk + "% CAPTURED"; }
+  function rankBarb(r){ return MENTOR
+    ? pick(["a new rank \u2014 you earned it. keep going!","level up! your skills are really showing.","new rank unlocked. i knew you could do it.","climbing fast. i'm impressed."])
+    : pick(["a new rank. do not let it go to your head.","climbing the ladder. i am still ahead of you.","the system takes notice of you now. so do i.","rank up. impressive, for a human."]); }
+  function mileTitle(mk){ if(MENTOR) return mk>=100 ? GLYPH + " " + ADV + " // COURSE COMPLETE!" : GLYPH + " " + ADV + " // " + mk + "% COMPLETE"; return mk>=100 ? "\u2620 NEMESIS // SYSTEM BREACHED" : "\u2620 NEMESIS // " + mk + "% CAPTURED"; }
   function mileBarb(mk){
+    if(MENTOR){
+      if(mk===25) return pick(["a quarter done \u2014 great start!","25 percent! you're rolling."]);
+      if(mk===50) return pick(["halfway there \u2014 fantastic work.","50 percent! keep it up."]);
+      if(mk===75) return pick(["three quarters \u2014 you're so close!","75 percent. almost home."]);
+      return pick(["you did it \u2014 every point captured! incredible work.","100 percent! i'm so proud of you."]);
+    }
     if(mk===25) return pick(["a quarter of my flags. beginner luck.","25 percent. i am barely concerned."]);
     if(mk===50) return pick(["halfway. more persistent than most who try.","50 percent. do not get comfortable."]);
     if(mk===75) return pick(["three quarters. this was not supposed to happen.","75 percent. i am running low on tricks."]);
@@ -295,7 +500,7 @@
       [25,50,75,100].forEach(function(mk){
         if(p0 < mk && p1 >= mk){
           state.mile = state.mile || {};
-          if(!state.mile[mk]){ state.mile[mk] = 1; save(state); var b = mileBarb(mk); nemesisToast(mileTitle(mk), b, mk>=75 ? "#39ff88" : "#ff5c7a"); nemesisSpeak(b); if(mk>=50) nemesisGlitch(); }
+          if(!state.mile[mk]){ state.mile[mk] = 1; save(state); var b = mileBarb(mk); nemesisToast(mileTitle(mk), b, mk>=75 ? "#39ff88" : "var(--adv2)"); nemesisSpeak(b); if(mk>=50) nemesisGlitch(); }
         }
       });
       nemesisMood();
@@ -304,34 +509,43 @@
   function buildChip(){
     if(document.getElementById("nemChip")) return;
     var c = document.createElement("button"); c.id = "nemChip"; c.className = "mono";
-    c.style.cssText = "position:fixed;bottom:16px;right:16px;z-index:11998;display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:1px;padding:8px 13px;border-radius:999px;border:1px solid #ff5c7a;background:#160a0f;color:#ff5c7a;cursor:pointer;box-shadow:0 0 18px -6px #ff5c7a;";
-    c.innerHTML = '<span style="font-size:13px;">\u2620</span> NEMESIS: <b class="nemMood" style="color:#ffb3c2;">online</b> <span style="opacity:.55;">\u2699</span>';
-    c.title = "Tune NEMESIS voice";
+    var chipBg = MENTOR ? "#0e1512" : "#160a0f", moodC = MENTOR ? ADVC2 : "#ffb3c2";
+    c.style.cssText = "position:fixed;bottom:16px;right:16px;z-index:11998;display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:1px;padding:8px 13px;border-radius:999px;border:1px solid var(--adv2);background:" + chipBg + ";color:var(--adv2);cursor:pointer;box-shadow:0 0 18px -6px var(--adv2);";
+    c.innerHTML = '<span style="font-size:13px;">' + GLYPH + '</span> ' + ADV + ': <b class="nemMood" style="color:' + moodC + ';">online</b> <span style="opacity:.55;">\u2699</span>';
+    c.title = "Tune " + ADV + " voice";
     c.onclick = openTuner;
     document.body.appendChild(c);
     nemMoodEl = c.querySelector(".nemMood");
     nemesisMood();
   }
   function startDevtoolsWatch(){
+    if (MENTOR) return;
     var open = false;
     setInterval(function(){
       var w = (window.outerWidth - window.innerWidth) > 170, h = (window.outerHeight - window.innerHeight) > 170;
       var now = w || h;
-      if(now && !open){ open = true; nemesisToast("\u2620 NEMESIS // INSPECTION DETECTED", "peeking under the hood? cute. there is nothing here for you.", "#ff5c7a"); nemesisSpeak("peeking under the hood. cute."); nemesisGlitch(); }
+      if(now && !open){ open = true; if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("devtools", "developer tools opened"); } catch (e) {} } nemesisToast("\u2620 NEMESIS // INSPECTION DETECTED", "peeking under the hood? cute. there is nothing here for you.", "var(--adv2)"); nemesisSpeak("peeking under the hood. cute."); nemesisGlitch(); if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("devtools", "developer tools opened"); } catch (e) {} } }
       else if(!now){ open = false; }
     }, 1600);
   }
   function nemesisBoot(){
     if(nemBooted) return; nemBooted = true;
-    nemesisToast("\u2620 NEMESIS // ONLINE", "i am the adversary on this system. every flag you chase, i am watching. prove you belong here.", "#ff5c7a");
+    if (MENTOR) {
+      nemesisToast(GLYPH + " " + ADV + " // ONLINE", "hi, i'm " + ADV + " \u2014 your guide. solve challenges, earn points, and i'll be right here cheering you on.", "var(--adv2)");
+      nemesisSpeak(ADV + " online. I'm your guide. Solve challenges, earn points, and I'll be right here to cheer you on.");
+      return;
+    }
+    nemesisToast("\u2620 NEMESIS // ONLINE", "i am the adversary on this system. every flag you chase, i am watching. prove you belong here.", "var(--adv2)");
     nemesisGlitch();
     nemesisSpeak("Nemesis online. I am the adversary on this system. Every flag you chase, I am watching.");
   }
-  var NEM_SAMPLES = ["i see every keystroke you make.","you cannot copy your way past me.","impressive, for a human.","this terminal belongs to me.","the flags will not crack themselves.","nice try. i am always one step ahead."];
+  var NEM_SAMPLES = MENTOR
+    ? ["you're doing great.","nice work \u2014 keep it up.","i believe in you.","every capture makes you sharper.","you've got this.","one step at a time."]
+    : ["i see every keystroke you make.","you cannot copy your way past me.","impressive, for a human.","this terminal belongs to me.","the flags will not crack themselves.","nice try. i am always one step ahead."];
   function nvCfg(){ return { enabled: document.getElementById("nvEn").checked, voice: document.getElementById("nvVoice").value, pitch: +document.getElementById("nvPitch").value, rate: +document.getElementById("nvRate").value, volume: +document.getElementById("nvVol").value }; }
   function nvSpeak(text){ try{ if(!window.speechSynthesis) return; var c = nvCfg(); var u = new SpeechSynthesisUtterance(text); u.pitch = c.pitch; u.rate = c.rate; u.volume = c.volume; if(c.voice){ var v = nemVoices.filter(function(x){return x.name===c.voice;})[0]; if(v) u.voice = v; } speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
   function nvRow(label, inner){ return '<div style="margin-bottom:14px;"><div style="font-size:12px;margin-bottom:6px;">' + label + '</div>' + inner + '</div>'; }
-  function nvSlider(label, id, min, max, step, val, hint){ return '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span>' + label + (hint ? ' <span style="color:#a86;font-size:10px;">' + hint + '</span>' : '') + '</span><b id="' + id + 'V" style="color:#ff8fa3;">' + val + '</b></div><input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '" style="width:100%;accent-color:#ff5c7a;"></div>'; }
+  function nvSlider(label, id, min, max, step, val, hint){ return '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span>' + label + (hint ? ' <span style="color:#a86;font-size:10px;">' + hint + '</span>' : '') + '</span><b id="' + id + 'V" style="color:#ff8fa3;">' + val + '</b></div><input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '" style="width:100%;accent-color:var(--adv2);"></div>'; }
   function openTuner(){
     loadVoices();
     var cfg = vGet();
@@ -339,15 +553,15 @@
     var ov = document.createElement("div"); ov.id = "nemTuner";
     ov.style.cssText = "position:fixed;inset:0;z-index:13000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);";
     var voiceOpts = '<option value="">(browser default)</option>' + nemVoices.filter(function(v){return /en/i.test(v.lang);}).map(function(v){ return '<option value="' + esc(v.name) + '"' + (v.name===cfg.voice ? ' selected' : '') + '>' + esc(v.name) + ' \u00b7 ' + esc(v.lang) + '</option>'; }).join("");
-    ov.innerHTML = '<div class="mono" style="width:min(460px,92vw);background:#0d0709;border:1px solid #ff5c7a;border-radius:14px;padding:22px 22px 18px;box-shadow:0 0 40px -8px #ff5c7a;color:#ffd9e2;">'
-      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><div style="font-size:15px;font-weight:800;letter-spacing:1px;color:#ff5c7a;">\u2620 NEMESIS VOICE</div><button id="nemClose" style="background:none;border:none;color:#ff8fa3;font-size:18px;cursor:pointer;">\u2715</button></div>'
-      + '<div style="font-size:11px;color:#c98a97;margin-bottom:16px;">shape the adversary voice. changes save on this device. (browser speech supports deepness, speed, volume and voice only.)</div>'
+    ov.innerHTML = '<div class="mono" style="width:min(460px,92vw);background:#0d0709;border:1px solid var(--adv2);border-radius:14px;padding:22px 22px 18px;box-shadow:0 0 40px -8px var(--adv2);color:#ffd9e2;">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><div style="font-size:15px;font-weight:800;letter-spacing:1px;color:var(--adv2);">' + GLYPH + ' ' + ADV + ' VOICE</div><button id="nemClose" style="background:none;border:none;color:#ff8fa3;font-size:18px;cursor:pointer;">\u2715</button></div>'
+      + '<div style="font-size:11px;color:#c98a97;margin-bottom:16px;">shape the ' + (MENTOR ? "guide" : "adversary") + ' voice. changes save on this device. (browser speech supports deepness, speed, volume and voice only.)</div>'
       + nvRow("Enabled", '<label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="nvEn" ' + (cfg.enabled ? "checked" : "") + '> <span id="nvEnL">' + (cfg.enabled ? "on" : "off") + '</span></label>')
       + nvRow("Voice", '<select id="nvVoice" style="width:100%;background:#160a0f;color:#ffd9e2;border:1px solid #4a2630;border-radius:8px;padding:8px;">' + voiceOpts + '</select>')
       + nvSlider("Deepness", "nvPitch", 0, 2, 0.05, cfg.pitch, "lower = deeper")
       + nvSlider("Speed", "nvRate", 0.5, 1.5, 0.05, cfg.rate, "")
       + nvSlider("Volume", "nvVol", 0, 1, 0.05, cfg.volume, "")
-      + '<div style="display:flex;gap:10px;margin-top:18px;"><button id="nvTest" style="flex:1;font-family:inherit;font-weight:700;padding:11px;border-radius:9px;border:1px solid #ff5c7a;background:#ff5c7a;color:#160a0f;cursor:pointer;">\u25b6 TEST VOICE</button><button id="nvSave" style="flex:1;font-family:inherit;font-weight:700;padding:11px;border-radius:9px;border:1px solid #4a2630;background:#160a0f;color:#ffd9e2;cursor:pointer;">DONE</button></div>'
+      + '<div style="display:flex;gap:10px;margin-top:18px;"><button id="nvTest" style="flex:1;font-family:inherit;font-weight:700;padding:11px;border-radius:9px;border:1px solid var(--adv2);background:var(--adv2);color:#160a0f;cursor:pointer;">\u25b6 TEST VOICE</button><button id="nvSave" style="flex:1;font-family:inherit;font-weight:700;padding:11px;border-radius:9px;border:1px solid #4a2630;background:#160a0f;color:#ffd9e2;cursor:pointer;">DONE</button></div>'
       + '<button id="nvReset" style="width:100%;margin-top:10px;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;padding:9px;border-radius:9px;border:1px solid #4a2630;background:transparent;color:#c98a97;cursor:pointer;">↻ RESET TO DEFAULT</button>'
       + '</div>';
     document.body.appendChild(ov);
@@ -358,19 +572,25 @@
     var en = document.getElementById("nvEn"); en.onchange = function(){ document.getElementById("nvEnL").textContent = en.checked ? "on" : "off"; vSet(nvCfg()); };
     document.getElementById("nvTest").onclick = function(){ nvSpeak(pick(NEM_SAMPLES)); };
     document.getElementById("nvSave").onclick = function(){ ov.remove(); };
-    document.getElementById("nvReset").onclick = function(){ var d={enabled:true,pitch:0.35,rate:0.9,volume:0.85,voice:""}; vSet(d); document.getElementById("nvEn").checked=true; document.getElementById("nvEnL").textContent="on"; document.getElementById("nvVoice").value=""; document.getElementById("nvPitch").value=0.35; document.getElementById("nvPitchV").textContent="0.35"; document.getElementById("nvRate").value=0.9; document.getElementById("nvRateV").textContent="0.90"; document.getElementById("nvVol").value=0.85; document.getElementById("nvVolV").textContent="0.85"; nemesisToast("☠ NEMESIS // VOICE RESET", "restored to my original voice.", "#ff5c7a"); nvSpeak(pick(NEM_SAMPLES)); };
+    document.getElementById("nvReset").onclick = function(){ var d={enabled:true,pitch:0.35,rate:0.9,volume:0.85,voice:""}; vSet(d); document.getElementById("nvEn").checked=true; document.getElementById("nvEnL").textContent="on"; document.getElementById("nvVoice").value=""; document.getElementById("nvPitch").value=0.35; document.getElementById("nvPitchV").textContent="0.35"; document.getElementById("nvRate").value=0.9; document.getElementById("nvRateV").textContent="0.90"; document.getElementById("nvVol").value=0.85; document.getElementById("nvVolV").textContent="0.85"; nemesisToast("☠ NEMESIS // VOICE RESET", "restored to my original voice.", "var(--adv2)"); nvSpeak(pick(NEM_SAMPLES)); };
   }
   function taintToast(kind) {
-    const map = {
+    const map = MENTOR ? {
+      paste: [GLYPH + " " + ADV + " // PASTE DETECTED", "let's keep this your own work \u00b7 this capture counts for 1/3 points"],
+      focus: [GLYPH + " " + ADV + " // FOCUS", "welcome back \u00b7 pick up where you left off"],
+      canary: [GLYPH + " " + ADV + " // HEADS UP", "that one was a decoy \u00b7 no points for it, but no harm \u2014 try the real answer"],
+      copy: [GLYPH + " " + ADV + " // NOT RECOGNIZED", "that function is not recognized in the system."]
+    } : {
       paste: ["\u2620 NEMESIS // PASTE FLAGGED", "i caught that clipboard drop \u00b7 this capture falls to 1/3 XP"],
       focus: ["\u2620 NEMESIS // FOCUS LOST", "you left the arena \u00b7 this capture falls to 1/3 XP"],
       canary: ["\u2620 NEMESIS // HONEYPOT TRIPPED", "that flag was bait \u00b7 nice try, i see you"],
       copy: ["\u2620 NEMESIS // COPY BLOCKED", "an adversary holds this terminal \u00b7 copy intercepted"]
     };
     const t = map[kind] || map.paste;
-    nemesisToast(t[0], t[1], "#ff5c7a");
+    nemesisToast(t[0], t[1], "var(--adv2)");
     nemesisSpeak(t[1]);
     nemesisGlitch();
+    if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT(kind, t[1]); } catch (e) {} }
   }
   function linkifyBody(text) {
     const re = /(https?:\/\/[^\s]+)/g;
@@ -481,17 +701,29 @@
   function bossRow(m) {
     const bkey = window.CTF_COURSE || "c";
     const best = (state.boss && state.boss[bkey + ":" + m]) || 0;
-    return `<div class="card bossCard" style="position:relative;overflow:hidden;margin-top:10px;border:1px solid #ff2b2b;background:#0b0102;box-shadow:0 0 22px -8px #ff0033, inset 0 0 40px -20px #ff2b2b;">
+    if (MENTOR) return `<div class="card bossCard" style="position:relative;overflow:hidden;margin-top:10px;border:1px solid var(--adv);background:#0b1016;box-shadow:0 0 22px -10px var(--advglow), inset 0 0 44px -24px var(--adv);">
+      <div style="position:relative;display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+        <div style="flex:none;width:104px;">${eyesSVG("104px")}</div>
+        <div style="flex:1;min-width:200px;">
+          <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--adv2);margin-bottom:6px;">${GLYPH} FINAL CHALLENGE</div>
+          <div style="font-size:22px;font-weight:800;color:var(--bright);margin-bottom:6px;">${ADV}'S GAUNTLET</div>
+          <p style="font-size:13.5px;line-height:1.6;color:var(--muted);margin:0 0 4px;max-width:520px;">Take on Module ${String(m).padStart(2, "0")}'s final challenge with ${ADV} \u2014 three escalating rounds. Answer quickly, build streaks, and push your score as high as you can. ${ADV} is cheering you on.</p>
+          <div class="mono" style="font-size:11px;color:var(--dim);">${best > 0 ? "your best score \u00b7 " + best : "no score yet \u2014 give it a go"}</div>
+        </div>
+        <button type="button" class="bossEnter mono" data-m="${m}" style="flex:none;font-size:14px;font-weight:800;letter-spacing:1px;padding:14px 26px;border-radius:10px;border:1px solid var(--adv);background:var(--adv);color:#04140c;cursor:pointer;box-shadow:0 0 20px -6px var(--advglow);">\u25b6 START CHALLENGE</button>
+      </div>
+    </div>`;
+    return `<div class="card bossCard" style="position:relative;overflow:hidden;margin-top:10px;border:1px solid var(--adv);background:#0b0102;box-shadow:0 0 22px -8px var(--advglow), inset 0 0 40px -20px var(--adv);">
       <canvas class="bossMiniRain" data-m="${m}" style="position:absolute;inset:0;width:100%;height:100%;opacity:.28;pointer-events:none;"></canvas>
       <div style="position:relative;display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
         <div style="flex:none;width:120px;">${eyesSVG("120px")}</div>
         <div style="flex:1;min-width:200px;">
-          <div class="mono" style="font-size:11px;letter-spacing:2px;color:#ff5c7a;margin-bottom:6px;">\u2620 FINAL FLAG \u00b7 BOSS</div>
-          <div style="font-size:22px;font-weight:800;color:#fff;text-shadow:0 0 14px #ff0033;margin-bottom:6px;">BEAT NEMESIS</div>
-          <p style="font-size:13.5px;line-height:1.6;color:#ffd9e2;margin:0 0 4px;max-width:520px;">The adversary holds Module ${String(m).padStart(2, "0")}. Duel NEMESIS across three escalating phases \u2014 answer fast, chain combos, and drain its integrity to zero before it deletes you.</p>
+          <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--adv2);margin-bottom:6px;">\u2620 FINAL FLAG \u00b7 BOSS</div>
+          <div style="font-size:22px;font-weight:800;color:#fff;text-shadow:0 0 14px var(--advglow);margin-bottom:6px;">BEAT ${ADV}</div>
+          <p style="font-size:13.5px;line-height:1.6;color:#ffd9e2;margin:0 0 4px;max-width:520px;">The adversary holds Module ${String(m).padStart(2, "0")}. Duel ${ADV} across three escalating phases \u2014 answer fast, chain combos, and drain its integrity to zero before it deletes you.</p>
           <div class="mono" style="font-size:11px;color:#ff8f8f;">${best > 0 ? "your best score \u00b7 " + best : "undefeated \u00b7 no score yet"}</div>
         </div>
-        <button type="button" class="bossEnter mono" data-m="${m}" style="flex:none;font-size:14px;font-weight:800;letter-spacing:1px;padding:14px 26px;border-radius:10px;border:1px solid #ff2b2b;background:#ff2b2b;color:#050000;cursor:pointer;box-shadow:0 0 20px -4px #ff0033;">\u2694 ENTER BATTLE</button>
+        <button type="button" class="bossEnter mono" data-m="${m}" style="flex:none;font-size:14px;font-weight:800;letter-spacing:1px;padding:14px 26px;border-radius:10px;border:1px solid var(--adv);background:var(--adv);color:#050000;cursor:pointer;box-shadow:0 0 20px -4px var(--advglow);">\u2694 ENTER BATTLE</button>
       </div>
     </div>`;
   }
@@ -524,7 +756,7 @@
     }
 
     const cards = buildList(chals);
-    root.innerHTML = banner() + statsCard(s, pct) +
+    root.innerHTML = banner() + statsCard(s, pct) + badgesCard() +
       `<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px;">${cards}</div>` +
       `<div class="mono" style="margin-top:26px;font-size:11px;color:var(--faint);line-height:1.6;">
          // flags are checked on your device \u00b7 progress saves automatically \u00b7
@@ -545,11 +777,54 @@
       </div>`;
   }
 
+  function howShown() { try { return localStorage.getItem("ctf-howto-" + course) === "1"; } catch (e) { return false; } }
+  function setHowShown(v) { try { v ? localStorage.setItem("ctf-howto-" + course, "1") : localStorage.removeItem("ctf-howto-" + course); } catch (e) {} }
+  function howtoCard() {
+    if (howShown()) return "";
+    const guideLine = MENTOR
+      ? `Hi, I'm <span style="color:var(--accent);font-weight:700;">${ADV}</span> — your guide. I'll cheer you on and offer hints along the way.`
+      : `<span style="color:var(--adv2);font-weight:700;">${ADV}</span> guards this system. Solve honestly — pasting or leaving the arena is logged and can cost you XP.`;
+    const step = (n, t, b) => `<div style="display:flex;gap:12px;align-items:flex-start;"><span class="mono" style="flex:none;width:26px;height:26px;border-radius:7px;background:var(--panel3);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--accent);">${n}</span><div style="font-size:13px;line-height:1.55;color:var(--muted);"><span style="color:var(--bright);font-weight:700;">${t}</span> — ${b}</div></div>`;
+    return `<div class="card" id="howCard" style="border:1px solid var(--border-hi);background:linear-gradient(135deg,var(--panel2),var(--bg) 70%);margin-bottom:20px;position:relative;">
+      <button type="button" id="howClose" class="mono" aria-label="Dismiss" style="position:absolute;top:14px;right:14px;font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid var(--border3);background:var(--panel);color:var(--dim);cursor:pointer;">Got it ✕</button>
+      <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">${GLYPH} How to play</div>
+      <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:var(--text);max-width:640px;">${guideLine}</p>
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:660px;">
+        ${step(1, "Open a module", "tap a module to expand its challenges. Work through them in any order.")}
+        ${step(2, "Capture flags", "text flags come in <b>Easy / Medium / Hard</b> tiers (50 / 100 / 150 XP). Interactive captures — match, order, spot — are worth XP too.")}
+        ${step(3, "Beat the clock", "a flag's XP ticks down the longer it's open once you begin, so don't stall. Looking things up is always fine — it never costs you points.")}
+        ${step(4, `Face ${ADV}`, `finish each module with its final challenge — three escalating rounds. Set a player handle below so your score is ready for the leaderboard.`)}
+      </div>
+    </div>`;
+  }
+  function shareText() {
+    const s = stats();
+    const handle = getHandle() || "Player";
+    const chals = ctf.challenges || [];
+    const byMod = {}; chals.forEach(c => { const m = c.module || 0; (byMod[m] = byMod[m] || []).push(c); });
+    const mods = Object.keys(byMod).sort((a, b) => a - b).map(m => {
+      const fl = byMod[m].flatMap(flagsOf), d = fl.filter(f => state.solved[f.key]).length;
+      return "M" + String(m).padStart(2, "0") + " " + d + "/" + fl.length;
+    }).join(" · ");
+    return handle + " — " + (ctf.title || "CTF") + "\nRank: " + s.rank + " · XP " + s.pts + "/" + s.total + " · Flags " + s.solvedCount + "/" + s.count + (mods ? "\nModules: " + mods : "");
+  }
+  function doShare() {
+    const txt = shareText();
+    const ok = () => nemesisToast(GLYPH + " COPIED", "your progress summary is on the clipboard — paste it to your teacher.", MENTOR ? ADVC2 : "var(--adv2)");
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(ok, () => window.prompt("Copy your progress:", txt)); }
+      else window.prompt("Copy your progress:", txt);
+    } catch (e) { window.prompt("Copy your progress:", txt); }
+  }
   function statsCard(s, pct) {
     const nextTxt = s.next
       ? `${s.next.t - s.pts} XP to <span style="color:var(--accent);">${esc(s.next.n)}</span>`
       : `max rank reached`;
     const handle = getHandle();
+    const st = state.streak || { count: 0, best: 0 };
+    const sc = st.count || 0;
+    const nextBonus = streakBonusFor(sc + 1);
+    const nextDayTxt = isSkipDay(dayNum(todayKey()) + 1) ? "next school day" : "tomorrow"; // Fri/Sat/Sun -> Monday
     return `
       <div class="card">
         <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;">
@@ -560,12 +835,14 @@
           <div style="display:flex;gap:26px;flex-wrap:wrap;">
             <div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">XP</div><div class="mono" style="font-size:24px;font-weight:800;color:var(--accent);">${s.pts}<span style="font-size:13px;color:var(--dim);"> / ${s.total}</span></div></div>
             <div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">FLAGS</div><div class="mono" style="font-size:24px;font-weight:800;color:var(--bright);">${s.solvedCount}<span style="font-size:13px;color:var(--dim);"> / ${s.count}</span></div></div>
+            <div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">STREAK</div><div class="mono" style="font-size:24px;font-weight:800;color:var(--amber);">${sc}<span style="font-size:13px;color:var(--dim);"> day${sc === 1 ? "" : "s"}</span></div></div>
           </div>
         </div>
         <div style="margin-top:18px;height:10px;border-radius:999px;background:var(--bg);border:1px solid var(--border2);overflow:hidden;">
           <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease;"></div>
         </div>
         <div class="mono" style="margin-top:8px;font-size:11px;color:var(--dim);">${nextTxt}</div>
+        <div class="mono" style="margin-top:4px;font-size:11px;color:var(--dim);">\u25b2 ${sc}-day login streak${st.best ? " \u00b7 best " + st.best : ""} \u00b7 log in ${nextDayTxt} for +${nextBonus} XP${sc >= 10 ? " (max)" : ""}</div>
         <div style="margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
           <label class="mono" for="ctfHandle" style="font-size:11px;letter-spacing:1px;color:var(--faint);">PLAYER HANDLE</label>
           <input id="ctfHandle" type="text" maxlength="24" placeholder="e.g. Alex R." value="${esc(handle)}"
@@ -807,7 +1084,7 @@
         score++; bump();
         const m = $(".rfMsg"); m.textContent = "\u2713 " + disp(cur.t); m.style.color = "var(--accent)";
         cur = nextTerm(); loadTerm();
-      } else if (enter) { const m = $(".rfMsg"); m.textContent = "\u2717 keep trying \u2014 or SKIP"; m.style.color = "#ff5c7a"; }
+      } else if (enter) { const m = $(".rfMsg"); m.textContent = "\u2717 keep trying \u2014 or SKIP"; m.style.color = "var(--adv2)"; }
     }
     inp.addEventListener("input", () => { boxes(); check(false); });
     $(".rfForm").addEventListener("submit", e => { e.preventDefault(); check(true); });
@@ -821,7 +1098,7 @@
     }
     rapidTimer = setInterval(() => {
       const left = Math.max(0, (endAt - Date.now()) / 1000), mm = Math.floor(left / 60), ss = Math.floor(left % 60);
-      const clk = $(".rfClock"); if (clk) { clk.textContent = mm + ":" + String(ss).padStart(2, "0"); clk.style.color = left <= 30 ? "#ff5c7a" : "var(--bright)"; }
+      const clk = $(".rfClock"); if (clk) { clk.textContent = mm + ":" + String(ss).padStart(2, "0"); clk.style.color = left <= 30 ? "var(--adv2)" : "var(--bright)"; }
       const bar = $(".rfBar"); if (bar) bar.style.width = (left / RAPID_SECS * 100) + "%";
       if (left <= 0) finish();
     }, 200);
@@ -864,7 +1141,7 @@
   }
   function tickHUD(wrap, left, total) {
     const mm = Math.floor(left / 60), ss = Math.floor(left % 60);
-    const clk = wrap.querySelector(".hClock"); if (clk) { clk.textContent = mm + ":" + String(ss).padStart(2, "0"); clk.style.color = left <= 30 ? "#ff5c7a" : "var(--bright)"; }
+    const clk = wrap.querySelector(".hClock"); if (clk) { clk.textContent = mm + ":" + String(ss).padStart(2, "0"); clk.style.color = left <= 30 ? "var(--adv2)" : "var(--bright)"; }
     const bar = wrap.querySelector(".hBar"); if (bar) bar.style.width = (left / total * 100) + "%";
   }
   function setHUD(wrap, score, xp) { const s = wrap.querySelector(".hScore"); if (s) s.textContent = score; const x = wrap.querySelector(".hXp"); if (x) x.textContent = xp + " XP"; }
@@ -906,7 +1183,7 @@
     function load() { shift = 1 + Math.floor(Math.random() * 25); $(".cDef").textContent = cur.d; $(".cShift").textContent = "ROT" + shift; $(".cCipher").textContent = caesar(dispTerm(cur.t), shift); inp.value = ""; boxes(); inp.focus(); }
     function check(enter) { if (done) return;
       if (acceptedAnswers(cur.t).includes(normAlpha(inp.value))) { score++; setHUD(wrap, score, score * per); const m = $(".cMsg"); m.textContent = "\u2713 " + dispTerm(cur.t); m.style.color = "var(--accent)"; cur = next(); load(); }
-      else if (enter) { const m = $(".cMsg"); m.textContent = "\u2717 not yet \u2014 keep decoding or SKIP"; m.style.color = "#ff5c7a"; } }
+      else if (enter) { const m = $(".cMsg"); m.textContent = "\u2717 not yet \u2014 keep decoding or SKIP"; m.style.color = "var(--adv2)"; } }
     inp.addEventListener("input", () => { boxes(); check(false); });
     $(".cForm").addEventListener("submit", e => { e.preventDefault(); check(true); });
     $(".cSkip").addEventListener("click", () => { cur = next(); load(); });
@@ -949,7 +1226,7 @@
     function load() { tiles = scramble(letters(dispTerm(cur.t))); picked = []; $(".uDef").textContent = cur.d; draw(); }
     function checkDone() { const target = letters(dispTerm(cur.t)); if (picked.length !== target.length) return;
       if (picked.map(ti => tiles[ti]).join("") === target.join("")) { score++; setHUD(wrap, score, score * per); const m = $(".uMsg"); m.textContent = "\u2713 " + dispTerm(cur.t); m.style.color = "var(--accent)"; cur = next(); load(); }
-      else { const m = $(".uMsg"); m.textContent = "\u2717 not quite \u2014 CLEAR and retry"; m.style.color = "#ff5c7a"; } }
+      else { const m = $(".uMsg"); m.textContent = "\u2717 not quite \u2014 CLEAR and retry"; m.style.color = "var(--adv2)"; } }
     $(".uClear").addEventListener("click", () => { if (done) return; picked = []; draw(); });
     $(".uSkip").addEventListener("click", () => { cur = next(); load(); });
     load();
@@ -977,7 +1254,7 @@
       wrap.querySelectorAll(".smTerm").forEach(b => b.addEventListener("click", () => { if (done) return; activeTerm = +b.getAttribute("data-bi"); draw(); }));
       wrap.querySelectorAll(".smDef").forEach(b => b.addEventListener("click", () => { if (done || activeTerm == null) return; const bi = +b.getAttribute("data-bi"); const m = $(".smMsg");
         if (bi === activeTerm) { matched[bi] = true; score++; setHUD(wrap, score, score * per); activeTerm = null; m.textContent = "\u2713 matched"; m.style.color = "var(--accent)"; if (Object.keys(matched).length >= board.length) { setTimeout(() => { if (!done) drawBoard(); }, 350); } else draw(); }
-        else { m.textContent = "\u2717 not a match"; m.style.color = "#ff5c7a"; activeTerm = null; draw(); } }));
+        else { m.textContent = "\u2717 not a match"; m.style.color = "var(--adv2)"; activeTerm = null; draw(); } }));
     }
     drawBoard();
     const endAt = Date.now() + total * 1000;
@@ -1009,7 +1286,7 @@
       $(".bChoices").innerHTML = choices.map((t, i) => `<button type="button" class="bChoice" data-i="${i}" style="text-align:left;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--border3);background:var(--panel);color:var(--bright);">${esc(dispTerm(t))}</button>`).join("");
       wrap.querySelectorAll(".bChoice").forEach(b => b.addEventListener("click", () => { if (done) return; const t = choices[+b.getAttribute("data-i")]; const m = $(".bMsg");
         if (acceptedAnswers(cur.t).includes(normAlpha(t))) { const g = per * mult(); xp += g; score++; streak++; b.style.borderColor = "var(--accent)"; b.style.background = "var(--panel3)"; m.textContent = "\u2713 +" + g + " XP"; m.style.color = "var(--accent)"; hudLine(); setTimeout(() => { if (!done) load(); }, 250); }
-        else { streak = 0; b.style.borderColor = "#ff5c7a"; m.textContent = "\u2717 " + dispTerm(t) + " \u2014 streak reset"; m.style.color = "#ff5c7a"; hudLine(); setTimeout(() => { if (!done) load(); }, 600); } })); }
+        else { streak = 0; b.style.borderColor = "var(--adv2)"; m.textContent = "\u2717 " + dispTerm(t) + " \u2014 streak reset"; m.style.color = "var(--adv2)"; hudLine(); setTimeout(() => { if (!done) load(); }, 600); } })); }
     load(); hudLine();
     const endAt = Date.now() + total * 1000;
     rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (xp > 0) onSolve(chal, 2, chal.id + "#2", xp); else render(); } }, 200);
@@ -1054,11 +1331,11 @@
       wrap.querySelectorAll(".wsCell").forEach(b => b.addEventListener("click", () => { if (done) return; const r = +b.getAttribute("data-r"), c = +b.getAttribute("data-c"), m = $(".wsMsg");
         if (!sel) { sel = [r, c]; draw(); return; }
         const cells = lineCells(sel, [r, c]); sel = null;
-        if (!cells) { draw(); m.textContent = "\u2717 must be a straight line"; m.style.color = "#ff5c7a"; return; }
+        if (!cells) { draw(); m.textContent = "\u2717 must be a straight line"; m.style.color = "var(--adv2)"; return; }
         const str = cells.map(([rr, cc]) => grid[rr][cc]).join(""), rev = str.split("").reverse().join("");
         const hit = placed.find(o => !found[o.w] && (o.w === str || o.w === rev));
         if (hit) { found[hit.w] = cells; m.textContent = "\u2713 " + dispTerm(hit.t); m.style.color = "var(--accent)"; setHUD(wrap, Object.keys(found).length, Object.keys(found).length * per); draw(); if (Object.keys(found).length >= placed.length) finish(); }
-        else { draw(); m.textContent = "\u2717 not a term"; m.style.color = "#ff5c7a"; } }));
+        else { draw(); m.textContent = "\u2717 not a term"; m.style.color = "var(--adv2)"; } }));
     }
     function finish() { if (done) return; done = true; const n = Object.keys(found).length; if (n > 0) onSolve(chal, 2, chal.id + "#2", n * per); else { const m = $(".wsMsg"); if (m) { m.textContent = "No terms found yet \u2014 keep looking!"; m.style.color = "var(--faint)"; } } }
     $(".wsDone").addEventListener("click", finish);
@@ -1130,7 +1407,7 @@
     const reset = document.getElementById("ctfReset");
     if (reset) reset.addEventListener("click", () => {
       if (confirm("Reset all your CTF progress on this device? This cannot be undone.")) {
-        state = { solved: {}, points: 0, retry: {}, earned: {}, mile: {} }; save(state); render();
+        state = { solved: {}, points: 0, retry: {}, earned: {}, mile: {}, boss: {}, bossWins: {}, streak: { last: null, count: 0, best: 0 }, bonus: 0, badges: {} }; save(state); render();
       }
     });
 
@@ -1178,7 +1455,7 @@
       h.innerHTML = (open ? "\u24d8 show hint" : "\u24d8 hide hint");
     }));
 
-    function nope(card, msg, txt) { msg.textContent = txt; msg.style.color = "#ff5c7a"; card.style.animation = "none"; void card.offsetWidth; card.style.animation = "ctfShake .4s"; }
+    function nope(card, msg, txt) { msg.textContent = txt; msg.style.color = "var(--adv2)"; card.style.animation = "none"; void card.offsetWidth; card.style.animation = "ctfShake .4s"; }
     document.querySelectorAll(".ctfCard").forEach(card => {
       const id = card.getAttribute("data-id");
       const chal = (ctf.challenges || []).find(c => c.id === id);
@@ -1315,15 +1592,18 @@
     nemesisProgress(before, s);
     if (typeof window.CTF_REPORT === "function") {
       try {
+        const secs = timers[key] ? Math.round((Date.now() - timers[key]) / 1000) : null;
         window.CTF_REPORT({
-          course, handle: getHandle(), challengeId: chal.id,
+          course, handle: getHandle(), challengeId: chal.id, key,
           level: chal.type === "vocab" ? VOCAB_DIFFS[li] : (usesLevels && chal.levels ? chal.levels[li].difficulty : null), title: chal.title,
-          points, totalPoints: s.pts, solvedCount: s.solvedCount, totalCount: s.count, ts: Date.now()
+          points, secs, retries: state.retry[key] || 0, tainted: !!tainted[key],
+          totalPoints: s.pts, solvedCount: s.solvedCount, totalCount: s.count, ts: Date.now()
         });
       } catch (e) {}
     }
     render();
     flash(points);
+    try { const nb = checkBadgeUnlocks(); if (nb.length) setTimeout(function(){ announceBadges(nb); }, 700); } catch (e) {}
   }
 
   function flash(pts) {
@@ -1376,9 +1656,10 @@
   function bossVocab() { return (window.CTF_VOCAB || []).filter(function (v) { return v && v.t && v.d; }); }
   function bossConfigBank() { return (ctf.bossQuestions || (ctf.boss && ctf.boss.questions) || []).slice(); }
   function eyesSVG(scale) {
+    if (MENTOR) return '<svg width="' + (scale || 'min(52vw,300px)') + '" viewBox="0 0 120 120" style="filter:drop-shadow(0 0 14px var(--advglow));"><circle cx="60" cy="60" r="46" fill="none" stroke="var(--adv)" stroke-width="4"/><circle cx="60" cy="60" r="30" fill="var(--adv)" opacity="0.14"/><path d="M42 61 l12 12 l24 -26" fill="none" stroke="var(--adv2)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     return '<svg width="' + (scale || 'min(52vw,300px)') + '" viewBox="0 0 420 150" style="animation:nemEyeGlow 1.6s ease-in-out infinite;">'
-      + '<defs><radialGradient id="nemIrisB" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffe08a"/><stop offset="32%" stop-color="#ff2b2b"/><stop offset="100%" stop-color="#3a0000"/></radialGradient></defs>'
-      + '<g fill="none" stroke="#ff2b2b" stroke-width="3"><path d="M20 75 Q110 5 200 75 Q110 145 20 75 Z" fill="#120000"/><path d="M220 75 Q310 5 400 75 Q310 145 220 75 Z" fill="#120000"/></g>'
+      + '<defs><radialGradient id="nemIrisB" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffe08a"/><stop offset="32%" stop-color="var(--adv)"/><stop offset="100%" stop-color="#3a0000"/></radialGradient></defs>'
+      + '<g fill="none" stroke="var(--adv)" stroke-width="3"><path d="M20 75 Q110 5 200 75 Q110 145 20 75 Z" fill="#120000"/><path d="M220 75 Q310 5 400 75 Q310 145 220 75 Z" fill="#120000"/></g>'
       + '<circle cx="110" cy="75" r="38" fill="url(#nemIrisB)"/><circle cx="110" cy="75" r="15" fill="#000"/>'
       + '<circle cx="310" cy="75" r="38" fill="url(#nemIrisB)"/><circle cx="310" cy="75" r="15" fill="#000"/>'
       + '<circle cx="122" cy="63" r="6" fill="#fff" opacity=".9"/><circle cx="322" cy="63" r="6" fill="#fff" opacity=".9"/></svg>';
@@ -1386,7 +1667,7 @@
   function bossMakeVocabQ(v, pool, phase) {
     var typed = phase >= 3;
     var topic = "M" + (v.m || 0);
-    if (typed) return { kind: "text", topic: topic, module: v.m, diff: "Hard", prompt: "NEMESIS demands the term. Type it:", body: v.d, answer: v.t };
+    if (typed) return { kind: "text", topic: topic, module: v.m, diff: "Hard", prompt: ADV + " demands the term. Type it:", body: v.d, answer: v.t };
     var others = shuffle(pool.filter(function (x) { return x.t !== v.t; }));
     var same = others.filter(function (x) { return x.m === v.m; });
     var distr = (same.length >= 3 ? same : others).slice(0, 3).map(function (x) { return dispTerm(x.t); });
@@ -1408,7 +1689,7 @@
     return bossMakeVocabQ(v, pool, boss.phase);
   }
   function normCfgQ(q) {
-    return { kind: q.kind || (q.choices ? "mc" : "text"), topic: q.topic || ("M" + (q.module || 0)), module: q.module, diff: q.diff || "Medium", prompt: q.prompt || "Answer NEMESIS:", body: q.body || "", answer: q.answer, choices: q.choices ? shuffle(q.choices.slice()) : null };
+    return { kind: q.kind || (q.choices ? "mc" : "text"), topic: q.topic || ("M" + (q.module || 0)), module: q.module, diff: q.diff || "Medium", prompt: q.prompt || ("Answer " + ADV + ":"), body: q.body || "", answer: q.answer, choices: q.choices ? shuffle(q.choices.slice()) : null };
   }
   function bossPhase() { return boss.nemHP > 66 ? 1 : (boss.nemHP > 33 ? 2 : 3); }
   function bossComboMult() { return Math.min(3, 1 + Math.floor(boss.streak / 3) * 0.5); }
@@ -1418,17 +1699,17 @@
     scopeModule = scopeModule ? +scopeModule : null;
     var vocab = bossVocab(); if (scopeModule) vocab = vocab.filter(function (v) { return +v.m === scopeModule; });
     var cfg = bossConfigBank(); if (scopeModule) cfg = cfg.filter(function (q) { return +q.module === scopeModule; });
-    if (vocab.length < 4 && cfg.length < 1) { nemesisToast("\u2620 NEMESIS", "not enough intel loaded for this module yet.", "#ff5c7a"); return; }
+    if (vocab.length < 4 && cfg.length < 1) { nemesisToast(GLYPH + " " + ADV, MENTOR ? "no challenges loaded for this module yet \u2014 check back soon." : "not enough intel loaded for this module yet.", "var(--adv2)"); return; }
     boss = { nemHP: 100, hp: 100, round: 0, streak: 0, best: 0, dmgDealt: 0, correct: 0, phase: 1, weak: {}, reviewQ: [], pool: vocab, cfgBank: cfg, scope: scopeModule, timer: null, locked: false };
     var w = document.createElement("div"); w.id = "bossWrap";
-    w.style.cssText = "position:fixed;inset:0;z-index:13600;overflow:hidden;background:#050000;font-family:'JetBrains Mono',ui-monospace,monospace;color:#ffd9e2;";
+    w.style.cssText = "position:fixed;inset:0;z-index:13600;overflow:hidden;background:" + (MENTOR ? "#0a0f14" : "#050000") + ";font-family:'JetBrains Mono',ui-monospace,monospace;color:" + (MENTOR ? "#cfe3f2" : "#ffd9e2") + ";";
     w.innerHTML =
       '<canvas id="bossRain" style="position:absolute;inset:0;width:100%;height:100%;opacity:.5;"></canvas>'
       + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:18px 20px;box-sizing:border-box;overflow:auto;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:center;gap:14px;"><div style="font-weight:800;letter-spacing:2px;color:#ff2b2b;">\u2620 BEAT NEMESIS' + (scopeModule ? ' \u00b7 MODULE ' + String(scopeModule).padStart(2, "0") : '') + '</div><button id="bossQuit" style="background:none;border:1px solid #4a2630;color:#ff8f8f;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">retreat \u2715</button></div>'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;gap:14px;"><div style="font-weight:800;letter-spacing:2px;color:var(--adv);">' + GLYPH + ' ' + (MENTOR ? ADV + ' GAUNTLET' : 'BEAT ' + ADV) + (scopeModule ? ' \u00b7 MODULE ' + String(scopeModule).padStart(2, "0") : '') + '</div><button id="bossQuit" style="background:none;border:1px solid " + (MENTOR ? "#2f4658" : "#4a2630") + ";color:" + (MENTOR ? "#8fa6bb" : "#ff8f8f") + ";border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">' + (MENTOR ? 'leave' : 'retreat') + ' \u2715</button></div>'
         + '<div style="display:flex;gap:16px;align-items:center;margin-top:14px;flex-wrap:wrap;justify-content:center;">' + eyesSVG("min(38vw,220px)") + '</div>'
-        + '<div style="margin-top:10px;"><div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px;color:#ff8f8f;"><span>NEMESIS</span><span class="bPhase">PHASE 1</span></div><div style="height:14px;border:1px solid #ff2b2b;border-radius:999px;overflow:hidden;background:#1a0000;margin-top:4px;"><div class="bNem" style="height:100%;width:100%;background:linear-gradient(90deg,#ff2b2b,#ff7a5c);transition:width .4s;"></div></div></div>'
-        + '<div style="margin-top:10px;"><div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px;color:#7affb0;"><span>YOUR INTEGRITY</span><span class="bCombo"></span></div><div style="height:14px;border:1px solid #39ff88;border-radius:999px;overflow:hidden;background:#001a0d;margin-top:4px;"><div class="bHp" style="height:100%;width:100%;background:linear-gradient(90deg,#39ff88,#7affb0);transition:width .4s;"></div></div></div>'
+        + '<div style="margin-top:10px;"><div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px;color:" + (MENTOR ? "var(--adv2)" : "#ff8f8f") + ";"><span>' + (MENTOR ? ADV : 'NEMESIS') + '</span><span class="bPhase">PHASE 1</span></div><div style="height:14px;border:1px solid var(--adv);border-radius:999px;overflow:hidden;background:#1a0000;margin-top:4px;"><div class="bNem" style="height:100%;width:100%;background:linear-gradient(90deg,var(--adv),#ff7a5c);transition:width .4s;"></div></div></div>'
+        + '<div style="margin-top:10px;"><div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px;color:#7affb0;"><span>' + (MENTOR ? 'YOUR FOCUS' : 'YOUR INTEGRITY') + '</span><span class="bCombo"></span></div><div style="height:14px;border:1px solid #39ff88;border-radius:999px;overflow:hidden;background:#001a0d;margin-top:4px;"><div class="bHp" style="height:100%;width:100%;background:linear-gradient(90deg,#39ff88,#7affb0);transition:width .4s;"></div></div></div>'
         + '<div class="bClock" style="text-align:center;font-size:22px;font-weight:800;margin:14px 0 6px;color:#fff;"></div>'
         + '<div class="bQ" style="max-width:680px;width:100%;margin:0 auto;"></div>'
         + '<div class="bMsg" style="text-align:center;min-height:20px;margin-top:10px;font-size:13px;"></div>'
@@ -1439,8 +1720,8 @@
     function size() { cv.width = w.clientWidth; cv.height = w.clientHeight; }
     size();
     var fs = 16, cols = Math.floor(cv.width / fs), drops = []; for (var i = 0; i < cols; i++) drops[i] = Math.random() * -50;
-    boss.rain = setInterval(function () { cx.fillStyle = "rgba(5,0,0,.09)"; cx.fillRect(0, 0, cv.width, cv.height); cx.font = fs + "px monospace"; for (var i = 0; i < drops.length; i++) { var ch = String.fromCharCode(0x30 + Math.floor(Math.random() * 10)); cx.fillStyle = Math.random() < 0.03 ? "#ffdddd" : "#ff2b2b"; cx.fillText(ch, i * fs, drops[i] * fs); if (drops[i] * fs > cv.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; } }, 60);
-    nemesisSpeak("So you challenge me. Prove you belong here.");
+    boss.rain = setInterval(function () { cx.fillStyle = "rgba(5,0,0,.09)"; cx.fillRect(0, 0, cv.width, cv.height); cx.font = fs + "px monospace"; for (var i = 0; i < drops.length; i++) { var ch = String.fromCharCode(0x30 + Math.floor(Math.random() * 10)); cx.fillStyle = Math.random() < 0.03 ? "#ffdddd" : ADVC; cx.fillText(ch, i * fs, drops[i] * fs); if (drops[i] * fs > cv.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; } }, 60);
+    nemesisSpeak(MENTOR ? "Let's do this together. Take your time and trust yourself." : "So you challenge me. Prove you belong here.");
     bossNext();
   }
   function closeBoss() {
@@ -1474,7 +1755,7 @@
       qEl.innerHTML = head + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' + q.choices.map(function (c, i) { return '<button class="bChoice" data-i="' + i + '" style="text-align:left;padding:13px 15px;border-radius:10px;border:1px solid #4a2630;background:#160a0f;color:#ffd9e2;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">' + esc(c) + '</button>'; }).join("") + '</div>';
       qEl.querySelectorAll(".bChoice").forEach(function (b) { b.onclick = function () { bossAnswer(q.choices[+b.getAttribute("data-i")], b); }; });
     } else {
-      qEl.innerHTML = head + '<form class="bForm" style="display:flex;gap:10px;flex-wrap:wrap;"><input class="bInput" type="text" autocomplete="off" spellcheck="false" placeholder="type your answer\u2026" style="flex:1;min-width:200px;font-family:inherit;font-size:15px;padding:12px 14px;border-radius:10px;border:1px solid #4a2630;background:#160a0f;color:#fff;"><button type="submit" style="font-family:inherit;font-weight:700;padding:12px 20px;border-radius:10px;border:1px solid #ff2b2b;background:#ff2b2b;color:#050000;cursor:pointer;">STRIKE</button></form>';
+      qEl.innerHTML = head + '<form class="bForm" style="display:flex;gap:10px;flex-wrap:wrap;"><input class="bInput" type="text" autocomplete="off" spellcheck="false" placeholder="type your answer\u2026" style="flex:1;min-width:200px;font-family:inherit;font-size:15px;padding:12px 14px;border-radius:10px;border:1px solid #4a2630;background:#160a0f;color:#fff;"><button type="submit" style="font-family:inherit;font-weight:700;padding:12px 20px;border-radius:10px;border:1px solid var(--adv);background:var(--adv);color:#050000;cursor:pointer;">STRIKE</button></form>';
       var inp = qEl.querySelector(".bInput"); inp.focus();
       qEl.querySelector(".bForm").onsubmit = function (e) { e.preventDefault(); bossAnswer(inp.value, null); };
     }
@@ -1482,7 +1763,7 @@
     var secs = QSEC[boss.phase]; boss.tleft = secs;
     var clk = w.querySelector(".bClock"); clk.textContent = secs + "s";
     if (boss.timer) clearInterval(boss.timer);
-    boss.timer = setInterval(function () { boss.tleft--; if (clk) { clk.textContent = Math.max(0, boss.tleft) + "s"; clk.style.color = boss.tleft <= 5 ? "#ff2b2b" : "#fff"; } if (boss.tleft <= 0) { clearInterval(boss.timer); bossAnswer(null, null, true); } }, 1000);
+    boss.timer = setInterval(function () { boss.tleft--; if (clk) { clk.textContent = Math.max(0, boss.tleft) + "s"; clk.style.color = boss.tleft <= 5 ? "var(--adv)" : "#fff"; } if (boss.tleft <= 0) { clearInterval(boss.timer); bossAnswer(null, null, true); } }, 1000);
   }
   function bossCorrect(q, guess) {
     if (q.kind === "text") { var acc = acceptedAnswers(q.answer); return acc.indexOf(normAlpha(guess)) !== -1; }
@@ -1499,15 +1780,15 @@
       boss.nemHP -= dmg; boss.dmgDealt += dmg; boss.streak++; boss.correct++;
       boss.weak[q.topic] = Math.max(1, (boss.weak[q.topic] || 1) - 1);
       if (btn) { btn.style.borderColor = "#39ff88"; btn.style.background = "#08240f"; }
-      msg.style.color = "#7affb0"; msg.textContent = "\u2713 \u2212" + dmg + " NEMESIS HP" + (boss.streak >= 3 ? "  \u00b7 combo \u00d7" + bossComboMult().toFixed(1) : "");
-      nemesisSpeak(pick(["well done \u2014 you are pushing me back.", "sharp. i felt that one.", "impressive work, human.", "correct. you are better than i thought.", "strong move. keep it up."]));
+      msg.style.color = "#7affb0"; msg.textContent = MENTOR ? ("\u2713 nice! +" + dmg + (boss.streak >= 3 ? "  \u00b7 combo \u00d7" + bossComboMult().toFixed(1) : "")) : ("\u2713 \u2212" + dmg + " NEMESIS HP" + (boss.streak >= 3 ? "  \u00b7 combo \u00d7" + bossComboMult().toFixed(1) : ""));
+      nemesisSpeak(pick(MENTOR ? ["nice work \u2014 keep it going!", "yes! you've got this.", "great answer.", "correct \u2014 you're on a roll.", "perfect. keep it up."] : ["well done \u2014 you are pushing me back.", "sharp. i felt that one.", "impressive work, human.", "correct. you are better than i thought.", "strong move. keep it up."]));
       nemesisGlitch();
     } else {
       var hit = HIT[boss.phase]; boss.hp -= hit; boss.nemHP = Math.min(100, boss.nemHP + 5); boss.streak = 0;
       boss.weak[q.topic] = (boss.weak[q.topic] || 1) + 3;
       boss.reviewQ.push({ q: q, due: boss.round + 3 });
-      msg.style.color = "#ff8f8f"; msg.textContent = (timeout ? "\u23f1 too slow \u2014 " : "\u2717 wrong \u2014 ") + "answer: " + esc(dispTerm(String(q.answer))) + "  \u00b7 \u2212" + hit + " integrity";
-      nemesisSpeak(pick(["nice try \u2014 but i am gaining access.", "not quite, and i am slipping through.", "close \u2014 however that opening is mine now.", "good effort \u2014 i just gained ground.", "almost \u2014 study it, you will get the next one."]));
+      msg.style.color = "#ff8f8f"; msg.textContent = (timeout ? "\u23f1 too slow \u2014 " : "\u2717 ") + "answer: " + esc(dispTerm(String(q.answer))) + (MENTOR ? "  \u00b7 keep going" : "  \u00b7 \u2212" + hit + " integrity");
+      nemesisSpeak(pick(MENTOR ? ["not quite \u2014 you'll get the next one.", "good try. now you know it.", "close! keep going.", "no worries \u2014 that's how we learn.", "almost \u2014 study it and move on."] : ["nice try \u2014 but i am gaining access.", "not quite, and i am slipping through.", "close \u2014 however that opening is mine now.", "good effort \u2014 i just gained ground.", "almost \u2014 study it, you will get the next one."]));
       nemesisGlitch();
     }
     bossUpdateBars();
@@ -1527,14 +1808,14 @@
       + '<div style="text-align:center;font-size:min(8vw,44px);font-weight:800;color:' + color + ';text-shadow:0 0 20px ' + color + ';margin-top:10px;">' + title + '</div>'
       + '<div style="text-align:center;color:#ffd9e2;margin-top:10px;font-size:15px;">' + sub + '</div>'
       + '<div style="text-align:center;color:#ffb3c2;margin-top:14px;font-size:14px;">score <b style="color:#fff;font-size:20px;">' + score + '</b> \u00b7 dealt ' + boss.dmgDealt + ' \u00b7 ' + boss.correct + ' correct' + (record ? ' \u00b7 <span style="color:#39ff88;">NEW BEST</span>' : (' \u00b7 best ' + (state.boss[key] || 0))) + '</div>'
-      + '<div style="display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap;"><button id="bAgain" style="font-family:inherit;font-weight:800;padding:13px 24px;border-radius:10px;border:1px solid #ff2b2b;background:#ff2b2b;color:#050000;cursor:pointer;">' + again + '</button><button id="bDone" style="font-family:inherit;font-weight:700;padding:13px 24px;border-radius:10px;border:1px solid #4a2630;background:#160a0f;color:#ffd9e2;cursor:pointer;">exit</button></div>';
+      + '<div style="display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap;"><button id="bAgain" style="font-family:inherit;font-weight:800;padding:13px 24px;border-radius:10px;border:1px solid var(--adv);background:var(--adv);color:#050000;cursor:pointer;">' + again + '</button><button id="bDone" style="font-family:inherit;font-weight:700;padding:13px 24px;border-radius:10px;border:1px solid #4a2630;background:#160a0f;color:#ffd9e2;cursor:pointer;">exit</button></div>';
     w.querySelector(".bClock").textContent = ""; w.querySelector(".bMsg").textContent = "";
     var againScope = boss.scope;
     document.getElementById("bAgain").onclick = function () { closeBoss(); openBoss(againScope); };
     document.getElementById("bDone").onclick = closeBoss;
   }
-  function bossWin() { if (!boss) return; nemAgitated = false; nemesisMood("beaten"); nemesisSpeak("Impossible. You... you beat me. The system is yours."); bossEndCard("NEMESIS DEFEATED", "You reclaimed the terminal. Well played, human.", "#39ff88", "\u21bb duel again"); }
-  function bossLose() { if (!boss) return; nemAgitated = true; nemesisMood(); nemesisSpeak("Close match. This round is mine — but you are learning fast. Come back and finish me."); bossEndCard("YOU WERE DELETED", "NEMESIS holds the system. Study up and try again.", "#ff2b2b", "\u21bb rematch"); }
+  function bossWin() { if (!boss) return; try { state.bossWins = state.bossWins || {}; var _wk = (window.CTF_COURSE || "c") + (boss.scope ? ":" + boss.scope : ""); if (!state.bossWins[_wk]) { state.bossWins[_wk] = 1; save(state); } var _nb = checkBadgeUnlocks(); if (_nb.length) setTimeout(function(){ announceBadges(_nb); }, 1400); } catch (e) {} nemAgitated = false; nemesisMood("beaten"); nemesisSpeak(MENTOR ? "You did it! I knew you had this in you." : "Impossible. You... you beat me. The system is yours."); bossEndCard(MENTOR ? "GAUNTLET CLEARED!" : "NEMESIS DEFEATED", MENTOR ? "Outstanding work \u2014 you mastered this module." : "You reclaimed the terminal. Well played, human.", "#39ff88", MENTOR ? "\u21bb play again" : "\u21bb duel again"); }
+  function bossLose() { if (!boss) return; nemAgitated = false; nemesisMood(); nemesisSpeak(MENTOR ? "Good run! You're learning fast. Come back and give it another go." : "Close match. This round is mine \u2014 but you are learning fast. Come back and finish me."); bossEndCard(MENTOR ? "GOOD RUN!" : "YOU WERE DELETED", MENTOR ? "You're getting sharper every time. Try again when you're ready." : "NEMESIS holds the system. Study up and try again.", MENTOR ? "var(--adv2)" : "var(--adv)", MENTOR ? "\u21bb try again" : "\u21bb rematch"); }
   var bossMiniTimer = null;
   function bossMiniRainStart() {
     var canvases = Array.prototype.slice.call(document.querySelectorAll(".bossMiniRain")).filter(function (c) { return c.offsetParent !== null; });
@@ -1554,7 +1835,7 @@
         ctx.fillStyle = "rgba(11,1,2,.10)"; ctx.fillRect(0, 0, s.cv.width, s.cv.height);
         ctx.font = fs + "px monospace";
         for (var i = 0; i < s.drops.length; i++) {
-          ctx.fillStyle = Math.random() < 0.04 ? "#ffdddd" : "#ff2b2b";
+          ctx.fillStyle = Math.random() < 0.04 ? "#ffdddd" : ADVC;
           ctx.fillText(String.fromCharCode(0x30 + Math.floor(Math.random() * 10)), i * fs, s.drops[i] * fs);
           if (s.drops[i] * fs > s.cv.height && Math.random() > 0.97) s.drops[i] = 0;
           s.drops[i]++;
@@ -1565,12 +1846,15 @@
   function buildBossBtn() {
     if (document.getElementById("bossBtn")) return;
     var b = document.createElement("button"); b.id = "bossBtn"; b.className = "mono";
-    b.style.cssText = "position:fixed;bottom:16px;left:16px;z-index:11998;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:1px;padding:10px 16px;border-radius:999px;border:1px solid #ff2b2b;background:#160a0f;color:#ff5c7a;cursor:pointer;box-shadow:0 0 18px -5px #ff0033;";
-    b.innerHTML = '\u2694 BEAT NEMESIS';
+    b.style.cssText = "position:fixed;bottom:16px;left:16px;z-index:11998;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:1px;padding:10px 16px;border-radius:999px;border:1px solid var(--adv);background:" + (MENTOR ? "#0e1512" : "#160a0f") + ";color:var(--adv2);cursor:pointer;box-shadow:0 0 18px -5px var(--advglow);";
+    b.innerHTML = MENTOR ? (GLYPH + ' ' + ADV + "'S GAUNTLET") : '\u2694 BEAT NEMESIS';
     b.onclick = openBoss;
     document.body.appendChild(b);
   }
   function nemesisInit(){ injectGlitchStyle(); loadVoices(); try{ if(window.speechSynthesis) speechSynthesis.onvoiceschanged = loadVoices; }catch(e){} buildChip(); startDevtoolsWatch(); nemesisIntruder(); setTimeout(nemesisBoot, 1150); }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function(){ render(); nemesisInit(); });
-  else { render(); nemesisInit(); }
+  // Pages that only READ progress (the profile page) set CTF_NO_ADVERSARY so the
+  // arena's integrity deterrents and mentor takeover don't follow the student there.
+  const withAdversary = !window.CTF_NO_ADVERSARY;
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function(){ bootProgress(); if (withAdversary) nemesisInit(); });
+  else { bootProgress(); if (withAdversary) nemesisInit(); }
 })();

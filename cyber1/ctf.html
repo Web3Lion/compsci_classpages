@@ -63,8 +63,14 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div id="ctfRoot"></div>
 </div>
 <script src="../config.js"></script>
-<script>window.CTF_COURSE="cyber1";</script>
+<script src="vocab-data.js"></script>
+<script>window.CTF_COURSE="cyber1";window.CTF_VOCAB=(window.CY1_VOCAB||{}).terms||[];</script>
 <script src="../ctf.js"></script>
+<script src="../name-filter.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../auth.js"></script>
+<script src="../gate-art.js"></script>
+<script src="../sync.js"></script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 <style>@keyframes ctfShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}</style>
 </body>
