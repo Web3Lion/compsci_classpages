@@ -175,6 +175,8 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 </div>
 
 <script src="vocab-data.js"></script>
+<script>window.CTF_COURSE="cyber2";</script>
+<script src="../vocab-xp.js"></script>
 <script>
 /* ============================================================
    VOCABULARY DATA — edit here. m = module number (1-10).
@@ -190,6 +192,10 @@ let selected = new Set(Object.keys(MODULES).map(Number));
 let mode = "cards";
 const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
 const pool = () => VOCAB.filter(v => selected.has(v.m));
+/* modules a finished game drew its terms from — drives the practice-XP award */
+const modsOf = items => [...new Set((items||[]).map(v => v.m))];
+const xpBlock = (game, items, acc) =>
+  (window.VOCAB_XP ? window.VOCAB_XP.finishSession(game, modsOf(items), acc) : "");
 const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g,"");
 const gameAnswer = t => t.replace(/\(.*?\)/g,"").split("/")[0].trim();
 
@@ -406,11 +412,13 @@ function endRound(correct){
 function gameOver(){
   stopTimers();
   const max = gQueue.length*100;
+  const xpHtml = xpBlock("decrypt", gQueue, max ? gScore/max : 0);
   panel.querySelector(".card").innerHTML = `
     <div class="g-summary">
       <div class="mono" style="color:var(--accent);font-size:12px;letter-spacing:2px;">// SESSION COMPLETE</div>
       <div class="big mono">${gScore}</div>
       <div style="color:var(--dim);font-size:14px;margin-bottom:6px;">out of ${max} possible · best streak ${gBest}</div>
+      ${xpHtml}
       <div style="color:var(--muted);font-size:15px;margin-bottom:22px;">${gScore>=max*0.8?"Elite. You cracked the system.":gScore>=max*0.5?"Solid work, keep drilling.":"Run it again — repetition is the exploit."}</div>
       <button class="btn primary" onclick="renderDecrypt()">play again</button>
     </div>`;
@@ -436,11 +444,13 @@ function renderMatch(){
     </div>`;
   let sel=null, matched=0, moves=0, lock=false;
   function finish(){
+    const xpHtml = xpBlock("match", items, moves ? total/moves : 0);
     panel.querySelector(".card").innerHTML = `
       <div class="g-summary">
         <div class="mono" style="color:var(--accent);font-size:12px;letter-spacing:2px;">// ALL PAIRS LINKED</div>
         <div class="big mono">${moves}</div>
         <div style="color:var(--dim);font-size:14px;margin-bottom:6px;">attempts for ${total} pairs</div>
+        ${xpHtml}
         <div style="color:var(--muted);font-size:15px;margin-bottom:22px;">${moves===total?"Flawless handshake — zero errors!":moves<=Math.ceil(total*1.5)?"Sharp pairing.":"Good — run it again to sharpen up."}</div>
         <button class="btn primary" onclick="renderMatch()">shuffle &amp; replay</button>
       </div>`;
@@ -512,6 +522,7 @@ function showQuestion(){
 }
 function quizOver(){
   const pct = Math.round(qScore/qQueue.length*100);
+  const xpHtml = xpBlock("quiz", qQueue, qQueue.length ? qScore/qQueue.length : 0);
   const msg = qScore===qQueue.length?"Perfect run!":qScore>=qQueue.length*0.7?"Strong — review the misses.":"Hit the flashcards and run it back.";
   window.__lastQuiz = { score:qScore, total:qQueue.length, pct, msg };
   panel.querySelector(".card").innerHTML = `
@@ -520,6 +531,7 @@ function quizOver(){
       <div class="big mono">${qScore} / ${qQueue.length}</div>
       <div style="color:var(--muted);font-size:15px;margin:8px 0 6px;">${pct}% correct</div>
       <div style="color:var(--dim);font-size:14px;margin:0 0 20px;">${msg}</div>
+      ${xpHtml}
       <input id="shareName" placeholder="Your name (for the results card)" maxlength="40" style="width:100%;max-width:320px;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:15px;font-family:inherit;margin-bottom:14px;text-align:center;" />
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
         <button class="btn primary" onclick="shareQuiz()">save / share result</button>
@@ -583,6 +595,7 @@ function casIntroduce(n){
   }
   return added;
 }
+let casMisses=0;
 function casMastered(){ return casSet.filter(function(c){return c.mastered;}).length; }
 function casStats(){
   const total=casDeck.length, m=casMastered();
@@ -633,8 +646,9 @@ function renderCascade(){
     if(casFlip){ casReady=true; document.getElementById('casGot').disabled=false; document.getElementById('casMiss').disabled=false; }
   });
   document.getElementById('casGot').onclick=function(){ if(!casReady) return; casSet[casCur].mastered=true; casStats(); casAdvance(); };
-  document.getElementById('casMiss').onclick=function(){ if(!casReady) return; casReview.push(casCur); casAdvance(); };
+  document.getElementById('casMiss').onclick=function(){ if(!casReady) return; casMisses++; casReview.push(casCur); casAdvance(); };
   document.getElementById('casBack').onclick=function(){ mode='cards'; render(); };
+  casMisses=0;
   document.getElementById('casDirBtn').onclick=function(){ casDir = casDir==='term'?'def':'term'; document.getElementById('casDirBtn').innerHTML = casDir==='term'?'mode: TERM &#8594; definition':'mode: DEFINITION &#8594; term'; casShow(); };
   casStats();
   casAdvance();
@@ -680,11 +694,13 @@ function casAdvance(){
 }
 function casComplete(){
   const total=casDeck.length;
+  const xpHtml = xpBlock("cascade", casDeck, total ? total/(total+casMisses) : 0);
   panel.querySelector('.card').innerHTML=
     '<div class="g-summary">'+
       '<div class="mono" style="color:var(--accent);font-size:12px;letter-spacing:2px;">// CASCADE CLEARED</div>'+
       '<div class="big mono">'+total+'</div>'+
       '<div style="color:var(--dim);font-size:14px;margin-bottom:6px;">terms mastered across '+casWave+' wave'+(casWave>1?'s':'')+'</div>'+
+      xpHtml+
       '<div style="color:var(--muted);font-size:15px;margin-bottom:22px;">Full stack conquered. Run it again to lock it in.</div>'+
       '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">'+
         '<button class="btn primary" onclick="renderCascade()">restart cascade</button>'+
