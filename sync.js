@@ -22,7 +22,10 @@
   var course = API.course;
   var SESS_KEY = "ctf-sess-" + course;
 
-  var ART = window.CTF_GATE_ART || null;
+  var ART_ALL = window.CTF_GATE_ART || null;
+  // Theatre is only available once we KNOW the class has the guide switched on.
+  // Unknown (first visit, no cached gates) counts as off.
+  function art() { return window.CTF_PERSONA === true ? ART_ALL : null; }
   var attempts = 0;                                     // drives the guide's escalation
   var NAMES = window.CTF_NAME || {};
   function handleProblem(v) { return NAMES.problem ? NAMES.problem(v) : null; }
@@ -87,6 +90,42 @@
   }
   function scheduleSync() { clearTimeout(syncTimer); syncTimer = setTimeout(pushProgress, 1200); }
 
+  /* Gates: which modules/flags the teacher has opened, and whether the course
+     guide is awake. Cached per course so a returning student sees the right
+     arena instantly instead of a flash of everything-unlocked. */
+  var GKEY = "ctf-gates-" + course;
+  function applyGates(g) {
+    if (!g || g.error) return;
+    window.CTF_LOCKS = { modules: g.locked_modules || [], flags: g.locked_flags || [] };
+    window.CTF_PERSONA = !!g.persona_on;
+    try { localStorage.setItem("ctf-persona-" + course, g.persona_on ? "1" : "0"); } catch (e) {}
+    try { localStorage.setItem(GKEY, JSON.stringify(g)); } catch (e) {}
+  }
+  function applyCachedGates() {
+    try { applyGates(JSON.parse(localStorage.getItem(GKEY))); } catch (e) {}
+  }
+  function loadGates() {
+    var sess = loadSess(); if (!sess) return;
+    AUTH.rpc("ctf_gates", { p_class: sess.classId }).then(function (g) {
+      var before = JSON.stringify(window.CTF_LOCKS || {}) + String(window.CTF_PERSONA);
+      applyGates(g);
+      var after = JSON.stringify(window.CTF_LOCKS || {}) + String(window.CTF_PERSONA);
+      if (before !== after && API.rerender) API.rerender();
+    }).catch(function () {});
+  }
+
+  /* Records "this student opened the arena today" so the teacher's login report
+     shows real attendance even on a day where nothing was solved. Once a day is
+     enough — the local guard keeps it to one call per device per day. */
+  function touchDay() {
+    var sess = loadSess(); if (!sess) return;
+    var k = "ctf-day-" + course, today = new Date().toISOString().slice(0, 10);
+    try { if (localStorage.getItem(k) === today) return; } catch (e) {}
+    AUTH.rpc("ctf_touch_day", { p_student: sess.studentId })
+      .then(function () { try { localStorage.setItem(k, today); } catch (e) {} })
+      .catch(function () {});
+  }
+
   /* ---- engine hooks ------------------------------------------------------ */
   window.CTF_CHEAT = function (kind, detail) {
     var sess = loadSess(); if (!sess) return;
@@ -109,9 +148,8 @@
   function decorate() {
     var sess = loadSess(); if (!sess) return;
     try { localStorage.setItem(API.handleKey, sess.handle); } catch (e) {}
-    var input = document.getElementById("ctfHandle");
-    if (!input) return;
-    var row = input.closest("div"); if (!row || row.getAttribute("data-bound")) return;
+    var row = document.getElementById("ctfIdentity");
+    if (!row || row.getAttribute("data-bound")) return;
     row.setAttribute("data-bound", "1");
     row.style.cssText = "display:flex;align-items:center;gap:10px;flex-wrap:wrap;";
     row.innerHTML =
@@ -125,7 +163,7 @@
       if (!confirm("Sign out? Your progress is saved to your school account — sign back in on any device to pick up where you left off.")) return;
       clearSess();
       try { await AUTH.signOut(); } catch (e) {}
-      if (ART) ART.lockdown(course, function () { location.reload(); });
+      if (art()) art().lockdown(course, function () { location.reload(); });
       else location.reload();
     };
   }
@@ -140,10 +178,11 @@
         "display:flex;align-items:center;justify-content:center;padding:22px;overflow:auto;";
       document.body.appendChild(wrap);
     }
-    wrap.innerHTML = (ART ? ART.backdrop(course) : "") +
+    var A = art();
+    wrap.innerHTML = (A ? A.backdrop(course) : "") +
       '<div style="position:relative;width:min(430px,96vw);background:var(--panel,#0b1220);border:1px solid var(--border,#1e3350);' +
       'border-radius:16px;padding:28px;box-shadow:0 30px 80px -30px #000;">' + inner + '</div>';
-    if (ART) ART.mount(course);
+    if (A) A.mount(course);
     return wrap;
   }
   function head(title, sub) {
@@ -172,18 +211,18 @@
       '<path fill="#FBBC05" d="M11.8 28.4c-.4-1.3-.7-2.7-.7-4.4s.3-3.1.7-4.4v-5.7H4.5C2.9 17.1 2 20.4 2 24s.9 6.9 2.5 10.1l7.3-5.7z"/>' +
       '<path fill="#EA4335" d="M24 10.7c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.7 4.5 13.9l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>';
     shell(
-      (ART ? ART.statusStrip(course) : "") +
+      (art() ? art().statusStrip(course) : "") +
       head("Sign in to play", "Use your <b style=\"color:var(--text,#cfe0f3)\">@" + AUTH.domain + "</b> school Google account. This is the only page that needs a sign-in.") +
-      (ART ? ART.guideBox(course) : "") +
+      (art() ? art().guideBox(course) : "") +
       (msg ? '<div style="font-size:12px;color:var(--adv2,#ff6b6b);margin-bottom:12px;line-height:1.5;">' + msg + '</div>' : "") +
       '<button id="gGoogle" style="width:100%;padding:13px;border-radius:10px;border:1px solid var(--border3,#244a6d);' +
         'background:#fff;color:#1f2733;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">' +
-        g + (ART ? ART.buttonLabel(course) + ' with Google' : 'Sign in with Google') + '</button>' +
+        g + (art() ? art().buttonLabel(course) + ' with Google' : 'Sign in with Google') + '</button>' +
       '<div class="mono" style="font-size:10px;color:var(--faint,#5c6b7a);margin-top:14px;line-height:1.6;">' +
         'Your name stays private — you pick an anonymous handle after signing in. Signing in also carries your progress between devices.</div>'
     );
     // the guide speaks; escalates each time the student lands back here
-    if (ART) ART.typeLine(course, attempts++, msg ? ART.wrongDomainLine(course) : null);
+    if (art()) art().typeLine(course, attempts++, msg ? art().wrongDomainLine(course) : null);
     document.getElementById("gGoogle").onclick = function () {
       this.disabled = true; this.textContent = "Opening Google\u2026";
       AUTH.signIn().catch(function () { gateSignIn("Couldn't reach Google. Check your connection."); });
@@ -196,7 +235,7 @@
     var T = NAMES.terms ? NAMES.terms(course) : { term: "Handle", eg: "NightOwl" };
     shell(
       head("Join your class", "Signed in as <b style=\"color:var(--text,#cfe0f3)\">" + esc(AUTH.emailOf(u)) + "</b>. Enter the class code your teacher gave you.") +
-      (ART ? ART.guideBox(course) : "") +
+      (art() ? art().guideBox(course) : "") +
       field("Class code", '<input id="gCode" spellcheck="false" autocomplete="off" placeholder="e.g. CSP-P3-2K8R" style="' + inputCss() + 'text-transform:uppercase;letter-spacing:1px;">') +
       field(T.term, '<div style="display:flex;gap:8px;">' +
         '<input id="gHandle" spellcheck="false" autocomplete="off" maxlength="18" placeholder="e.g. ' + esc(T.eg) + '" style="' + inputCss() + 'margin-bottom:0;">' +
@@ -210,9 +249,9 @@
         msg = document.getElementById("gHandleMsg"), err = document.getElementById("gErr"),
         go = document.getElementById("gGo");
     handle.value = suggested;
-    if (ART) {
-      var tt = ART.theme(course);
-      ART.typeLine(course, 0, tt.kind === "adversary"
+    if (art()) {
+      var tt = art().theme(course);
+      art().typeLine(course, 0, tt.kind === "adversary"
         ? "Signed in. Now pick a name I can put on the board."
         : "You're in. Pick a name for the leaderboard and let's start.");
     }
@@ -256,27 +295,35 @@
 
   /* adopt a joined/resumed class: merge progress, cache session, drop the gate */
   function adopt(d, celebrate) {
+    // the join response is the first moment persona state is knowable
+    if (d && typeof d.persona_on === "boolean") {
+      applyGates({ locked_modules: d.locked_modules || [], locked_flags: d.locked_flags || [],
+                   persona_on: d.persona_on });
+    }
     var server = (d.progress && d.progress.state) || null;
     var merged = mergeState(localState(), server || {});
     writeLocalState(merged);
     saveSess({ studentId: d.student_id, classId: d.class_id, course: d.course,
                className: d.class_name, handle: d.handle });
     function reveal() {
-      if (ART) ART.unmount();
+      if (ART_ALL) ART_ALL.unmount();
       var g = document.getElementById("ctfGate"); if (g) g.remove();
       if (API.rerender) API.rerender();
       decorate();
       scheduleSync();
+      touchDay();
+      loadGates();
     }
     // only celebrate an interactive sign-in, never a silent background resume
-    if (celebrate && ART) ART.granted(course, reveal); else reveal();
+    if (celebrate && art()) art().granted(course, reveal); else reveal();
   }
 
   /* ---- boot -------------------------------------------------------------- */
   async function boot() {
+    applyCachedGates();          // last known persona state, so a returning student keeps their guide
     // Already bound on this device? Show the arena immediately, verify quietly.
     var sess = loadSess();
-    if (sess) { decorate(); scheduleSync(); }
+    if (sess) { decorate(); scheduleSync(); touchDay(); loadGates(); }
 
     var u;
     try { u = await AUTH.requireSchool(); }

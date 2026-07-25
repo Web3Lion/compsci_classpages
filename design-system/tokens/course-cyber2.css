@@ -1,0 +1,47 @@
+/* Cyber 2 — phosphor green */
+[data-course="cyber2"]{
+  --bg:#0a0e14;
+  --panel:#0d1410;
+  --panel2:#0d1a12;
+  --panel3:#0f2318;
+  --border:#1e3a2e;
+  --border2:#17281f;
+  --border3:#244d38;
+  --border-hi:#2f5d44;
+  --amber-bd:#4a3d1a;
+  --amber-bg:#1a150a;
+  --text:#cfe3d8;
+  --bright:#eafff2;
+  --muted:#a9c4b6;
+  --dim:#7fa896;
+  --faint:#5c7a6b;
+  --fainter:#3d5749;
+  --accent:#39ff88;
+  --accent2:#7dffb3;
+  --amber:#ffcf5c;
+  --via:rgba(57,255,136,.10);
+  --trace:rgba(57,255,136,.035);
+}
+[data-course="cyber2"][data-theme="light"]{
+  --bg:#e9efe9;
+  --panel:#ffffff;
+  --panel2:#f2f7f2;
+  --panel3:#e8f6ee;
+  --border:#cdddd2;
+  --border2:#dde8e0;
+  --border3:#b6d4c1;
+  --border-hi:#8fbfa2;
+  --amber-bd:#e4cf95;
+  --amber-bg:#fbf4dd;
+  --text:#2b3a31;
+  --bright:#0e1a13;
+  --muted:#48594f;
+  --dim:#5f7568;
+  --faint:#839a8c;
+  --fainter:#a6b8ac;
+  --accent:#0f9d58;
+  --accent2:#0b7e45;
+  --amber:#9a7d16;
+  --via:rgba(15,157,88,.16);
+  --trace:rgba(15,157,88,.05);
+}

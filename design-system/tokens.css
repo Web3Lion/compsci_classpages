@@ -1,0 +1,131 @@
+/* ============================================================================
+   CTF PLATFORM — DESIGN TOKENS
+   Extracted from the live course pages. Single source of truth.
+
+   HOW IT WORKS
+   Every page sets a course theme on <html>:
+       <html data-course="cyber1">        (cyber1 | cyber2 | apcsp | web3)
+   and a light/dark mode:
+       <html data-theme="light">          (omit for dark, which is default)
+
+   All four courses share the SAME token names, so one component stylesheet
+   works everywhere — only the values swap. Never hardcode a hex in a page;
+   always reference var(--token).
+   ========================================================================= */
+
+/* ---------------------------------------------------------------------------
+   1. DARK THEME (default) — per course
+   ------------------------------------------------------------------------ */
+
+/* CYBER 1 — "cold blue terminal". Intrusion/recon mood, NEMESIS. */
+:root,
+:root[data-course="cyber1"]{
+  --bg:#0a0e14; --panel:#0b1220; --panel2:#0c1626; --panel3:#0e2136;
+  --border:#1e3350; --border2:#172436; --border3:#244a6d; --border-hi:#2f5580;
+  --amber-bd:#4a3d1a; --amber-bg:#1a150a;
+  --text:#cfe0f3; --bright:#eaf4ff; --muted:#a9bfd6; --dim:#7f9cb8;
+  --faint:#5c7592; --fainter:#3d5069;
+  --accent:#00b3ff; --accent2:#7dd8ff; --amber:#ffcf5c;
+  --via:rgba(0,179,255,.10); --trace:rgba(0,179,255,.035);
+}
+
+/* CYBER 2 — "green phosphor". Defense/hardening mood, SPECTER. */
+:root[data-course="cyber2"]{
+  --bg:#0a0e14; --panel:#0d1410; --panel2:#0d1a12; --panel3:#0f2318;
+  --border:#1e3a2e; --border2:#17281f; --border3:#244d38; --border-hi:#2f5d44;
+  --amber-bd:#4a3d1a; --amber-bg:#1a150a;
+  --text:#cfe3d8; --bright:#eafff2; --muted:#a9c4b6; --dim:#7fa896;
+  --faint:#5c7a6b; --fainter:#3d5749;
+  --accent:#39ff88; --accent2:#7dffb3; --amber:#ffcf5c;
+  --via:rgba(57,255,136,.10); --trace:rgba(57,255,136,.035);
+}
+
+/* AP CSP / BYTE BOUNTY — "violet compiler". Friendly mentor ADA. */
+:root[data-course="apcsp"]{
+  --bg:#0c0a14; --panel:#15111d; --panel2:#1a1524; --panel3:#20182e;
+  --border:#332845; --border2:#241d33; --border3:#48395f; --border-hi:#6a5788;
+  --amber-bd:#5a3d6a; --amber-bg:#1e0f28;
+  --text:#d8d2e6; --bright:#f5f2ff; --muted:#aca2c4; --dim:#867ba0;
+  --faint:#5d5279; --fainter:#3f374f;
+  --accent:#a855f7; --accent2:#c98bff; --amber:#a855f7;
+  --via:rgba(168,85,247,.10); --trace:rgba(168,85,247,.035);
+}
+
+/* WEB 3.0 / PROOF OF WORK — "bitcoin amber". Friendly mentor ORACLE. */
+:root[data-course="web3"]{
+  --bg:#100e0b; --panel:#191510; --panel2:#1f1a13; --panel3:#26201a;
+  --border:#3a3124; --border2:#2a231b; --border3:#4d3f2e; --border-hi:#6f5c42;
+  --amber-bd:#6a4d20; --amber-bg:#241a0c;
+  --text:#e6ddd0; --bright:#fff8ee; --muted:#c1b4a1; --dim:#93846f;
+  --faint:#655849; --fainter:#40382d;
+  --accent:#f7931a; --accent2:#ffb454; --amber:#f7931a;
+  --via:rgba(247,147,26,.10); --trace:rgba(247,147,26,.035);
+}
+
+/* ---------------------------------------------------------------------------
+   2. LIGHT THEME — per course. Same names, inverted values.
+   Accents DARKEN in light mode so they stay legible on white panels.
+   ------------------------------------------------------------------------ */
+
+:root[data-theme="light"],
+:root[data-theme="light"][data-course="cyber1"]{
+  --bg:#e9eef5; --panel:#ffffff; --panel2:#f2f6fb; --panel3:#e8f1fb;
+  --border:#cdd8e5; --border2:#dde5ef; --border3:#b6c8dc; --border-hi:#8fabc7;
+  --amber-bd:#e4cf95; --amber-bg:#fbf4dd;
+  --text:#26313f; --bright:#0e1622; --muted:#48566a; --dim:#5f7186;
+  --faint:#8394a8; --fainter:#a6b3c2;
+  --accent:#0a74d6; --accent2:#075aa8; --amber:#9a7d16;
+  --via:rgba(10,116,214,.16); --trace:rgba(10,116,214,.05);
+}
+:root[data-theme="light"][data-course="cyber2"]{
+  --bg:#e9efe9; --panel:#ffffff; --panel2:#f2f7f2; --panel3:#e8f6ee;
+  --border:#cdddd2; --border2:#dde8e0; --border3:#b6d4c1; --border-hi:#8fbfa2;
+  --amber-bd:#e4cf95; --amber-bg:#fbf4dd;
+  --text:#2b3a31; --bright:#0e1a13; --muted:#48594f; --dim:#5f7568;
+  --faint:#839a8c; --fainter:#a6b8ac;
+  --accent:#0f9d58; --accent2:#0b7e45; --amber:#9a7d16;
+  --via:rgba(15,157,88,.16); --trace:rgba(15,157,88,.05);
+}
+:root[data-theme="light"][data-course="apcsp"]{
+  --bg:#f1eef7; --panel:#ffffff; --panel2:#f6f3fb; --panel3:#f1ecf8;
+  --border:#d7cfe4; --border2:#e4ddf0; --border3:#b8accf; --border-hi:#897ba8;
+  --amber-bd:#c9a9dc; --amber-bg:#f3e6fb;
+  --text:#2c2740; --bright:#140e26; --muted:#524a6a; --dim:#6f668c;
+  --faint:#8d83a6; --fainter:#aaa3c0;
+  --accent:#8b2fd6; --accent2:#6f1fb0; --amber:#8b2fd6;
+  --via:rgba(139,47,214,.16); --trace:rgba(139,47,214,.05);
+}
+:root[data-theme="light"][data-course="web3"]{
+  --bg:#f5f1ea; --panel:#ffffff; --panel2:#faf6f0; --panel3:#f5efe6;
+  --border:#e2d8ca; --border2:#ece4d8; --border3:#c6b8a3; --border-hi:#8f7d64;
+  --amber-bd:#d3ba7a; --amber-bg:#f8f0d6;
+  --text:#2f2a22; --bright:#1a140c; --muted:#5c5244; --dim:#7a6e5b;
+  --faint:#9a8c77; --fainter:#bcb09b;
+  --accent:#c56b0c; --accent2:#9a5408; --amber:#b0710f;
+  --via:rgba(197,107,12,.16); --trace:rgba(197,107,12,.05);
+}
+
+/* ---------------------------------------------------------------------------
+   3. SEMANTIC / STATUS — constant across courses.
+   Difficulty tiers double as the status palette.
+   ------------------------------------------------------------------------ */
+:root{
+  --ok:#3ecf8e;      /* Easy · solved · clean */
+  --warn:#ffb454;    /* Medium · retries · paste event */
+  --bad:#ff6b6b;     /* Hard · tainted · integrity flag */
+  --xp:var(--accent);
+  --streak:#ffb454;
+
+  /* Type */
+  --font-ui:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+
+  /* Radius */
+  --r-sm:7px; --r-md:10px; --r-lg:14px; --r-pill:999px;
+
+  /* Spacing step = 4px. Common: 6 8 10 14 18 22 28 */
+  --sp-1:4px; --sp-2:8px; --sp-3:14px; --sp-4:18px; --sp-5:22px; --sp-6:28px;
+
+  /* Motion */
+  --t-fast:.15s ease; --t-base:.25s ease;
+}

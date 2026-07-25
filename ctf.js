@@ -47,6 +47,27 @@
      character only ever encourages; focus loss becomes a neutral "connection lost"
      screen with NO penalty; copy is disabled with a neutral system message. */
   const MENTOR = !!(ctf.mentor || ctf.tone === "mentor");
+  /* PERSONA — the course guide starts ASLEEP. A class begins as a plain, quiet
+     arena; the teacher flips persona_on and the character ARRIVES on the next
+     load (sync.js sets window.CTF_PERSONA from the class gates). Local-only
+     mode reads a device flag so the arena can still be demoed. */
+  function personaOn() {
+    if (typeof window.CTF_PERSONA === "boolean") return window.CTF_PERSONA;
+    try { return localStorage.getItem("ctf-persona-" + course) === "1"; } catch (e) { return false; }
+  }
+  const PKEY = "ctf-persona-seen-" + course;
+
+  /* LOCKS — modules and individual flags the teacher hasn't opened yet. A
+     locked flag is still listed: title in the clear, prompt enciphered. */
+  function locks() {
+    var L = window.CTF_LOCKS || {};
+    return { mods: (L.modules || []).map(Number), flags: L.flags || [] };
+  }
+  function isLocked(c) {
+    var L = locks();
+    if (L.flags.indexOf(c.id) !== -1) return true;
+    return L.mods.indexOf(Number(c.module || 0)) !== -1;
+  }
   const GLYPH = MENTOR ? "\u25c6" : "\u2620";
   const KEY = "ctf-" + course;
   const NKEY = "ctf-handle";
@@ -224,6 +245,7 @@
   window.CTF.stateKey = KEY;
   window.CTF.handleKey = NKEY;
   window.CTF.getState = function () { return state; };
+  window.CTF.vocabXp = function () { try { return vocabXpTotal(); } catch (e) { return 0; } };
   window.CTF.stats = function () { try { return stats(); } catch (e) { return null; } };
   window.CTF.reloadState = function () { state = load(); };
   window.CTF.rerender = function () { try { state = load(); render(); } catch (e) {} };
@@ -239,13 +261,47 @@
 
   function flagsOf(c) {
     if (c.type === "vocab") return [0, 1, 2].map(i => ({ key: c.id + "#" + i, points: VOCAB_PTS[i] }));
+    if (isLocked(c)) return [];   // locked work isn't part of the denominator yet
     return (c.levels && c.type !== "phish") ? c.levels.map((lv, i) => ({ key: c.id + "#" + i, points: lv.points || 0 })) : [{ key: c.id, points: c.points || 0 }];
+  }
+  // XP earned in the vocabulary practice games (vocab-xp.js writes these into
+  // the same state blob, capped per module per game so practice can't out-earn
+  // the flags). Real XP: it counts toward rank exactly like a capture does.
+  function vocabXpTotal() {
+    const v = state.vocabXp || {};
+    return Object.keys(v).reduce((a, k) => a + (v[k] || 0), 0);
+  }
+  /* ---- REVIEW QUEUE ------------------------------------------------------
+     Anything a student got wrong and never came back to. Retries and taints
+     are already recorded per flag, so the queue is derived — no new state to
+     keep in sync. Clearing a queued flag pays a small bounty on top of the
+     normal award, which is what makes coming back worth it. */
+  const REVIEW_BOUNTY = 10;
+  function reviewItems() {
+    const out = [];
+    (ctf.challenges || []).forEach(c => {
+      flagsOf(c).forEach((f, i) => {
+        if (state.solved[f.key]) return;
+        const tries = state.retry[f.key] || 0;
+        if (!tries) return;
+        out.push({ chal: c, key: f.key, li: i, tries: tries, points: f.points, module: c.module || 0, title: c.title });
+      });
+    });
+    return out.sort((a, b) => b.tries - a.tries);
+  }
+  function reviewCleared(key) { return !!(state.reviewPaid || {})[key]; }
+  function payReviewBounty(key) {
+    if (reviewCleared(key)) return 0;
+    state.reviewPaid = state.reviewPaid || {};
+    state.reviewPaid[key] = true;
+    state.bonus = (state.bonus || 0) + REVIEW_BOUNTY;
+    return REVIEW_BOUNTY;
   }
   function stats() {
     const flags = (ctf.challenges || []).flatMap(flagsOf);
     const total = flags.reduce((a, f) => a + f.points, 0);
     const solvedCount = flags.filter(f => !!state.solved[f.key]).length;
-    const pts = (state.points || 0) + (state.bonus || 0);
+    const pts = (state.points || 0) + (state.bonus || 0) + vocabXpTotal();
     return { total, solvedCount, pts, count: flags.length, rank: rankFor(pts, total), next: nextRank(pts, total) };
   }
 
@@ -268,11 +324,29 @@
 
   function tMult(sec) { if (sec <= FULL_SECS) return 1; if (sec >= MAX_SECS) return FLOOR; return 1 - (1 - FLOOR) * (sec - FULL_SECS) / (MAX_SECS - FULL_SECS); }
   function capFor(key) { return Math.pow(RETRY_FACTOR, state.retry[key] || 0); }
+
+  /* ---- HINT ECONOMY ------------------------------------------------------
+     Revealing a hint permanently costs HINT_COST of that flag's value. It is
+     a choice, not a punishment: the card shows the exact cost before you
+     commit, the reveal is confirmed, and it stacks with the time and retry
+     multipliers rather than replacing them. Looking things up elsewhere is
+     still free — this only prices the answer we hand over. */
+  const HINT_COST = 0.25;
+  function hintUsed(key) { return !!(state.hints || {})[key]; }
+  function hintMult(key) { return hintUsed(key) ? (1 - HINT_COST) : 1; }
+  function buyHint(key) {
+    state.hints = state.hints || {};
+    if (state.hints[key]) return true;
+    state.hints[key] = Date.now();
+    save(state);
+    updateTimers();
+    return true;
+  }
   function keyOf(chal, li) { li = li || 0; const uses = chal.type === "vocab" || !!(chal.levels && chal.type !== "phish"); return uses ? chal.id + "#" + li : chal.id; }
   function startTimer(key) { if (key && !timers[key]) timers[key] = Date.now(); updateTimers(); }
   function award(chal, li, key, base) {
     const sec = timers[key] ? (Date.now() - timers[key]) / 1000 : 0;
-    const earned = Math.max(1, Math.round(base * tMult(sec) * capFor(key)));
+    const earned = Math.max(1, Math.round(base * tMult(sec) * capFor(key) * hintMult(key)));
     onSolve(chal, li, key, earned);
   }
   function solveTimed(chal, li) {
@@ -296,12 +370,13 @@
       if (el.offsetParent === null) return;
       const key = el.getAttribute("data-key"), base = +el.getAttribute("data-base");
       const cap = capFor(key), rtxt = (state.retry[key] || 0) ? ` \u00b7 retry cap \u2212${Math.round((1 - cap) * 100)}%` : "";
-      if (!timers[key]) { el.innerHTML = `\u23f1 timer starts when you begin \u00b7 up to <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap))} XP</span>${rtxt}`; return; }
+      const hm = hintMult(key), htxt = hintUsed(key) ? ` \u00b7 hint \u2212${Math.round(HINT_COST * 100)}%` : "";
+      if (!timers[key]) { el.innerHTML = `\u23f1 timer starts when you begin \u00b7 up to <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span>${rtxt}${htxt}`; return; }
       const sec = (Date.now() - timers[key]) / 1000;
-      const earn = Math.max(1, Math.round(base * tMult(sec) * cap));
+      const earn = Math.max(1, Math.round(base * tMult(sec) * cap * hm));
       const left = Math.max(0, MAX_SECS - sec), mm = Math.floor(left / 60), ss = Math.floor(left % 60);
       const col = left > 60 ? "var(--accent)" : (left > 0 ? "var(--amber)" : "var(--faint)");
-      el.innerHTML = `\u23f1 <span style="color:${col};font-weight:700;">${mm}:${String(ss).padStart(2, "0")}</span> left \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now${rtxt}`;
+      el.innerHTML = `\u23f1 <span style="color:${col};font-weight:700;">${mm}:${String(ss).padStart(2, "0")}</span> left \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now${rtxt}${htxt}`;
     });
   }
   function startTicks() { if (tickTimer) clearInterval(tickTimer); tickTimer = setInterval(updateTimers, 250); updateTimers(); }
@@ -350,6 +425,7 @@
   }
   function nemesisTakeover(){
     if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("focus", "left the arena (tab/window blur)"); } catch (e) {} }
+    if (!personaOn()) return;   // guide asleep: log it, but no theatre
     if (MENTOR) { connectionLost(); return; }
     if (document.getElementById("nemTakeover")) return;
     injectGlitchStyle();
@@ -436,13 +512,13 @@
     document.head.appendChild(st);
   }
   function nemesisGlitch(){
-    if (MENTOR) return;
+    if (MENTOR || !personaOn()) return;
     var g = document.getElementById("nemGlitch");
     if(!g){ g = document.createElement("div"); g.id = "nemGlitch"; g.style.cssText = "position:fixed;inset:0;z-index:11999;pointer-events:none;mix-blend-mode:screen;opacity:0;background:repeating-linear-gradient(0deg,rgba(255,0,80,.10) 0,rgba(255,0,80,.10) 1px,transparent 1px,transparent 3px);"; document.body.appendChild(g); }
     g.style.animation = "none"; void g.offsetWidth; g.style.animation = "nemGlitchAnim .55s steps(2,end) 1";
   }
   function nemesisIntruder(){
-    if (MENTOR) return;
+    if (MENTOR || !personaOn()) return;
     injectGlitchStyle();
     var o = document.createElement("div"); o.id = "nemAlert";
     o.style.cssText = "position:fixed;inset:0;z-index:12500;pointer-events:none;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,0,60,.12),rgba(255,0,60,.30));opacity:0;animation:nemAlertBg .9s ease-out 1;";
@@ -453,6 +529,7 @@
     setTimeout(function(){ o.remove(); }, 950);
   }
   function nemesisToast(title, body, color){
+    if (!personaOn()) return;
     color = color || "var(--adv2)"; title = advize(title).replace(/\u2620/g, GLYPH); body = advize(body);
     var d = document.createElement("div"); d.className = "mono";
     d.innerHTML = '<div style="font-size:15px;font-weight:800;letter-spacing:1px;">' + title + '</div>' + (body ? '<div style="font-size:12px;font-weight:400;margin-top:4px;opacity:.92;">' + body + '</div>' : '');
@@ -519,7 +596,7 @@
     nemesisMood();
   }
   function startDevtoolsWatch(){
-    if (MENTOR) return;
+    if (MENTOR || !personaOn()) return;
     var open = false;
     setInterval(function(){
       var w = (window.outerWidth - window.innerWidth) > 170, h = (window.outerHeight - window.innerHeight) > 170;
@@ -530,6 +607,10 @@
   }
   function nemesisBoot(){
     if(nemBooted) return; nemBooted = true;
+    if(!personaOn()) return;
+    var firstMeeting = false;
+    try { firstMeeting = localStorage.getItem(PKEY) !== "1"; localStorage.setItem(PKEY, "1"); } catch(e){}
+    if (firstMeeting) { personaArrival(); return; }
     if (MENTOR) {
       nemesisToast(GLYPH + " " + ADV + " // ONLINE", "hi, i'm " + ADV + " \u2014 your guide. solve challenges, earn points, and i'll be right here cheering you on.", "var(--adv2)");
       nemesisSpeak(ADV + " online. I'm your guide. Solve challenges, earn points, and I'll be right here to cheer you on.");
@@ -539,6 +620,52 @@
     nemesisGlitch();
     nemesisSpeak("Nemesis online. I am the adversary on this system. Every flag you chase, I am watching.");
   }
+  /* THE ARRIVAL — the first load after the teacher wakes the guide. The arena
+     was quiet until now, so the character gets one real entrance instead of a
+     toast the student scrolls past. */
+  function personaArrival(){
+    injectGlitchStyle();
+    if (document.getElementById("nemArrive")) return;
+    var o = document.createElement("div"); o.id = "nemArrive"; o.className = "mono";
+    var bg = MENTOR ? "#080f0c" : "#0c0508";
+    var lines = MENTOR
+      ? ["> initializing helper…", "> loading course guide", "> " + ADV + " connected"]
+      : ["> unauthorized process detected", "> tracing origin…", "> " + ADV + " has taken this terminal"];
+    var title = MENTOR ? ADV + " IS ONLINE" : ADV + " IS HERE";
+    var sub = MENTOR
+      ? "Your guide just came online. I'll be right here from now on — cheering, hinting, and keeping score."
+      : "Something woke up inside this system. From now on, every flag you chase, I am watching.";
+    o.style.cssText = "position:fixed;inset:0;z-index:12500;background:" + bg +
+      ";display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .4s ease;";
+    o.innerHTML = '<div style="width:min(560px,94vw);text-align:center;color:var(--adv2);">' +
+      '<div style="font-size:13px;text-align:left;line-height:2;color:var(--adv2);opacity:.85;margin-bottom:26px;" id="nemArriveLog"></div>' +
+      '<div style="font-size:60px;line-height:1;margin-bottom:16px;">' + GLYPH + '</div>' +
+      '<div id="nemArriveTitle" style="font-size:clamp(22px,5vw,36px);font-weight:800;letter-spacing:4px;color:var(--adv);opacity:0;transition:opacity .5s ease;">' + esc(title) + '</div>' +
+      '<div id="nemArriveSub" style="margin-top:14px;font-size:13px;line-height:1.65;color:var(--dim);opacity:0;transition:opacity .5s .2s ease;font-family:Inter,sans-serif;">' + esc(sub) + '</div>' +
+      '<button id="nemArriveGo" style="margin-top:28px;opacity:0;transition:opacity .5s .4s ease;font-family:inherit;font-weight:800;letter-spacing:1px;font-size:13px;padding:13px 26px;border-radius:10px;border:1px solid var(--adv);background:transparent;color:var(--adv);cursor:pointer;">' +
+        (MENTOR ? "LET'S GO" : "I'M NOT AFRAID") + '</button>' +
+    '</div>';
+    document.body.appendChild(o);
+    requestAnimationFrame(function(){ o.style.opacity = "1"; });
+    var log = document.getElementById("nemArriveLog"), i = 0;
+    (function step(){
+      if (i >= lines.length) {
+        ["nemArriveTitle","nemArriveSub","nemArriveGo"].forEach(function(id){
+          var e = document.getElementById(id); if (e) e.style.opacity = "1";
+        });
+        if (!MENTOR) nemesisGlitch();
+        return;
+      }
+      log.innerHTML += esc(lines[i++]) + "<br>";
+      setTimeout(step, 620);
+    })();
+    var go = document.getElementById("nemArriveGo");
+    if (go) go.onclick = function(){
+      o.style.opacity = "0";
+      setTimeout(function(){ o.remove(); nemesisChip(); updateMood(); }, 420);
+    };
+  }
+
   var NEM_SAMPLES = MENTOR
     ? ["you're doing great.","nice work \u2014 keep it up.","i believe in you.","every capture makes you sharper.","you've got this.","one step at a time."]
     : ["i see every keystroke you make.","you cannot copy your way past me.","impressive, for a human.","this terminal belongs to me.","the flags will not crack themselves.","nice try. i am always one step ahead."];
@@ -756,8 +883,9 @@
     }
 
     const cards = buildList(chals);
-    root.innerHTML = banner() + statsCard(s, pct) + badgesCard() +
+    root.innerHTML = banner() + statsCard(s, pct) + badgesCard() + reviewCard() +
       `<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px;">${cards}</div>` +
+      endgameCard() +
       `<div class="mono" style="margin-top:26px;font-size:11px;color:var(--faint);line-height:1.6;">
          // flags are checked on your device \u00b7 progress saves automatically \u00b7
          <span id="ctfReset" style="color:var(--accent);cursor:pointer;">reset my progress</span>
@@ -816,6 +944,110 @@
       else window.prompt("Copy your progress:", txt);
     } catch (e) { window.prompt("Copy your progress:", txt); }
   }
+  /* Collapsed by default so it never nags; the count is the hook. */
+  let reviewOpen = false;
+  function reviewCard() {
+    const items = reviewItems();
+    if (!items.length) return "";
+    const rows = items.slice(0, 12).map(it => {
+      const paid = reviewCleared(it.key);
+      return `<button type="button" class="revJump mono" data-id="${esc(it.chal.id)}" data-mod="${it.module}"
+        style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:9px;
+               border:1px solid var(--border2);background:var(--bg);color:var(--text);cursor:pointer;font-size:12px;">
+        <span style="font-size:11px;color:var(--faint);width:34px;">M${String(it.module).padStart(2, "0")}</span>
+        <span style="flex:1;min-width:0;color:var(--bright);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(it.title)}</span>
+        <span style="color:var(--adv2);font-size:11px;">${it.tries} miss${it.tries === 1 ? "" : "es"}</span>
+        <span style="color:var(--amber);font-size:11px;">+${REVIEW_BOUNTY} bounty</span>
+      </button>`;
+    }).join("");
+    return `
+      <div class="card" style="margin-top:20px;border-color:var(--amber-bd);">
+        <button type="button" id="revToggle" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:0;cursor:pointer;text-align:left;">
+          <span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--amber);">TRY AGAIN QUEUE</span>
+          <span class="mono" style="font-size:11px;color:var(--dim);">${items.length} flag${items.length === 1 ? "" : "s"} you missed \u00b7 +${REVIEW_BOUNTY} XP bounty each</span>
+          <span class="mono" style="margin-left:auto;color:var(--dim);font-size:12px;">${reviewOpen ? "\u2212" : "+"}</span>
+        </button>
+        <div style="display:${reviewOpen ? "block" : "none"};margin-top:12px;">
+          <div style="font-size:12px;color:var(--dim);line-height:1.55;margin-bottom:12px;">
+            Every flag here is one you attempted and didn't get. Clear it and you earn the flag's XP <em>plus</em> a ${REVIEW_BOUNTY} XP comeback bounty.</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">${rows}</div>
+          ${items.length > 12 ? `<div class="mono" style="margin-top:10px;font-size:11px;color:var(--faint);">+${items.length - 12} more below</div>` : ""}
+        </div>
+      </div>`;
+  }
+
+  /* ============ ENDGAME ============
+     Every module boss beaten and 80% of flags captured opens a final gauntlet
+     drawing from the whole course. It's the summit the modules were climbing. */
+  const ENDGAME_PCT = 0.8;
+  const ENDGAME_TEXT = {
+    cyber1: { lockedTitle: "NEMESIS is still holding the core.",
+      readyTitle: "NEMESIS wants a rematch \u2014 all of it, at once.",
+      readyBody: "Twelve questions pulled from every module you've cleared. No hints, no retries, one run. Beat it and the system is yours.",
+      startBtn: "FACE NEMESIS", wonTitle: "The core is yours.",
+      wonBody: "You took the whole system apart, module by module, and NEMESIS ran out of doors to lock. Course complete." },
+    cyber2: { lockedTitle: "SPECTER is still in the wire.",
+      readyTitle: "SPECTER steps out of the shadows.",
+      readyBody: "Twelve questions drawn from the entire course. One run, no hints. Finish it and the ghost has nowhere left to hide.",
+      startBtn: "HUNT SPECTER", wonTitle: "Signal traced. Ghost gone.",
+      wonBody: "You followed SPECTER through every module and closed the loop. Course complete." },
+    apcsp: { lockedTitle: "The final build isn't ready yet.",
+      readyTitle: "Time to ship the whole thing.",
+      readyBody: "Twelve questions from across the course \u2014 one run, no hints. ADA is watching the build log and rooting for you.",
+      startBtn: "RUN FINAL BUILD", wonTitle: "Build succeeded. All tests green.",
+      wonBody: "Every module compiled, every concept in place. ADA says you're a programmer now. Course complete." },
+    web3: { lockedTitle: "The chain isn't long enough yet.",
+      readyTitle: "One last block to sign.",
+      readyBody: "Twelve questions from the entire ledger \u2014 one run, no hints. Sign it and ORACLE writes you into the genesis record.",
+      startBtn: "MINE FINAL BLOCK", wonTitle: "Final block confirmed.",
+      wonBody: "Your whole chain validates, end to end. ORACLE has added you to the record. Course complete." }
+  };
+  const ENDGAME_COPY = ENDGAME_TEXT[course] || ENDGAME_TEXT.cyber1;
+  function endgameState() {
+    const chals = (ctf.challenges || []);
+    const mods = [...new Set(chals.map(c => c.module || 0))];
+    const bossWins = Object.keys(state.bossWins || {}).length;
+    const s = stats();
+    const pct = s.count ? s.solvedCount / s.count : 0;
+    const need = { bosses: mods.length, pct: ENDGAME_PCT };
+    const have = { bosses: bossWins, pct: pct };
+    return { unlocked: bossWins >= mods.length && pct >= ENDGAME_PCT, need, have,
+             done: !!state.endgameWon, mods: mods.length };
+  }
+  function endgameCard() {
+    const e = endgameState();
+    const title = MENTOR ? "FINAL BUILD" : "FINAL GAUNTLET";
+    const pctTxt = Math.round(e.have.pct * 100) + "%";
+    const needTxt = Math.round(ENDGAME_PCT * 100) + "%";
+    if (e.done) {
+      return `<div class="card" style="margin-top:20px;border-color:var(--accent);background:linear-gradient(150deg,var(--accent-bg,rgba(46,230,166,.06)),transparent 70%);">
+        <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--accent);">${title} \u00b7 CLEARED</div>
+        <div style="font-size:20px;font-weight:800;color:var(--bright);margin:8px 0 6px;">${esc(ENDGAME_COPY.wonTitle)}</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;">${esc(ENDGAME_COPY.wonBody)}</div>
+      </div>`;
+    }
+    if (!e.unlocked) {
+      return `<div class="card" style="margin-top:20px;border-style:dashed;">
+        <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--faint);">${title} \u00b7 LOCKED</div>
+        <div style="font-size:18px;font-weight:700;color:var(--dim);margin:8px 0 10px;">${esc(ENDGAME_COPY.lockedTitle)}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;">
+          <div style="display:flex;align-items:center;gap:9px;color:${e.have.bosses >= e.need.bosses ? "var(--accent)" : "var(--dim)"};">
+            <span>${e.have.bosses >= e.need.bosses ? "\u2713" : "\u25cb"}</span>
+            <span>Beat every module boss \u00b7 ${e.have.bosses}/${e.need.bosses}</span></div>
+          <div style="display:flex;align-items:center;gap:9px;color:${e.have.pct >= ENDGAME_PCT ? "var(--accent)" : "var(--dim)"};">
+            <span>${e.have.pct >= ENDGAME_PCT ? "\u2713" : "\u25cb"}</span>
+            <span>Capture ${needTxt} of all flags \u00b7 at ${pctTxt}</span></div>
+        </div>
+      </div>`;
+    }
+    return `<div class="card" style="margin-top:20px;border-color:var(--amber-bd);background:linear-gradient(150deg,var(--amber-bg),transparent 70%);">
+      <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--amber);">${title} \u00b7 UNLOCKED</div>
+      <div style="font-size:21px;font-weight:800;color:var(--bright);margin:8px 0 8px;">${esc(ENDGAME_COPY.readyTitle)}</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;">${esc(ENDGAME_COPY.readyBody)}</div>
+      <button type="button" id="egStart" class="mono" style="font-size:13px;font-weight:800;padding:13px 22px;border-radius:10px;border:none;background:var(--amber);color:var(--bg);cursor:pointer;letter-spacing:.5px;">
+        ${esc(ENDGAME_COPY.startBtn)}</button>
+    </div>`;
+  }
   function statsCard(s, pct) {
     const nextTxt = s.next
       ? `${s.next.t - s.pts} XP to <span style="color:var(--accent);">${esc(s.next.n)}</span>`
@@ -843,16 +1075,48 @@
         </div>
         <div class="mono" style="margin-top:8px;font-size:11px;color:var(--dim);">${nextTxt}</div>
         <div class="mono" style="margin-top:4px;font-size:11px;color:var(--dim);">\u25b2 ${sc}-day login streak${st.best ? " \u00b7 best " + st.best : ""} \u00b7 log in ${nextDayTxt} for +${nextBonus} XP${sc >= 10 ? " (max)" : ""}</div>
-        <div style="margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
-          <label class="mono" for="ctfHandle" style="font-size:11px;letter-spacing:1px;color:var(--faint);">PLAYER HANDLE</label>
-          <input id="ctfHandle" type="text" maxlength="24" placeholder="e.g. Alex R." value="${esc(handle)}"
-            style="flex:1;min-width:180px;font-family:'JetBrains Mono',monospace;font-size:13px;padding:9px 12px;border-radius:9px;border:1px solid var(--border3);background:var(--bg);color:var(--text);" />
-          <span class="mono" style="font-size:10px;color:var(--faint);">saved for the future leaderboard</span>
+        <div id="ctfIdentity" style="margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+          <span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--faint);">PLAYING AS</span>
+          <span style="font-weight:700;color:var(--bright);">${handle ? esc(handle) : '<span style="color:var(--faint);font-weight:500;">not signed in</span>'}</span>
+          <a class="mono" href="profile.html" style="font-size:11px;padding:4px 10px;border:1px solid var(--border2);border-radius:7px;">PROFILE</a>
+        </div>
+      </div>`;
+  }
+
+  /* A locked flag is a tease, not a wall. The title is plain so students know
+     what's coming; the prompt and hint are enciphered with a method derived
+     from the flag id (cipher.js). Cracking one early is allowed and encouraged
+     — it just can't be submitted for XP until the teacher opens it. */
+  function lockedCard(c) {
+    const C = window.CTF_CIPHER;
+    const raw = c.levels ? (c.levels[0] || {}) : c;
+    const promptText = raw.prompt || c.intro || c.title;
+    const enc = C ? C.encrypt(c.id, promptText) : "████";
+    const tease = C ? C.teaseFor(c.id) : "";
+    const pts = c.levels ? c.levels.reduce((a, l) => a + (l.points || 0), 0) : (c.points || 0);
+    const who = personaOn() ? ADV : "The system";
+    const line = MENTOR
+      ? who + " hasn't unlocked this one yet — but the text is right here if you're curious."
+      : who + " sealed this one. The words are still on the wire if you can read them.";
+    return `
+      <div class="ctfCard card ctfLocked" data-id="${esc(c.id)}" style="border-color:var(--border2);border-style:dashed;position:relative;">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">
+          <span class="mono" style="font-size:11px;letter-spacing:1px;padding:5px 10px;border-radius:999px;border:1px solid var(--border3);background:var(--bg);color:var(--dim);">${esc(c.category || "MISC")}</span>
+          <span class="mono" style="font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--faint);">${pts} XP</span>
+          <span class="mono" style="margin-left:auto;font-size:12px;font-weight:700;color:var(--faint);">⚿ LOCKED</span>
+        </div>
+        <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        <div class="mono" style="font-size:11px;color:var(--faint);letter-spacing:.5px;margin-bottom:10px;">${esc(line)}</div>
+        <div class="mono ctfCryptoText" style="user-select:text;white-space:pre-wrap;word-break:break-all;font-size:12.5px;line-height:1.75;
+          color:var(--adv2,#8fb6d9);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:13px 15px;margin-bottom:12px;">${esc(enc)}</div>
+        <div class="mono" style="font-size:11px;color:var(--dim);line-height:1.6;">
+          ⓘ ${esc(tease)} <span style="color:var(--faint);">· crack it early if you like — submissions open when this unlocks.</span>
         </div>
       </div>`;
   }
 
   function challengeCard(c) {
+    if (isLocked(c)) return lockedCard(c);
     if (c.type === "phish") return phishCard(c);
     if (c.type === "vocab") return vocabCard(c);
     if (c.type === "spot") return spotCard(c);
@@ -1102,6 +1366,24 @@
       const bar = $(".rfBar"); if (bar) bar.style.width = (left / RAPID_SECS * 100) + "%";
       if (left <= 0) finish();
     }, 200);
+  }
+  /* A hint is a transaction: show the price, make them confirm, then reveal
+     for good. Already-bought hints render open with the cost acknowledged. */
+  function hintMarkup(key, base, hint) {
+    if (!hint) return "";
+    const cost = Math.max(1, Math.round(base * HINT_COST));
+    const body = `<div class="ctfHintBody" style="margin-top:8px;font-size:13px;color:var(--dim);line-height:1.6;border-left:2px solid var(--border3);padding-left:12px;">${esc(hint)}</div>`;
+    if (hintUsed(key) || state.solved[key]) {
+      return `<div style="margin-bottom:14px;">
+        <span class="mono" style="font-size:12px;color:var(--faint);">\u24d8 hint revealed \u00b7 \u2212${Math.round(HINT_COST * 100)}% on this flag</span>
+        ${body}</div>`;
+    }
+    return `<div style="margin-bottom:14px;">
+      <button type="button" class="ctfHintBuy mono" data-key="${esc(key)}"
+        style="font-size:12px;font-weight:700;color:var(--amber);background:none;border:1px dashed var(--border3);border-radius:8px;padding:8px 12px;cursor:pointer;">
+        \u24d8 reveal hint \u00b7 costs ${cost} XP (\u2212${Math.round(HINT_COST * 100)}%)</button>
+      <div class="mono" style="margin-top:6px;font-size:11px;color:var(--faint);">Looking things up on your own is always free.</div>
+    </div>`;
   }
   function retryBtn(key, id) {
     const pct = Math.round(Math.pow(RETRY_FACTOR, (state.retry[key] || 0) + 1) * 100);
@@ -1364,7 +1646,7 @@
         <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:12px;">${esc(c.title)}</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">${tabs}</div>
         <p style="white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(lv.prompt)}</p>
-        ${lv.hint ? `<div style="margin-bottom:14px;"><span class="ctfHint mono" style="font-size:12px;color:var(--accent);cursor:pointer;">&#9432; show hint</span><div class="ctfHintBody" style="display:none;margin-top:8px;font-size:13px;color:var(--dim);line-height:1.6;border-left:2px solid var(--border3);padding-left:12px;">${esc(lv.hint)}</div></div>` : ""}
+        ${hintMarkup(c.id + "#" + li, (lv.points || 0), lv.hint)}
         ${solvedThis
           ? `<div class="mono" style="font-size:13px;color:var(--accent);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;">${esc(lv.difficulty)} flag captured. +${earnedTxt(c.id + "#" + li, lv.points || 0)} XP earned.</div>`
           : `<form class="ctfForm" style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -1388,7 +1670,7 @@
         </div>
         <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
         <p style="white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(c.prompt)}</p>
-        ${c.hint ? `<div style="margin-bottom:14px;"><span class="ctfHint mono" style="font-size:12px;color:var(--accent);cursor:pointer;">&#9432; show hint</span><div class="ctfHintBody" style="display:none;margin-top:8px;font-size:13px;color:var(--dim);line-height:1.6;border-left:2px solid var(--border3);padding-left:12px;">${esc(c.hint)}</div></div>` : ""}
+        ${hintMarkup(c.id, (c.points || 0), c.hint)}
         ${solved
           ? `<div class="mono" style="font-size:13px;color:var(--accent);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;">Flag captured. +${earnedTxt(c.id, c.points || 0)} XP earned.</div>`
           : `<form class="ctfForm" style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -1401,13 +1683,12 @@
   }
 
   function bind() {
-    const handle = document.getElementById("ctfHandle");
-    if (handle) handle.addEventListener("input", () => setHandle(handle.value.trim()));
+    // display name is owned by the class account now (sync.js chip + profile.html)
 
     const reset = document.getElementById("ctfReset");
     if (reset) reset.addEventListener("click", () => {
       if (confirm("Reset all your CTF progress on this device? This cannot be undone.")) {
-        state = { solved: {}, points: 0, retry: {}, earned: {}, mile: {}, boss: {}, bossWins: {}, streak: { last: null, count: 0, best: 0 }, bonus: 0, badges: {} }; save(state); render();
+        state = { solved: {}, points: 0, retry: {}, earned: {}, mile: {}, boss: {}, bossWins: {}, streak: { last: null, count: 0, best: 0 }, bonus: 0, badges: {}, hints: {}, reviewPaid: {}, vocabXp: {}, endgameWon: 0 }; save(state); render();
       }
     });
 
@@ -1447,6 +1728,25 @@
       if (willOpen) openChals.add(id); else openChals.delete(id);
       if (det) det.style.display = willOpen ? "block" : "none";
       if (chev) chev.style.transform = "rotate(" + (willOpen ? 90 : 0) + "deg)";
+    }));
+    const revT = document.getElementById("revToggle");
+    if (revT) revT.addEventListener("click", () => { reviewOpen = !reviewOpen; render(); });
+    document.querySelectorAll(".revJump").forEach(b => b.addEventListener("click", () => {
+      const id = b.getAttribute("data-id"), mod = b.getAttribute("data-mod");
+      openMods.add(String(mod));                 // make sure its module is expanded
+      openChals.add(id);
+      render();
+      const card = document.querySelector('.ctfCard[data-id="' + id + '"]');
+      if (card) window.scrollTo({ top: card.getBoundingClientRect().top + window.pageYOffset - 80, behavior: "smooth" });
+    }));
+    const eg = document.getElementById("egStart");
+    if (eg) eg.addEventListener("click", () => openBoss(null, { endgame: true }));
+    document.querySelectorAll(".ctfHintBuy").forEach(b => b.addEventListener("click", () => {
+      const key = b.getAttribute("data-key");
+      const label = b.textContent.trim();
+      if (!confirm("Reveal this hint?\n\n" + label.replace(/^\u24d8\s*/, "") + "\n\nThis is permanent for this flag.")) return;
+      buyHint(key);
+      render();
     }));
     document.querySelectorAll(".ctfHint").forEach(h => h.addEventListener("click", () => {
       const body = h.parentElement.querySelector(".ctfHintBody");
@@ -1584,9 +1884,14 @@
     const base = chal.type === "vocab" ? (VOCAB_PTS[li] || 0) : (usesLevels ? (chal.levels[li].points || 0) : (chal.points || 0));
     let points = (earnedOverride != null) ? earnedOverride : base;
     if (tainted[key]) points = Math.max(1, Math.round(points / 3));
+    const wasQueued = !state.solved[key] && (state.retry[key] || 0) > 0;
     state.solved[key] = true;
     state.earned[key] = points;
     state.points = (state.points || 0) + points;
+    const bounty = wasQueued ? payReviewBounty(key) : 0;
+    if (bounty) setTimeout(() => nemesisToast(GLYPH + " " + ADV,
+      MENTOR ? "you came back and got it \u2014 +" + bounty + " XP comeback bonus."
+             : "you came back for that one. +" + bounty + " XP. Respect, grudgingly."), 700);
     save(state);
     const s = stats();
     nemesisProgress(before, s);
@@ -1693,14 +1998,18 @@
   }
   function bossPhase() { return boss.nemHP > 66 ? 1 : (boss.nemHP > 33 ? 2 : 3); }
   function bossComboMult() { return Math.min(3, 1 + Math.floor(boss.streak / 3) * 0.5); }
-  function openBoss(scopeModule) {
+  function openBoss(scopeModule, opts) {
     injectGlitchStyle();
     if (document.getElementById("bossWrap")) return;
-    scopeModule = scopeModule ? +scopeModule : null;
+    var endgame = !!(opts && opts.endgame);
+    scopeModule = (!endgame && scopeModule) ? +scopeModule : null;
     var vocab = bossVocab(); if (scopeModule) vocab = vocab.filter(function (v) { return +v.m === scopeModule; });
     var cfg = bossConfigBank(); if (scopeModule) cfg = cfg.filter(function (q) { return +q.module === scopeModule; });
     if (vocab.length < 4 && cfg.length < 1) { nemesisToast(GLYPH + " " + ADV, MENTOR ? "no challenges loaded for this module yet \u2014 check back soon." : "not enough intel loaded for this module yet.", "var(--adv2)"); return; }
-    boss = { nemHP: 100, hp: 100, round: 0, streak: 0, best: 0, dmgDealt: 0, correct: 0, phase: 1, weak: {}, reviewQ: [], pool: vocab, cfgBank: cfg, scope: scopeModule, timer: null, locked: false };
+    // The endgame draws from the entire course and hits harder — it's the summit.
+    boss = { nemHP: endgame ? 140 : 100, hp: 100, round: 0, streak: 0, best: 0, dmgDealt: 0, correct: 0,
+             phase: 1, weak: {}, reviewQ: [], pool: vocab, cfgBank: cfg, scope: scopeModule,
+             endgame: endgame, timer: null, locked: false };
     var w = document.createElement("div"); w.id = "bossWrap";
     w.style.cssText = "position:fixed;inset:0;z-index:13600;overflow:hidden;background:" + (MENTOR ? "#0a0f14" : "#050000") + ";font-family:'JetBrains Mono',ui-monospace,monospace;color:" + (MENTOR ? "#cfe3f2" : "#ffd9e2") + ";";
     w.innerHTML =
@@ -1814,7 +2123,7 @@
     document.getElementById("bAgain").onclick = function () { closeBoss(); openBoss(againScope); };
     document.getElementById("bDone").onclick = closeBoss;
   }
-  function bossWin() { if (!boss) return; try { state.bossWins = state.bossWins || {}; var _wk = (window.CTF_COURSE || "c") + (boss.scope ? ":" + boss.scope : ""); if (!state.bossWins[_wk]) { state.bossWins[_wk] = 1; save(state); } var _nb = checkBadgeUnlocks(); if (_nb.length) setTimeout(function(){ announceBadges(_nb); }, 1400); } catch (e) {} nemAgitated = false; nemesisMood("beaten"); nemesisSpeak(MENTOR ? "You did it! I knew you had this in you." : "Impossible. You... you beat me. The system is yours."); bossEndCard(MENTOR ? "GAUNTLET CLEARED!" : "NEMESIS DEFEATED", MENTOR ? "Outstanding work \u2014 you mastered this module." : "You reclaimed the terminal. Well played, human.", "#39ff88", MENTOR ? "\u21bb play again" : "\u21bb duel again"); }
+  function bossWin() { if (!boss) return; if (boss.endgame && !state.endgameWon) { state.endgameWon = Date.now(); save(state); } try { state.bossWins = state.bossWins || {}; var _wk = (window.CTF_COURSE || "c") + (boss.scope ? ":" + boss.scope : ""); if (!state.bossWins[_wk]) { state.bossWins[_wk] = 1; save(state); } var _nb = checkBadgeUnlocks(); if (_nb.length) setTimeout(function(){ announceBadges(_nb); }, 1400); } catch (e) {} nemAgitated = false; nemesisMood("beaten"); nemesisSpeak(MENTOR ? "You did it! I knew you had this in you." : "Impossible. You... you beat me. The system is yours."); bossEndCard(MENTOR ? "GAUNTLET CLEARED!" : "NEMESIS DEFEATED", MENTOR ? "Outstanding work \u2014 you mastered this module." : "You reclaimed the terminal. Well played, human.", "#39ff88", MENTOR ? "\u21bb play again" : "\u21bb duel again"); }
   function bossLose() { if (!boss) return; nemAgitated = false; nemesisMood(); nemesisSpeak(MENTOR ? "Good run! You're learning fast. Come back and give it another go." : "Close match. This round is mine \u2014 but you are learning fast. Come back and finish me."); bossEndCard(MENTOR ? "GOOD RUN!" : "YOU WERE DELETED", MENTOR ? "You're getting sharper every time. Try again when you're ready." : "NEMESIS holds the system. Study up and try again.", MENTOR ? "var(--adv2)" : "var(--adv)", MENTOR ? "\u21bb try again" : "\u21bb rematch"); }
   var bossMiniTimer = null;
   function bossMiniRainStart() {

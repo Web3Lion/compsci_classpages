@@ -125,6 +125,8 @@
   </div>
 </div>
 
+<div id="studentModal" class="modal" style="display:none;"></div>
+
 <!-- create-class modal -->
 <div id="createModal" class="modal" style="display:none;">
   <div class="card fade" style="width:min(460px,94vw);padding:26px;">
@@ -147,6 +149,8 @@
   </div>
 </div>
 
+<script src="config.js"></script>
+<script src="cipher.js"></script>
 <script src="supabase-config.js"></script>
 <script src="auth.js"></script>
 <script src="name-filter.js"></script>
@@ -221,17 +225,25 @@ function renderClassList(){
 }
 
 /* ---------------- class detail ---------------- */
-var TAB="roster", ROSTER=[], FLAGS=[], CHEATS=[], sortKey="points", sortDir=-1;
-function selectClass(c){ CUR=c; TAB="roster"; renderClassList(); renderMain(); loadDetail(); }
+var TAB="summary", ROSTER=[], FLAGS=[], CHEATS=[], sortKey="points", sortDir=-1;
+var SUMMARY=null, FSTATS=[], ATTEND=null, ATTEND_DAYS=28, DETAIL=null;
+function selectClass(c){ CUR=c; TAB="summary"; syncGateFromClass(); renderClassList(); renderMain(); loadDetail(); }
 
 async function loadDetail(){
-  ROSTER=[];FLAGS=[];CHEATS=[];
+  ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;
   try{
     ROSTER=await rpc("ctf_t_roster",{p_class:CUR.id})||[];
     renderMain();
-    FLAGS=await rpc("ctf_t_flags",{p_class:CUR.id,p_limit:800})||[];
-    CHEATS=await rpc("ctf_t_cheats",{p_class:CUR.id,p_limit:800})||[];
-    if(TAB!=="roster") renderMain();
+    // these power the reporting tabs; failures here must not blank the roster
+    var rest=await Promise.all([
+      rpc("ctf_t_class_summary",{p_class:CUR.id}).catch(function(){return null;}),
+      rpc("ctf_t_flags",{p_class:CUR.id,p_limit:800}).catch(function(){return [];}),
+      rpc("ctf_t_cheats",{p_class:CUR.id,p_limit:800}).catch(function(){return [];}),
+      rpc("ctf_t_flag_stats",{p_class:CUR.id}).catch(function(){return [];}),
+      rpc("ctf_t_attendance",{p_class:CUR.id,p_days:ATTEND_DAYS}).catch(function(){return null;})
+    ]);
+    SUMMARY=rest[0]; FLAGS=rest[1]||[]; CHEATS=rest[2]||[]; FSTATS=rest[3]||[]; ATTEND=rest[4];
+    renderMain();
   }catch(e){
     var m=(e&&(e.message||""))+"";
     el("main").innerHTML='<div class="empty" style="color:var(--bad)">'+
@@ -242,12 +254,17 @@ async function loadDetail(){
 function renderMain(){
   if(!CUR){ el("main").innerHTML='<div class="empty">Select a class.</div>'; return; }
   var m=courseMeta(CUR.course);
-  var cheatTotal=ROSTER.reduce(function(a,s){return a+(s.cheat_count||0);},0);
+  // SUMMARY counts every row server-side; FLAGS/ROSTER are capped fetches, so
+  // prefer the summary numbers and only fall back when it failed to load.
+  var haveSum=SUMMARY&&!SUMMARY.error;
+  var cheatTotal=(haveSum&&SUMMARY.integrity!=null)?Number(SUMMARY.integrity)
+    :ROSTER.reduce(function(a,s){return a+(s.cheat_count||0);},0);
+  var capTotal=(haveSum&&SUMMARY.captures!=null)?Number(SUMMARY.captures):(FLAGS.length||0);
   var avg=ROSTER.length?Math.round(ROSTER.reduce(function(a,s){return a+(s.points||0)+(s.bonus||0);},0)/ROSTER.length):0;
   var h='<div class="fade">';
   // header
   h+='<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">'+
-      '<span class="pill" style="background:'+m.c+'22;color:'+m.c+';border:1px solid '+m.c+'55;">'+esc(m.label)+'</span>'+
+      '<span class="pill" style="background:color-mix(in srgb,'+m.c+' 14%,transparent);color:'+m.c+';border:1px solid color-mix(in srgb,'+m.c+' 34%,transparent);">'+esc(m.label)+'</span>'+
       '<h2 style="font-size:20px;color:var(--bright);margin:0;">'+esc(CUR.name)+'</h2>'+
       '<span class="chip mono" style="font-size:12px;">code: <b style="color:var(--bright)">'+esc(CUR.code)+'</b>'+
         ' <button class="btn sm" style="padding:2px 7px;" onclick="copyCode()">copy</button></span>'+
@@ -255,13 +272,19 @@ function renderMain(){
   // stat strip
   h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;">'+
       stat(ROSTER.length,"STUDENTS")+stat(avg.toLocaleString(),"AVG XP")+
-      stat(FLAGS.length||"—","FLAG CAPTURES")+stat(cheatTotal,"INTEGRITY FLAGS")+
+      stat(capTotal?capTotal.toLocaleString():"—","FLAG CAPTURES")+stat(cheatTotal,"INTEGRITY FLAGS")+
     '</div>';
   // tabs
   h+='<div class="tabs">'+
-      tabBtn("roster","Roster")+tabBtn("flags","Flag Captures")+tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
+      tabBtn("summary","Summary")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
+      tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+
+      tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
     '</div><div style="padding-top:16px;">';
   if(TAB==="roster") h+=rosterView();
+  else if(TAB==="summary") h+=summaryView();
+  else if(TAB==="attend") h+=attendView();
+  else if(TAB==="gates") h+=gatesView();
+  else if(TAB==="flagstats") h+=flagStatsView();
   else if(TAB==="flags") h+=flagsView();
   else if(TAB==="cheats") h+=cheatsView();
   else h+=settingsView();
@@ -272,6 +295,352 @@ function stat(n,k){ return '<div class="stat"><div class="n">'+n+'</div><div cla
 function tabBtn(id,label){ return '<button class="tab '+(TAB===id?"on":"")+'" onclick="setTab(\''+id+'\')">'+label+'</button>'; }
 function setTab(t){ TAB=t; renderMain(); }
 function copyCode(){ navigator.clipboard&&navigator.clipboard.writeText(CUR.code); }
+
+/* ----- class summary ----- */
+function summaryView(){
+  if(!SUMMARY) return '<div class="empty"><span class="spin"></span></div>';
+  var s=SUMMARY;
+  if(s.error) return '<div class="empty" style="color:var(--bad)">Reporting functions not installed \u2014 run supabase/teacher-reports.sql.</div>';
+  var box=function(n,k,sub,col){
+    return '<div class="stat"><div class="n" style="'+(col?'color:'+col:'')+'">'+n+'</div>'+
+      '<div class="k">'+k+'</div>'+(sub?'<div style="font-size:11px;color:var(--faint);margin-top:4px;">'+sub+'</div>':'')+'</div>';
+  };
+  var h='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:22px;">'+
+    box(s.students,"STUDENTS",(s.active_7d||0)+" active this week")+
+    box(Number(s.avg_xp||0).toLocaleString(),"AVERAGE XP","median "+Number(s.median_xp||0).toLocaleString(),"var(--accent)")+
+    box((s.avg_pct||0)+"%","AVG COMPLETION")+
+    box(Number(s.captures||0).toLocaleString(),"TOTAL CAPTURES",fmtSecs(Number(s.avg_secs||0))+" avg time")+
+    box(s.best_streak||0,"BEST STREAK","days in a row","var(--warn)")+
+    box(s.never_started||0,"NOT STARTED",s.never_started?"needs a nudge":"everyone\u2019s in",s.never_started?"var(--warn)":"var(--ok)")+
+    box(s.integrity||0,"INTEGRITY FLAGS",(s.tainted||0)+" tainted captures",s.integrity?"var(--bad)":"var(--ok)")+
+  '</div>';
+
+  // distribution + who needs attention, both derived from the roster we already have
+  var xps=ROSTER.map(function(r){return (r.points||0)+(r.bonus||0);});
+  var top=ROSTER.slice().sort(function(a,b){return ((b.points||0)+(b.bonus||0))-((a.points||0)+(a.bonus||0));}).slice(0,5);
+  var stale=ROSTER.filter(function(r){
+    var d=r.updated_at?(Date.now()-new Date(r.updated_at).getTime())/86400000:999;
+    return d>7||!r.solved_count;
+  }).slice(0,8);
+  var maxXp=Math.max.apply(null,[1].concat(xps));
+  var bar=function(r){
+    var xp=(r.points||0)+(r.bonus||0);
+    return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;">'+
+      '<span style="width:110px;font-size:13px;color:var(--bright);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(r.handle)+'</span>'+
+      '<span style="flex:1;height:8px;border-radius:99px;background:var(--bg2);overflow:hidden;display:block;">'+
+        '<span style="display:block;height:100%;width:'+Math.round(xp/maxXp*100)+'%;background:var(--accent);"></span></span>'+
+      '<span class="mono" style="width:64px;text-align:right;font-size:12px;color:var(--accent);font-weight:700;">'+xp.toLocaleString()+'</span></div>';
+  };
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;">';
+  h+='<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TOP 5 BY XP</div>'+
+      (top.length?top.map(bar).join(""):'<div class="empty" style="padding:20px;font-size:13px;">No XP yet.</div>')+'</div>';
+  h+='<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">NEEDS ATTENTION</div>'+
+      (stale.length?stale.map(function(r){
+        var why=!r.solved_count?"never started":"quiet "+ago(r.updated_at);
+        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;background:var(--bg2);border:1px solid var(--border2);margin-bottom:6px;">'+
+          '<b style="color:var(--bright);font-size:13px;">'+esc(r.handle)+'</b>'+
+          '<span style="margin-left:auto;font-size:11px;color:var(--warn);">'+why+'</span></div>';
+      }).join(""):'<div class="empty" style="padding:20px;font-size:13px;color:var(--ok)">Everyone is active. \uD83C\uDF89</div>')+'</div>';
+  h+='</div>';
+  return h;
+}
+
+/* ----- login report: spreadsheet-style attendance grid ----- */
+function setAttendDays(n){ ATTEND_DAYS=n; ATTEND=null; renderMain();
+  rpc("ctf_t_attendance",{p_class:CUR.id,p_days:n}).then(function(d){ATTEND=d;renderMain();}).catch(function(){}); }
+function attendView(){
+  if(!ATTEND) return '<div class="empty"><span class="spin"></span></div>';
+  if(ATTEND.error) return '<div class="empty" style="color:var(--bad)">Run supabase/teacher-reports.sql to enable the login report.</div>';
+  var studs=ATTEND.students||[], marks=ATTEND.marks||[];
+  if(!studs.length) return '<div class="empty">No students in this class yet.</div>';
+  var seen={}; marks.forEach(function(m){ seen[m.student_id+"|"+String(m.day).slice(0,10)]=m.hits||1; });
+
+  // build the day columns, newest last; weekends get a dimmed column
+  var days=[], end=new Date(ATTEND.to+"T00:00:00");
+  for(var i=ATTEND_DAYS-1;i>=0;i--){ var d=new Date(end); d.setDate(d.getDate()-i); days.push(d); }
+  var dow=["S","M","T","W","T","F","S"];
+  var frozen={}; (CUR.frozen_dates||[]).forEach(function(f){frozen[String(f).slice(0,10)]=1;});
+
+  var head='<th style="position:sticky;left:0;background:var(--panel);z-index:2;">Student</th>';
+  days.forEach(function(d){
+    var iso=d.toISOString().slice(0,10), wk=(d.getDay()===0||d.getDay()===6), fz=frozen[iso];
+    head+='<th title="'+iso+(fz?' \u00b7 no class':'')+'" style="text-align:center;padding:6px 0;min-width:26px;'+
+      (wk||fz?'color:var(--faint);background:var(--bg2);':'')+'">'+
+      '<div style="font-size:9px;">'+dow[d.getDay()]+'</div>'+
+      '<div style="font-size:10px;color:var(--dim);">'+d.getDate()+'</div></th>';
+  });
+  head+='<th style="text-align:right;">Days</th>';
+
+  var body=studs.map(function(st){
+    var n=0;
+    var cells=days.map(function(d){
+      var iso=d.toISOString().slice(0,10), wk=(d.getDay()===0||d.getDay()===6), fz=frozen[iso];
+      var hit=seen[st.id+"|"+iso];
+      if(hit) n++;
+      return '<td title="'+esc(st.handle)+' \u00b7 '+iso+(hit?' \u00b7 '+hit+' visit'+(hit>1?'s':''):' \u00b7 no login')+'" '+
+        'style="text-align:center;padding:5px 0;'+(wk||fz?'background:var(--bg2);':'')+'">'+
+        (hit?'<span style="color:var(--ok);font-weight:700;">\u2713</span>'
+            :'<span style="color:'+(wk||fz?'var(--border2)':'var(--border3)')+';">\u00b7</span>')+'</td>';
+    }).join("");
+    return '<tr><td style="position:sticky;left:0;background:var(--panel);z-index:1;white-space:nowrap;">'+
+      '<b style="color:var(--bright)">'+esc(st.handle)+'</b></td>'+cells+
+      '<td class="mono" style="text-align:right;color:var(--accent);font-weight:700;">'+n+'</td></tr>';
+  }).join("");
+
+  return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">'+
+      '<div class="mono" style="font-size:11px;color:var(--dim);">'+esc(ATTEND.from)+' \u2192 '+esc(ATTEND.to)+'</div>'+
+      '<div style="margin-left:auto;display:flex;gap:6px;">'+
+        [14,28,60,90].map(function(n){
+          return '<button class="btn sm'+(ATTEND_DAYS===n?' pri':'')+'" onclick="setAttendDays('+n+')">'+n+'d</button>';
+        }).join("")+'</div></div>'+
+    '<div style="overflow:auto;max-width:100%;"><table style="font-size:12px;">'+
+      '<thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:12px;line-height:1.6;">'+
+      '\u2713 = opened the arena that day. Shaded columns are weekends and your no-class days \u2014 they never count against a streak.</div>';
+}
+
+/* ----- locks & guide -----
+   Modules and individual flags can be closed per class. A locked flag is still
+   listed for students with its title visible and its prompt enciphered, so an
+   eager student can crack it early; only submission waits for the unlock. */
+var GATE={mods:{},flags:{},persona:false,answerKey:false},GATE_DIRTY=false;
+
+function courseChals(){
+  var cfg=(window.COURSE_CONFIG||{})[CUR.course]||{};
+  return ((cfg.ctf||{}).challenges)||[];
+}
+function courseModules(){
+  var m={},list=courseChals();
+  list.forEach(function(c){ var k=Number(c.module||0); (m[k]=m[k]||[]).push(c); });
+  return m;
+}
+function syncGateFromClass(){
+  GATE={mods:{},flags:{},persona:!!CUR.persona_on,answerKey:!!CUR.answer_key_on};
+  (CUR.locked_modules||[]).forEach(function(m){ GATE.mods[Number(m)]=true; });
+  (CUR.locked_flags||[]).forEach(function(f){ GATE.flags[f]=true; });
+  GATE_DIRTY=false;
+}
+function toggleMod(m){
+  m=Number(m); GATE.mods[m]=!GATE.mods[m]; GATE_DIRTY=true;
+  // locking a whole module supersedes its individual flag locks
+  if(GATE.mods[m]) (courseModules()[m]||[]).forEach(function(c){ delete GATE.flags[c.id]; });
+  renderMain();
+}
+function toggleFlag(id){ GATE.flags[id]=!GATE.flags[id]; GATE_DIRTY=true; renderMain(); }
+function togglePersona(){ GATE.persona=!GATE.persona; GATE_DIRTY=true; renderMain(); }
+function toggleAnswerKey(){ GATE.answerKey=!GATE.answerKey; GATE_DIRTY=true; renderMain(); }
+function bulkMods(lock){
+  Object.keys(courseModules()).forEach(function(m){ GATE.mods[Number(m)]=!!lock; });
+  if(lock===false) GATE.flags={};
+  GATE_DIRTY=true; renderMain();
+}
+async function saveGates(){
+  var b=el("gateSave"); if(b){ b.disabled=true; b.textContent="Saving\u2026"; }
+  var mods=Object.keys(GATE.mods).filter(function(k){return GATE.mods[k];}).map(Number);
+  var flags=Object.keys(GATE.flags).filter(function(k){return GATE.flags[k];});
+  try{
+    await rpc("ctf_t_set_gates",{p_class:CUR.id,p_locked_modules:mods,p_locked_flags:flags,
+      p_persona:GATE.persona,p_answer_key:GATE.answerKey});
+    CUR.locked_modules=mods; CUR.locked_flags=flags;
+    CUR.persona_on=GATE.persona; CUR.answer_key_on=GATE.answerKey;
+    GATE_DIRTY=false; await loadClasses(true);
+    var m=el("gateMsg"); if(m){ m.style.color="var(--ok)"; m.textContent="\u2713 saved"; setTimeout(function(){var x=el("gateMsg");if(x)x.textContent="";},2500); }
+  }catch(e){
+    var m2=el("gateMsg"); if(m2){ m2.style.color="var(--bad)"; m2.textContent="failed \u2014 run supabase/class-gates.sql"; }
+  }
+  if(b){ b.disabled=false; b.textContent="Save changes"; }
+}
+function slider(on,onclick,label,sub,col){
+  col=col||"var(--accent)";
+  return '<label onclick="'+onclick+'" style="display:flex;align-items:center;gap:14px;cursor:pointer;padding:14px 16px;border-radius:12px;'+
+      'border:1px solid '+(on?col:'var(--border2)')+';background:'+(on?'color-mix(in srgb,'+col+' 8%,transparent)':'var(--bg2)')+';">'+
+    '<span style="flex:none;width:46px;height:26px;border-radius:99px;background:'+(on?col:'var(--border3)')+';position:relative;transition:.18s;">'+
+      '<span style="position:absolute;top:3px;left:'+(on?'23px':'3px')+';width:20px;height:20px;border-radius:50%;background:#fff;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.4);"></span></span>'+
+    '<span style="min-width:0;"><span style="display:block;font-size:14px;font-weight:700;color:var(--bright);">'+label+'</span>'+
+      '<span style="display:block;font-size:12px;color:var(--dim);margin-top:3px;line-height:1.5;">'+sub+'</span></span></label>';
+}
+function gatesView(){
+  var chals=courseChals();
+  if(!chals.length) return '<div class="empty">No challenge list found for this course in config.js.</div>';
+  var mods=courseModules();
+  var keys=Object.keys(mods).map(Number).sort(function(a,b){return a-b;});
+  var guide=((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf||{};
+  var who=guide.adversary||"the guide";
+  var mentor=!!(guide.mentor||guide.tone==="mentor");
+
+  var h='<div style="max-width:820px;">';
+
+  // guide + answer key switches
+  h+='<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:26px;">'+
+    slider(GATE.persona,"togglePersona()", esc(who)+" is awake",
+      mentor?"Off: a plain, quiet arena with no character. On: "+esc(who)+" arrives with an entrance and guides students from then on."
+            :"Off: a plain, quiet arena with no character. On: "+esc(who)+" takes over the terminal and starts watching.",
+      "var(--apcsp)")+
+    slider(GATE.answerKey,"toggleAnswerKey()","Answer key armed",
+      "Unlocks the answer-key page for this class \u2014 every flag, plus how to decrypt the locked ones. Teacher-only.",
+      "var(--warn)")+
+  '</div>';
+
+  h+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">'+
+      '<div style="font-size:15px;font-weight:700;color:var(--bright);">Module &amp; flag locks</div>'+
+      '<div style="margin-left:auto;display:flex;gap:6px;">'+
+        '<button class="btn sm" onclick="bulkMods(true)">Lock all</button>'+
+        '<button class="btn sm" onclick="bulkMods(false)">Unlock all</button></div></div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:16px;">'+
+      'Locked work still appears in the arena: the title shows, the prompt is enciphered, and nothing can be submitted. '+
+      'Each flag gets a different cipher, so a student who wants a head start has to actually break it.</div>';
+
+  keys.forEach(function(m){
+    var list=mods[m], modLocked=!!GATE.mods[m];
+    var lockedCount=list.filter(function(c){return modLocked||GATE.flags[c.id];}).length;
+    h+='<div style="border:1px solid '+(modLocked?'var(--warn)':'var(--border2)')+';border-radius:12px;margin-bottom:10px;overflow:hidden;">'+
+      '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:'+(modLocked?'color-mix(in srgb,var(--warn) 8%,transparent)':'var(--bg2)')+';">'+
+        '<button onclick="toggleMod('+m+')" class="btn sm'+(modLocked?'':' pri')+'" style="min-width:74px;">'+(modLocked?'\uD83D\uDD12 Locked':'\u2713 Open')+'</button>'+
+        '<b style="color:var(--bright);font-size:14px;">Module '+m+'</b>'+
+        '<span class="mono" style="font-size:11px;color:var(--dim);">'+list.length+' challenge'+(list.length===1?'':'s')+
+          (lockedCount?' \u00b7 '+lockedCount+' locked':'')+'</span>'+
+      '</div>'+
+      '<div style="padding:6px 14px 12px;display:flex;flex-direction:column;gap:4px;">';
+    list.forEach(function(c){
+      var lk=modLocked||!!GATE.flags[c.id];
+      var meth=window.CTF_CIPHER?window.CTF_CIPHER.methodFor(c.id).name:"";
+      h+='<div style="display:flex;align-items:center;gap:10px;padding:7px 4px;'+(modLocked?'opacity:.5;':'')+'">'+
+        '<button '+(modLocked?'disabled':'onclick=\'toggleFlag("'+c.id+'")\'')+
+          ' style="flex:none;width:20px;height:20px;border-radius:5px;cursor:'+(modLocked?'default':'pointer')+';'+
+          'border:1px solid '+(lk?'var(--warn)':'var(--border3)')+';background:'+(lk?'var(--warn)':'transparent')+';color:#04121e;font-size:12px;font-weight:800;line-height:1;">'+
+          (lk?'\uD83D\uDD12':'')+'</button>'+
+        '<span style="flex:1;min-width:0;font-size:13px;color:'+(lk?'var(--dim)':'var(--text)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(c.title)+'</span>'+
+        (lk?'<span class="mono" style="font-size:10px;color:var(--warn);">'+esc(meth)+'</span>':'')+
+      '</div>';
+    });
+    h+='</div></div>';
+  });
+
+  h+='<div style="display:flex;align-items:center;gap:12px;margin-top:18px;">'+
+      '<button class="btn pri" id="gateSave" onclick="saveGates()"'+(GATE_DIRTY?'':' disabled')+'>Save changes</button>'+
+      '<span id="gateMsg" class="mono" style="font-size:11px;"></span>'+
+      (GATE_DIRTY?'<span class="mono" style="font-size:11px;color:var(--warn);">unsaved changes</span>':'')+
+      '<a class="btn sm" style="margin-left:auto;" href="answers.html?class='+encodeURIComponent(CUR.id)+'">Open answer key \u2192</a>'+
+    '</div></div>';
+  return h;
+}
+
+/* ----- per-flag analytics ----- */
+function flagStatsView(){
+  if(!FSTATS||!FSTATS.length) return '<div class="empty">No captures logged yet \u2014 analytics appear once students start solving.</div>';
+  if(FSTATS.error) return '<div class="empty" style="color:var(--bad)">Run supabase/teacher-reports.sql to enable flag analytics.</div>';
+  var rows=FSTATS.slice().sort(function(a,b){ return (b.misses||0)-(a.misses||0); });
+  var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;">'+
+    'Sorted by total misses \u2014 the flags at the top are where your class is struggling. '+
+    '\u201cFirst try\u201d counts captures with zero failed attempts.</div>'+
+    '<div style="overflow:auto;"><table><thead><tr>'+
+      '<th>Challenge</th><th>Level</th><th>Solves</th><th>Misses</th><th>First try</th>'+
+      '<th>Avg time</th><th>Fastest</th><th>Slowest</th><th>Tainted</th>'+
+    '</tr></thead><tbody>';
+  rows.forEach(function(f){
+    var lvlC=f.level==="Hard"?"var(--bad)":f.level==="Medium"?"var(--warn)":"var(--ok)";
+    var solves=f.solves||0, first=f.first_try||0;
+    var ftPct=solves?Math.round(first/solves*100):0;
+    var hard=(f.misses||0)>=solves&&solves>0;
+    h+='<tr>'+
+      '<td><b style="color:var(--bright)">'+esc(f.title||f.challenge_id)+'</b>'+
+        (hard?' <span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">tough</span>':'')+'</td>'+
+      '<td>'+(f.level?'<span class="pill" style="background:color-mix(in srgb,'+lvlC+' 14%,transparent);color:'+lvlC+'">'+esc(f.level)+'</span>':'\u2014')+'</td>'+
+      '<td class="mono">'+solves+'</td>'+
+      '<td class="mono" style="color:'+((f.misses||0)?'var(--warn)':'var(--dim)')+'">'+(f.misses||0)+'</td>'+
+      '<td><span class="mono" style="color:'+(ftPct>=70?'var(--ok)':ftPct>=40?'var(--warn)':'var(--bad)')+'">'+ftPct+'%</span></td>'+
+      '<td class="mono" style="color:var(--bright)">'+fmtSecs(f.avg_secs==null?null:Number(f.avg_secs))+'</td>'+
+      '<td class="mono" style="color:var(--dim)">'+fmtSecs(f.fast_secs==null?null:Number(f.fast_secs))+'</td>'+
+      '<td class="mono" style="color:var(--dim)">'+fmtSecs(f.slow_secs==null?null:Number(f.slow_secs))+'</td>'+
+      '<td>'+((f.tainted||0)?'<span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">'+f.tainted+'</span>':'<span style="color:var(--ok)">0</span>')+'</td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+/* ----- student drill-down ----- */
+async function openStudent(sid){
+  DETAIL="loading"; renderStudentModal();
+  try{ DETAIL=await rpc("ctf_t_student",{p_student:sid}); }
+  catch(e){ DETAIL={error:"load"}; }
+  renderStudentModal();
+}
+function closeStudent(){ DETAIL=null; renderStudentModal(); }
+function renderStudentModal(){
+  var m=el("studentModal");
+  if(!DETAIL){ m.style.display="none"; m.innerHTML=""; return; }
+  m.style.display="flex";
+  if(DETAIL==="loading"){ m.innerHTML='<div class="card" style="padding:40px;"><span class="spin"></span></div>'; return; }
+  if(DETAIL.error||!DETAIL.student){ m.innerHTML='<div class="card" style="padding:30px;">Couldn\u2019t load that student. <button class="btn sm" onclick="closeStudent()">Close</button></div>'; return; }
+  var s=DETAIL.student, flags=DETAIL.flags||[], cheats=DETAIL.cheats||[], days=DETAIL.days||[];
+  var xp=(s.points||0)+(s.bonus||0);
+  var st=s.streak||{}, badges=s.badges||{};
+  var badgeCount=Object.keys(badges).filter(function(k){return badges[k];}).length;
+  var timed=flags.filter(function(f){return f.secs>=0;});
+  var avg=timed.length?Math.round(timed.reduce(function(a,f){return a+f.secs;},0)/timed.length):null;
+  var misses=flags.reduce(function(a,f){return a+(f.retries||0);},0);
+  var firstTry=flags.filter(function(f){return !f.retries;}).length;
+  var pct=s.total_count?Math.round(s.solved_count/s.total_count*100):0;
+
+  var stat=function(n,k,col){ return '<div class="stat"><div class="n" style="'+(col?'color:'+col:'')+'">'+n+'</div><div class="k">'+k+'</div></div>'; };
+  var h='<div class="card fade" style="width:min(940px,96vw);max-height:92vh;overflow:auto;padding:26px;">'+
+    '<div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px;">'+
+      '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">STUDENT RECORD</div>'+
+        '<h2 style="font-size:22px;color:var(--bright);margin:4px 0 2px;">'+esc(s.handle)+'</h2>'+
+        '<div class="mono" style="font-size:11px;color:var(--dim);">'+esc(s.email||"")+' \u00b7 '+esc(s.class_name||"")+'</div></div>'+
+      '<div style="margin-left:auto;display:flex;gap:8px;">'+
+        '<button class="btn sm" onclick=\'setHandle("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Rename</button>'+
+        '<button class="btn sm" onclick="closeStudent()">Close</button></div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px;">'+
+      stat(xp.toLocaleString(),"TOTAL XP","var(--accent)")+
+      stat((s.solved_count||0)+"/"+(s.total_count||0),"FLAGS ("+pct+"%)")+
+      stat(fmtSecs(avg),"AVG TIME")+
+      stat(firstTry+"/"+flags.length,"FIRST TRY")+
+      stat(misses,"MISSES",misses?"var(--warn)":"")+
+      stat((st.count||0)+"\u00b7"+(st.best||0),"STREAK / BEST","var(--warn)")+
+      stat(badgeCount,"BADGES")+
+      stat(days.length,"ACTIVE DAYS")+
+    '</div>';
+
+  // recent activity days as a compact strip
+  if(days.length){
+    var last=days.slice(-30);
+    h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">RECENT LOGINS</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:22px;">'+
+      last.map(function(d){ return '<span class="mono" style="font-size:10px;padding:4px 7px;border-radius:6px;background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 34%,transparent);">'+String(d).slice(5)+'</span>'; }).join("")+
+      '</div>';
+  }
+
+  h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">FLAG CAPTURES ('+flags.length+')</div>';
+  if(!flags.length) h+='<div class="empty" style="padding:22px;font-size:13px;">No captures yet.</div>';
+  else{
+    h+='<div style="overflow:auto;max-height:280px;"><table style="font-size:12px;"><thead><tr>'+
+      '<th>When</th><th>Challenge</th><th>Level</th><th>XP</th><th>Time</th><th>Tries</th><th>Clean</th></tr></thead><tbody>';
+    flags.forEach(function(f){
+      var lvlC=f.level==="Hard"?"var(--bad)":f.level==="Medium"?"var(--warn)":"var(--ok)";
+      h+='<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(f.created_at)+'</td>'+
+        '<td>'+esc(f.title||f.challenge_id)+'</td>'+
+        '<td>'+(f.level?'<span class="pill" style="background:color-mix(in srgb,'+lvlC+' 14%,transparent);color:'+lvlC+'">'+esc(f.level)+'</span>':'\u2014')+'</td>'+
+        '<td class="mono" style="color:var(--accent)">'+(f.points||0)+'</td>'+
+        '<td class="mono">'+fmtSecs(f.secs)+'</td>'+
+        '<td>'+(f.retries?'<span style="color:var(--warn)">'+f.retries+'</span>':'0')+'</td>'+
+        '<td>'+(f.tainted?'<span style="color:var(--bad)">no</span>':'<span style="color:var(--ok)">yes</span>')+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+
+  if(cheats.length){
+    h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin:22px 0 10px;">INTEGRITY EVENTS ('+cheats.length+')</div>'+
+      '<div style="overflow:auto;max-height:200px;"><table style="font-size:12px;"><thead><tr><th>When</th><th>Event</th><th>Detail</th></tr></thead><tbody>'+
+      cheats.map(function(c){
+        return '<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(c.created_at)+'</td>'+
+          '<td><span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">'+esc(c.kind)+'</span></td>'+
+          '<td style="color:var(--muted);font-size:12px">'+esc(c.detail||"")+'</td></tr>';
+      }).join("")+'</tbody></table></div>';
+  }
+  m.innerHTML=h+'</div>';
+}
 
 /* ----- roster ----- */
 function setSort(k){ if(sortKey===k) sortDir=-sortDir; else{sortKey=k;sortDir=(k==="handle")?1:-1;} renderMain(); }
@@ -296,12 +665,13 @@ function rosterView(){
     var badges=s.badges&&typeof s.badges==="object"?Object.keys(s.badges).filter(function(k){return s.badges[k];}).length:0;
     var pctTot=s.total_count||0, pct=pctTot?Math.round((s.solved_count||0)/pctTot*100):0;
     h+='<tr>'+
-      '<td><b style="color:var(--bright)">'+esc(s.handle)+'</b></td>'+
+      '<td><button onclick=\'openStudent("'+s.id+'")\' style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">'+
+        '<b style="color:var(--accent);border-bottom:1px dotted var(--border3);">'+esc(s.handle)+'</b></button></td>'+
       '<td class="mono" style="font-size:11px;color:var(--dim);">'+esc((s.email||"\u2014").replace(/@.*$/,""))+'</td>'+
       '<td class="mono" style="color:var(--accent);font-weight:700;">'+xp.toLocaleString()+'</td>'+
       '<td>'+(s.solved_count||0)+(pctTot?' <span style="color:var(--faint)">/ '+pctTot+'</span> <span class="mono" style="font-size:11px;color:var(--dim)">'+pct+'%</span>':'')+'</td>'+
       '<td>'+(sc?'<span style="color:var(--warn);font-weight:700">🔥 '+sc+'</span>':'—')+(best>sc?' <span class="mono" style="font-size:10px;color:var(--faint)">best '+best+'</span>':'')+'</td>'+
-      '<td>'+(s.cheat_count?'<span class="pill" style="background:var(--bad)22;color:var(--bad)">'+s.cheat_count+'</span>':'<span style="color:var(--faint)">0</span>')+'</td>'+
+      '<td>'+(s.cheat_count?'<span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">'+s.cheat_count+'</span>':'<span style="color:var(--faint)">0</span>')+'</td>'+
       '<td style="color:var(--dim)">'+ago(s.updated_at)+'</td>'+
       '<td>'+(badges?'<span class="chip" style="font-size:11px">🏅 '+badges+'</span>':'<span style="color:var(--faint)">—</span>')+'</td>'+
       '<td style="text-align:right;white-space:nowrap">'+
@@ -328,11 +698,11 @@ function flagsView(){
       '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(f.created_at)+'</td>'+
       '<td><b style="color:var(--bright)">'+esc(f.handle)+'</b></td>'+
       '<td>'+esc(f.title||f.challenge_id)+'</td>'+
-      '<td>'+(f.level?'<span class="pill" style="background:'+lvlC+'22;color:'+lvlC+'">'+esc(f.level)+'</span>':'—')+'</td>'+
+      '<td>'+(f.level?'<span class="pill" style="background:color-mix(in srgb,'+lvlC+' 14%,transparent);color:'+lvlC+'">'+esc(f.level)+'</span>':'—')+'</td>'+
       '<td class="mono" style="color:var(--accent);font-weight:700">'+(f.points||0)+'</td>'+
       '<td class="mono" style="color:var(--bright)">'+fmtSecs(f.secs)+'</td>'+
       '<td>'+(f.retries?'<span style="color:var(--warn)">'+f.retries+'</span>':'0')+'</td>'+
-      '<td>'+(f.tainted?'<span class="pill" style="background:var(--bad)22;color:var(--bad)">tainted</span>':'<span style="color:var(--ok)">clean</span>')+'</td>'+
+      '<td>'+(f.tainted?'<span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">tainted</span>':'<span style="color:var(--ok)">clean</span>')+'</td>'+
     '</tr>';
   });
   h+='</tbody></table></div>';
@@ -349,7 +719,7 @@ function cheatsView(){
     h+='<tr>'+
       '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(c.created_at)+'</td>'+
       '<td><b style="color:var(--bright)">'+esc(c.handle)+'</b></td>'+
-      '<td><span class="pill" style="background:'+col+'22;color:'+col+'">'+esc(c.kind)+'</span></td>'+
+      '<td><span class="pill" style="background:color-mix(in srgb,'+col+' 14%,transparent);color:'+col+'">'+esc(c.kind)+'</span></td>'+
       '<td style="color:var(--muted);font-size:12px">'+esc(c.detail||"")+'</td>'+
     '</tr>';
   });
@@ -461,8 +831,13 @@ async function createClass(){
     var c=await rpc("ctf_t_create_class",{p_course:co,p_name:name,p_code:code});
     closeCreate(); await loadClasses(); selectClass(c);
   }catch(e){
-    var m=(e&&(e.message||""))+"";
-    el("ncErr").textContent=/code_taken/.test(m)?"That code is already in use — pick another.":"Couldn't create class.";
+    var m=(e&&(e.message||e.hint||e.details||""))+"";
+    el("ncErr").innerHTML=
+      (/code_taken/.test(m)?"That code is already in use — pick another."
+      :/not_teacher/.test(m)?"This account isn't the teacher account."
+      :/does not exist|schema cache/i.test(m)?"Database isn't set up yet — run supabase/google-auth.sql."
+      :"Couldn't create class.")+
+      '<div class="mono" style="font-size:10px;color:var(--dim);margin-top:6px;word-break:break-word;">'+esc(m)+'</div>';
   }
   b.disabled=false; b.textContent="Create class";
 }

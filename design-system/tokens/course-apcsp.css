@@ -1,0 +1,47 @@
+/* Byte Bounty (AP CSP) — compiler violet */
+[data-course="apcsp"]{
+  --bg:#0c0a14;
+  --panel:#15111d;
+  --panel2:#1a1524;
+  --panel3:#20182e;
+  --border:#332845;
+  --border2:#241d33;
+  --border3:#48395f;
+  --border-hi:#6a5788;
+  --amber-bd:#5a3d6a;
+  --amber-bg:#1e0f28;
+  --text:#d8d2e6;
+  --bright:#f5f2ff;
+  --muted:#aca2c4;
+  --dim:#867ba0;
+  --faint:#5d5279;
+  --fainter:#3f374f;
+  --accent:#a855f7;
+  --accent2:#c98bff;
+  --amber:#a855f7;
+  --via:rgba(168,85,247,.10);
+  --trace:rgba(168,85,247,.035);
+}
+[data-course="apcsp"][data-theme="light"]{
+  --bg:#f1eef7;
+  --panel:#ffffff;
+  --panel2:#f6f3fb;
+  --panel3:#f1ecf8;
+  --border:#d7cfe4;
+  --border2:#e4ddf0;
+  --border3:#b8accf;
+  --border-hi:#897ba8;
+  --amber-bd:#c9a9dc;
+  --amber-bg:#f3e6fb;
+  --text:#2c2740;
+  --bright:#140e26;
+  --muted:#524a6a;
+  --dim:#6f668c;
+  --faint:#8d83a6;
+  --fainter:#aaa3c0;
+  --accent:#8b2fd6;
+  --accent2:#6f1fb0;
+  --amber:#8b2fd6;
+  --via:rgba(139,47,214,.16);
+  --trace:rgba(139,47,214,.05);
+}

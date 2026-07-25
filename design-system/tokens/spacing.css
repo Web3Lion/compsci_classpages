@@ -1,0 +1,20 @@
+:root{
+  /* spacing — a loose 4px-derived scale, used as observed in the platform */
+  --sp-1:4px; --sp-2:6px; --sp-3:8px; --sp-4:10px; --sp-5:12px; --sp-6:14px;
+  --sp-7:16px; --sp-8:18px; --sp-9:20px; --sp-10:24px; --sp-11:28px;
+  --sp-12:32px; --sp-14:40px; --sp-16:44px; --sp-20:60px;
+
+  /* radii — the platform's four rounding steps + the pill */
+  --r-sm:6px;    /* pills inside dense tables, hash chips */
+  --r-md:10px;   /* inner cards, rows, buttons in tables */
+  --r-lg:14px;   /* the standard card */
+  --r-xl:16px;   /* feature / promo cards */
+  --r-pill:999px;
+
+  /* layout */
+  --container:1100px;      /* course pages */
+  --container-wide:1240px; /* teacher dashboard */
+  --gutter:20px;
+  --bp-narrow:820px;
+  --bp-wide:900px;
+}

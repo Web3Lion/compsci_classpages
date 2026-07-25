@@ -177,12 +177,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Malware. Malware that encrypts a victim's files and demands payment for the decryption key. Name it.\n\nSubmit as flag{answer} — one lowercase word.",
+        "hint": "The prompt already names what the attacker demands. Add the usual malware suffix.",
         "flagHash": "c3eab0cae2df20bf8a4b32c23cfe39e1d2e2f630a2c77d8b989431866e84712c" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Malware. Self-replicating malware that spreads across a network WITHOUT any user action. Name it.\n\nSubmit as flag{answer} — one lowercase word.",
+        "hint": "Four letters. It burrows through a network on its own, needing no host file to live in.",
         "flagHash": "5e71e44abcc73b58779ed4dd1faf938177c1e855d874532e4235d2cdc5e62b74" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Malware. Malware disguised as legitimate software to trick a user into running it. Name it.\n\nSubmit as flag{answer} — one lowercase word.",
+        "hint": "The Greek story is the wooden horse at Troy. One lowercase word — the adjective for that city.",
         "flagHash": "2e1c246c31b91f70ac8737c92773bbe13223720716f51b0a69614245134f57e5" }
     ]
   },
@@ -208,13 +211,16 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Adversaries. A threat actor motivated by a political or social cause rather than money.\n\nSubmit as flag{answer} — one lowercase word.",
+        "hint": "A portmanteau: hacker + the word for someone who campaigns for a cause.",
         "flagHash": "964498e1be46865ebc13d81c8f293e01e0cb1e1e5ed840b16e845070de0ad960" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Adversaries. A stealthy, well-funded, often state-sponsored attacker that maintains long-term access. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
         "hint": "Advanced Persistent Threat.",
+        "hint": "Three letters: Advanced Persistent ___.",
         "flagHash": "1e01ef12436e5142fb83ece5126a839e0d48dc1b42058bde32c08136f96ce5a7" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Adversaries. A threat that originates from an employee or trusted party inside the organization. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
+        "hint": "Two words. The call is coming from inside the building.",
         "flagHash": "0153707293c5f5aaf8bb1ae32ada44c96ed397e58bab74256b857c6ccae06d2e" }
     ]
   },
@@ -223,14 +229,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Access Control. The principle of giving each user only the access strictly required to do their job.\n\nSubmit as flag{two_words} with an underscore.",
+        "hint": "Not the access that's convenient — the smallest amount that still lets the job get done. Second word is a synonym for a special right.",
         "flagHash": "d83e6224bc301f25335532abb55ecbb617ec3ff9ceb738249e131fb38eb04be7" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Access Control. Splitting a critical task among multiple people so no single person can abuse it. Give the three words.\n\nSubmit as flag{three_words} with underscores.",
-        "hint": "separation of ___.",
+        "hint":"No single person should control a sensitive process end to end — split it so two people are required. Three words.",
         "flagHash": "9b0e0e768187bb2b1314b1cf873934d31c8a34efe92d53f13877fd375d41c863" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Access Control. Periodically moving employees between roles to detect fraud and reduce dependency. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
-        "hint": "job ___.",
+        "hint":"Periodically moving staff between duties so nobody permanently owns a sensitive process. It also surfaces fraud someone was hiding. Two words.",
         "flagHash": "b926fa8689daf701f3cf60de28c1b9270c2e93382051dc4a4a8657245be0278e" }
     ]
   },
@@ -239,13 +246,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Policies. The policy employees agree to that defines acceptable use of company systems. Give its three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        "hint": "Acceptable ___ Policy. You almost certainly signed one on your first day of school.",
         "flagHash": "ba63ae39ab2735990ef8e55a95377bbc2b90c5c63985547a190299ea820a0995" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Policies. The documented plan an organization follows when a security breach occurs. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
+        "hint": "Two words: the name for the event itself, then what the team does about it.",
         "flagHash": "0cfb3659b05dc1863002a8682073f4edb77a6c317ae3f55b3f8f548d438bce31" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Policies. The contract defining the uptime/response guarantees between a provider and customer. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        "hint": "Service Level Agreement.",
+        "hint": "Three letters. The contract that promises 99.9% uptime.",
         "flagHash": "60cc3dbe288a49749e3330314d484922022c8160086aa0111b2b7a89dafeea5e" }
     ]
   },
@@ -254,15 +263,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Security Training. Decode the best defense against social engineering:\n\nZmxhZ3tzZWN1cml0eV9hd2FyZW5lc3N9",
-        "hint": "Base64.",
+        "hint": "Base64 \u2014 decode it with CyberChef, or run atob(\"...\") in the browser console.",
         "flagHash": "2afb76f4eda450d04d551bd74bc9bdc4a8ba89c708297f3c491cfc73a8a05c96" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Security Training. Decode this exercise where staff receive fake phishing emails to test them:\n\nZmxhZ3twaGlzaGluZ19zaW11bGF0aW9ufQ==",
-        "hint": "Base64 — two words.",
+        "hint":"Decode the Base64. Two words: the safe fake-attack exercise IT sends to test whether staff click.",
         "flagHash": "197a13a782d2340b8c54bb174aeba4630d8a6a19c84cc0644d0abec13178f78e" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Security Training. Decode the organizational goal where security becomes everyone's shared habit:\n\nZmxhZ3tzZWN1cml0eV9jdWx0dXJlfQ==",
-        "hint": "Base64 — two words.",
+        "hint":"Decode the Base64. Two words for the shared mindset where everyone — not just IT — takes protection seriously.",
         "flagHash": "b3d49c361613108987fdd78fce67125093ca7f05f13e56224a1c83bccff58a1c" }
     ]
   },
@@ -282,7 +291,7 @@ window.COURSE_CONFIG.cyber2.ctf = {
         "flagHash": "5507990e56fe78d14dff799a9e9d0bb6cb722866a6ec2e76812977c5dca6003a" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Log Analysis. Same log line:\n\nNov 03 02:14:55 host sshd[2210]: Failed password for root from 198.51.100.77 port 55022 ssh2\n\nSubmit the attacker's source PORT as flag{port}.",
-        "hint": "The number after 'port'.",
+        "hint":"Read the log line carefully. You want the port on the connecting client's side, not the destination service port.",
         "flagHash": "904a9f8b0dcd781978eed1dbf05e525d1847d55e01efb0d84873fdc277a5d439" }
     ]
   },
@@ -333,12 +342,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Ports & Protocols. What default TCP port does HTTPS use?\n\nSubmit as flag{number}.",
+        "hint": "The secure sibling of port 80. Learn this pair together — it shows up on every certification exam.",
         "flagHash": "6330530366f15794e228e1b06447209953daab864b4e3643be8b90a8b3dc4081" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Ports & Protocols. What default TCP port does UNENCRYPTED HTTP use?\n\nSubmit as flag{number}.",
+        "hint": "The original web port from before TLS existed. Browsers assume it, so you almost never type it.",
         "flagHash": "f724c5f036071a8c0c1c6749ac4f26a4a5c3b857637a2769b9843fc577959dca" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Ports & Protocols. What default TCP port does SSH use for secure remote login?\n\nSubmit as flag{number}.",
+        "hint": "A low, even number under 25. SFTP and SCP ride on this same port.",
         "flagHash": "2fc3f5967a60f61e5d00b63396358303fbc67c215a182eadcda807272760b841" }
     ]
   },
@@ -347,13 +359,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Secure Zones. An isolated network segment that hosts public-facing servers, separated from the internal LAN. Give the three-letter term.\n\nSubmit as flag{term} (lowercase).",
+        "hint": "Three letters borrowed from military geography — the buffer strip between two hostile sides.",
         "flagHash": "695a06ff8342902975bb8bdb9811fa0dee537359e70c6d8d49ae9428d3d746b9" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Segmentation. Logically dividing one physical switch into isolated broadcast domains uses a ___. Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        "hint": "Four letters: take LAN and prefix the word meaning \"not physical\".",
         "flagHash": "c296b507a86580d4ee58bb6173cb7bac768d56c845efb04492c5dc0d47d4e174" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Zero Trust. The modern model that trusts no user or device by default, verifying every request. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
-        "hint": "___ trust.",
+        "hint":"The modern model that assumes the internal network is already compromised: verify every request, every time, no implicit confidence. Two words.",
         "flagHash": "c73298a200100932e47dfafa27568e743f25257aeed811dc3f303fced89741db" }
     ]
   },
@@ -379,9 +393,11 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — AAA. AAA stands for Authentication, Authorization, and ______.\n\nSubmit as flag{word} (lowercase).",
+        "hint": "The third A is the audit trail — recording what was done, when, and by whom.",
         "flagHash": "0e7332f9cc34e3aa219af4634ffbc171ca50b8dc4f55d4d198b879ca73a9ef3f" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — AAA. Verifying WHAT an authenticated user is allowed to do is which A of AAA? (one word)\n\nSubmit as flag{word} (lowercase).",
+        "hint": "Authentication proves who you are. This one decides what you're allowed to touch.",
         "flagHash": "e0f6519553979b886476cc5cdb737cc9b2499d51c61c0d01c007ee8f313320be" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — AAA. Name a common network protocol that provides centralized AAA for remote access. Give the six-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
@@ -394,14 +410,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Access Models. The access-control model that grants permissions based on a user's job role. Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        "hint": "Four letters ending in AC. Permissions attach to the job title, not the individual.",
         "flagHash": "81ec15816db6f25bc770ca98a52ec8d7e3cf0eeebf5998124655f9acdc8fd867" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Access Models. The strictest model where a central authority sets access via classifications/labels (e.g. military). Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        "hint": "Mandatory Access Control.",
+        "hint": "Three letters. The system enforces labels; users can't override them.",
         "flagHash": "0126f495eb054ee2114637e63cd1d82936b19e3a7f36843baa49cb47feeafd14" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Access Models. The flexible model granting access from user/resource/environment attributes evaluated by policy. Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        "hint": "Attribute-Based Access Control.",
+        "hint": "Four letters. Decisions come from properties — department, time, device.",
         "flagHash": "6a6cb2673df46570b181a670ee285f468b6cffea71c0dae489248da24b621fb5" }
     ]
   },
@@ -410,9 +427,11 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — MFA. MFA factors: something you know, something you have, and something you ______.\n\nSubmit as flag{word} (lowercase).",
+        "hint": "The biometric factor — fingerprint, face, iris. Three letters, and it's a verb.",
         "flagHash": "54085d06efce2149ff387a873c80fc8ceb733467b7b9a835325d1bbc5d63cddc" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — MFA. A password is which type of factor? Something you ______. (one word)\n\nSubmit as flag{word} (lowercase).",
+        "hint": "A password lives in your memory, not in your pocket and not on your body.",
         "flagHash": "bafca29e68ff2bc7fc54a5bd4bee00f1228729fc073c41d512e6be6b81d37e11" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — MFA. A time-based one-time code from an authenticator app uses which six-letter standard? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
@@ -442,10 +461,11 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — PKI. A digital document, issued by a Certificate Authority, that binds a public key to an identity.\n\nSubmit as flag{word} (lowercase).",
+        "hint": "One word — the file your browser inspects before it shows the padlock.",
         "flagHash": "688b4738274c19d562bc5475cd7eb265df8aa73afe87b7748ac04b258150ca07" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — PKI. The trusted entity that issues and signs digital certificates. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
-        "hint": "Its acronym is CA.",
+        "hint":"The trusted third party that issues and signs digital certificates. Two words.",
         "flagHash": "045616b0efbd99f4844dc360f62adb9799d948aa0e19578855c7d3a368eae4e9" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — PKI. The protocol (successor to SSL) that uses certificates to encrypt web traffic. Give the three-letter acronym.\n\nSubmit as flag{acronym}.",
@@ -458,13 +478,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Cryptography. Encryption that uses the SAME key to encrypt and decrypt is called ___ encryption. (one word)\n\nSubmit as flag{word} (lowercase).",
+        "hint": "One word meaning \"the same on both sides\". The opposite of a public/private key pair.",
         "flagHash": "0b84a426da5ad73abfd7f5e4a73a667621b374d6b8d3349074058a7f1ba9c8ed" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Cryptography. The symmetric-key encryption standard that replaced DES. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        "hint": "Three letters: Advanced ___ Standard, selected by NIST in 2001.",
         "flagHash": "d5200a238583c649d215d4c026336c142226e94ed04345cac72fb626da84c5b2" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Cryptography. The widely used ASYMMETRIC algorithm named after its three inventors. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        "hint": "Rivest, Shamir, Adleman.",
+        "hint": "Three letters — the initials of the three cryptographers who invented it.",
         "flagHash": "a061c4a101960f9d9d31a4f47d669a81d3ea0b63378b1f621d034c1d593b4533" }
     ]
   },
@@ -473,12 +495,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Security Foundations. The CIA triad: Confidentiality, Integrity, and ______.\n\nSubmit as flag{word} (lowercase).",
+        "hint": "The leg a DDoS attacks: your data is still secret and still intact, but nobody can reach it.",
         "flagHash": "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Security Foundations. Which CIA-triad property guarantees data has NOT been altered or tampered with?\n\nSubmit as flag{word} (lowercase).",
+        "hint": "A hash comparison protects this leg — same data out as went in.",
         "flagHash": "2f3d9851d23849572228eb2f2abb2c097a85090aaf63066e566d6584e366192e" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Attacks. A botnet floods a service so legitimate users lose access — attacking the Availability leg of the triad. Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        "hint": "Four letters. Not one attacker flooding the service, but thousands at once.",
         "flagHash": "da95c631b466fc86796850982341f91a7addba535a0bafdc9ea3589dbd4e2606" }
     ]
   },
@@ -504,13 +529,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Web Exploitation. The database query language that attackers target by injecting into web inputs. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        "hint": "Three letters. Say it out loud and it sounds like \"sequel\".",
         "flagHash": "f8a727f3002388bd72643884da6a084532307852d5c3d562505f529a13223e97" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Web Exploitation. A web server log shows:\n\nGET /login?user=admin'--&pass=x HTTP/1.1\n\nWhat class of attack is this?\n\nSubmit as flag{two_words} with an underscore.",
+        "hint": "That '-- comments out the rest of the query. Two words: the language, then what was done to it.",
         "flagHash": "262ea38fc0c2f783adc1ac3eb909446a9b37fe798a124bb4df93724de18f73aa" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Web Exploitation. Name the popular automated tool used to detect and exploit SQL injection.\n\nSubmit as flag{toolname} (lowercase).",
-        "hint": "sql + map.",
+        "hint":"The best-known open-source tool that automates finding and exploiting database injection flaws. Six letters.",
         "flagHash": "0b8bbfbb95c56df1c81619a9b99608934fa87f673af1bf131acd9f6c71352a2b" }
     ]
   },
@@ -527,7 +554,7 @@ window.COURSE_CONFIG.cyber2.ctf = {
         "flagHash": "529c509294e00e8f8fa602be5b90470ce200bff469bb5fa789657abfd52dd11a" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Incident Response. The final IR phase: a post-incident review to improve future response. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
-        "hint": "What did we ___ ___?",
+        "hint":"The final phase of incident response — the post-mortem where the team documents what went wrong so it doesn't repeat. Two words.",
         "flagHash": "fb07f740b203959c253837efb05c31a0af1f833215ab84043a54d9d17794d7a2" }
     ]
   },
@@ -536,6 +563,7 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Risk Management. Risk is commonly expressed as Likelihood × ______.\n\nSubmit as flag{word} (lowercase).",
+        "hint": "One word: how likely it is, multiplied by how badly it hurts.",
         "flagHash": "035cbccd7b32e1dcdab0cfb0c28cb235f43d516ffc15d8e2862e4d2fcceaa834" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Risk Management. Buying insurance to shift a risk to a third party is which risk response? (one word)\n\nSubmit as flag{word} (lowercase).",
@@ -543,6 +571,7 @@ window.COURSE_CONFIG.cyber2.ctf = {
         "flagHash": "550017e0ddd9353d3e8a45ddbca9ad68a460da57c92b818a55538a1dbc4a7e34" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Frameworks. Which U.S. agency publishes the widely used Cybersecurity Framework (CSF)? Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        "hint": "Four letters. A standards body under the U.S. Department of Commerce — it also ran the competition that chose AES.",
         "flagHash": "ee10e1a1da9cec8edeb64f8394e09abfe8ec4a578ee687944f3a3d3eb47f89dc" }
     ]
   },
@@ -551,15 +580,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Continuity. The metric for the maximum acceptable DOWNTIME before recovery. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        "hint": "Recovery TIME Objective.",
+        "hint": "Three letters. How long you can be down before it hurts.",
         "flagHash": "fe0f0d626e9ffebd86a32533175961ee83dba8bc65e9eb2cf4af36d9ee525531" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Continuity. The metric defining the maximum acceptable amount of DATA LOSS measured in time. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        "hint": "Recovery ___ Objective.",
+        "hint":"The metric for how much data loss is acceptable, measured as time since the last good backup. Three letters.",
         "flagHash": "a8d59db2337be852ac2477eb21c1e7e7fb884708c8cbf0462905f5de82a51031" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Continuity. The overall plan that keeps essential operations running during and after a disaster. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
-        "hint": "Business ___.",
+        "hint":"The broader plan that keeps the organization operating through a disaster. Disaster recovery is only one part of it. Two words.",
         "flagHash": "941d452a018eb351d8f9aad9b2cdb30a86073639efe394b9d068f070806ed7c9" }
     ]
   },
@@ -568,15 +597,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Portfolio. Decode the golden rule of a good portfolio:\n\nZmxhZ3tzaG93X3lvdXJfd29ya30=",
-        "hint": "Base64.",
+        "hint": "Base64 \u2014 decode it with CyberChef, or run atob(\"...\") in the browser console.",
         "flagHash": "a3f907250ab95ea8bb377ee09f88dc17b2a76b0e7aa3b1e383130cba13fe062a" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Portfolio. Decode this Base64 habit of strong professionals:\n\nZmxhZ3tkb2N1bWVudF9ldmVyeXRoaW5nfQ==",
-        "hint": "Base64.",
+        "hint": "Base64 \u2014 decode it with CyberChef, or run atob(\"...\") in the browser console.",
         "flagHash": "de0c86873c030d43b80598cd0c4b76fbab571c0f7cccdeee092e6fdc4b570091" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Portfolio. Decode this Base64 quality-assurance practice:\n\nZmxhZ3twZWVyX3Jldmlld30=",
-        "hint": "Base64 — two words.",
+        "hint":"Decode the Base64. Two words: having someone at your own level check your work before it ships.",
         "flagHash": "7e03112e1528664a9edb8ec90882ee67cd9b2bb4ff2854f4d8529f3ebc2909c5" }
     ]
   },
@@ -585,12 +614,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Portfolio. A concise one-page summary of your key skills and accomplishments.\n\nSubmit as flag{two_words} with an underscore.",
+        "hint": "Two words, informal. The document where you list your own wins so a teacher can write your recommendation.",
         "flagHash": "99c1684af15bd30071d669de11abc178de0e3006c35c52b5280413e3e2092cd9" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Career. The professional networking site where you publish your experience and connect with recruiters. (one word)\n\nSubmit as flag{word} (lowercase).",
+        "hint": "One word, no space, capital I in the middle. Owned by Microsoft.",
         "flagHash": "3288b4fbe3f74ae514beaba00684f4607157e172704a5b8f68587913de5bbdf8" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Portfolio. A curated collection of your work samples that proves your skills to employers. (one word)\n\nSubmit as flag{word} (lowercase).",
+        "hint": "One word. An artist has one and so does a developer — proof of work, not claims about it.",
         "flagHash": "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" }
     ]
   },
@@ -616,12 +648,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Certifications. The entry-level CompTIA security certification this course helps prepare you for.\n\nSubmit as flag{two_words} with an underscore.",
+        "hint": "Two words: the subject, then the symbol CompTIA adds. Spell the symbol out as a word.",
         "flagHash": "2e573dcb5716af6154ae28cd7f204d7f3ce8bcba8827a3b5c10d13d503e1ae4f" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Certifications. The CompTIA certification focused on networking fundamentals. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
+        "hint": "Same naming pattern as Security+, one rung earlier on the CompTIA path.",
         "flagHash": "02ea662396f423d1a47f04b026d8f0df8a78cc353e794a290d4b631c61f865a3" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Certifications. The CompTIA hands-on penetration-testing certification. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
+        "hint": "Two words. Shorten \"penetration testing\" the way the industry does, then add the usual CompTIA suffix spelled out.",
         "flagHash": "ff6709f9430b696ae327755d8fa7875855c08797fde8a31d9acf220c07d5e8cc" }
     ]
   },
@@ -630,12 +665,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — RWL. Observing a professional at work for a short period to learn about their role is called job ______.\n\nSubmit as flag{word} (lowercase).",
+        "hint": "You follow them everywhere, like their ___. Use the -ing form.",
         "flagHash": "6ca0e2c6c5fcabc3546ee25afe0ebb7533bbdb39e4b247057165643542881134" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — RWL. A temporary, often paid, supervised work experience in your field. (one word)\n\nSubmit as flag{word} (lowercase).",
+        "hint": "One word. The thing college students compete for every summer.",
         "flagHash": "7d02eb481cb8ea91cb3a04b8834ee3bda03c0b276d1b3ae85ed9fd0c2ebd94bd" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — RWL. A relationship where an experienced professional guides your career growth. (one word)\n\nSubmit as flag{word} (lowercase).",
+        "hint": "One word naming the relationship, not the person — the noun built from \"mentor\".",
         "flagHash": "a16f2e9988e29483b1ef2b8e16eb0608122d16b12d136c55c734f84c35fc6769" }
     ]
   },
@@ -644,15 +682,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
     "levels": [
       { "difficulty": "Easy", "points": 50,
         "prompt": "Objective — Mindset. Decode the mindset of every great cyber professional:\n\nZmxhZ3tuZXZlcl9zdG9wX2xlYXJuaW5nfQ==",
-        "hint": "Base64.",
+        "hint": "Base64 \u2014 decode it with CyberChef, or run atob(\"...\") in the browser console.",
         "flagHash": "10b22c3c3be40d829b83bda0e7739afbd365ea5d17f6be8d0e51fa5b39768e4b" },
       { "difficulty": "Medium", "points": 100,
         "prompt": "Objective — Mindset. Decode this Base64 trait of a lifelong learner:\n\nZmxhZ3tzdGF5X2N1cmlvdXN9",
-        "hint": "Base64 — two words.",
+        "hint":"Decode the Base64. Two words — the mindset that keeps a security career moving.",
         "flagHash": "28374844d073d0561320f03f3f9754381131ed67274c0ca6b5b6c03821907fcc" },
       { "difficulty": "Hard", "points": 150,
         "prompt": "Objective — Career. Decode this Base64 career advice:\n\nZmxhZ3tidWlsZF95b3VyX25ldHdvcmt9",
-        "hint": "Base64 — three words.",
+        "hint":"Decode the Base64. Three words — the career advice that relationships matter as much as certifications.",
         "flagHash": "e38b3ad0c1d7cf2035b32ef2c8b74c9e3c238ea0f8cb7e48515d9191501439e8" }
     ]
   }
@@ -866,18 +904,21 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
             "difficulty": "Easy",
             "points": 50,
             "prompt": "Malware that encrypts a victim's files and holds them hostage until a ransom is paid.\n\nSubmit as flag{answer} — one lowercase word.",
+            "hint": "It takes your data hostage and demands payment. The word combines the fee a kidnapper asks for with the ending in 'software'.",
             "flagHash": "c3eab0cae2df20bf8a4b32c23cfe39e1d2e2f630a2c77d8b989431866e84712c"
         },
         {
             "difficulty": "Medium",
             "points": 100,
             "prompt": "Malware disguised as a legitimate program to trick a user into installing it — named after a Greek war story.\n\nSubmit as flag{answer} — one lowercase word.",
+            "hint": "Think of the hollow wooden horse the Greeks wheeled into Troy — it looked like a gift.",
             "flagHash": "2e1c246c31b91f70ac8737c92773bbe13223720716f51b0a69614245134f57e5"
         },
         {
             "difficulty": "Hard",
             "points": 150,
             "prompt": "Self-replicating malware that spreads across a network on its own — no user action and no host file required.\n\nSubmit as flag{answer} — one lowercase word.",
+            "hint": "Unlike a virus it needs no host file and no click. It burrows through the network by itself — named after something that tunnels.",
             "flagHash": "5e71e44abcc73b58779ed4dd1faf938177c1e855d874532e4235d2cdc5e62b74"
         }
     ]
@@ -921,18 +962,21 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
             "difficulty": "Easy",
             "points": 50,
             "prompt": "An attacker motivated by a political or social cause rather than money.\n\nSubmit as flag{answer} — one lowercase word.",
+            "hint": "Combine 'hack' with the word for someone who campaigns for a cause.",
             "flagHash": "964498e1be46865ebc13d81c8f293e01e0cb1e1e5ed840b16e845070de0ad960"
         },
         {
             "difficulty": "Medium",
             "points": 100,
             "prompt": "A stealthy, well-resourced attacker (often nation-state backed) that maintains long-term access to a network. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+            "hint": "Three words describing an attacker that is Advanced, Persistent, and a Threat — give the three-letter acronym.",
             "flagHash": "1e01ef12436e5142fb83ece5126a839e0d48dc1b42058bde32c08136f96ce5a7"
         },
         {
             "difficulty": "Hard",
             "points": 150,
             "prompt": "A trusted employee or contractor who abuses their legitimate access to harm the organization.\n\nSubmit as flag{two_words} with an underscore.",
+            "hint": "The danger is already inside the building. Two words: someone on the inside, plus what they represent.",
             "flagHash": "0153707293c5f5aaf8bb1ae32ada44c96ed397e58bab74256b857c6ccae06d2e"
         }
     ]
@@ -995,7 +1039,7 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
       "hint": "Open ___ ___ Intelligence.", "flagHash": "607b00503c7e5203980e2f657b7493e52faaf49c99c42ec541f3b36ee1bd67da" },
     { "difficulty": "Hard", "points": 150,
       "prompt": "Objective — Scanning & Enumeration. In Nmap, which single flag turns on OS detection, version/service detection, default script scanning, and traceroute all at once? (include the dash)",
-      "hint": "One letter after a dash — “aggressive.”", "flagHash": "c274891790345c56cef3b53c026bdc48150948fa60c56306073d6fea7766ad6a" }
+      "hint":"Nmap's aggressive switch: OS detection, version detection, script scanning, and traceroute in one. Submit it exactly as you'd type it, dash included.", "flagHash": "c274891790345c56cef3b53c026bdc48150948fa60c56306073d6fea7766ad6a" }
   ]
 });
 window.COURSE_CONFIG.cyber2.ctf.challenges.push({
@@ -1006,7 +1050,7 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
       "hint": "You add it to food, too.", "flagHash": "63479ad69a090b258277ec8fba6f99419a2ffb248981510657c944ccd1148e97" },
     { "difficulty": "Medium", "points": 100,
       "prompt": "Objective — Password Cracking. Name the classic offline password-cracking tool named after a Biblical figure (type the full common name, e.g. “___ the ___”).",
-      "hint": "John the R______.", "flagHash": "96630fcc6c44b51662f217f8bee79f429984c61d41965f358a16c4ede783fabc" },
+      "hint":"A long-standing open-source password cracker named after a Victorian criminal. Three words.", "flagHash": "96630fcc6c44b51662f217f8bee79f429984c61d41965f358a16c4ede783fabc" },
     { "difficulty": "Hard", "points": 150,
       "prompt": "Objective — Password Cracking. What GPU-accelerated password-recovery tool is the NCL favorite for extremely high-speed hash cracking?",
       "hint": "“hash” + a word meaning cat.", "flagHash": "127e6fbfe24a750e72930c220a8e138275656b8e5d8f48a98c3c92df2caba935" }
@@ -1068,10 +1112,10 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
       "hint": "“Demilitarized zone.”", "flagHash": "a393efd3babafb0c48ef270d65b5c0c93882063811d40d43407723b8ded3c6c3" },
     { "difficulty": "Medium", "points": 100,
       "prompt": "Objective — Network Segmentation. Logically dividing one physical switch into several isolated broadcast domains is done with a ___. (four-letter acronym)",
-      "hint": "Virtual Local Area Network.", "flagHash": "c3b258168c41c0bce97616716bef315eeed33eb1142904bfe7f32eb392c7cf80" },
+      "hint": "Four letters. One physical switch, several logical networks.", "flagHash": "c3b258168c41c0bce97616716bef315eeed33eb1142904bfe7f32eb392c7cf80" },
     { "difficulty": "Hard", "points": 150,
       "prompt": "Objective — Defense in Depth. Layering multiple independent security controls so that if one fails the others still protect the asset is called 'defense in ___'. (one word)",
-      "hint": "How deep the layers go.", "flagHash": "ded32129b05bfc16ce501e654a169960583352cbc974824ed16ce94855904386" }
+      "hint":"One word. The layered-security doctrine stacks independent controls rather than lining them up — the phrase describes how far down they go.", "flagHash": "ded32129b05bfc16ce501e654a169960583352cbc974824ed16ce94855904386" }
   ]
 });
 window.COURSE_CONFIG.cyber2.ctf.challenges.push({
@@ -1085,7 +1129,7 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
       "hint": "Logging and auditing user actions.", "flagHash": "2a31aefa266db9cca794ee878f884a57bf190075ae0ed167b65b43e558b596ab" },
     { "difficulty": "Hard", "points": 150,
       "prompt": "Objective — Least Privilege. Granting a user only the minimum access required to perform their job, and nothing more, is the principle of ___ ___. (two words)",
-      "hint": "least ______.", "flagHash": "5b9cc3a4da689a7cc58007c6c32bfe1b35b73e7c1f5547d6df79799d001f4494" }
+      "hint":"The access principle: give each account exactly the permissions its job requires and nothing more. Two words.", "flagHash": "5b9cc3a4da689a7cc58007c6c32bfe1b35b73e7c1f5547d6df79799d001f4494" }
   ]
 });
 window.COURSE_CONFIG.cyber2.ctf.challenges.push({
@@ -1093,13 +1137,13 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
   "levels": [
     { "difficulty": "Easy", "points": 50,
       "prompt": "Objective — DoS. Flooding a server with traffic from a single source so legitimate users can no longer reach it is a ___ attack. (three-letter acronym)",
-      "hint": "Denial of Service.", "flagHash": "c1299854f2b209632ab22aeb848c24c2b02da4b37ecf93a830ee9c7f6f809924" },
+      "hint": "Three letters. One attacker, one source, one flooded server.", "flagHash": "c1299854f2b209632ab22aeb848c24c2b02da4b37ecf93a830ee9c7f6f809924" },
     { "difficulty": "Medium", "points": 100,
       "prompt": "Objective — DDoS. That same flooding attack launched simultaneously from thousands of compromised machines (a botnet) is a ___ attack. (four-letter acronym)",
-      "hint": "Distributed Denial of Service.", "flagHash": "deeb92f091caa8e2404885e30da06e8507eee571e81b062ef6723c4ec0b8ecf0" },
+      "hint": "Four letters. Same idea, but the traffic comes from everywhere at once.", "flagHash": "deeb92f091caa8e2404885e30da06e8507eee571e81b062ef6723c4ec0b8ecf0" },
     { "difficulty": "Hard", "points": 150,
       "prompt": "Objective — MitM. An attacker who secretly relays and can alter traffic between two parties who believe they are communicating directly is running a ___ attack. Type the full hyphenated name (e.g. word-word-the-word).",
-      "hint": "man-in-the-______.", "flagHash": "739d02fa6e447dd70c27887993f4fa6054147cb8a8a438a7c158d7b092331903" }
+      "hint":"An attacker silently relays — and possibly alters — traffic between two parties who believe they're talking directly. Hyphenated.", "flagHash": "739d02fa6e447dd70c27887993f4fa6054147cb8a8a438a7c158d7b092331903" }
   ]
 });
 window.COURSE_CONFIG.cyber2.ctf.challenges.push({
@@ -1110,7 +1154,7 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
       "hint": "Making input valid.", "flagHash": "98c41dcd20b86b86830ec0794559835614458ceaae0f0ec77a3ed1cd3a1f7d55" },
     { "difficulty": "Medium", "points": 100,
       "prompt": "Objective — Error Handling. Showing a generic message instead of a detailed stack trace when a program fails (so attackers learn nothing) is proper error ___. (one word)",
-      "hint": "How you handle an error.", "flagHash": "19ff8761fa648ade541f90a8ad63d989cff487c640eefe0c9d158c78b5d1134b" },
+      "hint":"One word: what secure code must do properly with errors, so failures don't leak stack traces or internal paths.", "flagHash": "19ff8761fa648ade541f90a8ad63d989cff487c640eefe0c9d158c78b5d1134b" },
     { "difficulty": "Hard", "points": 150,
       "prompt": "Objective — Separation of Duties. Splitting a critical task among multiple people so no single person can abuse it is called 'separation of ___'. (one word)",
       "hint": "Your job responsibilities.", "flagHash": "bb4ad70714e56e0192078ff46bae3ae73e04a55c21fedea9f31afde3cdc09baf" }
@@ -1411,7 +1455,7 @@ window.COURSE_CONFIG.cyber2.ctf.challenges.push({
       "hint": "Are you authorized?", "flagHash": "cbb82ebec6051b780ad26655ee48b5b42658c4ac49438888aac829e82195584f" },
     { "difficulty": "Medium", "points": 100,
       "prompt": "Objective — Directory Protocols. What protocol is used to query and modify directory services such as Active Directory? (four-letter acronym)",
-      "hint": "Lightweight Directory Access Protocol.", "flagHash": "f718933d8b6a5aed0e7f513f0075dead9ac208da3fde987d248562fc0b38016e" },
+      "hint": "Four letters. The protocol behind Active Directory lookups.", "flagHash": "f718933d8b6a5aed0e7f513f0075dead9ac208da3fde987d248562fc0b38016e" },
     { "difficulty": "Hard", "points": 150,
       "prompt": "Objective — Multifactor Authentication. Requiring a password PLUS a one-time code from your phone is an example of multi-factor authentication, commonly abbreviated as which three-letter acronym?",
       "hint": "___-Factor Authentication.", "flagHash": "cb0356a0532e824bd17b1ad6f24af01a2d9bbdda8891918ab6b91d9835f7c3ec" }
@@ -1575,8 +1619,8 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m1-cia", "module": 1, "title": "The CIA Triad", "category": "Foundations",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Foundational security knowledge. The CIA triad leg that ensures only authorized people can access information.\n\nSubmit as flag{word} (lowercase).", "hint": "The 'C' in CIA.", "flagHash": "c087a071e9e2f7c959cc4973c77b2c5feb17cead7dd031b00a94213f2664bfdc" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Foundational security knowledge. The CIA triad leg that ensures data has not been altered or tampered with.\n\nSubmit as flag{word} (lowercase).", "hint": "The 'I' in CIA.", "flagHash": "2f3d9851d23849572228eb2f2abb2c097a85090aaf63066e566d6584e366192e" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Foundational security knowledge. The CIA triad leg that ensures data and services are accessible when needed.\n\nSubmit as flag{word} (lowercase).", "hint": "The 'A' in CIA.", "flagHash": "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Foundational security knowledge. The CIA triad leg that ensures data has not been altered or tampered with.\n\nSubmit as flag{word} (lowercase).", "hint":"Data that hasn't been altered or tampered with in transit or at rest. Hashing is how you prove it.", "flagHash": "2f3d9851d23849572228eb2f2abb2c097a85090aaf63066e566d6584e366192e" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Foundational security knowledge. The CIA triad leg that ensures data and services are accessible when needed.\n\nSubmit as flag{word} (lowercase).", "hint":"Systems and data have to be reachable when people actually need them. A DDoS attack targets this leg of the triad.", "flagHash": "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1601,9 +1645,9 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m2-ethics", "module": 2, "title": "The Ethics Code", "category": "Ethics",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — The what and why of cyber ethics. The study of what is morally right and wrong is called ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Six letters.", "flagHash": "4f5aa4b3844ca967570aec04e2c900315a6b22b40fe710de60b27d22ccdc8fc4" },
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — The what and why of cyber ethics. The study of what is morally right and wrong is called ___.\n\nSubmit as flag{word} (lowercase).", "hint": "The branch of philosophy about right and wrong conduct \u2014 the root of the word \"ethical\".", "flagHash": "4f5aa4b3844ca967570aec04e2c900315a6b22b40fe710de60b27d22ccdc8fc4" },
       { "difficulty": "Medium", "points": 100, "prompt": "Objective — ACM Code of Ethics. Which organization publishes the Code of Ethics and Professional Conduct that guides computing professionals? Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Association for Computing Machinery.", "flagHash": "35891c846af4fbe2336dfa10e1778c4db3298ef3e364ea82a5427a8618bdc894" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Responsible cyber citizenship. Reporting wrongdoing or unethical activity despite personal risk is called ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Blowing the ___.", "flagHash": "21142ee75274040bb79254242d419572166433004ffd6c08a8da71fcbefbe76c" }
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Responsible cyber citizenship. Reporting wrongdoing or unethical activity despite personal risk is called ___.\n\nSubmit as flag{word} (lowercase).", "hint":"Reporting your own organization's wrongdoing to an outside authority — legally protected in many cases, but career-risky.", "flagHash": "21142ee75274040bb79254242d419572166433004ffd6c08a8da71fcbefbe76c" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1628,8 +1672,8 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m3-convert", "module": 3, "title": "Convert the Number", "category": "Number Systems",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — How computers store information. Convert this binary number to decimal:\n\n1010\n\nSubmit as flag{number}.", "hint": "8 + 0 + 2 + 0.", "flagHash": "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Binary, octal & hexadecimal. Convert this hexadecimal value to decimal:\n\n0x1F\n\nSubmit as flag{number}.", "hint": "16 + 15.", "flagHash": "403d60bfd7b665ebdd5ccc776d1dc852289ccbb96c5bae5cf074f32e7a87751a" },
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — How computers store information. Convert this binary number to decimal:\n\n1010\n\nSubmit as flag{number}.", "hint": "Place values from the left are 8, 4, 2, 1. Add the ones with a 1 above them.", "flagHash": "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Binary, octal & hexadecimal. Convert this hexadecimal value to decimal:\n\n0x1F\n\nSubmit as flag{number}.", "hint": "In hex the leading 1 is worth 16 and F is worth 15. Add them.", "flagHash": "403d60bfd7b665ebdd5ccc776d1dc852289ccbb96c5bae5cf074f32e7a87751a" },
       { "difficulty": "Hard", "points": 150, "prompt": "Objective — Binary encodes information. Decode this binary (8 bits per character) into text:\n\n01101000 01101001\n\nSubmit as flag{text}.", "hint": "Each 8-bit group is one ASCII character. 01101000 = 104 = 'h'.", "flagHash": "67916076f3a35700873e2946da257eb2e6e42ff7fdcfa963c0c1967c509f4225" }
     ]
   });
@@ -1657,7 +1701,7 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Basic cryptology concepts. Decode this ROT13 term:\n\nsynt{pvcure}\n\nApply ROT13 to reverse it.", "hint": "ROT13 shifts each letter 13 places.", "flagHash": "4d0a149ec4ee5f3815700964fe8b2dd598dbddc2b80c96e7877715c497ebe980" },
       { "difficulty": "Medium", "points": 100, "prompt": "Objective — Encryption vs encoding. Decode this Base64 term:\n\nZmxhZ3twbGFpbnRleHR9\n\nBase64 is encoding, not encryption.", "hint": "Base64 — the readable input to a cipher.", "flagHash": "7d53c4d8a96af6f9bdfca67ec0d1a2528270b3e3a7763eb0c322bbde753ce045" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Monoalphabetic vs polyalphabetic. A cipher that uses MULTIPLE substitution alphabets (like Vigenère) is called a ___ cipher.\n\nSubmit as flag{word} (lowercase).", "hint": "Poly = many.", "flagHash": "fce2dcd36e00cf9c443b37e2374c239b2ae0d5ccc2632f372bff092bd75db45f" }
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Monoalphabetic vs polyalphabetic. A cipher that uses MULTIPLE substitution alphabets (like Vigenère) is called a ___ cipher.\n\nSubmit as flag{word} (lowercase).", "hint": "Poly means many \u2014 this cipher rotates through several alphabets instead of one.", "flagHash": "fce2dcd36e00cf9c443b37e2374c239b2ae0d5ccc2632f372bff092bd75db45f" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1683,8 +1727,8 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m5-se", "module": 5, "title": "Name the Con", "category": "Social Engineering",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — How social engineering relates to cybersecurity. Fraudulent emails that trick users into revealing information or clicking malicious links.\n\nSubmit as flag{word} (lowercase).", "hint": "Sounds like 'fishing'.", "flagHash": "01fbd5d51977823ec0902cc5fdd02dacc020930a12ed4fe0a328d5b4edd6c6c8" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Social engineering attack types. Phishing carried out over a phone call or voicemail is called ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Voice + phishing.", "flagHash": "4b6fd979675437b6fbc5ed7d7eb6b8baaedb0c81a21f24a3768f0f7364d939e0" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Avoiding social engineering scams. Inventing a believable fake scenario to manipulate a victim (e.g. pretending to be IT support) is called ___.\n\nSubmit as flag{word} (lowercase).", "hint": "A made-up pretext.", "flagHash": "d16c145e707f262577ae6ff50359b1c7ce4df00c280d2b692a78bb9a147f9be4" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Social engineering attack types. Phishing carried out over a phone call or voicemail is called ___.\n\nSubmit as flag{word} (lowercase).", "hint":"Phishing carried out over a phone call. The first letter changes to match the medium.", "flagHash": "4b6fd979675437b6fbc5ed7d7eb6b8baaedb0c81a21f24a3768f0f7364d939e0" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Avoiding social engineering scams. Inventing a believable fake scenario to manipulate a victim (e.g. pretending to be IT support) is called ___.\n\nSubmit as flag{word} (lowercase).", "hint":"Inventing a believable backstory — “I'm from IT, I just need to verify your password” — so the target feels comfortable handing something over.", "flagHash": "d16c145e707f262577ae6ff50359b1c7ce4df00c280d2b692a78bb9a147f9be4" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1711,9 +1755,9 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m6-cli", "module": 6, "title": "The Command Line", "category": "Linux",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — GUI vs CLI. The text-based interface where you type commands instead of clicking is called the ___. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Command Line Interface.", "flagHash": "0396b5791be5a93a31be5a0b58aa3eb3d181ca907cd906378fdbb8f64f7fdb1c" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Basic Linux commands. Which command LISTS the files in the current directory?\n\nSubmit as flag{command} (lowercase).", "hint": "Two letters.", "flagHash": "df5ef263e44d43b0f92f9a48c689d1068724a91df52e602ad3f129c2d4a01c5e" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Basic Linux commands. Which command CHANGES your current directory?\n\nSubmit as flag{command} (lowercase).", "hint": "'change directory'.", "flagHash": "c0953f2e81ac4a2b9d1274810a2c213ec6dbf67c7681cbcd4add2337e2f1c5af" }
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — GUI vs CLI. The text-based interface where you type commands instead of clicking is called the ___. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Three letters. The opposite of a GUI — you type instead of click.", "flagHash": "0396b5791be5a93a31be5a0b58aa3eb3d181ca907cd906378fdbb8f64f7fdb1c" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Basic Linux commands. Which command LISTS the files in the current directory?\n\nSubmit as flag{command} (lowercase).", "hint": "Short for \"list\" \u2014 two letters you type constantly to see what is in a folder.", "flagHash": "df5ef263e44d43b0f92f9a48c689d1068724a91df52e602ad3f129c2d4a01c5e" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Basic Linux commands. Which command CHANGES your current directory?\n\nSubmit as flag{command} (lowercase).", "hint": "Two letters. It moves you from one folder into another.", "flagHash": "c0953f2e81ac4a2b9d1274810a2c213ec6dbf67c7681cbcd4add2337e2f1c5af" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1735,9 +1779,9 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m7-admin", "module": 7, "title": "Admin the System", "category": "Linux Admin",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — Basic file system commands. Which command displays the contents of a text file to the screen?\n\nSubmit as flag{command} (lowercase).", "hint": "Short for 'concatenate'.", "flagHash": "323dc0f68df5cfef77bfe45a3c4e54ddfa2cef8d83722f604acf46c6f30d9131" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Networking & packet capture. Which command-line tool captures and inspects network packets on an interface?\n\nSubmit as flag{command} (lowercase).", "hint": "'tcp dump'.", "flagHash": "5382f5ab29e9a406f1af3ec0dd2bb1bc70f8839f34608132798f4493a4e603c1" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — User & permission management. Which command changes a file's permissions (read/write/execute)?\n\nSubmit as flag{command} (lowercase).", "hint": "'change mode'.", "flagHash": "405f577adebd25f3aec09e0fbf6147489834388dca05a532a82b63b064e28a67" }
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — Basic file system commands. Which command displays the contents of a text file to the screen?\n\nSubmit as flag{command} (lowercase).", "hint": "Three letters. It also joins files end to end — hence the name.", "flagHash": "323dc0f68df5cfef77bfe45a3c4e54ddfa2cef8d83722f604acf46c6f30d9131" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Networking & packet capture. Which command-line tool captures and inspects network packets on an interface?\n\nSubmit as flag{command} (lowercase).", "hint":"The classic command-line packet capture tool on Linux — Wireshark's terminal-only ancestor.", "flagHash": "5382f5ab29e9a406f1af3ec0dd2bb1bc70f8839f34608132798f4493a4e603c1" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — User & permission management. Which command changes a file's permissions (read/write/execute)?\n\nSubmit as flag{command} (lowercase).", "hint":"A 5-letter Linux command that edits read/write/execute permissions. Often used with numbers like 755.", "flagHash": "405f577adebd25f3aec09e0fbf6147489834388dca05a532a82b63b064e28a67" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1759,9 +1803,9 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m8-win", "module": 8, "title": "Windows Admin", "category": "Windows Admin",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — Windows Command Prompt. What is the classic Windows command-line interpreter, launched by typing its three-letter name into Run?\n\nSubmit as flag{name} (lowercase).", "hint": "c-m-d.", "flagHash": "d7f3235a254632fd6278ac69ccba6ae886fcc22b5ee41b72a1668f09a0337b8e" },
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — Windows Command Prompt. What is the classic Windows command-line interpreter, launched by typing its three-letter name into Run?\n\nSubmit as flag{name} (lowercase).", "hint": "Three letters, typed into the Run box. Not PowerShell — the older one.", "flagHash": "d7f3235a254632fd6278ac69ccba6ae886fcc22b5ee41b72a1668f09a0337b8e" },
       { "difficulty": "Medium", "points": 100, "prompt": "Objective — Windows administration. What is Microsoft's more powerful scripting shell (successor to cmd) for automating admin tasks?\n\nSubmit as flag{word} (lowercase).", "hint": "'Power' + a word for a terminal.", "flagHash": "45e1b0cb5fcd3f50d7e90a9458b5dfdac49e4842414273f764a24f9c3d4e6efe" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Group management. What Windows directory service stores users, groups, and computers and is central to enterprise account management? Give the two words.\n\nSubmit as flag{two_words} with an underscore.", "hint": "Active ___.", "flagHash": "7c1f5fb2f4a26b42975d51f91c2f9cbcffcf5e9b5903a0765210344a00632a8b" }
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Group management. What Windows directory service stores users, groups, and computers and is central to enterprise account management? Give the two words.\n\nSubmit as flag{two_words} with an underscore.", "hint":"Microsoft's centralized service for managing users, computers, and group policy across a Windows domain. Two words.", "flagHash": "7c1f5fb2f4a26b42975d51f91c2f9cbcffcf5e9b5903a0765210344a00632a8b" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1784,7 +1828,7 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m9-ncl", "module": 9, "title": "Game On", "category": "NCL",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — NCL competition. What does 'NCL' stand for? Give the three words.\n\nSubmit as flag{three_words} with underscores.", "hint": "National ___ League.", "flagHash": "3212383c7d281b5dd34552bf45195dc477bb462bce8e62be085e003715bba5c9" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Security+ application. Which vendor publishes the Security+ certification that NCL skills help prepare you for?\n\nSubmit as flag{vendor} (lowercase).", "hint": "Comp___.", "flagHash": "aebe053e62f3f1071dacbf150bfa2d4bd56d9e34d10545da76658c9c6c956f9e" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Security+ application. Which vendor publishes the Security+ certification that NCL skills help prepare you for?\n\nSubmit as flag{vendor} (lowercase).", "hint":"The vendor-neutral certifying body behind A+, Network+, and Security+.", "flagHash": "aebe053e62f3f1071dacbf150bfa2d4bd56d9e34d10545da76658c9c6c956f9e" },
       { "difficulty": "Hard", "points": 150, "prompt": "Objective — NCL domains. The NCL domain focused on gathering intel from public sources uses which five-letter acronym?\n\nSubmit as flag{acronym} (lowercase).", "hint": "Open-Source Intelligence.", "flagHash": "3fc15149e5c1961d82e51cdad33971ac2a87aa79e609c6f425d47bbc05bbb365" }
     ]
   });
@@ -1808,8 +1852,8 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m10-net", "module": 10, "title": "Layers & Addresses", "category": "Networking",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — OSI model. How many layers are in the OSI model?\n\nSubmit as flag{number}.", "hint": "Physical up to Application.", "flagHash": "5583b3ce3b42644490f323edfc1da538d0c41d26ce150a65e700b3b6d11f651f" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Networking terminology. Which layer-3 protocol provides the addresses that route packets across the internet? Give the two-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "___ address.", "flagHash": "b7dd261872f3a6bd653e0add60842b13ba49f9e8743ebbb426002d17641c3da2" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — OSI model layers. Which OSI layer (by name) is responsible for reliable end-to-end delivery, using TCP?\n\nSubmit as flag{word} (lowercase).", "hint": "Layer 4.", "flagHash": "4d1477a3f1d2dcbf8954946fc70fa848cffe609deea649a1de7e99db056a2ccc" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Networking terminology. Which layer-3 protocol provides the addresses that route packets across the internet? Give the two-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint":"The layer-3 logical address that identifies a device on a network. Two letters.", "flagHash": "b7dd261872f3a6bd653e0add60842b13ba49f9e8743ebbb426002d17641c3da2" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — OSI model layers. Which OSI layer (by name) is responsible for reliable end-to-end delivery, using TCP?\n\nSubmit as flag{word} (lowercase).", "hint":"OSI layer 4 — where TCP and UDP live, and where ports and reliable end-to-end delivery are handled.", "flagHash": "4d1477a3f1d2dcbf8954946fc70fa848cffe609deea649a1de7e99db056a2ccc" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1834,7 +1878,7 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m11-mal", "module": 11, "title": "Know the Threat", "category": "Malware & Exploits",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Types of malware. Malware that encrypts your files and demands payment to unlock them.\n\nSubmit as flag{word} (lowercase).", "hint": "'ransom' + 'ware'.", "flagHash": "c3eab0cae2df20bf8a4b32c23cfe39e1d2e2f630a2c77d8b989431866e84712c" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Vulnerabilities vs exploits. A weakness in a system is a vulnerability; the code or technique that takes advantage of it is called an ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Attackers 'exploit' a flaw.", "flagHash": "98821dc83bab62853f12d3050b49f6d6d6dfe4038e570c915ea2459e798ee88d" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Vulnerabilities vs exploits. A weakness in a system is a vulnerability; the code or technique that takes advantage of it is called an ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Seven letters. The code that takes advantage of a specific flaw.", "flagHash": "98821dc83bab62853f12d3050b49f6d6d6dfe4038e570c915ea2459e798ee88d" },
       { "difficulty": "Hard", "points": 150, "prompt": "Objective — Vulnerabilities. A flaw unknown to the vendor, with no patch available yet, is called a ___-day vulnerability.\n\nSubmit as flag{word} (lowercase).", "hint": "Days since the vendor knew = 0.", "flagHash": "ac9874bc3b6204632610ff73ee5698c0388bce80ba1f493f91e309bbbe2a06ed" }
     ]
   });
@@ -1857,9 +1901,9 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m12-sql", "module": 12, "title": "Query the Database", "category": "SQL & Databases",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — Basic SQL. Which SQL keyword RETRIEVES data from a table?\n\nSubmit as flag{keyword} (lowercase).", "hint": "SELECT ... FROM ...", "flagHash": "604028290213f435d1278a005c3c5a5fbbadc0aeefe0c116eb2f7ea1230451a2" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Database structure. In a relational database, a single record (horizontal entry) in a table is called a ___.\n\nSubmit as flag{word} (lowercase).", "hint": "A row is also called a ___.", "flagHash": "abe5b34eb94c38ec1dc3e0c951f0ba8a4fa7633a8338ee339cb362728f7e1dfd" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Database security. Injecting malicious SQL through a web input to manipulate the database is called SQL ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Attackers 'inject' code.", "flagHash": "f12d2b3415eca631fd6b8726f5f357abad758199e0b4a73cee13c98719d52230" }
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — Basic SQL. Which SQL keyword RETRIEVES data from a table?\n\nSubmit as flag{keyword} (lowercase).", "hint": "The first keyword of nearly every query you'll ever write.", "flagHash": "604028290213f435d1278a005c3c5a5fbbadc0aeefe0c116eb2f7ea1230451a2" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Database structure. In a relational database, a single record (horizontal entry) in a table is called a ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Three letters. A table's horizontal entry — one complete record.", "flagHash": "abe5b34eb94c38ec1dc3e0c951f0ba8a4fa7633a8338ee339cb362728f7e1dfd" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Database security. Injecting malicious SQL through a web input to manipulate the database is called SQL ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Nine letters. The attacker's input becomes part of the query itself.", "flagHash": "f12d2b3415eca631fd6b8726f5f357abad758199e0b4a73cee13c98719d52230" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -1882,8 +1926,8 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m13-prep", "module": 13, "title": "Level Up", "category": "Prep for Cyber II",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Career readiness. The entry-level CompTIA certification that Cyber II helps prepare you for. Give the two words.\n\nSubmit as flag{two_words} with an underscore.", "hint": "___ plus.", "flagHash": "2e573dcb5716af6154ae28cd7f204d7f3ce8bcba8827a3b5c10d13d503e1ae4f" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Continued learning. Decode this mindset every cyber pro needs:\n\nZmxhZ3tuZXZlcl9zdG9wX2xlYXJuaW5nfQ==\n\n(It's Base64.)", "hint": "Base64 — three words.", "flagHash": "10b22c3c3be40d829b83bda0e7739afbd365ea5d17f6be8d0e51fa5b39768e4b" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Hands-on practice. Name the national cyber competition (three words) you'll compete in during Cyber II to sharpen real skills.\n\nSubmit as flag{three_words} with underscores.", "hint": "National ___ League.", "flagHash": "3212383c7d281b5dd34552bf45195dc477bb462bce8e62be085e003715bba5c9" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Continued learning. Decode this mindset every cyber pro needs:\n\nZmxhZ3tuZXZlcl9zdG9wX2xlYXJuaW5nfQ==\n\n(It's Base64.)", "hint":"Decode the Base64. Three words about staying current in a field that changes every year.", "flagHash": "10b22c3c3be40d829b83bda0e7739afbd365ea5d17f6be8d0e51fa5b39768e4b" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Hands-on practice. Name the national cyber competition (three words) you'll compete in during Cyber II to sharpen real skills.\n\nSubmit as flag{three_words} with underscores.", "hint":"Three words. This module's competition is referred to by its initials throughout — expand them.", "flagHash": "3212383c7d281b5dd34552bf45195dc477bb462bce8e62be085e003715bba5c9" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -2014,8 +2058,8 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m1-defense", "module": 1, "title": "Defense Basics", "category": "Foundations",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Personal information security. The secret word or phrase you use to log in to an account.\n\nSubmit as flag{word} (lowercase).", "hint": "You type it to sign in.", "flagHash": "96b5fddda749f35d9a65a86c361df2192719f5d933ce22d46eb470bf8ffa1c62" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Personal security. Requiring a second proof (like a phone code) in addition to a password. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Multi-Factor Authentication.", "flagHash": "b54b228a7dd04447468f32451d10e2a025f9bb5775ae2b74ef2cb377eadbed73" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Foundational knowledge. Software designed to detect and remove malicious programs is called ___ software.\n\nSubmit as flag{word} (lowercase).", "hint": "'anti' + a threat name.", "flagHash": "a48a572a3d37576eb1bd74ec613f4006a8ce60e1aa8948b5fe28ac5c82c6c78f" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Personal security. Requiring a second proof (like a phone code) in addition to a password. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Three letters. Something you know, plus something you have.", "flagHash": "b54b228a7dd04447468f32451d10e2a025f9bb5775ae2b74ef2cb377eadbed73" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Foundational knowledge. Software designed to detect and remove malicious programs is called ___ software.\n\nSubmit as flag{word} (lowercase).", "hint":"Software that scans for and removes known malicious programs, traditionally by matching signatures. One word.", "flagHash": "a48a572a3d37576eb1bd74ec613f4006a8ce60e1aa8948b5fe28ac5c82c6c78f" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -2029,16 +2073,16 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m3-units", "module": 3, "title": "Bits & Bytes", "category": "Number Systems",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — How computers store data. How many bits are in one byte?\n\nSubmit as flag{number}.", "hint": "2 to the 3rd.", "flagHash": "b4d955af2fe6d0058b4f20a8f4bfb87b4d280263eaf0ed9e082d857c9b2b9dcb" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Number systems. What is the largest decimal value a single byte (8 bits) can hold?\n\nSubmit as flag{number}.", "hint": "2^8 minus 1.", "flagHash": "2704e8a84e4552cc0f7971e8da4d41cd3cfc18a64323a0ea33d7a02cd6c25c95" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Hexadecimal. How many bits does one hexadecimal digit represent?\n\nSubmit as flag{number}.", "hint": "16 = 2^?", "flagHash": "7be5aec942dbdcfb4e21cd12dd137de80acf61b69c924a3500a50673253943c2" }
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — How computers store data. How many bits are in one byte?\n\nSubmit as flag{number}.", "hint": "Two to the third power \u2014 the number of bits in one byte.", "flagHash": "b4d955af2fe6d0058b4f20a8f4bfb87b4d280263eaf0ed9e082d857c9b2b9dcb" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Number systems. What is the largest decimal value a single byte (8 bits) can hold?\n\nSubmit as flag{number}.", "hint": "Eight bits give 256 possible values, but counting starts at 0.", "flagHash": "2704e8a84e4552cc0f7971e8da4d41cd3cfc18a64323a0ea33d7a02cd6c25c95" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Hexadecimal. How many bits does one hexadecimal digit represent?\n\nSubmit as flag{number}.", "hint": "One hex digit covers 16 values. How many bits make 16 combinations?", "flagHash": "7be5aec942dbdcfb4e21cd12dd137de80acf61b69c924a3500a50673253943c2" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m4-keys", "module": 4, "title": "Keys & Codes", "category": "Cryptology",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Cryptology basics. In a Caesar cipher, the number of positions each letter is shifted is called the ___.\n\nSubmit as flag{word} (lowercase).", "hint": "It unlocks the cipher.", "flagHash": "d4a44801327f6bdbad722255e7dbad5b319afb83fb8b50d18b6b6ec7d33e6963" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Cryptography. Encryption that uses ONE shared secret key for both encrypting and decrypting is called ___ encryption.\n\nSubmit as flag{word} (lowercase).", "hint": "Same key both ways.", "flagHash": "0b84a426da5ad73abfd7f5e4a73a667621b374d6b8d3349074058a7f1ba9c8ed" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Cryptography. Encryption that uses ONE shared secret key for both encrypting and decrypting is called ___ encryption.\n\nSubmit as flag{word} (lowercase).", "hint":"One shared key both encrypts and decrypts. AES is the standard example.", "flagHash": "0b84a426da5ad73abfd7f5e4a73a667621b374d6b8d3349074058a7f1ba9c8ed" },
       { "difficulty": "Hard", "points": 150, "prompt": "Objective — Cryptography. A fixed-length, one-way fingerprint of data (irreversible) is called a ___.\n\nSubmit as flag{word} (lowercase).", "hint": "MD5 and SHA produce these.", "flagHash": "deaed1f0d22fe5f2c4aa644d8fa1a50028d36f4e36358e9ea9545ec274adaa4e" }
     ]
   });
@@ -2046,16 +2090,16 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m5-targets", "module": 5, "title": "Know the Lure", "category": "Social Engineering",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Social engineering. Phishing sent as a text message is called ___.\n\nSubmit as flag{word} (lowercase).", "hint": "SMS + phishing.", "flagHash": "b9bb8b204aa16be3161039645fddb546dc78ab8d571114a6a7806433784cbb82" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Attack types. A phishing attack that targets a specific individual with personalized details is called ___ phishing.\n\nSubmit as flag{word} (lowercase).", "hint": "Like a spear, aimed at one target.", "flagHash": "701b15566fb67377f1e066a3ea32c396d8c751d8107786cf8309d84cea145aaa" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Attack types. A phishing attack that targets a specific individual with personalized details is called ___ phishing.\n\nSubmit as flag{word} (lowercase).", "hint": "Not a wide net — one carefully chosen person, researched first.", "flagHash": "701b15566fb67377f1e066a3ea32c396d8c751d8107786cf8309d84cea145aaa" },
       { "difficulty": "Hard", "points": 150, "prompt": "Objective — Attack types. Phishing that targets a high-profile executive (a 'big fish') is called ___.\n\nSubmit as flag{word} (lowercase).", "hint": "Hunting the biggest fish.", "flagHash": "ba23888f3dc8b11a72c8c06e9caddbcb2c8e31d5e6247472539987b8c5e43bd1" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m6-fs", "module": 6, "title": "Filesystem Facts", "category": "Linux",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — The filesystem. In Linux, the very top of the filesystem is represented by which single character?\n\nSubmit as flag{symbol}.", "hint": "A forward slash.", "flagHash": "108e1e1ccc9312925c008fb235e0bf8581d62253440fa920b03f9c97045a8b8c" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — CLI navigation. Which shortcut always refers to the current user's home directory?\n\nSubmit as flag{symbol}.", "hint": "One character, above the Tab key.", "flagHash": "0734fe3a6e5f58378949e8f56859624e36498b92f3f5d946187c95bdc5b0b4c1" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Basic commands. Which command creates an empty file or updates its timestamp?\n\nSubmit as flag{command} (lowercase).", "hint": "'touch' it.", "flagHash": "5cb771e2ee27334891b49db43f8a90e958b00708b5baaef45808f1abb52396b6" }
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — The filesystem. In Linux, the very top of the filesystem is represented by which single character?\n\nSubmit as flag{symbol}.", "hint": "A single character. It's also what separates every folder in a path.", "flagHash": "108e1e1ccc9312925c008fb235e0bf8581d62253440fa920b03f9c97045a8b8c" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — CLI navigation. Which shortcut always refers to the current user's home directory?\n\nSubmit as flag{symbol}.", "hint": "One character, top-left of the keyboard. Shorthand for your home folder.", "flagHash": "0734fe3a6e5f58378949e8f56859624e36498b92f3f5d946187c95bdc5b0b4c1" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Basic commands. Which command creates an empty file or updates its timestamp?\n\nSubmit as flag{command} (lowercase).", "hint": "Five letters. The name suggests contact without changing anything.", "flagHash": "5cb771e2ee27334891b49db43f8a90e958b00708b5baaef45808f1abb52396b6" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -2063,47 +2107,47 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — System administration. Which command runs another command with superuser (root) privileges?\n\nSubmit as flag{command} (lowercase).", "hint": "'super user do'.", "flagHash": "85094f96a9f5ca2a33e107c0c9cf13203aecc8dfa7af28036ded3c0d7631b575" },
       { "difficulty": "Medium", "points": 100, "prompt": "Objective — User management. Which file stores the list of user accounts on a Linux system? Give the full path.\n\nSubmit as flag{/path}.", "hint": "In /etc/, companion to shadow.", "flagHash": "748159bca73d8c555fe4b00c73f15f2362a347b919c610ccf98ee1fb3da5455a" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Process management. Which command shows currently running processes?\n\nSubmit as flag{command} (lowercase).", "hint": "Two letters — 'process status'.", "flagHash": "be7595c0f12b250b68f6ab6b6ae30639f7cd896ab76ace462047f8fe34515c82" }
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Process management. Which command shows currently running processes?\n\nSubmit as flag{command} (lowercase).", "hint": "Two letters. It answers \"what is running right now?\"", "flagHash": "be7595c0f12b250b68f6ab6b6ae30639f7cd896ab76ace462047f8fe34515c82" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m8-winfacts", "module": 8, "title": "Windows Know-How", "category": "Windows Admin",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Windows basics. The hierarchical database that stores Windows settings and configuration is called the ___.\n\nSubmit as flag{word} (lowercase).", "hint": "reg____.", "flagHash": "98b5e4f1518d0e646cd58cddd3944c01ce130473468a0a0123fa53019390cdf4" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — File systems. What is the default modern file system used by Windows? Give the four-letter name.\n\nSubmit as flag{name} (lowercase).", "hint": "New Technology File System.", "flagHash": "97d251c069ed02ef7e1cdb4b8998fbc671fc2c213e17c55d41fa639f4c789e9d" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Command line. Which cmd command shows a computer's IP configuration?\n\nSubmit as flag{command} (lowercase).", "hint": "'ip config'.", "flagHash": "189afbe00a674e2d78c03c3812e6f5d6bd580ebc90f3057e1d2cb26b1699dadc" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — File systems. What is the default modern file system used by Windows? Give the four-letter name.\n\nSubmit as flag{name} (lowercase).", "hint": "Four letters, ending in FS. Windows' modern replacement for FAT32.", "flagHash": "97d251c069ed02ef7e1cdb4b8998fbc671fc2c213e17c55d41fa639f4c789e9d" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Command line. Which cmd command shows a computer's IP configuration?\n\nSubmit as flag{command} (lowercase).", "hint":"The Windows command that prints your adapter's address details. On Linux you'd reach for `ip addr` instead.", "flagHash": "189afbe00a674e2d78c03c3812e6f5d6bd580ebc90f3057e1d2cb26b1699dadc" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m9-nclfacts", "module": 9, "title": "Competition Ready", "category": "NCL",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — NCL. In a CTF, the secret string you submit to prove you solved a challenge is called a ___.\n\nSubmit as flag{word} (lowercase).", "hint": "It's what this whole game captures.", "flagHash": "c28e44c10684c0187228dda2f9f0e1ee13623b4468c5d684a5124332706f857e" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — NCL scanning domain. Which tool scans a host to discover open ports and services?\n\nSubmit as flag{tool} (lowercase).", "hint": "'network mapper'.", "flagHash": "a8043f1361355b179941e0f023f504d372719d64213189f4f7efc136cc601a2b" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — NCL tools. Which web-based tool decodes, encodes, and transforms data (the 'cyber Swiss-army knife')?\n\nSubmit as flag{toolname} (lowercase).", "hint": "Cyber + a cooking place.", "flagHash": "8c1ed041d1c82dbb252a0dbb64671344e9ef31c93e1d7698e0f5460f8e38d43f" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — NCL scanning domain. Which tool scans a host to discover open ports and services?\n\nSubmit as flag{tool} (lowercase).", "hint":"The go-to open-source scanner for discovering live hosts, open ports, and running services.", "flagHash": "a8043f1361355b179941e0f023f504d372719d64213189f4f7efc136cc601a2b" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — NCL tools. Which web-based tool decodes, encodes, and transforms data (the 'cyber Swiss-army knife')?\n\nSubmit as flag{toolname} (lowercase).", "hint":"GCHQ's free browser tool for chaining encode/decode operations into a saved “recipe”. You'll use it constantly in NCL.", "flagHash": "8c1ed041d1c82dbb252a0dbb64671344e9ef31c93e1d7698e0f5460f8e38d43f" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m10-netfacts", "module": 10, "title": "Network Numbers", "category": "Networking",
     "levels": [
-      { "difficulty": "Easy", "points": 50, "prompt": "Objective — Networking terms. A unique address burned into a network card, written like 00:1A:2B:3C:4D:5E, is called a ___ address.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Media Access Control.", "flagHash": "0126f495eb054ee2114637e63cd1d82936b19e3a7f36843baa49cb47feeafd14" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Protocols. Which protocol translates a domain name like google.com into an IP address? Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Domain Name System.", "flagHash": "91c62aef53d9904503cebc53ad67c728716b5728b5cab6ed9601caf62ef178da" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Addressing. What is the loopback IP address that always refers to your own machine?\n\nSubmit as flag{ip.address}.", "hint": "127.0.0.___", "flagHash": "03f990510f8d903f3584165553ec31f1c2ce25c7cacbd6c61249af8fceda402b" }
+      { "difficulty": "Easy", "points": 50, "prompt": "Objective — Networking terms. A unique address burned into a network card, written like 00:1A:2B:3C:4D:5E, is called a ___ address.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Three letters. Burned into the hardware — layer 2, not layer 3.", "flagHash": "0126f495eb054ee2114637e63cd1d82936b19e3a7f36843baa49cb47feeafd14" },
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Protocols. Which protocol translates a domain name like google.com into an IP address? Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Three letters. Often called the internet's phone book.", "flagHash": "91c62aef53d9904503cebc53ad67c728716b5728b5cab6ed9601caf62ef178da" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Addressing. What is the loopback IP address that always refers to your own machine?\n\nSubmit as flag{ip.address}.", "hint": "The loopback address every machine uses for itself \u2014 it ends in a single 1.", "flagHash": "03f990510f8d903f3584165553ec31f1c2ce25c7cacbd6c61249af8fceda402b" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m11-malfacts", "module": 11, "title": "Threat Intel", "category": "Malware & Exploits",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Malware types. A network of compromised computers controlled by an attacker is called a ___.\n\nSubmit as flag{word} (lowercase).", "hint": "'robot' + 'network'.", "flagHash": "637347b57a1525df08c69264a7597e0404be95250746028e5f43bd7caa22ec5d" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Attacks. Flooding a server with traffic from many machines to knock it offline is a ___ attack. Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Distributed Denial of Service.", "flagHash": "da95c631b466fc86796850982341f91a7addba535a0bafdc9ea3589dbd4e2606" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Vulnerabilities. Malware hidden inside seemingly legitimate software is named after a famous Greek ___.\n\nSubmit as flag{word} (lowercase).", "hint": "The wooden ___ of Troy.", "flagHash": "b0a44b47a826666e0b5deefb3bb16a55daf57f048ae92e3aba9390b625c501b7" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Attacks. Flooding a server with traffic from many machines to knock it offline is a ___ attack. Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).", "hint": "Four letters. A flood from a botnet, not from one machine.", "flagHash": "da95c631b466fc86796850982341f91a7addba535a0bafdc9ea3589dbd4e2606" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Vulnerabilities. Malware hidden inside seemingly legitimate software is named after a famous Greek ___.\n\nSubmit as flag{word} (lowercase).", "hint":"The Greeks hid soldiers inside a gift to get past the walls of Troy — this malware type is named after that gift.", "flagHash": "b0a44b47a826666e0b5deefb3bb16a55daf57f048ae92e3aba9390b625c501b7" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "id": "c1-m12-sqlfacts", "module": 12, "title": "Data Handling", "category": "SQL & Databases",
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Databases. What does SQL stand for? Give the three words.\n\nSubmit as flag{three_words} with underscores.", "hint": "Structured ___ Language.", "flagHash": "fc1c9e99d4ef154c1d49425339af67f303bd0ba38b810e6baf9fc7402978f8f1" },
-      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Database structure. A column (or set) that uniquely identifies each row in a table is the ___ key. Give the word.\n\nSubmit as flag{word} (lowercase).", "hint": "The 'main' key.", "flagHash": "3eaa4ce0517d9fcb6d6f44cc09bfe3e3929faab3d09174d3cccf98dd00c576c6" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Database security. Which SQL keyword permanently removes an entire table? \n\nSubmit as flag{keyword} (lowercase).", "hint": "'DROP TABLE'.", "flagHash": "7b854cc6dd581aa9a81ef1fbc1ba27ea95197f1010d47ab0113abd73130b13bd" }
+      { "difficulty": "Medium", "points": 100, "prompt": "Objective — Database structure. A column (or set) that uniquely identifies each row in a table is the ___ key. Give the word.\n\nSubmit as flag{word} (lowercase).", "hint":"The column that uniquely identifies each row in a table. Every table should have exactly one.", "flagHash": "3eaa4ce0517d9fcb6d6f44cc09bfe3e3929faab3d09174d3cccf98dd00c576c6" },
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Database security. Which SQL keyword permanently removes an entire table? \n\nSubmit as flag{keyword} (lowercase).", "hint": "Four letters. Harsher than DELETE — the table itself is gone.", "flagHash": "7b854cc6dd581aa9a81ef1fbc1ba27ea95197f1010d47ab0113abd73130b13bd" }
     ]
   });
 window.COURSE_CONFIG.cyber1.ctf.challenges.push({
@@ -2111,7 +2155,7 @@ window.COURSE_CONFIG.cyber1.ctf.challenges.push({
     "levels": [
       { "difficulty": "Easy", "points": 50, "prompt": "Objective — Career readiness. A short, one-page document summarizing your skills and experience for employers.\n\nSubmit as flag{word} (lowercase).", "hint": "You submit it with a job application.", "flagHash": "5c9825b2206faa1aacb9d18a697f9966b4dd72bf26f675d008ab30103805ddfd" },
       { "difficulty": "Medium", "points": 100, "prompt": "Objective — Continued learning. A curated collection of your projects that proves your skills is called a ___.\n\nSubmit as flag{word} (lowercase).", "hint": "You build one all through Cyber II.", "flagHash": "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" },
-      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Networking (career). The professional networking website where you connect with recruiters and peers. (one word)\n\nSubmit as flag{word} (lowercase).", "hint": "'Linked' + a body part.", "flagHash": "3288b4fbe3f74ae514beaba00684f4607157e172704a5b8f68587913de5bbdf8" }
+      { "difficulty": "Hard", "points": 150, "prompt": "Objective — Networking (career). The professional networking website where you connect with recruiters and peers. (one word)\n\nSubmit as flag{word} (lowercase).", "hint":"The professional networking site where you post your résumé, connect with recruiters, and follow companies. One word, no space.", "flagHash": "3288b4fbe3f74ae514beaba00684f4607157e172704a5b8f68587913de5bbdf8" }
     ]
   });
 
@@ -2157,18 +2201,18 @@ window.COURSE_CONFIG.web3.ctf = {
    ============================================================ */
 window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m1a","module":1,"title":"Algorithms & Efficiency","category":"Computational Thinking","levels":[{"difficulty":"Easy","points":50,"hint":"A recipe is one.","prompt":"Objective — Algorithms. A finite set of step-by-step instructions that accomplishes a task is called an ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"e165ad962d510917b1dbd9c289ce95aac0de155864b0095001ef193be7f912cd"},{"difficulty":"Medium","points":100,"hint":"It halves a SORTED list each step.","prompt":"Objective — Algorithms. A search that starts in the middle of a sorted list and removes half the data each step is called ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"8df4578b0ae5d8875b5f269168532fc1cdeac556f0f41bdc0e43ce090975c3cd"},{"difficulty":"Hard","points":150,"hint":"A 'good enough' shortcut.","prompt":"Objective — Algorithmic efficiency. An approach that gives a 'good enough' solution when a perfect one is impractical or impossible is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"0ba600dc91096cc6250d73b1bf62d9f522f43506563f3361bc5bc6c701f1e290"}]});
 window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m1b","module":1,"title":"Abstraction & Parallelism","category":"Computational Thinking","levels":[{"difficulty":"Easy","points":50,"hint":"Hiding detail.","prompt":"Objective — Abstraction. Reducing complexity by focusing on the main idea and hiding unnecessary detail is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5f46d98c4b621039b59b05e84990cc59fe9e4718c08603506addf49eb8fba318"},{"difficulty":"Medium","points":100,"hint":"Pieces run at the same time.","prompt":"Objective — Parallel & distributed computing. A model in which a program is broken into pieces, some of which run at the same time, is ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"5ffb708e8d184373d0be826cd0a330a6d3a2f22eee933bd58c58312b46212dc0"},{"difficulty":"Hard","points":150,"hint":"Sequential time ÷ parallel time.","prompt":"Objective — Parallel computing. The time to complete a task sequentially divided by the time to complete it in parallel is the ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"2c77634d0c4787906adf64b39d0098f7c3b19d5f6f6551ccbf3aef25c3342c89"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m2a","module":2,"title":"Program Building Blocks","category":"Python Programming","levels":[{"difficulty":"Easy","points":50,"hint":"Also called a procedure.","prompt":"Objective — Procedures. A named group of programming instructions (also called a procedure) is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"8ca382b4e5241a459111fd4db3e39db4a9ca37d2d725c8781af8b0d79f30a480"},{"difficulty":"Medium","points":100,"hint":"NOT, AND, OR.","prompt":"Objective — Boolean logic. NOT, AND, and OR are ___ operators (they evaluate to a Boolean value).\n\nSubmit as flag{word} (lowercase).","flagHash":"a8b14711965e8b2b899887303183d154b8556d18912e6af039c360d3d5394e27"},{"difficulty":"Hard","points":150,"hint":"Square brackets in Python.","prompt":"Objective — Data abstraction. An ordered collection of elements, used to manage complexity, is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5f86bbef5f248c3803388c9f92d9c75a2a5b5264d41a1e39cbc7bed898265653"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m2b","module":2,"title":"Debugging & Interfaces","category":"Python Programming","levels":[{"difficulty":"Easy","points":50,"hint":"Finding and fixing bugs.","prompt":"Objective — Program development. Finding and fixing problems in an algorithm or program is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"efb06198e6e5cd8e7b538892ca4d81813a637d0ec4e0328de1d4fa1b33c994e9"},{"difficulty":"Medium","points":100,"hint":"Runs, but wrong output.","prompt":"Objective — Errors. A mistake that lets a program run but produce incorrect results is a ___ error.\n\nSubmit as flag{word} (lowercase).","flagHash":"ee2ea8902c4e60466a925bffa1338cd5149218fe6d6e545b2b166d81c8f92ab6"},{"difficulty":"Hard","points":150,"hint":"Three letters.","prompt":"Objective — Libraries. The specifications for how a library's procedures behave and are used — Application Program Interface — is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"e7f0fa54d28539fa670912d186744701b325cef6d8270fc58aad66edbb9b1b85"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m3a","module":3,"title":"Bits & Bytes","category":"Digital Media","levels":[{"difficulty":"Easy","points":50,"hint":"Short for 'binary digit'.","prompt":"Objective — Data representation. A single unit of information — a 0 or a 1 — is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"35c2262fd06ac855fdececea2104589f63e2adae5468263c6c610f89bf602b73"},{"difficulty":"Medium","points":100,"hint":"Eight of them.","prompt":"Objective — Data representation. A group of 8 bits is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"dcaaadf1496012d33eb9367d8b34978faac4af47643196660e82b313e42b7650"},{"difficulty":"Hard","points":150,"hint":"Number too BIG.","prompt":"Objective — Limits of representation. The error from trying to represent a number that is too large is an ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"1951ea84b1ed28abee061b1bdf9b8dab9a1313c7b4018d6c91e7b6c208afeda4"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m3b","module":3,"title":"Representing Media","category":"Digital Media","levels":[{"difficulty":"Easy","points":50,"hint":"Smallest dot in an image.","prompt":"Objective — Image representation. The smallest addressable element of a digital image is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"1b741aae151e716a8179784f709109e0c8abcb4d8ef2aee48ce5fcfcd740871d"},{"difficulty":"Medium","points":100,"hint":"Throws data away.","prompt":"Objective — Compression. Compression that permanently discards some data to shrink a file more is called ___ compression.\n\nSubmit as flag{word} (lowercase).","flagHash":"37a51a53ee2c309a6de855d819bb67012a8b3d7597db8fa8a1befd1c1022b8ff"},{"difficulty":"Hard","points":150,"hint":"Red, green, blue.","prompt":"Objective — Color representation. The color model that mixes red, green, and blue light is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"2cdd7e222810fea5b2df546fb767d5e7d59b2d53ab882618219ad60d0a785792"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m4a","module":4,"title":"Working with Data","category":"Data Science","levels":[{"difficulty":"Easy","points":50,"hint":"Data ABOUT data.","prompt":"Objective — Data. Data that describes other data (like a photo's date and location) is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"951adea39b54dd0ebb4028b560b787f549cddb92c4c371855307423c2a2db29f"},{"difficulty":"Medium","points":100,"hint":"Digging for patterns.","prompt":"Objective — Extracting information. The process of finding patterns and insight in large datasets is called ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"20465803c21ec72cd8005f51cc1c29308ee7f2c511f6e762ca64034c7856b56d"},{"difficulty":"Hard","points":150,"hint":"Together ≠ cause.","prompt":"Objective — Interpreting data. When two variables move together — but one may not cause the other — they have a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5c7b7344aa29cc2ab410ed1e5b50a8f34f93bb7fc9b3970d7491e17b23a4cd61"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m4b","module":4,"title":"From Data to Insight","category":"Data Science","levels":[{"difficulty":"Easy","points":50,"hint":"A chart or graph.","prompt":"Objective — Communicating data. A visual representation of data, such as a chart or graph, is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"47bb0ddef0134666d7282a9c34f8ef22d613c726b7f32afbbaf0809301ebff0f"},{"difficulty":"Medium","points":100,"hint":"One row.","prompt":"Objective — Data structures. A single row of related values in a dataset is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"19cd766d63f78bffe0d7bee6492d61713c7225f59bcd7fe9102e035cd06ede9b"},{"difficulty":"Hard","points":150,"hint":"Unfair from the data/design.","prompt":"Objective — Impact of computing. Unfair outcomes produced by an algorithm, often reflecting bias in its data or design, are called ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"33fb434e43266febfbb3a3dffe4230989451359a5b85ce9cc0cb4a1bbb1f0201"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m5a","module":5,"title":"The Create Task","category":"Creative Task","levels":[{"difficulty":"Easy","points":50,"hint":"You define it and call it.","prompt":"Objective — Create task. A reusable, named block of code you define and then call — required in your Create task — is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"8ef136b7b8cfb6826481421ced7380c6510c96907c8be29186a98d0350ad5dc6"},{"difficulty":"Medium","points":100,"hint":"A loop.","prompt":"Objective — Create task. Repeating a group of steps over and over — a loop — is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"016b907a6d4b6c8248bcf86c2c60ef48b479727ef339134e33cf65d5c31de7f2"},{"difficulty":"Hard","points":150,"hint":"WHAT, not HOW.","prompt":"Objective — Managing complexity. Using a procedure by knowing WHAT it does (not HOW) is called procedural ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5f46d98c4b621039b59b05e84990cc59fe9e4718c08603506addf49eb8fba318"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m5b","module":5,"title":"Program Development","category":"Creative Task","levels":[{"difficulty":"Easy","points":50,"hint":"Fixing errors.","prompt":"Objective — Program development. Finding and fixing the errors in your Create task program is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"efb06198e6e5cd8e7b538892ca4d81813a637d0ec4e0328de1d4fa1b33c994e9"},{"difficulty":"Medium","points":100,"hint":"Working together.","prompt":"Objective — Collaborative development. Developing a program with others, sharing ideas and code, is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"700d24eb67ab73345e98d37570da4844866f5feb4a140e1a5c7469edd0a5d152"},{"difficulty":"Hard","points":150,"hint":"Break it into parts.","prompt":"Objective — Problem solving. Breaking a large problem into smaller, manageable parts is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"e9f8cf8d0fecfef89a4c7133b1ff4860a8c16c12d37b7f0e4054a4d72a298349"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m6a","module":6,"title":"The Internet","category":"Innovative Technologies","levels":[{"difficulty":"Easy","points":50,"hint":"Sender → receiver route.","prompt":"Objective — The Internet. The series of connections a message travels between a sender and a receiver is called the ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"f031898a9e65b21a19d56b7bc981d2504488e89447c54553b081bcb0c9db4d62"},{"difficulty":"Medium","points":100,"hint":"Bits per second.","prompt":"Objective — The Internet. The maximum amount of data that can be sent in a fixed time, measured in bits per second, is the ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"77e4264534b53033ae287d5aa06050d5c54b8e5a277adff36836f354166773b0"},{"difficulty":"Hard","points":150,"hint":"Small chunks of data.","prompt":"Objective — Data on the Internet. Data is broken into small units that travel the network independently and are reassembled at the destination. These units are called ___.\n\nSubmit as flag{word} (lowercase, plural).","flagHash":"d72445caf6705d8834acab494b7bb0f97e67d1d9f5f928503f0ab47c050f1bf2"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m6b","module":6,"title":"Cybersecurity & Impact","category":"Innovative Technologies","levels":[{"difficulty":"Easy","points":50,"hint":"Proving who you are.","prompt":"Objective — Safe computing. Requiring at least two steps to log in is called multi-factor ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"0167e5432d777913fc23dc379d9f68c4f023af44904180c8c33935af6a833a09"},{"difficulty":"Medium","points":100,"hint":"Public locks, private unlocks.","prompt":"Objective — Encryption. Encryption that uses a public key to encrypt and a private key to decrypt is called ___ ___ ___.\n\nSubmit as flag{three words} (lowercase).","flagHash":"72a68bdde2444495e13dc3ad82b311ea6342e1133a6508841306fff8b727247f"},{"difficulty":"Hard","points":150,"hint":"Malicious software.","prompt":"Objective — Safe computing. Software intended to damage a system or gain unauthorized access is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"2aedb3e75aad5e62f6ca43787074f19854bee7654b92a301a6349bd0736acc44"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m7a","module":7,"title":"Big Ideas Review","category":"AP Test Prep","levels":[{"difficulty":"Easy","points":50,"hint":"Big Idea: hide detail.","prompt":"Objective — Exam review. Focusing on the main idea while hiding unnecessary detail is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5f46d98c4b621039b59b05e84990cc59fe9e4718c08603506addf49eb8fba318"},{"difficulty":"Medium","points":100,"hint":"Unfair results.","prompt":"Objective — Impact of computing. Unfair outcomes an algorithm produces from biased data or design are called ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"33fb434e43266febfbb3a3dffe4230989451359a5b85ce9cc0cb4a1bbb1f0201"},{"difficulty":"Hard","points":150,"hint":"No algorithm always solves it.","prompt":"Objective — Limits of computing. A problem for which no algorithm can always give a correct yes-or-no answer is an ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"cd4a6cfa66451259418f739dd07b3af5a808199ad188962c4a1fd5601452278e"}]});
-window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m7b","module":7,"title":"Impact & Ethics","category":"AP Test Prep","levels":[{"difficulty":"Easy","points":50,"hint":"Access gap.","prompt":"Objective — Impact of computing. The gap between those who have and don't have access to computing and the Internet is called the ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"d8fa93bf49fa28a40b4c5590601ff707113aa1e8a2b36e90b81f65ca26f535b6"},{"difficulty":"Medium","points":100,"hint":"Using work without credit.","prompt":"Objective — Ethics. Using someone else's work or ideas without giving credit is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"f709be5464275b66e613b5272c81893bb659664920fecbcf82e34d2b46aa6d64"},{"difficulty":"Hard","points":150,"hint":"Creator's legal control.","prompt":"Objective — Legal & ethical concerns. The legal protection giving creators control over their original work is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"7b5d1a4db073d1358859d752555b4ef945495a103b90146d503aff0e3f751a55"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m2a","module":2,"title":"Program Building Blocks","category":"Python Programming","levels":[{"difficulty":"Easy","points":50,"hint":"Also called a procedure.","prompt":"Objective — Procedures. A named group of programming instructions (also called a procedure) is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"8ca382b4e5241a459111fd4db3e39db4a9ca37d2d725c8781af8b0d79f30a480"},{"difficulty":"Medium","points":100,"hint":"The category of operators that combine or negate Boolean values.","prompt":"Objective — Boolean logic. NOT, AND, and OR are ___ operators (they evaluate to a Boolean value).\n\nSubmit as flag{word} (lowercase).","flagHash":"a8b14711965e8b2b899887303183d154b8556d18912e6af039c360d3d5394e27"},{"difficulty":"Hard","points":150,"hint":"Square brackets in Python.","prompt":"Objective — Data abstraction. An ordered collection of elements, used to manage complexity, is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5f86bbef5f248c3803388c9f92d9c75a2a5b5264d41a1e39cbc7bed898265653"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m2b","module":2,"title":"Debugging & Interfaces","category":"Python Programming","levels":[{"difficulty":"Easy","points":50,"hint":"Finding and fixing bugs.","prompt":"Objective — Program development. Finding and fixing problems in an algorithm or program is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"efb06198e6e5cd8e7b538892ca4d81813a637d0ec4e0328de1d4fa1b33c994e9"},{"difficulty":"Medium","points":100,"hint":"The program runs without crashing but produces the wrong answer. Name this kind of error.","prompt":"Objective — Errors. A mistake that lets a program run but produce incorrect results is a ___ error.\n\nSubmit as flag{word} (lowercase).","flagHash":"ee2ea8902c4e60466a925bffa1338cd5149218fe6d6e545b2b166d81c8f92ab6"},{"difficulty":"Hard","points":150,"hint":"Application Programming Interface \u2014 give the acronym.","prompt":"Objective — Libraries. The specifications for how a library's procedures behave and are used — Application Program Interface — is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"e7f0fa54d28539fa670912d186744701b325cef6d8270fc58aad66edbb9b1b85"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m3a","module":3,"title":"Bits & Bytes","category":"Digital Media","levels":[{"difficulty":"Easy","points":50,"hint":"Short for 'binary digit'.","prompt":"Objective — Data representation. A single unit of information — a 0 or a 1 — is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"35c2262fd06ac855fdececea2104589f63e2adae5468263c6c610f89bf602b73"},{"difficulty":"Medium","points":100,"hint":"Eight bits grouped together — the standard size for one character of ASCII text.","prompt":"Objective — Data representation. A group of 8 bits is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"dcaaadf1496012d33eb9367d8b34978faac4af47643196660e82b313e42b7650"},{"difficulty":"Hard","points":150,"hint":"What happens when a value needs more bits than its variable was given, so the number wraps or breaks. Two words.","prompt":"Objective — Limits of representation. The error from trying to represent a number that is too large is an ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"1951ea84b1ed28abee061b1bdf9b8dab9a1313c7b4018d6c91e7b6c208afeda4"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m3b","module":3,"title":"Representing Media","category":"Digital Media","levels":[{"difficulty":"Easy","points":50,"hint":"Smallest dot in an image.","prompt":"Objective — Image representation. The smallest addressable element of a digital image is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"1b741aae151e716a8179784f709109e0c8abcb4d8ef2aee48ce5fcfcd740871d"},{"difficulty":"Medium","points":100,"hint":"Compression that permanently discards data to save space. JPEG and MP3 both use it.","prompt":"Objective — Compression. Compression that permanently discards some data to shrink a file more is called ___ compression.\n\nSubmit as flag{word} (lowercase).","flagHash":"37a51a53ee2c309a6de855d819bb67012a8b3d7597db8fa8a1befd1c1022b8ff"},{"difficulty":"Hard","points":150,"hint":"Three letters. The additive color model your screen uses.","prompt":"Objective — Color representation. The color model that mixes red, green, and blue light is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"2cdd7e222810fea5b2df546fb767d5e7d59b2d53ab882618219ad60d0a785792"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m4a","module":4,"title":"Working with Data","category":"Data Science","levels":[{"difficulty":"Easy","points":50,"hint":"Data ABOUT data.","prompt":"Objective — Data. Data that describes other data (like a photo's date and location) is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"951adea39b54dd0ebb4028b560b787f549cddb92c4c371855307423c2a2db29f"},{"difficulty":"Medium","points":100,"hint":"Searching large datasets for patterns and relationships that weren't obvious up front. Two words.","prompt":"Objective — Extracting information. The process of finding patterns and insight in large datasets is called ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"20465803c21ec72cd8005f51cc1c29308ee7f2c511f6e762ca64034c7856b56d"},{"difficulty":"Hard","points":150,"hint":"Two variables move together — but that alone never proves one caused the other.","prompt":"Objective — Interpreting data. When two variables move together — but one may not cause the other — they have a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5c7b7344aa29cc2ab410ed1e5b50a8f34f93bb7fc9b3970d7491e17b23a4cd61"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m4b","module":4,"title":"From Data to Insight","category":"Data Science","levels":[{"difficulty":"Easy","points":50,"hint":"A chart or graph.","prompt":"Objective — Communicating data. A visual representation of data, such as a chart or graph, is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"47bb0ddef0134666d7282a9c34f8ef22d613c726b7f32afbbaf0809301ebff0f"},{"difficulty":"Medium","points":100,"hint":"In a dataset, one complete entry: all the fields describing a single item.","prompt":"Objective — Data structures. A single row of related values in a dataset is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"19cd766d63f78bffe0d7bee6492d61713c7225f59bcd7fe9102e035cd06ede9b"},{"difficulty":"Hard","points":150,"hint":"Unfair from the data/design.","prompt":"Objective — Impact of computing. Unfair outcomes produced by an algorithm, often reflecting bias in its data or design, are called ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"33fb434e43266febfbb3a3dffe4230989451359a5b85ce9cc0cb4a1bbb1f0201"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m5a","module":5,"title":"The Create Task","category":"Creative Task","levels":[{"difficulty":"Easy","points":50,"hint":"You define it and call it.","prompt":"Objective — Create task. A reusable, named block of code you define and then call — required in your Create task — is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"8ef136b7b8cfb6826481421ced7380c6510c96907c8be29186a98d0350ad5dc6"},{"difficulty":"Medium","points":100,"hint":"Repeating a block of code. `for` and `while` loops are how you implement it.","prompt":"Objective — Create task. Repeating a group of steps over and over — a loop — is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"016b907a6d4b6c8248bcf86c2c60ef48b479727ef339134e33cf65d5c31de7f2"},{"difficulty":"Hard","points":150,"hint":"Hiding complexity behind a simple interface, so you work with ideas instead of implementation details.","prompt":"Objective — Managing complexity. Using a procedure by knowing WHAT it does (not HOW) is called procedural ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5f46d98c4b621039b59b05e84990cc59fe9e4718c08603506addf49eb8fba318"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m5b","module":5,"title":"Program Development","category":"Creative Task","levels":[{"difficulty":"Easy","points":50,"hint":"Fixing errors.","prompt":"Objective — Program development. Finding and fixing the errors in your Create task program is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"efb06198e6e5cd8e7b538892ca4d81813a637d0ec4e0328de1d4fa1b33c994e9"},{"difficulty":"Medium","points":100,"hint":"Two or more people working jointly on a program — a required practice in the AP CSP Create task.","prompt":"Objective — Collaborative development. Developing a program with others, sharing ideas and code, is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"700d24eb67ab73345e98d37570da4844866f5feb4a140e1a5c7469edd0a5d152"},{"difficulty":"Hard","points":150,"hint":"Splitting a large problem into smaller pieces that can each be solved independently.","prompt":"Objective — Problem solving. Breaking a large problem into smaller, manageable parts is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"e9f8cf8d0fecfef89a4c7133b1ff4860a8c16c12d37b7f0e4054a4d72a298349"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m6a","module":6,"title":"The Internet","category":"Innovative Technologies","levels":[{"difficulty":"Easy","points":50,"hint":"Sender → receiver route.","prompt":"Objective — The Internet. The series of connections a message travels between a sender and a receiver is called the ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"f031898a9e65b21a19d56b7bc981d2504488e89447c54553b081bcb0c9db4d62"},{"difficulty":"Medium","points":100,"hint":"The maximum rate data can move through a connection, measured in bits per second.","prompt":"Objective — The Internet. The maximum amount of data that can be sent in a fixed time, measured in bits per second, is the ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"77e4264534b53033ae287d5aa06050d5c54b8e5a277adff36836f354166773b0"},{"difficulty":"Hard","points":150,"hint":"Data doesn't cross the internet as one stream — it's split into numbered chunks that may take different routes and get reassembled.","prompt":"Objective — Data on the Internet. Data is broken into small units that travel the network independently and are reassembled at the destination. These units are called ___.\n\nSubmit as flag{word} (lowercase, plural).","flagHash":"d72445caf6705d8834acab494b7bb0f97e67d1d9f5f928503f0ab47c050f1bf2"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m6b","module":6,"title":"Cybersecurity & Impact","category":"Innovative Technologies","levels":[{"difficulty":"Easy","points":50,"hint":"Proving who you are.","prompt":"Objective — Safe computing. Requiring at least two steps to log in is called multi-factor ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"0167e5432d777913fc23dc379d9f68c4f023af44904180c8c33935af6a833a09"},{"difficulty":"Medium","points":100,"hint":"Public locks, private unlocks.","prompt":"Objective — Encryption. Encryption that uses a public key to encrypt and a private key to decrypt is called ___ ___ ___.\n\nSubmit as flag{three words} (lowercase).","flagHash":"72a68bdde2444495e13dc3ad82b311ea6342e1133a6508841306fff8b727247f"},{"difficulty":"Hard","points":150,"hint":"The umbrella term covering viruses, worms, trojans, spyware, and ransomware.","prompt":"Objective — Safe computing. Software intended to damage a system or gain unauthorized access is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"2aedb3e75aad5e62f6ca43787074f19854bee7654b92a301a6349bd0736acc44"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m7a","module":7,"title":"Big Ideas Review","category":"AP Test Prep","levels":[{"difficulty":"Easy","points":50,"hint":"Big Idea: hide detail.","prompt":"Objective — Exam review. Focusing on the main idea while hiding unnecessary detail is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"5f46d98c4b621039b59b05e84990cc59fe9e4718c08603506addf49eb8fba318"},{"difficulty":"Medium","points":100,"hint":"When a program consistently produces unfair outcomes for certain groups, usually because of the data it learned from. Two words.","prompt":"Objective — Impact of computing. Unfair outcomes an algorithm produces from biased data or design are called ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"33fb434e43266febfbb3a3dffe4230989451359a5b85ce9cc0cb4a1bbb1f0201"},{"difficulty":"Hard","points":150,"hint":"No algorithm always solves it.","prompt":"Objective — Limits of computing. A problem for which no algorithm can always give a correct yes-or-no answer is an ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"cd4a6cfa66451259418f739dd07b3af5a808199ad188962c4a1fd5601452278e"}]});
+window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m7b","module":7,"title":"Impact & Ethics","category":"AP Test Prep","levels":[{"difficulty":"Easy","points":50,"hint":"Access gap.","prompt":"Objective — Impact of computing. The gap between those who have and don't have access to computing and the Internet is called the ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"d8fa93bf49fa28a40b4c5590601ff707113aa1e8a2b36e90b81f65ca26f535b6"},{"difficulty":"Medium","points":100,"hint":"Using work without credit.","prompt":"Objective — Ethics. Using someone else's work or ideas without giving credit is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"f709be5464275b66e613b5272c81893bb659664920fecbcf82e34d2b46aa6d64"},{"difficulty":"Hard","points":150,"hint":"The legal protection automatically granted to a creator over their original work. Creative Commons licenses modify it.","prompt":"Objective — Legal & ethical concerns. The legal protection giving creators control over their original work is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"7b5d1a4db073d1358859d752555b4ef945495a103b90146d503aff0e3f751a55"}]});
 window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m1-ptypes","module":1,"type":"match","title":"Sort the Problem Type","category":"Computational Thinking","points":150,"intro":"Objective — Problems & algorithms. Match each description to the kind of problem it is. Tap a description, then tap the type.","pairs":[{"left":"Is there a path from A to B? (yes/no)","right":"Decision Problem"},{"left":"Find the SHORTEST path from A to B","right":"Optimization Problem"},{"left":"No algorithm can always solve it","right":"Undecidable Problem"},{"left":"Gives a 'good enough' answer","right":"Heuristic"}]});
 window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m1-effic","module":1,"type":"order","title":"Efficiency: Slowest-Growing First","category":"Computational Thinking","points":150,"intro":"Objective — Algorithmic efficiency. Order these growth rates from the MOST efficient (slowest-growing) to the LEAST efficient (fastest-growing).","steps":["Constant","Linear","Quadratic (square)","Cubic","Exponential","Factorial"]});
 window.COURSE_CONFIG.apcsp.ctf.challenges.push({"id":"ap-m1-models","module":1,"type":"match","title":"Match the Computing Model","category":"Computational Thinking","points":150,"intro":"Objective — Parallel & distributed computing. Match each model to what it does. Tap a model, then tap its description.","pairs":[{"left":"Sequential","right":"Runs one command at a time, in order"},{"left":"Parallel","right":"Splits work so pieces run at the same time"},{"left":"Distributed","right":"Runs across multiple devices"}]});
@@ -2208,20 +2252,20 @@ window.COURSE_CONFIG.apcsp.ctf.bossQuestions = [{"module":1,"topic":"M1","diff":
    ============================================================ */
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m1a","module":1,"title":"Blockchain Foundations","category":"Blockchain Basics","levels":[{"difficulty":"Easy","points":50,"hint":"Blocks linked in a chain.","prompt":"Objective — Blockchain fundamentals. A shared, append-only ledger of transactions stored in linked blocks is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"7937ea509b73d988b162e6ab3afd5a3e4a1b8c0a3cc773aae6f16b6564233e44"},{"difficulty":"Medium","points":100,"hint":"No single point of control.","prompt":"Objective — Decentralization. A network with no single central authority, where copies of the ledger are spread across many nodes, is ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"4f15cbe9facaa2c22ded8ffe4f5fd812f5d05a3163faa851b4e3409d2316550c"},{"difficulty":"Hard","points":150,"hint":"Cannot be changed after the fact.","prompt":"Objective — Ledger integrity. Once data is confirmed on the chain it cannot be altered. This property is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"c49b5deed9c8d7547e3b7ce3d4507f6eb826c1faf33c328f87131a1709cc1fbf"}]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m1b","module":1,"title":"Consensus & Hashing","category":"Blockchain Basics","levels":[{"difficulty":"Easy","points":50,"hint":"One computer on the network.","prompt":"Objective — Network structure. A single computer that stores a copy of the blockchain and helps validate it is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"451140ce83d260df5dfb991be747dc58ab9dd8ec4f1ee1271b5eabba10dacb1a"},{"difficulty":"Medium","points":100,"hint":"A fixed-length fingerprint.","prompt":"Objective — Cryptography. A one-way function that turns any input into a fixed-length fingerprint, linking each block to the last, produces a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"deaed1f0d22fe5f2c4aa644d8fa1a50028d36f4e36358e9ea9545ec274adaa4e"},{"difficulty":"Hard","points":150,"hint":"Miners race to solve a puzzle.","prompt":"Objective — Consensus mechanisms. The consensus mechanism where miners expend computing power to solve a puzzle and add the next block is called ___ ___ ___.\n\nSubmit as flag{three words} (lowercase).","flagHash":"7978f248a7b9741dd3d1db7281e85671319f62428f305fa0bfb8118aa7107c12"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m2a","module":2,"title":"Keys & Wallets","category":"Digital Wallets","levels":[{"difficulty":"Easy","points":50,"hint":"Holds your keys.","prompt":"Objective — Custody. The software or device that stores your keys and lets you send and receive crypto is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"ebcaa50801688ebe0fc816606329c54551cd6d9679cef3cf4b69abb211bbec4d"},{"difficulty":"Medium","points":100,"hint":"Never share it.","prompt":"Objective — Key security. The secret that proves ownership and must NEVER be shared is your ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"74f61448a78aabf20bcda00e7818038e2de0d52213de30704ce7986d5357e0ee"},{"difficulty":"Hard","points":150,"hint":"12–24 recovery words.","prompt":"Objective — Recovery. The list of 12–24 words that can restore an entire wallet is called the ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"85900643d4625310d3837231ee08873598aa12556521c7ecbffb35c150728cff"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m2b","module":2,"title":"Custody & Addresses","category":"Digital Wallets","levels":[{"difficulty":"Easy","points":50,"hint":"Share this to receive funds.","prompt":"Objective — Transactions. The public string you share so others can send you crypto is your ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"53631335bc552a01ecab2938272fec7e45811fc2432f18c8c117a99ef671534f"},{"difficulty":"Medium","points":100,"hint":"Offline storage.","prompt":"Objective — Custody. A wallet kept offline for maximum security is called a ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"39863d225ef7f8c85a3e7e6ffed56f48ea5f5258b4bcdc7dd3ed641ae3ce71ed"},{"difficulty":"Hard","points":150,"hint":"Derived from the private key.","prompt":"Objective — Key pairs. The key derived from your private key that others use to verify your signatures is your ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"849913b08cbe7bcead3b745de10e0f6b59a19482dd7568299243304ccc68371a"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m2a","module":2,"title":"Keys & Wallets","category":"Digital Wallets","levels":[{"difficulty":"Easy","points":50,"hint":"Holds your keys.","prompt":"Objective — Custody. The software or device that stores your keys and lets you send and receive crypto is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"ebcaa50801688ebe0fc816606329c54551cd6d9679cef3cf4b69abb211bbec4d"},{"difficulty":"Medium","points":100,"hint":"The secret half of your keypair. Whoever holds it controls the funds. Two words.","prompt":"Objective — Key security. The secret that proves ownership and must NEVER be shared is your ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"74f61448a78aabf20bcda00e7818038e2de0d52213de30704ce7986d5357e0ee"},{"difficulty":"Hard","points":150,"hint":"The human-readable backup that can regenerate your entire wallet — usually 12 or 24 ordinary words in a fixed order. Two words.","prompt":"Objective — Recovery. The list of 12–24 words that can restore an entire wallet is called the ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"85900643d4625310d3837231ee08873598aa12556521c7ecbffb35c150728cff"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m2b","module":2,"title":"Custody & Addresses","category":"Digital Wallets","levels":[{"difficulty":"Easy","points":50,"hint":"Share this to receive funds.","prompt":"Objective — Transactions. The public string you share so others can send you crypto is your ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"53631335bc552a01ecab2938272fec7e45811fc2432f18c8c117a99ef671534f"},{"difficulty":"Medium","points":100,"hint":"Keys kept entirely offline, out of reach of remote attackers. Two words.","prompt":"Objective — Custody. A wallet kept offline for maximum security is called a ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"39863d225ef7f8c85a3e7e6ffed56f48ea5f5258b4bcdc7dd3ed641ae3ce71ed"},{"difficulty":"Hard","points":150,"hint":"Derived from the private key.","prompt":"Objective — Key pairs. The key derived from your private key that others use to verify your signatures is your ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"849913b08cbe7bcead3b745de10e0f6b59a19482dd7568299243304ccc68371a"}]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m3a","module":3,"title":"Coins & Tokens","category":"Tokens","levels":[{"difficulty":"Easy","points":50,"hint":"A unit of value on a chain.","prompt":"Objective — Digital assets. A digital asset created and managed on an existing blockchain is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"777343ab04f23add13eab005e5d5f438311c8b873ae7179d0f050845a9715990"},{"difficulty":"Medium","points":100,"hint":"The fee to run a transaction.","prompt":"Objective — Transaction fees. The fee paid to run a transaction or contract on Ethereum is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"77f8178a7fda468b8f3d105b49c4327131ab5eded25f835562d4ee29a83ea0d9"},{"difficulty":"Hard","points":150,"hint":"Pegged to a stable value.","prompt":"Objective — Token types. A token designed to hold a steady value by pegging to an asset like the US dollar is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"93219be3db5581f65057ddc74bc12beec724d6908d6943a8f0f1b75e752b7d15"}]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m3b","module":3,"title":"Standards & Value","category":"Tokens","levels":[{"difficulty":"Easy","points":50,"hint":"Interchangeable, like dollars.","prompt":"Objective — Token properties. A token where every unit is identical and interchangeable is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"28abd36ff7b1b8293fa3d3ac6310575b940c179254176049533897588d1e9a4b"},{"difficulty":"Medium","points":100,"hint":"Digital money on a chain.","prompt":"Objective — Digital money. A digital currency secured by cryptography and running on a blockchain is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"40c7e1eaa60e4338bf0193372af2082ab3927a61013bb68afd85ac9f2d8ab00a"},{"difficulty":"Hard","points":150,"hint":"Ethereum fungible-token standard.","prompt":"Objective — Token standards. The Ethereum standard that defines how fungible tokens behave is ___.\n\nSubmit as flag{standard} (lowercase, keep the hyphen).","flagHash":"3aacebec9f504e2ad270d881e8f3359b7afa3c33755bcf6eeab4e26aa1b67b76"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m4a","module":4,"title":"What Is an NFT?","category":"NFTs","levels":[{"difficulty":"Easy","points":50,"hint":"Non-Fungible Token.","prompt":"Objective — Unique assets. A one-of-a-kind token that proves ownership of a unique digital item is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"036644b3363b146e712afd7ead72b4287247582b0f81175bd1320ed38a3cdcdd"},{"difficulty":"Medium","points":100,"hint":"Not interchangeable.","prompt":"Objective — Token properties. A token that is unique and cannot be swapped one-for-one with another is ___.\n\nSubmit as flag{word} (lowercase, keep the hyphen).","flagHash":"ca18db12688eb6c70b4c0f7b53c10cd3346be7f47c782e6c13e5d6aba231582e"},{"difficulty":"Hard","points":150,"hint":"Creating the token on-chain.","prompt":"Objective — Creation. The process of publishing a new NFT onto the blockchain is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"4a373afdb00259be10b46fc1938c504d00a29def769bce8e9561a2a59d6ae42a"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m4a","module":4,"title":"What Is an NFT?","category":"NFTs","levels":[{"difficulty":"Easy","points":50,"hint":"Three letters. The token is one of a kind — you can't swap it for another.","prompt":"Objective — Unique assets. A one-of-a-kind token that proves ownership of a unique digital item is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"036644b3363b146e712afd7ead72b4287247582b0f81175bd1320ed38a3cdcdd"},{"difficulty":"Medium","points":100,"hint":"Each token is unique and can't be swapped one-for-one with another. Hyphenated.","prompt":"Objective — Token properties. A token that is unique and cannot be swapped one-for-one with another is ___.\n\nSubmit as flag{word} (lowercase, keep the hyphen).","flagHash":"ca18db12688eb6c70b4c0f7b53c10cd3346be7f47c782e6c13e5d6aba231582e"},{"difficulty":"Hard","points":150,"hint":"Creating the token on-chain.","prompt":"Objective — Creation. The process of publishing a new NFT onto the blockchain is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"4a373afdb00259be10b46fc1938c504d00a29def769bce8e9561a2a59d6ae42a"}]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m4b","module":4,"title":"Ownership & Metadata","category":"NFTs","levels":[{"difficulty":"Easy","points":50,"hint":"The NFT proves this.","prompt":"Objective — Provenance. An NFT recorded on-chain provides verifiable proof of ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"d1e610099b17a5b008e801609d52f09d63d7f7a600bc1fe6c0666aa991b578a2"},{"difficulty":"Medium","points":100,"hint":"Data describing the asset.","prompt":"Objective — Asset data. The information describing an NFT — its name, traits, and image link — is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"951adea39b54dd0ebb4028b560b787f549cddb92c4c371855307423c2a2db29f"},{"difficulty":"Hard","points":150,"hint":"Distributed file storage.","prompt":"Objective — Decentralized storage. The distributed file system often used to store NFT media off-chain is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"c14bd5913924191c2a64a25fac8c71abd85279d2fd89208757864e1e64fd85f0"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m5a","module":5,"title":"Smart Contracts","category":"Coding","levels":[{"difficulty":"Easy","points":50,"hint":"Self-executing code on-chain.","prompt":"Objective — On-chain programs. Self-executing code stored on the blockchain that runs when conditions are met is a ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"497a532123f0646fd636ac062b314d6d8ebb1119ad6daf013886f8ebe6895129"},{"difficulty":"Medium","points":100,"hint":"Ethereum's main language.","prompt":"Objective — Development. The primary programming language for writing Ethereum smart contracts is ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"f6a2f99e6fd251a7ed1a5103112bc5baf3f8c55ac563b96d08664f4c53a182db"},{"difficulty":"Hard","points":150,"hint":"Runs the contract code.","prompt":"Objective — Execution. The Ethereum Virtual Machine, which executes smart-contract code across the network, is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"c2e134b552f614af99897237babf59365f37de6d4c7b752995acafec2efe73dd"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m5b","module":5,"title":"Testing & Deploying","category":"Coding","levels":[{"difficulty":"Easy","points":50,"hint":"Publish to the network.","prompt":"Objective — Deployment. Publishing a finished smart contract onto a blockchain network is to ___ it.\n\nSubmit as flag{word} (lowercase).","flagHash":"f1dc979fa097a6d23b52ab5e26dec82f113c9d11881dced5c3b466155e21d299"},{"difficulty":"Medium","points":100,"hint":"Practice network, fake coins.","prompt":"Objective — Testing. The practice network where developers test contracts using valueless coins is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"b3b231446277bf8082cf1e95fe9778e72fdcaafaa880d6d8ed2a5fa2746563d8"},{"difficulty":"Hard","points":150,"hint":"Can't edit after deploy.","prompt":"Objective — Contract risk. Once deployed, a smart contract's code generally cannot be changed. This property is ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"c49b5deed9c8d7547e3b7ce3d4507f6eb826c1faf33c328f87131a1709cc1fbf"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m6a","module":6,"title":"Decentralized Apps","category":"DApps & DAOs","levels":[{"difficulty":"Easy","points":50,"hint":"Decentralized application.","prompt":"Objective — Applications. An application whose backend runs on a blockchain via smart contracts is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"80f657643695ce0d2a24cc8be255ca44c369e4316d597a42653e792dc967f761"},{"difficulty":"Medium","points":100,"hint":"Finance without banks.","prompt":"Objective — Use cases. Financial services (lending, trading) built on blockchain without traditional banks are called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"0e7ce4039ea026fa071c6f549c97fc636c28b11439c6ac02856020d0378c40d0"},{"difficulty":"Hard","points":150,"hint":"Feeds real-world data on-chain.","prompt":"Objective — External data. A service that feeds real-world data to a smart contract is called a(n) ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"9afb20edcb5db273f98641cf855adaa62a6ec436c3688c825a73bdf46dfefbdd"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m6b","module":6,"title":"DAOs & Governance","category":"DApps & DAOs","levels":[{"difficulty":"Easy","points":50,"hint":"Community-run organization.","prompt":"Objective — Governance. A Decentralized Autonomous Organization, run by member votes and code instead of managers, is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"b75d0ced6d6fcfb0ad15859eca1ace9e49b23261609291cf98b1ea23ce45af3d"},{"difficulty":"Medium","points":100,"hint":"Grants voting power.","prompt":"Objective — Voting. The token that grants members voting power in a DAO is called a ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"31fa826724732b521120dcdad3cd62ebe84761024ee9b205840d0c74aa974f04"},{"difficulty":"Hard","points":150,"hint":"Network agreement.","prompt":"Objective — Agreement. The process by which distributed nodes agree on the valid state of the ledger is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"1cc4e8c190b1688a8dd844c8f732da7a9a08b324f36eb1afcf9a0fe3a202f7d4"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m5a","module":5,"title":"Smart Contracts","category":"Coding","levels":[{"difficulty":"Easy","points":50,"hint":"Self-executing code on-chain.","prompt":"Objective — On-chain programs. Self-executing code stored on the blockchain that runs when conditions are met is a ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"497a532123f0646fd636ac062b314d6d8ebb1119ad6daf013886f8ebe6895129"},{"difficulty":"Medium","points":100,"hint":"Ethereum's main language.","prompt":"Objective — Development. The primary programming language for writing Ethereum smart contracts is ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"f6a2f99e6fd251a7ed1a5103112bc5baf3f8c55ac563b96d08664f4c53a182db"},{"difficulty":"Hard","points":150,"hint":"The runtime every Ethereum node uses to execute contract bytecode. Three letters.","prompt":"Objective — Execution. The Ethereum Virtual Machine, which executes smart-contract code across the network, is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"c2e134b552f614af99897237babf59365f37de6d4c7b752995acafec2efe73dd"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m5b","module":5,"title":"Testing & Deploying","category":"Coding","levels":[{"difficulty":"Easy","points":50,"hint":"Publish to the network.","prompt":"Objective — Deployment. Publishing a finished smart contract onto a blockchain network is to ___ it.\n\nSubmit as flag{word} (lowercase).","flagHash":"f1dc979fa097a6d23b52ab5e26dec82f113c9d11881dced5c3b466155e21d299"},{"difficulty":"Medium","points":100,"hint":"Practice network, fake coins.","prompt":"Objective — Testing. The practice network where developers test contracts using valueless coins is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"b3b231446277bf8082cf1e95fe9778e72fdcaafaa880d6d8ed2a5fa2746563d8"},{"difficulty":"Hard","points":150,"hint":"Once a contract is on-chain its code can't be edited — you'd have to deploy a new one. One word for that property.","prompt":"Objective — Contract risk. Once deployed, a smart contract's code generally cannot be changed. This property is ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"c49b5deed9c8d7547e3b7ce3d4507f6eb826c1faf33c328f87131a1709cc1fbf"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m6a","module":6,"title":"Decentralized Apps","category":"DApps & DAOs","levels":[{"difficulty":"Easy","points":50,"hint":"Decentralized application.","prompt":"Objective — Applications. An application whose backend runs on a blockchain via smart contracts is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"80f657643695ce0d2a24cc8be255ca44c369e4316d597a42653e792dc967f761"},{"difficulty":"Medium","points":100,"hint":"Lending, trading, and borrowing built on smart contracts instead of banks. Four letters.","prompt":"Objective — Use cases. Financial services (lending, trading) built on blockchain without traditional banks are called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"0e7ce4039ea026fa071c6f549c97fc636c28b11439c6ac02856020d0378c40d0"},{"difficulty":"Hard","points":150,"hint":"Feeds real-world data on-chain.","prompt":"Objective — External data. A service that feeds real-world data to a smart contract is called a(n) ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"9afb20edcb5db273f98641cf855adaa62a6ec436c3688c825a73bdf46dfefbdd"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m6b","module":6,"title":"DAOs & Governance","category":"DApps & DAOs","levels":[{"difficulty":"Easy","points":50,"hint":"Community-run organization.","prompt":"Objective — Governance. A Decentralized Autonomous Organization, run by member votes and code instead of managers, is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).","flagHash":"b75d0ced6d6fcfb0ad15859eca1ace9e49b23261609291cf98b1ea23ce45af3d"},{"difficulty":"Medium","points":100,"hint":"Holding it lets you vote on protocol proposals in a DAO. Two words.","prompt":"Objective — Voting. The token that grants members voting power in a DAO is called a ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"31fa826724732b521120dcdad3cd62ebe84761024ee9b205840d0c74aa974f04"},{"difficulty":"Hard","points":150,"hint":"The mechanism by which distributed nodes agree on one valid version of the ledger. Proof of work and proof of stake are two approaches.","prompt":"Objective — Agreement. The process by which distributed nodes agree on the valid state of the ledger is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"1cc4e8c190b1688a8dd844c8f732da7a9a08b324f36eb1afcf9a0fe3a202f7d4"}]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m7a","module":7,"title":"Project Planning","category":"Class Project","levels":[{"difficulty":"Easy","points":50,"hint":"Explains the project.","prompt":"Objective — Project design. The document that explains a Web 3.0 project's purpose, technology, and tokenomics is called a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"b6fdfe6dbbe5ff579a27163c4ba09589d066584358796edbd6103fc308b9abcc"},{"difficulty":"Medium","points":100,"hint":"The real problem it solves.","prompt":"Objective — Value. The specific real-world problem your project solves is its ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"05c53fb721bdc68780d3a36933f87293faeb07172fc9e7741e8f688e5c136b1c"},{"difficulty":"Hard","points":150,"hint":"Token supply & incentives.","prompt":"Objective — Economics. The design of a token's supply, distribution, and incentives is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"6e50edc26f743932c182177ea8a6320d54fb51497030b70ed8a9a02af706b6a0"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m7b","module":7,"title":"Build & Present","category":"Class Project","levels":[{"difficulty":"Easy","points":50,"hint":"An early working version.","prompt":"Objective — Development. An early working model of your project used to test the idea is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"e7a456f0cf0705f7d03206c9440f6eb224bf0a546f110b00784013ef9eb31297"},{"difficulty":"Medium","points":100,"hint":"Core Web3 value.","prompt":"Objective — Principles. Spreading control across many participants instead of one authority is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"4cdeb32a366f7d988d5200cab0cb6b93234de4ccbfb75b0a733a86627f68d7f3"},{"difficulty":"Hard","points":150,"hint":"MVP spelled out.","prompt":"Objective — Iteration. The simplest version of a product that still delivers value to users is the ___ ___ ___.\n\nSubmit as flag{three words} (lowercase).","flagHash":"f6da6caa455522fc5d0ca34b68682f23e25b493587d11f198ef8cded22d0a50a"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m7b","module":7,"title":"Build & Present","category":"Class Project","levels":[{"difficulty":"Easy","points":50,"hint":"An early working version.","prompt":"Objective — Development. An early working model of your project used to test the idea is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"e7a456f0cf0705f7d03206c9440f6eb224bf0a546f110b00784013ef9eb31297"},{"difficulty":"Medium","points":100,"hint":"The core Web3 property: no single party controls the network or can shut it down.","prompt":"Objective — Principles. Spreading control across many participants instead of one authority is called ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"4cdeb32a366f7d988d5200cab0cb6b93234de4ccbfb75b0a733a86627f68d7f3"},{"difficulty":"Hard","points":150,"hint":"The smallest version of a product that still delivers value and can be tested with real users. Three words.","prompt":"Objective — Iteration. The simplest version of a product that still delivers value to users is the ___ ___ ___.\n\nSubmit as flag{three words} (lowercase).","flagHash":"f6da6caa455522fc5d0ca34b68682f23e25b493587d11f198ef8cded22d0a50a"}]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m8a","module":8,"title":"Ecosystem Terms","category":"Additional Terms","levels":[{"difficulty":"Easy","points":50,"hint":"The decentralized web.","prompt":"Objective — Big picture. The name for the decentralized, blockchain-based era of the internet is ___.\n\nSubmit as flag{word} (lowercase, no space).","flagHash":"ef79dff314ff51d6cce3b4829be8a73fa00eebb404f6d7ae3b01cb823d6efd41"},{"difficulty":"Medium","points":100,"hint":"The record of transactions.","prompt":"Objective — Records. The shared record of all transactions on a blockchain is called the ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"16a04009c9c5fbdf408cdcbce2e16ee2f6132ec0b121366b7e1717e4aabb97d5"},{"difficulty":"Hard","points":150,"hint":"Validators lock up coins.","prompt":"Objective — Consensus. The energy-efficient consensus where validators lock up coins as collateral is called ___ ___ ___.\n\nSubmit as flag{three words} (lowercase).","flagHash":"2a6b5e5cc189aec303cf9b24132571944977d476d90249e8868a0a35af70891f"}]});
-window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m8b","module":8,"title":"Risks & Safety","category":"Additional Terms","levels":[{"difficulty":"Easy","points":50,"hint":"A fraud to avoid.","prompt":"Objective — Safety. A fraudulent scheme designed to steal crypto or keys is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"fa1964123faa234e3ad0c7c8da65f0cf85e900c76e1488c7043b1f69926979c1"},{"difficulty":"Medium","points":100,"hint":"Devs vanish with the money.","prompt":"Objective — Risk. A scam where creators abandon a project and run off with investors' funds is a ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"07674a056eaacf673c4d6e71db3254ead7f5aee1e532b16694b95d38fbf39cbe"},{"difficulty":"Hard","points":150,"hint":"Cost of a transaction.","prompt":"Objective — Costs. The charge paid to process a transaction on the network is the ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"582c94eddd908816ff0b7eaaa55df49d419d8d8bfec30a36f82530048eb97401"}]});
+window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m8b","module":8,"title":"Risks & Safety","category":"Additional Terms","levels":[{"difficulty":"Easy","points":50,"hint":"A fraud to avoid.","prompt":"Objective — Safety. A fraudulent scheme designed to steal crypto or keys is a ___.\n\nSubmit as flag{word} (lowercase).","flagHash":"fa1964123faa234e3ad0c7c8da65f0cf85e900c76e1488c7043b1f69926979c1"},{"difficulty":"Medium","points":100,"hint":"Devs vanish with the money.","prompt":"Objective — Risk. A scam where creators abandon a project and run off with investors' funds is a ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"07674a056eaacf673c4d6e71db3254ead7f5aee1e532b16694b95d38fbf39cbe"},{"difficulty":"Hard","points":150,"hint":"What you pay the network to include and execute your transaction. It rises when the network is busy. Two words.","prompt":"Objective — Costs. The charge paid to process a transaction on the network is the ___ ___.\n\nSubmit as flag{two words} (lowercase).","flagHash":"582c94eddd908816ff0b7eaaa55df49d419d8d8bfec30a36f82530048eb97401"}]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m1-parts","module":1,"type":"match","title":"Parts of a Block","category":"Blockchain Basics","points":150,"intro":"Objective — Block structure. Match each part of a block to what it holds. Tap a part, then tap its meaning.","pairs":[{"left":"Hash","right":"This block's unique fingerprint"},{"left":"Previous hash","right":"Links to the block before it"},{"left":"Transactions","right":"The data recorded in the block"},{"left":"Nonce","right":"Number miners change to solve the puzzle"}]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m1-mine","module":1,"type":"order","title":"Add a Block to the Chain","category":"Blockchain Basics","points":150,"intro":"Objective — Consensus. Order the steps to add a new block using proof of work, first to last.","steps":["Collect pending transactions","Bundle them into a candidate block","Miners race to solve the hash puzzle","The network verifies the winning block","The block is added to every copy of the chain"]});
 window.COURSE_CONFIG.web3.ctf.challenges.push({"id":"w3-m1-cf","module":1,"type":"match","title":"Centralized or Decentralized?","category":"Blockchain Basics","points":150,"intro":"Objective — Decentralization. Sort each system. Tap the example, then tap its type.","pairs":[{"left":"A single bank's database","right":"Centralized"},{"left":"The Bitcoin network","right":"Decentralized"},{"left":"One company's server","right":"Centralized"},{"left":"Thousands of nodes sharing a ledger","right":"Decentralized"}]});

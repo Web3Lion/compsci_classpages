@@ -1,0 +1,28 @@
+:root{
+  /* families */
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* display / heading (always mono, always tight, always bright) */
+  --fs-hero: 52px;      --lh-hero: 1.05;   --ls-hero: -1px;
+  --fs-h1: 34px;        --lh-h1: 1.15;     --ls-h1: -.5px;
+  --fs-h2: 22px;        --lh-h2: 1.25;     --ls-h2: -.3px;
+  --fs-h3: 19px;        --lh-h3: 1.3;
+
+  /* body */
+  --fs-lead: 18px;      --lh-lead: 1.6;
+  --fs-body: 15px;      --lh-body: 1.6;
+  --fs-sm: 14px;
+  --fs-xs: 13px;
+
+  /* mono utility — eyebrows, codes, table heads, telemetry */
+  --fs-mono-lg: 14px;
+  --fs-mono: 12px;
+  --fs-mono-sm: 11px;
+  --fs-mono-xs: 10px;
+  --ls-eyebrow: 2px;     /* section eyebrows: MINING BLOCK #1 */
+  --ls-label: 1.5px;     /* field labels, table heads */
+  --ls-pill: .5px;       /* pills + badges */
+
+  --fw-reg: 400; --fw-med: 500; --fw-semi: 600; --fw-bold: 700; --fw-black: 800;
+}

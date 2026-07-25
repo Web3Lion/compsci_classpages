@@ -1,0 +1,28 @@
+/* Semantic surface + ink scale. Defaults below are the Cyber 1 dark theme —
+   a page adopts a course by setting data-course, and light mode by data-theme.
+   Every course redefines the SAME names, so components never hardcode a hue. */
+:root{
+  /* surfaces, darkest -> lightest */
+  --bg:#0a0e14; --panel:#0b1220; --panel2:#0c1626; --panel3:#0e2136;
+  /* borders, quietest -> loudest */
+  --border2:#172436; --border:#1e3350; --border3:#244a6d; --border-hi:#2f5580;
+  /* ink, brightest -> faintest */
+  --bright:#eaf4ff; --text:#cfe0f3; --muted:#a9bfd6; --dim:#7f9cb8; --faint:#5c7592; --fainter:#3d5069;
+  /* course accent (the one hue that changes per course) */
+  --accent:#00b3ff; --accent2:#7dd8ff;
+  /* caution surface — used for hints, "elective" tags, warnings */
+  --amber:#ffcf5c; --amber-bd:#4a3d1a; --amber-bg:#1a150a;
+  /* background field tint (dot grid + trace lines) */
+  --via:rgba(0,179,255,.10); --trace:rgba(0,179,255,.035);
+
+  /* status — constant across courses */
+  --ok:#3ecf8e; --warn:#ffb454; --bad:#ff6b6b;
+  /* difficulty ladder */
+  --diff-easy:var(--ok); --diff-medium:var(--warn); --diff-hard:var(--bad);
+
+  /* course brand hues, for cross-course UI (teacher dashboard, hubs) */
+  --course-cyber1:#00b3ff;
+  --course-cyber2:#39ff88;
+  --course-apcsp:#a855f7;
+  --course-web3:#f7931a;
+}

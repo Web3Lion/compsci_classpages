@@ -72,6 +72,7 @@
     var st = API.getState ? API.getState() : {};
     var s = (API.stats && API.stats()) || { pts: 0, total: 0, solvedCount: 0, count: 0, rank: "", next: null };
     var flagXp = st.points || 0, bonusXp = st.bonus || 0;
+    var vocabXp = (API.vocabXp && API.vocabXp()) || 0;
     var streak = st.streak || {};
     var pct = s.total ? Math.round(s.pts / s.total * 100) : 0;
     var line = function (k, v, col) {
@@ -91,6 +92,7 @@
       line("Rank", esc(s.rank || "\u2014"), "var(--bright)") +
       line("Flag XP", flagXp.toLocaleString()) +
       line("Daily bonus XP", "+" + bonusXp.toLocaleString(), bonusXp ? "var(--amber)" : "var(--faint)") +
+      line("Vocab practice XP", "+" + vocabXp.toLocaleString(), vocabXp ? "var(--amber)" : "var(--faint)") +
       line("Flags captured", (s.solvedCount || 0) + " / " + (s.count || 0)) +
       line("Current streak", (streak.count || 0) + " day" + ((streak.count || 0) === 1 ? "" : "s"), streak.count ? "var(--amber)" : "var(--faint)") +
       line("Best streak", (streak.best || 0) + " day" + ((streak.best || 0) === 1 ? "" : "s")) +
