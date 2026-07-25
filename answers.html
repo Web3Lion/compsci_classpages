@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Answer Key — CTF Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d12;--panel:#111620;--panel2:#161d29;--panel3:#1c2432;--bg2:#0d1119;
+    --border:#26303e;--border2:#1d2531;--border3:#3a4658;
+    --text:#c6d0dc;--bright:#f0f5fb;--muted:#93a1b3;--dim:#6f7d8f;--faint:#4d5a6a;
+    --accent:#4ba3ff;--accent2:#7cc0ff;--ok:#3ecf8e;--warn:#ffb454;--bad:#ff6b6b;
+    --cyber1:#2ee6a6;--cyber2:#3fb2ff;--apcsp:#a855f7;--web3:#ff9838;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);
+    background-image:radial-gradient(circle at 12% -10%,rgba(255,180,84,.05),transparent 45%);}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+  button{font-family:inherit;cursor:pointer;}
+  ::-webkit-scrollbar{width:10px;height:10px;} ::-webkit-scrollbar-thumb{background:var(--border3);border-radius:6px;}
+  .btn{padding:9px 15px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);color:var(--text);font-size:13px;font-weight:600;transition:.15s;}
+  .btn:hover{border-color:var(--accent);color:var(--bright);}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#04121e;}
+  .btn.sm{padding:5px 10px;font-size:11px;border-radius:7px;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;}
+  .pill{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:6px;text-transform:uppercase;}
+  .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;text-transform:uppercase;}
+  .spin{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .fade{animation:fade .25s ease;}
+  .empty{padding:44px 20px;text-align:center;color:var(--dim);font-size:14px;}
+  .ansrow{border:1px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:9px;background:var(--bg2);}
+  @media print{
+    body{background:#fff;color:#111;} .noprint{display:none!important;}
+    .card,.ansrow{border-color:#bbb;background:#fff;}
+    .mono,b,span,div{color:#111!important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="gate" style="display:none;">
+  <div style="max-width:430px;margin:15vh auto;padding:0 22px;">
+    <div class="card fade" style="padding:30px;">
+      <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--warn);">CTF PLATFORM // ANSWER KEY</div>
+      <h1 style="font-size:22px;color:var(--bright);margin:6px 0 6px;">Teacher access only</h1>
+      <p id="gateMsg" style="color:var(--dim);font-size:13px;margin:0 0 20px;line-height:1.6;">Sign in with your school Google account.</p>
+      <button id="gateBtn" class="btn" style="width:100%;padding:13px;background:#fff;color:#1f2733;border-color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;" onclick="doLogin()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.7-2 5-4.4 6.6v5.5h7.1c4.1-3.8 6.6-9.4 6.6-16.3z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.2l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.3 15.5 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.4c-.4-1.3-.7-2.7-.7-4.4s.3-3.1.7-4.4v-5.7H4.5C2.9 17.1 2 20.4 2 24s.9 6.9 2.5 10.1l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.7 4.5 13.9l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>
+        Sign in with Google
+      </button>
+      <div id="gateErr" style="color:var(--bad);font-size:12px;min-height:16px;margin-top:12px;line-height:1.5;"></div>
+      <div class="mono" style="font-size:10px;color:var(--faint);margin-top:14px;"><a href="teacher.html">&larr; back to dashboard</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <div style="max-width:1000px;margin:0 auto;padding:22px 22px 70px;">
+    <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:20px;">
+      <div>
+        <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--warn);">CTF PLATFORM // ANSWER KEY</div>
+        <h1 id="akTitle" style="font-size:23px;color:var(--bright);margin:3px 0 0;">Answer Key</h1>
+      </div>
+      <div class="noprint" style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <select id="akClass" class="btn" style="max-width:230px;" onchange="pickClass(this.value)"></select>
+        <button class="btn" onclick="window.print()">Print</button>
+        <a class="btn" href="teacher.html">Dashboard</a>
+      </div>
+    </div>
+    <div id="akBody"><div class="empty"><span class="spin"></span></div></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="cipher.js"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
+<script>
+var AUTH=window.CTF_AUTH, CLASSES=[], CUR=null;
+/* Answer plaintext is NEVER a static file on this site — a public Pages deploy
+   would serve it to anyone who guessed the filename. It lives in a sealed
+   Supabase table, delivered only by the _is_teacher() gated RPC below. */
+window.CTF_ANSWERS = {};
+async function loadAnswerKey(){
+  try{ var r = await AUTH.rpc("ctf_t_answers"); window.CTF_ANSWERS = (r && r.data) || {}; }
+  catch(e){ window.CTF_ANSWERS = {}; }
+  return Object.keys(window.CTF_ANSWERS).length;
+}
+/* One-time seed: the teacher picks their local answers file and it is pushed
+   into Supabase. Nothing sensitive is ever committed or served. */
+function pickAnswerFile(){
+  var inp=document.createElement("input");
+  inp.type="file"; inp.accept=".js,.json";
+  inp.onchange=async function(){
+    var f=inp.files&&inp.files[0]; if(!f) return;
+    var msg=el("akUpMsg");
+    if(msg){ msg.style.color="var(--dim)"; msg.textContent="reading\u2026"; }
+    try{
+      var txt=await f.text(), data=null;
+      try{ data=JSON.parse(txt); }
+      catch(e){ var w={}; new Function("window", txt)(w); data=w.CTF_ANSWERS; }  // accepts answers.local.js verbatim
+      if(!data||typeof data!=="object") throw new Error("shape");
+      await AUTH.rpc("ctf_t_put_answers",{p_data:data});
+      if(msg){ msg.style.color="var(--ok)"; msg.textContent="\u2713 uploaded \u2014 reloading"; }
+      setTimeout(function(){ location.reload(); },900);
+    }catch(e){
+      if(msg){ msg.style.color="var(--bad)";
+        msg.textContent=/not_teacher/.test((e&&e.message)||"")?"teacher account required":"couldn\u2019t read that file"; }
+    }
+  };
+  inp.click();
+}
+function el(id){return document.getElementById(id);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+async function sha256(str){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(String(str)));
+  return [].slice.call(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}
+function norm(s){return String(s==null?"":s).trim().toLowerCase();}
+
+var COURSES={cyber1:{label:"Cyber 1",c:"var(--cyber1)"},cyber2:{label:"Cyber 2",c:"var(--cyber2)"},
+  apcsp:{label:"Byte Bounty · AP CSP",c:"var(--apcsp)"},web3:{label:"Proof of Work · Web 3.0",c:"var(--web3)"}};
+function cmeta(c){return COURSES[c]||{label:c,c:"var(--dim)"};}
+
+async function doLogin(){
+  var b=el("gateBtn"); b.disabled=true;
+  try{ await AUTH.signIn(); }catch(e){ el("gateErr").textContent="Couldn't reach Google."; b.disabled=false; }
+}
+async function signOut(){ await AUTH.signOut(); location.reload(); }
+
+/* ---------- guide-flavored framing: the key reads like the character
+     encrypted the course and you hold the master key ---------- */
+var VOICE={
+  cyber1:{who:"NEMESIS",line:"NEMESIS locked these down. You hold the master key — here is everything it tried to hide."},
+  cyber2:{who:"SPECTER",line:"SPECTER buried these in the wire. Decrypted below, in full."},
+  apcsp:{who:"ADA",line:"ADA wrapped the unreleased work so students can't peek early. Here's the plaintext."},
+  web3:{who:"ORACLE",line:"ORACLE signed these into a sealed block. This is the unsealed ledger."}
+};
+
+/* ---------- solutions we can derive straight from config.js ---------- */
+function derived(c){
+  if(c.type==="match"&&c.pairs) return {label:"Correct pairings",
+    body:c.pairs.map(function(p,i){return (i+1)+". "+p[0]+"  \u2192  "+p[1];}).join("\n")};
+  if(c.type==="order"&&c.sequence) return {label:"Correct order",
+    body:c.sequence.map(function(s,i){return (i+1)+". "+s;}).join("\n")};
+  if(c.type==="spot") return {label:"Answer",
+    body:(c.items||[]).filter(function(i){return i.bad;}).map(function(i){return "\u2713 "+(i.label||i.text||"");}).join("\n")
+      ||(c.answer!=null?String(c.answer):"")};
+  if(c.type==="phish"&&c.companies) return {label:"Real vs. phish",
+    body:c.companies.map(function(co,i){
+      var real=(co.emails||[]).map(function(e,ix){return e.phish?null:ix;}).filter(function(x){return x!==null;});
+      return (i+1)+". "+co.name+" \u2014 legitimate option"+(real.length===1?"":"s")+": "+real.map(function(x){return x+1;}).join(", ");
+    }).join("\n")};
+  if(c.type==="vocab") return {label:"Answer",body:"Drawn live from the module's vocabulary list (see vocab-data.js)."};
+  return null;
+}
+
+/* ---------- one challenge row ---------- */
+async function rowHtml(c,locked,course){
+  var CI=window.CTF_CIPHER;
+  var sheet=(window.CTF_ANSWERS||{})[course]||{};
+  var h='<div class="ansrow">';
+  h+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">'+
+    '<b style="color:var(--bright);font-size:14px;">'+esc(c.title)+'</b>'+
+    '<span class="pill" style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);">'+esc(c.category||c.type||"flag")+'</span>'+
+    (locked?'<span class="pill" style="background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);">\uD83D\uDD12 locked</span>'
+           :'<span class="pill" style="background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok);">open</span>')+
+    '<span class="mono" style="margin-left:auto;font-size:10px;color:var(--faint);">'+esc(c.id)+'</span></div>';
+
+  // decrypt directions when the class has this one locked
+  if(locked&&CI){
+    var d=CI.directionsFor(c.id);
+    h+='<div style="border-left:2px solid var(--warn);padding:8px 0 8px 12px;margin-bottom:10px;">'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--warn);margin-bottom:4px;">STUDENTS SEE THIS ENCIPHERED \u00b7 '+esc(d.name.toUpperCase())+'</div>'+
+      '<div style="font-size:12.5px;color:var(--muted);line-height:1.6;">'+esc(d.how)+'</div></div>';
+  }
+
+  // levels or single
+  var levels=c.levels&&c.type!=="phish"?c.levels:null;
+  if(levels){
+    for(var i=0;i<levels.length;i++){
+      var lv=levels[i], key=c.id+"#"+i, given=sheet[key];
+      var verdict="";
+      if(given&&lv.flagHash){
+        var hh=await sha256(norm(given));
+        verdict=hh===String(lv.flagHash).toLowerCase()
+          ?'<span class="mono" style="color:var(--ok);font-size:11px;">\u2713 verified</span>'
+          :'<span class="mono" style="color:var(--bad);font-size:11px;">\u2717 does not match the stored hash</span>';
+      }
+      h+='<div style="padding:9px 0;border-top:1px solid var(--border2);">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'+
+          '<span class="pill" style="background:color-mix(in srgb,var(--dim) 20%,transparent);color:var(--muted);">'+esc(lv.difficulty||("L"+i))+'</span>'+
+          '<span class="mono" style="font-size:11px;color:var(--dim);">'+(lv.points||0)+' XP</span>'+verdict+'</div>'+
+        '<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">'+esc(lv.prompt||"")+'</div>'+
+        (lv.hint?'<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:6px;">hint: '+esc(lv.hint)+'</div>':"")+
+        '<div class="mono" style="font-size:13px;">'+
+          (given?'<span style="color:var(--ok);font-weight:700;">'+esc(given)+'</span>'
+                :'<span style="color:var(--faint);">no plaintext recorded \u2014 add "'+esc(key)+'" to answers.js</span>')+
+        '</div></div>';
+    }
+  }else{
+    var der=derived(c), given2=sheet[c.id];
+    var verdict2="";
+    if(given2&&c.flagHash){
+      var hh2=await sha256(norm(given2));
+      verdict2=hh2===String(c.flagHash).toLowerCase()
+        ?'<span class="mono" style="color:var(--ok);font-size:11px;">\u2713 verified</span>'
+        :'<span class="mono" style="color:var(--bad);font-size:11px;">\u2717 does not match the stored hash</span>';
+    }
+    h+='<div style="padding:6px 0 0;">'+
+      (c.prompt||c.intro?'<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">'+esc(c.prompt||c.intro)+'</div>':"")+
+      (c.hint?'<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:6px;">hint: '+esc(c.hint)+'</div>':"")+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span class="mono" style="font-size:11px;color:var(--dim);">'+(c.points||0)+' XP</span>'+verdict2+'</div>'+
+      '<div class="mono" style="font-size:13px;white-space:pre-wrap;">'+
+        (der?'<span style="color:var(--ok);">'+esc(der.body)+'</span>'
+          :given2?'<span style="color:var(--ok);font-weight:700;">'+esc(given2)+'</span>'
+          :'<span style="color:var(--faint);">no plaintext recorded \u2014 add "'+esc(c.id)+'" to answers.js</span>')+
+      '</div></div>';
+  }
+  return h+'</div>';
+}
+
+/* ---------- render ---------- */
+async function renderKey(gates){
+  var course=CUR.course, cfg=(window.COURSE_CONFIG||{})[course]||{};
+  var chals=((cfg.ctf||{}).challenges)||[];
+  var v=VOICE[course]||VOICE.cyber1, m=cmeta(course);
+  el("akTitle").textContent="Answer Key \u2014 "+CUR.name;
+
+  if(!gates.answer_key_on){
+    el("akBody").innerHTML='<div class="card" style="padding:30px;">'+
+      '<div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--warn);">SEALED</div>'+
+      '<h2 style="font-size:19px;color:var(--bright);margin:8px 0 6px;">'+esc(v.who)+' still has this one sealed.</h2>'+
+      '<p style="color:var(--muted);font-size:13.5px;line-height:1.6;">Arm the answer key for <b>'+esc(CUR.name)+'</b> from the dashboard \u2014 '+
+      '<b>Locks &amp; Guide</b> tab, <b>Answer key armed</b> switch \u2014 then reload this page.</p>'+
+      '<a class="btn pri" style="margin-top:14px;display:inline-block;" href="teacher.html">Open dashboard</a></div>';
+    return;
+  }
+
+  var haveKey=Object.keys(window.CTF_ANSWERS||{}).length>0;
+  var lockedMods=(gates.locked_modules||[]).map(Number), lockedFlags=gates.locked_flags||[];
+  var isLocked=function(c){ return lockedFlags.indexOf(c.id)!==-1||lockedMods.indexOf(Number(c.module||0))!==-1; };
+
+  var mods={}; chals.forEach(function(c){ var k=Number(c.module||0); (mods[k]=mods[k]||[]).push(c); });
+  var keys=Object.keys(mods).map(Number).sort(function(a,b){return a-b;});
+
+  var h='<div class="card" style="padding:18px 20px;margin-bottom:20px;border-color:'+m.c+';">'+
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+
+      '<span class="pill" style="background:color-mix(in srgb,'+m.c+' 16%,transparent);color:'+m.c+';">'+esc(m.label)+'</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);">'+chals.length+' challenges \u00b7 '+
+        chals.filter(isLocked).length+' locked \u00b7 guide '+(gates.persona_on?"awake":"asleep")+'</span></div>'+
+    '<div style="font-size:13.5px;color:var(--muted);line-height:1.6;margin-top:10px;">'+esc(v.line)+'</div>'+
+    '<div class="mono noprint" style="font-size:11px;color:var(--faint);margin-top:10px;line-height:1.6;">'+
+      'Locked challenges list the exact cipher and how to reverse it. Text-flag answers come from answers.js and are '+
+      'checked against the stored hash, so a \u2713 means it is genuinely the accepted answer.</div></div>';
+
+  // answer-plaintext status + one-time upload
+  h+='<div class="card noprint" style="padding:16px 18px;margin-bottom:14px;border-color:'+(haveKey?'var(--border)':'var(--warn)')+';">'+
+    '<div class="lbl" style="color:'+(haveKey?'var(--faint)':'var(--warn)')+';">ANSWER PLAINTEXT</div>'+
+    '<div style="font-size:12.5px;color:var(--dim);line-height:1.6;margin-bottom:10px;">'+
+      (haveKey
+        ? 'Loaded from your Supabase project \u2014 sealed behind RLS and readable only by the teacher account. Nothing is served from this site.'
+        : 'Not uploaded yet. Answers are deliberately NOT stored in this repo \u2014 a public site would hand them to anyone. Upload your local <span class="mono">answers.local.js</span> once; it is stored in Supabase, teacher-only.')+
+    '</div>'+
+    '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'+
+      '<button class="btn'+(haveKey?'':' pri')+'" onclick="pickAnswerFile()">'+(haveKey?'Replace answer file':'Upload answer file')+'</button>'+
+      '<span id="akUpMsg" class="mono" style="font-size:11px;color:var(--dim);"></span></div></div>';
+
+  // verify-a-guess helper
+  h+='<div class="card noprint" style="padding:16px 18px;margin-bottom:20px;">'+
+    '<div class="lbl">VERIFY AN ANSWER</div>'+
+    '<div style="font-size:12.5px;color:var(--dim);line-height:1.6;margin-bottom:10px;">'+
+      'Don\u2019t want answers committed to the repo? Type a guess here \u2014 it is hashed in your browser and matched against every flag in this course.</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+      '<input id="vqIn" class="mono" placeholder="flag{...}" style="flex:1;min-width:220px;padding:10px 13px;border-radius:9px;border:1px solid var(--border3);background:var(--bg2);color:var(--bright);font-size:14px;outline:none;">'+
+      '<button class="btn pri" onclick="verifyGuess()">Check</button></div>'+
+    '<div id="vqOut" class="mono" style="font-size:12px;min-height:18px;margin-top:9px;"></div></div>';
+
+  for(var k=0;k<keys.length;k++){
+    var mk=keys[k], list=mods[mk];
+    var lockedN=list.filter(isLocked).length;
+    h+='<div style="margin:22px 0 10px;display:flex;align-items:center;gap:10px;">'+
+      '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--bright);font-weight:800;">MODULE '+mk+'</div>'+
+      '<div class="mono" style="font-size:11px;color:var(--faint);">'+list.length+' challenge'+(list.length===1?'':'s')+
+        (lockedN?' \u00b7 '+lockedN+' locked':'')+'</div></div>';
+    for(var i=0;i<list.length;i++) h+=await rowHtml(list[i],isLocked(list[i]),course);
+  }
+
+  // boss questions carry real plaintext answers in config
+  var bq=((cfg.ctf||{}).bossQuestions)||[];
+  if(bq.length){
+    h+='<div style="margin:26px 0 10px;" class="mono"><span style="font-size:12px;letter-spacing:2px;color:var(--bright);font-weight:800;">BOSS QUESTIONS</span>'+
+      ' <span style="font-size:11px;color:var(--faint);">'+bq.length+' items</span></div>';
+    bq.forEach(function(q){
+      h+='<div class="ansrow"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'+
+        '<span class="pill" style="background:color-mix(in srgb,var(--dim) 20%,transparent);color:var(--muted);">'+esc(q.diff||"")+'</span>'+
+        '<span class="mono" style="font-size:11px;color:var(--dim);">module '+esc(q.module==null?"\u2014":q.module)+' \u00b7 '+esc(q.kind||"")+'</span></div>'+
+        '<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">'+esc(q.prompt||"")+'</div>'+
+        (q.choices?'<div class="mono" style="font-size:11.5px;color:var(--faint);margin-bottom:6px;">'+q.choices.map(esc).join("  \u00b7  ")+'</div>':"")+
+        '<div class="mono" style="font-size:13px;color:var(--ok);font-weight:700;">'+esc(q.answer||"")+'</div></div>';
+    });
+  }
+
+  el("akBody").innerHTML=h;
+}
+
+async function verifyGuess(){
+  var v=el("vqIn").value, out=el("vqOut");
+  if(!v.trim()){ out.textContent=""; return; }
+  var cfg=(window.COURSE_CONFIG||{})[CUR.course]||{};
+  var chals=((cfg.ctf||{}).challenges)||[];
+  var h=await sha256(norm(v));
+  var hits=[];
+  chals.forEach(function(c){
+    if(c.levels&&c.type!=="phish"){
+      c.levels.forEach(function(lv,i){ if(lv.flagHash&&String(lv.flagHash).toLowerCase()===h) hits.push(c.title+" \u00b7 "+(lv.difficulty||("level "+i))); });
+    } else if(c.flagHash&&String(c.flagHash).toLowerCase()===h) hits.push(c.title);
+  });
+  out.style.color=hits.length?"var(--ok)":"var(--bad)";
+  out.textContent=hits.length?"\u2713 matches: "+hits.join(" | "):"\u2717 no flag in this course accepts that.";
+}
+
+/* ---------- boot ---------- */
+async function pickClass(id){
+  CUR=CLASSES.filter(function(c){return c.id===id;})[0]; if(!CUR) return;
+  try{ localStorage.setItem("ctf-ak-class",id); }catch(e){}
+  el("akBody").innerHTML='<div class="empty"><span class="spin"></span></div>';
+  try{
+    var g=await AUTH.rpc("ctf_t_gates",{p_class:CUR.id});
+    await renderKey(g||{});
+  }catch(e){
+    el("akBody").innerHTML='<div class="empty" style="color:var(--bad)">Couldn\u2019t load class settings \u2014 run supabase/class-gates.sql.'+
+      '<div class="mono" style="font-size:11px;color:var(--dim);margin-top:8px;">'+esc((e&&e.message)||"")+'</div></div>';
+  }
+}
+
+(async function(){
+  if(!AUTH||!AUTH.online){
+    el("gate").style.display="block";
+    el("gateMsg").textContent="Supabase isn't connected yet \u2014 fill in supabase-config.js first.";
+    el("gateBtn").style.display="none"; return;
+  }
+  var u=null; try{ u=await AUTH.user(); }catch(e){}
+  if(!u){ el("gate").style.display="block"; return; }
+  if(!AUTH.isTeacher(u)){
+    el("gate").style.display="block";
+    el("gateMsg").textContent="Signed in as "+AUTH.emailOf(u)+".";
+    el("gateErr").innerHTML="That account isn\u2019t the teacher account.<br><a href=\"#\" onclick=\"signOut();return false;\">Use a different account</a>";
+    el("gateBtn").style.display="none"; return;
+  }
+  el("app").style.display="block";
+  await loadAnswerKey();
+  try{ CLASSES=await AUTH.rpc("ctf_t_classes")||[]; }catch(e){ CLASSES=[]; }
+  if(!CLASSES.length){
+    el("akBody").innerHTML='<div class="empty">No classes yet \u2014 create one on the <a href="teacher.html">dashboard</a> first.</div>';
+    return;
+  }
+  el("akClass").innerHTML=CLASSES.map(function(c){
+    return '<option value="'+esc(c.id)+'">'+esc(cmeta(c.course).label)+" \u2014 "+esc(c.name)+'</option>';
+  }).join("");
+  var want=new URLSearchParams(location.search).get("class");
+  try{ want=want||localStorage.getItem("ctf-ak-class"); }catch(e){}
+  var start=CLASSES.filter(function(c){return c.id===want;})[0]||CLASSES[0];
+  el("akClass").value=start.id;
+  pickClass(start.id);
+})();
+</script>
+</body>
+</html>
