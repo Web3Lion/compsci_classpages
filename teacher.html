@@ -16,6 +16,9 @@
     --cyber1:#2ee6a6;--cyber2:#3fb2ff;--apcsp:#a855f7;--web3:#ff9838;
   }
   *{box-sizing:border-box;}
+  /* WebKit font-boosts any block holding a long run of text, which doubled the
+     11px explanatory copy on the analytics tabs. Must be global, not mobile-only. */
+  html{text-size-adjust:100%;-webkit-text-size-adjust:100%;}
   body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);
     background-image:radial-gradient(circle at 15% -10%,rgba(75,163,255,.06),transparent 45%);}
   .mono{font-family:'JetBrains Mono',monospace;}
@@ -53,7 +56,61 @@
   .stat{background:var(--bg2);border:1px solid var(--border2);border-radius:11px;padding:14px 16px;}
   .stat .n{font-size:26px;font-weight:800;color:var(--bright);line-height:1;}
   .stat .k{font-size:11px;color:var(--dim);margin-top:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;}
-  @media(max-width:900px){.layout{grid-template-columns:1fr !important;} .side{position:static !important;height:auto !important;}}
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr !important;}
+    .side{position:static !important;height:auto !important;max-height:none !important;}
+  }
+  @media(max-width:720px){
+    body{font-size:15px;}
+    .card{border-radius:12px;}
+    #app > div{padding:14px 12px 48px !important;}
+    /* stat strips: 4-up is unreadable on a phone */
+    .stat .n{font-size:21px;}
+    .stat{padding:11px 12px;}
+    /* tables scroll horizontally rather than crushing every column */
+    table{font-size:12px;min-width:560px;}
+    th,td{padding:9px 8px;}
+    .tabs{gap:2px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;}
+    .tab{padding:11px 12px;font-size:12px;white-space:nowrap;}
+    /* 44px minimum touch targets */
+    .btn{padding:11px 14px;min-height:44px;}
+    .btn.sm{padding:8px 11px;min-height:36px;font-size:11px;}
+    .modal{padding:10px;align-items:flex-start;}
+    .modal > .card{margin-top:10px;max-height:94vh;}
+    input[type=checkbox]{width:20px;height:20px;}
+  }
+  @media(max-width:480px){
+    h1{font-size:19px !important;}
+    .stat .n{font-size:18px;}
+  }
+  /* --- narrow screens: this dashboard gets opened on phones between classes --- */
+  @media(max-width:680px){
+    .card{border-radius:12px;}
+    /* tabs scroll sideways instead of stacking into a tall wall */
+    .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .tabs::-webkit-scrollbar{display:none;}
+    .tab{padding:11px 13px;font-size:12.5px;white-space:nowrap;flex:none;}
+    /* stat strips: 4-up is unreadable at this width */
+    .stat{padding:11px 12px;}
+    .stat .n{font-size:20px;}
+    .stat .k{font-size:10px;}
+    /* tap targets stay finger-sized */
+    .btn{padding:10px 14px;}
+    .btn.sm{padding:7px 11px;font-size:11px;}
+    table{font-size:12px;}
+    th,td{padding:9px 8px;}
+    /* modals become full-height sheets rather than floating cards */
+    .modal{padding:0;align-items:flex-end;}
+    .modal>.card{width:100% !important;max-width:100% !important;max-height:94vh !important;
+      border-radius:16px 16px 0 0;}
+  }
+  /* the attendance grid is intentionally wide — let it scroll, and keep the
+     student column pinned so a row is still identifiable mid-scroll */
+  .attendWrap{overflow:auto;max-width:100%;-webkit-overflow-scrolling:touch;}
+  .attendWrap table{min-width:max-content;}
+  @media(max-width:680px){
+    .attendWrap th:first-child,.attendWrap td:first-child{max-width:118px;overflow:hidden;text-overflow:ellipsis;}
+  }
 </style>
 </head>
 <body>
@@ -126,6 +183,7 @@
 </div>
 
 <div id="studentModal" class="modal" style="display:none;"></div>
+<div id="flagModal" class="modal" style="display:none;z-index:600;"></div>
 
 <!-- create-class modal -->
 <div id="createModal" class="modal" style="display:none;">
@@ -154,6 +212,7 @@
 <script src="supabase-config.js"></script>
 <script src="auth.js"></script>
 <script src="name-filter.js"></script>
+<script src="objectives.js"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -172,6 +231,9 @@ async function rpc(fn,args){ return AUTH.rpc(fn, args||{}); }
 /* ---------------- helpers ---------------- */
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function el(id){return document.getElementById(id);}
+/* Keep an {error:...} payload intact instead of flattening it to [], so a tab
+   whose SQL file hasn't been run yet can say so rather than look empty. */
+function keepErr(v){ return Array.isArray(v) ? v : (v && v.error ? v : []); }
 function fmtSecs(s){ if(s==null||s<0) return "—"; if(s<60) return s+"s"; var m=Math.floor(s/60); return m+"m "+(s%60)+"s"; }
 function ago(ts){ if(!ts) return "never"; var d=(Date.now()-new Date(ts).getTime())/1000;
   if(d<60)return "just now"; if(d<3600)return Math.floor(d/60)+"m ago"; if(d<86400)return Math.floor(d/3600)+"h ago"; return Math.floor(d/86400)+"d ago"; }
@@ -215,7 +277,7 @@ function renderClassList(){
       html+='<div onclick=\'selectClass('+JSON.stringify(c).replace(/'/g,"&#39;")+')\' style="padding:10px 12px;border-radius:9px;cursor:pointer;margin-bottom:5px;border:1px solid '+(on?"var(--accent)":"var(--border2)")+';background:'+(on?"var(--panel3)":"var(--bg2)")+';">'+
         '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">'+
           '<span style="font-weight:600;color:var(--bright);font-size:14px;">'+esc(c.name)+'</span>'+
-          '<span class="pill" style="background:var(--panel3);color:var(--muted);">'+c.student_count+'</span>'+
+          '<span class="pill" style="background:var(--panel3);color:var(--muted);">'+(c.student_count==null?0:c.student_count)+'</span>'+
         '</div>'+
         '<div class="mono" style="font-size:11px;color:var(--dim);margin-top:3px;">'+esc(c.code)+'</div>'+
       '</div>';
@@ -227,10 +289,13 @@ function renderClassList(){
 /* ---------------- class detail ---------------- */
 var TAB="summary", ROSTER=[], FLAGS=[], CHEATS=[], sortKey="points", sortDir=-1;
 var SUMMARY=null, FSTATS=[], ATTEND=null, ATTEND_DAYS=28, DETAIL=null;
+// Teacher-only groupings. Students never see these — no student RPC returns one.
+var GROUPS=[], GFILTER="all", GSEL={};
+var PIONEERS=[], VOCAB=[], EXPECTED=[], VSESS=[], STAND=[], CAPS=[];
 function selectClass(c){ CUR=c; TAB="summary"; syncGateFromClass(); renderClassList(); renderMain(); loadDetail(); }
 
 async function loadDetail(){
-  ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;
+  ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;GROUPS=[];GSEL={};GFILTER="all";PIONEERS=[];VOCAB=[];EXPECTED=[];VSESS=[];STAND=[];CAPS=[];
   try{
     ROSTER=await rpc("ctf_t_roster",{p_class:CUR.id})||[];
     renderMain();
@@ -240,9 +305,24 @@ async function loadDetail(){
       rpc("ctf_t_flags",{p_class:CUR.id,p_limit:800}).catch(function(){return [];}),
       rpc("ctf_t_cheats",{p_class:CUR.id,p_limit:800}).catch(function(){return [];}),
       rpc("ctf_t_flag_stats",{p_class:CUR.id}).catch(function(){return [];}),
-      rpc("ctf_t_attendance",{p_class:CUR.id,p_days:ATTEND_DAYS}).catch(function(){return null;})
+      rpc("ctf_t_attendance",{p_class:CUR.id,p_days:ATTEND_DAYS}).catch(function(){return null;}),
+      rpc("ctf_t_groups",{p_class:CUR.id}).catch(function(){return [];}),
+      rpc("ctf_t_pioneers",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
+      rpc("ctf_t_vocab",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
+      rpc("ctf_t_roster_expected",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
+      rpc("ctf_t_vocab_sessions",{p_class:CUR.id,p_limit:400}).catch(function(){return {error:"missing_rpc"};}),
+      rpc("ctf_t_squad_standings",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
+      rpc("ctf_t_captures",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};})
     ]);
     SUMMARY=rest[0]; FLAGS=rest[1]||[]; CHEATS=rest[2]||[]; FSTATS=rest[3]||[]; ATTEND=rest[4];
+    GROUPS=Array.isArray(rest[5])?rest[5]:[];
+    // an {error} payload is kept as-is so the tab can say WHICH sql file is missing
+    PIONEERS=keepErr(rest[6]);
+    VOCAB=keepErr(rest[7]);
+    EXPECTED=keepErr(rest[8]);
+    VSESS=keepErr(rest[9]);
+    STAND=keepErr(rest[10]);
+    CAPS=keepErr(rest[11]);
     renderMain();
   }catch(e){
     var m=(e&&(e.message||""))+"";
@@ -270,7 +350,7 @@ function renderMain(){
         ' <button class="btn sm" style="padding:2px 7px;" onclick="copyCode()">copy</button></span>'+
     '</div>';
   // stat strip
-  h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;">'+
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-bottom:18px;">'+
       stat(ROSTER.length,"STUDENTS")+stat(avg.toLocaleString(),"AVG XP")+
       stat(capTotal?capTotal.toLocaleString():"—","FLAG CAPTURES")+stat(cheatTotal,"INTEGRITY FLAGS")+
     '</div>';
@@ -278,6 +358,7 @@ function renderMain(){
   h+='<div class="tabs">'+
       tabBtn("summary","Summary")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
       tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+
+      tabBtn("vocab","Vocab Lab")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("enroll","Enrollment")+
       tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
     '</div><div style="padding-top:16px;">';
   if(TAB==="roster") h+=rosterView();
@@ -286,6 +367,10 @@ function renderMain(){
   else if(TAB==="gates") h+=gatesView();
   else if(TAB==="flagstats") h+=flagStatsView();
   else if(TAB==="flags") h+=flagsView();
+  else if(TAB==="vocab") h+=vocabView();
+  else if(TAB==="squads") h+=squadsView();
+  else if(TAB==="objectives") h+=objectivesView();
+  else if(TAB==="enroll") h+=enrollView();
   else if(TAB==="cheats") h+=cheatsView();
   else h+=settingsView();
   h+='</div></div>';
@@ -331,7 +416,7 @@ function summaryView(){
         '<span style="display:block;height:100%;width:'+Math.round(xp/maxXp*100)+'%;background:var(--accent);"></span></span>'+
       '<span class="mono" style="width:64px;text-align:right;font-size:12px;color:var(--accent);font-weight:700;">'+xp.toLocaleString()+'</span></div>';
   };
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;">';
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;">';
   h+='<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TOP 5 BY XP</div>'+
       (top.length?top.map(bar).join(""):'<div class="empty" style="padding:20px;font-size:13px;">No XP yet.</div>')+'</div>';
   h+='<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">NEEDS ATTENTION</div>'+
@@ -393,7 +478,7 @@ function attendView(){
         [14,28,60,90].map(function(n){
           return '<button class="btn sm'+(ATTEND_DAYS===n?' pri':'')+'" onclick="setAttendDays('+n+')">'+n+'d</button>';
         }).join("")+'</div></div>'+
-    '<div style="overflow:auto;max-width:100%;"><table style="font-size:12px;">'+
+    '<div class="attendWrap"><table style="font-size:12px;">'+
       '<thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>'+
     '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:12px;line-height:1.6;">'+
       '\u2713 = opened the arena that day. Shaded columns are weekends and your no-class days \u2014 they never count against a streak.</div>';
@@ -601,7 +686,9 @@ function renderStudentModal(){
       stat((st.count||0)+"\u00b7"+(st.best||0),"STREAK / BEST","var(--warn)")+
       stat(badgeCount,"BADGES")+
       stat(days.length,"ACTIVE DAYS")+
-    '</div>';
+      stat(fmtMin(vlogTotal(s)),"VOCAB TIME",vlogTotal(s)?"var(--accent)":"")+
+    '</div>'+
+    vlogStrip(s);
 
   // recent activity days as a compact strip
   if(days.length){
@@ -612,19 +699,22 @@ function renderStudentModal(){
       '</div>';
   }
 
-  h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">FLAG CAPTURES ('+flags.length+')</div>';
+  h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">FLAG CAPTURES ('+flags.length+') <span style="color:var(--dim);letter-spacing:0;">\u2014 click a row for the full attempt history</span></div>';
   if(!flags.length) h+='<div class="empty" style="padding:22px;font-size:13px;">No captures yet.</div>';
   else{
     h+='<div style="overflow:auto;max-height:280px;"><table style="font-size:12px;"><thead><tr>'+
-      '<th>When</th><th>Challenge</th><th>Level</th><th>XP</th><th>Time</th><th>Tries</th><th>Clean</th></tr></thead><tbody>';
+      '<th>When</th><th>Challenge</th><th>Level</th><th>XP</th><th>Time</th><th>Tries</th><th>Integrity</th><th>Clean</th></tr></thead><tbody>';
     flags.forEach(function(f){
       var lvlC=f.level==="Hard"?"var(--bad)":f.level==="Medium"?"var(--warn)":"var(--ok)";
-      h+='<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(f.created_at)+'</td>'+
-        '<td>'+esc(f.title||f.challenge_id)+'</td>'+
+      var fk=f.flag_key||f.challenge_id;
+      h+='<tr style="cursor:pointer" onclick=\'openFlag("'+s.id+'","'+esc(fk).replace(/"/g,"")+'")\'>'+
+        '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(f.created_at)+'</td>'+
+        '<td><span style="color:var(--accent);border-bottom:1px dotted var(--border3);">'+esc(f.title||f.challenge_id)+'</span></td>'+
         '<td>'+(f.level?'<span class="pill" style="background:color-mix(in srgb,'+lvlC+' 14%,transparent);color:'+lvlC+'">'+esc(f.level)+'</span>':'\u2014')+'</td>'+
         '<td class="mono" style="color:var(--accent)">'+(f.points||0)+'</td>'+
         '<td class="mono">'+fmtSecs(f.secs)+'</td>'+
-        '<td>'+(f.retries?'<span style="color:var(--warn)">'+f.retries+'</span>':'0')+'</td>'+
+        '<td>'+((f.wrong_tries||f.retries)?'<span style="color:var(--warn)">'+(f.wrong_tries||f.retries)+'</span>':'0')+'</td>'+
+        '<td>'+(f.flag_cheats?'<span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">'+f.flag_cheats+'</span>':'<span style="color:var(--faint)">0</span>')+'</td>'+
         '<td>'+(f.tainted?'<span style="color:var(--bad)">no</span>':'<span style="color:var(--ok)">yes</span>')+'</td></tr>';
     });
     h+='</tbody></table></div>';
@@ -642,11 +732,88 @@ function renderStudentModal(){
   m.innerHTML=h+'</div>';
 }
 
+/* ----- groups (teacher-only) -----
+   Lab partners, tables, intervention tiers. A student is in at most one group;
+   deleting a group just leaves its members ungrouped. */
+function selCount(){ return Object.keys(GSEL).filter(function(k){return GSEL[k];}).length; }
+function toggleSel(id){ GSEL[id]=!GSEL[id]; renderMain(); }
+function selAllVisible(on){
+  visibleRoster().forEach(function(r){ GSEL[r.id]=!!on; });
+  renderMain();
+}
+function setGFilter(v){ GFILTER=v; renderMain(); }
+function visibleRoster(){
+  if(GFILTER==="all") return ROSTER;
+  if(GFILTER==="none") return ROSTER.filter(function(r){return !r.group_id;});
+  return ROSTER.filter(function(r){return r.group_id===GFILTER;});
+}
+async function newGroup(){
+  var n=prompt("Name this group (students never see it):"); if(n==null) return;
+  n=n.trim(); if(!n) return;
+  try{
+    var r=await rpc("ctf_t_group_save",{p_class:CUR.id,p_id:null,p_name:n,p_color:null});
+    if(r&&r.error) throw new Error(r.error);
+    await loadDetail();
+  }catch(e){ alert(/name_taken/.test((e&&e.message)||"")?"A group in this class already has that name.":"Couldn\u2019t create the group \u2014 run supabase/class-groups.sql."); }
+}
+async function renameGroup(id,cur){
+  var n=prompt("Rename group:",cur); if(n==null) return;
+  n=n.trim(); if(!n) return;
+  try{ await rpc("ctf_t_group_save",{p_class:CUR.id,p_id:id,p_name:n,p_color:null}); await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t rename that group."); }
+}
+async function deleteGroup(id,name){
+  if(!confirm('Delete the group "'+name+'"?\n\nIts students stay in the class, just ungrouped.')) return;
+  try{ await rpc("ctf_t_group_delete",{p_id:id}); if(GFILTER===id) GFILTER="all"; await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t delete that group."); }
+}
+async function assignSel(gid){
+  var ids=Object.keys(GSEL).filter(function(k){return GSEL[k];});
+  if(!ids.length) return;
+  try{ await rpc("ctf_t_group_assign",{p_students:ids,p_group:gid||null}); GSEL={}; await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t move those students \u2014 run supabase/class-groups.sql."); }
+}
+function groupBar(){
+  var n=selCount();
+  var chip=function(v,label,count,col){
+    var on=GFILTER===v;
+    return '<button class="btn sm'+(on?' pri':'')+'" onclick="setGFilter(\''+v+'\')" style="'+
+      (col&&!on?'border-color:'+col+';':'')+'">'+esc(label)+
+      (count!=null?' <span style="opacity:.7">'+count+'</span>':'')+'</button>';
+  };
+  var ungrouped=ROSTER.filter(function(r){return !r.group_id;}).length;
+  var h='<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px;">'+
+    '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-right:2px;">GROUPS</span>'+
+    chip("all","All",ROSTER.length)+
+    GROUPS.map(function(g){return chip(g.id,g.name,g.student_count,g.color);}).join("")+
+    (ungrouped?chip("none","Ungrouped",ungrouped):"")+
+    '<button class="btn sm" onclick="newGroup()">+ Group</button>';
+  if(GFILTER!=="all"&&GFILTER!=="none"){
+    var g=GROUPS.filter(function(x){return x.id===GFILTER;})[0];
+    if(g) h+='<span style="margin-left:auto;display:flex;gap:6px;align-items:center;">'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);">avg '+Number(g.avg_xp||0).toLocaleString()+' XP</span>'+
+      '<button class="btn sm" onclick=\'renameGroup("'+g.id+'","'+esc(g.name).replace(/"/g,"")+'")\'>Rename</button>'+
+      '<button class="btn sm danger" onclick=\'deleteGroup("'+g.id+'","'+esc(g.name).replace(/"/g,"")+'")\'>Delete</button></span>';
+  }
+  h+='</div>';
+
+  if(n){
+    h+='<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 12px;border-radius:10px;'+
+        'background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid var(--accent);margin-bottom:12px;">'+
+      '<b style="color:var(--bright);font-size:13px;">'+n+' selected</b>'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);">move to:</span>'+
+      GROUPS.map(function(g){return '<button class="btn sm" onclick=\'assignSel("'+g.id+'")\'>'+esc(g.name)+'</button>';}).join("")+
+      '<button class="btn sm" onclick="assignSel(null)">Ungrouped</button>'+
+      '<button class="btn sm" style="margin-left:auto;" onclick="selAllVisible(false)">Clear</button></div>';
+  }
+  return h;
+}
+
 /* ----- roster ----- */
 function setSort(k){ if(sortKey===k) sortDir=-sortDir; else{sortKey=k;sortDir=(k==="handle")?1:-1;} renderMain(); }
 function rosterView(){
   if(!ROSTER.length) return '<div class="empty">No students have joined yet. Share the class code: <b class="mono" style="color:var(--bright)">'+esc(CUR.code)+'</b></div>';
-  var rows=ROSTER.slice().sort(function(a,b){
+  var rows=visibleRoster().slice().sort(function(a,b){
     var av,bv;
     if(sortKey==="handle"){av=(a.handle||"").toLowerCase();bv=(b.handle||"").toLowerCase();return av<bv?-sortDir:av>bv?sortDir:0;}
     if(sortKey==="xp"){av=(a.points||0)+(a.bonus||0);bv=(b.points||0)+(b.bonus||0);}
@@ -656,8 +823,10 @@ function rosterView(){
     else {av=a[sortKey]||0;bv=b[sortKey]||0;}
     return (av-bv)*sortDir;
   });
-  var h='<div style="overflow:auto;"><table><thead><tr>'+
-    th("handle","Handle")+'<th>School account</th>'+th("xp","XP")+th("solved_count","Solved")+th("streak","Streak")+
+  var h=groupBar()+'<div style="overflow:auto;"><table><thead><tr>'+
+    '<th style="width:26px;"><input type="checkbox" onclick="selAllVisible(this.checked)" '+
+      (rows.length&&rows.every(function(r){return GSEL[r.id];})?'checked':'')+'></th>'+
+    th("handle","Handle")+'<th>Group</th><th>School account</th>'+th("xp","XP")+th("solved_count","Solved")+th("streak","Streak")+
     th("cheat","Integrity")+th("last","Last active")+'<th>Badges</th><th></th></tr></thead><tbody>';
   rows.forEach(function(s){
     var xp=(s.points||0)+(s.bonus||0);
@@ -665,8 +834,10 @@ function rosterView(){
     var badges=s.badges&&typeof s.badges==="object"?Object.keys(s.badges).filter(function(k){return s.badges[k];}).length:0;
     var pctTot=s.total_count||0, pct=pctTot?Math.round((s.solved_count||0)/pctTot*100):0;
     h+='<tr>'+
+      '<td><input type="checkbox" '+(GSEL[s.id]?'checked':'')+' onclick=\'event.stopPropagation();toggleSel("'+s.id+'")\'></td>'+
       '<td><button onclick=\'openStudent("'+s.id+'")\' style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">'+
         '<b style="color:var(--accent);border-bottom:1px dotted var(--border3);">'+esc(s.handle)+'</b></button></td>'+
+      '<td>'+(s.group_name?'<span class="pill" style="background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);">'+esc(s.group_name)+'</span>':'<span style="color:var(--faint)">\u2014</span>')+'</td>'+
       '<td class="mono" style="font-size:11px;color:var(--dim);">'+esc((s.email||"\u2014").replace(/@.*$/,""))+'</td>'+
       '<td class="mono" style="color:var(--accent);font-weight:700;">'+xp.toLocaleString()+'</td>'+
       '<td>'+(s.solved_count||0)+(pctTot?' <span style="color:var(--faint)">/ '+pctTot+'</span> <span class="mono" style="font-size:11px;color:var(--dim)">'+pct+'%</span>':'')+'</td>'+
@@ -677,6 +848,7 @@ function rosterView(){
       '<td style="text-align:right;white-space:nowrap">'+
         '<button class="btn sm" onclick=\'setHandle("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Rename</button> '+
         '<button class="btn sm" onclick=\'resetHandle("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Reset name</button> '+
+        '<button class="btn sm" onclick=\'moveStudent("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Move</button> '+
         '<button class="btn sm danger" onclick=\'removeStudent("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Remove</button>'+
       '</td>'+
     '</tr>';
@@ -687,9 +859,37 @@ function rosterView(){
 function th(k,label){ var arrow=sortKey===k?(sortDir>0?" ▲":" ▼"):""; return '<th onclick="setSort(\''+k+'\')">'+label+arrow+'</th>'; }
 
 /* ----- flag captures (with time-to-solve) ----- */
+/* First-in-class captures. The bonus is awarded by the server exactly once
+   per (class, flag); this is just the receipt. */
+function pioneerPanel(){
+  if(PIONEERS&&PIONEERS.error) return '<div class="empty" style="color:var(--bad);margin-bottom:22px;">Run supabase/pioneer.sql to award and track first-in-class captures.</div>';
+  if(!PIONEERS.length) return "";
+  var byHandle={};
+  PIONEERS.forEach(function(p){ byHandle[p.handle]=(byHandle[p.handle]||0)+1; });
+  var top=Object.keys(byHandle).sort(function(a,b){return byHandle[b]-byHandle[a];}).slice(0,5);
+  var h='<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">'+
+    '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">PIONEER CAPTURES</span>'+
+    '<span class="pill" style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)">'+PIONEERS.length+'</span></div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+      'First student in this class to capture each flag, +25 XP each. '+
+      (top.length?'Leading: '+top.map(function(n){return esc(n)+' ('+byHandle[n]+')';}).join(' \u00b7 '):'')+'</div>'+
+    '<div style="overflow:auto;max-height:240px;margin-bottom:26px;"><table style="font-size:12px;"><thead><tr>'+
+      '<th>When</th><th>Handle</th><th>Challenge</th><th>Bonus</th></tr></thead><tbody>';
+  PIONEERS.forEach(function(p){
+    h+='<tr>'+
+      '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(p.created_at)+'</td>'+
+      '<td><b style="color:var(--bright)">'+esc(p.handle)+'</b></td>'+
+      '<td>'+esc(p.title||p.flag_key)+'</td>'+
+      '<td class="mono" style="color:var(--accent);font-weight:700">+'+(p.points||25)+'</td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
 function flagsView(){
-  if(!FLAGS.length) return '<div class="empty">No flag captures logged yet.</div>';
-  var h='<div style="overflow:auto;"><table><thead><tr>'+
+  var pre=pioneerPanel();
+  if(!FLAGS.length) return pre+'<div class="empty">No flag captures logged yet.</div>';
+  var h=pre+'<div style="overflow:auto;"><table><thead><tr>'+
     '<th>When</th><th>Handle</th><th>Challenge</th><th>Level</th><th>XP</th><th>Time</th><th>Tries</th><th>Flags</th>'+
     '</tr></thead><tbody>';
   FLAGS.forEach(function(f){
@@ -709,11 +909,786 @@ function flagsView(){
   return h;
 }
 
+/* ----- one student's vocab practice, for the drill-down ----- */
+function vlog(s){ var st=(s&&s.state)||{}; return st.vocabLog||{}; }
+function vlogTotal(s){ var t=vlog(s).totals||{}, n=0;
+  Object.keys(t).forEach(function(k){ n+=Number(t[k])||0; }); return n; }
+function vlogStrip(s){
+  var v=vlog(s), t=v.totals||{};
+  var games=VG.filter(function(g){ return (Number(t[g])||0)>0; });
+  if(!games.length) return '';
+  var total=vlogTotal(s);
+  var bars=games.map(function(g){
+    var sec=Number(t[g])||0, p=total?Math.round(sec/total*100):0;
+    return '<div style="display:flex;align-items:center;gap:10px;">'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);width:86px;">'+VGL[g]+'</span>'+
+      '<span style="flex:1;height:6px;border-radius:99px;background:var(--bg2);overflow:hidden;display:block;">'+
+        '<span style="display:block;height:100%;width:'+p+'%;background:var(--accent);"></span></span>'+
+      '<span class="mono" style="font-size:11px;color:var(--bright);width:64px;text-align:right;">'+fmtMin(sec)+'</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--faint);width:78px;text-align:right;">'+
+        (Number((v.done||{})[g])||0)+' finished</span>'+
+    '</div>';
+  }).join("");
+  return '<div style="margin-bottom:22px;">'+
+    '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">'+
+      'VOCAB TIME ON TASK <span style="color:var(--dim);letter-spacing:0;">\u2014 '+fmtMin(total)+' total</span></div>'+
+    '<div style="display:flex;flex-direction:column;gap:7px;">'+bars+'</div></div>';
+}
+
+/* ----- vocab lab: time on task -----
+   Seconds are recorded client-side only while the tab is visible and the
+   student is actually touching something, so these are study minutes rather
+   than tab-left-open minutes. Flashcards earn no XP but still count as time. */
+var VG=["cards","decrypt","match","quiz","cascade"];
+var VGL={cards:"Flashcards",decrypt:"Decrypt",match:"Handshake",quiz:"Quiz",cascade:"Cascade"};
+var VSORT="total_secs";
+function vsecs(o,g){ var n=Number((o&&o[g])||0); return isFinite(n)?n:0; }
+function fmtMin(s){ s=Math.round(Number(s)||0);
+  if(!s) return '\u2014';
+  if(s<60) return s+"s";
+  var m=Math.floor(s/60); if(m<60) return m+"m";
+  return Math.floor(m/60)+"h "+(m%60)+"m"; }
+function setVSort(k){ VSORT=k; renderMain(); }
+function vocabView(){
+  if(VOCAB&&VOCAB.error) return '<div class="empty" style="color:var(--bad)">Run supabase/vocab-log.sql to enable vocab time tracking.</div>';
+  if(!VOCAB.length) return '<div class="empty">No students in this class yet.</div>';
+
+  var rows=VOCAB.slice().sort(function(a,b){
+    if(VSORT==="handle") return String(a.handle||"").localeCompare(String(b.handle||""));
+    if(VSORT==="total_secs") return (b.total_secs||0)-(a.total_secs||0);
+    return vsecs(b.games,VSORT)-vsecs(a.games,VSORT);
+  });
+  var classTotal=rows.reduce(function(a,r){return a+(Number(r.total_secs)||0);},0);
+  var perGame={}; VG.forEach(function(g){ perGame[g]=rows.reduce(function(a,r){return a+vsecs(r.games,g);},0); });
+  var active=rows.filter(function(r){return (r.total_secs||0)>0;}).length;
+  var median=(function(){ var t=rows.map(function(r){return Number(r.total_secs)||0;}).sort(function(x,y){return x-y;});
+    if(!t.length) return 0; var m=t.length>>1; return t.length%2?t[m]:Math.round((t[m-1]+t[m])/2); })();
+
+  function box(v,l,s,c){ return '<div class="card" style="padding:14px 16px;">'+
+    '<div class="mono" style="font-size:22px;font-weight:800;color:'+(c||"var(--bright)")+'">'+v+'</div>'+
+    '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">'+l+'</div>'+
+    (s?'<div style="font-size:11px;color:var(--dim);margin-top:3px;">'+s+'</div>':'')+'</div>'; }
+
+  var h='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px;">'+
+    box(fmtMin(classTotal),"CLASS TIME ON TASK","across all five modes","var(--accent)")+
+    box(fmtMin(median),"MEDIAN PER STUDENT")+
+    box(active+"/"+rows.length,"HAVE PRACTICED",active===rows.length?"everyone\u2019s in":(rows.length-active)+" not yet",active===rows.length?"var(--ok)":"var(--warn)")+
+  '</div>';
+
+  h+='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+    'Class totals \u2014 '+VG.map(function(g){return VGL[g]+' '+fmtMin(perGame[g]);}).join(' \u00b7 ')+
+    '<br>The clock only runs while the page is open and the student is interacting; it pauses after 90s idle. Tap a column to sort.</div>';
+
+  function th(k,l){ return '<th style="cursor:pointer;'+(VSORT===k?'color:var(--accent);':'')+
+    '" onclick="setVSort(\''+k+'\')">'+l+(VSORT===k?' \u25be':'')+'</th>'; }
+
+  h+='<div style="overflow:auto;"><table><thead><tr>'+
+    th("handle","Handle")+VG.map(function(g){return th(g,VGL[g]);}).join("")+
+    th("total_secs","Total")+'<th>Sessions</th><th>Best quiz</th><th>Last</th>'+
+  '</tr></thead><tbody>';
+  rows.forEach(function(r){
+    var tot=Number(r.total_secs)||0;
+    var sess=VG.reduce(function(a,g){return a+vsecs(r.sessions,g);},0);
+    var done=VG.reduce(function(a,g){return a+vsecs(r.done,g);},0);
+    var bq=Number((r.best||{}).quiz||0);
+    var last=VG.map(function(g){return (r.last||{})[g]||"";}).filter(Boolean).sort().pop();
+    h+='<tr>'+
+      '<td><b style="color:var(--bright)">'+esc(r.handle)+'</b></td>'+
+      VG.map(function(g){ var v=vsecs(r.games,g);
+        return '<td class="mono" style="color:'+(v?"var(--text)":"var(--faint)")+'">'+fmtMin(v)+'</td>'; }).join("")+
+      '<td class="mono" style="color:'+(tot?"var(--accent)":"var(--faint)")+';font-weight:700">'+fmtMin(tot)+'</td>'+
+      '<td class="mono" style="color:var(--dim)">'+(sess||0)+'<span style="color:var(--faint)"> \u00b7 '+(done||0)+' done</span></td>'+
+      '<td class="mono" style="color:'+(bq>=0.8?"var(--ok)":bq>0?"var(--warn)":"var(--faint)")+'">'+(bq?Math.round(bq*100)+"%":"\u2014")+'</td>'+
+      '<td style="color:var(--dim);white-space:nowrap">'+(last?esc(last):"\u2014")+'</td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div>'+vsessPanel();
+}
+
+/* Every finished practice run, newest first. Practice XP used to be awarded
+   with no server record at all; these rows are the trail. A run can arrive
+   long after it was played (vocab pages work signed-out and flush later), so
+   "played" and "logged" are both shown. */
+var VSHOW="all";
+function setVShow(v){ VSHOW=v; renderMain(); }
+function vsessPanel(){
+  if(VSESS&&VSESS.error) return '<div class="empty" style="color:var(--bad);margin-top:8px;">Run supabase/vocab-sessions.sql to log individual practice runs.</div>';
+  if(!VSESS.length) return '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:20px;line-height:1.6;">'+
+    'No individual practice runs logged yet. Runs appear here after a student finishes a game and then opens the arena \u2014 that visit is what uploads them.</div>';
+
+  var sus=VSESS.filter(function(r){return r.suspect;});
+  var rows2=(VSHOW==="suspect")?sus:VSESS;
+  var chip=function(v,l,n,c){ var on=VSHOW===v;
+    return '<button class="btn sm'+(on?' pri':'')+'" onclick="setVShow(\''+v+'\')"'+
+      (c&&!on?' style="border-color:'+c+';color:'+c+'"':'')+'>'+l+(n!=null?' <span style="opacity:.7">'+n+'</span>':'')+'</button>'; };
+
+  var h2='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">'+
+      '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">PRACTICE RUNS</span>'+
+      chip("all","All",VSESS.length)+chip("suspect","Too fast",sus.length,sus.length?"var(--warn)":null)+
+    '</div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+      'One row per finished game, with the active seconds it actually took. <b style="color:var(--warn)">Too fast</b> means XP was paid for a run under 10s, or under 4s per term \u2014 worth a look, not proof of anything.</div>'+
+    '<div style="overflow:auto;max-height:420px;"><table style="font-size:12px;"><thead><tr>'+
+      '<th>Played</th><th>Handle</th><th>Game</th><th>Time</th><th>Terms</th><th>Accuracy</th><th>XP</th>'+
+    '</tr></thead><tbody>';
+  rows2.forEach(function(r){
+    var acc=Number(r.accuracy)||0;
+    h2+='<tr'+(r.suspect?' style="background:color-mix(in srgb,var(--warn) 7%,transparent)"':'')+'>'+
+      '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(r.played_at)+
+        '<div style="font-size:10px;color:var(--faint)">logged '+ago(r.created_at)+'</div>'+
+        (r.suspect?' <span class="pill" style="background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)">fast</span>':'')+'</td>'+
+      '<td><b style="color:var(--bright)">'+esc(r.handle)+'</b></td>'+
+      '<td class="mono" style="color:var(--dim)">'+esc(VGL[r.game]||r.game)+'</td>'+
+      '<td class="mono" style="color:'+(r.suspect?"var(--warn)":"var(--text)")+'">'+fmtMin(r.secs)+'</td>'+
+      '<td class="mono" style="color:var(--dim)">'+(r.terms||0)+'</td>'+
+      '<td class="mono" style="color:'+(acc>=80?"var(--ok)":acc>0?"var(--warn)":"var(--faint)")+'">'+(acc?acc+"%":"\u2014")+'</td>'+
+      '<td class="mono" style="color:'+(r.xp?"var(--accent)":"var(--faint)")+'">'+(r.xp?"+"+r.xp:"\u2014")+'</td>'+
+    '</tr>';
+  });
+  return h2+'</tbody></table></div></div>';
+}
+
+/* ----- enrollment: CSV roster, moves, bulk removal -----
+   Uploading a roster does NOT create accounts. Students still sign in with
+   their own Google account; this records who is EXPECTED so the teacher can
+   see who hasn't shown up, and so a student's class can be found by email
+   without them typing a code. */
+var CSVTEXT="", CSVREPLACE=false;
+function parseCSV(text){
+  var lines=String(text||"").split(/\r?\n/).filter(function(l){return l.trim()!=="";});
+  if(!lines.length) return {rows:[],skipped:0};
+  var cells=lines.map(function(l){
+    // handles quoted fields containing commas
+    var out=[],cur="",q=false;
+    for(var i=0;i<l.length;i++){ var ch=l[i];
+      if(q){ if(ch==='"'&&l[i+1]==='"'){cur+='"';i++;} else if(ch==='"'){q=false;} else cur+=ch; }
+      else if(ch==='"') q=true;
+      else if(ch===","){ out.push(cur); cur=""; }
+      else cur+=ch; }
+    out.push(cur); return out.map(function(x){return x.trim();});
+  });
+  // find the email column from a header row, else scan every cell
+  var head=cells[0].map(function(c){return c.toLowerCase();});
+  var ei=head.findIndex(function(c){return /e-?mail/.test(c);});
+  var ni=head.findIndex(function(c){return /name|student/.test(c);});
+  var body=(ei>=0||ni>=0)?cells.slice(1):cells;
+  if(ei<0) ei=null;
+  var rows=[],skipped=0;
+  body.forEach(function(c){
+    var email=null;
+    if(ei!==null&&c[ei]) email=c[ei];
+    if(!email) email=c.filter(function(x){return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x);})[0];
+    if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ skipped++; return; }
+    var name=(ni>=0&&c[ni])?c[ni]:c.filter(function(x){return x&&x!==email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x);})[0]||"";
+    rows.push({email:email.toLowerCase(),full_name:name,note:""});
+  });
+  return {rows:rows,skipped:skipped};
+}
+function csvChanged(v){ CSVTEXT=v; var p=parseCSV(v);
+  var m=el("csvCount"); if(m) m.textContent=p.rows.length?(p.rows.length+" student"+(p.rows.length==1?"":"s")+" found"+(p.skipped?" \u00b7 "+p.skipped+" line"+(p.skipped==1?"":"s")+" skipped":"")):"No email addresses found yet."; }
+function csvFile(inp){
+  var f=inp.files&&inp.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){ var t=el("csvText"); if(t){ t.value=r.result; csvChanged(r.result); } };
+  r.readAsText(f);
+}
+async function csvImport(){
+  var p=parseCSV(CSVTEXT);
+  if(!p.rows.length){ alert("No valid email addresses found. Each row needs one school email."); return; }
+  var msg=CSVREPLACE
+    ? "Replace the expected roster for \u201c"+CUR.name+"\u201d with these "+p.rows.length+" students?\n\nThis only changes the expected list \u2014 no student account or progress is touched."
+    : "Add "+p.rows.length+" students to the expected roster for \u201c"+CUR.name+"\u201d?";
+  if(!confirm(msg)) return;
+  var b=el("csvGo"); if(b){ b.disabled=true; b.textContent="Importing\u2026"; }
+  try{
+    var r=await rpc("ctf_t_roster_import",{p_class:CUR.id,p_rows:p.rows,p_replace:CSVREPLACE});
+    if(r&&r.error) throw new Error(r.error);
+    CSVTEXT=""; await loadDetail();
+    alert("Roster updated \u2014 "+(r.added||0)+" added, "+(r.updated||0)+" refreshed"+((r.skipped||0)?", "+r.skipped+" skipped":"")+".");
+  }catch(e){ alert("Import failed. Run supabase/roster-csv.sql first."); }
+  var b2=el("csvGo"); if(b2){ b2.disabled=false; b2.textContent="Import roster"; }
+}
+async function rosterRemove(email){
+  if(!confirm("Remove "+email+" from the expected roster?\n\nIf they already signed in, their account and progress stay \u2014 this only removes them from the expected list.")) return;
+  try{ await rpc("ctf_t_roster_remove",{p_class:CUR.id,p_email:email}); await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t remove that row."); }
+}
+async function removeSelected(){
+  var ids=Object.keys(GSEL).filter(function(k){return GSEL[k];});
+  if(!ids.length) return;
+  if(!confirm("Remove "+ids.length+" student"+(ids.length==1?"":"s")+" from this class?\n\nTheir progress, captures, and integrity logs are deleted. This cannot be undone.")) return;
+  try{ await rpc("ctf_t_remove_students",{p_students:ids}); GSEL={}; await loadClasses(true); }
+  catch(e){ alert("Couldn\u2019t remove those students \u2014 run supabase/roster-csv.sql."); }
+}
+/* move one student to another class, keeping every bit of their work */
+function moveStudent(sid,handle){
+  var others=CLASSES.filter(function(c){return c.id!==CUR.id;});
+  if(!others.length){ alert("There's only one class to move between."); return; }
+  var opts=others.map(function(c){
+    return '<option value="'+c.id+'">'+esc(courseMeta(c.course).label)+" \u2014 "+esc(c.name)+'</option>';
+  }).join("");
+  var o=document.createElement("div");
+  o.id="moveOv";
+  o.style.cssText="position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px;";
+  o.innerHTML='<div class="card" style="max-width:440px;width:100%;padding:22px;">'+
+    '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">MOVE STUDENT</div>'+
+    '<h3 style="font-size:19px;color:var(--bright);margin:6px 0 4px;">'+esc(handle)+'</h3>'+
+    '<div style="font-size:13px;color:var(--dim);line-height:1.55;margin-bottom:16px;">'+
+      'All XP, captures, attempts, and integrity history move with them. Moving to a different course keeps the record but their solved count will read oddly until they work through the new course.</div>'+
+    '<select id="moveSel" style="width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:14px;margin-bottom:16px;">'+opts+'</select>'+
+    '<div style="display:flex;gap:9px;justify-content:flex-end;">'+
+      '<button class="btn" onclick="closeMove()">Cancel</button>'+
+      '<button class="btn pri" id="moveGo">Move student</button></div></div>';
+  document.body.appendChild(o);
+  o.addEventListener("click",function(e){ if(e.target===o) closeMove(); });
+  el("moveGo").onclick=async function(){
+    var to=el("moveSel").value; this.disabled=true; this.textContent="Moving\u2026";
+    try{
+      var r=await rpc("ctf_t_move_student",{p_student:sid,p_class:to});
+      if(r&&r.error) throw new Error(r.error);
+      closeMove(); await loadClasses(true);
+    }catch(e){
+      var m=(e&&(e.message||""))+"";
+      alert(/handle_taken/.test(m)
+        ? "That class already has a student using the handle \u201c"+handle+"\u201d. Rename one of them first."
+        : "Move failed \u2014 run supabase/roster-csv.sql.");
+      closeMove();
+    }
+  };
+}
+function closeMove(){ var o=el("moveOv"); if(o) o.remove(); }
+
+function enrollView(){
+  if(EXPECTED&&EXPECTED.error) return '<div class="empty" style="color:var(--bad)">Run supabase/roster-csv.sql to enable roster uploads.</div>';
+  var joined=EXPECTED.filter(function(r){return r.joined;}).length;
+  var missing=EXPECTED.length-joined;
+  var extras=ROSTER.filter(function(s){
+    if(!EXPECTED.length) return false;
+    var e=String(s.email||"").toLowerCase();
+    return !EXPECTED.some(function(r){return r.email===e;});
+  });
+  var n=selCount();
+
+  var h='<div class="card" style="padding:18px;margin-bottom:22px;">'+
+    '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">UPLOAD A ROSTER</div>'+
+    '<div style="font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:14px;max-width:640px;">'+
+      'Paste or drop a CSV exported from your gradebook. Any column named <b>email</b> is used; otherwise the first email-looking cell in each row wins. '+
+      'This does not create accounts \u2014 students still sign in with their own school Google account. It records who you expect, so you can see who hasn\u2019t shown up.</div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">'+
+      '<input type="file" accept=".csv,text/csv,text/plain" onchange="csvFile(this)" '+
+        'style="font:inherit;font-size:12px;color:var(--dim);max-width:100%;">'+
+      '<label class="mono" style="font-size:12px;color:var(--dim);display:flex;align-items:center;gap:7px;cursor:pointer;">'+
+        '<input type="checkbox" '+(CSVREPLACE?'checked':'')+' onchange="CSVREPLACE=this.checked;"> replace existing list</label>'+
+    '</div>'+
+    '<textarea id="csvText" oninput="csvChanged(this.value)" rows="5" spellcheck="false" '+
+      'placeholder="name,email&#10;Ada Lovelace,alovelace@southfayette.org" '+
+      'style="width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font-family:ui-monospace,monospace;font-size:12px;resize:vertical;">'+esc(CSVTEXT)+'</textarea>'+
+    '<div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;">'+
+      '<button class="btn pri" id="csvGo" onclick="csvImport()">Import roster</button>'+
+      '<span id="csvCount" class="mono" style="font-size:12px;color:var(--dim);"></span></div>'+
+  '</div>';
+
+  if(EXPECTED.length){
+    h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;">'+
+      '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--bright)">'+EXPECTED.length+'</div>'+
+        '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">EXPECTED</div></div>'+
+      '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--ok)">'+joined+'</div>'+
+        '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">SIGNED IN</div></div>'+
+      '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:'+(missing?"var(--warn)":"var(--ok)")+'">'+missing+'</div>'+
+        '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">NOT YET</div></div>'+
+    '</div>'+
+    '<div style="overflow:auto;margin-bottom:26px;"><table><thead><tr>'+
+      '<th>Status</th><th>Name</th><th>School account</th><th>Handle</th><th></th></tr></thead><tbody>';
+    EXPECTED.forEach(function(r){
+      h+='<tr>'+
+        '<td>'+(r.joined
+          ? '<span class="pill" style="background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)">signed in</span>'
+          : '<span class="pill" style="background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)">not yet</span>')+'</td>'+
+        '<td style="color:var(--bright)">'+esc(r.full_name||"\u2014")+'</td>'+
+        '<td class="mono" style="font-size:11px;color:var(--dim)">'+esc(r.email)+'</td>'+
+        '<td>'+(r.handle?'<b style="color:var(--accent)">'+esc(r.handle)+'</b>':'<span style="color:var(--faint)">\u2014</span>')+'</td>'+
+        '<td style="text-align:right"><button class="btn sm" onclick=\'rosterRemove("'+esc(r.email)+'")\'>Remove</button></td>'+
+      '</tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+
+  if(extras.length){
+    h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">'+
+        'JOINED BUT NOT ON THE ROSTER ('+extras.length+')</div>'+
+      '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:10px;line-height:1.6;">'+
+        'These students used the class code. Usually a transfer or a wrong-period join \u2014 move them, or add them to the roster.</div>'+
+      '<div style="overflow:auto;margin-bottom:26px;"><table><thead><tr>'+
+        '<th>Handle</th><th>School account</th><th>XP</th><th></th></tr></thead><tbody>';
+    extras.forEach(function(s){
+      h+='<tr>'+
+        '<td><b style="color:var(--bright)">'+esc(s.handle)+'</b></td>'+
+        '<td class="mono" style="font-size:11px;color:var(--dim)">'+esc(s.email||"\u2014")+'</td>'+
+        '<td class="mono" style="color:var(--accent)">'+(((s.points||0)+(s.bonus||0))).toLocaleString()+'</td>'+
+        '<td style="text-align:right;white-space:nowrap">'+
+          '<button class="btn sm" onclick=\'moveStudent("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Move</button> '+
+          '<button class="btn sm danger" onclick=\'removeStudent("'+s.id+'","'+esc(s.handle).replace(/"/g,"")+'")\'>Remove</button>'+
+        '</td></tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+
+  h+='<div style="border-top:1px solid var(--border);padding-top:18px;">'+
+    '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Bulk actions</div>'+
+    '<div style="color:var(--dim);font-size:13px;margin-bottom:12px;">'+
+      (n?'<b style="color:var(--bright)">'+n+'</b> selected on the Roster tab.':'Select students on the Roster tab first.')+'</div>'+
+    '<button class="btn danger" '+(n?'':'disabled')+' onclick="removeSelected()">Remove selected'+(n?' ('+n+')':'')+'</button>'+
+  '</div>';
+  return h;
+}
+
+/* ----- squads -----
+   A squad is just a group the teacher has chosen to SHOW students. The
+   teacher-only uses of groups (intervention tiers, reading groups) are
+   unaffected — nothing reaches a student screen until the switch below is on
+   for this class, because a group named "needs re-teach" must never be
+   student-visible. */
+var SQCOLORS=["#2ee6a6","#3fb2ff","#a855f7","#ff9838","#f43f5e","#eab308"];
+async function toggleSquads(on){
+  try{
+    var r=await rpc("ctf_t_squads_on",{p_class:CUR.id,p_on:!!on});
+    if(r&&r.error) throw new Error(r.error);
+    CUR.squads_on=!!on;
+    CLASSES.forEach(function(c){ if(c.id===CUR.id) c.squads_on=!!on; });
+    renderMain();
+  }catch(e){ alert("Couldn\u2019t change that \u2014 run supabase/squads.sql."); }
+}
+async function newSquad(){
+  var n=prompt("Squad name (students will see this):","");
+  if(n==null) return; n=n.trim(); if(!n) return;
+  var col=SQCOLORS[GROUPS.length%SQCOLORS.length];
+  try{
+    var r=await rpc("ctf_t_group_save",{p_class:CUR.id,p_id:null,p_name:n,p_color:col});
+    if(r&&r.error) throw new Error(r.error);
+    await loadDetail();
+  }catch(e){ alert(/name_taken/.test((e&&e.message)||"")?"A squad in this class already has that name.":"Couldn\u2019t create the squad \u2014 run supabase/class-groups.sql."); }
+}
+async function recolorSquad(id,cur){
+  var i=SQCOLORS.indexOf(cur); var next=SQCOLORS[(i+1)%SQCOLORS.length];
+  try{ await rpc("ctf_t_group_save",{p_class:CUR.id,p_id:id,p_name:squadName(id),p_color:next}); await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t change that colour."); }
+}
+function squadName(id){ var g=GROUPS.filter(function(x){return x.id===id;})[0]; return g?g.name:""; }
+async function autofillSquads(only){
+  if(!GROUPS.length){ alert("Make at least one squad first \u2014 you decide the teams, this only deals students into them."); return; }
+  var msg=only
+    ? "Deal students who aren\u2019t on a squad yet into your "+GROUPS.length+" squads?"
+    : "Re-deal EVERY student in this class across your "+GROUPS.length+" squads?\n\nExisting squad assignments will be overwritten.";
+  if(!confirm(msg+"\n\nStudents are dealt strongest-first in a snake order so the squads start out comparable. You can move anyone afterwards.")) return;
+  try{
+    var r=await rpc("ctf_t_squads_autofill",{p_class:CUR.id,p_only_ungrouped:!!only});
+    if(r&&r.error) throw new Error(r.error);
+    await loadDetail();
+  }catch(e){
+    alert(/no_squads/.test((e&&e.message)||"")?"Make at least one squad first.":"Couldn\u2019t deal students \u2014 run supabase/squads.sql.");
+  }
+}
+async function moveToSquad(sid,gid){
+  try{ await rpc("ctf_t_group_assign",{p_students:[sid],p_group:gid||null}); await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t move that student."); }
+}
+function squadPicker(s){
+  var opts='<option value="">\u2014 no squad \u2014</option>'+GROUPS.map(function(g){
+    return '<option value="'+g.id+'"'+(s.group_id===g.id?' selected':'')+'>'+esc(g.name)+'</option>';
+  }).join("");
+  return '<select onchange=\'moveToSquad("'+s.id+'",this.value)\' '+
+    'style="padding:5px 7px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;">'+opts+'</select>';
+}
+
+function squadsView(){
+  if(STAND&&STAND.error) return '<div class="empty" style="color:var(--bad)">Run supabase/class-groups.sql, then supabase/squads.sql, to enable squads.</div>';
+  var on=!!CUR.squads_on;
+  var byId={}; STAND.forEach(function(g){ byId[g.id]=g; });
+  var ungrouped=ROSTER.filter(function(r){return !r.group_id;});
+
+  var h='<div class="card" style="padding:18px;margin-bottom:22px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">'+
+    '<div style="flex:1;min-width:260px;">'+
+      '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">SHOW SQUADS TO STUDENTS</div>'+
+      '<div style="font-size:13px;color:var(--dim);line-height:1.6;max-width:620px;">'+
+        (on
+          ? 'Students in this class see their squad name, their teammates, and the squad standings on the arena page. Individual scores from other squads stay hidden \u2014 only squad totals are shared.'
+          : 'Off. Your groups stay teacher-only, exactly as they are now, and nothing about them reaches a student screen. Turn this on when your groups are teams you\u2019re happy to name out loud.')+
+      '</div></div>'+
+    '<label style="display:flex;align-items:center;gap:9px;cursor:pointer;white-space:nowrap;">'+
+      '<input type="checkbox" '+(on?'checked':'')+' onchange="toggleSquads(this.checked)" style="width:18px;height:18px;">'+
+      '<b style="color:'+(on?'var(--ok)':'var(--dim)')+';font-size:14px;">'+(on?'Visible to students':'Teacher-only')+'</b></label>'+
+  '</div>';
+
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
+    '<button class="btn pri" onclick="newSquad()">+ New squad</button>'+
+    '<button class="btn" onclick="autofillSquads(true)">Deal in unassigned'+(ungrouped.length?' ('+ungrouped.length+')':'')+'</button>'+
+    '<button class="btn" onclick="autofillSquads(false)">Re-deal everyone</button>'+
+    '<span class="mono" style="font-size:11px;color:var(--faint);margin-left:auto;">You build the squads \u2014 dealing is only a shortcut.</span>'+
+  '</div>';
+
+  if(!GROUPS.length) return h+'<div class="empty">No squads yet. Make one, then deal students in or assign them by hand.</div>';
+
+  // standings
+  var best=Math.max.apply(null,[1].concat(STAND.map(function(g){return Number(g.avg_xp)||0;})));
+  h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">STANDINGS</div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+      'Ranked by average XP per member, so a squad of three isn\u2019t beaten just for being small. Students see this same order.</div>'+
+    '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:26px;">';
+  STAND.forEach(function(g,i){
+    var avg=Number(g.avg_xp)||0, pct=Math.round(avg/best*100);
+    var col=g.color||"var(--accent)";
+    h+='<div class="card" style="padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'+
+      '<span class="mono" style="font-size:12px;color:var(--faint);width:20px;">'+(i+1)+'</span>'+
+      '<span style="width:10px;height:10px;border-radius:99px;background:'+col+';flex:none;"></span>'+
+      '<b style="color:var(--bright);font-size:14px;min-width:110px;">'+esc(g.name)+'</b>'+
+      '<span style="flex:1;min-width:100px;height:7px;border-radius:99px;background:var(--bg2);overflow:hidden;display:block;">'+
+        '<span style="display:block;height:100%;width:'+pct+'%;background:'+col+';"></span></span>'+
+      '<span class="mono" style="font-size:12px;color:var(--bright);white-space:nowrap;">'+avg.toLocaleString()+' avg</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);white-space:nowrap;">'+Number(g.total_xp||0).toLocaleString()+' total</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--faint);white-space:nowrap;">'+(g.members||0)+' member'+((g.members||0)==1?'':'s')+' \u00b7 '+Number(g.solved||0).toLocaleString()+' flags</span>'+
+      '<span style="display:flex;gap:6px;margin-left:auto;">'+
+        '<button class="btn sm" onclick=\'recolorSquad("'+g.id+'","'+(g.color||"")+'")\'>Colour</button>'+
+        '<button class="btn sm" onclick=\'renameGroup("'+g.id+'","'+esc(g.name).replace(/"/g,"")+'")\'>Rename</button>'+
+        '<button class="btn sm danger" onclick=\'deleteGroup("'+g.id+'","'+esc(g.name).replace(/"/g,"")+'")\'>Delete</button></span>'+
+    '</div>';
+  });
+  h+='</div>';
+
+  // rosters per squad
+  h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">MEMBERS</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;">';
+  GROUPS.concat([{id:null,name:"Not on a squad",color:null}]).forEach(function(g){
+    var mem=g.id?ROSTER.filter(function(r){return r.group_id===g.id;}):ungrouped;
+    if(!g.id&&!mem.length) return;
+    var col=g.color||"var(--border3)";
+    h+='<div class="card" style="padding:14px;">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'+
+        '<span style="width:9px;height:9px;border-radius:99px;background:'+col+';flex:none;"></span>'+
+        '<b style="color:var(--bright);font-size:14px;">'+esc(g.name)+'</b>'+
+        '<span class="mono" style="font-size:11px;color:var(--faint);margin-left:auto;">'+mem.length+'</span></div>';
+    if(!mem.length) h+='<div class="mono" style="font-size:11px;color:var(--faint);">Empty \u2014 assign students below or deal them in.</div>';
+    else h+='<div style="display:flex;flex-direction:column;gap:7px;">'+mem.map(function(s){
+      return '<div style="display:flex;align-items:center;gap:8px;">'+
+        '<b style="color:var(--bright);font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(s.handle)+'</b>'+
+        '<span class="mono" style="font-size:11px;color:var(--accent);white-space:nowrap;">'+(((s.points||0)+(s.bonus||0))).toLocaleString()+'</span>'+
+        squadPicker(s)+'</div>';
+    }).join("")+'</div>';
+    h+='</div>';
+  });
+  return h+'</div>';
+}
+
+/* ----- objectives -----
+   Every leveled prompt already opens with "Objective — X." objectives.js
+   parses that back out and rolls captures up per objective, so this reports on
+   the course objectives without a single prompt being re-authored. Mastery is
+   deliberately stricter than points: all levels cleared, and the hardest one
+   cleared within 2 wrong guesses. */
+var OBJVIEW="class", OBJMOD="all", OBJSTU=null;
+function objIndex(){
+  if(!window.OBJECTIVES||!CUR) return null;
+  if(!objIndex._c) objIndex._c={};
+  if(!objIndex._c[CUR.course]){
+    try{ objIndex._c[CUR.course]=OBJECTIVES.index(CUR.course); }
+    catch(e){ objIndex._c[CUR.course]=null; }
+  }
+  return objIndex._c[CUR.course];
+}
+/* captures -> { studentId: { flagKey: {tainted, wrong_tries} } } */
+function capsByStudent(){
+  var m={};
+  (Array.isArray(CAPS)?CAPS:[]).forEach(function(c){
+    (m[c.student_id]=m[c.student_id]||{})[c.flag_key]=
+      {tainted:!!c.tainted,wrong_tries:Number(c.wrong_tries)||0};
+  });
+  // a student with no captures still counts as "untouched", not missing
+  ROSTER.forEach(function(s){ if(!m[s.id]) m[s.id]={}; });
+  return m;
+}
+function setObjView(v){ OBJVIEW=v; OBJSTU=null; renderMain(); }
+function setObjMod(v){ OBJMOD=v; renderMain(); }
+function openObjStudent(id){ OBJSTU=id; OBJVIEW="student"; renderMain(); }
+async function toggleObjectives(on){
+  try{
+    var r=await rpc("ctf_t_objectives_on",{p_class:CUR.id,p_on:!!on});
+    if(r&&r.error) throw new Error(r.error);
+    CUR.objectives_on=!!on;
+    CLASSES.forEach(function(c){ if(c.id===CUR.id) c.objectives_on=!!on; });
+    renderMain();
+  }catch(e){ alert("Couldn\u2019t change that \u2014 run supabase/objectives.sql."); }
+}
+function objDot(state){
+  var c=state==="mastered"?"var(--ok)":state==="shaky"?"var(--warn)":"var(--border3)";
+  return '<span style="width:9px;height:9px;border-radius:99px;background:'+c+';flex:none;display:inline-block;"></span>';
+}
+function objBar(r){
+  var seg=function(w,c){ return w>0?'<span style="display:block;height:100%;width:'+w+'%;background:'+c+';"></span>':''; };
+  var m=r.students?Math.round(r.mastered/r.students*100):0;
+  var s=r.students?Math.round(r.shaky/r.students*100):0;
+  return '<span style="flex:1;min-width:90px;height:8px;border-radius:99px;background:var(--bg2);overflow:hidden;display:flex;">'+
+    seg(m,"var(--ok)")+seg(s,"var(--warn)")+'</span>';
+}
+function objModChips(idx){
+  var mods={}; idx.objectives.forEach(function(o){ mods[o.module]=true; });
+  var list=Object.keys(mods).map(Number).sort(function(a,b){return a-b;});
+  var chip=function(v,l){ var on=String(OBJMOD)===String(v);
+    return '<button class="btn sm'+(on?' pri':'')+'" onclick="setObjMod(\''+v+'\')">'+l+'</button>'; };
+  return '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">'+
+    '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-right:2px;">MODULE</span>'+
+    chip("all","All")+list.map(function(m){return chip(m,"M"+m);}).join("")+'</div>';
+}
+function objFilter(rows){
+  if(OBJMOD==="all") return rows;
+  return rows.filter(function(r){return String(r.module)===String(OBJMOD);});
+}
+
+function objectivesView(){
+  if(!window.OBJECTIVES) return '<div class="empty" style="color:var(--bad)">objectives.js didn\u2019t load.</div>';
+  if(CAPS&&CAPS.error) return '<div class="empty" style="color:var(--bad)">Run supabase/objectives.sql to enable objective reporting.</div>';
+  var idx=objIndex();
+  if(!idx||!idx.objectives.length) return '<div class="empty">No objectives found in this course\u2019s prompts. Each leveled prompt should open with \u201cObjective \u2014 Name.\u201d</div>';
+  if(!ROSTER.length) return '<div class="empty">No students in this class yet.</div>';
+
+  var h='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
+    ['class','students','coverage'].map(function(v){
+      var l={class:"Class mastery",students:"Per student",coverage:"Coverage audit"}[v];
+      return '<button class="btn sm'+((OBJVIEW===v||(OBJVIEW==="student"&&v==="students"))?' pri':'')+'" onclick="setObjView(\''+v+'\')">'+l+'</button>';
+    }).join("")+
+    '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-left:auto;white-space:nowrap;">'+
+      '<input type="checkbox" '+(CUR.objectives_on?'checked':'')+' onchange="toggleObjectives(this.checked)" style="width:16px;height:16px;">'+
+      '<span class="mono" style="font-size:11px;color:'+(CUR.objectives_on?'var(--ok)':'var(--dim)')+';">'+
+        (CUR.objectives_on?'STUDENTS SEE THEIR OWN MAP':'TEACHER-ONLY')+'</span></label>'+
+  '</div>';
+
+  if(OBJVIEW==="student") return h+objStudentView(idx);
+  if(OBJVIEW==="students") return h+objRosterView(idx);
+  if(OBJVIEW==="coverage") return h+objCoverageView(idx);
+  return h+objClassView(idx);
+}
+
+function objClassView(idx){
+  var rows=objFilter(OBJECTIVES.classReport(idx,capsByStudent()));
+  var weak=rows.slice().sort(function(a,b){return a.pctMastered-b.pctMastered;}).slice(0,3);
+  var done=rows.filter(function(r){return r.pctMastered>=80;}).length;
+
+  var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;max-width:720px;">'+
+    'Mastered = every flag under that objective cleared, with the hardest one cleared in '+OBJECTIVES.CLEAN_TRIES+' wrong guesses or fewer. '+
+    'Honeypot captures never count. Green is mastered, amber is partial.</div>';
+
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px;">'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--bright)">'+rows.length+'</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">OBJECTIVES</div></div>'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--ok)">'+done+'</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">80%+ MASTERED</div></div>'+
+    '<div class="card" style="padding:14px 16px;"><div style="font-size:13px;color:var(--warn);font-weight:700;line-height:1.5;">'+
+      (weak.length?weak.map(function(r){return esc(r.name)+' <span class="mono" style="opacity:.7">'+r.pctMastered+'%</span>';}).join('<br>'):'\u2014')+'</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:6px;">NEEDS RE-TEACH</div></div>'+
+  '</div>';
+
+  h+=objModChips(idx);
+  h+='<div style="display:flex;flex-direction:column;gap:7px;">';
+  rows.sort(function(a,b){return a.pctMastered-b.pctMastered||a.name.localeCompare(b.name);}).forEach(function(r){
+    h+='<div class="card" style="padding:11px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'+
+      '<span class="mono" style="font-size:10px;color:var(--faint);width:26px;">M'+r.module+'</span>'+
+      '<b style="color:var(--bright);font-size:13px;min-width:150px;flex:0 1 auto;">'+esc(r.name)+'</b>'+
+      '<span class="mono" style="font-size:10px;color:var(--faint);white-space:nowrap;">'+r.flags+' flag'+(r.flags==1?'':'s')+'</span>'+
+      objBar(r)+
+      '<span class="mono" style="font-size:12px;color:var(--ok);white-space:nowrap;">'+r.mastered+' mastered</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--warn);white-space:nowrap;">'+r.shaky+' partial</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--faint);white-space:nowrap;">'+r.untouched+' not started</span>'+
+    '</div>';
+  });
+  return h+'</div>';
+}
+
+function objRosterView(idx){
+  var by=capsByStudent();
+  var objs=objFilter(idx.objectives.map(function(o){return {name:o.name,module:o.module};}));
+  var names={}; objs.forEach(function(o){ names[o.name]=true; });
+
+  var rows=ROSTER.map(function(s){
+    var rep=OBJECTIVES.report(idx,by[s.id]).filter(function(r){return names[r.name];});
+    return {
+      s:s,
+      mastered:rep.filter(function(r){return r.state==="mastered";}).length,
+      shaky:rep.filter(function(r){return r.state==="shaky";}).length,
+      total:rep.length,
+      gaps:rep.filter(function(r){return r.state!=="mastered";}).slice(0,3)
+    };
+  }).sort(function(a,b){return b.mastered-a.mastered;});
+
+  var h=objModChips(idx)+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+      'Tap a student for their full objective map and next-step list \u2014 that view prints cleanly for conferences.</div>'+
+    '<div style="overflow:auto;"><table><thead><tr>'+
+      '<th>Handle</th><th>Mastered</th><th>Partial</th><th>Progress</th><th>Biggest gaps</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    var pct=r.total?Math.round(r.mastered/r.total*100):0;
+    h+='<tr>'+
+      '<td><button onclick=\'openObjStudent("'+r.s.id+'")\' style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">'+
+        '<b style="color:var(--accent);border-bottom:1px dotted var(--border3);">'+esc(r.s.handle)+'</b></button></td>'+
+      '<td class="mono" style="color:var(--ok);font-weight:700">'+r.mastered+'<span style="color:var(--faint);font-weight:400"> / '+r.total+'</span></td>'+
+      '<td class="mono" style="color:'+(r.shaky?"var(--warn)":"var(--faint)")+'">'+r.shaky+'</td>'+
+      '<td style="min-width:110px;"><span style="display:block;height:7px;border-radius:99px;background:var(--bg2);overflow:hidden;">'+
+        '<span style="display:block;height:100%;width:'+pct+'%;background:var(--ok);"></span></span>'+
+        '<span class="mono" style="font-size:10px;color:var(--faint);">'+pct+'%</span></td>'+
+      '<td style="color:var(--dim);font-size:12px;">'+(r.gaps.length?r.gaps.map(function(g){return esc(g.name);}).join(", "):"\u2014")+'</td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+/* One student's map — the conference / progress-report view. */
+function objStudentView(idx){
+  var s=ROSTER.filter(function(x){return x.id===OBJSTU;})[0];
+  if(!s) return '<div class="empty">Student not found.</div>';
+  var got=capsByStudent()[s.id]||{};
+  var rep=OBJECTIVES.report(idx,got);
+  var mastered=rep.filter(function(r){return r.state==="mastered";});
+  var shaky=rep.filter(function(r){return r.state==="shaky";});
+  var none=rep.filter(function(r){return r.state==="untouched";});
+
+  // next steps: the shakiest objectives, with the specific flag still open
+  var next=shaky.concat(none).slice(0,5).map(function(r){
+    var o=idx.byName[r.name]||{flags:[]};
+    var open=(o.flags||[]).filter(function(f){return !got[f.key];})[0]||null;
+    return {name:r.name,module:r.module,flag:open};
+  });
+
+  var h='<button class="btn sm" onclick="setObjView(\'students\')" style="margin-bottom:14px;">\u2190 All students</button>'+
+    '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;">'+
+      '<h3 style="font-size:20px;color:var(--bright);margin:0;">'+esc(s.handle)+'</h3>'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);">'+esc(s.email||"")+'</span></div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:18px;">'+
+      mastered.length+' of '+rep.length+' objectives mastered \u00b7 '+shaky.length+' partial \u00b7 '+none.length+' not started</div>';
+
+  if(next.length){
+    h+='<div class="card" style="padding:16px;margin-bottom:20px;">'+
+      '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">NEXT STEPS</div>'+
+      '<div style="display:flex;flex-direction:column;gap:8px;">'+
+      next.map(function(n){
+        return '<div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;">'+
+          '<span class="mono" style="font-size:10px;color:var(--faint);width:26px;">M'+n.module+'</span>'+
+          '<b style="color:var(--bright);font-size:13px;">'+esc(n.name)+'</b>'+
+          (n.flag?'<span style="color:var(--dim);font-size:12px;">\u2014 try <i>'+esc(n.flag.title)+'</i>'+
+            (n.flag.level?' <span class="mono" style="font-size:10px;color:var(--faint);">'+esc(n.flag.level)+'</span>':'')+'</span>':'')+
+        '</div>';
+      }).join("")+'</div></div>';
+  }
+
+  var group=function(label,list,col){
+    if(!list.length) return "";
+    return '<div style="margin-bottom:18px;">'+
+      '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:'+col+';margin-bottom:8px;">'+label+' ('+list.length+')</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+list.map(function(r){
+        return '<span style="display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--border2);border-radius:99px;font-size:12px;color:var(--text);">'+
+          objDot(r.state)+esc(r.name)+
+          '<span class="mono" style="font-size:10px;color:var(--faint);">'+r.cleared+'/'+r.total+'</span></span>';
+      }).join("")+'</div></div>';
+  };
+  h+=group("MASTERED",mastered,"var(--ok)")+group("PARTIAL",shaky,"var(--warn)")+group("NOT STARTED",none,"var(--faint)");
+  return h;
+}
+
+/* Your own authoring gaps: which objectives are thin, and what isn't measured. */
+function objCoverageView(idx){
+  var rows=objFilter(idx.objectives.map(function(o){
+    return {name:o.name,module:o.module,flags:o.flags.length,mergedFrom:o.mergedFrom,
+            levels:o.flags.map(function(f){return f.level;}).filter(Boolean)};
+  }));
+  var thin=rows.filter(function(r){return r.flags<2;});
+  var merged=rows.filter(function(r){return (r.mergedFrom||[]).length>1;});
+
+  var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;max-width:720px;">'+
+    'This is about your flags, not your students. '+idx.flags.length+' flags carry an objective line; '+
+    idx.unmapped.length+' don\u2019t (interactive captures and boss cards, which aren\u2019t measured here).</div>';
+
+  if(thin.length) h+='<div class="card" style="padding:14px 16px;margin-bottom:16px;border-left:3px solid var(--warn);">'+
+    '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--warn);margin-bottom:6px;">THIN COVERAGE ('+thin.length+')</div>'+
+    '<div style="font-size:13px;color:var(--dim);line-height:1.6;">One flag each, so mastery there rests on a single question: '+
+      thin.map(function(r){return '<b style="color:var(--bright)">'+esc(r.name)+'</b>';}).join(", ")+'</div></div>';
+
+  h+=objModChips(idx);
+  h+='<div style="overflow:auto;"><table><thead><tr>'+
+    '<th>Module</th><th>Objective</th><th>Flags</th><th>Levels</th><th>Merged from</th></tr></thead><tbody>';
+  rows.sort(function(a,b){return a.module-b.module||a.name.localeCompare(b.name);}).forEach(function(r){
+    h+='<tr>'+
+      '<td class="mono" style="color:var(--faint)">M'+r.module+'</td>'+
+      '<td><b style="color:var(--bright)">'+esc(r.name)+'</b></td>'+
+      '<td class="mono" style="color:'+(r.flags<2?"var(--warn)":"var(--text)")+'">'+r.flags+'</td>'+
+      '<td class="mono" style="font-size:11px;color:var(--dim)">'+(r.levels.length?esc(r.levels.join(" \u00b7 ")):"\u2014")+'</td>'+
+      '<td style="font-size:11px;color:var(--faint)">'+((r.mergedFrom||[]).length>1?esc(r.mergedFrom.join(", ")):"")+'</td>'+
+    '</tr>';
+  });
+  h+='</tbody></table></div>';
+
+  if(merged.length) h+='<div class="mono" style="font-size:11px;color:var(--faint);margin-top:14px;line-height:1.6;max-width:720px;">'+
+    merged.length+' objective'+(merged.length==1?' was':'s were')+' merged from differently-worded prompts. '+
+    'If any merge is wrong, tell me which and I\u2019ll split it \u2014 the mapping lives in objectives.js.</div>';
+  return h;
+}
+
 /* ----- integrity ----- */
+/* Time-to-solve outliers. Deterrents are theatrical; this is evidentiary.
+   A capture is called out when it beats an absolute floor for its level, or
+   when it lands far under what the rest of the class needed on that exact
+   flag. Advisory only — it is a prompt to go look at the timeline, never a
+   verdict. */
+var FLOOR_SECS={Easy:5,Medium:7,Hard:10};
+function median(a){ if(!a.length) return null; var s=a.slice().sort(function(x,y){return x-y;}); var m=s.length>>1;
+  return s.length%2?s[m]:Math.round((s[m-1]+s[m])/2); }
+function outliers(){
+  var by={};
+  FLAGS.forEach(function(f){ if(f.secs==null||f.secs<0) return;
+    var k=(f.challenge_id||f.title||"?")+"|"+(f.level||""); (by[k]=by[k]||[]).push(f); });
+  var out=[];
+  Object.keys(by).forEach(function(k){
+    var g=by[k], med=median(g.map(function(f){return f.secs;}));
+    g.forEach(function(f){
+      var why=[], floor=FLOOR_SECS[f.level]||6;
+      if(f.secs<floor) why.push("under the "+floor+"s floor for "+(f.level||"this level"));
+      if(g.length>=4&&med>=20&&f.secs<Math.round(med*0.25)) why.push("class median is "+fmtSecs(med));
+      if(!why.length) return;
+      if(f.retries) why.push("after "+f.retries+" wrong "+(f.retries==1?"try":"tries"));
+      out.push({f:f,med:med,n:g.length,why:why.join(" · ")});
+    });
+  });
+  return out.sort(function(a,b){return a.f.secs-b.f.secs;});
+}
+function outlierPanel(){
+  if(!FLAGS.length) return "";
+  var o=outliers();
+  var head='<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">'+
+    '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">TIME-TO-SOLVE OUTLIERS</span>'+
+    (o.length?'<span class="pill" style="background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)">'+o.length+'</span>':'')+'</div>';
+  if(!o.length) return head+'<div class="empty" style="padding:18px;font-size:13px;margin-bottom:26px;">'+
+    'Every capture took a plausible amount of time.</div>';
+  var h=head+'<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+    'Captures that came in implausibly fast for their level, or far under what the rest of the class needed on the same flag. '+
+    'This is a prompt to open the timeline \u2014 not proof of anything.</div>'+
+    '<div style="overflow:auto;margin-bottom:26px;"><table><thead><tr>'+
+      '<th>Handle</th><th>Challenge</th><th>Level</th><th>Time</th><th>Class median</th><th>Why</th></tr></thead><tbody>';
+  o.forEach(function(r){
+    var f=r.f, lvlC=f.level==="Hard"?"var(--bad)":f.level==="Medium"?"var(--warn)":"var(--ok)";
+    h+='<tr>'+
+      '<td><b style="color:var(--bright)">'+esc(f.handle)+'</b></td>'+
+      '<td>'+esc(f.title||f.challenge_id)+'</td>'+
+      '<td>'+(f.level?'<span class="pill" style="background:color-mix(in srgb,'+lvlC+' 14%,transparent);color:'+lvlC+'">'+esc(f.level)+'</span>':'\u2014')+'</td>'+
+      '<td class="mono" style="color:var(--bad);font-weight:700">'+fmtSecs(f.secs)+'</td>'+
+      '<td class="mono" style="color:var(--dim)">'+fmtSecs(r.med)+'<span style="color:var(--faint)"> \u00b7 n='+r.n+'</span></td>'+
+      '<td style="color:var(--muted);font-size:12px">'+esc(r.why)+'</td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
 function cheatsView(){
-  if(!CHEATS.length) return '<div class="empty">No integrity events. 🎉<br><span style="font-size:12px">Looking things up is allowed — these only flag paste / focus-loss / honeypot / devtools activity.</span></div>';
+  var pre=outlierPanel();
+  if(!CHEATS.length) return pre+'<div class="empty">No integrity events. 🎉<br><span style="font-size:12px">Looking things up is allowed — these only flag paste / focus-loss / honeypot / devtools activity.</span></div>';
   var kindC={paste:"var(--warn)",focus:"var(--dim)",canary:"var(--bad)",copy:"var(--warn)",devtools:"var(--bad)",decoy:"var(--bad)"};
-  var h='<div style="overflow:auto;"><table><thead><tr><th>When</th><th>Handle</th><th>Event</th><th>Detail</th></tr></thead><tbody>';
+  var h=pre+'<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">INTEGRITY EVENTS ('+CHEATS.length+')</div>'+
+    '<div style="overflow:auto;"><table><thead><tr><th>When</th><th>Handle</th><th>Event</th><th>Detail</th></tr></thead><tbody>';
   CHEATS.forEach(function(c){
     var col=kindC[c.kind]||"var(--dim)";
     h+='<tr>'+
@@ -807,6 +1782,89 @@ async function removeStudent(sid,handle){
   if(!confirm('Remove "'+handle+'" from this class?\n\nTheir progress, captures, and integrity log are deleted. They can rejoin with the class code.')) return;
   try{ await rpc("ctf_t_remove_student",{p_student:sid}); await loadClasses(true); }
   catch(e){ alert("Couldn't remove that student."); }
+}
+
+/* ---------------- one flag, one student ----------------
+   The whole story: every submission with its timestamp, how long they'd been
+   working, and any integrity events that fired while that flag was open. */
+var FLAGDET=null;
+async function openFlag(sid,key){
+  FLAGDET="loading"; renderFlagModal();
+  try{ FLAGDET=await rpc("ctf_t_flag_detail",{p_student:sid,p_key:key}); }
+  catch(e){ FLAGDET={error:(e&&e.message)||"load"}; }
+  renderFlagModal();
+}
+function closeFlag(){ FLAGDET=null; renderFlagModal(); }
+function renderFlagModal(){
+  var m=el("flagModal");
+  if(!FLAGDET){ m.style.display="none"; m.innerHTML=""; return; }
+  m.style.display="flex";
+  if(FLAGDET==="loading"){ m.innerHTML='<div class="card" style="padding:40px;"><span class="spin"></span></div>'; return; }
+  if(FLAGDET.error){
+    m.innerHTML='<div class="card" style="padding:28px;max-width:460px;">'+
+      '<div style="color:var(--bad);font-size:14px;margin-bottom:8px;">Couldn\u2019t load that flag.</div>'+
+      '<div class="mono" style="font-size:11px;color:var(--dim);margin-bottom:14px;">'+esc(FLAGDET.error)+
+        '<br>If this says the function is missing, run supabase/attempt-log.sql.</div>'+
+      '<button class="btn" onclick="closeFlag()">Close</button></div>';
+    return;
+  }
+  var st=FLAGDET.student||{}, cap=FLAGDET.capture||null,
+      att=FLAGDET.attempts||[], ch=FLAGDET.cheats||[];
+  var wrong=att.filter(function(a){return !a.correct;}).length;
+  var lvlC=cap&&cap.level==="Hard"?"var(--bad)":cap&&cap.level==="Medium"?"var(--warn)":"var(--ok)";
+  var stat=function(n,k,col){ return '<div class="stat"><div class="n" style="'+(col?'color:'+col:'')+'">'+n+'</div><div class="k">'+k+'</div></div>'; };
+
+  var h='<div class="card fade" style="width:min(760px,96vw);max-height:92vh;overflow:auto;padding:26px;">'+
+    '<div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:16px;">'+
+      '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">FLAG DETAIL</div>'+
+        '<h2 style="font-size:20px;color:var(--bright);margin:4px 0 3px;">'+esc((cap&&(cap.title||cap.challenge_id))||"Flag")+'</h2>'+
+        '<div class="mono" style="font-size:11px;color:var(--dim);">'+esc(st.handle||"")+
+          (cap&&cap.level?' \u00b7 <span style="color:'+lvlC+'">'+esc(cap.level)+'</span>':'')+'</div></div>'+
+      '<button class="btn sm" style="margin-left:auto;" onclick="closeFlag()">Close</button></div>';
+
+  if(cap){
+    h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-bottom:20px;">'+
+      stat((cap.points||0),"XP EARNED","var(--accent)")+
+      stat(fmtSecs(cap.secs),"TIME TO SOLVE")+
+      stat(wrong||cap.retries||0,"WRONG TRIES",(wrong||cap.retries)?"var(--warn)":"")+
+      stat(ch.length,"INTEGRITY",ch.length?"var(--bad)":"var(--ok)")+
+      stat(cap.tainted?"tainted":"clean","STATUS",cap.tainted?"var(--bad)":"var(--ok)")+
+    '</div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:20px;">'+
+      'Captured '+fmtDate(cap.created_at)+
+      (FLAGDET.class_solves?' \u00b7 class average '+fmtSecs(Number(FLAGDET.class_avg_secs))+' across '+FLAGDET.class_solves+' solve'+(FLAGDET.class_solves==1?'':'s'):'')+
+    '</div>';
+  } else {
+    h+='<div class="empty" style="padding:18px;font-size:13px;">Not captured yet \u2014 attempts below are from an unfinished run.</div>';
+  }
+
+  // merged chronological timeline: attempts + integrity events together
+  var tl=att.map(function(a){return {t:a.created_at,kind:a.correct?"solve":"wrong",secs:a.secs,text:a.guess};})
+    .concat(ch.map(function(c){return {t:c.created_at,kind:"integrity",sub:c.kind,text:c.detail};}))
+    .sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+
+  h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">TIMELINE ('+tl.length+')</div>';
+  if(!tl.length){
+    h+='<div class="empty" style="padding:20px;font-size:13px;">No attempt history recorded.'+
+       '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:8px;">Attempts are logged from the moment supabase/attempt-log.sql is installed \u2014 flags captured before that show totals only.</div></div>';
+  } else {
+    h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+    tl.forEach(function(e){
+      var col=e.kind==="solve"?"var(--ok)":e.kind==="wrong"?"var(--warn)":"var(--bad)";
+      var icon=e.kind==="solve"?"\u2713":e.kind==="wrong"?"\u2717":"\u26a0";
+      var label=e.kind==="solve"?"correct":e.kind==="wrong"?"wrong answer":esc(e.sub||"integrity");
+      h+='<div style="display:flex;align-items:baseline;gap:11px;padding:9px 12px;border-radius:9px;background:var(--bg2);'+
+          'border:1px solid var(--border2);border-left:2px solid '+col+';">'+
+        '<span style="color:'+col+';font-weight:700;">'+icon+'</span>'+
+        '<span class="mono" style="font-size:11px;color:var(--dim);white-space:nowrap;">'+fmtDate(e.t)+'</span>'+
+        '<span style="font-size:12.5px;color:'+col+';">'+label+'</span>'+
+        (e.text?'<span class="mono" style="font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(e.text)+'</span>':'')+
+        (e.secs!=null?'<span class="mono" style="margin-left:auto;font-size:11px;color:var(--faint);white-space:nowrap;">at '+fmtSecs(e.secs)+'</span>':'')+
+      '</div>';
+    });
+    h+='</div>';
+  }
+  m.innerHTML=h+'</div>';
 }
 
 /* ---------------- create class ---------------- */

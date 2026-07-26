@@ -17,11 +17,14 @@
   var REDUCED = false;
   try { REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
 
-  /* ---- per-course personality -------------------------------------------- */
-  var THEMES = {
-    cyber1: {
-      guide: "NEMESIS", kind: "adversary", art: "alert",
-      hue: "#ff3b3b", glow: "rgba(255,59,59,.16)", ok: "#2ee6a6",
+  /* ---- the cast -----------------------------------------------------------
+     Keyed by CHARACTER, not by course, and the course→character mapping plus
+     every colour comes from COURSE_CONFIG. That way a course can be handed a
+     different guide (or recoloured) by editing config.js alone, and the gate
+     can never greet a student as someone the arena then calls by another name. */
+  var CAST = {
+    NEMESIS: {
+      kind: "adversary", art: "alert",
       status: "INTRUSION DETECTED",
       btn: "AUTHENTICATE",
       lines: [
@@ -35,9 +38,8 @@
       lockTitle: "TERMINAL SEALED",
       lockSub: "Session closed. I'll be watching the door."
     },
-    cyber2: {
-      guide: "SPECTER", kind: "adversary", art: "static",
-      hue: "#3fb2ff", glow: "rgba(63,178,255,.14)", ok: "#2ee6a6",
+    SPECTER: {
+      kind: "adversary", art: "static",
       status: "GHOST IN THE WIRE",
       btn: "PROVE IDENTITY",
       lines: [
@@ -51,9 +53,8 @@
       lockTitle: "SIGNAL LOST",
       lockSub: "You've gone dark. Good."
     },
-    apcsp: {
-      guide: "ADA", kind: "mentor", art: "trace",
-      hue: "#a855f7", glow: "rgba(168,85,247,.15)", ok: "#3ecf8e",
+    ADA: {
+      kind: "mentor", art: "trace",
       status: "COMPILE ERROR",
       btn: "RUN auth()",
       lines: [
@@ -67,9 +68,8 @@
       lockTitle: "PROCESS EXITED",
       lockSub: "Progress saved. See you at the next build."
     },
-    web3: {
-      guide: "ORACLE", kind: "mentor", art: "block",
-      hue: "#ff9838", glow: "rgba(255,152,56,.15)", ok: "#3ecf8e",
+    ORACLE: {
+      kind: "mentor", art: "block",
       status: "UNVERIFIED WALLET",
       btn: "SIGN & VERIFY",
       lines: [
@@ -84,7 +84,27 @@
       lockSub: "Your ledger is safe. Come back any time."
     }
   };
-  function theme(course) { return THEMES[course] || THEMES.cyber1; }
+  /* mentor guides read "success green"; adversaries get a colder confirm */
+  var OK_MENTOR = "#3ecf8e", OK_ADV = "#2ee6a6";
+
+  function courseCfg(course) {
+    var all = window.COURSE_CONFIG || {};
+    return ((all[course] || {}).ctf) || {};
+  }
+  function theme(course) {
+    var cfg = courseCfg(course);
+    var name = cfg.adversary || "NEMESIS";
+    var base = CAST[name.toUpperCase()] || CAST.NEMESIS;
+    var hue = cfg.adversaryColor || (base.kind === "mentor" ? "#a855f7" : "#ff3b3b");
+    var mentor = (typeof cfg.mentor === "boolean") ? cfg.mentor : (base.kind === "mentor");
+    return Object.assign({}, base, {
+      guide: name,
+      kind: mentor ? "mentor" : "adversary",
+      hue: hue,
+      glow: "color-mix(in srgb, " + hue + " 16%, transparent)",
+      ok: mentor ? OK_MENTOR : OK_ADV
+    });
+  }
 
   /* ---- one-time keyframes ------------------------------------------------ */
   var injected = false;

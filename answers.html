@@ -35,6 +35,29 @@
   .fade{animation:fade .25s ease;}
   .empty{padding:44px 20px;text-align:center;color:var(--dim);font-size:14px;}
   .ansrow{border:1px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:9px;background:var(--bg2);}
+  /* The answer key is a teacher tool but gets opened on a phone mid-class, so
+     the tables have to survive a narrow screen rather than blow out the page. */
+  @media(max-width:680px){
+    body{-webkit-text-size-adjust:100%;}
+    #app > div{padding:16px 14px 50px !important;}
+    #gate > div{margin:8vh auto !important;}
+    .card{border-radius:12px;}
+    .ansrow{padding:12px 13px;}
+    h1{font-size:19px !important;}
+    #akClass{max-width:100% !important;width:100%;}
+    /* header actions stack instead of squeezing the class picker to nothing */
+    #app .noprint{width:100%;margin-left:0 !important;flex-wrap:wrap;}
+    /* long ciphertext and answers must wrap, never force a horizontal scroll */
+    .mono{overflow-wrap:anywhere;word-break:break-word;}
+  }
+  @media(max-width:720px){
+    #app > div{padding:16px 12px 48px !important;}
+    .btn{padding:11px 14px;min-height:44px;}
+    .btn.sm{min-height:36px;}
+    .ansrow{padding:12px 13px;}
+    h1{font-size:19px !important;}
+    select.btn{max-width:100% !important;width:100%;}
+  }
   @media print{
     body{background:#fff;color:#111;} .noprint{display:none!important;}
     .card,.ansrow{border-color:#bbb;background:#fff;}
@@ -134,12 +157,19 @@ async function signOut(){ await AUTH.signOut(); location.reload(); }
 
 /* ---------- guide-flavored framing: the key reads like the character
      encrypted the course and you hold the master key ---------- */
-var VOICE={
-  cyber1:{who:"NEMESIS",line:"NEMESIS locked these down. You hold the master key — here is everything it tried to hide."},
-  cyber2:{who:"SPECTER",line:"SPECTER buried these in the wire. Decrypted below, in full."},
-  apcsp:{who:"ADA",line:"ADA wrapped the unreleased work so students can't peek early. Here's the plaintext."},
-  web3:{who:"ORACLE",line:"ORACLE signed these into a sealed block. This is the unsealed ledger."}
+/* Cast lives in config.js; the key here is the CHARACTER so the answer key can
+   never name a different guide than the arena does. */
+var VOICE_BY_GUIDE={
+  NEMESIS:"NEMESIS locked these down. You hold the master key \u2014 here is everything it tried to hide.",
+  SPECTER:"SPECTER buried these in the wire. Decrypted below, in full.",
+  ADA:"ADA wrapped the unreleased work so students can't peek early. Here's the plaintext.",
+  ORACLE:"ORACLE signed these into a sealed block. This is the unsealed ledger."
 };
+function voiceFor(course){
+  var cfg=((window.COURSE_CONFIG||{})[course]||{}).ctf||{};
+  var who=(cfg.adversary||"NEMESIS").toUpperCase();
+  return {who:who, line:VOICE_BY_GUIDE[who]||VOICE_BY_GUIDE.NEMESIS};
+}
 
 /* ---------- solutions we can derive straight from config.js ---------- */
 function derived(c){
@@ -228,7 +258,7 @@ async function rowHtml(c,locked,course){
 async function renderKey(gates){
   var course=CUR.course, cfg=(window.COURSE_CONFIG||{})[course]||{};
   var chals=((cfg.ctf||{}).challenges)||[];
-  var v=VOICE[course]||VOICE.cyber1, m=cmeta(course);
+  var v=voiceFor(course), m=cmeta(course);
   el("akTitle").textContent="Answer Key \u2014 "+CUR.name;
 
   if(!gates.answer_key_on){

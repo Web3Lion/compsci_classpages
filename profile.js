@@ -27,15 +27,14 @@
   /* ---- pieces ------------------------------------------------------------ */
   function header() {
     var s = sess();
-    // padding-right reserves room for the shell's fixed .themebtn (top-right)
-    return '<div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:0 0 22px;padding-right:112px;">' +
+    return '<div class="pfHead" style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:0 0 22px;">' +
       '<div>' +
         '<div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--faint);">OPERATOR RECORD</div>' +
         '<div style="font-size:28px;font-weight:800;color:var(--bright);letter-spacing:-.4px;line-height:1.1;margin-top:4px;">My Profile</div>' +
       '</div>' +
       '<div style="margin-left:auto;display:flex;gap:8px;align-items:center;">' +
         (s ? '<span class="mono" style="font-size:11px;color:var(--dim);">' + esc(s.className || "") + '</span>' : "") +
-        '<a class="qlink mono" href="ctf.html" style="font-size:12px;padding:9px 14px;border:1px solid var(--border3);border-radius:9px;color:var(--accent);">&larr; BACK TO ARENA</a>' +
+        '<a class="qlink mono taplink" href="ctf.html" style="font-size:12px;padding:9px 14px;border:1px solid var(--border3);border-radius:9px;color:var(--accent);">&larr; BACK TO ARENA</a>' +
       '</div>' +
     '</div>';
   }
@@ -49,7 +48,7 @@
         '<div style="font-size:26px;font-weight:800;color:var(--bright);letter-spacing:-.3px;">' +
           (name ? esc(name) : '<span style="color:var(--faint);font-weight:600;font-size:18px;">not set yet</span>') +
         '</div>' +
-        '<button id="pfEdit" class="mono" style="font-size:11px;letter-spacing:.5px;background:none;border:1px solid var(--border3);color:var(--dim);padding:6px 12px;border-radius:8px;cursor:pointer;">CHANGE</button>' +
+        '<button id="pfEdit" class="mono" style="font-size:11px;letter-spacing:.5px;background:none;border:1px solid var(--border3);color:var(--dim);padding:6px 14px;min-height:44px;border-radius:8px;cursor:pointer;">CHANGE</button>' +
       '</div>' +
       '<div id="pfIdEdit" style="display:none;max-width:420px;">' +
         '<div style="display:flex;gap:8px;">' +
@@ -144,7 +143,70 @@
         '<div class="mono" style="font-size:11px;color:var(--dim);">' + earned + ' / ' + totalTiers + ' tiers earned</div>' +
       '</div>' +
       '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:16px;">Every badge in the course. Greyed out until you earn its first tier.</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px;">' + defs.map(tile).join("") + '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(215px,100%),1fr));gap:12px;">' + defs.map(tile).join("") + '</div>' +
+    '</div>';
+  }
+
+  /* ---- objective map ------------------------------------------------------
+     Hidden unless the teacher turned it on for this class, and strictly the
+     signed-in student's own data — the RPC is scoped to the caller and returns
+     { on:false } while the switch is off. Mastery here is the same rule the
+     teacher sees, so the two views can never disagree. */
+  function objectiveCard() {
+    return '<div id="pfObjWrap"></div>';
+  }
+  function objState(st) {
+    return st === "mastered" ? "var(--ok)" : st === "shaky" ? "var(--warn)" : "var(--border3)";
+  }
+  async function loadObjectives() {
+    var box = el("pfObjWrap"); if (!box) return;
+    var s = sess();
+    if (!ONLINE || !s || !window.OBJECTIVES) return;
+    var d;
+    try { d = await AUTH.rpc("ctf_my_captures", { p_student: s.studentId }); }
+    catch (e) { return; }
+    if (!d || d.error || !d.on) return;
+
+    var idx = OBJECTIVES.index(course);
+    if (!idx || !idx.objectives.length) return;
+
+    var got = {};
+    (d.captures || []).forEach(function (c) {
+      got[c.flag_key] = { tainted: !!c.tainted, wrong_tries: Number(c.wrong_tries) || 0 };
+    });
+    var rep = OBJECTIVES.report(idx, got);
+    var done = rep.filter(function (r) { return r.state === "mastered"; });
+    var part = rep.filter(function (r) { return r.state === "shaky"; });
+    var open = rep.filter(function (r) { return r.state === "untouched"; });
+
+    var chips = function (list) {
+      return '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + list.map(function (r) {
+        return '<span style="display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--border2);' +
+          'border-radius:99px;font-size:12px;color:var(--text);">' +
+          '<span style="width:8px;height:8px;border-radius:99px;background:' + objState(r.state) + ';flex:none;"></span>' +
+          esc(r.name) + '<span class="mono" style="font-size:10px;color:var(--faint);">' + r.cleared + '/' + r.total + '</span></span>';
+      }).join("") + '</div>';
+    };
+    var group = function (label, list, col) {
+      if (!list.length) return "";
+      return '<div style="margin-top:16px;">' +
+        '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:' + col + ';margin-bottom:8px;">' +
+          label + ' (' + list.length + ')</div>' + chips(list) + '</div>';
+    };
+
+    var pct = rep.length ? Math.round(done.length / rep.length * 100) : 0;
+    box.innerHTML = '<div class="card" style="padding:22px;margin-top:20px;">' +
+      '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">OBJECTIVE MAP</div>' +
+      '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;">' +
+        'What you\u2019ve shown you know, not what you\u2019ve scored. An objective counts as mastered once you\u2019ve ' +
+        'cleared every flag under it \u2014 including the hard one \u2014 without a long guessing streak.</div>' +
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">' +
+        '<span style="flex:1;height:9px;border-radius:99px;background:var(--bg2);overflow:hidden;display:block;">' +
+          '<span style="display:block;height:100%;width:' + pct + '%;background:var(--ok);"></span></span>' +
+        '<b class="mono" style="font-size:13px;color:var(--bright);white-space:nowrap;">' + done.length + ' / ' + rep.length + '</b></div>' +
+      group("MASTERED", done, "var(--ok)") +
+      group("KEEP GOING", part, "var(--warn)") +
+      group("NOT STARTED", open, "var(--faint)") +
     '</div>';
   }
 
@@ -235,14 +297,29 @@
   }
 
   /* ---- boot -------------------------------------------------------------- */
+  function css() {
+    if (document.getElementById("pfCss")) return;
+    var st = document.createElement("style"); st.id = "pfCss";
+    /* .pfHead reserves room for the shell's fixed theme button; on a phone the
+       button sits over empty space instead, so the gutter is dropped. */
+    st.textContent =
+      ".pfHead{padding-right:112px;}" +
+      "@media(max-width:640px){" +
+        ".pfHead{padding-right:0;}" +
+        ".pfHead > div:last-child{width:100%;}" +
+      "}";
+    document.head.appendChild(st);
+  }
   function boot() {
     var root = el("profileRoot"); if (!root) return;
+    css();
     root.innerHTML = header() +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start;">' +
         identityCard() + xpCard() +
       '</div>' +
-      badgeCase() + leaderboardCard();
+      badgeCase() + objectiveCard() + leaderboardCard();
     wireIdentity();
+    loadObjectives();
     loadLb();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

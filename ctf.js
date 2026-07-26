@@ -53,7 +53,13 @@
      mode reads a device flag so the arena can still be demoed. */
   function personaOn() {
     if (typeof window.CTF_PERSONA === "boolean") return window.CTF_PERSONA;
-    try { return localStorage.getItem("ctf-persona-" + course) === "1"; } catch (e) { return false; }
+    try {
+      var cached = localStorage.getItem("ctf-persona-" + course);
+      if (cached !== null) return cached === "1";
+      // No backend configured => no teacher switch exists => ship the character.
+      var cfgS = window.SUPABASE_CONFIG || {};
+      return !(cfgS.url && cfgS.anonKey);
+    } catch (e) { return false; }
   }
   const PKEY = "ctf-persona-seen-" + course;
 
@@ -219,7 +225,7 @@
     return `<div class="card" style="margin-top:20px;">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px;">
         <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">BADGES</div>
-        <div class="mono" style="font-size:11px;color:var(--dim);">${earned} / ${defs.length * 3} tiers earned · <a href="profile.html">MY PROFILE →</a></div>
+        <div class="mono" style="font-size:11px;color:var(--dim);">${earned} / ${defs.length * 3} tiers earned · <a class="taplink" href="profile.html">MY PROFILE →</a></div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">${defs.map(tile).join("")}</div>
     </div>`;
@@ -258,6 +264,31 @@
 
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const norm = s => String(s == null ? "" : s).trim().toLowerCase();
+  /* Multi-word answers are written with spaces in some modules and underscores
+     in others. A student shouldn't have to guess the punctuation, so a guess is
+     hashed in several equivalent spellings and any match counts. */
+  function flagVariants(s) {
+    const base = norm(s);
+    const inner = base.replace(/^flag\{|\}$/g, "");
+    const forms = new Set();
+    [inner, inner.replace(/[_-]+/g, " "), inner.replace(/\s+/g, "_"),
+     inner.replace(/\s+/g, "-"), inner.replace(/[\s_-]+/g, "")].forEach(v => {
+      v = v.replace(/\s+/g, " ").trim();
+      if (!v) return;
+      forms.add(v);
+      forms.add("flag{" + v + "}");
+    });
+    forms.add(base);
+    return [...forms];
+  }
+  async function matchesFlag(guess, hash) {
+    if (!hash) return false;
+    const want = String(hash).toLowerCase();
+    for (const v of flagVariants(guess)) {
+      if (await sha256(v) === want) return true;
+    }
+    return false;
+  }
 
   function flagsOf(c) {
     if (c.type === "vocab") return [0, 1, 2].map(i => ({ key: c.id + "#" + i, points: VOCAB_PTS[i] }));
@@ -306,6 +337,10 @@
   }
 
   let phishState = {};
+  /* PERFORMANCE — the biggest course is 104 challenges. Building every card up
+     front produced a ~790KB DOM that a school Chromebook chews on for seconds.
+     Collapsed modules and rows now render as empty shells and fill in on the
+     click that opens them, so first paint only pays for what's visible. */
   let openMods = new Set();
   let openChals = new Set();
   let levelSel = {};
@@ -319,11 +354,42 @@
   const VOCAB_DIFFS = ["Easy", "Medium", "Hard"];
   const RAPID_SECS = 240, RAPID_PER = 20;   // hard rapid-fire: 4 min, XP per correct term
   // per-flag timing: full XP within FULL_SECS, decaying to FLOOR by MAX_SECS; each retry caps at RETRY_FACTOR of the last
-  const MAX_SECS = 300, FULL_SECS = 60, FLOOR = 0.4, RETRY_FACTOR = 0.95;
+  const MAX_SECS = 300, FULL_SECS = 20, FLOOR = 0.6, RETRY_FACTOR = 0.95;
   let timers = {}, rapidTimer = null, tickTimer = null;
 
   function tMult(sec) { if (sec <= FULL_SECS) return 1; if (sec >= MAX_SECS) return FLOOR; return 1 - (1 - FLOOR) * (sec - FULL_SECS) / (MAX_SECS - FULL_SECS); }
   function capFor(key) { return Math.pow(RETRY_FACTOR, state.retry[key] || 0); }
+
+  /* ---- RETRY COOLDOWN -----------------------------------------------------
+     A wrong text answer locks submission for a few seconds, scaled by
+     difficulty and by how many times they've already missed. Guessing is the
+     cheapest way to beat a hashed answer; this makes it cost real time.
+     Interactive captures (match / order / spot) are exempt — retrying those
+     IS the learning. Persisted, so reloading the page can't skip the wait,
+     and the flag's own clock is pushed out so the lockout never burns XP. */
+  const COOL_BASE = { Easy: 8, Medium: 15, Hard: 25 }, COOL_STEP = 5, COOL_MAX = 45;
+  function diffOf(chal, li) {
+    li = li || 0;
+    if (chal.type === "vocab") return VOCAB_DIFFS[li] || "Medium";
+    if (chal.levels && chal.type !== "phish") return (chal.levels[li] || {}).difficulty || "Medium";
+    return chal.difficulty || "Medium";
+  }
+  function coolSecs(chal, li, key) {
+    if (chal.type === "match" || chal.type === "order" || chal.type === "spot") return 0;
+    const tries = state.retry[key] || 0;
+    return Math.min(COOL_MAX, (COOL_BASE[diffOf(chal, li)] || 15) + COOL_STEP * Math.max(0, tries - 1));
+  }
+  function coolLeft(key) {
+    const until = (state.cool || {})[key];
+    return until ? Math.max(0, Math.ceil((until - Date.now()) / 1000)) : 0;
+  }
+  function startCool(chal, li, key) {
+    const s = coolSecs(chal, li, key);
+    if (!s) return 0;
+    state.cool = state.cool || {};
+    state.cool[key] = Date.now() + s * 1000;
+    return s;
+  }
 
   /* ---- HINT ECONOMY ------------------------------------------------------
      Revealing a hint permanently costs HINT_COST of that flag's value. It is
@@ -331,7 +397,7 @@
      commit, the reveal is confirmed, and it stacks with the time and retry
      multipliers rather than replacing them. Looking things up elsewhere is
      still free — this only prices the answer we hand over. */
-  const HINT_COST = 0.25;
+  const HINT_COST = 0.10;
   function hintUsed(key) { return !!(state.hints || {})[key]; }
   function hintMult(key) { return hintUsed(key) ? (1 - HINT_COST) : 1; }
   function buyHint(key) {
@@ -358,10 +424,14 @@
   function earnedTxt(key, base) { return state.earned[key] != null ? state.earned[key] : base; }
   function fail(chal, li, card, msg, txt) {
     const key = keyOf(chal, li);
+    reportAttempt(chal, li, key, false, txt);
     state.retry[key] = (state.retry[key] || 0) + 1;
-    timers[key] = Date.now();
+    const cd = startCool(chal, li, key);
+    // push the clock past the lockout so waiting it out costs no XP
+    timers[key] = Date.now() + cd * 1000;
     save(state);
-    msg.textContent = txt; msg.style.color = "var(--adv2)";
+    msg.textContent = cd ? txt + "  \u00b7 locked " + cd + "s" : txt;
+    msg.style.color = "var(--adv2)";
     card.style.animation = "none"; void card.offsetWidth; card.style.animation = "ctfShake .4s";
     updateTimers();
   }
@@ -371,12 +441,22 @@
       const key = el.getAttribute("data-key"), base = +el.getAttribute("data-base");
       const cap = capFor(key), rtxt = (state.retry[key] || 0) ? ` \u00b7 retry cap \u2212${Math.round((1 - cap) * 100)}%` : "";
       const hm = hintMult(key), htxt = hintUsed(key) ? ` \u00b7 hint \u2212${Math.round(HINT_COST * 100)}%` : "";
-      if (!timers[key]) { el.innerHTML = `\u23f1 timer starts when you begin \u00b7 up to <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span>${rtxt}${htxt}`; return; }
+      const cd = coolLeft(key);
+      const form = el.parentNode ? el.parentNode.querySelector(".ctfForm") : null;
+      const sub = form ? form.querySelector('button[type="submit"]') : null;
+      if (sub) { sub.disabled = !!cd; sub.style.opacity = cd ? ".45" : ""; sub.style.cursor = cd ? "not-allowed" : "pointer"; }
+      if (cd) { el.innerHTML = `\u23f3 <span style="color:var(--adv2);font-weight:700;">${cd}s</span> lockout after a wrong answer \u00b7 still worth <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span> when it lifts${rtxt}${htxt}`; return; }
+      if (!timers[key]) { el.innerHTML = `\u23f1 ${FULL_SECS}s at full value once you begin \u00b7 up to <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span>${rtxt}${htxt}`; return; }
       const sec = (Date.now() - timers[key]) / 1000;
       const earn = Math.max(1, Math.round(base * tMult(sec) * cap * hm));
+      if (sec < FULL_SECS) {
+        const g = Math.ceil(FULL_SECS - sec);
+        el.innerHTML = `\u23f1 <span style="color:var(--accent);font-weight:700;">${g}s</span> of full value left \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now${rtxt}${htxt}`;
+        return;
+      }
       const left = Math.max(0, MAX_SECS - sec), mm = Math.floor(left / 60), ss = Math.floor(left % 60);
-      const col = left > 60 ? "var(--accent)" : (left > 0 ? "var(--amber)" : "var(--faint)");
-      el.innerHTML = `\u23f1 <span style="color:${col};font-weight:700;">${mm}:${String(ss).padStart(2, "0")}</span> left \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now${rtxt}${htxt}`;
+      const col = left > 60 ? "var(--amber)" : (left > 0 ? "var(--adv2)" : "var(--faint)");
+      el.innerHTML = `\u23f1 decaying \u00b7 <span style="color:${col};font-weight:700;">${mm}:${String(ss).padStart(2, "0")}</span> to floor \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now${rtxt}${htxt}`;
     });
   }
   function startTicks() { if (tickTimer) clearInterval(tickTimer); tickTimer = setInterval(updateTimers, 250); updateTimers(); }
@@ -424,7 +504,7 @@
     }
   }
   function nemesisTakeover(){
-    if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("focus", "left the arena (tab/window blur)"); } catch (e) {} }
+    if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("focus", "left the arena (tab/window blur)", activeFlagKey()); } catch (e) {} }
     if (!personaOn()) return;   // guide asleep: log it, but no theatre
     if (MENTOR) { connectionLost(); return; }
     if (document.getElementById("nemTakeover")) return;
@@ -584,6 +664,7 @@
     }catch(e){}
   }
   function buildChip(){
+    if(!personaOn()) return;          // guide asleep: no chip on the arena
     if(document.getElementById("nemChip")) return;
     var c = document.createElement("button"); c.id = "nemChip"; c.className = "mono";
     var chipBg = MENTOR ? "#0e1512" : "#160a0f", moodC = MENTOR ? ADVC2 : "#ffb3c2";
@@ -601,13 +682,14 @@
     setInterval(function(){
       var w = (window.outerWidth - window.innerWidth) > 170, h = (window.outerHeight - window.innerHeight) > 170;
       var now = w || h;
-      if(now && !open){ open = true; if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("devtools", "developer tools opened"); } catch (e) {} } nemesisToast("\u2620 NEMESIS // INSPECTION DETECTED", "peeking under the hood? cute. there is nothing here for you.", "var(--adv2)"); nemesisSpeak("peeking under the hood. cute."); nemesisGlitch(); if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("devtools", "developer tools opened"); } catch (e) {} } }
+      if(now && !open){ open = true; if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("devtools", "developer tools opened", activeFlagKey()); } catch (e) {} } nemesisToast("\u2620 NEMESIS // INSPECTION DETECTED", "peeking under the hood? cute. there is nothing here for you.", "var(--adv2)"); nemesisSpeak("peeking under the hood. cute."); nemesisGlitch(); if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("devtools", "developer tools opened", activeFlagKey()); } catch (e) {} } }
       else if(!now){ open = false; }
     }, 1600);
   }
   function nemesisBoot(){
-    if(nemBooted) return; nemBooted = true;
-    if(!personaOn()) return;
+    if(nemBooted) return;
+    if(!personaOn()) return;      // stay unlatched: gates may still be in flight
+    nemBooted = true;
     var firstMeeting = false;
     try { firstMeeting = localStorage.getItem(PKEY) !== "1"; localStorage.setItem(PKEY, "1"); } catch(e){}
     if (firstMeeting) { personaArrival(); return; }
@@ -623,47 +705,198 @@
   /* THE ARRIVAL — the first load after the teacher wakes the guide. The arena
      was quiet until now, so the character gets one real entrance instead of a
      toast the student scrolls past. */
+  function arrivalCss(){
+    if (document.getElementById("arriveCss")) return;
+    var st = document.createElement("style"); st.id = "arriveCss";
+    st.textContent = [
+      "@keyframes arBarTop{from{transform:translateY(-100%)}to{transform:translateY(0)}}",
+      "@keyframes arBarBot{from{transform:translateY(100%)}to{transform:translateY(0)}}",
+      "@keyframes arPower{0%{transform:scaleX(0);opacity:0}30%{opacity:1}100%{transform:scaleX(1);opacity:.9}}",
+      "@keyframes arBloom{0%{opacity:0}55%{opacity:.55}100%{opacity:0}}",
+      "@keyframes arScan{0%{transform:translateY(-30vh)}100%{transform:translateY(130vh)}}",
+      "@keyframes arTear{0%,100%{clip-path:inset(0 0 0 0);transform:translateX(0)}" +
+        "18%{clip-path:inset(12% 0 62% 0);transform:translateX(-13px)}" +
+        "26%{clip-path:inset(58% 0 18% 0);transform:translateX(11px)}" +
+        "34%{clip-path:inset(33% 0 44% 0);transform:translateX(-7px)}" +
+        "44%{clip-path:inset(0 0 0 0);transform:translateX(4px)}}",
+      "@keyframes arShake{0%,100%{transform:translate(0,0)}20%{transform:translate(-6px,3px)}" +
+        "40%{transform:translate(5px,-4px)}60%{transform:translate(-4px,-2px)}80%{transform:translate(3px,4px)}}",
+      "@keyframes arGlyphIn{0%{opacity:0;transform:scale(2.8);filter:blur(22px)}" +
+        "60%{opacity:1;filter:blur(2px)}100%{opacity:1;transform:scale(1);filter:blur(0)}}",
+      "@keyframes arGlyphPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}",
+      "@keyframes arRing{0%{transform:scale(.35);opacity:.75}100%{transform:scale(2.6);opacity:0}}",
+      "@keyframes arNameIn{0%{opacity:0;letter-spacing:44px;filter:blur(9px)}" +
+        "70%{opacity:1;filter:blur(0)}100%{opacity:1;letter-spacing:6px}}",
+      "@keyframes arFlick{0%,100%{opacity:1}42%{opacity:.32}46%{opacity:1}61%{opacity:.5}64%{opacity:1}}",
+      "@keyframes arUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}",
+      "@keyframes arCaret{0%,49%{opacity:1}50%,100%{opacity:0}}",
+      "@media(prefers-reduced-motion:reduce){#nemArrive *{animation:none!important}}"
+    ].join("");
+    document.head.appendChild(st);
+  }
+
+  /* THE ARRIVAL — the first load after the teacher wakes the guide. The site
+     was deliberately silent until now, so the character gets a real entrance:
+     letterboxed, booted, and (for the adversaries) a hostile takeover of the
+     screen. Every beat is skippable and reduced-motion collapses it to the
+     final frame. */
   function personaArrival(){
-    injectGlitchStyle();
     if (document.getElementById("nemArrive")) return;
-    var o = document.createElement("div"); o.id = "nemArrive"; o.className = "mono";
-    var bg = MENTOR ? "#080f0c" : "#0c0508";
+    arrivalCss(); injectGlitchStyle();
+    var REDUCED = false;
+    try { REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e){}
+
+    var hostile = !MENTOR;
+    var bg = MENTOR ? "#04100b" : "#0a0308";
     var lines = MENTOR
-      ? ["> initializing helper…", "> loading course guide", "> " + ADV + " connected"]
-      : ["> unauthorized process detected", "> tracing origin…", "> " + ADV + " has taken this terminal"];
+      ? ["> booting course guide\u2026", "> loading mentor profile", "> handshake complete", "> " + ADV + " online"]
+      : ["> integrity scan\u2026 nominal", "> WARNING: unsigned process on this terminal",
+         "> tracing origin\u2026 FAILED", "> control surrendered"];
     var title = MENTOR ? ADV + " IS ONLINE" : ADV + " IS HERE";
     var sub = MENTOR
-      ? "Your guide just came online. I'll be right here from now on — cheering, hinting, and keeping score."
+      ? "Your guide just came online. I'll be right here from now on \u2014 hinting, cheering, and keeping score."
       : "Something woke up inside this system. From now on, every flag you chase, I am watching.";
+
+    var o = document.createElement("div");
+    o.id = "nemArrive"; o.className = "mono";
     o.style.cssText = "position:fixed;inset:0;z-index:12500;background:" + bg +
-      ";display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .4s ease;";
-    o.innerHTML = '<div style="width:min(560px,94vw);text-align:center;color:var(--adv2);">' +
-      '<div style="font-size:13px;text-align:left;line-height:2;color:var(--adv2);opacity:.85;margin-bottom:26px;" id="nemArriveLog"></div>' +
-      '<div style="font-size:60px;line-height:1;margin-bottom:16px;">' + GLYPH + '</div>' +
-      '<div id="nemArriveTitle" style="font-size:clamp(22px,5vw,36px);font-weight:800;letter-spacing:4px;color:var(--adv);opacity:0;transition:opacity .5s ease;">' + esc(title) + '</div>' +
-      '<div id="nemArriveSub" style="margin-top:14px;font-size:13px;line-height:1.65;color:var(--dim);opacity:0;transition:opacity .5s .2s ease;font-family:Inter,sans-serif;">' + esc(sub) + '</div>' +
-      '<button id="nemArriveGo" style="margin-top:28px;opacity:0;transition:opacity .5s .4s ease;font-family:inherit;font-weight:800;letter-spacing:1px;font-size:13px;padding:13px 26px;border-radius:10px;border:1px solid var(--adv);background:transparent;color:var(--adv);cursor:pointer;">' +
-        (MENTOR ? "LET'S GO" : "I'M NOT AFRAID") + '</button>' +
-    '</div>';
+      ";display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;";
+    o.innerHTML =
+      // film grain + vignette
+      '<div id="arGrain" style="position:absolute;inset:0;pointer-events:none;opacity:.5;' +
+        'background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);"></div>' +
+      '<div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 34%,rgba(0,0,0,.82) 100%);"></div>' +
+      '<div id="arBloom" style="position:absolute;inset:0;pointer-events:none;opacity:0;' +
+        'background:radial-gradient(circle at 50% 50%,var(--adv) 0%,transparent 58%);"></div>' +
+      '<div id="arScan" style="position:absolute;left:0;right:0;height:38vh;pointer-events:none;opacity:0;' +
+        'background:linear-gradient(180deg,transparent,rgba(255,255,255,.05),transparent);"></div>' +
+      // letterbox
+      '<div id="arBarT" style="position:absolute;top:0;left:0;right:0;height:0;background:#000;z-index:3;"></div>' +
+      '<div id="arBarB" style="position:absolute;bottom:0;left:0;right:0;height:0;background:#000;z-index:3;"></div>' +
+      // stage
+      '<div id="arStage" style="position:relative;z-index:2;width:min(620px,94vw);text-align:center;color:var(--adv2);">' +
+        '<div id="arPower" style="height:2px;background:var(--adv);transform-origin:50% 50%;transform:scaleX(0);' +
+          'box-shadow:0 0 18px var(--adv);margin-bottom:30px;"></div>' +
+        '<div id="arLog" style="font-size:13px;text-align:left;line-height:2.05;min-height:8.2em;' +
+          'color:var(--adv2);opacity:.9;white-space:pre-wrap;"></div>' +
+        '<div id="arReveal" style="opacity:0;">' +
+          '<div id="arGlyphWrap" style="position:relative;height:96px;display:flex;align-items:center;justify-content:center;margin:6px 0 4px;">' +
+            '<div id="arGlyph" style="font-size:72px;line-height:1;color:var(--adv);text-shadow:0 0 34px var(--adv);">' + GLYPH + '</div>' +
+          '</div>' +
+          '<div id="arName" style="font-size:clamp(24px,6vw,46px);font-weight:800;color:var(--adv);' +
+            'text-shadow:0 0 26px var(--adv);white-space:nowrap;">' + esc(title) + '</div>' +
+          '<div id="arSub" style="margin-top:16px;font-size:13.5px;line-height:1.7;color:var(--dim);' +
+            'font-family:Inter,sans-serif;max-width:44ch;margin-left:auto;margin-right:auto;opacity:0;">' + esc(sub) + '</div>' +
+          '<button id="arGo" style="margin-top:30px;opacity:0;font-family:inherit;font-weight:800;letter-spacing:1.5px;' +
+            'font-size:13px;padding:14px 30px;border-radius:10px;border:1px solid var(--adv);background:transparent;' +
+            'color:var(--adv);cursor:pointer;">' + (MENTOR ? "LET'S GO" : "I'M NOT AFRAID") + '</button>' +
+        '</div>' +
+      '</div>' +
+      '<button id="arSkip" class="mono" style="position:absolute;top:16px;right:16px;z-index:4;font-size:10px;' +
+        'letter-spacing:1.5px;padding:7px 12px;border-radius:7px;border:1px solid var(--border2);' +
+        'background:transparent;color:var(--faint);cursor:pointer;">SKIP</button>';
     document.body.appendChild(o);
-    requestAnimationFrame(function(){ o.style.opacity = "1"; });
-    var log = document.getElementById("nemArriveLog"), i = 0;
-    (function step(){
-      if (i >= lines.length) {
-        ["nemArriveTitle","nemArriveSub","nemArriveGo"].forEach(function(id){
-          var e = document.getElementById(id); if (e) e.style.opacity = "1";
-        });
-        if (!MENTOR) nemesisGlitch();
-        return;
-      }
-      log.innerHTML += esc(lines[i++]) + "<br>";
-      setTimeout(step, 620);
-    })();
-    var go = document.getElementById("nemArriveGo");
-    if (go) go.onclick = function(){
+
+    var $$ = function(id){ return document.getElementById(id); };
+    var timers = [], done = false;
+    function at(ms, fn){ timers.push(setTimeout(fn, ms)); }
+    function stopAll(){ timers.forEach(clearTimeout); timers = []; }
+
+    function finish(){
+      if (done) return; done = true;
+      stopAll();
+      $$("arReveal").style.opacity = "1";
+      $$("arSub").style.opacity = "1";
+      $$("arGo").style.opacity = "1";
+      var sk = $$("arSkip"); if (sk) sk.style.display = "none";
+    }
+    function close(){
+      stopAll();
+      o.style.transition = "opacity .45s ease";
       o.style.opacity = "0";
-      setTimeout(function(){ o.remove(); nemesisChip(); updateMood(); }, 420);
-    };
+      setTimeout(function(){ o.remove(); buildChip(); }, 470);
+    }
+    $$("arSkip").onclick = finish;
+    $$("arGo").onclick = close;
+
+    if (REDUCED) { finish(); return; }
+
+    // ---- beat 1: letterbox closes in, power line strikes ------------------
+    var bars = $$("arBarT"), barsB = $$("arBarB");
+    bars.style.transition = barsB.style.transition = "height .7s cubic-bezier(.7,0,.2,1)";
+    requestAnimationFrame(function(){ bars.style.height = "7vh"; barsB.style.height = "7vh"; });
+    $$("arPower").style.animation = "arPower .85s .25s cubic-bezier(.6,0,.2,1) forwards";
+
+    // ---- beat 2: the log types itself -------------------------------------
+    var log = $$("arLog"), li = 0;
+    function typeLine(){
+      if (li >= lines.length) { at(hostile ? 260 : 420, hostile ? breach : reveal); return; }
+      var txt = lines[li++], ci = 0;
+      var base = log.textContent;
+      (function ch(){
+        if (done) return;
+        log.textContent = base + txt.slice(0, ++ci);
+        if (ci < txt.length) at(15, ch);
+        else { log.textContent = base + txt + "\n"; at(li === lines.length ? 220 : 330, typeLine); }
+      })();
+    }
+    at(1050, typeLine);
+
+    // ---- beat 3 (adversary only): the takeover ----------------------------
+    function breach(){
+      if (done) return;
+      var stage = $$("arStage");
+      o.style.animation = "arShake .5s steps(3,end) 2";
+      stage.style.animation = "arTear .5s steps(2,end) 2";
+      $$("arGrain").style.opacity = ".9";
+      nemesisGlitch();
+      at(240, function(){ if (!done) log.textContent = log.textContent.replace(/[a-z]/g, function(c){
+        return Math.random() < .34 ? String.fromCharCode(33 + Math.floor(Math.random()*93)) : c; }); });
+      at(900, function(){
+        if (done) return;
+        o.style.animation = ""; stage.style.animation = "";
+        $$("arGrain").style.opacity = ".5";
+        log.style.transition = "opacity .35s ease"; log.style.opacity = "0";
+        at(360, reveal);
+      });
+    }
+
+    // ---- beat 4: the guide materializes -----------------------------------
+    function reveal(){
+      if (done) return;
+      if (!hostile) { log.style.transition = "opacity .5s ease"; log.style.opacity = "0"; }
+      at(hostile ? 0 : 380, function(){
+        if (done) return;
+        log.style.display = "none";
+        $$("arReveal").style.transition = "opacity .3s ease";
+        $$("arReveal").style.opacity = "1";
+        $$("arBloom").style.animation = "arBloom 1.5s ease-out";
+        var sc = $$("arScan"); sc.style.opacity = "1"; sc.style.animation = "arScan 1.4s linear";
+
+        var g = $$("arGlyph");
+        g.style.animation = "arGlyphIn .95s cubic-bezier(.2,.9,.25,1) forwards";
+        // expanding rings behind the glyph
+        [0, 1, 2].forEach(function(i){
+          var r = document.createElement("div");
+          r.style.cssText = "position:absolute;width:150px;height:150px;border-radius:50%;" +
+            "border:1px solid var(--adv);opacity:0;animation:arRing 1.9s " + (0.55 + i*0.3) + "s ease-out forwards;";
+          $$("arGlyphWrap").appendChild(r);
+        });
+        at(1050, function(){ if(!done) g.style.animation = "arGlyphPulse 3.2s ease-in-out infinite"; });
+
+        at(620, function(){
+          if (done) return;
+          var n = $$("arName");
+          n.style.animation = "arNameIn 1.05s cubic-bezier(.2,.9,.25,1) forwards" +
+            (hostile ? ", arFlick 1.6s 1.05s steps(2,end)" : "");
+        });
+        at(1500, function(){ if (done) return;
+          var sb = $$("arSub"); sb.style.animation = "arUp .7s ease forwards"; });
+        at(1950, function(){ if (done) return;
+          var gb = $$("arGo"); gb.style.animation = "arUp .6s ease forwards";
+          var sk = $$("arSkip"); if (sk) sk.style.display = "none"; done = true; });
+      });
+    }
   }
 
   var NEM_SAMPLES = MENTOR
@@ -717,7 +950,7 @@
     nemesisToast(t[0], t[1], "var(--adv2)");
     nemesisSpeak(t[1]);
     nemesisGlitch();
-    if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT(kind, t[1]); } catch (e) {} }
+    if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT(kind, t[1], activeFlagKey()); } catch (e) {} }
   }
   function linkifyBody(text) {
     const re = /(https?:\/\/[^\s]+)/g;
@@ -807,7 +1040,7 @@
         <span class="mono" style="flex:none;font-size:11px;color:var(--amber);">${pts} XP</span>
         <span class="chalChev mono" style="flex:none;font-size:16px;color:var(--faint);transition:transform .2s;transform:rotate(${open ? 90 : 0}deg);">\u203a</span>
       </button>
-      <div class="chalDetail" data-id="${esc(c.id)}" style="display:${open ? "block" : "none"};padding:2px 0 16px;">${challengeCard(c)}</div>
+      <div class="chalDetail" data-id="${esc(c.id)}" style="display:${open ? "block" : "none"};padding:2px 0 16px;">${open ? challengeCard(c) : ""}</div>
     </div>`;
   }
   function moduleBlock(m, names, gc) {
@@ -822,7 +1055,7 @@
         <span class="mono" style="flex:none;font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid ${all ? "var(--accent)" : "var(--border2)"};color:${all ? "var(--accent)" : "var(--faint)"};">${done}/${gc.length}</span>
         <span class="modChev mono" style="flex:none;font-size:20px;color:var(--faint);transition:transform .2s;transform:rotate(${open ? 90 : 0}deg);">\u203a</span>
       </button>
-      <div class="modBody" data-m="${m}" style="display:${open ? "block" : "none"};padding:0 22px 10px;">${gc.map(chalRow).join("")}${bossRow(m)}</div>
+      <div class="modBody" data-m="${m}" style="display:${open ? "block" : "none"};padding:0 22px 10px;">${open ? gc.map(chalRow).join("") + bossRow(m) : ""}</div>
     </div>`;
   }
   function bossRow(m) {
@@ -883,7 +1116,7 @@
     }
 
     const cards = buildList(chals);
-    root.innerHTML = banner() + statsCard(s, pct) + badgesCard() + reviewCard() +
+    root.innerHTML = banner() + statsCard(s, pct) + squadCard() + badgesCard() + reviewCard() +
       `<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px;">${cards}</div>` +
       endgameCard() +
       `<div class="mono" style="margin-top:26px;font-size:11px;color:var(--faint);line-height:1.6;">
@@ -897,7 +1130,7 @@
 
   function banner() {
     return `
-      <a href="../index.html" class="mono" style="display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);margin:6px 0 18px;">&larr; Back to Course Home</a>
+      <a href="../index.html" class="mono" style="display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);margin:0 0 12px;padding:13px 4px;min-height:44px;box-sizing:border-box;">&larr; Back to Course Home</a>
       <div style="position:relative;overflow:hidden;border:1px solid var(--border);border-radius:14px;background:linear-gradient(135deg,var(--panel2) 0%,var(--bg) 62%);padding:30px 32px;margin-bottom:20px;">
         <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;">&gt; ./ctf --start</div>
         <h1 class="mono" style="font-weight:800;font-size:34px;margin:0 0 8px;color:var(--bright);letter-spacing:-.5px;">${esc(ctf.title || "Capture The Flag")}</h1>
@@ -920,7 +1153,7 @@
       <div style="display:flex;flex-direction:column;gap:12px;max-width:660px;">
         ${step(1, "Open a module", "tap a module to expand its challenges. Work through them in any order.")}
         ${step(2, "Capture flags", "text flags come in <b>Easy / Medium / Hard</b> tiers (50 / 100 / 150 XP). Interactive captures — match, order, spot — are worth XP too.")}
-        ${step(3, "Beat the clock", "a flag's XP ticks down the longer it's open once you begin, so don't stall. Looking things up is always fine — it never costs you points.")}
+        ${step(3, "Beat the clock", "you get <b>20 seconds at full XP</b> once you begin; after that the flag's value ticks down, so don't stall. A wrong answer locks the flag briefly — longer on Hard — so think before you submit. Revealing a hint costs 10% of the flag. Looking things up elsewhere is always fine — it never costs you points.")}
         ${step(4, `Face ${ADV}`, `finish each module with its final challenge — three escalating rounds. Set a player handle below so your score is ready for the leaderboard.`)}
       </div>
     </div>`;
@@ -980,29 +1213,31 @@
      Every module boss beaten and 80% of flags captured opens a final gauntlet
      drawing from the whole course. It's the summit the modules were climbing. */
   const ENDGAME_PCT = 0.8;
-  const ENDGAME_TEXT = {
-    cyber1: { lockedTitle: "NEMESIS is still holding the core.",
+  /* Keyed by GUIDE, not by course — the course→guide mapping lives in
+     config.js, so a course can be reassigned without stranding its finale. */
+  const ENDGAME_BY_GUIDE = {
+    NEMESIS: { lockedTitle: "NEMESIS is still holding the core.",
       readyTitle: "NEMESIS wants a rematch \u2014 all of it, at once.",
       readyBody: "Twelve questions pulled from every module you've cleared. No hints, no retries, one run. Beat it and the system is yours.",
       startBtn: "FACE NEMESIS", wonTitle: "The core is yours.",
       wonBody: "You took the whole system apart, module by module, and NEMESIS ran out of doors to lock. Course complete." },
-    cyber2: { lockedTitle: "SPECTER is still in the wire.",
+    SPECTER: { lockedTitle: "SPECTER is still in the wire.",
       readyTitle: "SPECTER steps out of the shadows.",
       readyBody: "Twelve questions drawn from the entire course. One run, no hints. Finish it and the ghost has nowhere left to hide.",
       startBtn: "HUNT SPECTER", wonTitle: "Signal traced. Ghost gone.",
       wonBody: "You followed SPECTER through every module and closed the loop. Course complete." },
-    apcsp: { lockedTitle: "The final build isn't ready yet.",
+    ADA: { lockedTitle: "The final build isn't ready yet.",
       readyTitle: "Time to ship the whole thing.",
       readyBody: "Twelve questions from across the course \u2014 one run, no hints. ADA is watching the build log and rooting for you.",
       startBtn: "RUN FINAL BUILD", wonTitle: "Build succeeded. All tests green.",
       wonBody: "Every module compiled, every concept in place. ADA says you're a programmer now. Course complete." },
-    web3: { lockedTitle: "The chain isn't long enough yet.",
+    ORACLE: { lockedTitle: "The chain isn't long enough yet.",
       readyTitle: "One last block to sign.",
       readyBody: "Twelve questions from the entire ledger \u2014 one run, no hints. Sign it and ORACLE writes you into the genesis record.",
       startBtn: "MINE FINAL BLOCK", wonTitle: "Final block confirmed.",
       wonBody: "Your whole chain validates, end to end. ORACLE has added you to the record. Course complete." }
   };
-  const ENDGAME_COPY = ENDGAME_TEXT[course] || ENDGAME_TEXT.cyber1;
+  const ENDGAME_COPY = ENDGAME_BY_GUIDE[String(ADV).toUpperCase()] || ENDGAME_BY_GUIDE.NEMESIS;
   function endgameState() {
     const chals = (ctf.challenges || []);
     const mods = [...new Set(chals.map(c => c.module || 0))];
@@ -1048,6 +1283,54 @@
         ${esc(ENDGAME_COPY.startBtn)}</button>
     </div>`;
   }
+  /* Squad card. Only renders when the teacher has turned squads on for this
+     class. Other squads show totals only — never their individual students. */
+  function squadCard() {
+    const d = window.CTF_SQUAD;
+    if (!d || !d.on) return "";
+    const st = d.standings || [];
+    const mine = d.squad;
+    if (!mine && !st.length) return "";
+
+    const col = (mine && mine.color) || "var(--accent)";
+    const rank = mine ? st.findIndex(g => g.id === mine.id) + 1 : 0;
+    const best = Math.max(1, ...st.map(g => Number(g.avg_xp) || 0));
+
+    const rows = st.map((g, i) => {
+      const avg = Number(g.avg_xp) || 0;
+      const me = mine && g.id === mine.id;
+      const c = g.color || "var(--border3)";
+      return `<div style="display:flex;align-items:center;gap:10px;${me ? "" : "opacity:.72;"}">
+        <span class="mono" style="font-size:11px;color:var(--faint);width:16px;">${i + 1}</span>
+        <span style="width:8px;height:8px;border-radius:99px;background:${c};flex:none;"></span>
+        <span style="font-size:13px;font-weight:${me ? 800 : 600};color:${me ? "var(--bright)" : "var(--text)"};min-width:88px;">${esc(g.name)}</span>
+        <span style="flex:1;min-width:60px;height:6px;border-radius:99px;background:var(--bg2);overflow:hidden;display:block;">
+          <span style="display:block;height:100%;width:${Math.round(avg / best * 100)}%;background:${c};"></span></span>
+        <span class="mono" style="font-size:11px;color:${me ? "var(--accent)" : "var(--dim)"};white-space:nowrap;">${avg.toLocaleString()} avg</span>
+      </div>`;
+    }).join("");
+
+    const mates = (d.mates || []).map(m =>
+      `<span class="mono" style="font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid ${m.is_me ? col : "var(--border2)"};
+        color:${m.is_me ? "var(--bright)" : "var(--dim)"};font-weight:${m.is_me ? 700 : 400};">${esc(m.handle)}
+        <span style="opacity:.6;">${Number(m.xp || 0).toLocaleString()}</span></span>`).join("");
+
+    return `<div class="card" style="margin-top:14px;padding:16px 18px;border-left:3px solid ${col};">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:${mine ? 10 : 12}px;">
+        <span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">SQUAD</span>
+        ${mine
+          ? `<b style="font-size:17px;color:var(--bright);">${esc(mine.name)}</b>
+             ${rank ? `<span class="mono" style="font-size:11px;color:${col};">#${rank} of ${st.length}</span>` : ""}`
+          : `<span style="font-size:13px;color:var(--dim);">You're not on a squad yet — your teacher will add you.</span>`}
+      </div>
+      ${mates ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">${mates}</div>` : ""}
+      <div style="display:flex;flex-direction:column;gap:7px;">${rows}</div>
+      <div class="mono" style="margin-top:12px;font-size:10px;color:var(--faint);line-height:1.6;">
+        // ranked by average XP per member · every flag you capture lifts your squad
+      </div>
+    </div>`;
+  }
+
   function statsCard(s, pct) {
     const nextTxt = s.next
       ? `${s.next.t - s.pts} XP to <span style="color:var(--accent);">${esc(s.next.n)}</span>`
@@ -1078,7 +1361,7 @@
         <div id="ctfIdentity" style="margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
           <span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--faint);">PLAYING AS</span>
           <span style="font-weight:700;color:var(--bright);">${handle ? esc(handle) : '<span style="color:var(--faint);font-weight:500;">not signed in</span>'}</span>
-          <a class="mono" href="profile.html" style="font-size:11px;padding:4px 10px;border:1px solid var(--border2);border-radius:7px;">PROFILE</a>
+          <a class="mono taplink" href="profile.html" style="font-size:11px;padding:4px 10px;border:1px solid var(--border2);border-radius:7px;">PROFILE</a>
         </div>
       </div>`;
   }
@@ -1186,7 +1469,7 @@
     }).join("");
     const rightHtml = order.map(ri => {
       const used = usedBy[ri] != null;
-      return `<button type="button" class="matchRight" data-id="${esc(c.id)}" data-r="${ri}" style="text-align:center;font-size:13px;font-weight:700;padding:11px 12px;border-radius:999px;cursor:pointer;color:${used ? "var(--faint)" : "var(--bright)"};border:1px solid ${used ? "var(--border2)" : "var(--border3)"};background:${used ? "var(--bg)" : "var(--panel)"};opacity:${used ? ".5" : "1"};">${esc(c.pairs[ri].right)}</button>`;
+      return `<button type="button" class="matchRight" data-id="${esc(c.id)}" data-r="${ri}" style="text-align:center;font-size:13px;font-weight:700;padding:12px;min-height:44px;border-radius:999px;cursor:pointer;color:${used ? "var(--faint)" : "var(--bright)"};border:1px solid ${used ? "var(--border2)" : "var(--border3)"};background:${used ? "var(--bg)" : "var(--panel)"};opacity:${used ? ".5" : "1"};">${esc(c.pairs[ri].right)}</button>`;
     }).join("");
     return `
       <div class="ctfCard card" data-id="${esc(c.id)}" style="border-color:${solved ? "var(--accent)" : "var(--border)"};position:relative;">
@@ -1219,8 +1502,8 @@
         <span class="mono" style="flex:none;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;font-weight:700;background:var(--panel3);color:var(--accent);">${pos + 1}</span>
         <span style="flex:1;min-width:0;font-size:14px;color:var(--text);">${esc(c.steps[si])}</span>
         <span style="flex:none;display:flex;gap:5px;">
-          <button type="button" class="orderMove mono" data-id="${esc(c.id)}" data-pos="${pos}" data-dir="-1" ${pos === 0 ? "disabled" : ""} style="width:30px;height:30px;border-radius:8px;font-size:13px;cursor:${pos === 0 ? "default" : "pointer"};border:1px solid var(--border3);background:var(--panel);color:${pos === 0 ? "var(--faint)" : "var(--accent)"};opacity:${pos === 0 ? ".4" : "1"};">\u25b2</button>
-          <button type="button" class="orderMove mono" data-id="${esc(c.id)}" data-pos="${pos}" data-dir="1" ${pos === n - 1 ? "disabled" : ""} style="width:30px;height:30px;border-radius:8px;font-size:13px;cursor:${pos === n - 1 ? "default" : "pointer"};border:1px solid var(--border3);background:var(--panel);color:${pos === n - 1 ? "var(--faint)" : "var(--accent)"};opacity:${pos === n - 1 ? ".4" : "1"};">\u25bc</button>
+          <button type="button" class="orderMove mono" data-id="${esc(c.id)}" data-pos="${pos}" data-dir="-1" ${pos === 0 ? "disabled" : ""} style="width:44px;height:44px;border-radius:10px;font-size:13px;cursor:${pos === 0 ? "default" : "pointer"};border:1px solid var(--border3);background:var(--panel);color:${pos === 0 ? "var(--faint)" : "var(--accent)"};opacity:${pos === 0 ? ".4" : "1"};">\u25b2</button>
+          <button type="button" class="orderMove mono" data-id="${esc(c.id)}" data-pos="${pos}" data-dir="1" ${pos === n - 1 ? "disabled" : ""} style="width:44px;height:44px;border-radius:10px;font-size:13px;cursor:${pos === n - 1 ? "default" : "pointer"};border:1px solid var(--border3);background:var(--panel);color:${pos === n - 1 ? "var(--faint)" : "var(--accent)"};opacity:${pos === n - 1 ? ".4" : "1"};">\u25bc</button>
         </span>
       </div>`).join("");
     return `
@@ -1380,7 +1663,7 @@
     }
     return `<div style="margin-bottom:14px;">
       <button type="button" class="ctfHintBuy mono" data-key="${esc(key)}"
-        style="font-size:12px;font-weight:700;color:var(--amber);background:none;border:1px dashed var(--border3);border-radius:8px;padding:8px 12px;cursor:pointer;">
+        style="font-size:12px;font-weight:700;color:var(--amber);background:none;border:1px dashed var(--border3);border-radius:8px;padding:8px 14px;min-height:44px;cursor:pointer;">
         \u24d8 reveal hint \u00b7 costs ${cost} XP (\u2212${Math.round(HINT_COST * 100)}%)</button>
       <div class="mono" style="margin-top:6px;font-size:11px;color:var(--faint);">Looking things up on your own is always free.</div>
     </div>`;
@@ -1556,7 +1839,7 @@
       <div style="border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:16px 18px;margin-bottom:12px;">
         <div class="mono" style="font-size:10px;letter-spacing:1px;color:var(--accent);margin-bottom:8px;">WHICH TERM MATCHES?</div>
         <div class="bDef" style="font-size:15px;line-height:1.6;color:var(--text);margin-bottom:14px;"></div>
-        <div class="bChoices" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;"></div>
+        <div class="bChoices" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:9px;"></div>
       </div>
       <div class="bCombo mono" style="font-size:12px;color:var(--amber);min-height:16px;margin-bottom:6px;"></div>
       <div class="mono" style="font-size:11px;color:var(--faint);">Every 3 in a row raises the multiplier (up to \u00d74) \u00b7 a wrong pick resets the streak \u00b7 base ${per} XP</div>
@@ -1685,6 +1968,9 @@
   function bind() {
     // display name is owned by the class account now (sync.js chip + profile.html)
 
+    const howTo = document.getElementById("ctfHowTo");
+    if (howTo) howTo.addEventListener("click", () => { if (window.CTF_WELCOME) window.CTF_WELCOME.open(); });
+
     const reset = document.getElementById("ctfReset");
     if (reset) reset.addEventListener("click", () => {
       if (confirm("Reset all your CTF progress on this device? This cannot be undone.")) {
@@ -1714,6 +2000,7 @@
       const chev = h.querySelector(".modChev");
       const willOpen = !openMods.has(m);
       if (willOpen) openMods.add(m); else openMods.delete(m);
+      if (willOpen && body && !body.innerHTML.trim()) { render(); return; }   // lazy fill
       if (body) body.style.display = willOpen ? "block" : "none";
       if (chev) chev.style.transform = "rotate(" + (willOpen ? 90 : 0) + "deg)";
       bossMiniRainStart();
@@ -1726,6 +2013,7 @@
       const chev = b.querySelector(".chalChev");
       const willOpen = !openChals.has(id);
       if (willOpen) openChals.add(id); else openChals.delete(id);
+      if (willOpen && det && !det.innerHTML.trim()) { render(); return; }     // lazy fill
       if (det) det.style.display = willOpen ? "block" : "none";
       if (chev) chev.style.transform = "rotate(" + (willOpen ? 90 : 0) + "deg)";
     }));
@@ -1821,6 +2109,14 @@
       card.querySelectorAll(".orderShuffle").forEach(el => el.addEventListener("click", () => { orderState[id] = shuffleNI(chal.steps.map((_, i) => i)); render(); }));
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        {
+          const ck = keyOf(chal, (chal.type === "vocab" || (chal.levels && chal.type !== "phish")) ? (levelSel[id] || 0) : 0);
+          const left = coolLeft(ck);
+          if (left) {
+            if (msg) { msg.textContent = "\u23f3 Locked for " + left + "s \u2014 slow down and reason it through."; msg.style.color = "var(--adv2)"; }
+            return;
+          }
+        }
         if (chal.type === "spot") {
           const sel = spotSel[id] || {};
           let ok = true;
@@ -1868,8 +2164,7 @@
         }
         const li = chal.levels ? (levelSel[id] || 0) : 0;
         const target = chal.levels ? chal.levels[li] : chal;
-        const h = await sha256(norm(guess));
-        if (h === target.flagHash) solveTimed(chal, li);
+        if (await matchesFlag(guess, target.flagHash)) solveTimed(chal, li);
         else fail(chal, li, card, msg, "\u2717 Not quite \u2014 check your work and try again.");
       });
     });
@@ -1895,6 +2190,8 @@
     save(state);
     const s = stats();
     nemesisProgress(before, s);
+    reportAttempt(chal, li, key, true, null);
+    if (!tainted[key]) claimPioneer(chal, key);
     if (typeof window.CTF_REPORT === "function") {
       try {
         const secs = timers[key] ? Math.round((Date.now() - timers[key]) / 1000) : null;
@@ -1911,6 +2208,29 @@
     try { const nb = checkBadgeUnlocks(); if (nb.length) setTimeout(function(){ announceBadges(nb); }, 700); } catch (e) {}
   }
 
+  /* ---- PIONEER BONUS ------------------------------------------------------
+     First student in the class to capture a given flag gets a flat bonus. The
+     server owns the decision — (class, flag) is a primary key over there, so a
+     tie can only resolve one way. We just spend the answer. Tainted captures
+     never claim. */
+  const PIONEER_XP = 25;
+  function claimPioneer(chal, key) {
+    if (typeof window.CTF_PIONEER !== "function") return;
+    try {
+      Promise.resolve(window.CTF_PIONEER({ key: key, title: chal.title })).then(r => {
+        if (!r || !r.pioneer) return;
+        const amt = r.bonus || PIONEER_XP;
+        state.bonus = (state.bonus || 0) + amt;
+        save(state);
+        render();
+        nemesisToast(GLYPH + " " + ADV + " // PIONEER",
+          MENTOR ? "first in the class to capture that one \u00b7 +" + amt + " XP for breaking ground"
+                 : "nobody had cracked that one yet. you did. +" + amt + " XP.",
+          "var(--amber)");
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
   function flash(pts) {
     const d = document.createElement("div");
     d.className = "mono";
@@ -1921,6 +2241,33 @@
     setTimeout(() => { d.style.opacity = "0"; d.style.transform = "translate(-50%,-50%) scale(.9)"; }, 1100);
     setTimeout(() => d.remove(), 1450);
   }
+
+  /* One row per submission so the teacher can replay a student's whole run at
+     a flag: every wrong guess, its timestamp, and how long they'd been at it. */
+  function reportAttempt(chal, li, key, correct, txt) {
+    if (typeof window.CTF_ATTEMPT !== "function") return;
+    try {
+      const usesLevels = chal.levels && chal.type !== "phish";
+      window.CTF_ATTEMPT({
+        key: key, challengeId: chal.id, title: chal.title,
+        level: chal.type === "vocab" ? VOCAB_DIFFS[li]
+             : (usesLevels && chal.levels ? chal.levels[li].difficulty : null),
+        correct: !!correct,
+        secs: timers[key] ? Math.round((Date.now() - timers[key]) / 1000) : null,
+        guess: txt == null ? null : String(txt).slice(0, 120)
+      });
+    } catch (e) {}
+  }
+
+  function activeFlagKey() {
+    if (hardRunning && currentHardKey && !state.solved[currentHardKey]) return currentHardKey;
+    let best = null, bestT = 0;
+    Object.keys(timers).forEach(k => {
+      if (timers[k] && !state.solved[k] && timers[k] > bestT) { bestT = timers[k]; best = k; }
+    });
+    return best;
+  }
+  window.CTF_ACTIVE_FLAG = activeFlagKey;
 
   function taintActive() {
     let any = false;
@@ -2061,7 +2408,7 @@
       + '<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;">' + esc(q.prompt) + '</div>'
       + (q.body ? '<div style="font-size:14px;line-height:1.6;color:#ffd9e2;background:rgba(255,43,43,.08);border:1px solid #4a2630;border-radius:10px;padding:12px 14px;margin-bottom:14px;">' + esc(q.body) + '</div>' : '');
     if (q.kind === "mc") {
-      qEl.innerHTML = head + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' + q.choices.map(function (c, i) { return '<button class="bChoice" data-i="' + i + '" style="text-align:left;padding:13px 15px;border-radius:10px;border:1px solid #4a2630;background:#160a0f;color:#ffd9e2;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">' + esc(c) + '</button>'; }).join("") + '</div>';
+      qEl.innerHTML = head + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:10px;">' + q.choices.map(function (c, i) { return '<button class="bChoice" data-i="' + i + '" style="text-align:left;padding:13px 15px;border-radius:10px;border:1px solid #4a2630;background:#160a0f;color:#ffd9e2;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">' + esc(c) + '</button>'; }).join("") + '</div>';
       qEl.querySelectorAll(".bChoice").forEach(function (b) { b.onclick = function () { bossAnswer(q.choices[+b.getAttribute("data-i")], b); }; });
     } else {
       qEl.innerHTML = head + '<form class="bForm" style="display:flex;gap:10px;flex-wrap:wrap;"><input class="bInput" type="text" autocomplete="off" spellcheck="false" placeholder="type your answer\u2026" style="flex:1;min-width:200px;font-family:inherit;font-size:15px;padding:12px 14px;border-radius:10px;border:1px solid #4a2630;background:#160a0f;color:#fff;"><button type="submit" style="font-family:inherit;font-weight:700;padding:12px 20px;border-radius:10px;border:1px solid var(--adv);background:var(--adv);color:#050000;cursor:pointer;">STRIKE</button></form>';
@@ -2160,6 +2507,19 @@
     b.onclick = openBoss;
     document.body.appendChild(b);
   }
+  /* Called by sync.js when the class gates land (or change). Everything here
+     is idempotent, so a late "persona on" produces the same result as if it had
+     been known at page load. */
+  window.CTF.personaWake = function(){
+    if (!personaOn()) return;
+    try {
+      injectGlitchStyle();
+      buildChip();
+      startDevtoolsWatch();
+      nemesisIntruder();
+      nemesisBoot();
+    } catch (e) {}
+  };
   function nemesisInit(){ injectGlitchStyle(); loadVoices(); try{ if(window.speechSynthesis) speechSynthesis.onvoiceschanged = loadVoices; }catch(e){} buildChip(); startDevtoolsWatch(); nemesisIntruder(); setTimeout(nemesisBoot, 1150); }
   // Pages that only READ progress (the profile page) set CTF_NO_ADVERSARY so the
   // arena's integrity deterrents and mentor takeover don't follow the student there.

@@ -21,6 +21,10 @@
   if (!API || !API.course) return;
   var course = API.course;
   var SESS_KEY = "ctf-sess-" + course;
+  /* Store the literal text of wrong guesses? Off by default — the timeline of
+     attempts is the useful signal, and verbatim text is student work product.
+     Set SUPABASE_CONFIG.logGuesses = true to record it. */
+  var LOG_GUESSES = !!(CFG && CFG.logGuesses);
 
   var ART_ALL = window.CTF_GATE_ART || null;
   // Theatre is only available once we KNOW the class has the guide switched on.
@@ -103,6 +107,10 @@
   }
   function applyCachedGates() {
     try { applyGates(JSON.parse(localStorage.getItem(GKEY))); } catch (e) {}
+    if (window.CTF_PERSONA === true && API.personaWake) {
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", API.personaWake);
+      else API.personaWake();
+    }
   }
   function loadGates() {
     var sess = loadSess(); if (!sess) return;
@@ -111,6 +119,8 @@
       applyGates(g);
       var after = JSON.stringify(window.CTF_LOCKS || {}) + String(window.CTF_PERSONA);
       if (before !== after && API.rerender) API.rerender();
+      // the guide may have just been switched on for this class
+      if (window.CTF_PERSONA === true && API.personaWake) API.personaWake();
     }).catch(function () {});
   }
 
@@ -126,11 +136,62 @@
       .catch(function () {});
   }
 
-  /* ---- engine hooks ------------------------------------------------------ */
-  window.CTF_CHEAT = function (kind, detail) {
+  /* Vocabulary practice is not gated on sign-in, so finished runs are queued
+     in state.vocabLog.pending by vocab-log.js and flushed from here on the
+     student's next arena visit. Runs may therefore arrive long after they
+     happened; the server keeps both clocks. Only rows the server actually
+     accepted are dropped from the queue, so a failed flush retries next time. */
+  function flushVocab() {
     var sess = loadSess(); if (!sess) return;
-    AUTH.rpc("ctf_cheat_google", { p_student: sess.studentId, p_kind: kind, p_detail: detail }).catch(function () {});
+    var st = localState();
+    var q = (st.vocabLog && st.vocabLog.pending) || [];
+    if (!q.length) return;
+    var batch = q.slice(0, 60);
+    AUTH.rpc("ctf_vocab_sessions_google", { p_student: sess.studentId, p_rows: batch })
+      .then(function (r) {
+        if (!r || !r.ok) return;
+        var through = Number(r.through) || 0;
+        var s2 = localState();
+        if (s2.vocabLog) {
+          s2.vocabLog.pending = (s2.vocabLog.pending || []).filter(function (x) {
+            return Number(x.ts) > through;
+          });
+          writeLocalState(s2);
+        }
+      }).catch(function () {});
+  }
+
+  /* ---- engine hooks ------------------------------------------------------ */
+  window.CTF_CHEAT = function (kind, detail, flagKey) {
+    var sess = loadSess(); if (!sess) return;
+    AUTH.rpc("ctf_cheat_google", { p_student: sess.studentId, p_kind: kind,
+      p_detail: detail, p_flag: flagKey || null }).catch(function () {});
   };
+
+  /* Every submission, right or wrong. Fire-and-forget: a dropped attempt log
+     must never block or slow a student mid-flag. */
+  window.CTF_ATTEMPT = function (a) {
+    var sess = loadSess(); if (!sess || !a || !a.key) return;
+    AUTH.rpc("ctf_attempt_google", {
+      p_student: sess.studentId, p_key: a.key, p_challenge: a.challengeId || "",
+      p_title: a.title || "", p_level: a.level || "", p_correct: !!a.correct,
+      p_secs: (a.secs == null ? null : a.secs),
+      p_guess: LOG_GUESSES ? (a.guess || null) : null
+    }).catch(function () {});
+  };
+  /* First capture in the class wins a bonus. The server decides; we only ask.
+     Resolves to null on any failure so a solve never depends on this. */
+  window.CTF_PIONEER = function (p) {
+    var sess = loadSess();
+    if (!sess || !p || !p.key) return Promise.resolve(null);
+    return AUTH.rpc("ctf_pioneer_google", {
+      p_student: sess.studentId, p_key: p.key, p_title: p.title || ""
+    }).then(function (r) {
+      if (r && r.pioneer) scheduleSync();
+      return r;
+    }).catch(function () { return null; });
+  };
+
   window.CTF_REPORT = function (p) {
     scheduleSync();
     if (!p || !p.challengeId) return;
@@ -144,6 +205,31 @@
     }).catch(function () {});
   };
 
+  /* ---- squads -------------------------------------------------------------
+     Off unless the teacher turned squads on for this class. Cached so the
+     card paints on the next load without waiting for the round trip, and
+     cleared when the switch goes off so a stale squad can't linger. */
+  var SQKEY = "ctf-squad-" + course;
+  function applySquad(d) {
+    if (!d || d.error) return;
+    if (!d.on) {
+      window.CTF_SQUAD = null;
+      try { localStorage.removeItem(SQKEY); } catch (e) {}
+    } else {
+      window.CTF_SQUAD = d;
+      try { localStorage.setItem(SQKEY, JSON.stringify(d)); } catch (e) {}
+    }
+    if (API.rerender) API.rerender();
+  }
+  function loadSquads() {
+    var sess = loadSess(); if (!sess) return;
+    AUTH.rpc("ctf_squads", { p_student: sess.studentId }).then(applySquad).catch(function () {});
+  }
+  try {
+    var cachedSq = JSON.parse(localStorage.getItem(SQKEY) || "null");
+    if (cachedSq && cachedSq.on) window.CTF_SQUAD = cachedSq;
+  } catch (e) {}
+
   /* ---- identity chip on the stats card ----------------------------------- */
   function decorate() {
     var sess = loadSess(); if (!sess) return;
@@ -156,7 +242,7 @@
       '<span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--faint);">PLAYING AS</span>' +
       '<span style="font-weight:700;color:var(--bright);">' + esc(sess.handle) + '</span>' +
       '<span class="mono" style="font-size:11px;color:var(--dim);">' + esc(sess.className || "") + '</span>' +
-      '<a class="mono" href="profile.html" style="font-size:11px;padding:4px 10px;border:1px solid var(--border2);border-radius:7px;">PROFILE</a>' +
+      '<a class="mono taplink" href="profile.html" style="font-size:11px;padding:4px 10px;border:1px solid var(--border2);border-radius:7px;">PROFILE</a>' +
       '<button id="ctfSignout" class="mono" style="margin-left:auto;font-size:11px;background:none;border:1px solid var(--border2);color:var(--dim);padding:4px 10px;border-radius:7px;cursor:pointer;">SIGN OUT</button>';
     var so = document.getElementById("ctfSignout");
     if (so) so.onclick = async function () {
@@ -312,7 +398,9 @@
       decorate();
       scheduleSync();
       touchDay();
+      flushVocab();
       loadGates();
+      loadSquads();
     }
     // only celebrate an interactive sign-in, never a silent background resume
     if (celebrate && art()) art().granted(course, reveal); else reveal();
@@ -323,7 +411,7 @@
     applyCachedGates();          // last known persona state, so a returning student keeps their guide
     // Already bound on this device? Show the arena immediately, verify quietly.
     var sess = loadSess();
-    if (sess) { decorate(); scheduleSync(); touchDay(); loadGates(); }
+    if (sess) { decorate(); scheduleSync(); touchDay(); flushVocab(); loadGates(); loadSquads(); }
 
     var u;
     try { u = await AUTH.requireSchool(); }
