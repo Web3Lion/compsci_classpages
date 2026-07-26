@@ -44,6 +44,28 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   #glitch .noise { position:absolute; inset:0; color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.15; opacity:.22; white-space:pre-wrap; word-break:break-all; overflow:hidden; }
   #glitch .slice { position:absolute; left:0; right:0; height:16px; background:rgba(0,179,255,.10); }
   #glitch .msg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'JetBrains Mono',monospace; font-weight:800; font-size:clamp(22px,5vw,48px); color:var(--bright); text-shadow: 2px 0 #ff2d5e, -2px 0 #2de2ff; letter-spacing:1px; text-align:center; }
+  /* mobile pass */
+  @media(max-width:720px){
+    .wrap{padding-left:12px !important;padding-right:12px !important;}
+    .card{padding:14px !important;border-radius:12px;}
+    /* every tappable thing clears the 44px minimum */
+    button,.btn,a.qlink,input[type=submit]{min-height:44px;}
+    input,select,textarea{font-size:16px;}   /* stops iOS zooming the page on focus */
+    .themebtn{top:8px;right:8px;padding:7px 11px;font-size:11px;}
+    /* challenge rows: let long titles wrap instead of shoving the XP off-screen */
+    .chalName{flex-wrap:wrap;gap:8px !important;padding:13px 2px !important;}
+    .chalName > span:nth-child(2){flex:1 1 100% !important;order:-1;}
+    .modHead{padding:15px 14px !important;gap:9px !important;flex-wrap:wrap;}
+    .modHead > span:nth-child(2){flex:1 1 100% !important;font-size:15px !important;}
+    .modBody{padding:0 14px 10px !important;}
+    .bossCard{padding:14px !important;}
+    .bossCard > div{gap:12px !important;}
+    table{font-size:12px;}
+  }
+  @media(max-width:420px){
+    .card{padding:12px !important;}
+    .big{font-size:30px !important;}
+  }
 </style>
 </head>
 <body>
@@ -325,6 +347,40 @@ load(); setInterval(load, 5*60*1000);
   #objList li{position:relative;padding:13px 0 13px 38px;border-bottom:1px solid var(--border2);color:var(--text);line-height:1.5;font-size:15px;}
   #objList li:last-child{border-bottom:none;}
   #objList li::before{content:"\2713";position:absolute;left:0;top:12px;width:22px;height:22px;border-radius:6px;background:var(--accent);color:#140e04;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px -3px var(--accent);}
+
+  /* --- touch targets: phones and Chromebook touchscreens ---
+     A 17px-tall text link is a coin toss with a fingertip. On coarse pointers
+     the standalone nav/action links get a 44px hit box without changing how
+     they look on a mouse-driven screen. */
+  @media (pointer:coarse){
+    .themebtn{min-height:44px;display:inline-flex;align-items:center;}
+    a.taplink,a.qlink,#ctfIdentity a,.backlink,
+    .wrap > a[href$="index.html"],.wrap > a[href^="index"]{
+      display:inline-flex;align-items:center;min-height:44px;
+    }
+  }
+  /* mobile pass */
+  @media(max-width:720px){
+    .wrap{padding-left:12px !important;padding-right:12px !important;}
+    .card{padding:14px !important;border-radius:12px;}
+    /* every tappable thing clears the 44px minimum */
+    button,.btn,a.qlink,input[type=submit]{min-height:44px;}
+    input,select,textarea{font-size:16px;}   /* stops iOS zooming the page on focus */
+    .themebtn{top:8px;right:8px;padding:7px 11px;font-size:11px;}
+    /* challenge rows: let long titles wrap instead of shoving the XP off-screen */
+    .chalName{flex-wrap:wrap;gap:8px !important;padding:13px 2px !important;}
+    .chalName > span:nth-child(2){flex:1 1 100% !important;order:-1;}
+    .modHead{padding:15px 14px !important;gap:9px !important;flex-wrap:wrap;}
+    .modHead > span:nth-child(2){flex:1 1 100% !important;font-size:15px !important;}
+    .modBody{padding:0 14px 10px !important;}
+    .bossCard{padding:14px !important;}
+    .bossCard > div{gap:12px !important;}
+    table{font-size:12px;}
+  }
+  @media(max-width:420px){
+    .card{padding:12px !important;}
+    .big{font-size:30px !important;}
+  }
 </style>
 <div id="objOverlay" onclick="if(event.target===this)__closeObj()">
   <div id="objModal" role="dialog" aria-modal="true" aria-labelledby="objTitle">
@@ -361,6 +417,8 @@ load(); setInterval(load, 5*60*1000);
 })();
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script src="../supabase-config.js"></script>
 <script src="../nemesis-intro.js"></script>
+<script src="../profile-link.js"></script>
 </body>
 </html>

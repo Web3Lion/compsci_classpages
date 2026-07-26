@@ -3,7 +3,25 @@
    A random variant plays once per page load on the CTF arena AND the formal
    course pages (index / vocab / syllabus / news). Guide: ORACLE. */
 (function () {
+  /* The animation is course flavour and always plays. The guide's NAME is the
+     only part that waits for the teacher's switch — until then the readout is
+     labelled neutrally, so students meet the character for the first time in
+     the arrival scene, not in a page transition. */
+  function guideLabel() {
+    var awake = false;
+    try {
+      if (window.CTF_PERSONA === true) awake = true;
+      else {
+        var m = location.pathname.match(/\/(cyber1|cyber2|apcsp|web3)\//);
+        var cached = m ? localStorage.getItem("ctf-persona-" + m[1]) : null;
+        var cfg = window.SUPABASE_CONFIG || {};
+        awake = cached !== null ? cached === "1" : !(cfg.url && cfg.anonKey);
+      }
+    } catch (e) {}
+    return awake ? "ORACLE" : "NETWORK";
+  }
   function run() {
+    var WHO = guideLabel();
     if (window.__consensusIntroDone) return;
     window.__consensusIntroDone = true;
 
@@ -44,7 +62,7 @@
     /* ---- Variant A: REACHING CONSENSUS (validating node ring) ---- */
     function consensus() {
       var b = build(), ctx = b.ctx, W = b.W, H = b.H;
-      var h = hud(b.host, '\u25c6 REACHING CONSENSUS', 'ORACLE // VALIDATING NODES <span id="cs">0%</span>');
+      var h = hud(b.host, '\u25c6 REACHING CONSENSUS', WHO + ' // VALIDATING NODES <span id="cs">0%</span>');
       var top = h.querySelector('#csTop'), sub = h.querySelector('#csSub'), cs2 = h.querySelector('#cs');
       var cx = W / 2, cy = H / 2, R = Math.min(W, H) * .24, N = 9, nodes = [];
       for (var i = 0; i < N; i++) { var a = -Math.PI / 2 + i / N * Math.PI * 2; nodes.push({ x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R, vt: 260 + i * 150 + Math.random() * 60 }); }
@@ -61,7 +79,7 @@
         ctx.save(); ctx.translate(cx, cy); hexPoly(ctx, 0, 0, 30 * dpr); ctx.strokeStyle = accent; ctx.lineWidth = 2 * dpr; ctx.globalAlpha = .9; ctx.stroke(); ctx.globalAlpha = .14 + .5 * prog; ctx.fillStyle = accent; ctx.fill(); ctx.restore();
         for (var i = 0; i < N; i++) { var n = nodes[i], on = el >= n.vt, pop = on ? Math.min(1, (el - n.vt) / 200) : 0, rad = (5 + 3 * (on ? 1 : 0)) * dpr; if (on) { ctx.shadowColor = accent; ctx.shadowBlur = 12 * dpr * pop; } ctx.beginPath(); ctx.arc(n.x, n.y, rad, 0, 7); ctx.fillStyle = on ? accent2 : dimNode; ctx.fill(); ctx.shadowBlur = 0; if (on && pop < 1) { ctx.beginPath(); ctx.arc(n.x, n.y, rad + 14 * dpr * pop, 0, 7); ctx.strokeStyle = accent; ctx.globalAlpha = 1 - pop; ctx.lineWidth = 2 * dpr; ctx.stroke(); ctx.globalAlpha = 1; } }
         if (cs2) cs2.textContent = Math.round(prog * 100) + '%';
-        if (prog >= 1 && top.dataset.d !== '1') { top.dataset.d = '1'; top.textContent = '\u25c6 CONSENSUS REACHED \u2713'; sub.innerHTML = 'ORACLE // BLOCK VALIDATED'; }
+        if (prog >= 1 && top.dataset.d !== '1') { top.dataset.d = '1'; top.textContent = '\u25c6 CONSENSUS REACHED \u2713'; sub.innerHTML = WHO + ' // BLOCK VALIDATED'; }
         if (el < END) requestAnimationFrame(frame); else finish(b.host);
       })(start);
     }
@@ -69,7 +87,7 @@
     /* ---- Variant B: MINING BLOCK (proof of work — hash finds leading zeros) ---- */
     function mineBlock() {
       var b = build(), ctx = b.ctx, W = b.W, H = b.H;
-      var h = hud(b.host, '\u25c6 MINING BLOCK', 'ORACLE // PROOF OF WORK \u00b7 nonce <span id="cs">0</span>');
+      var h = hud(b.host, '\u25c6 MINING BLOCK', WHO + ' // PROOF OF WORK \u00b7 nonce <span id="cs">0</span>');
       var top = h.querySelector('#csTop'), sub = h.querySelector('#csSub'), cs2 = h.querySelector('#cs');
       var HEX = '0123456789abcdef', LEN = 24, TARGET = 4;
       function rnd() { return HEX[Math.floor(Math.random() * 16)]; }
@@ -89,7 +107,7 @@
         for (var i = 0; i < str.length; i++) { ctx.fillStyle = i < locked ? accent2 : (isLight ? '#9a8c77' : '#93846f'); if (i < locked) { ctx.shadowColor = accent; ctx.shadowBlur = 8 * dpr; } else ctx.shadowBlur = 0; ctx.fillText(str[i], sx + i * cw, hy); }
         ctx.shadowBlur = 0;
         if (cs2) cs2.textContent = (Math.floor(el / 8)).toLocaleString();
-        if (locked >= TARGET && top.dataset.d !== '1') { top.dataset.d = '1'; top.textContent = '\u25c6 BLOCK MINED \u2713'; sub.innerHTML = 'ORACLE // VALID HASH FOUND'; }
+        if (locked >= TARGET && top.dataset.d !== '1') { top.dataset.d = '1'; top.textContent = '\u25c6 BLOCK MINED \u2713'; sub.innerHTML = WHO + ' // VALID HASH FOUND'; }
         if (el < END) requestAnimationFrame(frame); else finish(b.host);
       })(start);
     }
@@ -97,7 +115,7 @@
     /* ---- Variant C: BROADCASTING TRANSACTION (propagation across mesh) ---- */
     function broadcast() {
       var b = build(), ctx = b.ctx, W = b.W, H = b.H;
-      var h = hud(b.host, '\u25c6 BROADCASTING TRANSACTION', 'ORACLE // PROPAGATING TO PEERS <span id="cs">0%</span>');
+      var h = hud(b.host, '\u25c6 BROADCASTING TRANSACTION', WHO + ' // PROPAGATING TO PEERS <span id="cs">0%</span>');
       var top = h.querySelector('#csTop'), sub = h.querySelector('#csSub'), cs2 = h.querySelector('#cs');
       var cx = W / 2, cy = H / 2, N = 22, nodes = [{ x: cx, y: cy, r: 0 }];
       for (var i = 1; i < N; i++) { var a = Math.random() * 7, rad = (0.14 + Math.random() * 0.34) * Math.min(W, H); nodes.push({ x: cx + Math.cos(a) * rad, y: cy + Math.sin(a) * rad, r: rad }); }
@@ -115,7 +133,7 @@
         ctx.globalAlpha = 1;
         for (var i = 0; i < N; i++) { var n = nodes[i], on = el >= n.t; if (on) reached++; var pop = on ? Math.min(1, (el - n.t) / 240) : 0; var rad = (i === 0 ? 8 : 5) * dpr; if (on) { ctx.shadowColor = accent; ctx.shadowBlur = 12 * dpr * pop; } ctx.beginPath(); ctx.arc(n.x, n.y, rad, 0, 7); ctx.fillStyle = on ? accent2 : dimNode; ctx.fill(); ctx.shadowBlur = 0; if (on && pop < 1) { ctx.beginPath(); ctx.arc(n.x, n.y, rad + 16 * dpr * pop, 0, 7); ctx.strokeStyle = accent; ctx.globalAlpha = 1 - pop; ctx.lineWidth = 2 * dpr; ctx.stroke(); ctx.globalAlpha = 1; } }
         var prog = Math.round(reached / N * 100); if (cs2) cs2.textContent = prog + '%';
-        if (prog >= 100 && top.dataset.d !== '1') { top.dataset.d = '1'; top.textContent = '\u25c6 TRANSACTION CONFIRMED \u2713'; sub.innerHTML = 'ORACLE // ALL PEERS SYNCED'; }
+        if (prog >= 100 && top.dataset.d !== '1') { top.dataset.d = '1'; top.textContent = '\u25c6 TRANSACTION CONFIRMED \u2713'; sub.innerHTML = WHO + ' // ALL PEERS SYNCED'; }
         if (el < END) requestAnimationFrame(frame); else finish(b.host);
       })(start);
     }
@@ -126,3 +144,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
+

@@ -3,7 +3,25 @@
    A random variant plays once per page load on the CTF arena AND the formal
    course pages (index / vocab / syllabus / news). Guide: ADA. */
 (function () {
+  /* The animation is course flavour and always plays. The guide's NAME is the
+     only part that waits for the teacher's switch — until then the readout is
+     labelled neutrally, so students meet the character for the first time in
+     the arrival scene, not in a page transition. */
+  function guideLabel() {
+    var awake = false;
+    try {
+      if (window.CTF_PERSONA === true) awake = true;
+      else {
+        var m = location.pathname.match(/\/(cyber1|cyber2|apcsp|web3)\//);
+        var cached = m ? localStorage.getItem("ctf-persona-" + m[1]) : null;
+        var cfg = window.SUPABASE_CONFIG || {};
+        awake = cached !== null ? cached === "1" : !(cfg.url && cfg.anonKey);
+      }
+    } catch (e) {}
+    return awake ? "ADA" : "SYSTEM";
+  }
   function run() {
+    var WHO = guideLabel();
     if (window.__packetIntroDone) return;
     window.__packetIntroDone = true;
 
@@ -44,7 +62,7 @@
     /* ---- Variant A: RECEIVING PACKETS ---- */
     function receivePackets() {
       var b = build(), ctx = b.ctx, W = b.W, H = b.H;
-      var h = hud(b.host, '\u25c6 RECEIVING PACKETS', 'ADA // BUFFERING STREAM <span id="pk">0%</span>');
+      var h = hud(b.host, '\u25c6 RECEIVING PACKETS', WHO + ' // BUFFERING STREAM <span id="pk">0%</span>');
       var top = h.querySelector('#pkTop'), pk = h.querySelector('#pk');
       var COLS = 16, ROWS = 3, cell = 18 * dpr, gap = 5 * dpr;
       var gw = COLS * cell + (COLS - 1) * gap, gx = W / 2 - gw / 2, gy = H / 2 - (ROWS * cell + (ROWS - 1) * gap) / 2 - 6 * dpr;
@@ -75,7 +93,7 @@
     /* ---- Variant B: ESTABLISHING CONNECTION (handshake) ---- */
     function handshake() {
       var b = build(), ctx = b.ctx, W = b.W, H = b.H;
-      var h = hud(b.host, '\u25c6 ESTABLISHING CONNECTION', 'ADA // <span id="pk">SYN \u2192</span>');
+      var h = hud(b.host, '\u25c6 ESTABLISHING CONNECTION', WHO + ' // <span id="pk">SYN \u2192</span>');
       var top = h.querySelector('#pkTop'), pk = h.querySelector('#pk');
       var ax = W * 0.28, bx = W * 0.72, cy = H / 2, nr = 13 * dpr;
       var pulses = [ { t: 200, dir: 1, label: 'SYN \u2192' }, { t: 800, dir: -1, label: '\u2190 SYN-ACK' }, { t: 1400, dir: 1, label: 'ACK \u2192' } ];
@@ -104,7 +122,7 @@
     function compile() {
       var b = build(), ctx = b.ctx, W = b.W, H = b.H;
       var lines = ['def solve(data):', '  result = []', '  for x in data:', '    result.append(x * 2)', '  return result', '', 'print(solve(inputs))'];
-      var h = hud(b.host, '\u25c6 COMPILING PROGRAM', 'ADA // BUILDING <span id="pk">0%</span>');
+      var h = hud(b.host, '\u25c6 COMPILING PROGRAM', WHO + ' // BUILDING <span id="pk">0%</span>');
       var top = h.querySelector('#pkTop'), pk = h.querySelector('#pk');
       var start = performance.now(), END = 2100, PER = 210;
       var x0 = W / 2 - 150 * dpr, y0 = H / 2 - 46 * dpr, lh = 20 * dpr;
@@ -133,3 +151,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
+

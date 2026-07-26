@@ -37,6 +37,18 @@ body,.card{transition:background-color .25s ease,border-color .25s ease,color .2
   .ntitle { font-size: 16px; font-weight: 700; color: var(--bright); line-height: 1.35; }
   .ndesc { font-size: 13px; color: var(--dim); line-height: 1.5; flex: 1; }
   .nmeta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--faint); margin-top: 4px; }
+
+  /* --- touch targets: phones and Chromebook touchscreens ---
+     A 17px-tall text link is a coin toss with a fingertip. On coarse pointers
+     the standalone nav/action links get a 44px hit box without changing how
+     they look on a mouse-driven screen. */
+  @media (pointer:coarse){
+    .themebtn{min-height:44px;display:inline-flex;align-items:center;}
+    a.taplink,a.qlink,#ctfIdentity a,.backlink,
+    .wrap > a[href$="index.html"],.wrap > a[href^="index"]{
+      display:inline-flex;align-items:center;min-height:44px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -44,7 +56,7 @@ body,.card{transition:background-color .25s ease,border-color .25s ease,color .2
 <div class="wrap">
 
   <div style="margin-top: 28px; margin-bottom: 26px;">
-    <div class="mono" style="font-size: 12px; letter-spacing: 2px; color: var(--accent); margin-bottom: 10px;"><a href="index.html" style="color:var(--faint);">&larr; back to course</a></div>
+    <div class="mono" style="font-size: 12px; letter-spacing: 2px; color: var(--accent); margin-bottom: 10px;"><a href="index.html" style="color:var(--faint);display:inline-flex;align-items:center;min-height:44px;">&larr; back to course</a></div>
     <h1 class="mono" style="font-weight: 800; font-size: 40px; margin: 0 0 10px; color: var(--bright); letter-spacing: -1px;">Cybersecurity News Feed</h1>
     <p style="margin: 0; font-size: 16px; color: var(--muted); max-width: 620px; line-height: 1.6;">The latest security headlines, gathered from top cybersecurity news outlets. Refreshes automatically each morning.</p>
     <div id="status" class="mono" style="margin-top: 14px; font-size: 12px; color: var(--dim);"><span class="spin"></span> &nbsp;fetching latest headlines…</div>
@@ -195,6 +207,7 @@ load();
 </script>
 
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script src="../supabase-config.js"></script>
 <script src="../nemesis-intro.js"></script>
 </body>
 </html>

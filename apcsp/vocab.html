@@ -12,7 +12,7 @@
 
 :root{--bg:#0a0d12;--panel:#111620;--panel2:#151b27;--panel3:#1a2130;--border:#2b3346;--border2:#1f2735;--border3:#3d4a63;--border-hi:#5b6a88;--amber-bd:#5a3d6a;--amber-bg:#1e0f28;--text:#d5dced;--bright:#f4f7ff;--muted:#a3adc6;--dim:#7c8aa6;--faint:#56637d;--fainter:#3a4c63;--accent:#a855f7;--accent2:#c98bff;--amber:#a855f7;--via:rgba(168,85,247,.10);--trace:rgba(168,85,247,.035);}
 :root[data-theme="light"]{--bg:#eef1f5;--panel:#ffffff;--panel2:#f3f6fb;--panel3:#eef3fa;--border:#ccd5e4;--border2:#dbe3f0;--border3:#aebccf;--border-hi:#7f92ad;--amber-bd:#c9a9dc;--amber-bg:#f3e6fb;--text:#26303f;--bright:#0d1420;--muted:#47546a;--dim:#67748c;--faint:#8592a6;--fainter:#a7b3c4;--accent:#8b2fd6;--accent2:#6f1fb0;--amber:#8b2fd6;--via:rgba(139,47,214,.16);--trace:rgba(139,47,214,.05);}
-body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;min-height:44px;}
 .themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
 .themebtn:hover{border-color:var(--accent);}
 
@@ -38,7 +38,13 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
   .modgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; }
   @media (max-width: 620px){ .modgrid { grid-template-columns: 1fr; } }
-  .chip { font-size: 12px; padding: 10px 13px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); color: var(--dim); cursor: pointer; user-select: none; transition: all .12s; }
+  /* mobile: handshake */
+  @media (max-width: 560px){
+    .m-grid { gap: 8px; }
+    .m-item { padding: 11px 10px; font-size: 12.5px; min-height: 44px; }
+    .chip { padding: 12px 13px;min-height:44px;display:inline-flex;align-items:center;}
+  }
+  .chip { font-size: 12px; padding: 10px 13px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); color: var(--dim); cursor: pointer; user-select: none; transition: all .12s;min-height:44px;display:inline-flex;align-items:center;}
   .chip:hover { border-color: var(--border-hi); color: var(--text); }
   .chip.on { border-color: var(--accent); color: var(--bg); background: var(--accent); font-weight: 700; }
   .chip.all { color: var(--amber); border-color: var(--amber-bd); writing-mode: vertical-rl; text-orientation: mixed; display: flex; align-items: center; justify-content: center; border-radius: 14px; padding: 12px 14px; letter-spacing: 3px; font-weight: 700; }
@@ -66,7 +72,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   .fc-term { font-size: 30px; font-weight: 800; color: var(--bright); letter-spacing: -.5px; }
   .fc-def { font-size: 18px; line-height: 1.55; color: var(--text); max-width: 640px; }
   .fc-ctrl { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
-  .btn { font-family:'JetBrains Mono',monospace; font-size: 13px; padding: 11px 18px; border-radius: 10px; border: 1px solid var(--border3); background: var(--bg); color: var(--accent); cursor: pointer; transition: all .12s; }
+  .btn { font-family:'JetBrains Mono',monospace; font-size: 13px; padding: 11px 18px; border-radius: 10px; border: 1px solid var(--border3); background: var(--bg); color: var(--accent); cursor: pointer; transition: all .12s;min-height:44px;}
   .btn:hover { background: var(--panel3); }
   .btn:disabled { opacity: .35; cursor: default; }
   .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
@@ -77,7 +83,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   .cas-barwrap { height: 8px; background: var(--border2); border-radius: 999px; overflow: hidden; margin-bottom: 20px; }
   .cas-bar { height: 100%; width: 0%; background: linear-gradient(90deg,var(--accent),var(--accent2)); transition: width .4s ease; }
   .cas-ctrl { display: flex; gap: 12px; margin-top: 16px; }
-  .cas-ctrl .btn { flex: 1; padding: 15px; font-size: 15px; text-align: center; }
+  .cas-ctrl .btn { flex: 1; padding: 15px; font-size: 15px; text-align: center;min-height:44px;}
   .cas-miss { color: #ff9b9b; border-color: #5a2a2a; }
   .cas-miss:hover { background: #1a0d0d; }
   .cas-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 14px; padding: 16px 18px; border: 1px solid var(--border3); border-radius: 12px; background: linear-gradient(160deg,var(--panel3),var(--panel)); }
@@ -136,6 +142,40 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     #printdoc dd { margin: 1pt 0 0; font-size: 10.5pt; line-height: 1.35; color: #222; break-inside: avoid; }
     #printdoc .src { color: #777; font-size: 8.5pt; }
   }
+
+  /* --- touch targets: phones and Chromebook touchscreens ---
+     A 17px-tall text link is a coin toss with a fingertip. On coarse pointers
+     the standalone nav/action links get a 44px hit box without changing how
+     they look on a mouse-driven screen. */
+  @media (pointer:coarse){
+    .themebtn{min-height:44px;display:inline-flex;align-items:center;}
+    a.taplink,a.qlink,#ctfIdentity a,.backlink,
+    .wrap > a[href$="index.html"],.wrap > a[href^="index"]{
+      display:inline-flex;align-items:center;min-height:44px;
+    }
+  }
+  /* mobile pass */
+  @media(max-width:720px){
+    .wrap{padding-left:12px !important;padding-right:12px !important;}
+    .card{padding:14px !important;border-radius:12px;}
+    /* every tappable thing clears the 44px minimum */
+    button,.btn,a.qlink,input[type=submit]{min-height:44px;}
+    input,select,textarea{font-size:16px;}   /* stops iOS zooming the page on focus */
+    .themebtn{top:8px;right:8px;padding:7px 11px;font-size:11px;}
+    /* challenge rows: let long titles wrap instead of shoving the XP off-screen */
+    .chalName{flex-wrap:wrap;gap:8px !important;padding:13px 2px !important;}
+    .chalName > span:nth-child(2){flex:1 1 100% !important;order:-1;}
+    .modHead{padding:15px 14px !important;gap:9px !important;flex-wrap:wrap;}
+    .modHead > span:nth-child(2){flex:1 1 100% !important;font-size:15px !important;}
+    .modBody{padding:0 14px 10px !important;}
+    .bossCard{padding:14px !important;}
+    .bossCard > div{gap:12px !important;}
+    table{font-size:12px;}
+  }
+  @media(max-width:420px){
+    .card{padding:12px !important;}
+    .big{font-size:30px !important;}
+  }
 </style>
 </head>
 <body>
@@ -147,7 +187,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     <div style="position:relative;z-index:1;">
       <div class="kick mono">&gt; ./vocab --course=ap-csp</div>
       <h1 class="mono">Vocabulary Lab<span class="cursor"></span></h1>
-      <p class="lead">Master the vocabulary of computing. Filter by classroom module, drill with flashcards, then prove it in <b style="color:var(--accent);">DECRYPT</b>, HANDSHAKE, and the quiz. <a href="index.html">&larr; back to course home</a></p>
+      <p class="lead">Master the vocabulary of computing. Filter by classroom module, drill with flashcards, then prove it in <b style="color:var(--accent);">DECRYPT</b>, HANDSHAKE, and the quiz. <a href="index.html" style="display:inline-flex;align-items:center;min-height:44px;">&larr; back to course home</a></p>
     </div>
   </div>
 
@@ -162,6 +202,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     </div>
   </div>
 
+  <div id="timeOnTask"></div>
   <div class="tabs" id="tabs">
     <div class="tab on" data-mode="cards">FLASHCARDS<small>flip &amp; review</small></div>
     <div class="tab" data-mode="decrypt">DECRYPT<small>beat the timer</small></div>
@@ -174,6 +215,9 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="mono" style="text-align:center;margin-top:30px;font-size:12px;color:var(--fainter);">&gt; compile knowledge, ship confidence_</div>
 </div>
 
+<script>window.CTF_COURSE="apcsp";</script>
+<script src="../vocab-xp.js"></script>
+<script src="../vocab-log.js"></script>
 <script>
 /* ============================================================
    VOCABULARY DATA — edit here. m = classroom module (1-7).
@@ -320,6 +364,16 @@ let selected = new Set(Object.keys(MODULES).map(Number));
 let mode = "cards";
 const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
 const pool = () => selected.has(7) ? VOCAB.slice() : VOCAB.filter(v => selected.has(v.m));
+const modsOf = items => [...new Set((items||[]).map(v => v.m))];
+const xpBlock = (game, items, acc) => {
+  const mods = modsOf(items);
+  const before = window.VOCAB_XP ? window.VOCAB_XP.totalEarned() : 0;
+  const html = (window.VOCAB_XP ? window.VOCAB_XP.finishSession(game, mods, acc) : "");
+  const after = window.VOCAB_XP ? window.VOCAB_XP.totalEarned() : 0;
+  if (window.VOCAB_LOG) window.VOCAB_LOG.finish(game, {
+    terms: (items||[]).length, acc: acc||0, xp: after - before, mods: mods });
+  return html;
+};
 const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g,"");
 const gameAnswer = t => t.replace(/\(.*?\)/g,"").split("/")[0].trim();
 
@@ -357,6 +411,8 @@ $("#tabs").addEventListener("click", e => {
 
 function render(){
   stopTimers();
+  if(window.VOCAB_LOG) window.VOCAB_LOG.start(mode);
+  if(window.VOCAB_LOG){ const tt=document.getElementById("timeOnTask"); if(tt) tt.innerHTML=window.VOCAB_LOG.panelHtml(); }
   if(pool().length === 0){ panel.innerHTML = `<div class="card empty">Select at least one module above to begin.</div>`; return; }
   if(mode==="cards") renderCards();
   else if(mode==="decrypt") renderDecrypt();
@@ -864,8 +920,7 @@ render();
 })();
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script>window.CTF_COURSE="apcsp";</script>
-<script src="../vocab-xp.js"></script>
+<script src="../supabase-config.js"></script>
 <script src="packet-intro.js"></script>
 </body>
 </html>

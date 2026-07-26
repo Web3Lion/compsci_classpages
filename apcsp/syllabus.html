@@ -41,6 +41,18 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   .docframe iframe { display: block; width: 100%; height: 1400px; border: 0; background: #fff; }
   .loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px; background: var(--panel); color: var(--dim); font-family:'JetBrains Mono',monospace; font-size: 13px; transition: opacity .4s; }
   .spinner { width: 24px; height: 24px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+
+  /* --- touch targets: phones and Chromebook touchscreens ---
+     A 17px-tall text link is a coin toss with a fingertip. On coarse pointers
+     the standalone nav/action links get a 44px hit box without changing how
+     they look on a mouse-driven screen. */
+  @media (pointer:coarse){
+    .themebtn{min-height:44px;display:inline-flex;align-items:center;}
+    a.taplink,a.qlink,#ctfIdentity a,.backlink,
+    .wrap > a[href$="index.html"],.wrap > a[href^="index"]{
+      display:inline-flex;align-items:center;min-height:44px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -82,6 +94,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   var a=document.getElementById('docLink'); if(a) a.href=base+'/view';
 })();
 </script>
+<script src="../supabase-config.js"></script>
 <script src="packet-intro.js"></script>
 </body>
 </html>
