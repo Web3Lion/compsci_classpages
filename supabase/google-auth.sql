@@ -16,6 +16,16 @@
 --       (https://<project>.supabase.co/auth/v1/callback) as authorized URIs.
 --    3. Authentication -> URL Configuration: set Site URL to your GitHub Pages
 --       URL and add it to Redirect URLs.
+--
+--  ⚠ IF YOU RE-RUN THIS FILE, RE-RUN TWO OTHERS RIGHT AFTER IT:
+--      supabase/multi-domain.sql   restores multi-domain student sign-in
+--      supabase/teachers.sql       restores multiple teacher accounts
+--    This file defines _is_school() against ONE hardcoded domain and
+--    _is_teacher() against ONE email address. Those two files replace both with
+--    a list and a table. Re-running this file silently reverts them: every
+--    @lions.net student is rejected with "not_school_account" and every added
+--    teacher loses dashboard access, with no visible error anywhere.
+--    supabase/check-installed.sql detects both cases.
 -- ============================================================================
 
 -- ---- who is who -------------------------------------------------------------
