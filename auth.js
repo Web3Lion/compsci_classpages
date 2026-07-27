@@ -9,7 +9,14 @@
    ========================================================================== */
 (function () {
   var CFG = window.SUPABASE_CONFIG || {};
-  var DOMAIN = (CFG.schoolDomain || "southfayette.org").toLowerCase();
+  /* Two Google Workspace domains: staff on the first, students on the second.
+     schoolDomains is the list that decides who may join a class; schoolDomain
+     stays as the primary/staff domain for anything that needs just one. */
+  var DOMAINS = (CFG.schoolDomains && CFG.schoolDomains.length
+      ? CFG.schoolDomains
+      : [CFG.schoolDomain || "southfayette.org"])
+    .map(function (d) { return String(d).toLowerCase().replace(/^@/, ""); });
+  var DOMAIN = DOMAINS[0];
   var TEACHER = (CFG.teacherEmail || "rnreasey@southfayette.org").toLowerCase();
   var ONLINE = !!(CFG.url && CFG.anonKey);
 
@@ -42,18 +49,24 @@
     } catch (e) { return null; }
   }
   function emailOf(u) { return ((u && u.email) || "").toLowerCase(); }
-  function isSchool(u) { return emailOf(u).endsWith("@" + DOMAIN); }
+  function domainOf(u) { return emailOf(u).split("@")[1] || ""; }
+  function isSchool(u) { return DOMAINS.indexOf(domainOf(u)) !== -1; }
+  function isStaffDomain(u) { return domainOf(u) === DOMAIN; }
   function isTeacher(u) { return emailOf(u) === TEACHER; }
 
-  /* Google OAuth. hd hints the school domain in the account chooser; the real
-     enforcement is server-side (_is_school() in the SQL) plus the check below. */
+  /* Google OAuth. `hd` restricts the account chooser to a single domain, so it
+     is only sent when the school HAS one domain — passing it with two would
+     hide every student account. Real enforcement is server-side (_is_school()
+     in the SQL) plus the check below. */
   async function signIn(redirectTo) {
     var db = await client();
+    var q = { prompt: "select_account" };
+    if (DOMAINS.length === 1) q.hd = DOMAIN;
     return db.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: redirectTo || location.href.split("#")[0],
-        queryParams: { hd: DOMAIN, prompt: "select_account" }
+        queryParams: q
       }
     });
   }
@@ -81,8 +94,9 @@
   }
 
   window.CTF_AUTH = {
-    online: ONLINE, domain: DOMAIN, teacherEmail: TEACHER,
+    online: ONLINE, domain: DOMAIN, domains: DOMAINS, teacherEmail: TEACHER,
     client: client, rpc: rpc, user: user, requireSchool: requireSchool,
-    signIn: signIn, signOut: signOut, isSchool: isSchool, isTeacher: isTeacher, emailOf: emailOf
+    signIn: signIn, signOut: signOut, isSchool: isSchool, isTeacher: isTeacher,
+    isStaffDomain: isStaffDomain, domainOf: domainOf, emailOf: emailOf
   };
 })();

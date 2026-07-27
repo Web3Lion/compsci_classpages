@@ -213,6 +213,8 @@
 <script src="auth.js"></script>
 <script src="name-filter.js"></script>
 <script src="objectives.js"></script>
+<script src="standards.js"></script>
+<script src="csv.js"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -261,6 +263,7 @@ var CLASSES=[], CUR=null;
 async function loadClasses(refresh){
   try{
     CLASSES=await rpc("ctf_t_classes")||[];
+    if(!refresh){ await loadWhoami(); await loadTeachers(); }
     renderClassList();
     if(refresh&&CUR){ var again=CLASSES.filter(function(c){return c.id===CUR.id;})[0]; if(again) selectClass(again); }
   }catch(e){ el("classList").innerHTML='<div class="empty" style="color:var(--bad)">Failed to load.</div>'; }
@@ -977,7 +980,8 @@ function vocabView(){
 
   h+='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
     'Class totals \u2014 '+VG.map(function(g){return VGL[g]+' '+fmtMin(perGame[g]);}).join(' \u00b7 ')+
-    '<br>The clock only runs while the page is open and the student is interacting; it pauses after 90s idle. Tap a column to sort.</div>';
+    '<br>The clock only runs while the page is open and the student is interacting; it pauses after 90s idle. Tap a column to sort.</div>'+
+  '<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">'+CSV.button("exportVocab()")+'</div>';
 
   function th(k,l){ return '<th style="cursor:pointer;'+(VSORT===k?'color:var(--accent);':'')+
     '" onclick="setVSort(\''+k+'\')">'+l+(VSORT===k?' \u25be':'')+'</th>'; }
@@ -1026,6 +1030,7 @@ function vsessPanel(){
     '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">'+
       '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">PRACTICE RUNS</span>'+
       chip("all","All",VSESS.length)+chip("suspect","Too fast",sus.length,sus.length?"var(--warn)":null)+
+      '<span style="margin-left:auto">'+CSV.button("exportVocabSessions()")+'</span>'+
     '</div>'+
     '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
       'One row per finished game, with the active seconds it actually took. <b style="color:var(--warn)">Too fast</b> means XP was paid for a run under 10s, or under 4s per term \u2014 worth a look, not proof of anything.</div>'+
@@ -1182,7 +1187,7 @@ function enrollView(){
         '<input type="checkbox" '+(CSVREPLACE?'checked':'')+' onchange="CSVREPLACE=this.checked;"> replace existing list</label>'+
     '</div>'+
     '<textarea id="csvText" oninput="csvChanged(this.value)" rows="5" spellcheck="false" '+
-      'placeholder="name,email&#10;Ada Lovelace,alovelace@southfayette.org" '+
+      'placeholder="name,email&#10;Ada Lovelace,alovelace@lions.net" '+
       'style="width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font-family:ui-monospace,monospace;font-size:12px;resize:vertical;">'+esc(CSVTEXT)+'</textarea>'+
     '<div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;">'+
       '<button class="btn pri" id="csvGo" onclick="csvImport()">Import roster</button>'+
@@ -1385,7 +1390,7 @@ function squadsView(){
    the course objectives without a single prompt being re-authored. Mastery is
    deliberately stricter than points: all levels cleared, and the hardest one
    cleared within 2 wrong guesses. */
-var OBJVIEW="class", OBJMOD="all", OBJSTU=null;
+var OBJVIEW="class", OBJMOD="all", OBJSTU=null, OBJSTD="all", OBJQ="";
 function objIndex(){
   if(!window.OBJECTIVES||!CUR) return null;
   if(!objIndex._c) objIndex._c={};
@@ -1408,6 +1413,8 @@ function capsByStudent(){
 }
 function setObjView(v){ OBJVIEW=v; OBJSTU=null; renderMain(); }
 function setObjMod(v){ OBJMOD=v; renderMain(); }
+function setObjStd(v){ OBJSTD=v; renderMain(); }
+function setObjQ(v){ OBJQ=v; var r=renderMain(); var i=el("objSearch"); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } return r; }
 function openObjStudent(id){ OBJSTU=id; OBJVIEW="student"; renderMain(); }
 async function toggleObjectives(on){
   try{
@@ -1429,18 +1436,63 @@ function objBar(r){
   return '<span style="flex:1;min-width:90px;height:8px;border-radius:99px;background:var(--bg2);overflow:hidden;display:flex;">'+
     seg(m,"var(--ok)")+seg(s,"var(--warn)")+'</span>';
 }
+/* Filter bar shared by every objective view: module chips, standard picker,
+   and a text search over objective names. A standard filter narrows to the
+   modules that standard covers, so the two filters compose. */
 function objModChips(idx){
-  var mods={}; idx.objectives.forEach(function(o){ mods[o.module]=true; });
+  var mods={}; idx.objectives.forEach(function(o){
+    (o.moduleList||[o.module]).forEach(function(m){ mods[m]=true; }); });
   var list=Object.keys(mods).map(Number).sort(function(a,b){return a-b;});
-  var chip=function(v,l){ var on=String(OBJMOD)===String(v);
-    return '<button class="btn sm'+(on?' pri':'')+'" onclick="setObjMod(\''+v+'\')">'+l+'</button>'; };
-  return '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">'+
+  var chip=function(v,l,t){ var on=String(OBJMOD)===String(v);
+    return '<button class="btn sm'+(on?' pri':'')+'" onclick="setObjMod(\''+v+'\')"'+
+      (t?' title="'+esc(t)+'"':'')+'>'+l+'</button>'; };
+  var names=((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf||{};
+  var mn=names.modules||[];
+
+  var h='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">'+
     '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-right:2px;">MODULE</span>'+
-    chip("all","All")+list.map(function(m){return chip(m,"M"+m);}).join("")+'</div>';
+    chip("all","All")+list.map(function(m){return chip(m,"M"+m,mn[m-1]||"");}).join("")+
+  '</div>';
+
+  var stds=(window.STANDARDS&&STANDARDS.list(CUR.course))||[];
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">';
+  if(stds.length){
+    h+='<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">STANDARD</span>'+
+      '<select onchange="setObjStd(this.value)" style="padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;max-width:320px;">'+
+      '<option value="all">— any standard —</option>'+
+      stds.map(function(s){
+        return '<option value="'+s.code+'"'+(OBJSTD===s.code?' selected':'')+'>'+esc(s.code)+' · M'+s.modules.join("/M")+'</option>';
+      }).join("")+'</select>';
+  }
+  h+='<input id="objSearch" value="'+esc(OBJQ)+'" oninput="setObjQ(this.value)" placeholder="Search objectives…" '+
+     'style="padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;min-width:170px;">';
+  if(OBJMOD!=="all"||OBJSTD!=="all"||OBJQ)
+    h+='<button class="btn sm" onclick="OBJMOD=\'all\';OBJSTD=\'all\';OBJQ=\'\';renderMain()">Clear</button>';
+  h+='</div>';
+
+  if(OBJSTD!=="all"){
+    var s=stds.filter(function(x){return x.code===OBJSTD;})[0];
+    if(s) h+='<div class="card" style="padding:11px 14px;margin-bottom:14px;border-left:3px solid var(--accent);">'+
+      '<b class="mono" style="color:var(--accent);font-size:12px;">'+esc(s.code)+'</b> '+
+      '<span style="font-size:13px;color:var(--dim);line-height:1.55;">'+esc(s.text)+'</span></div>';
+  }
+  return h;
 }
 function objFilter(rows){
-  if(OBJMOD==="all") return rows;
-  return rows.filter(function(r){return String(r.module)===String(OBJMOD);});
+  var out=rows;
+  // an objective can be taught in several modules (Cryptography spans M3 and
+  // M6), so match against every module it appears in, not just the first
+  var modsOf=function(r){ return (r.modules&&r.modules.length)?r.modules:[r.module]; };
+  if(OBJMOD!=="all") out=out.filter(function(r){
+    return modsOf(r).some(function(m){return String(m)===String(OBJMOD);}); });
+  if(OBJSTD!=="all"){
+    var mods=(window.STANDARDS?STANDARDS.forCourse(CUR.course):{})||{};
+    var keep={}; Object.keys(mods).forEach(function(m){ if((mods[m]||[]).indexOf(OBJSTD)!==-1) keep[m]=1; });
+    out=out.filter(function(r){ return modsOf(r).some(function(m){return keep[m];}); });
+  }
+  if(OBJQ){ var q=OBJQ.toLowerCase();
+    out=out.filter(function(r){return String(r.name||"").toLowerCase().indexOf(q)!==-1;}); }
+  return out;
 }
 
 function objectivesView(){
@@ -1451,8 +1503,8 @@ function objectivesView(){
   if(!ROSTER.length) return '<div class="empty">No students in this class yet.</div>';
 
   var h='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
-    ['class','students','coverage'].map(function(v){
-      var l={class:"Class mastery",students:"Per student",coverage:"Coverage audit"}[v];
+    ['class','students','standards','coverage'].map(function(v){
+      var l={class:"Class mastery",students:"Per student",standards:"Standards",coverage:"Coverage audit"}[v];
       return '<button class="btn sm'+((OBJVIEW===v||(OBJVIEW==="student"&&v==="students"))?' pri':'')+'" onclick="setObjView(\''+v+'\')">'+l+'</button>';
     }).join("")+
     '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-left:auto;white-space:nowrap;">'+
@@ -1463,8 +1515,157 @@ function objectivesView(){
 
   if(OBJVIEW==="student") return h+objStudentView(idx);
   if(OBJVIEW==="students") return h+objRosterView(idx);
+  if(OBJVIEW==="standards") return h+objStandardsView(idx);
   if(OBJVIEW==="coverage") return h+objCoverageView(idx);
   return h+objClassView(idx);
+}
+
+/* ----- standards -----
+   A standard's mastery is the mastery of every objective taught in the modules
+   that carry it — nothing extra is stored per flag, so re-tagging a module
+   re-scores the standard immediately. */
+function objStandardsView(idx){
+  if(!window.STANDARDS) return '<div class="empty" style="color:var(--bad)">standards.js didn’t load.</div>';
+  if(!STANDARDS.mapped(CUR.course))
+    return '<div class="empty">No standards mapped for this course yet. Send me the standards for '+
+      esc(courseMeta(CUR.course).label)+' and I’ll wire them up — the mapping lives in standards.js.</div>';
+
+  var rows=STANDARDS.classReport(CUR.course,OBJECTIVES.classReport(idx,capsByStudent()));
+  if(OBJQ){ var q=OBJQ.toLowerCase();
+    rows=rows.filter(function(r){return (r.code+' '+r.text).toLowerCase().indexOf(q)!==-1;}); }
+  var mods={}; idx.objectives.forEach(function(o){
+    (o.moduleList||[o.module]).forEach(function(m){ mods[m]=true; }); });
+  var gaps=STANDARDS.unmapped(CUR.course,Object.keys(mods).map(Number));
+
+  var h='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'+
+    '<span class="mono" style="font-size:11px;color:var(--faint);line-height:1.6;flex:1;min-width:240px;">'+
+      'Each standard scores from the objectives taught in the modules that carry it. '+
+      'Mastered is the share of every student × objective pair under that standard.</span>'+
+    CSV.button("exportStandards()")+'</div>';
+
+  if(gaps.length) h+='<div class="card" style="padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--warn);">'+
+    '<span class="mono" style="font-size:11px;color:var(--warn);">UNMAPPED MODULES</span> '+
+    '<span style="font-size:13px;color:var(--dim);">M'+gaps.join(", M")+' carry no standard yet, so their objectives count toward nothing above.</span></div>';
+
+  h+='<div style="display:flex;flex-direction:column;gap:9px;">';
+  rows.sort(function(a,b){return a.pctMastered-b.pctMastered;}).forEach(function(r){
+    var col=r.pctMastered>=80?"var(--ok)":r.pctMastered>=40?"var(--warn)":"var(--bad)";
+    h+='<div class="card" style="padding:13px 15px;">'+
+      '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:7px;">'+
+        '<b class="mono" style="color:var(--bright);font-size:13px;">'+esc(r.code)+'</b>'+
+        '<span class="mono" style="font-size:10px;color:var(--faint);">M'+r.modules.join(" · M")+'</span>'+
+        '<span class="mono" style="margin-left:auto;font-size:13px;font-weight:700;color:'+col+';">'+r.pctMastered+'% mastered</span></div>'+
+      '<div style="font-size:12px;color:var(--dim);line-height:1.55;margin-bottom:9px;">'+esc(r.text)+'</div>'+
+      '<span style="display:flex;height:8px;border-radius:99px;background:var(--bg2);overflow:hidden;margin-bottom:7px;">'+
+        '<span style="display:block;height:100%;width:'+r.pctMastered+'%;background:var(--ok);"></span>'+
+        '<span style="display:block;height:100%;width:'+r.pctShaky+'%;background:var(--warn);"></span></span>'+
+      '<div class="mono" style="font-size:10px;color:var(--faint);line-height:1.6;">'+
+        r.objectives+' objective'+(r.objectives==1?'':'s')+' · '+esc(r.objectiveNames.slice(0,6).join(", "))+
+        (r.objectiveNames.length>6?' +'+(r.objectiveNames.length-6)+' more':'')+'</div>'+
+    '</div>';
+  });
+  return h+'</div>';
+}
+
+/* ----- CSV exports ----- */
+function exportStandards(){
+  var idx=objIndex(); if(!idx) return;
+  var rows=STANDARDS.classReport(CUR.course,OBJECTIVES.classReport(idx,capsByStudent()));
+  var out=[["Standard","Description","Modules","Objectives","Students","% mastered","% partial","Objective names"]];
+  rows.forEach(function(r){ out.push([r.code,r.text,"M"+r.modules.join(" M"),r.objectives,r.students,
+    r.pctMastered,r.pctShaky,r.objectiveNames.join("; ")]); });
+  CSV.download(out,"standards",CUR.name);
+}
+function exportObjectives(){
+  var idx=objIndex(); if(!idx) return;
+  var rows=objFilter(OBJECTIVES.classReport(idx,capsByStudent()));
+  var out=[["Module","Objective","Standards","Flags","Students","Mastered","Partial","Not started","% mastered"]];
+  rows.forEach(function(r){
+    var mods=(r.modules&&r.modules.length)?r.modules:[r.module];
+    var codes=[];mods.forEach(function(m){(window.STANDARDS?STANDARDS.forModule(CUR.course,m):[]).forEach(function(x){if(codes.indexOf(x)<0)codes.push(x);});});
+    out.push([mods.map(function(m){return "M"+m;}).join(" "),r.name,codes.join(" "),
+      r.flags,r.students,r.mastered,r.shaky,r.untouched,r.pctMastered]);
+  });
+  CSV.download(out,"objective-mastery",CUR.name);
+}/* Wide sheet: one row per student, one column per objective. This is the one
+   that goes into a gradebook. */
+function exportObjectiveGrid(){
+  var idx=objIndex(); if(!idx) return;
+  var by=capsByStudent();
+  var objs=objFilter(idx.objectives.map(function(o){
+    return {name:o.name,module:o.module,modules:o.moduleList};}));
+  var keep={}; objs.forEach(function(o){ keep[o.name]=1; });
+  var head=["Handle","Email","Mastered","Partial","Not started","% mastered"]
+    .concat(objs.map(function(o){
+      var m=(o.modules&&o.modules.length)?o.modules:[o.module];
+      return "M"+m.join("/")+" "+o.name;}));
+  var out=[head];
+  ROSTER.forEach(function(s){
+    var rep=OBJECTIVES.report(idx,by[s.id]).filter(function(r){return keep[r.name];});
+    var done=rep.filter(function(r){return r.state==="mastered";}).length;
+    var part=rep.filter(function(r){return r.state==="shaky";}).length;
+    var row=[s.handle,s.email||"",done,part,rep.length-done-part,
+      rep.length?Math.round(done/rep.length*100):0];
+    var m={}; rep.forEach(function(r){ m[r.name]=r.state; });
+    objs.forEach(function(o){
+      var st=m[o.name];
+      row.push(st==="mastered"?"mastered":st==="shaky"?"partial":"not started");
+    });
+    out.push(row);
+  });
+  CSV.download(out,"objective-grid",CUR.name);
+}
+function exportStudentObjectives(){
+  var idx=objIndex(); if(!idx) return;
+  var s=ROSTER.filter(function(x){return x.id===OBJSTU;})[0]; if(!s) return;
+  var rep=OBJECTIVES.report(idx,capsByStudent()[s.id]||{});
+  var out=[["Handle",s.handle],["Email",s.email||""],["Class",CUR.name],["Exported",CSV.stamp()],[],
+    ["Module","Objective","Standards","State","Flags cleared","Flags total"]];
+  rep.forEach(function(r){
+    var mods=(r.modules&&r.modules.length)?r.modules:[r.module];
+    var codes=[];mods.forEach(function(m){(window.STANDARDS?STANDARDS.forModule(CUR.course,m):[]).forEach(function(x){if(codes.indexOf(x)<0)codes.push(x);});});
+    out.push([mods.map(function(m){return "M"+m;}).join(" "),r.name,codes.join(" "),
+      r.state,r.cleared,r.total]);
+  });
+  CSV.download(out,"objectives-"+CSV.slug(s.handle),CUR.name);
+}
+function exportVocab(){
+  var out=[["Handle","Email"].concat(VG.map(function(g){return VGL[g]+" (sec)";}))
+    .concat(["Total (sec)","Total","Sessions","Completed","Best quiz %","Last active"])];
+  (VOCAB||[]).forEach(function(r){
+    var sess=VG.reduce(function(a,g){return a+vsecs(r.sessions,g);},0);
+    var done=VG.reduce(function(a,g){return a+vsecs(r.done,g);},0);
+    var last=VG.map(function(g){return (r.last||{})[g]||"";}).filter(Boolean).sort().pop()||"";
+    out.push([r.handle,r.email||""].concat(VG.map(function(g){return vsecs(r.games,g);}))
+      .concat([r.total_secs||0,fmtMin(r.total_secs),sess,done,
+        Math.round((Number((r.best||{}).quiz)||0)*100),last]));
+  });
+  CSV.download(out,"vocab-time",CUR.name);
+}
+function exportRoster(){
+  var out=[["Handle","Email","XP","Bonus","Flags solved","Badges","Squad","Last seen"]];
+  var gname={}; (GROUPS||[]).forEach(function(g){ gname[g.id]=g.name; });
+  (ROSTER||[]).forEach(function(s){
+    out.push([s.handle,s.email||"",s.points||0,s.bonus||0,s.solved_count||0,
+      s.badge_count||0,gname[s.group_id]||"",s.last_seen||""]);
+  });
+  CSV.download(out,"roster",CUR.name);
+}
+function exportFlags(){
+  var out=[["When","Handle","Challenge","Level","Points","Seconds","Retries","Tainted"]];
+  (FLAGS||[]).forEach(function(f){
+    out.push([f.created_at,f.handle,f.title||f.flag_key,f.level||"",f.points||0,
+      f.secs||"",f.retries||0,f.tainted?"yes":""]);
+  });
+  CSV.download(out,"flag-captures",CUR.name);
+}
+function exportVocabSessions(){
+  var out=[["Played","Logged","Handle","Game","Seconds","Terms","Accuracy %","XP","Flagged fast"]];
+  (VSESS||[]).forEach(function(r){
+    out.push([r.played_at,r.created_at,r.handle,VGL[r.game]||r.game,r.secs,r.terms,
+      r.accuracy,r.xp,r.suspect?"yes":""]);
+  });
+  CSV.download(out,"practice-runs",CUR.name);
 }
 
 function objClassView(idx){
@@ -1487,10 +1688,11 @@ function objClassView(idx){
   '</div>';
 
   h+=objModChips(idx);
+  h+='<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">'+CSV.button("exportObjectives()")+'</div>';
   h+='<div style="display:flex;flex-direction:column;gap:7px;">';
   rows.sort(function(a,b){return a.pctMastered-b.pctMastered||a.name.localeCompare(b.name);}).forEach(function(r){
     h+='<div class="card" style="padding:11px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'+
-      '<span class="mono" style="font-size:10px;color:var(--faint);width:26px;">M'+r.module+'</span>'+
+      '<span class="mono" style="font-size:10px;color:var(--faint);min-width:26px;">'+((r.modules&&r.modules.length>1)?"M"+r.modules.join("/"):"M"+r.module)+'</span>'+
       '<b style="color:var(--bright);font-size:13px;min-width:150px;flex:0 1 auto;">'+esc(r.name)+'</b>'+
       '<span class="mono" style="font-size:10px;color:var(--faint);white-space:nowrap;">'+r.flags+' flag'+(r.flags==1?'':'s')+'</span>'+
       objBar(r)+
@@ -1504,7 +1706,8 @@ function objClassView(idx){
 
 function objRosterView(idx){
   var by=capsByStudent();
-  var objs=objFilter(idx.objectives.map(function(o){return {name:o.name,module:o.module};}));
+  var objs=objFilter(idx.objectives.map(function(o){
+    return {name:o.name,module:o.module,modules:o.moduleList};}));
   var names={}; objs.forEach(function(o){ names[o.name]=true; });
 
   var rows=ROSTER.map(function(s){
@@ -1519,8 +1722,10 @@ function objRosterView(idx){
   }).sort(function(a,b){return b.mastered-a.mastered;});
 
   var h=objModChips(idx)+
-    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
-      'Tap a student for their full objective map and next-step list \u2014 that view prints cleanly for conferences.</div>'+
+    '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'+
+      '<span class="mono" style="font-size:11px;color:var(--faint);line-height:1.6;flex:1;min-width:220px;">'+
+      'Tap a student for their full objective map and next-step list.</span>'+
+      CSV.button("exportObjectiveGrid()","Export grid")+'</div>'+
     '<div style="overflow:auto;"><table><thead><tr>'+
       '<th>Handle</th><th>Mastered</th><th>Partial</th><th>Progress</th><th>Biggest gaps</th></tr></thead><tbody>';
   rows.forEach(function(r){
@@ -1556,7 +1761,9 @@ function objStudentView(idx){
     return {name:r.name,module:r.module,flag:open};
   });
 
-  var h='<button class="btn sm" onclick="setObjView(\'students\')" style="margin-bottom:14px;">\u2190 All students</button>'+
+  var h='<div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">'+
+    '<button class="btn sm" onclick="setObjView(\'students\')">\u2190 All students</button>'+
+    CSV.button("exportStudentObjectives()","Export this student")+'</div>'+
     '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;">'+
       '<h3 style="font-size:20px;color:var(--bright);margin:0;">'+esc(s.handle)+'</h3>'+
       '<span class="mono" style="font-size:11px;color:var(--dim);">'+esc(s.email||"")+'</span></div>'+
@@ -1594,7 +1801,8 @@ function objStudentView(idx){
 /* Your own authoring gaps: which objectives are thin, and what isn't measured. */
 function objCoverageView(idx){
   var rows=objFilter(idx.objectives.map(function(o){
-    return {name:o.name,module:o.module,flags:o.flags.length,mergedFrom:o.mergedFrom,
+    return {name:o.name,module:o.module,modules:o.moduleList,
+            flags:o.flags.length,mergedFrom:o.mergedFrom,
             levels:o.flags.map(function(f){return f.level;}).filter(Boolean)};
   }));
   var thin=rows.filter(function(r){return r.flags<2;});
@@ -1614,7 +1822,7 @@ function objCoverageView(idx){
     '<th>Module</th><th>Objective</th><th>Flags</th><th>Levels</th><th>Merged from</th></tr></thead><tbody>';
   rows.sort(function(a,b){return a.module-b.module||a.name.localeCompare(b.name);}).forEach(function(r){
     h+='<tr>'+
-      '<td class="mono" style="color:var(--faint)">M'+r.module+'</td>'+
+      '<td class="mono" style="color:var(--faint)">'+((r.modules&&r.modules.length>1)?"M"+r.modules.join("/"):"M"+r.module)+'</td>'+
       '<td><b style="color:var(--bright)">'+esc(r.name)+'</b></td>'+
       '<td class="mono" style="color:'+(r.flags<2?"var(--warn)":"var(--text)")+'">'+r.flags+'</td>'+
       '<td class="mono" style="font-size:11px;color:var(--dim)">'+(r.levels.length?esc(r.levels.join(" \u00b7 ")):"\u2014")+'</td>'+
@@ -1702,6 +1910,112 @@ function cheatsView(){
   return h;
 }
 
+/* ----- teacher accounts -----
+   Teacher access is school-wide, not per-class, so teachers live in their own
+   table rather than as a flag on a class roster — a checkbox next to a student
+   would imply access to only that class, which isn't what the permission does.
+   Adding an email here does not create a login: the person signs in with their
+   own school Google account and is recognised on arrival. */
+var TEACHERS=[], ME={teacher:true,owner:true};
+async function loadTeachers(){
+  try{
+    var r=await rpc("ctf_t_teachers");
+    TEACHERS=Array.isArray(r)?r:(r&&r.error?{error:r.error}:[]);
+  }catch(e){ TEACHERS={error:"missing_rpc"}; }
+}
+async function loadWhoami(){
+  try{ var r=await rpc("ctf_t_whoami"); if(r&&!r.error) ME=r; }
+  catch(e){ ME={teacher:true,owner:true,legacy:true}; }
+}
+async function addTeacher(){
+  var email=(el("tEmail")||{}).value||"";
+  var name=(el("tName")||{}).value||"";
+  var role=(el("tRole")||{}).value||"staff";
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())){ alert("That doesn’t look like an email address."); return; }
+  try{
+    var r=await rpc("ctf_t_teacher_save",{p_email:email,p_role:role,p_name:name,p_note:""});
+    if(r&&r.error) throw new Error(r.error);
+    await loadTeachers(); renderMain();
+  }catch(e){
+    var m=(e&&e.message)||"";
+    alert(/not_owner/.test(m)?"Only an owner can add teachers.":
+          /bad_email/.test(m)?"That doesn’t look like an email address.":
+          "Couldn’t add that teacher — run supabase/teachers.sql.");
+  }
+}
+async function setTeacherRole(email,role){
+  try{ await rpc("ctf_t_teacher_save",{p_email:email,p_role:role,p_name:"",p_note:""});
+       await loadTeachers(); renderMain(); }
+  catch(e){ alert("Couldn’t change that role."); }
+}
+async function removeTeacher(email){
+  if(!confirm("Remove teacher access for "+email+"?\n\nTheir account is untouched — they simply stop being able to open the dashboard.")) return;
+  try{
+    var r=await rpc("ctf_t_teacher_remove",{p_email:email});
+    if(r&&r.error) throw new Error(r.error);
+    await loadTeachers(); renderMain();
+  }catch(e){
+    var m=(e&&e.message)||"";
+    alert(/founder/.test(m)?"The course owner account can’t be removed.":
+          /last_owner/.test(m)?"That’s the last owner — promote someone else first.":
+          /not_owner/.test(m)?"Only an owner can remove teachers.":
+          "Couldn’t remove that teacher.");
+  }
+}
+function teachersPanel(){
+  if(TEACHERS&&TEACHERS.error)
+    return '<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+      '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Teacher accounts</div>'+
+      '<div class="empty" style="color:var(--bad);text-align:left;padding:12px 0;">Run supabase/teachers.sql to add other teachers.</div></div>';
+
+  var owner=!!ME.owner;
+  var h='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Teacher accounts</div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:14px;">'+
+      'Teacher access is school-wide — it covers every class, not just this one. '+
+      'Adding an email does not create a login: they sign in with their own school Google account and are recognised on arrival.'+
+      (owner?'':'<br><b style="color:var(--warn)">You have staff access, so you can see this list but not change it.</b>')+
+    '</div>';
+
+  if(owner){
+    h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
+      '<input id="tEmail" type="email" placeholder="teacher@southfayette.org" '+
+        'style="flex:1;min-width:210px;padding:9px 11px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;">'+
+      '<input id="tName" placeholder="Name (optional)" '+
+        'style="min-width:150px;padding:9px 11px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;">'+
+      '<select id="tRole" style="padding:9px 10px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;">'+
+        '<option value="staff">Staff — full teaching access</option>'+
+        '<option value="owner">Owner — can also manage teachers</option></select>'+
+      '<button class="btn pri" onclick="addTeacher()">Add teacher</button></div>';
+  }
+
+  if(!TEACHERS.length) return h+'<div class="empty" style="text-align:left;padding:8px 0;">No teachers listed yet.</div></div>';
+
+  h+='<div style="overflow:auto;"><table><thead><tr>'+
+    '<th>Email</th><th>Name</th><th>Role</th><th>Last seen</th>'+(owner?'<th></th>':'')+
+  '</tr></thead><tbody>';
+  TEACHERS.forEach(function(t){
+    var isMe=String(t.email).toLowerCase()===String(ME.email||"").toLowerCase();
+    h+='<tr>'+
+      '<td class="mono" style="font-size:12px;color:var(--bright)">'+esc(t.email)+
+        (isMe?' <span class="pill" style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)">you</span>':'')+'</td>'+
+      '<td style="color:var(--dim)">'+esc(t.full_name||"\u2014")+'</td>'+
+      '<td>'+(t.role==="owner"
+        ? '<span class="pill" style="background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)">owner</span>'
+        : '<span class="pill" style="background:var(--bg2);color:var(--dim)">staff</span>')+
+        (t.founder?' <span class="mono" style="font-size:10px;color:var(--faint)">permanent</span>':'')+'</td>'+
+      '<td style="color:var(--faint);white-space:nowrap">'+(t.last_seen?ago(t.last_seen):"never")+'</td>'+
+      (owner?'<td style="text-align:right;white-space:nowrap">'+
+        (t.founder?'<span class="mono" style="font-size:11px;color:var(--faint)">course owner</span>':
+          '<button class="btn sm" onclick=\'setTeacherRole("'+esc(t.email)+'","'+(t.role==="owner"?"staff":"owner")+'")\'>'+
+            (t.role==="owner"?"Make staff":"Make owner")+'</button> '+
+          '<button class="btn sm danger" onclick=\'removeTeacher("'+esc(t.email)+'")\'>Remove</button>')+
+      '</td>':'')+
+    '</tr>';
+  });
+  return h+'</tbody></table></div></div>';
+}
+
 /* ----- settings: streak-freeze, code, delete ----- */
 function settingsView(){
   var frozen=(CUR.frozen_dates||[]).slice().sort();
@@ -1723,7 +2037,9 @@ function settingsView(){
     '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Danger zone</div>'+
     '<div style="color:var(--dim);font-size:13px;margin-bottom:12px;">Deleting a class removes all its students, progress, flag captures, and integrity logs. This cannot be undone.</div>'+
     '<button class="btn danger" onclick="deleteClass()">Delete this class</button>'+
-  '</div></div>';
+  '</div>';
+  h+=teachersPanel();
+  h+='</div>';
   return h;
 }
 var _freeze=[];

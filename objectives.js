@@ -254,7 +254,8 @@
     else if (cleared > 0) state = "shaky";
 
     return {
-      name: obj.name, module: obj.module, total: flags.length,
+      name: obj.name, module: obj.module, modules: obj.moduleList || [obj.module],
+      total: flags.length,
       cleared: cleared, tainted: dirty, state: state, clean: hardClean,
       pct: flags.length ? Math.round(cleared / flags.length * 100) : 0
     };
@@ -279,6 +280,7 @@
       });
       return {
         name: o.name, module: o.module, moduleList: o.moduleList,
+        modules: o.moduleList,
         flags: o.flags.length, mergedFrom: o.mergedFrom,
         students: ids.length, mastered: mastered, shaky: shaky, untouched: untouched,
         pctMastered: ids.length ? Math.round(mastered / ids.length * 100) : 0,

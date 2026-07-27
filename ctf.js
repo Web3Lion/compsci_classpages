@@ -78,10 +78,20 @@
   const KEY = "ctf-" + course;
   const NKEY = "ctf-handle";
 
-  const RANKS = [
-    [0, "Recruit"], [0.2, "Script Kiddie"], [0.4, "Analyst"],
-    [0.6, "Operator"], [0.85, "Threat Hunter"]
-  ];
+  /* RANKS — themed per course, like the badges. The thresholds are shares of
+     the course's total XP, so a short course promotes at the same pace as a
+     long one. A single shared ladder used to hand an AP CSP student the title
+     "Script Kiddie", which is a security pejorative that means nothing in a
+     programming course and reads badly next to ADA's encouraging tone. */
+  const RANK_LADDERS = {
+    cyber:  [[0, "Recruit"],    [0.2, "Script Kiddie"], [0.4, "Analyst"],
+             [0.6, "Operator"], [0.85, "Threat Hunter"]],
+    apcsp:  [[0, "Hello World"],[0.2, "Coder"],         [0.4, "Debugger"],
+             [0.6, "Developer"],[0.85, "Architect"]],
+    web3:   [[0, "Observer"],   [0.2, "Node Runner"],   [0.4, "Miner"],
+             [0.6, "Validator"],[0.85, "Chain Architect"]]
+  };
+  const RANKS = RANK_LADDERS[course] || RANK_LADDERS.cyber;
   function rankFor(p, total) { const T = total || 1; let r = RANKS[0][1]; for (const [t, n] of RANKS) if (p >= t * T) r = n; return r; }
   function nextRank(p, total) { const T = total || 1; for (const [t, n] of RANKS) if (p < t * T) return { t: Math.ceil(t * T), n }; return null; }
 
@@ -136,14 +146,20 @@
   function byModule(){ const by = {}; (ctf.challenges || []).forEach(c => { const m = c.module || 0; (by[m] = by[m] || []).push(c); }); return by; }
   function incNeeds(a){ const o = []; let prev = 0; a.forEach(v => { v = Math.max(Math.round(v), prev + 1); o.push(v); prev = v; }); return o; }
   function badgeThemes(){
-    const A = ADV;
+    /* While the guide is asleep the badge case must not name it: the third boss
+       tier is the only badge that carries the character's name, and a locked
+       badge still shows its name, so it would spoil the arrival. */
+    const A = personaOn() ? ADV : null;
+    const bossTop = { cyber: A ? A + " Bane" : "Unstoppable",
+                      csp:   A ? A + " Approved" : "Shipped",
+                      web3:  A ? A + " Consensus" : "Finalized" };
     const cyber = {
       flags:{ name:"Flag Hunter",  tiers:["Recon","Infiltrator","Ghost"] },
       xp:   { name:"Power Core",   tiers:["Charged","Overclocked","Singularity"] },
       streak:{ name:"Daily Grind", tiers:["Regular","Relentless","Unbroken"] },
       mods: { name:"Sector Sweep", tiers:["Breacher","Sweeper","Total Control"] },
       vocab:{ name:"Cipher Mind",  tiers:["Decoder","Cryptographer","Codebreaker"] },
-      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", A + " Bane"] }
+      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", bossTop.cyber] }
     };
     const csp = {
       flags:{ name:"Bug Bounty",    tiers:["Tester","Debugger","Zero-Day"] },
@@ -151,7 +167,7 @@
       streak:{ name:"Daily Commit", tiers:["Committer","Streaker","Green Board"] },
       mods: { name:"Module Master", tiers:["Runner","Builder","Architect"] },
       vocab:{ name:"Syntax Sage",   tiers:["Parser","Compiler","Interpreter"] },
-      boss: { name:"Boss Slayer",   tiers:["Challenger","Duelist", A + " Approved"] }
+      boss: { name:"Boss Slayer",   tiers:["Challenger","Duelist", bossTop.csp] }
     };
     const web3 = {
       flags:{ name:"Block Hunter", tiers:["Node","Validator","Whale"] },
@@ -159,7 +175,7 @@
       streak:{ name:"Daily Mint",  tiers:["Holder","Diamond Hands","HODLer"] },
       mods: { name:"Chain Cleared",tiers:["Fork","Merge","Mainnet"] },
       vocab:{ name:"Ledger Mind",  tiers:["Ledger","Smart Contract","Oracle"] },
-      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", A + " Consensus"] }
+      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", bossTop.web3] }
     };
     return course === "apcsp" ? csp : course === "web3" ? web3 : cyber;
   }
@@ -1059,6 +1075,12 @@
     </div>`;
   }
   function bossRow(m) {
+    /* The boss card is the guide's card: it is titled with the character's
+       name and written in its voice. While the guide is asleep it renders
+       nothing at all — not a greyed placeholder, which would half-spoil the
+       reveal. The moment the teacher flips persona_on, the boss appears
+       alongside the arrival. */
+    if (!personaOn()) return "";
     const bkey = window.CTF_COURSE || "c";
     const best = (state.boss && state.boss[bkey + ":" + m]) || 0;
     if (MENTOR) return `<div class="card bossCard" style="position:relative;overflow:hidden;margin-top:10px;border:1px solid var(--adv);background:#0b1016;box-shadow:0 0 22px -10px var(--advglow), inset 0 0 44px -24px var(--adv);">
@@ -1154,7 +1176,9 @@
         ${step(1, "Open a module", "tap a module to expand its challenges. Work through them in any order.")}
         ${step(2, "Capture flags", "text flags come in <b>Easy / Medium / Hard</b> tiers (50 / 100 / 150 XP). Interactive captures — match, order, spot — are worth XP too.")}
         ${step(3, "Beat the clock", "you get <b>20 seconds at full XP</b> once you begin; after that the flag's value ticks down, so don't stall. A wrong answer locks the flag briefly — longer on Hard — so think before you submit. Revealing a hint costs 10% of the flag. Looking things up elsewhere is always fine — it never costs you points.")}
-        ${step(4, `Face ${ADV}`, `finish each module with its final challenge — three escalating rounds. Set a player handle below so your score is ready for the leaderboard.`)}
+        ${personaOn()
+          ? step(4, `Face ${ADV}`, `finish each module with its final challenge — three escalating rounds. Set a player handle below so your score is ready for the leaderboard.`)
+          : step(4, "Set your handle", "pick a player handle below so your score is ready for the leaderboard.")}
       </div>
     </div>`;
   }
@@ -1250,6 +1274,8 @@
              done: !!state.endgameWon, mods: mods.length };
   }
   function endgameCard() {
+    // every line of the finale names the guide; hide it until the guide is awake
+    if (!personaOn()) return "";
     const e = endgameState();
     const title = MENTOR ? "FINAL BUILD" : "FINAL GAUNTLET";
     const pctTxt = Math.round(e.have.pct * 100) + "%";

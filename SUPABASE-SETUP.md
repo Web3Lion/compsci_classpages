@@ -28,6 +28,35 @@ row-level security and only the four `ctf_*` functions are reachable.
 2. Paste the entire contents of `supabase/schema.sql` → **Run**.
    This creates the tables (`classes`, `students`, `progress`, `cheat_events`),
    locks them with RLS, and installs the `ctf_join` / `ctf_sync` / `ctf_cheat` functions.
+3. Then run the rest, **in this order**, pasting each file's contents the same way:
+
+   | # | File | Adds |
+   |---|------|------|
+   | 1 | `google-auth.sql` | Google sign-in, teacher identity |
+   | 2 | `class-gates.sql` | Module/flag locks, guide + answer-key switches |
+   | 3 | `answer-key.sql` | Sealed answer key |
+   | 4 | `teacher-reports.sql` | Roster, flag captures, attendance |
+   | 5 | `attempt-log.sql` | Wrong-guess log, time-to-solve outliers |
+   | 6 | `class-groups.sql` | Teacher groups |
+   | 7 | `pioneer.sql` | First-in-class capture bonus |
+   | 8 | `vocab-log.sql` | Vocab time on task |
+   | 9 | `vocab-sessions.sql` | Per-run vocab audit trail |
+   | 10 | `roster-csv.sql` | CSV roster, move/remove students |
+   | 11 | `squads.sql` | Student-facing squads |
+   | 12 | `objectives.sql` | Objective mastery reporting |
+   | 13 | `teachers.sql` | Multiple teacher accounts |
+   | 14 | `multi-domain.sql` | Student sign-in from the second domain |
+
+   **Order matters in three places.** `objectives.sql` must come after
+   `squads.sql`, and both `teachers.sql` and `multi-domain.sql` must come after
+   `google-auth.sql` — each pair redefines the same function, and the later one
+   wins. Re-running `google-auth.sql` on its own will silently lock out every
+   student on the second domain and every added teacher.
+
+4. **Check your work at any time:** paste the contents of
+   `supabase/check-installed.sql` → **Run**. It lists every add-on with
+   ✅/❌ and flags all three run-order problems. It only reads the catalog and
+   changes nothing.
 
 ## 3. Turn it on in the site
 Edit `supabase-config.js` and paste your two values:
@@ -100,5 +129,7 @@ where class_id = '<class-uuid>' and lower(handle) = lower('<handle>');
 - **Teacher page:** create/rename classes, generate codes, reset PINs, view rosters
   & cheat logs, and set **streak-freeze** dates (holidays / no-class days) — the
   `frozen_dates` column and the engine's `isSkipDay` hook are already in place.
-- **Google sign-in** restricted to `@southfayette.org` as a stronger identity option
-  alongside anonymous handles.
+- **Google sign-in** restricted to the school's Workspace domains — `@southfayette.org`
+  for staff and `@lions.net` for students (the list lives in `supabase-config.js` as
+  `schoolDomains` and in `supabase/multi-domain.sql` as `_school_domains()`; both must
+  agree) — as a stronger identity option alongside anonymous handles.

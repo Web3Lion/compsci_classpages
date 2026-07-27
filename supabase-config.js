@@ -11,8 +11,10 @@
    browser exactly like before, no login gate, no sync. Nothing breaks.
    ========================================================================== */
 window.SUPABASE_CONFIG = {
-  // Google sign-in: only this domain may join classes, and only this address
-  // gets the teacher dashboard.
+  // Google sign-in: any address on these domains may join a class, and only
+  // the teachers table (supabase/teachers.sql) grants the dashboard.
+  // First entry is the staff/primary domain.
+  schoolDomains: ["southfayette.org", "lions.net"],
   schoolDomain: "southfayette.org",
   teacherEmail: "rnreasey@southfayette.org",
 

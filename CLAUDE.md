@@ -6,6 +6,22 @@
   Do NOT create single-`difficulty` text flags — always author all three tiers.
 - Flag hashes: `sha256(answer.trim().toLowerCase())`. Answers are wrapped `flag{...}`
   unless the prompt says otherwise. Console helper: `CTF.hash("flag{...}")`.
+- **ALWAYS update `answers.local.js` in the same pass as any flag change** — adding,
+  editing, or removing a flag in `config.js` must update the matching entry under
+  that course's key. Keys are `"<id>"` or `"<id>#0|#1|#2"` (Easy/Medium/Hard);
+  values are the exact typed answer. Interactive (`match`/`order`/`spot`/`phish`)
+  and `vocab` challenges have no typed answer and never appear there. After
+  editing, re-verify every entry by hashing it against `config.js`. The file is
+  gitignored and uploaded through `answers.html`; never commit or serve it.
+- **Every challenge lives in exactly one place**: the `challenges: [ ... ]` array
+  inside that course's `window.COURSE_CONFIG.<course>.ctf = { … }` block, grouped by
+  `/* MODULE n — Name */` dividers, in display order. There are no `.push()` calls
+  and no post-processing blocks that rewrite the array — do not reintroduce either.
+  To add, edit, or remove a flag, edit that array directly.
+- **Still audit by EXECUTING `config.js`, not by scanning its text** — prompts contain
+  braces and escaped quotes that defeat regex/JSON scans, which makes live flags look
+  missing and hides duplicate ids. Enumerate with
+  `new Function('window','document',src)(win, stub)` then read `win.COURSE_CONFIG`.
 - Each module should also have **≥3 dedicated interactive captures** (type `match`,
   `order`, `spot`, `phish`) plus the vocab `type:"vocab"` challenge (Easy/Med = typed,
   Hard = a per-module mini-game via `hardMode`).

@@ -290,6 +290,16 @@
   }
 
   /* step 1 — google */
+  /* "@southfayette.org" with one domain, "@southfayette.org or @lions.net"
+     with two — a student must never be told to use the staff domain. */
+  function domainPhrase(bold) {
+    var ds = (AUTH.domains && AUTH.domains.length ? AUTH.domains : [AUTH.domain]);
+    var w = ds.map(function (d) {
+      return bold ? '<b style="color:var(--text,#cfe0f3)">@' + d + '</b>' : '@' + d;
+    });
+    return w.length < 2 ? w[0] : w.slice(0, -1).join(", ") + " or " + w[w.length - 1];
+  }
+
   function gateSignIn(msg) {
     var g = '<svg width="18" height="18" viewBox="0 0 48 48" style="vertical-align:-4px;margin-right:9px;">' +
       '<path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.7-2 5-4.4 6.6v5.5h7.1c4.1-3.8 6.6-9.4 6.6-16.3z"/>' +
@@ -298,7 +308,7 @@
       '<path fill="#EA4335" d="M24 10.7c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.7 4.5 13.9l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>';
     shell(
       (art() ? art().statusStrip(course) : "") +
-      head("Sign in to play", "Use your <b style=\"color:var(--text,#cfe0f3)\">@" + AUTH.domain + "</b> school Google account. This is the only page that needs a sign-in.") +
+      head("Sign in to play", "Use your " + domainPhrase(true) + " school Google account. This is the only page that needs a sign-in.") +
       (art() ? art().guideBox(course) : "") +
       (msg ? '<div style="font-size:12px;color:var(--adv2,#ff6b6b);margin-bottom:12px;line-height:1.5;">' + msg + '</div>' : "") +
       '<button id="gGoogle" style="width:100%;padding:13px;border-radius:10px;border:1px solid var(--border3,#244a6d);' +
@@ -371,7 +381,7 @@
           /class_not_found/.test(m) ? "No class with that code. Check with your teacher." :
           /handle_taken/.test(m)    ? "Someone in that class already uses that name." :
           /not_allowed/.test(m)     ? "Please choose a school-appropriate name." :
-          /not_school_account/.test(m) ? "Use your @" + AUTH.domain + " account." :
+          /not_school_account/.test(m) ? "Use your " + domainPhrase(false) + " school account." :
           /not_signed_in/.test(m)   ? "Your sign-in expired — reload the page." :
                                       "Couldn't join. Check your connection.";
         go.disabled = false; go.textContent = "JOIN CLASS";
@@ -417,7 +427,7 @@
     try { u = await AUTH.requireSchool(); }
     catch (e) { return; }                       // network down: stay local, no gate
 
-    if (u && u.wrongDomain) { clearSess(); return gateSignIn("That account isn't a @" + AUTH.domain + " address. Sign in with your school account."); }
+    if (u && u.wrongDomain) { clearSess(); return gateSignIn("That isn't a " + domainPhrase(false) + " address. Sign in with your school account."); }
     if (!u) { if (!sess) gateSignIn(); return; }
 
     // Signed in — reconcile with the classes this account actually belongs to.
