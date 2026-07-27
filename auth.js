@@ -85,11 +85,27 @@
   }
 
   /* A signed-in user on the wrong domain is signed straight back out — a
-     personal gmail account must never end up holding a class row. */
+     personal gmail account must never end up holding a class row. The refusal
+     is logged first (while the session still exists) so the teacher dashboard
+     can show WHICH domain was turned away: that is how a mis-set allow-list
+     gets diagnosed instead of guessed at. Failure to log is ignored — a missing
+     signin-log.sql must never keep the sign-out from happening. */
+  async function logReject(reason) {
+    try {
+      await rpc("ctf_log_signin_reject", {
+        p_reason: reason || "wrong_domain",
+        p_page: (location.pathname.split("/").pop() || "index.html")
+      });
+    } catch (e) {}
+  }
   async function requireSchool() {
     var u = await user();
     if (!u) return null;
-    if (!isSchool(u)) { await signOut(); return { wrongDomain: true }; }
+    if (!isSchool(u)) {
+      await logReject("wrong_domain");
+      await signOut();
+      return { wrongDomain: true, email: emailOf(u), domain: domainOf(u) };
+    }
     return u;
   }
 
@@ -97,6 +113,7 @@
     online: ONLINE, domain: DOMAIN, domains: DOMAINS, teacherEmail: TEACHER,
     client: client, rpc: rpc, user: user, requireSchool: requireSchool,
     signIn: signIn, signOut: signOut, isSchool: isSchool, isTeacher: isTeacher,
-    isStaffDomain: isStaffDomain, domainOf: domainOf, emailOf: emailOf
+    isStaffDomain: isStaffDomain, domainOf: domainOf, emailOf: emailOf,
+    logReject: logReject
   };
 })();

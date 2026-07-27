@@ -1,5 +1,17 @@
 # Cybersecurity Course Webpage — project notes
 
+## Grading invariant (ctf.js) — compare TEXT, never index
+- Interactive challenges are graded on the **visible label**, not the array position:
+  `match` on `pairs[].right`, `order` on `steps[]` text, Speed Match on the
+  definition, Blitz/boss MC on the term. Duplicate labels are therefore legal and
+  expected — a challenge may repeat "Confidentiality" as many times as it needs.
+- Never reintroduce an index comparison (`picks[i] !== i`, `bi === activeTerm`,
+  `arr.every((v,i)=>v===i)`). Two chips with identical text are indistinguishable
+  on screen, so demanding one specific copy marks a correct board wrong. This bug
+  silently affected 24 of 91 match challenges before July 2026.
+- `vocabPool()` dedupes by normalized term, so a term repeated across modules
+  can't put two identical definitions on one board. Keep that dedupe.
+
 ## CTF flag conventions (config.js + ctf.js)
 - **Text-answer flags MUST be leveled** with Easy / Medium / Hard tiers by default
   (`"levels": [{difficulty, points, prompt, hint, flagHash}, ...]`), points 50 / 100 / 150.

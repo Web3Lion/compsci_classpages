@@ -363,6 +363,16 @@
   let vocabState = {};
   let spotSel = {};
   let matchSel = {}, matchState = {}, orderState = {};
+  /* Timed mini-games only banked their XP when the clock hit zero, so leaving
+     the page (or collapsing the card) mid-run threw the work away. Each game
+     registers how to bank what it has; we call it if the page goes away. */
+  let hardCommit = null;
+  function commitHard() { const f = hardCommit; hardCommit = null; if (typeof f === "function") { try { f(); } catch (e) {} } reportHardRun(0, 0); }
+  try {
+    document.addEventListener("visibilitychange", function () { if (document.hidden) commitHard(); });
+    window.addEventListener("pagehide", commitHard);
+    window.addEventListener("beforeunload", commitHard);
+  } catch (e) {}
   let tainted = {}, taintPending = false, hardRunning = false, currentHardKey = null;
   const CANARY = "flag{ai_h0n3yp0t}";
   const VOCAB_COUNTS = [3, 5, null];        // null = rapid-fire (unlimited)
@@ -486,7 +496,19 @@
   function vocabPool(c) {
     const all = window.CTF_VOCAB || [];
     const f = (c.poolModule != null) ? all.filter(v => v.m === c.poolModule) : all;
-    return f.length ? f : all;
+    /* One entry per term. Several vocab lists repeat a term across modules, and
+       a duplicate could put two identical definitions on the same board — where
+       tapping the "other" copy of the right answer read as wrong. */
+    return dedupeTerms(f.length ? f : all);
+  }
+  function dedupeTerms(list) {
+    const seen = {}, out = [];
+    (list || []).forEach(v => {
+      const k = normAlpha(String(v && v.t || ""));
+      if (!k || seen[k]) return;
+      seen[k] = 1; out.push(v);
+    });
+    return out.length ? out : (list || []);
   }
   function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   function shuffleNI(a) { if (a.length < 2) return a.slice(); let s; do { s = shuffle(a); } while (s.every((v, i) => v === a[i])); return s; }
@@ -1509,7 +1531,7 @@
         ${solved
           ? `<div class="mono" style="font-size:13px;color:var(--accent);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;">All ${n} matched correctly. +${earnedTxt(c.id, c.points || 0)} XP earned.</div>`
           : `<div style="display:flex;flex-direction:column;gap:9px;margin-bottom:12px;">${leftHtml}</div>
-             <div class="mono" style="font-size:10px;letter-spacing:1px;color:var(--faint);margin-bottom:8px;">ATTACK TYPES</div>
+             <div class="mono" style="font-size:10px;letter-spacing:1px;color:var(--faint);margin-bottom:8px;">${esc((c.rightLabel || "options").toUpperCase())}</div>
              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">${rightHtml}</div>
              <form class="ctfForm" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
                <span class="mono" style="font-size:12px;color:var(--dim);">${matched}/${n} matched</span>
@@ -1618,6 +1640,7 @@
     if (!pool.length) return;
     let order = weightedShuffle(pool, chal.bias), ptr = 0, score = 0, done = false;
     const endAt = Date.now() + RAPID_SECS * 1000;
+    hardCommit = () => { if (done) return; done = true; if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; } if (score > 0) onSolve(chal, 2, chal.id + "#2", score * RAPID_PER); };
     const disp = t => t.replace(/\(.*?\)/g, "").trim();
     function nextTerm() { if (ptr >= order.length) { order = weightedShuffle(pool, chal.bias); ptr = 0; } return pool[order[ptr++]]; }
     let cur = nextTerm();
@@ -1713,8 +1736,28 @@
       intro: "Word search: the module's terms are hidden in the grid \u2014 across, down, diagonally, forwards or backwards. Click the first and last letter of each term. No timer \u2014 <strong style=\"color:var(--amber);\">25 XP</strong> per term found." }
   };
   function hardMeta(c) { return HARD_MODES[c.hardMode] || HARD_MODES.rapid; }
+  let hardGame = null;      // label of the running mini-game, for the capture title
+  /* One record per finished run, banked XP or not: "I played the decrypt game"
+     has to be checkable even when the run scored nothing. */
+  let hardRun = null;
+  function reportHardRun(score, xp) {
+    const r = hardRun; if (!r || r.reported) return;
+    if (!score && r.score) score = r.score;
+    r.reported = true;
+    if (typeof window.CTF_HARDRUN !== "function") return;
+    try {
+      window.CTF_HARDRUN({
+        challengeId: r.chalId, game: r.game, score: Math.max(0, score || 0),
+        xp: Math.max(0, Math.round(xp || 0)),
+        secs: Math.max(0, Math.round((Date.now() - r.t0) / 1000)),
+        banked: (xp || 0) > 0
+      });
+    } catch (e) {}
+  }
   function startHard(chal) {
     const m = chal.hardMode || "rapid";
+    hardGame = (HARD_MODES[m] || HARD_MODES.rapid).label;
+    hardRun = { chalId: chal.id, game: hardGame, t0: Date.now(), reported: false };
     if (m === "cipher") return startCipher(chal);
     if (m === "unscramble") return startUnscramble(chal);
     if (m === "speedmatch") return startSpeedMatch(chal);
@@ -1735,7 +1778,11 @@
     const clk = wrap.querySelector(".hClock"); if (clk) { clk.textContent = mm + ":" + String(ss).padStart(2, "0"); clk.style.color = left <= 30 ? "var(--adv2)" : "var(--bright)"; }
     const bar = wrap.querySelector(".hBar"); if (bar) bar.style.width = (left / total * 100) + "%";
   }
-  function setHUD(wrap, score, xp) { const s = wrap.querySelector(".hScore"); if (s) s.textContent = score; const x = wrap.querySelector(".hXp"); if (x) x.textContent = xp + " XP"; }
+  function setHUD(wrap, score, xp) {
+    if (hardRun && !hardRun.reported) { hardRun.score = score; hardRun.liveXp = xp; }
+    const s = wrap.querySelector(".hScore"); if (s) s.textContent = score;
+    const x = wrap.querySelector(".hXp"); if (x) x.textContent = xp + " XP";
+  }
   function lenBoxes(term, typed) {
     let ti = 0; const up = typed.replace(/[^a-z0-9]/gi, "").toUpperCase();
     return term.split("").map(ch => {
@@ -1752,6 +1799,7 @@
     if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; }
     const per = 20, total = RAPID_SECS;
     let order = weightedShuffle(pool, chal.bias), ptr = 0, score = 0, done = false, shift = 1;
+    hardCommit = () => { if (done) return; done = true; if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; } if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); };
     const caesar = (str, s) => str.replace(/[a-z]/gi, ch => { const b = ch <= "Z" ? 65 : 97; return String.fromCharCode((ch.charCodeAt(0) - b + s) % 26 + b); });
     const next = () => { if (ptr >= order.length) { order = weightedShuffle(pool, chal.bias); ptr = 0; } return pool[order[ptr++]]; };
     let cur = next();
@@ -1780,7 +1828,7 @@
     $(".cSkip").addEventListener("click", () => { cur = next(); load(); });
     load();
     const endAt = Date.now() + total * 1000;
-    rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); else render(); } }, 200);
+    rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); else { reportHardRun(0, 0); render(); } } }, 200);
   }
 
   function startUnscramble(chal) {
@@ -1790,6 +1838,7 @@
     if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; }
     const per = 20, total = RAPID_SECS;
     let order = weightedShuffle(pool, chal.bias), ptr = 0, score = 0, done = false, tiles = [], picked = [];
+    hardCommit = () => { if (done) return; done = true; if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; } if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); };
     const next = () => { if (ptr >= order.length) { order = weightedShuffle(pool, chal.bias); ptr = 0; } return pool[order[ptr++]]; };
     const letters = term => term.toUpperCase().split("").filter(ch => /[a-z0-9]/i.test(ch));
     const scramble = arr => { if (arr.length < 2) return arr.slice(); let s; do { s = shuffle(arr); } while (s.join("") === arr.join("")); return s; };
@@ -1822,7 +1871,7 @@
     $(".uSkip").addEventListener("click", () => { cur = next(); load(); });
     load();
     const endAt = Date.now() + total * 1000;
-    rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); else render(); } }, 200);
+    rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); else { reportHardRun(0, 0); render(); } } }, 200);
   }
 
   function startSpeedMatch(chal) {
@@ -1832,6 +1881,7 @@
     if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; }
     const per = 15, total = RAPID_SECS, SIZE = Math.min(5, pool.length);
     let score = 0, done = false, board = [], leftOrder = [], rightOrder = [], matched = {}, activeTerm = null, po = weightedShuffle(pool, chal.bias), pp = 0;
+    hardCommit = () => { if (done) return; done = true; if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; } if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); };
     function drawBoard() { board = []; for (let i = 0; i < SIZE; i++) { if (pp >= po.length) { po = weightedShuffle(pool, chal.bias); pp = 0; } board.push(pool[po[pp++]]); } leftOrder = board.map((_, i) => i); rightOrder = shuffle(board.map((_, i) => i)); matched = {}; activeTerm = null; draw(); }
     wrap.innerHTML = hudHTML("PAIRS") + `
       <div class="smMsg mono" style="font-size:12px;min-height:16px;margin-bottom:8px;"></div>
@@ -1844,12 +1894,16 @@
       $(".smGrid").innerHTML = col1 + col2;
       wrap.querySelectorAll(".smTerm").forEach(b => b.addEventListener("click", () => { if (done) return; activeTerm = +b.getAttribute("data-bi"); draw(); }));
       wrap.querySelectorAll(".smDef").forEach(b => b.addEventListener("click", () => { if (done || activeTerm == null) return; const bi = +b.getAttribute("data-bi"); const m = $(".smMsg");
-        if (bi === activeTerm) { matched[bi] = true; score++; setHUD(wrap, score, score * per); activeTerm = null; m.textContent = "\u2713 matched"; m.style.color = "var(--accent)"; if (Object.keys(matched).length >= board.length) { setTimeout(() => { if (!done) drawBoard(); }, 350); } else draw(); }
+        /* by text, not index: two board cells showing the same definition are
+           indistinguishable, so either one has to count */
+        const sameDef = board[bi] && board[activeTerm] &&
+          String(board[bi].d).trim().toLowerCase() === String(board[activeTerm].d).trim().toLowerCase();
+        if (bi === activeTerm || sameDef) { matched[bi] = true; score++; setHUD(wrap, score, score * per); activeTerm = null; m.textContent = "\u2713 matched"; m.style.color = "var(--accent)"; if (Object.keys(matched).length >= board.length) { setTimeout(() => { if (!done) drawBoard(); }, 350); } else draw(); }
         else { m.textContent = "\u2717 not a match"; m.style.color = "var(--adv2)"; activeTerm = null; draw(); } }));
     }
     drawBoard();
     const endAt = Date.now() + total * 1000;
-    rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); else render(); } }, 200);
+    rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (score > 0) onSolve(chal, 2, chal.id + "#2", score * per); else { reportHardRun(0, 0); render(); } } }, 200);
   }
 
   function startBlitz(chal) {
@@ -1859,6 +1913,7 @@
     if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; }
     const per = 15, total = RAPID_SECS;
     let order = weightedShuffle(pool, chal.bias), ptr = 0, score = 0, xp = 0, streak = 0, done = false, cur = null, choices = [];
+    hardCommit = () => { if (done) return; done = true; if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; } if (xp > 0) onSolve(chal, 2, chal.id + "#2", xp); };
     const next = () => { if (ptr >= order.length) { order = weightedShuffle(pool, chal.bias); ptr = 0; } return pool[order[ptr++]]; };
     const mult = () => Math.min(4, 1 + Math.floor(streak / 3));
     wrap.innerHTML = hudHTML("CORRECT") + `
@@ -1872,7 +1927,12 @@
       <div class="bMsg mono" style="margin-top:8px;font-size:12px;min-height:16px;"></div>`;
     const $ = s => wrap.querySelector(s);
     function hudLine() { setHUD(wrap, score, xp); $(".bCombo").textContent = streak > 0 ? ("\u25b6 " + streak + " streak \u00b7 \u00d7" + mult() + " multiplier") : ""; }
-    function load() { cur = next(); const wrong = shuffle(pool.map((_, i) => i).filter(i => pool[i].t !== cur.t)).slice(0, 3).map(i => pool[i].t); choices = shuffle([cur.t].concat(wrong));
+    function load() { cur = next();
+      const seenChoice = {}; seenChoice[normAlpha(cur.t)] = 1;
+      const wrong = shuffle(pool.map((_, i) => i))
+        .map(i => pool[i].t)
+        .filter(t => { const k = normAlpha(t); if (seenChoice[k]) return false; seenChoice[k] = 1; return true; })
+        .slice(0, 3); choices = shuffle([cur.t].concat(wrong));
       $(".bDef").textContent = cur.d;
       $(".bChoices").innerHTML = choices.map((t, i) => `<button type="button" class="bChoice" data-i="${i}" style="text-align:left;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--border3);background:var(--panel);color:var(--bright);">${esc(dispTerm(t))}</button>`).join("");
       wrap.querySelectorAll(".bChoice").forEach(b => b.addEventListener("click", () => { if (done) return; const t = choices[+b.getAttribute("data-i")]; const m = $(".bMsg");
@@ -1880,7 +1940,7 @@
         else { streak = 0; b.style.borderColor = "var(--adv2)"; m.textContent = "\u2717 " + dispTerm(t) + " \u2014 streak reset"; m.style.color = "var(--adv2)"; hudLine(); setTimeout(() => { if (!done) load(); }, 600); } })); }
     load(); hudLine();
     const endAt = Date.now() + total * 1000;
-    rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (xp > 0) onSolve(chal, 2, chal.id + "#2", xp); else render(); } }, 200);
+    rapidTimer = setInterval(() => { const left = Math.max(0, (endAt - Date.now()) / 1000); tickHUD(wrap, left, total); if (left <= 0) { done = true; clearInterval(rapidTimer); rapidTimer = null; if (xp > 0) onSolve(chal, 2, chal.id + "#2", xp); else { reportHardRun(0, 0); render(); } } }, 200);
   }
 
   function startWordSearch(chal) {
@@ -1928,6 +1988,7 @@
         if (hit) { found[hit.w] = cells; m.textContent = "\u2713 " + dispTerm(hit.t); m.style.color = "var(--accent)"; setHUD(wrap, Object.keys(found).length, Object.keys(found).length * per); draw(); if (Object.keys(found).length >= placed.length) finish(); }
         else { draw(); m.textContent = "\u2717 not a term"; m.style.color = "var(--adv2)"; } }));
     }
+    hardCommit = () => finish();
     function finish() { if (done) return; done = true; const n = Object.keys(found).length; if (n > 0) onSolve(chal, 2, chal.id + "#2", n * per); else { const m = $(".wsMsg"); if (m) { m.textContent = "No terms found yet \u2014 keep looking!"; m.style.color = "var(--faint)"; } } }
     $(".wsDone").addEventListener("click", finish);
     const clk = $(".hClock"); if (clk) clk.style.display = "none"; const bw = $(".hBarWrap"); if (bw) bw.style.display = "none";
@@ -2153,14 +2214,27 @@
         if (chal.type === "match") {
           const sel = matchSel[id] || { picks: {} };
           const n = chal.pairs.length;
+          /* Grade by the LABEL, not the chip index. Plenty of challenges repeat a
+             right-side label (two safeguards both protect Confidentiality), and
+             identical chips are indistinguishable on screen — demanding one
+             specific duplicate marked a fully correct board wrong. */
+          const label = i => String((chal.pairs[i] || {}).right || "")
+            .trim().toLowerCase().replace(/\s+/g, " ");
           let ok = Object.keys(sel.picks).length === n;
-          for (let i = 0; i < n; i++) if (sel.picks[i] !== i) ok = false;
+          for (let i = 0; i < n; i++) {
+            const p = sel.picks[i];
+            if (p == null || label(p) !== label(i)) ok = false;
+          }
           if (ok) return solveTimed(chal, 0);
           return fail(chal, 0, card, msg, "\u2717 Not quite \u2014 match every scenario, and check the mismatched ones.");
         }
         if (chal.type === "order") {
           const arr = orderState[id] || [];
-          const ok = arr.length === chal.steps.length && arr.every((v, i) => v === i);
+          /* by step text, not index — if two steps are ever worded identically,
+             either arrangement of them is the same answer on screen */
+          const stepText = i => String(chal.steps[i] || "").trim().toLowerCase();
+          const ok = arr.length === chal.steps.length &&
+            arr.every((v, i) => v === i || stepText(v) === stepText(i));
           if (ok) return solveTimed(chal, 0);
           return fail(chal, 0, card, msg, "\u2717 Wrong order \u2014 reconsider the sequence and try again.");
         }
@@ -2198,6 +2272,8 @@
 
   function onSolve(chal, li, keyOverride, earnedOverride) {
     li = li || 0;
+    hardCommit = null;          // whatever was pending has now been banked
+    if (hardRun && keyOverride && /#2$/.test(String(keyOverride))) reportHardRun(hardRun.score || 0, earnedOverride);
     const usesLevels = chal.type === "vocab" || !!(chal.levels && chal.type !== "phish");
     const key = keyOverride || (usesLevels ? chal.id + "#" + li : chal.id);
     if (state.solved[key]) return;
@@ -2223,7 +2299,11 @@
         const secs = timers[key] ? Math.round((Date.now() - timers[key]) / 1000) : null;
         window.CTF_REPORT({
           course, handle: getHandle(), challengeId: chal.id, key,
-          level: chal.type === "vocab" ? VOCAB_DIFFS[li] : (usesLevels && chal.levels ? chal.levels[li].difficulty : null), title: chal.title,
+          level: chal.type === "vocab" ? VOCAB_DIFFS[li] : (usesLevels && chal.levels ? chal.levels[li].difficulty : null),
+          /* Hard vocab flags are earned by playing one of six mini-games; say
+             which, so a capture reads "Vocabulary Recall · Cipher Decode"
+             instead of leaving the teacher guessing. */
+          title: (chal.type === "vocab" && li === 2 && hardGame) ? (chal.title + " · " + hardGame) : chal.title,
           points, secs, retries: state.retry[key] || 0, tainted: !!tainted[key],
           totalPoints: s.pts, solvedCount: s.solvedCount, totalCount: s.count, ts: Date.now()
         });

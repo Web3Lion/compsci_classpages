@@ -162,6 +162,20 @@
   }
 
   /* ---- engine hooks ------------------------------------------------------ */
+  /* One finished Hard-tier mini-game run (Rapid Fire, Cipher Decode, …), banked
+     XP or not. Fire and forget: a lost log line must never cost a student XP. */
+  window.CTF_HARDRUN = function (r) {
+    var sess = loadSess(); if (!sess || !r) return;
+    AUTH.rpc("ctf_hardmode_run_google", {
+      p_student: sess.studentId,
+      p_challenge: r.challengeId || "",
+      p_game: r.game || "?",
+      p_score: r.score || 0,
+      p_xp: r.xp || 0,
+      p_secs: r.secs || 0,
+      p_banked: !!r.banked
+    }).catch(function () {});
+  };
   window.CTF_CHEAT = function (kind, detail, flagKey) {
     var sess = loadSess(); if (!sess) return;
     AUTH.rpc("ctf_cheat_google", { p_student: sess.studentId, p_kind: kind,

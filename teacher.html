@@ -263,7 +263,7 @@ var CLASSES=[], CUR=null;
 async function loadClasses(refresh){
   try{
     CLASSES=await rpc("ctf_t_classes")||[];
-    if(!refresh){ await loadWhoami(); await loadTeachers(); }
+    if(!refresh){ await loadWhoami(); await loadTeachers(); await loadRejects(); }
     renderClassList();
     if(refresh&&CUR){ var again=CLASSES.filter(function(c){return c.id===CUR.id;})[0]; if(again) selectClass(again); }
   }catch(e){ el("classList").innerHTML='<div class="empty" style="color:var(--bad)">Failed to load.</div>'; }
@@ -295,10 +295,16 @@ var SUMMARY=null, FSTATS=[], ATTEND=null, ATTEND_DAYS=28, DETAIL=null;
 // Teacher-only groupings. Students never see these — no student RPC returns one.
 var GROUPS=[], GFILTER="all", GSEL={};
 var PIONEERS=[], VOCAB=[], EXPECTED=[], VSESS=[], STAND=[], CAPS=[];
+// Global, not class-scoped: a rejected sign-in has no class yet.
+var REJECTS=null;
+// Teacher XP grants for the selected class (supabase/teacher-xp.sql).
+var GRANTS=[];
+// Arena Hard-tier mini-game runs (supabase/hardmode-log.sql).
+var HRUNS=[];
 function selectClass(c){ CUR=c; TAB="summary"; syncGateFromClass(); renderClassList(); renderMain(); loadDetail(); }
 
 async function loadDetail(){
-  ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;GROUPS=[];GSEL={};GFILTER="all";PIONEERS=[];VOCAB=[];EXPECTED=[];VSESS=[];STAND=[];CAPS=[];
+  ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;GROUPS=[];GSEL={};GFILTER="all";PIONEERS=[];VOCAB=[];EXPECTED=[];VSESS=[];STAND=[];CAPS=[];GRANTS=[];HRUNS=[];
   try{
     ROSTER=await rpc("ctf_t_roster",{p_class:CUR.id})||[];
     renderMain();
@@ -315,7 +321,9 @@ async function loadDetail(){
       rpc("ctf_t_roster_expected",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
       rpc("ctf_t_vocab_sessions",{p_class:CUR.id,p_limit:400}).catch(function(){return {error:"missing_rpc"};}),
       rpc("ctf_t_squad_standings",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
-      rpc("ctf_t_captures",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};})
+      rpc("ctf_t_captures",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
+      rpc("ctf_t_xp_grants",{p_class:CUR.id,p_limit:300}).catch(function(){return {error:"missing_rpc"};}),
+      rpc("ctf_t_hardmode_runs",{p_class:CUR.id,p_limit:400}).catch(function(){return {error:"missing_rpc"};})
     ]);
     SUMMARY=rest[0]; FLAGS=rest[1]||[]; CHEATS=rest[2]||[]; FSTATS=rest[3]||[]; ATTEND=rest[4];
     GROUPS=Array.isArray(rest[5])?rest[5]:[];
@@ -326,6 +334,8 @@ async function loadDetail(){
     VSESS=keepErr(rest[9]);
     STAND=keepErr(rest[10]);
     CAPS=keepErr(rest[11]);
+    GRANTS=keepErr(rest[12]);
+    HRUNS=keepErr(rest[13]);
     renderMain();
   }catch(e){
     var m=(e&&(e.message||""))+"";
@@ -361,7 +371,7 @@ function renderMain(){
   h+='<div class="tabs">'+
       tabBtn("summary","Summary")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
       tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+
-      tabBtn("vocab","Vocab Lab")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("enroll","Enrollment")+
+      tabBtn("vocab","Vocab Lab")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("enroll","Enrollment")+
       tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
     '</div><div style="padding-top:16px;">';
   if(TAB==="roster") h+=rosterView();
@@ -373,6 +383,7 @@ function renderMain(){
   else if(TAB==="vocab") h+=vocabView();
   else if(TAB==="squads") h+=squadsView();
   else if(TAB==="objectives") h+=objectivesView();
+  else if(TAB==="xplog") h+=xpLogView();
   else if(TAB==="enroll") h+=enrollView();
   else if(TAB==="cheats") h+=cheatsView();
   else h+=settingsView();
@@ -646,6 +657,216 @@ function flagStatsView(){
   return h+'</tbody></table></div>';
 }
 
+/* ----- XP log -----
+   Every manual grant in this class, newest first: who, how much, why, which
+   teacher, and an undo. Teacher-only — no student RPC returns any of it. */
+var XPLOGQ="";
+function setXpLogQ(v){ XPLOGQ=v; renderMain(); var i=el("xpLogSearch"); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } }
+function xpLogView(){
+  if(GRANTS&&GRANTS.error) return '<div class="empty" style="color:var(--bad)">Run supabase/teacher-xp.sql to grant XP by hand.</div>';
+  var all=Array.isArray(GRANTS)?GRANTS:[];
+  var rows=all;
+  if(XPLOGQ){ var q=XPLOGQ.toLowerCase();
+    rows=rows.filter(function(g){
+      return ((g.handle||"")+" "+(g.reason||"")+" "+(g.teacher_email||"")).toLowerCase().indexOf(q)!==-1; }); }
+  var net=all.reduce(function(a,g){ return a+(Number(g.amount)||0); },0);
+  var pos=all.filter(function(g){return (Number(g.amount)||0)>0;}).length;
+  var neg=all.length-pos;
+  var kids={}; all.forEach(function(g){ kids[g.student_id]=1; });
+
+  var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;max-width:720px;">'+
+    'XP you granted by hand \u2014 participation, helping a classmate, paper work, or making good a challenge that graded unfairly. '+
+    'Granted XP counts in leaderboards, squad standings and exports. Students never see this log.</div>';
+
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px;">'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--accent)">'+(net>0?"+":"")+net.toLocaleString()+'</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">NET XP GRANTED</div></div>'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--bright)">'+Object.keys(kids).length+'</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">STUDENTS AWARDED</div></div>'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--ok)">'+pos+'</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">GRANTS</div></div>'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:'+(neg?'var(--warn)':'var(--dim)')+'">'+neg+'</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">DEDUCTIONS</div></div>'+
+  '</div>';
+
+  h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">'+
+    '<input id="xpLogSearch" value="'+esc(XPLOGQ)+'" oninput="setXpLogQ(this.value)" placeholder="Search student, reason, teacher\u2026" '+
+      'style="padding:6px 9px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;min-width:230px;">'+
+    (XPLOGQ?'<button class="btn sm" onclick="setXpLogQ(\'\')">Clear</button>':'')+
+    '<span style="margin-left:auto;display:flex;gap:8px;">'+CSV.button("exportXpLog()")+CSV.button("exportGradebook()","Gradebook CSV")+'</span>'+
+  '</div>';
+
+  if(!all.length) return h+'<div class="empty">No XP granted yet. Open a student from the Roster, or select several and use the grant box.</div>';
+  if(!rows.length) return h+'<div class="empty">No grants match that search.</div>';
+
+  h+='<div style="overflow:auto;"><table style="font-size:12px;"><thead><tr>'+
+    '<th>When</th><th>Student</th><th>XP</th><th>Reason</th><th>Granted by</th><th></th></tr></thead><tbody>';
+  rows.forEach(function(g){
+    var a=Number(g.amount)||0;
+    h+='<tr>'+
+      '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(g.created_at)+'</td>'+
+      '<td><button onclick=\'openStudent("'+g.student_id+'")\' style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">'+
+        '<b style="color:var(--accent);border-bottom:1px dotted var(--border3);">'+esc(g.handle||"")+'</b></button></td>'+
+      '<td class="mono" style="font-weight:700;color:'+(a<0?'var(--bad)':'var(--ok)')+'">'+(a>0?'+':'')+a+'</td>'+
+      '<td style="color:var(--text)">'+esc(g.reason||'\u2014')+'</td>'+
+      '<td class="mono" style="color:var(--dim);white-space:nowrap">'+esc((g.teacher_email||"").split("@")[0])+'</td>'+
+      '<td><button class="btn sm" style="padding:3px 8px;font-size:11px;" onclick=\'undoGrant("'+g.id+'","'+esc(g.handle||"").replace(/"/g,"")+'",'+a+')\'>Undo</button></td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+function exportXpLog(){
+  var out=[["When","Student","XP","Reason","Granted by"]];
+  (Array.isArray(GRANTS)?GRANTS:[]).forEach(function(g){
+    out.push([g.created_at,g.handle||"",Number(g.amount)||0,g.reason||"",g.teacher_email||""]);
+  });
+  CSV.download(out,"xp-grants",CUR.name);
+}
+/* Gradebook shape: one row per student, the columns a gradebook actually wants —
+   total XP, share of what's available, objectives mastered, flags cleared. */
+function exportGradebook(){
+  var idx=(window.OBJECTIVES&&objIndex())||null;
+  var by=idx?capsByStudent():null;
+  var cfg=(window.COURSE_CONFIG||{})[CUR.course]||{};
+  var chals=((cfg.ctf||{}).challenges)||[];
+  var availXP=0, availFlags=0;
+  chals.forEach(function(c){
+    if(c.type==="vocab"){ availXP+=300; availFlags+=3; return; }
+    if(c.levels&&c.type!=="phish"){ c.levels.forEach(function(l){ availXP+=l.points||0; availFlags++; }); return; }
+    availXP+=c.points||0; availFlags++;
+  });
+  var out=[["Handle","Email","Total XP","XP available","% of XP","Flags cleared","Flags available","% of flags",
+    "Objectives mastered","Objectives partial","Objectives total","% objectives mastered",
+    "Granted by teacher","Badges","Streak","Last active"]];
+  (ROSTER||[]).slice().sort(function(a,b){ return String(a.handle||"").localeCompare(String(b.handle||"")); })
+  .forEach(function(s){
+    var xp=(s.points||0)+(s.bonus||0);
+    var granted=grantsFor(s.id).reduce(function(a,g){ return a+(Number(g.amount)||0); },0);
+    var m=0,p=0,tot=0;
+    if(idx&&by){
+      var rep=OBJECTIVES.report(idx,by[s.id]||{});
+      tot=rep.length;
+      rep.forEach(function(r){ if(r.state==="mastered") m++; else if(r.state==="shaky") p++; });
+    }
+    var st=s.streak||{};
+    out.push([s.handle,s.email||"",xp,availXP,availXP?Math.round(xp/availXP*100):0,
+      s.solved_count||0,availFlags,availFlags?Math.round((s.solved_count||0)/availFlags*100):0,
+      m,p,tot,tot?Math.round(m/tot*100):0,granted,s.badge_count||0,st.count||0,s.last_seen||""]);
+  });
+  CSV.download(out,"gradebook",CUR.name);
+}
+
+/* ----- teacher XP grants -----
+   XP for work the site can't see: participation, helping a neighbour, a paper
+   worksheet, or making good a challenge that graded unfairly. ±100 per grant,
+   clamped server-side too, and every grant carries a reason so the log explains
+   itself weeks later. Granted XP lands in progress.bonus, so leaderboards,
+   squads and exports pick it up with no extra wiring. */
+var XPQ=["Participation","Helped a classmate","Great question","Paper worksheet","Presentation","Make-good"];
+function grantsFor(sid){
+  return (Array.isArray(GRANTS)?GRANTS:[]).filter(function(g){ return g.student_id===sid; });
+}
+function xpGrantPanel(s){
+  if(GRANTS&&GRANTS.error) return '<div class="mono" style="font-size:11px;color:var(--bad);margin-bottom:20px;">'+
+    'Run supabase/teacher-xp.sql to grant XP by hand.</div>';
+  var mine=grantsFor(s.id);
+  var total=mine.reduce(function(a,g){ return a+(Number(g.amount)||0); },0);
+  var h='<div class="card" style="padding:14px 16px;margin-bottom:22px;background:var(--bg2);">'+
+    '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;">'+
+      '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">GRANT XP</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);">\u00b1100 per grant</span>'+
+      (total?'<span class="mono" style="font-size:11px;color:var(--accent);margin-left:auto;">'+
+        (total>0?'+':'')+total+' XP granted so far</span>':'')+
+    '</div>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:9px;">'+
+      [10,25,50,100].map(function(n){
+        return '<button class="btn sm" onclick="setXpAmt('+n+')">+'+n+'</button>'; }).join("")+
+      '<input id="xpAmt" class="in" type="number" min="-100" max="100" step="5" value="25" '+
+        'style="max-width:92px;" title="XP to grant (negative to claw back)">'+
+      '<button class="btn pri sm" id="xpGo" onclick="grantXp(\''+s.id+'\')">Grant</button>'+
+      '<span id="xpMsg" class="mono" style="font-size:11px;color:var(--ok);"></span>'+
+    '</div>'+
+    '<input id="xpReason" class="in" placeholder="Reason \u2014 what earned it (shows in the log)" maxlength="120" style="margin-bottom:8px;">'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
+      XPQ.map(function(r){ return '<button class="btn sm" onclick="setXpReason('+JSON.stringify(r).replace(/"/g,"&quot;")+')">'+esc(r)+'</button>'; }).join("")+
+    '</div>';
+  if(mine.length){
+    h+='<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin:14px 0 7px;">GRANT HISTORY</div>'+
+      '<div style="display:flex;flex-direction:column;gap:5px;max-height:150px;overflow:auto;">'+
+      mine.map(function(g){
+        var a=Number(g.amount)||0;
+        return '<div style="display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;font-size:12px;">'+
+          '<span class="mono" style="font-weight:700;min-width:46px;color:'+(a<0?'var(--bad)':'var(--ok)')+';">'+(a>0?'+':'')+a+' XP</span>'+
+          '<span style="color:var(--text);">'+esc(g.reason||"\u2014")+'</span>'+
+          '<span class="mono" style="font-size:10px;color:var(--faint);margin-left:auto;white-space:nowrap;">'+
+            esc((g.teacher_email||"").split("@")[0])+' \u00b7 '+fmtDate(g.created_at)+'</span>'+
+          '<button class="btn sm" style="padding:2px 7px;font-size:10px;" onclick=\'undoGrant("'+g.id+'","'+esc(s.handle).replace(/"/g,"")+'",'+a+')\'>Undo</button>'+
+        '</div>';
+      }).join("")+'</div>';
+  }
+  return h+'</div>';
+}
+function setXpAmt(n){ var i=el("xpAmt"); if(i) i.value=n; }
+function setXpReason(r){ var i=el("xpReason"); if(i){ i.value=r; i.focus(); } }
+async function grantXpBulk(){
+  var ids=Object.keys(GSEL).filter(function(k){return GSEL[k];});
+  if(!ids.length) return;
+  var amt=Math.round(Number((el("bulkXpAmt")||{}).value||0));
+  var why=((el("bulkXpReason")||{}).value||"").trim();
+  var msg=el("bulkXpMsg"), btn=el("bulkXpGo");
+  if(!amt||Math.abs(amt)>100){ if(msg){ msg.style.color="var(--bad)"; msg.textContent="\u00b1100 max"; } return; }
+  if(!confirm((amt>0?"Grant +":"Deduct ")+amt+" XP "+(amt>0?"to ":"from ")+ids.length+
+    " student"+(ids.length==1?"":"s")+"?"+(why?"\n\nReason: "+why:"\n\nNo reason recorded."))) return;
+  if(btn){ btn.disabled=true; btn.textContent="Granting\u2026"; }
+  try{
+    var r=await rpc("ctf_t_grant_xp_bulk",{p_students:ids,p_amount:amt,p_reason:why});
+    if(r&&r.error) throw new Error(r.error);
+    GSEL={};
+    await loadDetail();
+  }catch(e){
+    var m=(e&&(e.message||""))+"";
+    if(btn){ btn.disabled=false; btn.textContent="Grant"; }
+    if(msg){ msg.style.color="var(--bad)";
+      msg.textContent=/does not exist|schema cache/i.test(m)?"run supabase/teacher-xp.sql":"failed"; }
+  }
+}
+async function undoGrant(gid,handle,amount){
+  if(!confirm("Undo "+(amount>0?"+":"")+amount+" XP for "+handle+"?\n\nThe grant is removed from the log entirely.")) return;
+  try{
+    var r=await rpc("ctf_t_undo_grant",{p_grant:gid});
+    if(r&&r.error) throw new Error(r.error);
+    if(DETAIL&&DETAIL.student){
+      var sid=DETAIL.student.id;
+      GRANTS=await rpc("ctf_t_xp_grants",{p_class:CUR.id,p_limit:300}).catch(function(){return GRANTS;});
+      DETAIL=await rpc("ctf_t_student",{p_student:sid}).catch(function(){return DETAIL;});
+      renderStudentModal(); await loadClasses(true);
+    } else await loadDetail();
+  }catch(e){ alert("Couldn\u2019t undo that grant."); }
+}
+async function grantXp(sid){
+  var amt=Math.round(Number((el("xpAmt")||{}).value||0));
+  var why=((el("xpReason")||{}).value||"").trim();
+  var msg=el("xpMsg"), btn=el("xpGo");
+  if(!amt){ if(msg){ msg.style.color="var(--bad)"; msg.textContent="enter an amount"; } return; }
+  if(Math.abs(amt)>100){ if(msg){ msg.style.color="var(--bad)"; msg.textContent="\u00b1100 max per grant"; } return; }
+  if(!why && !confirm("Grant "+amt+" XP with no reason recorded?")) return;
+  if(btn){ btn.disabled=true; btn.textContent="Granting\u2026"; }
+  try{
+    var r=await rpc("ctf_t_grant_xp",{p_student:sid,p_amount:amt,p_reason:why});
+    if(r&&r.error) throw new Error(r.error);
+    GRANTS=await rpc("ctf_t_xp_grants",{p_class:CUR.id,p_limit:300}).catch(function(){return GRANTS;});
+    await loadClasses(true);
+    var d=await rpc("ctf_t_student",{p_student:sid}).catch(function(){return DETAIL;});
+    DETAIL=d; renderStudentModal();
+    var m2=el("xpMsg"); if(m2){ m2.style.color="var(--ok)"; m2.textContent="\u2713 "+(amt>0?"+":"")+amt+" XP granted"; }
+  }catch(e){
+    var m=(e&&(e.message||""))+"";
+    if(btn){ btn.disabled=false; btn.textContent="Grant"; }
+    if(msg){ msg.style.color="var(--bad)";
+      msg.textContent=/does not exist|schema cache/i.test(m)?"run supabase/teacher-xp.sql":"failed"; }
+  }
+}
+
 /* ----- student drill-down ----- */
 async function openStudent(sid){
   DETAIL="loading"; renderStudentModal();
@@ -691,7 +912,7 @@ function renderStudentModal(){
       stat(days.length,"ACTIVE DAYS")+
       stat(fmtMin(vlogTotal(s)),"VOCAB TIME",vlogTotal(s)?"var(--accent)":"")+
     '</div>'+
-    vlogStrip(s);
+    vlogStrip(s)+xpGrantPanel(s);
 
   // recent activity days as a compact strip
   if(days.length){
@@ -807,6 +1028,12 @@ function groupBar(){
       '<span class="mono" style="font-size:11px;color:var(--dim);">move to:</span>'+
       GROUPS.map(function(g){return '<button class="btn sm" onclick=\'assignSel("'+g.id+'")\'>'+esc(g.name)+'</button>';}).join("")+
       '<button class="btn sm" onclick="assignSel(null)">Ungrouped</button>'+
+      '<span style="width:1px;height:20px;background:var(--border2);margin:0 2px;"></span>'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);">grant XP:</span>'+
+      '<input id="bulkXpAmt" class="in" type="number" min="-100" max="100" step="5" value="25" style="max-width:80px;padding:5px 7px;font-size:12px;">'+
+      '<input id="bulkXpReason" class="in" placeholder="reason" maxlength="120" style="max-width:190px;padding:5px 8px;font-size:12px;">'+
+      '<button class="btn pri sm" id="bulkXpGo" onclick="grantXpBulk()">Grant to '+n+'</button>'+
+      '<span id="bulkXpMsg" class="mono" style="font-size:11px;color:var(--ok);"></span>'+
       '<button class="btn sm" style="margin-left:auto;" onclick="selAllVisible(false)">Clear</button></div>';
   }
   return h;
@@ -1016,9 +1243,9 @@ function vocabView(){
 var VSHOW="all";
 function setVShow(v){ VSHOW=v; renderMain(); }
 function vsessPanel(){
-  if(VSESS&&VSESS.error) return '<div class="empty" style="color:var(--bad);margin-top:8px;">Run supabase/vocab-sessions.sql to log individual practice runs.</div>';
+  if(VSESS&&VSESS.error) return '<div class="empty" style="color:var(--bad);margin-top:8px;">Run supabase/vocab-sessions.sql to log individual practice runs.</div>'+hrunsPanel();
   if(!VSESS.length) return '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:20px;line-height:1.6;">'+
-    'No individual practice runs logged yet. Runs appear here after a student finishes a game and then opens the arena \u2014 that visit is what uploads them.</div>';
+    'No individual practice runs logged yet. Runs appear here after a student finishes a game and then opens the arena \u2014 that visit is what uploads them.</div>'+hrunsPanel();
 
   var sus=VSESS.filter(function(r){return r.suspect;});
   var rows2=(VSHOW==="suspect")?sus:VSESS;
@@ -1051,7 +1278,58 @@ function vsessPanel(){
       '<td class="mono" style="color:'+(r.xp?"var(--accent)":"var(--faint)")+'">'+(r.xp?"+"+r.xp:"\u2014")+'</td>'+
     '</tr>';
   });
-  return h2+'</tbody></table></div></div>';
+  return h2+'</tbody></table></div></div>'+hrunsPanel();
+}
+
+/* ----- arena mini-game runs -----
+   The Hard tier of every vocab challenge is earned by playing one of six
+   mini-games. Those runs used to leave a trace only when they paid XP, so a
+   student who played and scored nothing looked like they'd done nothing. Every
+   finished run is logged now, banked or not. */
+function hrunsPanel(){
+  if(HRUNS&&HRUNS.error) return '<div class="empty" style="color:var(--bad);margin-top:26px;">'+
+    'Run supabase/hardmode-log.sql to log arena mini-game runs (Decrypt, Rapid Fire, Speed Match\u2026).</div>';
+  var h='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">'+
+      '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">ARENA MINI-GAME RUNS</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);">'+(Array.isArray(HRUNS)?HRUNS.length:0)+'</span>'+
+      '<span style="margin-left:auto">'+CSV.button("exportHruns()")+'</span>'+
+    '</div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+      'Hard-tier vocab games played inside the arena \u2014 one row per finished run, including runs that banked no XP. '+
+      '<b style="color:var(--warn)">Fast</b> flags a paying run under 2 seconds per point scored.</div>';
+  if(!HRUNS.length) return h+'<div class="mono" style="font-size:12px;color:var(--faint);">No runs logged yet.</div></div>';
+
+  h+='<div style="overflow:auto;max-height:420px;"><table style="font-size:12px;"><thead><tr>'+
+    '<th>Played</th><th>Handle</th><th>Game</th><th>Challenge</th><th>Score</th><th>Time</th><th>XP</th>'+
+    '</tr></thead><tbody>';
+  var titleOf=function(cid){
+    var chals=(((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf||{}).challenges||[];
+    var c=chals.filter(function(x){return x.id===cid;})[0];
+    return c?(("M"+c.module+" \u00b7 ")+c.title):cid;
+  };
+  HRUNS.forEach(function(r){
+    h+='<tr'+(r.suspect?' style="background:color-mix(in srgb,var(--warn) 7%,transparent)"':'')+'>'+
+      '<td style="color:var(--dim);white-space:nowrap">'+fmtDate(r.played_at)+
+        (r.suspect?' <span class="pill" style="background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)">fast</span>':'')+'</td>'+
+      '<td><button onclick=\'openStudent("'+r.student_id+'")\' style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">'+
+        '<b style="color:var(--accent);border-bottom:1px dotted var(--border3);">'+esc(r.handle||"")+'</b></button></td>'+
+      '<td class="mono" style="color:var(--bright)">'+esc(r.game||"")+'</td>'+
+      '<td style="color:var(--dim)">'+esc(titleOf(r.challenge_id))+'</td>'+
+      '<td class="mono" style="color:var(--dim)">'+(r.score||0)+'</td>'+
+      '<td class="mono">'+fmtSecs(r.secs)+'</td>'+
+      '<td class="mono" style="color:'+(r.xp?"var(--accent)":"var(--faint)")+'">'+(r.xp?"+"+r.xp:"0")+'</td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div></div>';
+}
+function exportHruns(){
+  var out=[["Played","Handle","Game","Challenge","Score","Seconds","XP","Banked","Flagged fast"]];
+  (Array.isArray(HRUNS)?HRUNS:[]).forEach(function(r){
+    out.push([r.played_at,r.handle||"",r.game||"",r.challenge_id||"",r.score||0,r.secs||0,
+      r.xp||0,r.banked?"yes":"",r.suspect?"yes":""]);
+  });
+  CSV.download(out,"minigame-runs",CUR.name);
 }
 
 /* ----- enrollment: CSV roster, moves, bulk removal -----
@@ -1390,7 +1668,13 @@ function squadsView(){
    the course objectives without a single prompt being re-authored. Mastery is
    deliberately stricter than points: all levels cleared, and the hardest one
    cleared within 2 wrong guesses. */
-var OBJVIEW="class", OBJMOD="all", OBJSTU=null, OBJSTD="all", OBJQ="";
+var OBJVIEW="class", OBJMOD="all", OBJSTU=null, OBJSTD="all", OBJQ="", OBJFW="all";
+/* Which standard sets this course actually uses, in reference order. */
+function objFrameworks(){
+  if(!window.STANDARDS) return [];
+  var seen={}; (STANDARDS.list(CUR.course)||[]).forEach(function(s){ seen[STANDARDS.frameworkOf(s.code)]=1; });
+  return (STANDARDS.references||[]).filter(function(r){ return seen[r.id]; });
+}
 function objIndex(){
   if(!window.OBJECTIVES||!CUR) return null;
   if(!objIndex._c) objIndex._c={};
@@ -1414,6 +1698,12 @@ function capsByStudent(){
 function setObjView(v){ OBJVIEW=v; OBJSTU=null; renderMain(); }
 function setObjMod(v){ OBJMOD=v; renderMain(); }
 function setObjStd(v){ OBJSTD=v; renderMain(); }
+function setObjFw(v){
+  OBJFW=v;
+  /* drop a standard selection that the new set doesn't contain */
+  if(OBJSTD!=="all" && v!=="all" && window.STANDARDS && STANDARDS.frameworkOf(OBJSTD)!==v) OBJSTD="all";
+  renderMain();
+}
 function setObjQ(v){ OBJQ=v; var r=renderMain(); var i=el("objSearch"); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } return r; }
 function openObjStudent(id){ OBJSTU=id; OBJVIEW="student"; renderMain(); }
 async function toggleObjectives(on){
@@ -1455,7 +1745,17 @@ function objModChips(idx){
   '</div>';
 
   var stds=(window.STANDARDS&&STANDARDS.list(CUR.course))||[];
+  var fws=objFrameworks();
+  if(OBJFW!=="all") stds=stds.filter(function(s){return STANDARDS.frameworkOf(s.code)===OBJFW;});
   h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">';
+  if(fws.length>1){
+    h+='<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">STANDARD SET</span>'+
+      '<div style="display:flex;gap:5px;flex-wrap:wrap;">'+
+      [{id:"all",short:"All sets"}].concat(fws).map(function(f){
+        return '<button class="btn sm'+(OBJFW===f.id?' pri':'')+'" onclick="setObjFw(\''+f.id+'\')"'+
+          (f.label?' title="'+esc(f.label)+'"':'')+'>'+esc(f.short)+'</button>';
+      }).join("")+'</div>';
+  }
   if(stds.length){
     h+='<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">STANDARD</span>'+
       '<select onchange="setObjStd(this.value)" style="padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;max-width:320px;">'+
@@ -1466,8 +1766,8 @@ function objModChips(idx){
   }
   h+='<input id="objSearch" value="'+esc(OBJQ)+'" oninput="setObjQ(this.value)" placeholder="Search objectives…" '+
      'style="padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;min-width:170px;">';
-  if(OBJMOD!=="all"||OBJSTD!=="all"||OBJQ)
-    h+='<button class="btn sm" onclick="OBJMOD=\'all\';OBJSTD=\'all\';OBJQ=\'\';renderMain()">Clear</button>';
+  if(OBJMOD!=="all"||OBJSTD!=="all"||OBJQ||OBJFW!=="all")
+    h+='<button class="btn sm" onclick="OBJMOD=\'all\';OBJSTD=\'all\';OBJFW=\'all\';OBJQ=\'\';renderMain()">Clear</button>';
   h+='</div>';
 
   if(OBJSTD!=="all"){
@@ -1489,6 +1789,11 @@ function objFilter(rows){
     var mods=(window.STANDARDS?STANDARDS.forCourse(CUR.course):{})||{};
     var keep={}; Object.keys(mods).forEach(function(m){ if((mods[m]||[]).indexOf(OBJSTD)!==-1) keep[m]=1; });
     out=out.filter(function(r){ return modsOf(r).some(function(m){return keep[m];}); });
+  } else if(OBJFW!=="all" && window.STANDARDS){
+    var fmods=STANDARDS.forCourse(CUR.course)||{}, fkeep={};
+    Object.keys(fmods).forEach(function(m){
+      if((fmods[m]||[]).some(function(c){return STANDARDS.frameworkOf(c)===OBJFW;})) fkeep[m]=1; });
+    out=out.filter(function(r){ return modsOf(r).some(function(m){return fkeep[m];}); });
   }
   if(OBJQ){ var q=OBJQ.toLowerCase();
     out=out.filter(function(r){return String(r.name||"").toLowerCase().indexOf(q)!==-1;}); }
@@ -1503,8 +1808,8 @@ function objectivesView(){
   if(!ROSTER.length) return '<div class="empty">No students in this class yet.</div>';
 
   var h='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
-    ['class','students','standards','coverage'].map(function(v){
-      var l={class:"Class mastery",students:"Per student",standards:"Standards",coverage:"Coverage audit"}[v];
+    ['class','students','growth','standards','coverage'].map(function(v){
+      var l={class:"Class mastery",students:"Per student",growth:"Growth",standards:"Standards",coverage:"Coverage audit"}[v];
       return '<button class="btn sm'+((OBJVIEW===v||(OBJVIEW==="student"&&v==="students"))?' pri':'')+'" onclick="setObjView(\''+v+'\')">'+l+'</button>';
     }).join("")+
     '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-left:auto;white-space:nowrap;">'+
@@ -1515,6 +1820,7 @@ function objectivesView(){
 
   if(OBJVIEW==="student") return h+objStudentView(idx);
   if(OBJVIEW==="students") return h+objRosterView(idx);
+  if(OBJVIEW==="growth") return h+objGrowthView(idx);
   if(OBJVIEW==="standards") return h+objStandardsView(idx);
   if(OBJVIEW==="coverage") return h+objCoverageView(idx);
   return h+objClassView(idx);
@@ -1531,6 +1837,8 @@ function objStandardsView(idx){
       esc(courseMeta(CUR.course).label)+' and I’ll wire them up — the mapping lives in standards.js.</div>';
 
   var rows=STANDARDS.classReport(CUR.course,OBJECTIVES.classReport(idx,capsByStudent()));
+  if(OBJFW!=="all") rows=rows.filter(function(r){return STANDARDS.frameworkOf(r.code)===OBJFW;});
+  if(OBJSTD!=="all") rows=rows.filter(function(r){return r.code===OBJSTD;});
   if(OBJQ){ var q=OBJQ.toLowerCase();
     rows=rows.filter(function(r){return (r.code+' '+r.text).toLowerCase().indexOf(q)!==-1;}); }
   var mods={}; idx.objectives.forEach(function(o){
@@ -1541,14 +1849,46 @@ function objStandardsView(idx){
     '<span class="mono" style="font-size:11px;color:var(--faint);line-height:1.6;flex:1;min-width:240px;">'+
       'Each standard scores from the objectives taught in the modules that carry it. '+
       'Mastered is the share of every student × objective pair under that standard.</span>'+
+    (function(){ var rf=((window.STANDARDS&&STANDARDS.references)||[]).filter(function(r){return OBJFW==="all"||r.id===OBJFW;});
+      return rf.map(function(r){ return '<a href="'+r.url+'" target="_blank" rel="noopener" class="btn sm" title="'+esc(r.label)+'">'+esc(r.short)+' ↗</a>'; }).join(''); })()+
     CSV.button("exportStandards()")+'</div>';
+
+  (function(){ var fws=objFrameworks();
+    if(fws.length<2) return;
+    h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">'+
+      '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">STANDARD SET</span>'+
+      [{id:"all",short:"All sets"}].concat(fws).map(function(f){
+        return '<button class="btn sm'+(OBJFW===f.id?' pri':'')+'" onclick="setObjFw(\''+f.id+'\')"'+
+          (f.label?' title="'+esc(f.label)+'"':'')+'>'+esc(f.short)+'</button>';
+      }).join("")+
+      '<input value="'+esc(OBJQ)+'" oninput="setObjQ(this.value)" placeholder="Search standards…" id="objSearch" '+
+        'style="padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;min-width:170px;">'+
+      ((OBJFW!=="all"||OBJSTD!=="all"||OBJQ)?'<button class="btn sm" onclick="OBJFW=\'all\';OBJSTD=\'all\';OBJQ=\'\';renderMain()">Clear</button>':'')+
+    '</div>';
+  })();
 
   if(gaps.length) h+='<div class="card" style="padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--warn);">'+
     '<span class="mono" style="font-size:11px;color:var(--warn);">UNMAPPED MODULES</span> '+
     '<span style="font-size:13px;color:var(--dim);">M'+gaps.join(", M")+' carry no standard yet, so their objectives count toward nothing above.</span></div>';
 
+  if(!rows.length) h+='<div class="empty">No standards match this filter.</div>';
   h+='<div style="display:flex;flex-direction:column;gap:9px;">';
-  rows.sort(function(a,b){return a.pctMastered-b.pctMastered;}).forEach(function(r){
+  var FW={cyberorg:"var(--accent)",ap:"var(--accent2)",apcsp:"var(--warn)",pa:"var(--ok)"};
+  var groups=[["cyberorg","CYBER.ORG K-12 Cybersecurity Standards"],["ap","AP Cybersecurity Course & Exam Description"],["apcsp","AP Computer Science Principles CED"],["pa","PA / CSTA Computer Science Standards"]];
+  var byFw=function(r){ return (window.STANDARDS.frameworkOf?STANDARDS.frameworkOf(r.code):"cyberorg"); };
+  var sorted=rows.slice().sort(function(a,b){return a.pctMastered-b.pctMastered;});
+  groups.forEach(function(g){
+    var set=sorted.filter(function(r){return byFw(r)===g[0];});
+    if(!set.length) return;
+    var rf=((window.STANDARDS.references)||[]).filter(function(x){return x.id===g[0];})[0];
+    h+='<div style="display:flex;align-items:baseline;gap:9px;margin:8px 0 2px;">'+
+      '<span class="mono" style="font-size:10px;letter-spacing:.09em;color:'+FW[g[0]]+';">'+esc(g[1].toUpperCase())+'</span>'+
+      '<span class="mono" style="font-size:10px;color:var(--faint);">'+set.length+' code'+(set.length==1?'':'s')+'</span>'+
+      (rf?'<a href="'+rf.url+'" target="_blank" rel="noopener" class="mono" style="font-size:10px;color:var(--faint);margin-left:auto;">open reference ↗</a>':'')+
+    '</div>';
+    set.forEach(renderStdCard);
+  });
+  function renderStdCard(r){
     var col=r.pctMastered>=80?"var(--ok)":r.pctMastered>=40?"var(--warn)":"var(--bad)";
     h+='<div class="card" style="padding:13px 15px;">'+
       '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:7px;">'+
@@ -1563,7 +1903,7 @@ function objStandardsView(idx){
         r.objectives+' objective'+(r.objectives==1?'':'s')+' · '+esc(r.objectiveNames.slice(0,6).join(", "))+
         (r.objectiveNames.length>6?' +'+(r.objectiveNames.length-6)+' more':'')+'</div>'+
     '</div>';
-  });
+  }
   return h+'</div>';
 }
 
@@ -1571,8 +1911,10 @@ function objStandardsView(idx){
 function exportStandards(){
   var idx=objIndex(); if(!idx) return;
   var rows=STANDARDS.classReport(CUR.course,OBJECTIVES.classReport(idx,capsByStudent()));
-  var out=[["Standard","Description","Modules","Objectives","Students","% mastered","% partial","Objective names"]];
-  rows.forEach(function(r){ out.push([r.code,r.text,"M"+r.modules.join(" M"),r.objectives,r.students,
+  if(OBJFW!=="all") rows=rows.filter(function(r){return STANDARDS.frameworkOf(r.code)===OBJFW;});
+  var out=[["Framework","Standard","Description","Modules","Objectives","Students","% mastered","% partial","Objective names"]];
+  rows.forEach(function(r){ out.push([({ap:"AP Cybersecurity CED",apcsp:"AP CSP CED",pa:"PA / CSTA"})[STANDARDS.frameworkOf(r.code)]||"CYBER.ORG",
+    r.code,r.text,"M"+r.modules.join(" M"),r.objectives,r.students,
     r.pctMastered,r.pctShaky,r.objectiveNames.join("; ")]); });
   CSV.download(out,"standards",CUR.name);
 }
@@ -1643,10 +1985,11 @@ function exportVocab(){
   CSV.download(out,"vocab-time",CUR.name);
 }
 function exportRoster(){
-  var out=[["Handle","Email","XP","Bonus","Flags solved","Badges","Squad","Last seen"]];
+  var out=[["Handle","Email","XP","Bonus","Granted by teacher","Flags solved","Badges","Squad","Last seen"]];
   var gname={}; (GROUPS||[]).forEach(function(g){ gname[g.id]=g.name; });
   (ROSTER||[]).forEach(function(s){
-    out.push([s.handle,s.email||"",s.points||0,s.bonus||0,s.solved_count||0,
+    var granted=grantsFor(s.id).reduce(function(a,g){ return a+(Number(g.amount)||0); },0);
+    out.push([s.handle,s.email||"",s.points||0,s.bonus||0,granted,s.solved_count||0,
       s.badge_count||0,gname[s.group_id]||"",s.last_seen||""]);
   });
   CSV.download(out,"roster",CUR.name);
@@ -1702,6 +2045,192 @@ function objClassView(idx){
     '</div>';
   });
   return h+'</div>';
+}
+
+/* ----- growth -----
+   Weekly mastery snapshots, reconstructed from the timestamp already on every
+   capture rather than stored: history goes back to the class's first flag, and
+   nothing has to be captured on a schedule. A week's snapshot is mastery
+   computed from every capture made on or before the end of that week, so the
+   same stricter mastery rule as the rest of the tab applies at each point in
+   time. The module / standard / search filters narrow the series too. */
+var GROWMAX=14;                       // weeks charted (most recent)
+function weekStartOf(ms){
+  var d=new Date(ms); d.setHours(0,0,0,0);
+  d.setDate(d.getDate()-((d.getDay()+6)%7));   // Monday
+  return d;
+}
+function capsAsOf(cut){
+  var m={};
+  (Array.isArray(CAPS)?CAPS:[]).forEach(function(c){
+    if(new Date(c.created_at).getTime()>cut) return;
+    (m[c.student_id]=m[c.student_id]||{})[c.flag_key]=
+      {tainted:!!c.tainted,wrong_tries:Number(c.wrong_tries)||0};
+  });
+  ROSTER.forEach(function(s){ if(!m[s.id]) m[s.id]={}; });
+  return m;
+}
+/* [{start,label,cut,pairs,mastered,shaky,active}] + per-student mastered counts */
+function growSeries(idx){
+  var caps=(Array.isArray(CAPS)?CAPS:[]).filter(function(c){return c.created_at;});
+  if(!caps.length||!ROSTER.length) return null;
+  var ck=[CUR.id,caps.length,OBJMOD,OBJSTD,OBJFW,OBJQ].join("|");
+  if(growSeries._k===ck) return growSeries._v;
+
+  var first=weekStartOf(Math.min.apply(null,caps.map(function(c){return new Date(c.created_at).getTime();})));
+  var thisWk=weekStartOf(Date.now()), starts=[], d=new Date(first.getTime());
+  while(d.getTime()<=thisWk.getTime() && starts.length<80){
+    starts.push(new Date(d.getTime()));
+    d.setDate(d.getDate()+7); d=weekStartOf(d.getTime());
+  }
+  if(starts.length>GROWMAX) starts=starts.slice(starts.length-GROWMAX);
+
+  var keep={};
+  objFilter(idx.objectives.map(function(o){
+    return {name:o.name,module:o.module,modules:o.moduleList};})).forEach(function(o){ keep[o.name]=1; });
+
+  var weeks=starts.map(function(st,i){
+    var next=weekStartOf(new Date(st.getTime()+8*86400000).getTime()).getTime();
+    var cut=Math.min(next-1,Date.now());
+    var by=capsAsOf(cut), mastered=0, shaky=0, pairs=0, per={};
+    ROSTER.forEach(function(s){
+      var rep=OBJECTIVES.report(idx,by[s.id]||{}).filter(function(r){return keep[r.name];});
+      var m=0,k=0;
+      rep.forEach(function(r){ if(r.state==="mastered") m++; else if(r.state==="shaky") k++; });
+      mastered+=m; shaky+=k; pairs+=rep.length;
+      per[s.id]={mastered:m,shaky:k,total:rep.length,
+        pct:rep.length?Math.round(m/rep.length*100):0};
+    });
+    var active={};
+    caps.forEach(function(c){ var t=new Date(c.created_at).getTime();
+      if(t>=st.getTime()&&t<=cut) active[c.student_id]=1; });
+    return {start:st.getTime(), cut:cut, current:i===starts.length-1,
+      label:st.toLocaleDateString(undefined,{month:"short",day:"numeric"}),
+      pairs:pairs, mastered:mastered, shaky:shaky, per:per,
+      active:Object.keys(active).length,
+      pct:pairs?Math.round(mastered/pairs*100):0};
+  });
+  growSeries._k=ck; growSeries._v={weeks:weeks,objectives:Object.keys(keep).length};
+  return growSeries._v;
+}
+function growSpark(vals){
+  var max=100;
+  return '<span style="display:flex;align-items:flex-end;gap:2px;height:22px;flex:none;">'+
+    vals.map(function(v){
+      var hpx=Math.max(2,Math.round(v/max*22));
+      return '<span title="'+v+'%" style="width:5px;height:'+hpx+'px;border-radius:2px;background:'+
+        (v>=80?"var(--ok)":v>=40?"var(--accent)":v>0?"var(--warn)":"var(--border3)")+';display:block;"></span>';
+    }).join("")+'</span>';
+}
+function growDelta(n,unit){
+  var c=n>0?"var(--ok)":n<0?"var(--bad)":"var(--faint)";
+  return '<span class="mono" style="font-size:11px;color:'+c+';white-space:nowrap;">'+
+    (n>0?"+":n<0?"\u2212":"\u00b1")+Math.abs(n)+(unit||"")+'</span>';
+}
+function objGrowthView(idx){
+  var s=growSeries(idx);
+  if(!s) return objModChips(idx)+'<div class="empty">No captures yet \u2014 growth appears once this class starts clearing flags.</div>';
+  var W=s.weeks, last=W[W.length-1], prev=W.length>1?W[W.length-2]:null;
+  var dPct=prev?last.pct-prev.pct:last.pct;
+  var dPairs=prev?last.mastered-prev.mastered:last.mastered;
+  var gained=0, flat=0;
+  ROSTER.forEach(function(st){
+    var now=(last.per[st.id]||{}).mastered||0, was=prev?((prev.per[st.id]||{}).mastered||0):0;
+    if(now>was) gained++; else flat++;
+  });
+
+  var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;max-width:760px;">'+
+    'Each week is mastery as it stood at the end of that week, rebuilt from capture timestamps \u2014 '+
+    'no snapshot job to run, and the history reaches back to this class\u2019s first flag. '+
+    'Percentages are mastered student \u00d7 objective pairs across '+s.objectives+' filtered objective'+(s.objectives==1?'':'s')+'.</div>';
+
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px;">'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--bright)">'+last.pct+'%</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">MASTERY THIS WEEK</div></div>'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:'+
+      (dPct>0?'var(--ok)':dPct<0?'var(--bad)':'var(--dim)')+'">'+(dPct>0?"+":dPct<0?"\u2212":"\u00b1")+Math.abs(dPct)+'%</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">VS LAST WEEK</div></div>'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--ok)">'+(dPairs>0?"+":"")+dPairs+'</div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">OBJECTIVES NEWLY MASTERED</div></div>'+
+    '<div class="card" style="padding:14px 16px;"><div class="mono" style="font-size:22px;font-weight:800;color:var(--bright)">'+gained+'<span style="font-size:13px;color:var(--faint);font-weight:600;"> / '+ROSTER.length+'</span></div>'+
+      '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">STUDENTS WHO GREW</div></div>'+
+  '</div>';
+
+  h+=objModChips(idx);
+  h+='<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">'+CSV.button("exportGrowth()")+'</div>';
+
+  /* week columns */
+  h+='<div class="card" style="padding:16px;margin-bottom:16px;">'+
+    '<div style="display:flex;align-items:flex-end;gap:8px;height:190px;">';
+  W.forEach(function(w,i){
+    var pm=w.pairs?Math.round(w.mastered/w.pairs*150):0;
+    var ps=w.pairs?Math.round(w.shaky/w.pairs*150):0;
+    var dd=i?w.pct-W[i-1].pct:0;
+    h+='<div style="flex:1;min-width:26px;display:flex;flex-direction:column;align-items:center;gap:5px;justify-content:flex-end;height:100%;" '+
+        'title="'+w.label+' \u00b7 '+w.mastered+' mastered, '+w.shaky+' partial of '+w.pairs+' pairs \u00b7 '+w.active+' active">'+
+      '<span class="mono" style="font-size:11px;color:'+(w.current?'var(--bright)':'var(--dim)')+';font-weight:700;">'+w.pct+'%</span>'+
+      (i?'<span class="mono" style="font-size:9px;color:'+(dd>0?'var(--ok)':dd<0?'var(--bad)':'var(--faint)')+';">'+(dd>0?"+":dd<0?"\u2212":"")+(dd?Math.abs(dd):"")+'</span>':'<span style="height:11px;"></span>')+
+      '<span style="width:100%;max-width:44px;display:flex;flex-direction:column;justify-content:flex-end;height:150px;">'+
+        (ps?'<span style="height:'+ps+'px;background:var(--warn);opacity:.55;border-radius:4px 4px 0 0;display:block;"></span>':'')+
+        '<span style="height:'+Math.max(2,pm)+'px;background:'+(w.current?'var(--ok)':'var(--ok)')+';opacity:'+(w.current?1:.72)+';border-radius:'+(ps?'0 0 4px 4px':'4px')+';display:block;"></span>'+
+      '</span>'+
+      '<span class="mono" style="font-size:9.5px;color:var(--faint);white-space:nowrap;">'+esc(w.label)+'</span>'+
+    '</div>';
+  });
+  h+='</div>'+
+    '<div class="mono" style="font-size:10px;color:var(--faint);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;">'+
+      '<span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--ok);margin-right:5px;"></span>MASTERED</span>'+
+      '<span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--warn);opacity:.55;margin-right:5px;"></span>PARTIAL</span>'+
+      '<span>WEEK OF (MONDAY) \u00b7 LAST '+W.length+' WEEK'+(W.length==1?'':'S')+'</span></div>'+
+  '</div>';
+
+  /* per-student growth */
+  var rows=ROSTER.map(function(st){
+    var cur=last.per[st.id]||{mastered:0,shaky:0,total:0,pct:0};
+    var was=prev?(prev.per[st.id]||{mastered:0,pct:0}):{mastered:0,pct:0};
+    var firstW=W[0].per[st.id]||{mastered:0};
+    return {s:st, cur:cur, d:cur.mastered-was.mastered, dPct:cur.pct-was.pct,
+      since:cur.mastered-firstW.mastered,
+      spark:W.map(function(w){return (w.per[st.id]||{}).pct||0;})};
+  }).sort(function(a,b){ return b.d-a.d || b.cur.mastered-a.cur.mastered; });
+
+  h+='<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin:4px 0 8px;">PER STUDENT \u00b7 SORTED BY GROWTH THIS WEEK</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:7px;">';
+  rows.forEach(function(r){
+    h+='<div class="card" onclick="openObjStudent(\''+r.s.id+'\')" style="padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;cursor:pointer;">'+
+      '<b style="color:var(--bright);font-size:13px;min-width:120px;">'+esc(r.s.handle)+'</b>'+
+      growSpark(r.spark)+
+      '<span class="mono" style="font-size:12px;color:var(--ok);white-space:nowrap;">'+r.cur.mastered+' mastered</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--warn);white-space:nowrap;">'+r.cur.shaky+' partial</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--faint);white-space:nowrap;">'+r.cur.pct+'%</span>'+
+      '<span style="margin-left:auto;display:flex;gap:10px;align-items:center;">'+
+        '<span class="mono" style="font-size:10px;color:var(--faint);">THIS WEEK</span>'+growDelta(r.d)+
+        '<span class="mono" style="font-size:10px;color:var(--faint);">SINCE '+esc(W[0].label).toUpperCase()+'</span>'+growDelta(r.since)+
+      '</span>'+
+    '</div>';
+  });
+  return h+'</div>';
+}
+function exportGrowth(){
+  var idx=objIndex(); if(!idx) return;
+  var s=growSeries(idx); if(!s) return;
+  var out=[["Handle","Email","Metric"].concat(s.weeks.map(function(w){return "Week of "+w.label;}))
+    .concat(["Growth this week","Growth since "+s.weeks[0].label])];
+  var last=s.weeks[s.weeks.length-1], prev=s.weeks.length>1?s.weeks[s.weeks.length-2]:null;
+  ROSTER.forEach(function(st){
+    var g=function(w,f){ return (w.per[st.id]||{})[f]||0; };
+    out.push([st.handle,st.email||"","Objectives mastered"]
+      .concat(s.weeks.map(function(w){return g(w,"mastered");}))
+      .concat([g(last,"mastered")-(prev?g(prev,"mastered"):0), g(last,"mastered")-g(s.weeks[0],"mastered")]));
+    out.push([st.handle,st.email||"","% mastered"]
+      .concat(s.weeks.map(function(w){return g(w,"pct");}))
+      .concat([g(last,"pct")-(prev?g(prev,"pct"):0), g(last,"pct")-g(s.weeks[0],"pct")]));
+  });
+  out.push([]);
+  out.push(["CLASS","","% mastered"].concat(s.weeks.map(function(w){return w.pct;})));
+  out.push(["CLASS","","Objective pairs mastered"].concat(s.weeks.map(function(w){return w.mastered;})));
+  out.push(["CLASS","","Students active"].concat(s.weeks.map(function(w){return w.active;})));
+  CSV.download(out,"mastery-growth",CUR.name);
 }
 
 function objRosterView(idx){
@@ -2039,8 +2568,80 @@ function settingsView(){
     '<button class="btn danger" onclick="deleteClass()">Delete this class</button>'+
   '</div>';
   h+=teachersPanel();
+  h+=rejectsPanel();
   h+='</div>';
   return h;
+}
+
+/* ----- rejected sign-ins -----
+   Every account our own gate turned away, with the domain it came from. A run
+   of rejections sharing one domain IS the answer to "what do students actually
+   sign in as" — add that domain to supabase-config.js and _school_domains().
+   Reasons: wrong_domain (not on the allow-list), not_teacher (a school account
+   that opened the dashboard). */
+async function loadRejects(){
+  try{ var r=await rpc("ctf_t_signin_rejects",{p_limit:200});
+    REJECTS=(r&&r.error)?{error:r.error}:r; }
+  catch(e){ REJECTS={error:"missing_rpc"}; }
+}
+async function refreshRejects(){ await loadRejects(); renderMain(); }
+async function clearRejects(){
+  if(!confirm("Clear the rejected sign-in log?")) return;
+  try{ await rpc("ctf_t_signin_rejects_clear"); }catch(e){}
+  await refreshRejects();
+}
+function rejectsPanel(){
+  var h='<div style="border-top:1px solid var(--border);padding-top:18px;margin-top:26px;">'+
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">'+
+      '<div style="font-size:15px;font-weight:700;color:var(--bright);">Rejected sign-ins</div>'+
+      '<button class="btn sm" style="margin-left:auto;" onclick="refreshRejects()">Refresh</button>'+
+    '</div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">'+
+      'Accounts Google let in but this site turned away. If a batch of students share one domain here, '+
+      'that domain is the one missing from the allow-list — add it to <span class="mono" style="color:var(--accent);">supabase-config.js</span> '+
+      '(<span class="mono">schoolDomains</span>) and to <span class="mono" style="color:var(--accent);">_school_domains()</span> in '+
+      '<span class="mono">supabase/multi-domain.sql</span>. This log is class-independent.</div>';
+
+  if(!REJECTS) return h+'<div class="empty" style="text-align:left;padding:10px 0;color:var(--dim);font-size:13px;">Loading…</div></div>';
+  if(REJECTS.error) return h+'<div class="empty" style="color:var(--bad);text-align:left;padding:10px 0;">'+
+    'Run <span class="mono">supabase/signin-log.sql</span> to record rejected sign-ins.</div></div>';
+
+  var rows=REJECTS.rows||[], doms=REJECTS.domains||[], allow=REJECTS.allowed||[];
+  h+='<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">ALLOW-LIST · '+
+    (allow.length?allow.map(function(d){return esc(d);}).join(" · "):"—")+'</div>';
+
+  if(!rows.length) return h+'<div class="empty" style="text-align:left;padding:10px 0;color:var(--ok);font-size:13px;">'+
+    'Nothing rejected. Every account that has signed in was allowed through.</div></div>';
+
+  /* domain roll-up first: this is the line that answers the question */
+  var unknown=doms.filter(function(d){ return !d.domain_allowed; });
+  if(unknown.length) h+='<div class="card" style="padding:12px 14px;margin-bottom:12px;border-left:3px solid var(--warn);">'+
+    '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--warn);margin-bottom:7px;">DOMAINS NOT ON THE ALLOW-LIST</div>'+
+    unknown.map(function(d){
+      return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:3px 0;">'+
+        '<b class="mono" style="color:var(--bright);font-size:13px;">@'+esc(d.domain||"(none)")+'</b>'+
+        '<span class="mono" style="font-size:11px;color:var(--dim);">'+d.accounts+' account'+(d.accounts==1?'':'s')+'</span>'+
+        '<span class="mono" style="font-size:11px;color:var(--dim);">'+d.attempts+' attempt'+(d.attempts==1?'':'s')+'</span>'+
+        '<span class="mono" style="font-size:11px;color:var(--faint);margin-left:auto;">'+ago(d.last_at)+'</span>'+
+      '</div>';
+    }).join("")+'</div>';
+
+  h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+  rows.forEach(function(r){
+    var why=r.reason==="not_teacher"
+      ? {t:"not the teacher account",c:"var(--dim)"}
+      : {t:"domain not allowed",c:"var(--warn)"};
+    h+='<div class="card" style="padding:9px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+
+      '<span class="mono" style="font-size:12px;color:var(--bright);">'+esc(r.email)+'</span>'+
+      '<span class="pill" style="background:var(--panel3);color:'+why.c+';">'+why.t+'</span>'+
+      (r.page?'<span class="mono" style="font-size:10px;color:var(--faint);">'+esc(r.page)+'</span>':'')+
+      '<span class="mono" style="font-size:11px;color:var(--dim);margin-left:auto;">'+r.attempts+'×</span>'+
+      '<span class="mono" style="font-size:11px;color:var(--faint);min-width:70px;text-align:right;">'+ago(r.last_at)+'</span>'+
+    '</div>';
+  });
+  h+='</div>';
+  h+='<button class="btn sm" style="margin-top:12px;" onclick="clearRejects()">Clear log</button>';
+  return h+'</div>';
 }
 var _freeze=[];
 function freezeChips(list){ _freeze=list.slice();
@@ -2222,7 +2823,7 @@ async function createClass(){
   var u=null;
   try{ u=await AUTH.user(); }catch(e){}
   if(!u){ el("login").style.display="block"; return; }
-  if(!AUTH.isTeacher(u)) return denied(AUTH.emailOf(u));
+  if(!AUTH.isTeacher(u)){ AUTH.logReject&&AUTH.logReject("not_teacher"); return denied(AUTH.emailOf(u)); }
   el("app").style.display="block";
   loadClasses();
 })();

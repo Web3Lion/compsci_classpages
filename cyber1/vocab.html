@@ -219,6 +219,9 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 <script>window.CTF_COURSE="cyber1";</script>
 <script src="../vocab-xp.js"></script>
 <script src="../vocab-log.js"></script>
+<script src="../supabase-config.js"></script>
+<script src="../auth.js"></script>
+<script src="../practice-sync.js"></script>
 <script>
 /* ============================================================
    VOCABULARY DATA — edit here. m = module number (1-10).
@@ -350,7 +353,7 @@ function showCard(){
 }
 
 /* ================= DECRYPT GAME ================= */
-let gTimers=[], gQueue=[], gRound=0, gScore=0, gStreak=0, gBest=0, gAnswer="", gChars=[], gRevealed=[], gPhase="", gLeaked=0, gGraceMs=5000, gHintMs=1800;
+let gTimers=[], gQueue=[], gRound=0, gScore=0, gStreak=0, gBest=0, gAnswer="", gChars=[], gRevealed=[], gPhase="", gLeaked=0, gGraceMs=10000, gHintMs=1800;   /* 10s to read the definition and think, at full 100 pts */
 function stopTimers(){ gTimers.forEach(clearInterval); gTimers=[]; }
 function renderDecrypt(){
   gQueue = shuffle(pool()).slice(0, Math.min(10, pool().length));
@@ -370,7 +373,7 @@ function renderDecrypt(){
         <button class="btn primary" id="gSubmit">enter</button>
         <button class="btn" id="gSkip">skip</button>
       </div>
-      <div class="g-msg mono" id="gMsg">&gt; decrypting… you have 5 seconds before the leak starts</div>
+      <div class="g-msg mono" id="gMsg">&gt; decrypting… you have 10 seconds before the leak starts</div>
     </div>`;
   $("#gSubmit").onclick = checkGuess;
   $("#gSkip").onclick = ()=>{ revealAll(); endRound(false); };
@@ -387,7 +390,7 @@ function startRound(){
   gPhase = "grace"; gLeaked = 0;
   $("#gDef").innerHTML = `<span class="mono" style="color:var(--accent);font-size:12px;">MODULE ${String(v.m).padStart(2,"0")}</span><br>${v.d}`;
   $("#gRound").textContent = (gRound+1)+" / "+gQueue.length;
-  $("#gMsg").innerHTML = "&gt; decrypting… you have 5 seconds before the leak starts";
+  $("#gMsg").innerHTML = "&gt; decrypting… you have 10 seconds before the leak starts";
   $("#gMsg").style.color = "var(--dim)";
   const inp = $("#gInput"); inp.value=""; inp.disabled=false; inp.focus();
   renderBoxes();

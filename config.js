@@ -3084,7 +3084,7 @@ window.COURSE_CONFIG.web3.ctf = {
   adversaryColor: "#f7931a",
   adversaryColor2: "#ffb454",
   adversaryGlow: "#f7931a",
-  modules: ["Web 3 Principles & Blockchain","Cryptocurrencies","NFTs","Digital Wallets","Blockchain Coding","DAOs","DApps","Legal & Ethical Considerations","Applied Application"],
+  modules: ["Web 3 Principles & Blockchain","Cryptocurrencies","NFTs","Digital Wallets","Blockchain Coding","DAOs","DApps","Applied Application"],
   challenges: [
 
   /* MODULE 1 — Web 3 Principles & Blockchain ──────────────────────────────── */
@@ -3700,94 +3700,8 @@ window.COURSE_CONFIG.web3.ctf = {
     bias: ["dapp","smart contract","frontend","oracle","defi","tokenization","audit","jurisdiction","reentrancy","gas"],
     hardMode: "rapid" },
 
-  /* MODULE 8 — Legal & Ethical Considerations ─────────────────────────────── */
-  { id: "w3-m8-vocab", module: 8, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["regulation","compliance","jurisdiction","liability","privacy","transparency","consent","audit","kyc","ico"],
-    hardMode: "cipher" },
-
-  { id: "w3-law-frameworks", module: 8, title: "Regulators & Rules", category: "Legal & Ethical",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Regulatory frameworks. The U.S. agency that decides whether a token counts as a security is the ___.\n\nSubmit as flag{abbreviation} (lowercase).",
-        hint: "Three letters.",
-        flagHash: "f035b6008ad081d0d59cfccef5bdd16c00c5d6cb6bce0e73d6896ea2339ddb67" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Legal implications of tokenization. A fundraise that sells a brand-new token to the public to raise money is an initial coin offering, abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).",
-        hint: "Three letters.",
-        flagHash: "8a2e628d4736786a4729e228b80bb841f09a5e9739dc4576dfe89f3d9bff0e33" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Regulatory frameworks. Rules requiring an exchange to verify who its customers are go by the abbreviation ___.\n\nSubmit as flag{abbreviation} (lowercase).",
-        hint: "Know Your ___.",
-        flagHash: "ac4809b49c2ed301d48fb6f3ca5a0ee4924d1eaad022fba145a2b7fc2f98e8d1" }
-    ] },
-
-  { id: "w3-ethics-dilemmas", module: 8, title: "Permanence & Power", category: "Legal & Ethical",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Data privacy & ownership. Because a public blockchain is permanent, personal data written onto it can never truly be ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Removed for good.",
-        flagHash: "43fb9c726ae17022b1495ec3b54457966820007457b89ec261055e306b58afa0" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Ethical dilemmas. Every transaction being publicly viewable by anyone gives a blockchain its ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "You can see through it.",
-        flagHash: "7232fbfbd2e85bf3cc2e1df28942d220cc312ca3ff4c8309c5ddf9cdcb57e738" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Algorithmic bias. A consensus design that grants more influence to whoever already holds more coins risks concentrating ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Who ends up with power.",
-        flagHash: "202680ab36aac4677f88bf1828833217628b4eb78e28e5affab491816ebd210d" }
-    ] },
-
-  { id: "w3-adopt", module: 8, title: "Responsible Adoption", category: "Legal & Ethical",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Responsible adoption. Explaining risks in plain language so a user genuinely agrees is called informed ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Permission that is real.",
-        flagHash: "0d09c7d18a59c1c61f2d831fd59ae599a65798399f6425ace38da2e14858bd94" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — User-centric design. Collecting only the data you actually need, and no more, is called data ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Keep it small.",
-        flagHash: "37422175849d3d706b90c336948f94e5762758823c87bbadfc7f69b5d4aba64e" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Responsible adoption. Cryptography letting a user prove something is true without revealing the data behind it is a ___ ___ proof.\n\nSubmit as flag{two words} (lowercase).",
-        hint: "You learn nothing extra.",
-        flagHash: "e1ae1e8b275c3fb78be818cfbc9636eef8486c4a179a5fd3151bfcf8bcf3d96a" }
-    ] },
-
-  { id: "w3-legal-sort", module: 8, title: "Legal Question or Ethical Question?", category: "Legal & Ethical", type: "match", points: 150,
-    intro: "Objective — Legal & ethical frameworks. Sort each question. Tap the question, then tap the category.",
-    pairs: [
-      { left: "Does this token count as a security?", right: "Legal" },
-      { left: "Should we launch knowing most buyers will lose money?", right: "Ethical" },
-      { left: "Which country's tax rules apply to this sale?", right: "Legal" },
-      { left: "Is it right to keep data on-chain forever?", right: "Ethical" },
-      { left: "Must we verify our customers' identities?", right: "Legal" },
-      { left: "Who is excluded if a wallet is the only way in?", right: "Ethical" }
-    ] },
-
-  { id: "w3-ethics-spot", module: 8, title: "Responsible or Reckless?", category: "Legal & Ethical", type: "match", points: 150,
-    intro: "Objective — Responsible adoption. Sort each choice a Web 3.0 project could make. Tap the choice, then tap the label.",
-    pairs: [
-      { left: "Publishing an outside audit before launch", right: "Responsible" },
-      { left: "Promising guaranteed returns to buyers", right: "Reckless" },
-      { left: "Writing risks in plain language up front", right: "Responsible" },
-      { left: "Storing users' legal names on-chain", right: "Reckless" },
-      { left: "Letting users export and leave at any time", right: "Responsible" },
-      { left: "Hiding who controls the admin keys", right: "Reckless" }
-    ] },
-
-  { id: "w3-adopt-order", module: 8, title: "Launch It the Right Way", category: "Legal & Ethical", type: "order", points: 150,
-    intro: "Objective — Responsible adoption. Order the steps to release a Web 3.0 project responsibly, first to last.",
-    steps: [
-      "Identify who the project affects and how",
-      "Check which laws and regulations apply",
-      "Have the contract code audited by outsiders",
-      "Publish the risks in plain language",
-      "Test publicly on a testnet",
-      "Launch, then keep monitoring and disclosing"
-    ] },
-
-  /* MODULE 9 — Applied Application ────────────────────────────────────────── */
-  { id: "w3-m7a", module: 9, title: "Project Planning", category: "Class Project",
+  /* MODULE 8 — Applied Application ────────────────────────────────────────── */
+  { id: "w3-m7a", module: 8, title: "Project Planning", category: "Class Project",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Applied problem solving. The document that explains a Web 3.0 project's purpose, technology, and tokenomics is called a ___.\n\nSubmit as flag{word} (lowercase).",
@@ -3803,7 +3717,7 @@ window.COURSE_CONFIG.web3.ctf = {
         flagHash: "6e50edc26f743932c182177ea8a6320d54fb51497030b70ed8a9a02af706b6a0" }
     ] },
 
-  { id: "w3-m7b", module: 9, title: "Build & Present", category: "Class Project",
+  { id: "w3-m7b", module: 8, title: "Build & Present", category: "Class Project",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Token/NFT as solution. An early working model of your project used to test the idea is a ___.\n\nSubmit as flag{word} (lowercase).",
@@ -3819,7 +3733,7 @@ window.COURSE_CONFIG.web3.ctf = {
         flagHash: "f6da6caa455522fc5d0ca34b68682f23e25b493587d11f198ef8cded22d0a50a" }
     ] },
 
-  { id: "w3-m7-plan", module: 9, title: "Plan Your Web3 Project", category: "Class Project", type: "order", points: 150,
+  { id: "w3-m7-plan", module: 8, title: "Plan Your Web3 Project", category: "Class Project", type: "order", points: 150,
     intro: "Objective — Applied problem solving. Order the stages of planning a Web 3.0 project, first to last.",
     steps: [
       "Identify a problem to solve",
@@ -3829,7 +3743,7 @@ window.COURSE_CONFIG.web3.ctf = {
       "Present the whitepaper"
     ] },
 
-  { id: "w3-m7-match", module: 9, title: "Match the Project Piece", category: "Class Project", type: "match", points: 150,
+  { id: "w3-m7-match", module: 8, title: "Match the Project Piece", category: "Class Project", type: "match", points: 150,
     intro: "Objective — Applied problem solving. Match each deliverable to what it is. Tap a piece, then tap its meaning.",
     pairs: [
       { left: "Whitepaper", right: "Explains purpose and tech" },
@@ -3838,7 +3752,7 @@ window.COURSE_CONFIG.web3.ctf = {
       { left: "Use case", right: "The problem it solves" }
     ] },
 
-  { id: "w3-m7-good", module: 9, title: "Strong or Weak Idea?", category: "Class Project", type: "match", points: 150,
+  { id: "w3-m7-good", module: 8, title: "Strong or Weak Idea?", category: "Class Project", type: "match", points: 150,
     intro: "Objective — Collaborative strategy. Sort each project idea. Tap the idea, then tap the label.",
     pairs: [
       { left: "Solves a real problem decentralization helps", right: "Strong" },
@@ -3847,7 +3761,7 @@ window.COURSE_CONFIG.web3.ctf = {
       { left: "Copies another project with no improvement", right: "Weak" }
     ] },
 
-  { id: "w3-m7-vocab", module: 9, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "w3-m7-vocab", module: 8, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["whitepaper","tokenomics","prototype","use case","project","mvp","decentralization","roadmap"],
     hardMode: "rapid" }
 
@@ -3872,7 +3786,7 @@ window.COURSE_CONFIG.apcsp.ctf.bossQuestions = [{"module":1,"topic":"M1","diff":
    ============================================================ */
 
 
-window.COURSE_CONFIG.web3.ctf.bossQuestions = [{"module":1,"topic":"M1","diff":"Easy","kind":"text","prompt":"A shared, append-only record of transactions in linked blocks is a ___. (one word)","answer":"blockchain"},{"module":1,"topic":"M1","diff":"Medium","kind":"mc","prompt":"Why can't someone quietly edit a transaction in an old block?","choices":["Changing it breaks every following block's hash","Blocks aren't stored anywhere","Only banks can edit blocks","Hashes are random and ignored"],"answer":"Changing it breaks every following block's hash"},{"module":1,"topic":"M1","diff":"Hard","kind":"text","prompt":"The energy-efficient consensus where validators lock up coins is proof of ___. (one word)","answer":"stake"},{"module":2,"topic":"M2","diff":"Easy","kind":"text","prompt":"The fee paid to run a transaction on Ethereum is called ___. (one word)","answer":"gas"},{"module":2,"topic":"M2","diff":"Medium","kind":"mc","prompt":"A token pegged to the US dollar to stay at a steady value is a:","choices":["Stablecoin","NFT","Governance token","Meme coin"],"answer":"Stablecoin"},{"module":3,"topic":"M3","diff":"Easy","kind":"text","prompt":"Publishing a new NFT onto the blockchain is called ___. (one word)","answer":"minting"},{"module":3,"topic":"M3","diff":"Medium","kind":"mc","prompt":"You buy an NFT of an image. What do you definitely own?","choices":["A unique on-chain token proving ownership","The full copyright to the art","The only copy of the image","The website it was sold on"],"answer":"A unique on-chain token proving ownership"},{"module":3,"diff":"Hard","kind":"text","prompt":"Buying an NFT of an artwork does not transfer the artist's ___ unless stated. (one word)","answer":"copyright","topic":"M3"},{"module":4,"topic":"M4","diff":"Easy","kind":"mc","prompt":"Which of these should you NEVER share with anyone?","choices":["Your seed phrase","Your public address","Your username","Your wallet app name"],"answer":"Your seed phrase"},{"module":4,"topic":"M4","diff":"Medium","kind":"text","prompt":"A wallet kept completely offline for security is called a ___ wallet. (one word)","answer":"cold"},{"module":4,"topic":"M4","diff":"Medium","kind":"mc","prompt":"A stranger promises to double any crypto you send them first. This is:","choices":["A scam","A gas fee","Staking","A smart contract"],"answer":"A scam"},{"module":5,"topic":"M5","diff":"Easy","kind":"text","prompt":"The main programming language for Ethereum smart contracts is ___. (one word)","answer":"solidity"},{"module":5,"topic":"M5","diff":"Medium","kind":"mc","prompt":"Why test a smart contract on a testnet before mainnet?","choices":["Deployed code usually can't be changed, so bugs are costly","Testnets are faster than reading the code","Mainnet doesn't allow contracts","It skips the gas fee forever"],"answer":"Deployed code usually can't be changed, so bugs are costly"},{"module":5,"diff":"Hard","kind":"text","prompt":"Setting a token's keys to null so it can never be changed makes it ___. (one word)","answer":"immutable","topic":"M5"},{"module":6,"topic":"M6","diff":"Easy","kind":"text","prompt":"A community-run organization governed by member votes and code is a ___. (abbreviation)","answer":"dao"},{"module":6,"diff":"Medium","kind":"mc","prompt":"A DAO proposal passes with 3 yes votes out of 500 members. What went wrong?","choices":["Quorum was never reached","The vote was illegal","Smart contracts cannot count votes","Nothing — majority is majority"],"answer":"Quorum was never reached","topic":"M6"},{"module":6,"diff":"Hard","kind":"text","prompt":"One member buys enough governance tokens to win every vote alone. Power has become ___. (one word)","answer":"centralized","topic":"M6"},{"module":7,"topic":"M7","diff":"Medium","kind":"mc","prompt":"A smart contract needs the current price of gold. What provides it?","choices":["An oracle","A wallet","A seed phrase","A testnet"],"answer":"An oracle"},{"module":7,"diff":"Medium","kind":"mc","prompt":"What can a DApp do that a traditional app cannot?","choices":["Keep running even if its creators disappear","Store data","Show a web page","Charge users money"],"answer":"Keep running even if its creators disappear","topic":"M7"},{"module":7,"diff":"Hard","kind":"text","prompt":"Outside experts reviewing contract code before launch perform an ___. (one word)","answer":"audit","topic":"M7"},{"module":8,"diff":"Easy","kind":"mc","prompt":"Why is putting a student's legal name on a public blockchain a problem?","choices":["It can never be deleted","It costs too much gas","Blockchains reject text","Names are always encrypted"],"answer":"It can never be deleted","topic":"M8"},{"module":8,"diff":"Medium","kind":"text","prompt":"Explaining risks in plain language so users truly agree is informed ___. (one word)","answer":"consent","topic":"M8"},{"module":8,"diff":"Hard","kind":"mc","prompt":"A project promises guaranteed 20% monthly returns. The most responsible response is to:","choices":["Treat it as a red flag and investigate before investing","Invest early to beat the crowd","Assume the code prevents loss","Trust it if the website looks professional"],"answer":"Treat it as a red flag and investigate before investing","topic":"M8"},{"module":9,"topic":"M9","diff":"Medium","kind":"mc","prompt":"Which is the STRONGEST Web3 project idea?","choices":["Solves a real problem that benefits from decentralization","Adds a token to an app just to raise money","Copies an existing coin exactly","Uses blockchain with no clear reason"],"answer":"Solves a real problem that benefits from decentralization"},{"module":9,"diff":"Hard","kind":"text","prompt":"The simplest version of your project that still delivers real value is the ___ ___ ___. (three words)","answer":"minimum viable product","topic":"M9"}];
+window.COURSE_CONFIG.web3.ctf.bossQuestions = [{"module":1,"topic":"M1","diff":"Easy","kind":"text","prompt":"A shared, append-only record of transactions in linked blocks is a ___. (one word)","answer":"blockchain"},{"module":1,"topic":"M1","diff":"Medium","kind":"mc","prompt":"Why can't someone quietly edit a transaction in an old block?","choices":["Changing it breaks every following block's hash","Blocks aren't stored anywhere","Only banks can edit blocks","Hashes are random and ignored"],"answer":"Changing it breaks every following block's hash"},{"module":1,"topic":"M1","diff":"Hard","kind":"text","prompt":"The energy-efficient consensus where validators lock up coins is proof of ___. (one word)","answer":"stake"},{"module":2,"topic":"M2","diff":"Easy","kind":"text","prompt":"The fee paid to run a transaction on Ethereum is called ___. (one word)","answer":"gas"},{"module":2,"topic":"M2","diff":"Medium","kind":"mc","prompt":"A token pegged to the US dollar to stay at a steady value is a:","choices":["Stablecoin","NFT","Governance token","Meme coin"],"answer":"Stablecoin"},{"module":3,"topic":"M3","diff":"Easy","kind":"text","prompt":"Publishing a new NFT onto the blockchain is called ___. (one word)","answer":"minting"},{"module":3,"topic":"M3","diff":"Medium","kind":"mc","prompt":"You buy an NFT of an image. What do you definitely own?","choices":["A unique on-chain token proving ownership","The full copyright to the art","The only copy of the image","The website it was sold on"],"answer":"A unique on-chain token proving ownership"},{"module":3,"diff":"Hard","kind":"text","prompt":"Buying an NFT of an artwork does not transfer the artist's ___ unless stated. (one word)","answer":"copyright","topic":"M3"},{"module":4,"topic":"M4","diff":"Easy","kind":"mc","prompt":"Which of these should you NEVER share with anyone?","choices":["Your seed phrase","Your public address","Your username","Your wallet app name"],"answer":"Your seed phrase"},{"module":4,"topic":"M4","diff":"Medium","kind":"text","prompt":"A wallet kept completely offline for security is called a ___ wallet. (one word)","answer":"cold"},{"module":4,"topic":"M4","diff":"Medium","kind":"mc","prompt":"A stranger promises to double any crypto you send them first. This is:","choices":["A scam","A gas fee","Staking","A smart contract"],"answer":"A scam"},{"module":5,"topic":"M5","diff":"Easy","kind":"text","prompt":"The main programming language for Ethereum smart contracts is ___. (one word)","answer":"solidity"},{"module":5,"topic":"M5","diff":"Medium","kind":"mc","prompt":"Why test a smart contract on a testnet before mainnet?","choices":["Deployed code usually can't be changed, so bugs are costly","Testnets are faster than reading the code","Mainnet doesn't allow contracts","It skips the gas fee forever"],"answer":"Deployed code usually can't be changed, so bugs are costly"},{"module":5,"diff":"Hard","kind":"text","prompt":"Setting a token's keys to null so it can never be changed makes it ___. (one word)","answer":"immutable","topic":"M5"},{"module":6,"topic":"M6","diff":"Easy","kind":"text","prompt":"A community-run organization governed by member votes and code is a ___. (abbreviation)","answer":"dao"},{"module":6,"diff":"Medium","kind":"mc","prompt":"A DAO proposal passes with 3 yes votes out of 500 members. What went wrong?","choices":["Quorum was never reached","The vote was illegal","Smart contracts cannot count votes","Nothing — majority is majority"],"answer":"Quorum was never reached","topic":"M6"},{"module":6,"diff":"Hard","kind":"text","prompt":"One member buys enough governance tokens to win every vote alone. Power has become ___. (one word)","answer":"centralized","topic":"M6"},{"module":7,"topic":"M7","diff":"Medium","kind":"mc","prompt":"A smart contract needs the current price of gold. What provides it?","choices":["An oracle","A wallet","A seed phrase","A testnet"],"answer":"An oracle"},{"module":7,"diff":"Medium","kind":"mc","prompt":"What can a DApp do that a traditional app cannot?","choices":["Keep running even if its creators disappear","Store data","Show a web page","Charge users money"],"answer":"Keep running even if its creators disappear","topic":"M7"},{"module":7,"diff":"Hard","kind":"text","prompt":"Outside experts reviewing contract code before launch perform an ___. (one word)","answer":"audit","topic":"M7"},{"module":8,"topic":"M8","diff":"Medium","kind":"mc","prompt":"Which is the STRONGEST Web3 project idea?","choices":["Solves a real problem that benefits from decentralization","Adds a token to an app just to raise money","Copies an existing coin exactly","Uses blockchain with no clear reason"],"answer":"Solves a real problem that benefits from decentralization"},{"module":8,"diff":"Hard","kind":"text","prompt":"The simplest version of your project that still delivers real value is the ___ ___ ___. (three words)","answer":"minimum viable product","topic":"M8"}];
 
 /* ============================================================
    CYBER 2 — objective coverage fill (July 2026).
