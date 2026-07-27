@@ -173,18 +173,27 @@ function voiceFor(course){
 
 /* ---------- solutions we can derive straight from config.js ---------- */
 function derived(c){
+  /* field names here must match config.js exactly: match -> pairs[{left,right}],
+     order -> steps[], spot -> items[{field,text,bad}], phish -> companies[]. */
   if(c.type==="match"&&c.pairs) return {label:"Correct pairings",
-    body:c.pairs.map(function(p,i){return (i+1)+". "+p[0]+"  \u2192  "+p[1];}).join("\n")};
-  if(c.type==="order"&&c.sequence) return {label:"Correct order",
-    body:c.sequence.map(function(s,i){return (i+1)+". "+s;}).join("\n")};
-  if(c.type==="spot") return {label:"Answer",
-    body:(c.items||[]).filter(function(i){return i.bad;}).map(function(i){return "\u2713 "+(i.label||i.text||"");}).join("\n")
-      ||(c.answer!=null?String(c.answer):"")};
-  if(c.type==="phish"&&c.companies) return {label:"Real vs. phish",
+    body:c.pairs.map(function(p,i){
+      var l=p.left!=null?p.left:p[0], r=p.right!=null?p.right:p[1];
+      return (i+1)+". "+l+"  \u2192  "+r;}).join("\n")};
+  if(c.type==="order"&&(c.steps||c.sequence)) return {label:"Correct order",
+    body:(c.steps||c.sequence).map(function(s,i){return (i+1)+". "+s;}).join("\n")};
+  if(c.type==="spot"){
+    var bad=(c.items||[]).filter(function(i){return i.bad;});
+    if(bad.length) return {label:"Red flags to click",
+      body:bad.map(function(i){
+        return "\u2713 "+(i.field?"["+i.field+"] ":"")+String(i.label||i.text||"").trim();}).join("\n")};
+    if(c.answer!=null) return {label:"Answer",body:String(c.answer)};
+  }
+  if(c.type==="phish"&&c.companies) return {label:"Phish or legit",
     body:c.companies.map(function(co,i){
-      var real=(co.emails||[]).map(function(e,ix){return e.phish?null:ix;}).filter(function(x){return x!==null;});
-      return (i+1)+". "+co.name+" \u2014 legitimate option"+(real.length===1?"":"s")+": "+real.map(function(x){return x+1;}).join(", ");
-    }).join("\n")};
+      return (i+1)+". "+co.name+"\n"+(co.emails||[]).map(function(e){
+        return "     "+(e.phish?"PHISH":"LEGIT")+"  \u00b7  "+(e.from||e.subject||"");
+      }).join("\n");
+    }).join("\n")+"\n\nEmails reshuffle every attempt \u2014 the binary string depends on the order shown on screen."};
   if(c.type==="vocab") return {label:"Answer",body:"Drawn live from the module's vocabulary list (see vocab-data.js)."};
   return null;
 }
@@ -229,7 +238,7 @@ async function rowHtml(c,locked,course){
         (lv.hint?'<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:6px;">hint: '+esc(lv.hint)+'</div>':"")+
         '<div class="mono" style="font-size:13px;">'+
           (given?'<span style="color:var(--ok);font-weight:700;">'+esc(given)+'</span>'
-                :'<span style="color:var(--faint);">no plaintext recorded \u2014 add "'+esc(key)+'" to answers.js</span>')+
+                :'<span style="color:var(--faint);">no plaintext recorded \u2014 add "'+esc(key)+'" to answers.local.js</span>')+
         '</div></div>';
     }
   }else{
@@ -244,11 +253,12 @@ async function rowHtml(c,locked,course){
     h+='<div style="padding:6px 0 0;">'+
       (c.prompt||c.intro?'<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">'+esc(c.prompt||c.intro)+'</div>':"")+
       (c.hint?'<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:6px;">hint: '+esc(c.hint)+'</div>':"")+
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span class="mono" style="font-size:11px;color:var(--dim);">'+(c.points||0)+' XP</span>'+verdict2+'</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span class="mono" style="font-size:11px;color:var(--dim);">'+(c.points||0)+' XP</span>'+
+        (der?'<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">'+esc(der.label.toUpperCase())+'</span>':'')+verdict2+'</div>'+
       '<div class="mono" style="font-size:13px;white-space:pre-wrap;">'+
         (der?'<span style="color:var(--ok);">'+esc(der.body)+'</span>'
           :given2?'<span style="color:var(--ok);font-weight:700;">'+esc(given2)+'</span>'
-          :'<span style="color:var(--faint);">no plaintext recorded \u2014 add "'+esc(c.id)+'" to answers.js</span>')+
+          :'<span style="color:var(--faint);">no plaintext recorded \u2014 add "'+esc(c.id)+'" to answers.local.js</span>')+
       '</div></div>';
   }
   return h+'</div>';
