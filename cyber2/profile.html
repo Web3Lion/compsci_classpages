@@ -54,6 +54,40 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     .bChoices, .smGrid { grid-template-columns: 1fr !important; }
     input, textarea, select, button { font-size: 16px; }
   }
+
+  /* --- touch targets: phones and Chromebook touchscreens ---
+     A 17px-tall text link is a coin toss with a fingertip. On coarse pointers
+     the standalone nav/action links get a 44px hit box without changing how
+     they look on a mouse-driven screen. */
+  @media (pointer:coarse){
+    .themebtn{min-height:44px;display:inline-flex;align-items:center;}
+    a.taplink,a.qlink,#ctfIdentity a,.backlink,
+    .wrap > a[href$="index.html"],.wrap > a[href^="index"]{
+      display:inline-flex;align-items:center;min-height:44px;
+    }
+  }
+  /* mobile pass */
+  @media(max-width:720px){
+    .wrap{padding-left:12px !important;padding-right:12px !important;}
+    .card{padding:14px !important;border-radius:12px;}
+    /* every tappable thing clears the 44px minimum */
+    button,.btn,a.qlink,input[type=submit]{min-height:44px;}
+    input,select,textarea{font-size:16px;}   /* stops iOS zooming the page on focus */
+    .themebtn{top:8px;right:8px;padding:7px 11px;font-size:11px;}
+    /* challenge rows: let long titles wrap instead of shoving the XP off-screen */
+    .chalName{flex-wrap:wrap;gap:8px !important;padding:13px 2px !important;}
+    .chalName > span:nth-child(2){flex:1 1 100% !important;order:-1;}
+    .modHead{padding:15px 14px !important;gap:9px !important;flex-wrap:wrap;}
+    .modHead > span:nth-child(2){flex:1 1 100% !important;font-size:15px !important;}
+    .modBody{padding:0 14px 10px !important;}
+    .bossCard{padding:14px !important;}
+    .bossCard > div{gap:12px !important;}
+    table{font-size:12px;}
+  }
+  @media(max-width:420px){
+    .card{padding:12px !important;}
+    .big{font-size:30px !important;}
+  }
 </style>
 </head>
 <body>
@@ -66,6 +100,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 <script>window.CTF_COURSE="cyber2";window.CTF_VOCAB=(window.CY2_VOCAB||{}).terms||[];window.CTF_NO_ADVERSARY=true;</script>
 <script src="../ctf.js"></script>
 <script src="../name-filter.js"></script>
+<script src="../objectives.js"></script>
 <script src="../supabase-config.js"></script>
 <script src="../auth.js"></script>
 <script src="../profile.js"></script>

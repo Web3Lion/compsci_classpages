@@ -50,7 +50,16 @@ from (
     (10,'multi-domain.sql',   'Student sign-in from @lions.net as well as @southfayette.org',
         (select exists (select 1 from pg_proc p
                         join pg_namespace n on n.oid = p.pronamespace
-                        where n.nspname='public' and p.proname='_school_domains')))
+                        where n.nspname='public' and p.proname='_school_domains'))),
+    (11,'signin-log.sql',     'Rejected sign-in log — which domain got turned away',
+        (select exists (select 1 from information_schema.tables
+                        where table_schema='public' and table_name='signin_rejects'))),
+    (12,'teacher-xp.sql',     'Manual XP grants with a reason, ±100 per grant',
+        (select exists (select 1 from information_schema.tables
+                        where table_schema='public' and table_name='xp_grants'))),
+    (13,'hardmode-log.sql',   'Arena mini-game run log (Decrypt, Rapid Fire, Speed Match…)',
+        (select exists (select 1 from information_schema.tables
+                        where table_schema='public' and table_name='hardmode_runs')))
   ) as c(step, file, feature, present)
 
   union all
@@ -113,6 +122,26 @@ from (
       else '⚠ RE-RUN teachers.sql — google-auth.sql reverted _is_teacher() to one email'
     end,
     2, 3
+
+  union all
+
+  -- ---- guard 4: sync must preserve teacher XP grants -------------------------
+  -- teacher-xp.sql redefines ctf_sync_google so a student's push can't overwrite
+  -- or double-count granted XP. Re-running google-auth.sql reverts it: grants
+  -- then vanish on the student's next sync.
+  select '—', 'run order', 'teacher-xp.sql must run after google-auth.sql',
+    case
+      when not exists (select 1 from information_schema.tables
+                       where table_schema='public' and table_name='xp_grants')
+        then 'teacher-xp.sql not run yet — no manual XP grants'
+      when (select pg_get_functiondef(p.oid) from pg_proc p
+            join pg_namespace n on n.oid = p.pronamespace
+            where n.nspname='public' and p.proname='ctf_sync_google' limit 1)
+           like '%teacher_bonus%'
+        then '✅ fine — sync preserves granted XP'
+      else '⚠ RE-RUN teacher-xp.sql — google-auth.sql reverted ctf_sync_google, granted XP will be lost on sync'
+    end,
+    2, 4
 
 ) as r
 order by r.grp, r.ord;
