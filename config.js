@@ -56,7 +56,7 @@ window.COURSE_CONFIG = {
     meet:          "https://meet.google.com/mro-asqu-djt",
     sheetId:       "1QK16rbnhGoegU101VnkfikWIeu54L_eKm3zfNQnqbPU",
     sheetGid:      "118090459",
-    exam:          { name: "AP Exam", date: "2027-05-28T08:00:00", from: "2026-08-25" },
+    exam:          { name: "AP Exam", date: "2027-05-05T08:00:00", from: "2026-08-25" },
     syllabusDocId: "1S4d61MaNLeReiA9bc-1xKIUbZsUVznPMVz9kNstI_vQ",
     resourceCards: [
       { title: "RESOURCES", items: [
@@ -78,7 +78,7 @@ window.COURSE_CONFIG = {
     meet:          "https://meet.google.com/mro-asqu-djt",
     sheetId:       "1er9y-g7uGIEkAgCB-GWIXnBvybBAta6jYVxAZXUO_60",
     sheetGid:      "1728534605",
-    exam:          { name: "AP Exam", date: "2027-05-12T12:00:00", from: "2026-08-25" },
+    exam:          { name: "AP Exam", date: "2027-05-14T08:00:00", from: "2026-08-25" },
     syllabusDocId: "18D2JRB9IIiCVwels8u2fLulD9I6tr8LHMN_CoFk7KGw",
     resourceCards: [
       { title: "RESOURCES", items: [
@@ -2633,6 +2633,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "0ba600dc91096cc6250d73b1bf62d9f522f43506563f3361bc5bc6c701f1e290" }
     ] },
 
+  { id: "ap-m1-robotrun", module: 1, title: "Trace the Robot", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Algorithm tracing & iteration. A robot runs this pseudocode:\nn \u2190 1\nREPEAT 3 TIMES {\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n  n \u2190 n + 1\n}\nHow many total MOVE_FORWARD steps execute?\n\nSubmit as flag{number}.",
+        hint: "REPEAT n TIMES reads n once, right when it starts. Trace n across all 3 outer loops: 1, then 2, then 3. Try the ROBOT RUN simulator's first practice problem.",
+        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Order of operations in loops. Same robot, but the increment moved:\nn \u2190 1\nREPEAT 3 TIMES {\n  n \u2190 n + 1\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n}\nHow many total MOVE_FORWARD steps execute now?\n\nSubmit as flag{number}.",
+        hint: "n is incremented BEFORE the inner loop reads it this time, so the inner loop never runs at n=1. Try selecting the option in ROBOT RUN that increments before moving.",
+        flagHash: "1203df1573ea0f4077ca6a65df1e0113dc69fa1e267be5bf0c2ff757be0cda12" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — When a loop's iteration count is 'locked in'. Same robot, but n now changes DURING the inner loop:\nn \u2190 1\nREPEAT 3 TIMES {\n  REPEAT n TIMES {\n    MOVE_FORWARD\n    n \u2190 n + 1\n  }\n  ROTATE_LEFT\n}\nHow many total MOVE_FORWARD steps execute?\n\nSubmit as flag{number}.",
+        hint: "REPEAT n TIMES only reads n once, when that specific loop starts — changing n inside doesn't change how many times THAT loop was already set to run. Track how many times each of the 3 inner loops actually repeats: 1, then 2, then 4.",
+        flagHash: "5583b3ce3b42644490f323edfc1da538d0c41d26ce150a65e700b3b6d11f651f" }
+    ] },
+
   { id: "ap-m1b", module: 1, title: "Abstraction & Parallelism", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -2805,6 +2821,38 @@ window.COURSE_CONFIG.apcsp.ctf = {
       { left: "A streaming video", right: "Lossy" },
       { left: "Keeps every bit of the original", right: "Lossless" },
       { left: "Discards detail to shrink more", right: "Lossy" }
+    ] },
+
+  { id: "ap-m3-studentnum", module: 3, title: "Student Numbers", category: "Digital Media",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Data representation. A classroom assigns each student a number as an 8-bit binary value, counting up from 0000 0000 in the order they joined. The last assigned number was 0111 1110. What was the student number of the NEXT-TO-LAST student, in decimal?\n\nSubmit as flag{number}.",
+        hint: "Next-to-last means one number lower than 0111 1110. Convert that binary value to decimal, then subtract 1.",
+        flagHash: "db9091a65674b8a6ae69203576d832da5555ec07a0bc82784fb41cbd29603435" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Limits of representation. Same classroom, same 8-bit counter, last assigned number was 0111 1110. If one more student adds the course, what decimal number would THEY be assigned?\n\nSubmit as flag{number}.",
+        hint: "The next student gets the next number after 0111 1110 — one binary value up.",
+        flagHash: "389a2275435cf33a47232e4947f534956938d10e9aebc01b1c806cf416ee7a3a" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Binary place value. Convert student number 1001 1110 to decimal.\n\nSubmit as flag{number}.",
+        hint: "Place values from the left, 8 bits: 128, 64, 32, 16, 8, 4, 2, 1. Add the ones with a 1 above them. Try the ROLLOVER bit odometer simulator to watch a counter roll bit by bit.",
+        flagHash: "b395eadc8a2f146c77446033b7f2f43e5657307e7062fa8808cacbf38b7bf516" }
+    ] },
+
+  { id: "ap-m3-arithmetic", module: 3, title: "Bit Arithmetic", category: "Digital Media",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Binary addition & subtraction. Using 8-bit binary, solve all three and submit the three decimal answers in order:\n1) 0000 1101 + 0000 0011 = ?\n2) 0001 0011 − 0000 0111 = ?\n3) 1111 1111 + 0000 0001 = ? (what does an 8-bit register show after this overflows?)\n\nSubmit as flag{a,b,c}.",
+        hint: "Add/subtract the decimal values first, then think about what happens when a sum can't fit in 8 bits — try the Add & Subtract mode in the ROLLOVER simulator.",
+        flagHash: "3dcdbd576e1349bd4e68101bb7942ea0e83eab82c1f0cc4334babbb5068fe13b" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Representing negative numbers. 8-bit two's complement. Submit the three answers in order:\n1) What unsigned byte value (0-255) represents −5?\n2) What signed decimal value does the byte 1111 1001 represent?\n3) What unsigned byte value (0-255) represents −1?\n\nSubmit as flag{a,b,c}.",
+        hint: "Two's complement: invert every bit, then add 1. Try the Negative Numbers mode in ROLLOVER to watch the invert-then-add-1 steps.",
+        flagHash: "4d9daaa12af1073567a25f12f74b3a15a2019a281568374786859bf480a30f65" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Binary fractions. Using a fixed-point byte split into 4 whole bits and 4 fraction bits (each fraction bit worth 1/2, 1/4, 1/8, 1/16), submit the three decimal answers in order:\n1) Fraction bits 1010 alone = ? (as a decimal fraction)\n2) Byte 0011 0100 (whole 0011, fraction 0100) = ?\n3) Byte 0000 1111 plus one more 1/16 step = ?\n\nSubmit as flag{a,b,c}.",
+        hint: "Each fraction bit is worth half the one before it, same as each whole bit is worth double the one before it. Try the Fractions mode in ROLLOVER.",
+        flagHash: "780b274a22b7f4b041794f6cbc1ff4265dceb7816e0ba777b293deab372d497f" }
     ] },
 
   { id: "ap-m3-vocab", module: 3, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",

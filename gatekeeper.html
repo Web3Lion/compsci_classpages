@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gatekeeper — Firewall Rule Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:920px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
+/* ---------- menu ---------- */
+#menu .lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 22px;}
+.scenGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:720px){.scenGrid{grid-template-columns:1fr;}}
+.scenCard{text-align:left;border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:16px;cursor:pointer;font-family:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;min-height:44px;}
+.scenCard:hover{border-color:var(--border-hi);background:var(--panel3);}
+.scenCard .ic{font-size:22px;}
+.scenCard b{color:var(--bright);font-size:14.5px;}
+.scenCard span.d{color:var(--dim);font-size:12.5px;line-height:1.5;}
+.randBtn{margin-top:16px;width:100%;font-family:'JetBrains Mono',monospace;font-size:13px;padding:13px 16px;border-radius:10px;border:1px solid var(--border-hi);background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;cursor:pointer;min-height:44px;}
+.randBtn:hover{filter:brightness(1.08);}
+/* ---------- builder ---------- */
+#builder{display:none;}
+.bHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.bHead h2{margin:0 0 4px;font-size:19px;color:var(--bright);}
+.bHead p{margin:0;color:var(--dim);font-size:13.5px;max-width:60ch;line-height:1.5;}
+.changeLink{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--accent);background:none;border:1px solid var(--border2);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:44px;white-space:nowrap;}
+.changeLink:hover{border-color:var(--border-hi);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+@media(max-width:720px){.cols{grid-template-columns:1fr;}}
+.colTitle{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.3px;color:var(--faint);margin-bottom:10px;}
+.ruleCard{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);margin-bottom:8px;font-size:13px;}
+.ruleCard .act{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:5px;flex:none;}
+.ruleCard .act.allow{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok);}
+.ruleCard .act.deny{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad);}
+.ruleCard .lbl{flex:1;color:var(--text);line-height:1.4;}
+.ruleCard button{font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--border3);background:var(--panel3);color:var(--accent);border-radius:7px;padding:6px 9px;cursor:pointer;min-height:32px;flex:none;}
+.ruleCard button:hover{background:var(--panel2);}
+.ruleCard button:disabled{opacity:.3;cursor:default;}
+.ruleCard .num{font-family:'JetBrains Mono',monospace;color:var(--faint);font-size:11.5px;width:16px;flex:none;}
+.paletteEmpty,.activeEmpty{color:var(--faint);font-size:12.5px;font-family:'JetBrains Mono',monospace;padding:14px 0;}
+.defaultRow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px dashed var(--border3);background:transparent;font-size:12.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+.runBtn{width:100%;font-family:'JetBrains Mono',monospace;font-size:13.5px;padding:14px 16px;border-radius:10px;border:none;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;cursor:pointer;min-height:44px;}
+.runBtn:hover{filter:brightness(1.08);}
+.runBtn:disabled{opacity:.4;cursor:default;filter:none;}
+/* ---------- results ---------- */
+#results{display:none;margin-top:24px;padding-top:22px;border-top:1px solid var(--border2);}
+.gradeBig{text-align:center;padding:4px 0 20px;}
+.gradeBig .letter{font-size:56px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
+.gradeBig .sub{color:var(--dim);font-size:13.5px;margin-top:6px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.8px;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--border2);}
+td{padding:10px 10px;border-bottom:1px solid var(--border2);vertical-align:top;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+.tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap;}
+.tag.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);}
+.tag.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);}
+.why{color:var(--faint);font-size:12px;margin-top:3px;line-height:1.4;}
+.debBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.dbtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);cursor:pointer;min-height:44px;}
+.dbtn:hover{background:var(--panel3);}
+.dbtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;border:none;}
+.dead{margin-top:16px;font-size:12.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>GATEKEEPER</h1></div>
+    <span class="back mono">firewall rule simulator · free play, no XP</span>
+  </div>
+
+  <div class="card" id="menu">
+    <p class="lead">Build a firewall's rule list, top to bottom, then send real traffic through it. Rules are checked in order — first match wins, and anything left unmatched is denied by default.</p>
+    <div class="scenGrid" id="scenGrid"></div>
+    <button class="randBtn" onclick="startScenario(null)">🔀 SURPRISE ME — random network</button>
+  </div>
+
+  <div class="card" id="builder">
+    <div class="bHead">
+      <div><h2 id="scenTitle"></h2><p id="scenBlurb"></p></div>
+      <button class="changeLink" onclick="backToMenu()">← change network</button>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="colTitle">RULE PALETTE — click to add</div>
+        <div id="palette"></div>
+      </div>
+      <div>
+        <div class="colTitle">ACTIVE RULE LIST — checked top to bottom</div>
+        <div id="activeList"></div>
+        <div class="defaultRow">— everything else: DEFAULT DENY —</div>
+      </div>
+    </div>
+    <button class="runBtn" id="runBtn" onclick="runTraffic()">▶ RUN TRAFFIC</button>
+    <div id="results"></div>
+  </div>
+</div>
+
+<script>
+/* cond fields use '*' as wildcard; a rule matches a packet when every field
+   is '*' or equal. First matching rule in the active list wins; no match =
+   default deny. */
+var SCENARIOS = [
+{ id:"web", icon:"🌐", title:"School Web Server", blurb:"A public web server. Only the services it's meant to offer should be reachable — everything else should be denied, especially remote admin from outside.",
+  packets:[
+    { desc:"Visitor loads the site over HTTPS", proto:"tcp", port:443, src:"external", dst:"*", expected:"ALLOW" },
+    { desc:"Visitor loads the site over HTTP", proto:"tcp", port:80, src:"external", dst:"*", expected:"ALLOW" },
+    { desc:"Someone outside tries to SSH into the server", proto:"tcp", port:22, src:"external", dst:"*", expected:"DENY", why:"Remote admin access should never be open to the internet." },
+    { desc:"IT staff SSH in from the internal network to do maintenance", proto:"tcp", port:22, src:"internal", dst:"*", expected:"ALLOW", why:"Admin access is fine from inside, on a controlled network." },
+    { desc:"Someone outside tries Telnet (port 23)", proto:"tcp", port:23, src:"external", dst:"*", expected:"DENY", why:"Telnet sends everything, including passwords, in plaintext — never allowed." },
+    { desc:"A scanner probes an unpublished app port (8080)", proto:"tcp", port:8080, src:"external", dst:"*", expected:"DENY", why:"Nothing is supposed to be running there — it should fall to the default deny." }
+  ],
+  rules:[
+    { id:"a", label:"ALLOW HTTPS (tcp/443) from anywhere", cond:{proto:"tcp",port:443,src:"*",dst:"*"}, action:"ALLOW" },
+    { id:"b", label:"ALLOW HTTP (tcp/80) from anywhere", cond:{proto:"tcp",port:80,src:"*",dst:"*"}, action:"ALLOW" },
+    { id:"c", label:"ALLOW SSH (tcp/22) from the internal network only", cond:{proto:"tcp",port:22,src:"internal",dst:"*"}, action:"ALLOW" },
+    { id:"d", label:"DENY SSH (tcp/22) from anywhere", cond:{proto:"tcp",port:22,src:"*",dst:"*"}, action:"DENY" },
+    { id:"e", label:"DENY Telnet (tcp/23) from anywhere", cond:{proto:"tcp",port:23,src:"*",dst:"*"}, action:"DENY" },
+    { id:"f", label:"ALLOW ALL inbound TCP traffic", cond:{proto:"tcp",port:"*",src:"*",dst:"*"}, action:"ALLOW" },
+    { id:"g", label:"ALLOW app port 8080 from anywhere", cond:{proto:"tcp",port:8080,src:"*",dst:"*"}, action:"ALLOW" },
+    { id:"h", label:"DENY DNS (udp/53) from anywhere", cond:{proto:"udp",port:53,src:"*",dst:"*"}, action:"DENY" }
+  ]},
+{ id:"guest", icon:"📶", title:"Guest Wi-Fi Network", blurb:"Guests and staff share the building's network. Guests should reach the internet — and nothing that belongs to staff.",
+  packets:[
+    { desc:"Guest device browses the internet (HTTPS)", proto:"tcp", port:443, src:"guest", dst:"internet", expected:"ALLOW" },
+    { desc:"Guest device tries to open the internal file share", proto:"tcp", port:445, src:"guest", dst:"internal", expected:"DENY", why:"Guests have no business reaching staff file shares." },
+    { desc:"Staff laptop opens the internal file share", proto:"tcp", port:445, src:"staff", dst:"internal", expected:"ALLOW" },
+    { desc:"Guest device tries to print to the office printer", proto:"tcp", port:9100, src:"guest", dst:"internal", expected:"DENY", why:"Printer access is a staff-only resource." },
+    { desc:"Staff laptop prints to the office printer", proto:"tcp", port:9100, src:"staff", dst:"internal", expected:"ALLOW" },
+    { desc:"Guest device probes the internal admin panel (8443)", proto:"tcp", port:8443, src:"guest", dst:"internal", expected:"DENY", why:"Never published to guests — should fall to default deny." }
+  ],
+  rules:[
+    { id:"a", label:"ALLOW HTTPS out to the internet, from anyone", cond:{proto:"tcp",port:443,src:"*",dst:"internet"}, action:"ALLOW" },
+    { id:"b", label:"ALLOW staff to the internal file share (tcp/445)", cond:{proto:"tcp",port:445,src:"staff",dst:"internal"}, action:"ALLOW" },
+    { id:"c", label:"DENY the internal file share (tcp/445) from anyone", cond:{proto:"tcp",port:445,src:"*",dst:"internal"}, action:"DENY" },
+    { id:"d", label:"ALLOW staff to the printer (tcp/9100)", cond:{proto:"tcp",port:9100,src:"staff",dst:"internal"}, action:"ALLOW" },
+    { id:"e", label:"DENY the printer (tcp/9100) from anyone", cond:{proto:"tcp",port:9100,src:"*",dst:"internal"}, action:"DENY" },
+    { id:"f", label:"ALLOW guests full access to the internal network", cond:{proto:"tcp",port:"*",src:"guest",dst:"internal"}, action:"ALLOW" },
+    { id:"g", label:"ALLOW the admin panel (tcp/8443) from anyone", cond:{proto:"tcp",port:8443,src:"*",dst:"internal"}, action:"ALLOW" }
+  ]},
+{ id:"cam", icon:"📷", title:"Smart Camera Network", blurb:"Security cameras only need to talk to the recorder. A compromised camera phoning out to the internet is exactly what this firewall exists to stop.",
+  packets:[
+    { desc:"Camera streams video to the recorder (RTSP, tcp/554)", proto:"tcp", port:554, src:"camera", dst:"internal", expected:"ALLOW" },
+    { desc:"A compromised camera tries to call out to the internet (HTTPS)", proto:"tcp", port:443, src:"camera", dst:"internet", expected:"DENY", why:"Cameras don't need internet access — this is what botnet callback traffic looks like." },
+    { desc:"A compromised camera tries a Telnet callback", proto:"tcp", port:23, src:"camera", dst:"internet", expected:"DENY", why:"No reason for outbound Telnet ever, from a camera especially." },
+    { desc:"Admin laptop opens a camera's web UI", proto:"tcp", port:80, src:"staff", dst:"internal", expected:"ALLOW" },
+    { desc:"One camera tries to SSH into another camera", proto:"tcp", port:22, src:"camera", dst:"internal", expected:"DENY", why:"Cameras have no reason to reach each other directly." },
+    { desc:"The recorder backs up footage to the cloud (HTTPS)", proto:"tcp", port:443, src:"nvr", dst:"internet", expected:"ALLOW" }
+  ],
+  rules:[
+    { id:"a", label:"ALLOW cameras to stream to the recorder (tcp/554)", cond:{proto:"tcp",port:554,src:"camera",dst:"internal"}, action:"ALLOW" },
+    { id:"b", label:"ALLOW staff to a camera's web UI (tcp/80)", cond:{proto:"tcp",port:80,src:"staff",dst:"internal"}, action:"ALLOW" },
+    { id:"c", label:"ALLOW the recorder out to the internet (tcp/443)", cond:{proto:"tcp",port:443,src:"nvr",dst:"internet"}, action:"ALLOW" },
+    { id:"d", label:"DENY cameras from reaching the internet at all", cond:{proto:"tcp",port:"*",src:"camera",dst:"internet"}, action:"DENY" },
+    { id:"e", label:"DENY camera-to-camera traffic (tcp/22)", cond:{proto:"tcp",port:22,src:"camera",dst:"internal"}, action:"DENY" },
+    { id:"f", label:"ALLOW cameras HTTPS out to the internet", cond:{proto:"tcp",port:443,src:"camera",dst:"internet"}, action:"ALLOW" },
+    { id:"g", label:"ALLOW cameras full network access", cond:{proto:"tcp",port:"*",src:"camera",dst:"*"}, action:"ALLOW" }
+  ]}
+];
+
+var current=null, activeRules=[], lastResults=null;
+
+function renderMenu(){
+  document.getElementById('scenGrid').innerHTML=SCENARIOS.map(function(s,i){
+    return '<button class="scenCard" onclick="startScenario('+i+')"><span class="ic">'+s.icon+'</span><b>'+s.title+'</b><span class="d">'+s.blurb+'</span></button>';
+  }).join('');
+}
+renderMenu();
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+function startScenario(i){
+  current = (i==null) ? pick(SCENARIOS) : SCENARIOS[i];
+  activeRules=[]; lastResults=null;
+  document.getElementById('menu').style.display='none';
+  document.getElementById('builder').style.display='block';
+  document.getElementById('scenTitle').textContent=current.icon+'  '+current.title;
+  document.getElementById('scenBlurb').textContent=current.blurb;
+  document.getElementById('results').style.display='none';
+  renderBuilder();
+}
+function backToMenu(){
+  document.getElementById('builder').style.display='none';
+  document.getElementById('menu').style.display='block';
+}
+function renderBuilder(){
+  var usedIds=activeRules.map(function(r){return r.id;});
+  var palette=current.rules.filter(function(r){ return usedIds.indexOf(r.id)===-1; });
+  var pEl=document.getElementById('palette');
+  pEl.innerHTML = palette.length ? palette.map(function(r){
+    return '<div class="ruleCard"><span class="act '+(r.action==='ALLOW'?'allow':'deny')+'">'+r.action+'</span><span class="lbl">'+r.label+'</span><button onclick="addRule(\''+r.id+'\')">+ add</button></div>';
+  }).join('') : '<div class="paletteEmpty">All rules placed.</div>';
+
+  var aEl=document.getElementById('activeList');
+  aEl.innerHTML = activeRules.length ? activeRules.map(function(r,i){
+    return '<div class="ruleCard"><span class="num">'+(i+1)+'</span><span class="act '+(r.action==='ALLOW'?'allow':'deny')+'">'+r.action+'</span><span class="lbl">'+r.label+'</span>'+
+      '<button onclick="moveRule('+i+',-1)" '+(i===0?'disabled':'')+' title="move up">↑</button>'+
+      '<button onclick="moveRule('+i+',1)" '+(i===activeRules.length-1?'disabled':'')+' title="move down">↓</button>'+
+      '<button onclick="removeRule('+i+')" title="remove">✕</button></div>';
+  }).join('') : '<div class="activeEmpty">No rules yet — add some from the palette.</div>';
+
+  document.getElementById('runBtn').disabled = activeRules.length===0;
+}
+function addRule(id){
+  var r=current.rules.find(function(x){return x.id===id;});
+  activeRules.push(r);
+  invalidateResults();
+  renderBuilder();
+}
+function moveRule(i,dir){
+  var j=i+dir; if(j<0||j>=activeRules.length) return;
+  var tmp=activeRules[i]; activeRules[i]=activeRules[j]; activeRules[j]=tmp;
+  invalidateResults();
+  renderBuilder();
+}
+function removeRule(i){
+  activeRules.splice(i,1);
+  invalidateResults();
+  renderBuilder();
+}
+function invalidateResults(){
+  lastResults=null;
+  document.getElementById('results').style.display='none';
+}
+function fieldMatch(a,b){ return a==='*' || String(a)===String(b); }
+function matches(rule, pkt){
+  return fieldMatch(rule.cond.proto,pkt.proto) && fieldMatch(rule.cond.port,pkt.port) &&
+         fieldMatch(rule.cond.src,pkt.src) && fieldMatch(rule.cond.dst,pkt.dst);
+}
+function runTraffic(){
+  var matchedIds={};
+  var results = current.packets.map(function(pkt){
+    var hit=null;
+    for(var i=0;i<activeRules.length;i++){ if(matches(activeRules[i],pkt)){ hit=activeRules[i]; break; } }
+    if(hit) matchedIds[hit.id]=true;
+    var outcome = hit ? hit.action : "DENY";
+    return { pkt:pkt, outcome:outcome, correct: outcome===pkt.expected, matchedLabel: hit?hit.label:"(default deny)" };
+  });
+  lastResults=results;
+  var correctCount=results.filter(function(r){return r.correct;}).length;
+  var pct=correctCount/results.length;
+  var grade, color;
+  if(pct===1){ grade="A"; color="var(--ok)"; }
+  else if(pct>=0.83){ grade="B"; color="var(--ok)"; }
+  else if(pct>=0.66){ grade="C"; color="var(--warn)"; }
+  else if(pct>=0.5){ grade="D"; color="var(--bad)"; }
+  else { grade="F"; color="var(--bad)"; }
+
+  var html='<div class="gradeBig"><div class="letter" style="color:'+color+'">'+grade+'</div><div class="sub">'+correctCount+' of '+results.length+' packets handled correctly</div></div>';
+  html+='<table><thead><tr><th>Traffic</th><th>Matched rule</th><th>Result</th></tr></thead><tbody>';
+  results.forEach(function(r){
+    html+='<tr><td>'+r.pkt.desc+(!r.correct&&r.pkt.why?'<div class="why">'+r.pkt.why+'</div>':'')+'</td>'+
+      '<td class="mono" style="color:var(--dim);font-size:12px;">'+r.matchedLabel+'</td>'+
+      '<td><span class="tag '+(r.correct?'ok':'bad')+'">'+r.outcome+(r.correct?'':' — expected '+r.pkt.expected)+'</span></td></tr>';
+  });
+  html+='</tbody></table>';
+
+  var unused=current.rules.filter(function(r){ return activeRules.indexOf(r)>=0 && !matchedIds[r.id]; });
+  if(unused.length){
+    html+='<div class="dead">Never triggered by any traffic: '+unused.map(function(r){return r.label;}).join('; ')+'. A rule that never fires is worth questioning — either the traffic it targets doesn\u2019t exist, or something above it is already catching everything it would.</div>';
+  }
+  html+='<div class="debBtns"><button class="dbtn primary" onclick="runTraffic()">↻ Run again</button><button class="dbtn" onclick="startScenario(SCENARIOS.indexOf(current))">↺ Reset rules</button><button class="dbtn" onclick="backToMenu()">← Different network</button></div>';
+
+  var el=document.getElementById('results');
+  el.innerHTML=html;
+  el.style.display='block';
+}
+</script>
+</body>
+</html>

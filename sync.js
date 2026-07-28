@@ -215,7 +215,7 @@
       p_key: p.key || p.challengeId, p_challenge: p.challengeId,
       p_title: p.title || "", p_level: p.level || "",
       p_points: p.points || 0, p_secs: (p.secs == null ? -1 : p.secs),
-      p_retries: p.retries || 0, p_tainted: !!p.tainted
+      p_retries: p.retries || 0, p_tainted: !!p.tainted, p_hint_used: !!p.hintUsed
     }).catch(function () {});
   };
 

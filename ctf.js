@@ -2305,6 +2305,7 @@
              instead of leaving the teacher guessing. */
           title: (chal.type === "vocab" && li === 2 && hardGame) ? (chal.title + " · " + hardGame) : chal.title,
           points, secs, retries: state.retry[key] || 0, tainted: !!tainted[key],
+          hintUsed: !!hintUsed(key),
           totalPoints: s.pts, solvedCount: s.solvedCount, totalCount: s.count, ts: Date.now()
         });
       } catch (e) {}

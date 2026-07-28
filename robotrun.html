@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Run — Algorithm Tracing Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#a855f7;--accent2:#c98bff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
+.card + .card{margin-top:16px;}
+.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 18px;}
+.probRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.probBtn{font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 15px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:40px;}
+.probBtn:hover{border-color:var(--border-hi);}
+.probBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--accent2);}
+/* ---------- grid ---------- */
+.gridStage{display:flex;justify-content:center;padding:16px 0;}
+.grid{display:grid;background:#04070c;border:1px solid var(--border3);border-radius:10px;padding:6px;position:relative;}
+.cell{width:38px;height:38px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;position:relative;}
+.cell.goal{background:color-mix(in srgb,var(--warn) 16%,transparent);border-color:color-mix(in srgb,var(--warn) 50%,transparent);}
+.cell .arrow{font-size:15px;color:var(--fainter);}
+.cell.trail{background:color-mix(in srgb,var(--accent) 16%,transparent);}
+.robot{position:absolute;width:38px;height:38px;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform .34s cubic-bezier(.4,0,.2,1),left .34s cubic-bezier(.4,0,.2,1),top .34s cubic-bezier(.4,0,.2,1);}
+.robot .tri{font-size:20px;color:var(--accent2);text-shadow:0 0 10px rgba(200,139,255,.6);}
+.startMark{position:absolute;width:38px;height:38px;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.35;}
+.startMark .tri{font-size:20px;color:var(--dim);}
+.goalFlag{font-size:15px;}
+.legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);margin-top:6px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.legDot{width:10px;height:10px;border-radius:3px;display:inline-block;}
+/* ---------- options ---------- */
+.optGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+@media(max-width:640px){.optGrid{grid-template-columns:1fr;}}
+.optCard{border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:14px 16px;cursor:pointer;}
+.optCard:hover{border-color:var(--border-hi);}
+.optCard.sel{border-color:var(--accent);background:var(--panel3);}
+.optCard .letter{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);font-weight:700;margin-bottom:8px;letter-spacing:1px;}
+.codeLine{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);line-height:1.65;white-space:pre;}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
+.ctrlBtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent2);cursor:pointer;min-height:44px;}
+.ctrlBtn:hover{background:var(--panel3);}
+.ctrlBtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#1c0a30;font-weight:700;border:none;}
+.ctrlBtn.primary:hover{filter:brightness(1.08);}
+.ctrlBtn:disabled{opacity:.4;cursor:default;filter:none;}
+.gradeBanner{margin-top:18px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.6;display:none;}
+.gradeBanner.show{display:block;}
+.gradeBanner.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);}
+.gradeBanner.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);}
+.note{margin-top:18px;font-size:12.5px;color:var(--faint);line-height:1.6;}
+.note b{color:var(--dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>ROBOT RUN</h1></div>
+    <span class="back mono">algorithm tracing simulator · free play, no XP</span>
+  </div>
+
+  <div class="card">
+    <p class="lead">The robot (triangle) needs to follow the arrow path to the goal square. Four pseudocode options are given — pick the one that actually does it, then run it and watch. Each option is real, runnable code: what you see is exactly what it does.</p>
+    <div class="probRow" id="probRow"></div>
+  </div>
+
+  <div class="card">
+    <div class="gridStage"><div class="grid" id="gridEl"></div></div>
+    <div class="legend">
+      <span><span class="legDot" style="background:color-mix(in srgb,var(--warn) 30%,transparent);"></span>goal</span>
+      <span><span class="legDot" style="background:color-mix(in srgb,var(--accent) 30%,transparent);"></span>path taken</span>
+      <span><span style="color:var(--fainter);">→</span>target path</span>
+    </div>
+
+    <div class="optGrid" id="optGrid"></div>
+
+    <div class="controls">
+      <button class="ctrlBtn primary" id="runBtn" onclick="runSelected()" disabled>▶ RUN SELECTED CODE</button>
+      <button class="ctrlBtn" onclick="loadProblem(currentIdx)">↺ RESET GRID</button>
+      <button class="ctrlBtn" onclick="randomProblem()">🔀 NEW PROBLEM</button>
+    </div>
+    <div class="gradeBanner mono" id="gradeBanner"></div>
+    <div class="note">Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you're told; the grid shows you exactly what each option does. <b>REPEAT n TIMES</b> reads the value of <b>n</b> once, right when that loop starts — changing n partway through a loop doesn't change how many times that loop was already set to repeat.</div>
+  </div>
+</div>
+
+<script>
+/* ---------- tiny robot-pseudocode interpreter ---------- */
+var DIRV=[[0,-1],[1,0],[0,1],[-1,0]]; // up, right, down, left
+var DIRCH=['\u25B2','\u25B6','\u25BC','\u25C0'];
+function runAST(ast, start, grid){
+  var state={x:start.x,y:start.y,dir:start.dir,n:0};
+  var steps=[{x:state.x,y:state.y,dir:state.dir}];
+  var crashed=false;
+  function exec(node){
+    if(crashed) return;
+    if(Array.isArray(node)){ for(var k=0;k<node.length;k++) exec(node[k]); return; }
+    if(node.t==='assign1'){ state.n=1; }
+    else if(node.t==='inc'){ state.n=state.n+1; }
+    else if(node.t==='move'){
+      var d=DIRV[state.dir], nx=state.x+d[0], ny=state.y+d[1];
+      if(nx<0||nx>=grid.w||ny<0||ny>=grid.h){ crashed=true; return; }
+      state.x=nx; state.y=ny; steps.push({x:state.x,y:state.y,dir:state.dir});
+    }
+    else if(node.t==='left'){ state.dir=(state.dir+3)%4; steps.push({x:state.x,y:state.y,dir:state.dir}); }
+    else if(node.t==='right'){ state.dir=(state.dir+1)%4; steps.push({x:state.x,y:state.y,dir:state.dir}); }
+    else if(node.t==='repeatFixed'){ for(var i=0;i<node.n;i++) exec(node.body); }
+    else if(node.t==='repeatVar'){ var times=state.n; for(var j=0;j<times;j++) exec(node.body); }
+  }
+  exec(ast);
+  return {steps:steps, crashed:crashed};
+}
+function uniqueCells(steps){
+  var out=[]; steps.forEach(function(s){ var last=out[out.length-1]; if(!last||last.x!==s.x||last.y!==s.y) out.push({x:s.x,y:s.y}); });
+  return out;
+}
+function renderLines(node, depth, lines){
+  if(Array.isArray(node)){ node.forEach(function(n){ renderLines(n,depth,lines); }); return; }
+  var pad='  '.repeat(depth);
+  if(node.t==='assign1') lines.push(pad+'n \u2190 1');
+  else if(node.t==='inc') lines.push(pad+'n \u2190 n + 1');
+  else if(node.t==='move') lines.push(pad+'MOVE_FORWARD');
+  else if(node.t==='left') lines.push(pad+'ROTATE_LEFT');
+  else if(node.t==='right') lines.push(pad+'ROTATE_RIGHT');
+  else if(node.t==='repeatFixed'){ lines.push(pad+'REPEAT '+node.n+' TIMES {'); renderLines(node.body,depth+1,lines); lines.push(pad+'}'); }
+  else if(node.t==='repeatVar'){ lines.push(pad+'REPEAT n TIMES {'); renderLines(node.body,depth+1,lines); lines.push(pad+'}'); }
+}
+/* Generic option generator: given the turn direction and outer loop count,
+   produces the target program plus three classic misconception variants —
+   incrementing n too early, turning before moving, and incrementing n from
+   inside the very loop whose length n controls. */
+function buildPrograms(turn, times){
+  var t={t:turn};
+  return {
+    correct:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'repeatVar',body:[{t:'move'}]},t,{t:'inc'}]}],
+    incBefore:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'inc'},{t:'repeatVar',body:[{t:'move'}]},t]}],
+    turnBefore:[{t:'assign1'},{t:'repeatFixed',n:times,body:[t,{t:'repeatVar',body:[{t:'move'}]},{t:'inc'}]}],
+    incInside:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'repeatVar',body:[{t:'move'},{t:'inc'}]},t]}]
+  };
+}
+
+/* ---------- practice problem bank ---------- */
+var PROBLEMS=[
+  { title:"Rising Staircase", grid:{w:8,h:8}, start:{x:3,y:6,dir:1}, turn:'left', times:3 },
+  { title:"Descending Steps", grid:{w:8,h:8}, start:{x:2,y:4,dir:1}, turn:'right', times:3 },
+  { title:"Corner Climb", grid:{w:7,h:7}, start:{x:2,y:5,dir:1}, turn:'left', times:3 },
+  { title:"Spiral In", grid:{w:9,h:9}, start:{x:4,y:5,dir:1}, turn:'right', times:3 },
+  { title:"Long Way Round", grid:{w:9,h:9}, start:{x:1,y:5,dir:2}, turn:'left', times:3 },
+  { title:"Quick Turn", grid:{w:9,h:9}, start:{x:4,y:6,dir:0}, turn:'right', times:3 }
+];
+
+var currentIdx=0, currentProbs=null, currentTarget=null, selectedKey=null, CELL=38;
+
+function renderProbTabs(){
+  document.getElementById('probRow').innerHTML = PROBLEMS.map(function(p,i){
+    return '<button class="probBtn'+(i===currentIdx?' active':'')+'" onclick="loadProblem('+i+')">'+p.title+'</button>';
+  }).join('');
+}
+function randomProblem(){ loadProblem(Math.floor(Math.random()*PROBLEMS.length)); }
+
+function loadProblem(idx){
+  currentIdx=idx;
+  renderProbTabs();
+  var p=PROBLEMS[idx];
+  var progs=buildPrograms(p.turn, p.times);
+  currentTarget=runAST(progs.correct, p.start, p.grid);
+  currentProbs=p;
+
+  // shuffle option order fresh each load
+  var entries=[
+    {key:'correct',ast:progs.correct},
+    {key:'incBefore',ast:progs.incBefore},
+    {key:'turnBefore',ast:progs.turnBefore},
+    {key:'incInside',ast:progs.incInside}
+  ];
+  for(var i=entries.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=entries[i]; entries[i]=entries[j]; entries[j]=tmp; }
+  currentOptions=entries;
+  selectedKey=null;
+
+  buildGrid(p);
+  drawTargetOverlay(p, currentTarget);
+  renderOptions();
+  placeRobot(p.start, false);
+  document.getElementById('runBtn').disabled=true;
+  var gb=document.getElementById('gradeBanner'); gb.classList.remove('show','ok','bad');
+}
+
+function buildGrid(p){
+  var el=document.getElementById('gridEl');
+  el.style.gridTemplateColumns='repeat('+p.grid.w+', '+CELL+'px)';
+  el.style.gridTemplateRows='repeat('+p.grid.h+', '+CELL+'px)';
+  var html='';
+  for(var y=0;y<p.grid.h;y++){
+    for(var x=0;x<p.grid.w;x++){ html+='<div class="cell" id="cell-'+x+'-'+y+'"></div>'; }
+  }
+  html+='<div class="robot" id="robotEl"><span class="tri">\u25B2</span></div>';
+  html+='<div class="startMark" id="startMark"><span class="tri">\u25B2</span></div>';
+  el.innerHTML=html;
+}
+function drawTargetOverlay(p, target){
+  var cells=uniqueCells(target.steps);
+  var goal=cells[cells.length-1];
+  document.getElementById('cell-'+goal.x+'-'+goal.y).classList.add('goal');
+  document.getElementById('cell-'+goal.x+'-'+goal.y).innerHTML='<span class="goalFlag">\u2691</span>';
+  var arrowFor={ '1,0':'\u2192','-1,0':'\u2190','0,1':'\u2193','0,-1':'\u2191' };
+  for(var i=1;i<cells.length;i++){
+    var prev=cells[i-1], cur=cells[i];
+    if(cur.x===goal.x && cur.y===goal.y) continue;
+    var key=(cur.x-prev.x)+','+(cur.y-prev.y);
+    var cellEl=document.getElementById('cell-'+cur.x+'-'+cur.y);
+    if(cellEl && !cellEl.querySelector('.goalFlag')) cellEl.innerHTML='<span class="arrow">'+(arrowFor[key]||'')+'</span>';
+  }
+  var startMark=document.getElementById('startMark');
+  startMark.style.left=(p.start.x*CELL)+'px'; startMark.style.top=(p.start.y*CELL)+'px';
+  startMark.querySelector('.tri').style.transform='rotate('+(p.start.dir*90)+'deg)';
+}
+function placeRobot(state, animate){
+  var el=document.getElementById('robotEl');
+  el.style.transition = animate ? 'left .34s cubic-bezier(.4,0,.2,1),top .34s cubic-bezier(.4,0,.2,1),transform .34s cubic-bezier(.4,0,.2,1)' : 'none';
+  el.style.left=(state.x*CELL)+'px'; el.style.top=(state.y*CELL)+'px';
+  el.querySelector('.tri').style.transform='rotate('+(state.dir*90)+'deg)';
+  if(!animate){ void el.offsetHeight; }
+}
+function renderOptions(){
+  var letters=['A','B','C','D'];
+  document.getElementById('optGrid').innerHTML = currentOptions.map(function(opt,i){
+    var lines=[]; renderLines(opt.ast,0,lines);
+    return '<div class="optCard" id="opt-'+opt.key+'" onclick="selectOption(\''+opt.key+'\')">'+
+      '<div class="letter">('+letters[i]+')</div>'+
+      '<div class="codeLine">'+lines.join('\n')+'</div></div>';
+  }).join('');
+}
+function selectOption(key){
+  selectedKey=key;
+  document.querySelectorAll('.optCard').forEach(function(c){ c.classList.toggle('sel', c.id==='opt-'+key); });
+  document.getElementById('runBtn').disabled=false;
+}
+function clearTrail(){
+  document.querySelectorAll('.cell.trail').forEach(function(c){ c.classList.remove('trail'); });
+}
+function runSelected(){
+  if(!selectedKey) return;
+  clearTrail();
+  document.getElementById('runBtn').disabled=true;
+  var opt=currentOptions.find(function(o){ return o.key===selectedKey; });
+  var result=runAST(opt.ast, currentProbs.start, currentProbs.grid);
+  var i=0;
+  (function playStep(){
+    if(i>=result.steps.length){
+      if(result.crashed){
+        var flag=document.createElement('div'); // brief visual: nothing extra needed, banner explains
+      }
+      finishRun(result);
+      return;
+    }
+    var s=result.steps[i];
+    document.getElementById('cell-'+s.x+'-'+s.y).classList.add('trail');
+    placeRobot(s, true);
+    i++;
+    setTimeout(playStep, 380);
+  })();
+}
+function finishRun(result){
+  document.getElementById('runBtn').disabled=false;
+  var gb=document.getElementById('gradeBanner');
+  gb.classList.remove('ok','bad'); gb.classList.add('show');
+  if(result.crashed){
+    gb.classList.add('bad');
+    gb.textContent='✗ This code drives the robot off the edge of the grid before it finishes — not a valid path to the goal.';
+    return;
+  }
+  var tCells=uniqueCells(currentTarget.steps), aCells=uniqueCells(result.steps);
+  var tFinal=result.steps[result.steps.length-1];
+  var same = tCells.length===aCells.length && tCells.every(function(c,i){ return c.x===aCells[i].x && c.y===aCells[i].y; })
+             && tFinal.dir===currentTarget.steps[currentTarget.steps.length-1].dir;
+  if(same){
+    gb.classList.add('ok');
+    gb.textContent='✓ Correct — this code follows the exact path to the goal, facing the right direction.';
+  } else {
+    gb.classList.add('bad');
+    var idx=0; while(idx<Math.min(tCells.length,aCells.length) && tCells[idx].x===aCells[idx].x && tCells[idx].y===aCells[idx].y) idx++;
+    var lastA=aCells[aCells.length-1];
+    if(idx>=Math.min(tCells.length,aCells.length) && tCells.length!==aCells.length){
+      gb.textContent='✗ Not quite — this path matches the target the whole way, but '+(aCells.length>tCells.length?'keeps going past the goal.':'stops short of the goal.')+' Ends at ('+lastA.x+','+lastA.y+').';
+    } else {
+      var tc=tCells[idx];
+      gb.textContent='✗ Not quite — this path matches the target for the first '+idx+' cell'+(idx===1?'':'s')+', then goes to ('+aCells[idx].x+','+aCells[idx].y+') instead of ('+tc.x+','+tc.y+'). Ends at ('+lastA.x+','+lastA.y+') instead of the goal.';
+    }
+  }
+}
+
+loadProblem(0);
+</script>
+</body>
+</html>

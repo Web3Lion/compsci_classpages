@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crack Time — Password Cracking Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--warn);box-shadow:0 0 10px var(--warn);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
+.card + .card{margin-top:16px;}
+.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 20px;}
+.inputRow{position:relative;margin-bottom:12px;}
+#pwInput{width:100%;font-family:'JetBrains Mono',monospace;font-size:16px;padding:14px 46px 14px 14px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);min-height:44px;}
+#pwInput:focus{outline:none;border-color:var(--accent);}
+.eyeBtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--faint);cursor:pointer;font-size:17px;padding:8px;min-height:32px;}
+.eyeBtn:hover{color:var(--accent);}
+.hint{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;margin-bottom:16px;}
+.chipRow{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:32px;}
+.chip:hover{border-color:var(--border-hi);color:var(--accent2);}
+.colTitle{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.3px;color:var(--faint);margin:20px 0 10px;}
+.rigRow{display:flex;flex-direction:column;gap:8px;}
+.rigOpt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);cursor:pointer;min-height:44px;}
+.rigOpt.sel{border-color:var(--accent);background:var(--panel3);}
+.rigOpt input{accent-color:var(--accent);width:16px;height:16px;flex:none;}
+.rigOpt .t{font-size:13.5px;color:var(--bright);font-weight:600;}
+.rigOpt .d{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;}
+/* ---------- results ---------- */
+#empty{color:var(--faint);font-size:13.5px;text-align:center;padding:20px 0;}
+#results{display:none;}
+.dictBanner{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:18px;line-height:1.5;}
+.bigTime{text-align:center;padding:6px 0 18px;}
+.bigTime .val{font-size:34px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1;}
+.bigTime .cat{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;margin-top:6px;padding:4px 12px;border-radius:999px;display:inline-block;}
+.statsRow{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.statsRow b{color:var(--bright);font-size:15px;display:block;}
+.rigTable{display:flex;flex-direction:column;gap:10px;}
+.rigRowResult{display:flex;align-items:center;gap:12px;}
+.rigRowResult .name{width:190px;flex:none;font-size:12.5px;color:var(--dim);font-family:'JetBrains Mono',monospace;}
+.barTrack{flex:1;height:9px;border-radius:99px;background:var(--panel3);overflow:hidden;}
+.barFill{height:100%;border-radius:99px;}
+.rigRowResult .time{width:130px;flex:none;text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--bright);}
+.note{margin-top:20px;font-size:12.5px;color:var(--faint);line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>CRACK TIME</h1></div>
+    <span class="back mono">password cracking simulator · free play, no XP</span>
+  </div>
+
+  <div class="card">
+    <p class="lead">Type a password to see how long it would actually take to crack — and why the same password can be instant on one system and unbreakable on another. Nothing here ever leaves your browser.</p>
+    <div class="inputRow">
+      <input type="password" id="pwInput" placeholder="Try a password…" autocomplete="off" spellcheck="false">
+      <button class="eyeBtn" id="eyeBtn" onclick="toggleEye()" title="Show/hide">👁</button>
+    </div>
+    <div class="hint">Nothing is sent anywhere — this all runs locally, right here.</div>
+    <div class="chipRow" id="chips"></div>
+
+    <div class="colTitle">ATTACK SCENARIO</div>
+    <div class="rigRow" id="rigRow"></div>
+  </div>
+
+  <div class="card">
+    <div id="empty">Type or pick a password above to see how it holds up.</div>
+    <div id="results"></div>
+  </div>
+</div>
+
+<script>
+var COMMON = ["password","123456","123456789","qwerty","password1","12345678","111111","1234567","sunshine","iloveyou",
+  "admin","welcome","monkey","letmein","dragon","football","baseball","master","superman","trustno1","abc123","000000",
+  "121212","qwerty123","zaq1zaq1","password123","freedom","whatever","qazwsx","michael","shadow","princess","summer",
+  "flower","hunter2","charlie","robert","jordan23","hockey","killer"];
+
+var CHIPS = [
+  {label:"\u201cpassword1\u201d", pw:"password1"},
+  {label:"\u201cSpring2025!\u201d", pw:"Spring2025!"},
+  {label:"\u201cTr0ub4dor&3\u201d", pw:"Tr0ub4dor&3"},
+  {label:"\u201ccorrecthorsebatterystaple\u201d", pw:"correcthorsebatterystaple"},
+  {label:"\u201cJ9\\$mLp2#qV\u201d", pw:"J9$mLp2#qV"}
+];
+
+var RIGS = [
+  { id:"online", name:"Online login (rate-limited)", rate:10, desc:"A website that throttles/locks after failed attempts \u2014 10 guesses/sec" },
+  { id:"bcrypt", name:"Leaked database, slow hash (bcrypt)", rate:20000, desc:"Hashes designed to be slow to check \u2014 ~20,000 guesses/sec on a cracking rig" },
+  { id:"md5", name:"Leaked database, fast hash (MD5, GPU rig)", rate:50000000000, desc:"A weak, fast hash cracked with GPUs \u2014 ~50 billion guesses/sec" }
+];
+var selectedRig = "bcrypt";
+
+function renderChips(){
+  document.getElementById('chips').innerHTML = CHIPS.map(function(c){
+    return '<button class="chip" onclick="tryChip(\''+c.pw.replace(/'/g,"\\'")+'\')">'+c.label+'</button>';
+  }).join('');
+}
+function renderRigs(){
+  document.getElementById('rigRow').innerHTML = RIGS.map(function(r){
+    return '<label class="rigOpt '+(r.id===selectedRig?'sel':'')+'"><input type="radio" name="rig" '+(r.id===selectedRig?'checked':'')+' onchange="selectRig(\''+r.id+'\')">'+
+      '<span><span class="t">'+r.name+'</span><br><span class="d">'+r.desc+'</span></span></label>';
+  }).join('');
+}
+function selectRig(id){ selectedRig=id; renderRigs(); analyze(); }
+function tryChip(pw){ var el=document.getElementById('pwInput'); el.value=pw; el.type='text'; document.getElementById('eyeBtn').textContent='🙈'; analyze(); }
+function toggleEye(){
+  var el=document.getElementById('pwInput'), btn=document.getElementById('eyeBtn');
+  if(el.type==='password'){ el.type='text'; btn.textContent='🙈'; } else { el.type='password'; btn.textContent='👁'; }
+}
+renderChips(); renderRigs();
+document.getElementById('pwInput').addEventListener('input', analyze);
+
+function fmtTime(seconds){
+  if(seconds<1) return "instantly";
+  if(seconds<60) return Math.ceil(seconds)+" sec";
+  if(seconds<3600) return Math.ceil(seconds/60)+" min";
+  if(seconds<86400) return Math.ceil(seconds/3600)+" hours";
+  if(seconds<31536000) return Math.ceil(seconds/86400)+" days";
+  var years=seconds/31536000;
+  if(years<1000) return Math.ceil(years)+" years";
+  if(years<1e6) return Math.round(years/1000)+"K years";
+  if(years<1e9) return Math.round(years/1e6)+"M years";
+  if(years<1e12) return Math.round(years/1e9)+"B years";
+  var exp=Math.round(Math.log10(years));
+  return "~10^"+exp+" years";
+}
+function crackSeconds(keyspace, rate){ return keyspace/rate/2; }
+
+function analyze(){
+  var pw=document.getElementById('pwInput').value;
+  var emptyEl=document.getElementById('empty'), resEl=document.getElementById('results');
+  if(!pw){ emptyEl.style.display='block'; resEl.style.display='none'; return; }
+  emptyEl.style.display='none'; resEl.style.display='block';
+
+  var lower=/[a-z]/.test(pw), upper=/[A-Z]/.test(pw), digit=/[0-9]/.test(pw), symbol=/[^a-zA-Z0-9]/.test(pw);
+  var charset=0; if(lower) charset+=26; if(upper) charset+=26; if(digit) charset+=10; if(symbol) charset+=32;
+  charset=charset||1;
+  var length=pw.length;
+  var entropyBits=Math.round(length*Math.log2(charset));
+  var keyspace=Math.pow(charset,length);
+  var isCommon=COMMON.indexOf(pw.toLowerCase())!==-1;
+
+  var rig=RIGS.find(function(r){return r.id===selectedRig;});
+  var seconds = isCommon ? (COMMON.indexOf(pw.toLowerCase())+1)/rig.rate : crackSeconds(keyspace, rig.rate);
+  var timeStr = fmtTime(seconds);
+  var cat, color;
+  if(isCommon || seconds<60){ cat="INSTANT"; color="var(--bad)"; }
+  else if(seconds<86400){ cat="WEAK"; color="var(--bad)"; }
+  else if(seconds<31536000){ cat="MODERATE"; color="var(--warn)"; }
+  else if(seconds<31536000*100){ cat="STRONG"; color="var(--ok)"; }
+  else { cat="VERY STRONG"; color="var(--ok)"; }
+
+  var html='';
+  if(isCommon){
+    html+='<div class="dictBanner">⚠ This is one of the most common passwords ever leaked. Attackers try dictionary lists like this <i>before</i> brute force \u2014 length and symbols don\u2019t help if the whole password is already on the list.</div>';
+  }
+  html+='<div class="bigTime"><div class="val" style="color:'+color+'">'+timeStr+'</div><div class="cat" style="background:color-mix(in srgb,'+color+' 16%,transparent);color:'+color+'">'+cat+'</div></div>';
+  html+='<div class="statsRow"><span><b>'+length+'</b>characters</span><span><b>'+charset+'</b>possible characters</span><span><b>'+entropyBits+'</b>bits of entropy</span></div>';
+
+  html+='<div class="colTitle">SAME PASSWORD, DIFFERENT SYSTEMS</div><div class="rigTable">';
+  var maxSec=Math.max.apply(null, RIGS.map(function(r){ return isCommon ? 1 : crackSeconds(keyspace,r.rate); }));
+  RIGS.forEach(function(r){
+    var s = isCommon ? (COMMON.indexOf(pw.toLowerCase())+1)/r.rate : crackSeconds(keyspace,r.rate);
+    var pctWidth = Math.max(3, Math.min(100, Math.round((Math.log10(s+1)/Math.log10(maxSec+1))*100)));
+    var barColor = s<86400?"var(--bad)":s<31536000*100?"var(--warn)":"var(--ok)";
+    html+='<div class="rigRowResult"><span class="name">'+r.name+'</span><span class="barTrack"><span class="barFill" style="width:'+pctWidth+'%;background:'+barColor+'"></span></span><span class="time">'+fmtTime(s)+'</span></div>';
+  });
+  html+='</div>';
+  html+='<div class="note">Crack time assumes an attacker checks on average half the possible combinations before finding a match. The gap between rows above is the real lesson: how a password is <i>stored</i> (a slow hash like bcrypt vs. a fast one like MD5) changes crack time by orders of magnitude \u2014 which is why you can\u2019t control that part, only your password.</div>';
+
+  resEl.innerHTML=html;
+}
+</script>
+</body>
+</html>

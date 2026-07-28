@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wire Tap — Packet Sniffer Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:960px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
+/* ---------- menu ---------- */
+#menu .lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 22px;}
+.scenGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:560px){.scenGrid{grid-template-columns:1fr;}}
+.scenCard{text-align:left;border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:16px;cursor:pointer;font-family:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;min-height:44px;}
+.scenCard:hover{border-color:var(--border-hi);background:var(--panel3);}
+.scenCard .ic{font-size:22px;}
+.scenCard b{color:var(--bright);font-size:14.5px;}
+.scenCard span.d{color:var(--dim);font-size:12.5px;line-height:1.5;}
+.randBtn{margin-top:16px;width:100%;font-family:'JetBrains Mono',monospace;font-size:13px;padding:13px 16px;border-radius:10px;border:1px solid var(--border-hi);background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;cursor:pointer;min-height:44px;}
+.randBtn:hover{filter:brightness(1.08);}
+/* ---------- capture ---------- */
+#capture{display:none;}
+.capHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+.capHead h2{margin:0 0 4px;font-size:18px;color:var(--bright);}
+.capHead p{margin:0;color:var(--dim);font-size:13px;max-width:56ch;line-height:1.5;}
+.statsBar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.statBox{flex:1;min-width:100px;border:1px solid var(--border2);border-radius:9px;padding:8px 12px;background:var(--bg);}
+.statBox .l{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1px;color:var(--faint);}
+.statBox .v{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--bright);font-weight:700;margin-top:2px;}
+.feedWrap{border:1px solid var(--border2);border-radius:10px;background:var(--bg);max-height:52vh;overflow-y:auto;}
+.pktRow{display:grid;grid-template-columns:56px 1fr 1fr 50px 1fr;gap:8px;padding:9px 12px;border-bottom:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:11.5px;cursor:pointer;align-items:center;color:var(--dim);}
+.pktRow:last-child{border-bottom:none;}
+.pktRow:hover{background:var(--panel3);}
+.pktRow.flagged{background:color-mix(in srgb,var(--warn) 10%,transparent);}
+.pktRow .payload{color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pktRow .proto{color:var(--accent2);}
+.pktRow .idx{color:var(--fainter);}
+.flagMark{width:16px;height:16px;border-radius:4px;border:1px solid var(--border3);display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex:none;}
+.pktRow.flagged .flagMark{background:var(--warn);color:#241a00;border-color:var(--warn);}
+.finishRow{padding:14px;text-align:center;}
+.finishBtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:12px 20px;border-radius:10px;border:none;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;cursor:pointer;min-height:44px;}
+.finishBtn:hover{filter:brightness(1.08);}
+.legend{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;margin-top:10px;}
+/* ---------- results ---------- */
+#debrief{display:none;margin-top:6px;}
+.gradeBig{text-align:center;padding:8px 0 20px;}
+.gradeBig .letter{font-size:60px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
+.gradeBig .sub{color:var(--dim);font-size:13.5px;margin-top:8px;}
+.prTable{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.prTable b{color:var(--bright);font-size:16px;display:block;}
+.section{margin-bottom:18px;}
+.section h3{font-size:12px;letter-spacing:1.2px;color:var(--faint);margin:0 0 10px;font-family:'JetBrains Mono',monospace;}
+.itemRow{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border2);font-size:13px;line-height:1.5;font-family:'JetBrains Mono',monospace;}
+.itemRow:last-child{border-bottom:none;}
+.itemRow .ic{flex:none;margin-top:1px;font-family:'Inter',sans-serif;}
+.itemRow .why{font-family:'Inter',sans-serif;color:var(--faint);font-size:12.5px;margin-top:3px;line-height:1.5;}
+.debBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.dbtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);cursor:pointer;min-height:44px;}
+.dbtn:hover{background:var(--panel3);}
+.dbtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;border:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>WIRE TAP</h1></div>
+    <span class="back mono">packet sniffer simulator · free play, no XP</span>
+  </div>
+
+  <div class="card" id="menu">
+    <p class="lead">A live capture is scrolling by. Click any packet that looks like it shouldn't be there — plaintext credentials, data leaving where it shouldn't, traffic on a port that doesn't belong. When you're done, see what you caught and what got past you.</p>
+    <div class="scenGrid" id="scenGrid"></div>
+    <button class="randBtn" onclick="startCapture(null)">📡 SURPRISE ME — random capture</button>
+  </div>
+
+  <div class="card" id="capture">
+    <div class="capHead">
+      <div><h2 id="capTitle"></h2><p id="capBlurb"></p></div>
+    </div>
+    <div class="statsBar">
+      <div class="statBox"><div class="l">PACKETS</div><div class="v" id="statTotal">0</div></div>
+      <div class="statBox"><div class="l">FLAGGED</div><div class="v" id="statFlagged">0</div></div>
+    </div>
+    <div class="feedWrap" id="feedWrap"></div>
+    <div class="legend">Click a row to flag/unflag it as suspicious. Scroll to see the whole capture before submitting.</div>
+    <div class="finishRow"><button class="finishBtn" onclick="finishCapture()">✓ SUBMIT FINDINGS</button></div>
+    <div id="debrief"></div>
+  </div>
+</div>
+
+<script>
+/* Each packet: src, dst, proto, port, payload (shown truncated), bad (true if
+   it's a genuine finding) + why (shown only in the debrief, on real findings). */
+var SCENARIOS = [
+{ id:"office", icon:"🏢", title:"Office Network Capture", blurb:"An ordinary afternoon of traffic on the office LAN — with a few things that don't belong.",
+  packets:[
+    { src:"10.0.1.14", dst:"172.217.4.10", proto:"TLS", port:443, payload:"Client Hello, encrypted application data", bad:false },
+    { src:"10.0.1.22", dst:"10.0.1.1", proto:"DNS", port:53, payload:"query: mail.google.com", bad:false },
+    { src:"10.0.1.31", dst:"203.0.113.9", proto:"HTTP", port:80, payload:"POST /login user=jsmith&pass=Summer2024!", bad:true, why:"A login form submitting over plain HTTP sends the username and password in cleartext — anyone on the network can read this." },
+    { src:"10.0.1.14", dst:"172.217.4.10", proto:"TLS", port:443, payload:"encrypted application data", bad:false },
+    { src:"10.0.1.45", dst:"10.0.1.5", proto:"SMB", port:445, payload:"file read: \\\\fileserver\\shared\\budget.xlsx", bad:false },
+    { src:"10.0.1.31", dst:"91.198.22.4", proto:"FTP", port:21, payload:"USER admin  PASS admin123", bad:true, why:"FTP sends credentials in plaintext by default — this is a login being handed over in the open." },
+    { src:"10.0.1.60", dst:"142.250.1.1", proto:"HTTPS", port:443, payload:"encrypted application data", bad:false },
+    { src:"10.0.1.31", dst:"185.220.101.7", proto:"TCP", port:4444, payload:"binary stream, ~40MB, sent over 90 seconds", bad:true, why:"Port 4444 is a classic reverse-shell/callback port, and a large outbound transfer to an unfamiliar external IP right after a plaintext login capture looks like active exfiltration." },
+    { src:"10.0.1.9", dst:"10.0.1.1", proto:"DHCP", port:67, payload:"lease renewal", bad:false },
+    { src:"10.0.1.22", dst:"172.217.4.10", proto:"TLS", port:443, payload:"encrypted application data", bad:false },
+    { src:"10.0.1.14", dst:"8.8.8.8", proto:"DNS", port:53, payload:"query: outlook.office.com", bad:false },
+    { src:"10.0.1.31", dst:"203.0.113.9", proto:"HTTP", port:80, payload:"GET /dashboard?session=a91f...", bad:false }
+  ]},
+{ id:"student", icon:"🎓", title:"Student Lab Capture", blurb:"Traffic from a school computer lab during a study hall.",
+  packets:[
+    { src:"10.20.4.11", dst:"151.101.1.69", proto:"HTTPS", port:443, payload:"encrypted application data", bad:false },
+    { src:"10.20.4.18", dst:"10.20.4.2", proto:"DNS", port:53, payload:"query: classroom.google.com", bad:false },
+    { src:"10.20.4.25", dst:"10.20.4.2", proto:"HTTP", port:80, payload:"GET /login.php?user=teacheracct&pw=Fayette2024", bad:true, why:"Credentials passed as plain URL parameters over HTTP are visible to anyone capturing this traffic, including in server logs." },
+    { src:"10.20.4.11", dst:"151.101.1.69", proto:"HTTPS", port:443, payload:"encrypted application data", bad:false },
+    { src:"10.20.4.30", dst:"203.0.113.44", proto:"TCP", port:6667, payload:"IRC-style beacon, repeats every 30s", bad:true, why:"Port 6667 with a repeating beacon pattern is a classic command-and-control check-in signature, not normal student traffic." },
+    { src:"10.20.4.9", dst:"10.20.4.2", proto:"DHCP", port:67, payload:"lease renewal", bad:false },
+    { src:"10.20.4.18", dst:"172.217.4.10", proto:"TLS", port:443, payload:"encrypted application data", bad:false },
+    { src:"10.20.4.30", dst:"45.33.32.156", proto:"TCP", port:4444, payload:"binary stream, small, repeated 12 times", bad:true, why:"Repeated small transfers to an external IP on port 4444, right after the C2-style beacon, is consistent with an infected machine phoning home." },
+    { src:"10.20.4.11", dst:"10.20.4.2", proto:"DNS", port:53, payload:"query: kahoot.it", bad:false },
+    { src:"10.20.4.25", dst:"10.20.4.2", proto:"HTTP", port:80, payload:"GET /dashboard.php", bad:false }
+  ]},
+{ id:"iot", icon:"🏠", title:"Smart Home Capture", blurb:"An evening of traffic from a house full of connected devices.",
+  packets:[
+    { src:"192.168.1.30", dst:"192.168.1.1", proto:"MQTT", port:1883, payload:"topic: home/thermostat/set, temp=71", bad:false },
+    { src:"192.168.1.14", dst:"52.94.225.1", proto:"HTTPS", port:443, payload:"encrypted application data", bad:false },
+    { src:"192.168.1.22", dst:"104.16.85.20", proto:"HTTP", port:80, payload:"GET /api/status?token=cam_9f21ab", bad:true, why:"A security camera sending its access token over plain HTTP means anyone watching the network traffic can capture and reuse that token." },
+    { src:"192.168.1.30", dst:"192.168.1.1", proto:"MQTT", port:1883, payload:"topic: home/lights/livingroom, state=on", bad:false },
+    { src:"192.168.1.22", dst:"185.220.101.44", proto:"TCP", port:23, payload:"login attempt, admin:admin, then binary payload", bad:true, why:"That camera making an outbound Telnet connection to an unfamiliar external IP, using default admin credentials, is the signature of a compromised IoT device joining a botnet." },
+    { src:"192.168.1.14", dst:"192.168.1.1", proto:"DNS", port:53, payload:"query: api.spotify.com", bad:false },
+    { src:"192.168.1.22", dst:"185.220.101.44", proto:"TCP", port:23, payload:"binary stream, repeated every 60s", bad:true, why:"The same IP, same odd port, repeating on a fixed interval — this is the compromised camera checking in with its controller." },
+    { src:"192.168.1.9", dst:"192.168.1.1", proto:"DHCP", port:67, payload:"lease renewal", bad:false },
+    { src:"192.168.1.14", dst:"52.94.225.1", proto:"HTTPS", port:443, payload:"encrypted application data", bad:false },
+    { src:"192.168.1.30", dst:"192.168.1.1", proto:"MQTT", port:1883, payload:"topic: home/lock/front, state=locked", bad:false }
+  ]}
+];
+
+var current=null, flagged={};
+
+function renderMenu(){
+  document.getElementById('scenGrid').innerHTML=SCENARIOS.map(function(s,i){
+    return '<button class="scenCard" onclick="startCapture('+i+')"><span class="ic">'+s.icon+'</span><b>'+s.title+'</b><span class="d">'+s.blurb+'</span></button>';
+  }).join('');
+}
+renderMenu();
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+function startCapture(i){
+  current = (i==null) ? pick(SCENARIOS) : SCENARIOS[i];
+  flagged={};
+  document.getElementById('menu').style.display='none';
+  document.getElementById('capture').style.display='block';
+  document.getElementById('capTitle').textContent=current.icon+'  '+current.title;
+  document.getElementById('capBlurb').textContent=current.blurb;
+  document.getElementById('debrief').style.display='none';
+  document.getElementById('feedWrap').style.display='block';
+  document.querySelector('.finishRow').style.display='block';
+  renderFeed();
+  updateStats();
+}
+function renderFeed(){
+  document.getElementById('feedWrap').innerHTML = current.packets.map(function(p,i){
+    return '<div class="pktRow '+(flagged[i]?'flagged':'')+'" onclick="toggleFlag('+i+')">'+
+      '<span class="idx">#'+(i+1)+'</span>'+
+      '<span>'+p.src+'</span><span>'+p.dst+'</span>'+
+      '<span class="proto">'+p.proto+'</span>'+
+      '<span class="payload">'+esc(p.payload)+'</span></div>';
+  }).join('');
+}
+function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function toggleFlag(i){
+  flagged[i] = !flagged[i];
+  renderFeed();
+  updateStats();
+}
+function updateStats(){
+  document.getElementById('statTotal').textContent=current.packets.length;
+  document.getElementById('statFlagged').textContent=Object.keys(flagged).filter(function(k){return flagged[k];}).length;
+}
+function finishCapture(){
+  document.getElementById('feedWrap').style.display='none';
+  document.querySelector('.legend').style.display='none';
+  document.querySelector('.finishRow').style.display='none';
+  showDebrief();
+}
+function showDebrief(){
+  var actualBad=current.packets.map(function(p,i){return p.bad?i:null;}).filter(function(x){return x!==null;});
+  var flaggedIdx=Object.keys(flagged).filter(function(k){return flagged[k];}).map(Number);
+  var hits=flaggedIdx.filter(function(i){return current.packets[i].bad;});
+  var falsePositives=flaggedIdx.filter(function(i){return !current.packets[i].bad;});
+  var missed=actualBad.filter(function(i){return flaggedIdx.indexOf(i)===-1;});
+
+  var precision = flaggedIdx.length ? hits.length/flaggedIdx.length : 1;
+  var recall = actualBad.length ? hits.length/actualBad.length : 1;
+  var f1 = (precision+recall)>0 ? 2*precision*recall/(precision+recall) : 0;
+
+  var grade, color;
+  if(f1>=0.95){ grade="A"; color="var(--ok)"; }
+  else if(f1>=0.8){ grade="B"; color="var(--ok)"; }
+  else if(f1>=0.6){ grade="C"; color="var(--warn)"; }
+  else if(f1>=0.4){ grade="D"; color="var(--bad)"; }
+  else { grade="F"; color="var(--bad)"; }
+
+  var html='<div class="gradeBig"><div class="letter" style="color:'+color+'">'+grade+'</div><div class="sub">'+hits.length+' of '+actualBad.length+' real findings caught, '+falsePositives.length+' false alarm'+(falsePositives.length===1?'':'s')+'</div></div>';
+  html+='<div class="prTable"><span><b>'+Math.round(precision*100)+'%</b>precision</span><span><b>'+Math.round(recall*100)+'%</b>recall</span></div>';
+
+  html+='<div class="section"><h3>REAL FINDINGS IN THIS CAPTURE</h3>';
+  actualBad.forEach(function(i){
+    var p=current.packets[i], caught=hits.indexOf(i)!==-1;
+    html+='<div class="itemRow"><span class="ic" style="color:'+(caught?'var(--ok)':'var(--bad)')+'">'+(caught?'✓':'✗')+'</span><span>#'+(i+1)+' &middot; '+p.src+' \u2192 '+p.dst+' ('+p.proto+')<div class="why">'+p.why+'</div></span></div>';
+  });
+  html+='</div>';
+
+  if(falsePositives.length){
+    html+='<div class="section"><h3>FLAGGED, BUT ACTUALLY FINE</h3>';
+    falsePositives.forEach(function(i){
+      var p=current.packets[i];
+      html+='<div class="itemRow"><span class="ic" style="color:var(--warn)">!</span><span>#'+(i+1)+' &middot; '+p.src+' \u2192 '+p.dst+' ('+p.proto+')<div class="why">Ordinary traffic \u2014 encrypted or expected on this network.</div></span></div>';
+    });
+    html+='</div>';
+  }
+
+  html+='<div class="debBtns"><button class="dbtn primary" onclick="retryCurrent()">↻ Same capture again</button><button class="dbtn" onclick="backToMenu()">← Different capture</button></div>';
+
+  var d=document.getElementById('debrief');
+  d.innerHTML=html;
+  d.style.display='block';
+}
+function retryCurrent(){ var i=SCENARIOS.indexOf(current); startCapture(i>=0?i:null); }
+function backToMenu(){ document.getElementById('capture').style.display='none'; document.getElementById('menu').style.display='block'; }
+</script>
+</body>
+</html>
