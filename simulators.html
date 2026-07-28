@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulators</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:16px 0 28px;max-width:70ch;}
+.sectionLbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--faint);margin:32px 0 14px;}
+.sectionLbl:first-of-type{margin-top:0;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+.card{display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:14px;border:1px solid var(--border);background:var(--panel);min-height:44px;}
+.card:hover{border-color:var(--border-hi);background:var(--panel3);}
+.iconWrap{width:52px;height:52px;border-radius:12px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;}
+.card b{font-size:15.5px;color:var(--bright);}
+.card span.d{font-size:12.5px;color:var(--dim);line-height:1.5;}
+.card .go{margin-top:auto;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>SIMULATORS</h1></div>
+    <a class="backLink mono" href="javascript:history.back()">&larr; back to course</a>
+  </div>
+  <p class="lead">Free-play tools — no login, no XP, no grading. Pick one and jump in.</p>
+
+  <div class="sectionLbl">CYBERSECURITY</div>
+  <div class="grid">
+    <a class="card" href="coldcall.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6.5 3.5c1 1.6 1.6 3 2.4 3.9-.6.9-1.5 1.7-1.9 2.2 1.4 3 3.9 5.5 6.9 6.9.5-.4 1.3-1.3 2.2-1.9.9.8 2.3 1.4 3.9 2.4-.2 1.5-1.6 3.1-3.3 3.1C10.7 20.1 3.9 13.3 3.4 7.3c0-1.7 1.6-3.1 3.1-3.8z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+      <b>Cold Call</b><span class="d">Social engineering phone-call simulator</span><span class="go">OPEN &rarr;</span>
+    </a>
+    <a class="card" href="proofoflife.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M16 10l5-3v10l-5-3z" fill="var(--accent)"/></svg></div>
+      <b>Proof of Life</b><span class="d">Deepfake video-call verification simulator</span><span class="go">OPEN &rarr;</span>
+    </a>
+    <a class="card" href="gatekeeper.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" style="stroke:var(--accent)" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+      <b>Gatekeeper</b><span class="d">Firewall rule-ordering simulator</span><span class="go">OPEN &rarr;</span>
+    </a>
+    <a class="card" href="cracktime.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="6" y="11" width="12" height="9" rx="2" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M9 11V8a3 3 0 0 1 6 0v3" style="stroke:var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <b>Crack Time</b><span class="d">Live password cracking-time calculator</span><span class="go">OPEN &rarr;</span>
+    </a>
+    <a class="card" href="warroom.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M2 12h4M18 12h4" style="stroke:var(--accent)" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="6" style="stroke:var(--accent)" stroke-width="1.6"/></svg></div>
+      <b>War Room</b><span class="d">Incident response decision tabletop</span><span class="go">OPEN &rarr;</span>
+    </a>
+    <a class="card" href="wiretap.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2" fill="var(--accent)"/><path d="M4 12h5M15 12h5" style="stroke:var(--accent)" stroke-width="1.6" stroke-linecap="round"/><path d="M7 6v3M17 6v3M7 18v-3M17 18v-3" style="stroke:var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <b>Wire Tap</b><span class="d">Packet sniffer capture simulator</span><span class="go">OPEN &rarr;</span>
+    </a>
+    <a class="card" href="blockrush.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="4" y="9" width="6" height="6" rx="1" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="9" width="6" height="6" rx="1" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M10 12h4" style="stroke:var(--accent)" stroke-width="1.6"/></svg></div>
+      <b>Block Rush</b><span class="d">Proof-of-work mining simulator</span><span class="go">OPEN &rarr;</span>
+    </a>
+  </div>
+
+  <div class="sectionLbl">AP COMPUTER SCIENCE PRINCIPLES</div>
+  <div class="grid">
+    <a class="card" href="rollover.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="4.5" height="8" rx="1" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="9.5" y="8" width="4.5" height="8" rx="1" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="16" y="8" width="4.5" height="8" rx="1" style="stroke:var(--accent)" stroke-width="1.6"/></svg></div>
+      <b>Rollover</b><span class="d">Binary bit odometer — count, add, negatives, fractions</span><span class="go">OPEN &rarr;</span>
+    </a>
+    <a class="card" href="robotrun.html">
+      <div class="iconWrap"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 4l6 10.5H6L12 4z" style="stroke:var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 20h16" style="stroke:var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <b>Robot Run</b><span class="d">Algorithm tracing — loops, variables, a grid robot</span><span class="go">OPEN &rarr;</span>
+    </a>
+  </div>
+</div>
+</body>
+</html>
