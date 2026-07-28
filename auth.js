@@ -17,6 +17,7 @@
       : [CFG.schoolDomain || "southfayette.org"])
     .map(function (d) { return String(d).toLowerCase().replace(/^@/, ""); });
   var DOMAIN = DOMAINS[0];
+  var EXTRA_EMAILS = (CFG.allowedExternalEmails || []).map(function (e) { return String(e).toLowerCase(); });
   var TEACHER = (CFG.teacherEmail || "rnreasey@southfayette.org").toLowerCase();
   var ONLINE = !!(CFG.url && CFG.anonKey);
 
@@ -50,18 +51,19 @@
   }
   function emailOf(u) { return ((u && u.email) || "").toLowerCase(); }
   function domainOf(u) { return emailOf(u).split("@")[1] || ""; }
-  function isSchool(u) { return DOMAINS.indexOf(domainOf(u)) !== -1; }
+  function isSchool(u) { return DOMAINS.indexOf(domainOf(u)) !== -1 || EXTRA_EMAILS.indexOf(emailOf(u)) !== -1; }
   function isStaffDomain(u) { return domainOf(u) === DOMAIN; }
   function isTeacher(u) { return emailOf(u) === TEACHER; }
 
   /* Google OAuth. `hd` restricts the account chooser to a single domain, so it
-     is only sent when the school HAS one domain — passing it with two would
-     hide every student account. Real enforcement is server-side (_is_school()
-     in the SQL) plus the check below. */
+     is only sent when the school HAS one domain and there's no external
+     allowlist — passing it with two, or with an allowed outside email
+     configured, would hide the very accounts that need to sign in. Real
+     enforcement is server-side (_is_school() in the SQL) plus the check below. */
   async function signIn(redirectTo) {
     var db = await client();
     var q = { prompt: "select_account" };
-    if (DOMAINS.length === 1) q.hd = DOMAIN;
+    if (DOMAINS.length === 1 && EXTRA_EMAILS.length === 0) q.hd = DOMAIN;
     return db.auth.signInWithOAuth({
       provider: "google",
       options: {

@@ -111,6 +111,22 @@
   @media(max-width:680px){
     .attendWrap th:first-child,.attendWrap td:first-child{max-width:118px;overflow:hidden;text-overflow:ellipsis;}
   }
+
+/* Real toggle switch. A bare checkbox left teachers guessing which state was
+   which; the track slides and the label states the CURRENT state, not the
+   action, so there's nothing to interpret. */
+.sw{display:inline-flex;align-items:center;gap:10px;cursor:pointer;white-space:nowrap;user-select:none;min-height:44px;}
+.sw input{position:absolute;opacity:0;width:0;height:0;}
+.sw .track{position:relative;width:46px;height:26px;flex:none;border-radius:999px;background:var(--bg2);
+  border:1px solid var(--border3);transition:background .18s ease,border-color .18s ease;}
+.sw .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:999px;background:var(--dim);
+  transition:transform .18s ease,background .18s ease;}
+.sw input:checked + .track{background:color-mix(in srgb,var(--ok) 26%,transparent);border-color:var(--ok);}
+.sw input:checked + .track .knob{transform:translateX(20px);background:var(--ok);}
+.sw input:focus-visible + .track{outline:2px solid var(--accent);outline-offset:2px;}
+.sw:hover .track{border-color:var(--border-hi,var(--accent));}
+.sw .swLabel{font-size:14px;font-weight:700;}
+.sw .swHint{font-size:11px;font-weight:400;color:var(--faint);}
 </style>
 </head>
 <body>
@@ -263,7 +279,7 @@ var CLASSES=[], CUR=null;
 async function loadClasses(refresh){
   try{
     CLASSES=await rpc("ctf_t_classes")||[];
-    if(!refresh){ await loadWhoami(); await loadTeachers(); await loadRejects(); }
+    if(!refresh){ await loadWhoami(); await loadTeachers(); await loadAllowedEmails(); await loadRejects(); }
     renderClassList();
     if(refresh&&CUR){ var again=CLASSES.filter(function(c){return c.id===CUR.id;})[0]; if(again) selectClass(again); }
   }catch(e){ el("classList").innerHTML='<div class="empty" style="color:var(--bad)">Failed to load.</div>'; }
@@ -301,10 +317,12 @@ var REJECTS=null;
 var GRANTS=[];
 // Arena Hard-tier mini-game runs (supabase/hardmode-log.sql).
 var HRUNS=[];
+// Per-flag attempt roll-up for abandonment (supabase/item-analysis.sql).
+var ATTEMPTS=[];
 function selectClass(c){ CUR=c; TAB="summary"; syncGateFromClass(); renderClassList(); renderMain(); loadDetail(); }
 
 async function loadDetail(){
-  ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;GROUPS=[];GSEL={};GFILTER="all";PIONEERS=[];VOCAB=[];EXPECTED=[];VSESS=[];STAND=[];CAPS=[];GRANTS=[];HRUNS=[];
+  ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;GROUPS=[];GSEL={};GFILTER="all";PIONEERS=[];VOCAB=[];EXPECTED=[];VSESS=[];STAND=[];CAPS=[];GRANTS=[];HRUNS=[];ATTEMPTS=[];
   try{
     ROSTER=await rpc("ctf_t_roster",{p_class:CUR.id})||[];
     renderMain();
@@ -323,7 +341,8 @@ async function loadDetail(){
       rpc("ctf_t_squad_standings",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
       rpc("ctf_t_captures",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};}),
       rpc("ctf_t_xp_grants",{p_class:CUR.id,p_limit:300}).catch(function(){return {error:"missing_rpc"};}),
-      rpc("ctf_t_hardmode_runs",{p_class:CUR.id,p_limit:400}).catch(function(){return {error:"missing_rpc"};})
+      rpc("ctf_t_hardmode_runs",{p_class:CUR.id,p_limit:400}).catch(function(){return {error:"missing_rpc"};}),
+      rpc("ctf_t_flag_attempts",{p_class:CUR.id}).catch(function(){return {error:"missing_rpc"};})
     ]);
     SUMMARY=rest[0]; FLAGS=rest[1]||[]; CHEATS=rest[2]||[]; FSTATS=rest[3]||[]; ATTEND=rest[4];
     GROUPS=Array.isArray(rest[5])?rest[5]:[];
@@ -336,6 +355,7 @@ async function loadDetail(){
     CAPS=keepErr(rest[11]);
     GRANTS=keepErr(rest[12]);
     HRUNS=keepErr(rest[13]);
+    ATTEMPTS=keepErr(rest[14]);
     renderMain();
   }catch(e){
     var m=(e&&(e.message||""))+"";
@@ -369,13 +389,14 @@ function renderMain(){
     '</div>';
   // tabs
   h+='<div class="tabs">'+
-      tabBtn("summary","Summary")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
+      tabBtn("summary","Summary")+tabBtn("spread","Distributions")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
       tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+
       tabBtn("vocab","Vocab Lab")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("enroll","Enrollment")+
       tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
     '</div><div style="padding-top:16px;">';
   if(TAB==="roster") h+=rosterView();
   else if(TAB==="summary") h+=summaryView();
+  else if(TAB==="spread") h+=spreadView();
   else if(TAB==="attend") h+=attendView();
   else if(TAB==="gates") h+=gatesView();
   else if(TAB==="flagstats") h+=flagStatsView();
@@ -441,7 +462,129 @@ function summaryView(){
           '<span style="margin-left:auto;font-size:11px;color:var(--warn);">'+why+'</span></div>';
       }).join(""):'<div class="empty" style="padding:20px;font-size:13px;color:var(--ok)">Everyone is active. \uD83C\uDF89</div>')+'</div>';
   h+='</div>';
-  return h;
+  return h+silentPanel()+timeOnTaskPanel();
+}
+
+/* ----- time on task (#1) -----
+   Minutes actually worked, not XP: capture time from flag_events, vocab practice
+   from the lab, and arena mini-game runs, added up per student. XP rewards speed
+   and correctness; this is the number a parent or an administrator asks about,
+   and the one that separates "didn't try" from "tried and struggled". */
+function timeOnTask(){
+  var m={};
+  var row=function(id){ return m[id]||(m[id]={capture:0,vocab:0,game:0,total:0}); };
+  (Array.isArray(CAPS)?CAPS:[]).forEach(function(c){
+    var s=Number(c.secs); if(s>0) row(c.student_id).capture+=s;
+  });
+  (Array.isArray(HRUNS)?HRUNS:[]).forEach(function(r){
+    var s=Number(r.secs); if(s>0) row(r.student_id).game+=s;
+  });
+  // the vocab report is keyed by handle, so match on that
+  var byHandle={}; (ROSTER||[]).forEach(function(s){ byHandle[s.handle]=s.id; });
+  (Array.isArray(VOCAB)?VOCAB:[]).forEach(function(v){
+    var id=byHandle[v.handle]; if(!id) return;
+    row(id).vocab+=Number(v.total_secs)||0;
+  });
+  (ROSTER||[]).forEach(function(s){ var r=row(s.id); r.total=r.capture+r.vocab+r.game; });
+  return m;
+}
+function timeOnTaskPanel(){
+  var T=timeOnTask();
+  var rows=(ROSTER||[]).map(function(s){ return { s:s, t:T[s.id]||{capture:0,vocab:0,game:0,total:0} }; })
+    .sort(function(a,b){ return b.t.total-a.t.total; });
+  var any=rows.some(function(r){ return r.t.total>0; });
+  var h='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;">'+
+      '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">TIME ON TASK</span>'+
+      '<span style="margin-left:auto;">'+CSV.button("exportTimeOnTask()")+'</span></div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+      'Minutes worked, not points earned: capture time + vocab practice + arena mini-games. '+
+      'A student low on XP but high here is struggling, not idle \u2014 the two cases need opposite responses.</div>';
+  if(!any) return h+'<div class="mono" style="font-size:12px;color:var(--faint);">No timed work recorded yet.</div></div>';
+  var max=Math.max.apply(null,rows.map(function(r){ return r.t.total; }))||1;
+  var seg=function(v,c,title){ return v>0?'<span title="'+title+'" style="display:block;height:100%;width:'+(v/max*100)+'%;background:'+c+';"></span>':''; };
+  h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+  rows.forEach(function(r){
+    h+='<div style="display:flex;align-items:center;gap:10px;">'+
+      '<button onclick=\'openStudent("'+r.s.id+'")\' style="background:none;border:none;padding:0;cursor:pointer;font:inherit;width:130px;text-align:left;">'+
+        '<b style="color:var(--accent);font-size:13px;border-bottom:1px dotted var(--border3);">'+esc(r.s.handle)+'</b></button>'+
+      '<span style="flex:1;min-width:100px;height:10px;border-radius:99px;background:var(--bg2);overflow:hidden;display:flex;">'+
+        seg(r.t.capture,"var(--accent)","captures")+seg(r.t.vocab,"var(--ok)","vocab lab")+seg(r.t.game,"var(--warn)","mini-games")+
+      '</span>'+
+      '<span class="mono" style="width:66px;text-align:right;font-size:12px;color:var(--bright);font-weight:700;">'+fmtMin(r.t.total)+'</span>'+
+    '</div>';
+  });
+  h+='</div>'+
+    '<div class="mono" style="font-size:10px;color:var(--faint);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;">'+
+      '<span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-right:5px;"></span>CAPTURES</span>'+
+      '<span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--ok);margin-right:5px;"></span>VOCAB LAB</span>'+
+      '<span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--warn);margin-right:5px;"></span>MINI-GAMES</span></div>';
+  return h+'</div>';
+}
+function exportTimeOnTask(){
+  var T=timeOnTask();
+  var out=[["Handle","Email","Capture secs","Vocab secs","Mini-game secs","Total secs","Total","XP"]];
+  (ROSTER||[]).forEach(function(s){
+    var t=T[s.id]||{capture:0,vocab:0,game:0,total:0};
+    out.push([s.handle,s.email||"",t.capture,t.vocab,t.game,t.total,fmtMin(t.total),(s.points||0)+(s.bonus||0)]);
+  });
+  CSV.download(out,"time-on-task",CUR.name);
+}
+
+/* ----- silent since (#4) -----
+   Days since a student's last capture, longest first. XP totals hide this: a
+   student can sit on 600 XP earned three weeks ago and look fine on every other
+   screen. Calendar days, not school days. */
+function lastCaptureByStudent(){
+  var m={};
+  (Array.isArray(CAPS)?CAPS:[]).forEach(function(c){
+    var t=c.created_at?new Date(c.created_at).getTime():0;
+    if(t && t>(m[c.student_id]||0)) m[c.student_id]=t;
+  });
+  return m;
+}
+function silentPanel(){
+  var last=lastCaptureByStudent();
+  var day=86400000, now=Date.now();
+  var rows=(ROSTER||[]).map(function(s){
+    var t=last[s.id]||0;
+    return { s:s, t:t, days:t?Math.floor((now-t)/day):null };
+  }).sort(function(a,b){
+    if(!a.t&&!b.t) return String(a.s.handle).localeCompare(String(b.s.handle));
+    if(!a.t) return -1; if(!b.t) return 1;
+    return a.t-b.t;
+  });
+  var quiet=rows.filter(function(r){ return r.days===null || r.days>=3; });
+  var h='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;">'+
+      '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">SILENT SINCE</span>'+
+      '<span class="mono" style="font-size:11px;color:'+(quiet.length?'var(--warn)':'var(--ok)')+';">'+
+        quiet.length+' quiet 3+ days</span>'+
+      '<span style="margin-left:auto;">'+CSV.button("exportSilent()")+'</span></div>'+
+    '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;">'+
+      'Days since each student\u2019s last flag capture, longest first. Logging in isn\u2019t working \u2014 this counts work.</div>';
+  if(CAPS&&CAPS.error) return h+'<div class="mono" style="font-size:12px;color:var(--bad)">Run supabase/objectives.sql to read per-student captures.</div></div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:7px;">';
+  rows.forEach(function(r){
+    var col=r.days===null?"var(--bad)":r.days>=7?"var(--bad)":r.days>=3?"var(--warn)":"var(--ok)";
+    var txt=r.days===null?"never":r.days===0?"today":r.days===1?"yesterday":r.days+"d";
+    h+='<button onclick=\'openStudent("'+r.s.id+'")\' class="mono" style="cursor:pointer;display:flex;align-items:center;gap:8px;'+
+      'padding:7px 11px;border-radius:9px;background:var(--bg2);border:1px solid '+
+      (r.days===null||r.days>=7?col:'var(--border2)')+';font:inherit;">'+
+      '<b style="color:var(--bright);font-size:12.5px;">'+esc(r.s.handle)+'</b>'+
+      '<span class="mono" style="font-size:11px;color:'+col+';">'+txt+'</span></button>';
+  });
+  return h+'</div></div>';
+}
+function exportSilent(){
+  var last=lastCaptureByStudent(), day=86400000, now=Date.now();
+  var out=[["Handle","Email","Last capture","Days since","XP","Flags cleared"]];
+  (ROSTER||[]).forEach(function(s){
+    var t=last[s.id]||0;
+    out.push([s.handle,s.email||"",t?new Date(t).toISOString():"never",
+      t?Math.floor((now-t)/day):"",(s.points||0)+(s.bonus||0),s.solved_count||0]);
+  });
+  CSV.download(out,"silent-since",CUR.name);
 }
 
 /* ----- login report: spreadsheet-style attendance grid ----- */
@@ -654,8 +797,581 @@ function flagStatsView(){
       '<td>'+((f.tainted||0)?'<span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">'+f.tainted+'</span>':'<span style="color:var(--ok)">0</span>')+'</td>'+
     '</tr>';
   });
-  return h+'</tbody></table></div>';
+  return h+'</tbody></table></div>'+discriminationPanel()+abandonPanel()+hintRatePanel();
 }
+
+/* ----- hint-purchase rate -----
+   ctf.js has always priced a hint reveal at 10% of that flag's value; this is
+   just the backend telling us it happened. Requires supabase/hint-log.sql. */
+function hintRatePanel(){
+  var rows=Array.isArray(FLAGS)?FLAGS:[];
+  var h='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;">'+
+      '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">HINT PURCHASES</span></div>';
+  if(!rows.length) return h+'<div class="mono" style="font-size:12px;color:var(--faint);">No captures logged yet.</div></div>';
+  if(!rows.some(function(f){ return f.hint_used!==undefined; }))
+    return h+'<div class="mono" style="font-size:12px;color:var(--bad)">Run supabase/hint-log.sql to track hint reveals per flag.</div></div>';
+  var by={};
+  rows.forEach(function(f){
+    var k=f.title||f.challenge_id; if(!k) return;
+    var e=by[k]||(by[k]={title:k,level:f.level,n:0,hints:0});
+    e.n++; if(f.hint_used) e.hints++;
+  });
+  var list=Object.keys(by).map(function(k){ return by[k]; }).filter(function(r){ return r.hints>0; })
+    .sort(function(a,b){ return (b.hints/b.n)-(a.hints/a.n); });
+  if(!list.length) return h+'<div class="mono" style="font-size:12px;color:var(--dim);">No hints have been revealed in this class yet.</div></div>';
+  h+='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:10px;line-height:1.6;">'+
+    'Share of captures on that flag where the student paid the hint cost. A flag many students buy the hint on is either genuinely hard or under-taught.</div>'+
+    '<div style="overflow:auto;"><table><thead><tr><th>Challenge</th><th>Level</th><th>Captures</th><th>Hints used</th><th>Rate</th></tr></thead><tbody>';
+  list.forEach(function(r){
+    var lvlC=r.level==="Hard"?"var(--bad)":r.level==="Medium"?"var(--warn)":"var(--ok)";
+    var rate=Math.round(r.hints/r.n*100);
+    h+='<tr>'+
+      '<td><b style="color:var(--bright)">'+esc(r.title)+'</b></td>'+
+      '<td>'+(r.level?'<span class="pill" style="background:color-mix(in srgb,'+lvlC+' 14%,transparent);color:'+lvlC+'">'+esc(r.level)+'</span>':'\u2014')+'</td>'+
+      '<td class="mono">'+r.n+'</td>'+
+      '<td class="mono" style="color:var(--warn)">'+r.hints+'</td>'+
+      '<td><span class="mono" style="color:'+(rate>=50?'var(--bad)':rate>=25?'var(--warn)':'var(--dim)')+'">'+rate+'%</span></td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div></div>';
+}
+
+/* ----- abandonment (#8) -----
+   flag_events only records success, so a flag students fight with and give up on
+   looks the same as one nobody reached. This joins the attempt log against the
+   captures: abandoned = tried at least once, never cleared. Many abandoners who
+   each spent SEVERAL tries is the wording signal — they understood enough to keep
+   trying and still couldn't satisfy the answer. One try and gone is more often a
+   concept not taught yet. */
+function abandonPanel(){
+  var h='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;">'+
+      '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">ATTEMPTED &amp; ABANDONED</span>'+
+      (Array.isArray(ATTEMPTS)&&ATTEMPTS.length?'<span style="margin-left:auto;">'+CSV.button("exportAbandon()")+'</span>':'')+'</div>';
+  if(ATTEMPTS&&ATTEMPTS.error) return h+'<div class="mono" style="font-size:12px;color:var(--bad)">'+
+    (ATTEMPTS.error==="no_attempt_log"
+      ? 'Run supabase/attempt-log.sql first, then supabase/item-analysis.sql.'
+      : 'Run supabase/item-analysis.sql to see which flags get abandoned.')+'</div></div>';
+  var rows=(Array.isArray(ATTEMPTS)?ATTEMPTS:[]).filter(function(r){ return (r.abandoned||0)>0; });
+  if(!rows.length) return h+'<div class="mono" style="font-size:12px;color:var(--ok)">Nothing abandoned \u2014 every flag anyone tried was eventually cleared.</div></div>';
+
+  var chals=(((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf||{}).challenges||[];
+  var meta=function(key){
+    var id=String(key||"").split("#")[0];
+    var c=chals.filter(function(x){ return x.id===id; })[0];
+    var li=Number(String(key||"").split("#")[1]);
+    var lvl=c&&c.type==="vocab"?["Easy","Medium","Hard"][li||0]
+      :(c&&c.levels&&c.levels[li]?c.levels[li].difficulty:"");
+    return { title:c?c.title:id, module:c?c.module:"", level:lvl||"" };
+  };
+  h+='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;max-width:820px;">'+
+    'Flags students tried and never cleared, worst first. <b style="color:var(--text)">Tries given</b> is the average number of '+
+    'wrong guesses an abandoner spent before walking away \u2014 2 or more alongside several abandoners points at the '+
+    'wording or answer format rather than the concept.</div>';
+  h+='<div style="overflow:auto;max-height:460px;"><table style="font-size:12px;"><thead><tr>'+
+    '<th>Flag</th><th>Level</th><th>Tried</th><th>Cleared</th><th>Abandoned</th><th>Tries given</th><th>Last try</th>'+
+    '</tr></thead><tbody>';
+  rows.sort(function(a,b){ return (b.abandoned-a.abandoned)||(b.tries_given-a.tries_given); }).forEach(function(r){
+    var m=meta(r.flag_key);
+    var lvlC=m.level==="Hard"?"var(--bad)":m.level==="Medium"?"var(--warn)":"var(--ok)";
+    var wordy=(r.abandoned||0)>=2&&Number(r.tries_given)>=2;
+    h+='<tr'+(wordy?' style="background:color-mix(in srgb,var(--warn) 7%,transparent)"':'')+'>'+
+      '<td><b style="color:var(--bright)">'+esc(m.title)+'</b>'+
+        (wordy?' <span class="pill" style="background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)">check wording</span>':'')+
+        '<div class="mono" style="font-size:10px;color:var(--faint)">'+(m.module?"M"+m.module+" \u00b7 ":"")+esc(r.flag_key)+'</div></td>'+
+      '<td>'+(m.level?'<span class="pill" style="background:color-mix(in srgb,'+lvlC+' 14%,transparent);color:'+lvlC+'">'+esc(m.level)+'</span>':'\u2014')+'</td>'+
+      '<td class="mono">'+(r.attempters||0)+'</td>'+
+      '<td class="mono" style="color:var(--ok)">'+(r.solvers||0)+'</td>'+
+      '<td class="mono" style="font-weight:700;color:var(--bad)">'+(r.abandoned||0)+'</td>'+
+      '<td class="mono" style="color:'+(Number(r.tries_given)>=2?'var(--warn)':'var(--dim)')+'">'+Number(r.tries_given||0)+'</td>'+
+      '<td class="mono" style="color:var(--dim);white-space:nowrap">'+ago(r.last_at)+'</td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div></div>';
+}
+function exportAbandon(){
+  var out=[["Flag key","Tried","Cleared","Abandoned","Wrong guesses total","Avg tries before quitting","Last try"]];
+  (Array.isArray(ATTEMPTS)?ATTEMPTS:[]).forEach(function(r){
+    out.push([r.flag_key,r.attempters||0,r.solvers||0,r.abandoned||0,r.wrong_total||0,
+      Number(r.tries_given||0),r.last_at||""]);
+  });
+  CSV.download(out,"abandoned-flags",CUR.name);
+}
+
+/* ----- flag discrimination (#7) -----
+   This one is about the QUESTIONS, not the students. A good item is passed more
+   often by students who know the material than by students who don't. Split the
+   class into a top and bottom third by XP; D = (top pass rate) − (bottom pass
+   rate).
+
+     D >= .40  excellent          the flag separates who knows it from who doesn't
+     .20-.39   fine
+     .10-.19   weak
+     < .10     not discriminating — either everyone gets it, nobody does, or the
+               wording is the obstacle rather than the concept
+     negative  BACKWARDS: your strongest students miss it more than the weakest.
+               Almost always a wording, format, or answer-key problem.
+
+   p is the difficulty: share of the class that has cleared it. Very high or very
+   low p caps how much D can ever be, so both are shown together. Small classes
+   make these noisy — the group sizes are printed so you can judge. */
+function discrimination(){
+  if(CAPS&&CAPS.error) return null;
+  var caps={}; (Array.isArray(CAPS)?CAPS:[]).forEach(function(c){
+    (caps[c.student_id]=caps[c.student_id]||{})[c.flag_key]=!c.tainted;
+  });
+  var ranked=(ROSTER||[]).slice().sort(function(a,b){
+    return ((b.points||0)+(b.bonus||0))-((a.points||0)+(a.bonus||0)); });
+  if(ranked.length<4) return { tooSmall:true, n:ranked.length, rows:[] };
+  var third=Math.max(1,Math.round(ranked.length/3));
+  var top=ranked.slice(0,third), bot=ranked.slice(-third);
+
+  var chals=(((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf||{}).challenges||[];
+  var items=[];
+  chals.forEach(function(c){
+    var leveled=(c.type==="vocab")||!!(c.levels&&c.type!=="phish");
+    var lv=leveled?(c.levels||[0,1,2]):[null];
+    lv.forEach(function(l,i){
+      items.push({ key:leveled?(c.id+"#"+i):c.id, title:c.title, module:c.module,
+        level:(c.type==="vocab")?["Easy","Medium","Hard"][i]:(l&&l.difficulty)||"" });
+    });
+  });
+
+  var rate=function(group,key){
+    if(!group.length) return 0;
+    var got=group.filter(function(s){ return (caps[s.id]||{})[key]; }).length;
+    return got/group.length;
+  };
+  var rows=items.map(function(it){
+    var all=rate(ranked,it.key);
+    var solvedAny=ranked.filter(function(s){ return (caps[s.id]||{})[it.key]; }).length;
+    return { key:it.key, title:it.title, module:it.module, level:it.level,
+      p:all, solves:solvedAny, topRate:rate(top,it.key), botRate:rate(bot,it.key),
+      d:rate(top,it.key)-rate(bot,it.key) };
+  }).filter(function(r){ return r.solves>0; });
+  return { rows:rows, topN:top.length, botN:bot.length, n:ranked.length };
+}
+function dLabel(d){
+  if(d<0) return { t:"backwards", c:"var(--bad)" };
+  if(d<0.10) return { t:"not discriminating", c:"var(--warn)" };
+  if(d<0.20) return { t:"weak", c:"var(--warn)" };
+  if(d<0.40) return { t:"fine", c:"var(--dim)" };
+  return { t:"excellent", c:"var(--ok)" };
+}
+function discriminationPanel(){
+  var D=discrimination();
+  var h='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;">'+
+      '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">ITEM DISCRIMINATION</span>'+
+      (D&&D.rows.length?'<span style="margin-left:auto;">'+CSV.button("exportDiscrimination()")+'</span>':'')+'</div>';
+  if(!D) return h+'<div class="mono" style="font-size:12px;color:var(--bad)">Run supabase/objectives.sql to read per-student captures.</div></div>';
+  if(D.tooSmall) return h+'<div class="mono" style="font-size:12px;color:var(--faint);">Needs at least 4 students with progress \u2014 this class has '+D.n+'.</div></div>';
+  if(!D.rows.length) return h+'<div class="mono" style="font-size:12px;color:var(--faint);">No captures yet.</div></div>';
+
+  h+='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;max-width:820px;">'+
+    'About your questions, not your students. Top third by XP ('+D.topN+') versus bottom third ('+D.botN+
+    '): <b style="color:var(--text)">D</b> is how much more often the strong group clears a flag. '+
+    'High D means the flag actually distinguishes understanding. '+
+    '<b style="color:var(--bad)">Negative D</b> means your strongest students miss it more often than your weakest \u2014 '+
+    'nearly always a wording or answer-key problem worth rewriting. <b style="color:var(--text)">p</b> is difficulty: '+
+    'the share of the class that has cleared it, where near-0 or near-1 leaves little room to discriminate.</div>';
+
+  var rows=D.rows.slice().sort(function(a,b){ return a.d-b.d; });
+  h+='<div style="overflow:auto;max-height:520px;"><table style="font-size:12px;"><thead><tr>'+
+    '<th>Flag</th><th>Level</th><th>p (difficulty)</th><th>Top \u2153</th><th>Bottom \u2153</th><th>D</th><th>Verdict</th>'+
+    '</tr></thead><tbody>';
+  rows.forEach(function(r){
+    var v=dLabel(r.d);
+    var lvlC=r.level==="Hard"?"var(--bad)":r.level==="Medium"?"var(--warn)":"var(--ok)";
+    h+='<tr'+(r.d<0?' style="background:color-mix(in srgb,var(--bad) 7%,transparent)"':'')+'>'+
+      '<td><b style="color:var(--bright)">'+esc(r.title)+'</b>'+
+        '<div class="mono" style="font-size:10px;color:var(--faint)">M'+r.module+' \u00b7 '+esc(r.key)+'</div></td>'+
+      '<td>'+(r.level?'<span class="pill" style="background:color-mix(in srgb,'+lvlC+' 14%,transparent);color:'+lvlC+'">'+esc(r.level)+'</span>':'\u2014')+'</td>'+
+      '<td class="mono" style="color:'+(r.p>0.9||r.p<0.1?'var(--warn)':'var(--text)')+'">'+r.p.toFixed(2)+'</td>'+
+      '<td class="mono" style="color:var(--dim)">'+Math.round(r.topRate*100)+'%</td>'+
+      '<td class="mono" style="color:var(--dim)">'+Math.round(r.botRate*100)+'%</td>'+
+      '<td class="mono" style="font-weight:700;color:'+v.c+'">'+(r.d>0?"+":"")+r.d.toFixed(2)+'</td>'+
+      '<td class="mono" style="color:'+v.c+';font-size:11px;">'+v.t+'</td>'+
+    '</tr>';
+  });
+  return h+'</tbody></table></div></div>';
+}
+function exportDiscrimination(){
+  var D=discrimination(); if(!D||!D.rows) return;
+  var out=[["Flag key","Title","Module","Level","p (difficulty)","Top third pass %","Bottom third pass %","D","Verdict"]];
+  D.rows.slice().sort(function(a,b){ return a.d-b.d; }).forEach(function(r){
+    out.push([r.key,r.title,r.module,r.level,r2(r.p),Math.round(r.topRate*100),
+      Math.round(r.botRate*100),r2(r.d),dLabel(r.d).t]);
+  });
+  CSV.download(out,"item-discrimination",CUR.name);
+}
+
+/* ----- distributions (#10) -----
+   An average hides the shape of a class: two very different rooms can both
+   average 400 XP. These are five-number summaries with real box-and-whisker
+   plots, plus mean, SD and coefficient of variation, over whatever the class
+   has actually generated. Quartiles use the linear-interpolation method
+   (type 7, what R and NumPy default to), so a 1-student class is legal and a
+   small class doesn't produce nonsense.
+
+   Outliers are the standard 1.5 x IQR fences — worth a look, not a verdict. */
+function stats5(vals){
+  var v=(vals||[]).map(Number).filter(function(x){ return isFinite(x); }).sort(function(a,b){return a-b;});
+  var n=v.length; if(!n) return null;
+  var q=function(p){
+    if(n===1) return v[0];
+    var h=(n-1)*p, lo=Math.floor(h), hi=Math.ceil(h);
+    return v[lo]+(h-lo)*(v[hi]-v[lo]);
+  };
+  var mean=v.reduce(function(a,b){return a+b;},0)/n;
+  var sd=n>1?Math.sqrt(v.reduce(function(a,b){return a+Math.pow(b-mean,2);},0)/(n-1)):0;
+  var q1=q(0.25), med=q(0.5), q3=q(0.75), iqr=q3-q1;
+  var loF=q1-1.5*iqr, hiF=q3+1.5*iqr;
+  var inl=v.filter(function(x){ return x>=loF&&x<=hiF; });
+  return { n:n, values:v, min:v[0], max:v[n-1], q1:q1, med:med, q3:q3, iqr:iqr,
+    mean:mean, sd:sd, cv:mean?sd/mean*100:0,
+    whiskLo:inl.length?inl[0]:v[0], whiskHi:inl.length?inl[inl.length-1]:v[n-1],
+    outliers:v.filter(function(x){ return x<loF||x>hiF; }) };
+}
+function boxPlot(s, fmt, scaleMin, scaleMax){
+  var W=640, H=62, PAD=8;
+  var lo=scaleMin!=null?scaleMin:s.min, hi=scaleMax!=null?scaleMax:s.max;
+  if(hi<=lo) hi=lo+1;
+  var X=function(v){ return PAD+(v-lo)/(hi-lo)*(W-PAD*2); };
+  var cy=26, bh=26;
+  var g='<svg width="100%" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="display:block;overflow:visible;">';
+  // every value as a faint tick, so the shape shows through the summary
+  g+=s.values.map(function(v){
+    return '<line x1="'+X(v).toFixed(1)+'" y1="'+(cy-bh/2-5)+'" x2="'+X(v).toFixed(1)+'" y2="'+(cy-bh/2-1)+'" stroke="var(--accent)" stroke-opacity=".45" stroke-width="2"/>';
+  }).join("");
+  g+='<line x1="'+X(s.whiskLo).toFixed(1)+'" y1="'+cy+'" x2="'+X(s.whiskHi).toFixed(1)+'" y2="'+cy+'" stroke="var(--border3)" stroke-width="2"/>';
+  [s.whiskLo,s.whiskHi].forEach(function(v){
+    g+='<line x1="'+X(v).toFixed(1)+'" y1="'+(cy-7)+'" x2="'+X(v).toFixed(1)+'" y2="'+(cy+7)+'" stroke="var(--border3)" stroke-width="2"/>';
+  });
+  g+='<rect x="'+X(s.q1).toFixed(1)+'" y="'+(cy-bh/2)+'" width="'+Math.max(1,(X(s.q3)-X(s.q1))).toFixed(1)+'" height="'+bh+
+     '" rx="3" fill="color-mix(in srgb,var(--accent) 18%,transparent)" stroke="var(--accent)" stroke-width="1.5"/>';
+  g+='<line x1="'+X(s.med).toFixed(1)+'" y1="'+(cy-bh/2)+'" x2="'+X(s.med).toFixed(1)+'" y2="'+(cy+bh/2)+'" stroke="var(--bright)" stroke-width="3"/>';
+  g+='<circle cx="'+X(s.mean).toFixed(1)+'" cy="'+cy+'" r="4" fill="var(--warn)"/>';
+  s.outliers.forEach(function(v){
+    g+='<circle cx="'+X(v).toFixed(1)+'" cy="'+cy+'" r="3.5" fill="none" stroke="var(--bad)" stroke-width="1.5"/>';
+  });
+  g+='<text x="'+PAD+'" y="'+(H-4)+'" fill="var(--faint)" font-size="10" font-family="ui-monospace,monospace">'+esc(fmt(lo))+'</text>';
+  g+='<text x="'+(W-PAD)+'" y="'+(H-4)+'" fill="var(--faint)" font-size="10" font-family="ui-monospace,monospace" text-anchor="end">'+esc(fmt(hi))+'</text>';
+  return g+'</svg>';
+}
+/* One continuous work session per student = events (captures + integrity
+   flags) less than 20 minutes apart. Returns every session's length in
+   minutes, across the whole class, for the distribution box plot. */
+function sessionLengths(){
+  var events={};
+  var push=function(h,t){ if(!h||!t) return; (events[h]=events[h]||[]).push(t); };
+  (Array.isArray(FLAGS)?FLAGS:[]).forEach(function(f){ push(f.handle, f.created_at?new Date(f.created_at).getTime():0); });
+  (Array.isArray(CHEATS)?CHEATS:[]).forEach(function(c){ push(c.handle, c.created_at?new Date(c.created_at).getTime():0); });
+  var GAP=20*60*1000, lens=[];
+  Object.keys(events).forEach(function(h){
+    var ts=events[h].filter(Boolean).sort(function(a,b){ return a-b; });
+    if(!ts.length) return;
+    var start=ts[0], prev=ts[0];
+    for(var i=1;i<ts.length;i++){
+      if(ts[i]-prev>GAP){ lens.push((prev-start)/60000); start=ts[i]; }
+      prev=ts[i];
+    }
+    lens.push((prev-start)/60000);
+  });
+  return lens;
+}
+function spreadMetrics(){
+  var idx=(window.OBJECTIVES&&objIndex())||null;
+  var by=(idx&&!(CAPS&&CAPS.error))?capsByStudent():null;
+  var num=function(x){ return Math.round(x).toLocaleString(); };
+  var secs=function(x){ return fmtSecs(Math.round(x)); };
+  var mins=function(x){ return Math.round(x)+"m"; };
+
+  var perStudentTries={}, perStudentSecs={};
+  (Array.isArray(FLAGS)?FLAGS:[]).forEach(function(f){
+    perStudentTries[f.handle]=(perStudentTries[f.handle]||0)+(Number(f.retries)||0);
+  });
+  var pct=function(x){ return Math.round(x)+"%"; };
+  var score=function(x){ return r2(x); };
+
+  // struggle score + first-try rate: same capture list, weighted by how hard the flag was
+  var lvlWeight=function(lvl){ return lvl==="Hard"?3:lvl==="Medium"?2:1; };
+  var perStudentStruggle={}, perStudentCaps={}, perStudentFirstTry={};
+  (Array.isArray(FLAGS)?FLAGS:[]).forEach(function(f){
+    var h=f.handle; if(!h) return;
+    perStudentCaps[h]=(perStudentCaps[h]||0)+1;
+    perStudentStruggle[h]=(perStudentStruggle[h]||0)+(Number(f.retries)||0)*lvlWeight(f.level);
+    if(!(Number(f.retries)||0)) perStudentFirstTry[h]=(perStudentFirstTry[h]||0)+1;
+  });
+  var withCaps=(ROSTER||[]).filter(function(s){ return perStudentCaps[s.handle]; });
+
+  var M=[
+    { key:"xp", label:"Total XP", hint:"points + bonus, per student", fmt:num,
+      vals:(ROSTER||[]).map(function(s){ return (s.points||0)+(s.bonus||0); }) },
+    { key:"flags", label:"Flags cleared", hint:"per student", fmt:num,
+      vals:(ROSTER||[]).map(function(s){ return s.solved_count||0; }) },
+    { key:"secs", label:"Time per capture", hint:"every timed capture in the class", fmt:secs,
+      vals:(Array.isArray(FLAGS)?FLAGS:[]).filter(function(f){ return Number(f.secs)>=0; }).map(function(f){ return Number(f.secs); }) },
+    { key:"tries", label:"Wrong guesses", hint:"total per student", fmt:num,
+      vals:(ROSTER||[]).map(function(s){ return perStudentTries[s.handle]||0; }) },
+    { key:"streak", label:"Current streak", hint:"days, per student", fmt:num,
+      vals:(ROSTER||[]).map(function(s){ return (s.streak&&s.streak.count)||0; }) },
+    { key:"struggle", label:"Struggle score", hint:"wrong guesses per capture, weighted by difficulty \u2014 per student", fmt:score,
+      vals:withCaps.map(function(s){ return perStudentStruggle[s.handle]/perStudentCaps[s.handle]; }) },
+    { key:"firsttry", label:"First-try rate", hint:"captures solved with zero wrong guesses, per student", fmt:pct,
+      vals:withCaps.map(function(s){ return (perStudentFirstTry[s.handle]||0)/perStudentCaps[s.handle]*100; }) }
+  ];
+  var withCaptures=(ROSTER||[]).filter(function(s){ return s.solved_count; });
+  if(withCaptures.length) M.push(
+    { key:"integrity", label:"Integrity rate", hint:"flagged integrity events per 100 captures, per student", fmt:score,
+      vals:withCaptures.map(function(s){ return (s.cheat_count||0)/s.solved_count*100; }) });
+  var SESS=sessionLengths();
+  if(SESS.length) M.push(
+    { key:"sesslen", label:"Session length", hint:"minutes per continuous work session (20-min-gap cutoff), across the class", fmt:mins, vals:SESS });
+  var TOT=timeOnTask();
+  var totVals=(ROSTER||[]).map(function(s){ return Math.round(((TOT[s.id]||{}).total||0)/60); });
+  if(totVals.some(function(x){ return x>0; })) M.push(
+    { key:"tot", label:"Time on task", hint:"minutes worked, per student", fmt:mins, vals:totVals });
+  if(Array.isArray(VOCAB)&&VOCAB.length) M.push(
+    { key:"vocab", label:"Vocab minutes", hint:"time on task, per student", fmt:mins,
+      vals:VOCAB.map(function(r){ return Math.round((Number(r.total_secs)||0)/60); }) });
+  if(idx&&by) M.push(
+    { key:"obj", label:"Objectives mastered", hint:"per student, of "+idx.objectives.length, fmt:num,
+      vals:(ROSTER||[]).map(function(s){
+        return OBJECTIVES.report(idx,by[s.id]||{}).filter(function(r){ return r.state==="mastered"; }).length; }) });
+  return M.map(function(m){ m.stats=stats5(m.vals); return m; }).filter(function(m){ return m.stats; });
+}
+function spreadView(){
+  if(!ROSTER.length) return '<div class="empty">No students in this class yet.</div>';
+  var M=spreadMetrics();
+  if(!M.length) return '<div class="empty">Nothing to summarise yet \u2014 distributions appear once the class starts working.</div>';
+
+  var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:16px;line-height:1.6;max-width:780px;">'+
+    'Five-number summary per measure, with the box spanning the middle 50% of the class (Q1\u2013Q3), '+
+    'the white line at the median and the amber dot at the mean. Ticks above the box are individual values; '+
+    'hollow red rings are outliers beyond 1.5\u00d7IQR. When the mean sits well off the median, the class is skewed \u2014 '+
+    'that\u2019s the case an average alone hides.</div>';
+
+  h+='<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
+    '<span class="mono" style="font-size:10px;color:var(--faint);"><span style="display:inline-block;width:22px;height:9px;border:1.5px solid var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent);vertical-align:middle;margin-right:5px;"></span>MIDDLE 50%</span>'+
+    '<span class="mono" style="font-size:10px;color:var(--faint);"><span style="display:inline-block;width:3px;height:12px;background:var(--bright);vertical-align:middle;margin-right:5px;"></span>MEDIAN</span>'+
+    '<span class="mono" style="font-size:10px;color:var(--faint);"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:var(--warn);vertical-align:middle;margin-right:5px;"></span>MEAN</span>'+
+    '<span class="mono" style="font-size:10px;color:var(--faint);"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;border:1.5px solid var(--bad);vertical-align:middle;margin-right:5px;"></span>OUTLIER</span>'+
+    '<span style="margin-left:auto;">'+CSV.button("exportSpread()")+'</span>'+
+  '</div>';
+
+  M.forEach(function(m){
+    var s=m.stats;
+    var skew=s.sd?((s.mean-s.med)/s.sd):0;
+    var skewTxt=Math.abs(skew)<0.15?"balanced":skew>0?"a few pulling the top up":"a tail falling behind";
+    h+='<div class="card" style="padding:15px 17px;margin-bottom:12px;">'+
+      '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;">'+
+        '<b style="color:var(--bright);font-size:14px;">'+esc(m.label)+'</b>'+
+        '<span class="mono" style="font-size:11px;color:var(--faint);">'+esc(m.hint)+' \u00b7 n='+s.n+'</span>'+
+        '<span class="mono" style="font-size:11px;color:'+(Math.abs(skew)<0.15?'var(--dim)':'var(--warn)')+';margin-left:auto;">'+skewTxt+'</span>'+
+      '</div>'+
+      boxPlot(s,m.fmt)+
+      '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;">'+
+        [["MIN",m.fmt(s.min)],["Q1",m.fmt(s.q1)],["MEDIAN",m.fmt(s.med)],["Q3",m.fmt(s.q3)],["MAX",m.fmt(s.max)],
+         ["IQR",m.fmt(s.iqr)],["MEAN",m.fmt(s.mean)],["SD",m.fmt(s.sd)],["CV",Math.round(s.cv)+"%"]].map(function(p){
+          return '<span><span class="mono" style="font-size:9.5px;letter-spacing:1.2px;color:var(--faint);">'+p[0]+'</span> '+
+            '<b class="mono" style="font-size:13px;color:'+(p[0]==="MEDIAN"?'var(--bright)':'var(--text)')+';">'+esc(p[1])+'</b></span>';
+        }).join("")+
+      '</div>'+
+    '</div>';
+  });
+
+  /* group comparison: same measure, one box per group, shared scale */
+  var groups=(GROUPS||[]).filter(function(g){ return ROSTER.some(function(r){ return r.group_id===g.id; }); });
+  if(groups.length>1){
+    var xpOf=function(s){ return (s.points||0)+(s.bonus||0); };
+    var sets=groups.map(function(g){
+      return { name:g.name, color:g.color,
+        stats:stats5(ROSTER.filter(function(r){ return r.group_id===g.id; }).map(xpOf)) };
+    }).filter(function(x){ return x.stats; });
+    var un=ROSTER.filter(function(r){ return !r.group_id; });
+    if(un.length) sets.push({ name:"Ungrouped", color:"var(--dim)", stats:stats5(un.map(xpOf)) });
+    var lo=Math.min.apply(null,sets.map(function(x){return x.stats.min;}));
+    var hi=Math.max.apply(null,sets.map(function(x){return x.stats.max;}));
+    h+='<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin:22px 0 8px;">TOTAL XP BY GROUP \u00b7 SHARED SCALE</div>';
+    sets.forEach(function(x){
+      h+='<div class="card" style="padding:13px 16px;margin-bottom:9px;">'+
+        '<div style="display:flex;align-items:baseline;gap:9px;margin-bottom:2px;">'+
+          '<b style="color:'+(x.color||'var(--bright)')+';font-size:13px;">'+esc(x.name)+'</b>'+
+          '<span class="mono" style="font-size:11px;color:var(--faint);">n='+x.stats.n+'</span>'+
+          '<span class="mono" style="font-size:11px;color:var(--dim);margin-left:auto;">median '+
+            Math.round(x.stats.med).toLocaleString()+' \u00b7 IQR '+Math.round(x.stats.iqr).toLocaleString()+'</span>'+
+        '</div>'+
+        boxPlot(x.stats,function(v){ return Math.round(v).toLocaleString(); },lo,hi)+
+      '</div>';
+    });
+  }
+  return h+velocityPanel();
+}
+
+/* ----- module velocity (#5) -----
+   Days-to-finish per module, derived from capture timestamps already in CAPS —
+   no new logging. A module is "started" at a student's first capture in it and
+   "finished" at their last (once every flag in it is cleared); the gap in days
+   is their pace for that module. Median pace per module shows which units run
+   long across the whole class; per-student pace vs. the class median flags who
+   is falling behind on speed even before they fall behind on mastery.
+
+   PACE is a text input (localStorage, teacher-set per class) — e.g. "2027-05-05"
+   or "10d/module" — used only to label a projection; nothing here compares
+   students to each other for grading. */
+function moduleMeta(){
+  var cfg=(((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{};
+  var names=cfg.modules||[];
+  var chals=cfg.challenges||[];
+  var byMod={};
+  chals.forEach(function(c){ (byMod[c.module]=byMod[c.module]||[]).push(c); });
+  return Object.keys(byMod).map(Number).sort(function(a,b){return a-b;}).map(function(m){
+    return { m:m, name:names[m-1]||("Module "+m), flagCount:byMod[m].length };
+  });
+}
+function velocityData(){
+  if(CAPS&&CAPS.error) return null;
+  var mods=moduleMeta();
+  var flagMod={};
+  var chals=(((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf||{}).challenges||[];
+  chals.forEach(function(c){ flagMod[c.id]=c.module; });
+  var perStudMod={}; // student -> module -> {first,last,count}
+  (Array.isArray(CAPS)?CAPS:[]).forEach(function(c){
+    var base=String(c.flag_key||"").split("#")[0];
+    var mod=flagMod[base]; if(mod==null) return;
+    var t=c.created_at?new Date(c.created_at).getTime():0; if(!t) return;
+    var sm=(perStudMod[c.student_id]=perStudMod[c.student_id]||{});
+    var e=sm[mod]||(sm[mod]={first:t,last:t,keys:{}});
+    if(t<e.first) e.first=t; if(t>e.last) e.last=t;
+    e.keys[c.flag_key]=1;
+  });
+  var byHandle={}; (ROSTER||[]).forEach(function(s){ byHandle[s.id]=s.handle; });
+  var perModule=mods.map(function(mm){
+    var days=[], finishedCount=0, startedCount=0;
+    Object.keys(perStudMod).forEach(function(sid){
+      var e=perStudMod[sid][mm.m]; if(!e) return;
+      startedCount++;
+      var cleared=Object.keys(e.keys).length;
+      // "finished" needs decent coverage of the module, not just one flag touched
+      if(cleared>=Math.max(1,Math.ceil(mm.flagCount*0.6))){
+        finishedCount++;
+        days.push(Math.max(0,(e.last-e.first)/86400000));
+      }
+    });
+    return { m:mm.m, name:mm.name, started:startedCount, finished:finishedCount,
+      stats:days.length?stats5(days):null };
+  }).filter(function(r){ return r.started>0; });
+
+  var perStudent=(ROSTER||[]).map(function(s){
+    var sm=perStudMod[s.id]||{};
+    var completedMods=mods.filter(function(mm){
+      var e=sm[mm.m]; return e && Object.keys(e.keys).length>=Math.max(1,Math.ceil(mm.flagCount*0.6));
+    });
+    var totalDays=0;
+    completedMods.forEach(function(mm){ var e=sm[mm.m]; totalDays+=(e.last-e.first)/86400000; });
+    var avgDays=completedMods.length?totalDays/completedMods.length:null;
+    var curMod=mods.filter(function(mm){ return sm[mm.m]; }).sort(function(a,b){return b.m-a.m;})[0];
+    var daysInCurrent=null;
+    if(curMod){ var e=sm[curMod.m]; if(e) daysInCurrent=(Date.now()-e.first)/86400000; }
+    return { s:s, completed:completedMods.length, avgDays:avgDays,
+      currentModule:curMod?curMod.m:null, daysInCurrent:daysInCurrent };
+  }).filter(function(r){ return r.completed>0 || r.currentModule!=null; });
+
+  return { perModule:perModule, perStudent:perStudent, totalModules:mods.length };
+}
+var VELOCITY_PACE_KEY="ctf-velocity-pace";
+function getPaceTarget(){ try{ return localStorage.getItem(VELOCITY_PACE_KEY+"-"+CUR.id)||""; }catch(e){ return ""; } }
+function setPaceTarget(v){ try{ localStorage.setItem(VELOCITY_PACE_KEY+"-"+CUR.id, v); }catch(e){} renderMain(); }
+function velocityPanel(){
+  var V=velocityData();
+  var h='<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin:22px 0 8px;">MODULE VELOCITY</div>';
+  if(!V) return h+'<div class="mono" style="font-size:12px;color:var(--bad)">Run supabase/objectives.sql to read per-student captures.</div>';
+  if(!V.perModule.length) return h+'<div class="mono" style="font-size:12px;color:var(--faint);">No module activity yet.</div>';
+
+  var target=getPaceTarget();
+  var targetMs=target?Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(target)?target+"T23:59:59":target):NaN;
+  h+='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:12px;line-height:1.6;max-width:800px;">'+
+    'Days between a student\u2019s first and last capture in a module, counted once they\u2019ve cleared most of its flags. '+
+    'Median per module shows which units run long across the whole class; per-student pace flags who is slow before '+
+    'grades show it. Set a target finish date to see who is projected to miss it at their current pace.</div>';
+
+  h+='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;">'+
+    '<span class="mono" style="font-size:11px;color:var(--dim);">target finish date (optional)</span>'+
+    '<input id="paceInput" type="date" value="'+(/^\d{4}-\d{2}-\d{2}$/.test(target)?target:"")+'" '+
+      'onchange="setPaceTarget(this.value)" style="padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;">'+
+    (target?'<button class="btn sm" onclick="setPaceTarget(\'\')">Clear</button>':'')+
+  '</div>';
+
+  // per-module medians as a simple bar
+  var maxMed=Math.max.apply(null,V.perModule.map(function(r){ return r.stats?r.stats.med:0; }))||1;
+  h+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">';
+  V.perModule.forEach(function(r){
+    var med=r.stats?r.stats.med:null;
+    h+='<div style="display:flex;align-items:center;gap:10px;">'+
+      '<span class="mono" style="width:190px;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">M'+r.m+' \u00b7 '+esc(r.name)+'</span>'+
+      '<span style="flex:1;min-width:80px;height:10px;border-radius:99px;background:var(--bg2);overflow:hidden;">'+
+        (med!=null?'<span style="display:block;height:100%;width:'+Math.min(100,med/maxMed*100)+'%;background:var(--accent);"></span>':'')+
+      '</span>'+
+      '<span class="mono" style="width:120px;text-align:right;font-size:11px;color:var(--dim);">'+
+        (med!=null?med.toFixed(1)+'d median \u00b7 n='+r.finished:r.started+' started, 0 finished')+'</span>'+
+    '</div>';
+  });
+  h+='</div>';
+
+  // per-student pace table
+  var rows=V.perStudent.slice().sort(function(a,b){
+    var av=a.avgDays==null?1e9:a.avgDays, bv=b.avgDays==null?1e9:b.avgDays;
+    return bv-av;
+  });
+  h+='<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">PER STUDENT</div>';
+  h+='<div style="overflow:auto;max-height:420px;"><table style="font-size:12px;"><thead><tr>'+
+    '<th>Student</th><th>Modules finished</th><th>Avg days/module</th><th>Currently on</th><th>Days so far</th>'+
+    (isFinite(targetMs)?'<th>Projected finish</th>':'')+
+  '</tr></thead><tbody>';
+  rows.forEach(function(r){
+    var proj="", projLate=false;
+    if(isFinite(targetMs)&&r.avgDays!=null&&r.currentModule!=null){
+      var remaining=Math.max(0,V.totalModules-r.completed);
+      var projMs=Date.now()+remaining*r.avgDays*86400000;
+      projLate=projMs>targetMs;
+      proj=new Date(projMs).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+    }
+    h+='<tr>'+
+      '<td><button onclick=\'openStudent("'+r.s.id+'")\' style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">'+
+        '<b style="color:var(--accent);border-bottom:1px dotted var(--border3);">'+esc(r.s.handle)+'</b></button></td>'+
+      '<td class="mono">'+r.completed+' / '+V.totalModules+'</td>'+
+      '<td class="mono" style="color:var(--dim);">'+(r.avgDays!=null?r.avgDays.toFixed(1)+'d':'\u2014')+'</td>'+
+      '<td class="mono" style="color:var(--dim);">'+(r.currentModule!=null?"M"+r.currentModule:'\u2014')+'</td>'+
+      '<td class="mono" style="color:var(--dim);">'+(r.daysInCurrent!=null?r.daysInCurrent.toFixed(1)+'d':'\u2014')+'</td>'+
+      (isFinite(targetMs)?'<td class="mono" style="color:'+(proj?(projLate?'var(--bad)':'var(--ok)'):'var(--faint)')+';font-weight:'+(projLate?'700':'400')+';">'+(proj||'\u2014')+'</td>':'')+
+    '</tr>';
+  });
+  return h+'</tbody></table></div><div style="margin-top:10px;">'+CSV.button("exportVelocity()")+'</div>';
+}
+function exportVelocity(){
+  var V=velocityData(); if(!V) return;
+  var out=[["Module","Median days","Students finished","Students started"]];
+  V.perModule.forEach(function(r){ out.push(["M"+r.m+" "+r.name, r.stats?r2(r.stats.med):"", r.finished, r.started]); });
+  out.push([]);
+  out.push(["Handle","Modules finished","Avg days/module","Currently on","Days so far"]);
+  V.perStudent.forEach(function(r){
+    out.push([r.s.handle,r.completed,r.avgDays!=null?r2(r.avgDays):"",
+      r.currentModule!=null?"M"+r.currentModule:"", r.daysInCurrent!=null?r2(r.daysInCurrent):""]);
+  });
+  CSV.download(out,"module-velocity",CUR.name);
+}
+function exportSpread(){
+  var out=[["Measure","n","Min","Q1","Median","Q3","Max","IQR","Mean","SD","CV %","Outliers"]];
+  spreadMetrics().forEach(function(m){
+    var s=m.stats;
+    out.push([m.label,s.n,r2(s.min),r2(s.q1),r2(s.med),r2(s.q3),r2(s.max),r2(s.iqr),
+      r2(s.mean),r2(s.sd),Math.round(s.cv),s.outliers.map(r2).join(" ")]);
+  });
+  CSV.download(out,"distributions",CUR.name);
+}
+function r2(x){ return Math.round(Number(x)*100)/100; }
 
 /* ----- XP log -----
    Every manual grant in this class, newest first: who, how much, why, which
@@ -1533,6 +2249,16 @@ function enrollView(){
    for this class, because a group named "needs re-teach" must never be
    student-visible. */
 var SQCOLORS=["#2ee6a6","#3fb2ff","#a855f7","#ff9838","#f43f5e","#eab308"];
+/* on/off switch: label reads the current state, hint explains what it means */
+function switchHtml(on, handler, onLabel, offLabel, hint){
+  return '<label class="sw">'+
+    '<input type="checkbox" '+(on?'checked':'')+' onchange="'+handler+'(this.checked)">'+
+    '<span class="track"><span class="knob"></span></span>'+
+    '<span><span class="swLabel" style="color:'+(on?'var(--ok)':'var(--dim)')+';">'+
+      (on?onLabel:offLabel)+'</span>'+
+      (hint?'<span class="swHint"> \u00b7 '+hint+'</span>':'')+'</span>'+
+  '</label>';
+}
 async function toggleSquads(on){
   try{
     var r=await rpc("ctf_t_squads_on",{p_class:CUR.id,p_on:!!on});
@@ -1584,6 +2310,17 @@ function squadPicker(s){
     'style="padding:5px 7px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;">'+opts+'</select>';
 }
 
+/* How evenly a squad's XP is spread across its members: 100% is every member
+   contributing an equal share; it drops as one member carries the squad. */
+function squadBalance(members){
+  var xps=members.map(function(s){ return (s.points||0)+(s.bonus||0); });
+  var n=xps.length; if(n<2) return null;
+  var total=xps.reduce(function(a,b){ return a+b; },0);
+  if(!total) return null;
+  var maxShare=Math.max.apply(null,xps)/total, equalShare=1/n;
+  var pct=Math.max(0,Math.round((1-(maxShare-equalShare)/(1-equalShare))*100));
+  return { pct:pct, label: pct>=80?"balanced":pct>=55?"uneven":"lopsided" };
+}
 function squadsView(){
   if(STAND&&STAND.error) return '<div class="empty" style="color:var(--bad)">Run supabase/class-groups.sql, then supabase/squads.sql, to enable squads.</div>';
   var on=!!CUR.squads_on;
@@ -1598,9 +2335,8 @@ function squadsView(){
           ? 'Students in this class see their squad name, their teammates, and the squad standings on the arena page. Individual scores from other squads stay hidden \u2014 only squad totals are shared.'
           : 'Off. Your groups stay teacher-only, exactly as they are now, and nothing about them reaches a student screen. Turn this on when your groups are teams you\u2019re happy to name out loud.')+
       '</div></div>'+
-    '<label style="display:flex;align-items:center;gap:9px;cursor:pointer;white-space:nowrap;">'+
-      '<input type="checkbox" '+(on?'checked':'')+' onchange="toggleSquads(this.checked)" style="width:18px;height:18px;">'+
-      '<b style="color:'+(on?'var(--ok)':'var(--dim)')+';font-size:14px;">'+(on?'Visible to students':'Teacher-only')+'</b></label>'+
+    switchHtml(on,"toggleSquads","Visible to students","Teacher-only",
+      on?"students see their squad and the standings":"only you can see squads")+
   '</div>';
 
   h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
@@ -1621,6 +2357,7 @@ function squadsView(){
   STAND.forEach(function(g,i){
     var avg=Number(g.avg_xp)||0, pct=Math.round(avg/best*100);
     var col=g.color||"var(--accent)";
+    var bal=squadBalance(ROSTER.filter(function(r){ return r.group_id===g.id; }));
     h+='<div class="card" style="padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'+
       '<span class="mono" style="font-size:12px;color:var(--faint);width:20px;">'+(i+1)+'</span>'+
       '<span style="width:10px;height:10px;border-radius:99px;background:'+col+';flex:none;"></span>'+
@@ -1630,6 +2367,7 @@ function squadsView(){
       '<span class="mono" style="font-size:12px;color:var(--bright);white-space:nowrap;">'+avg.toLocaleString()+' avg</span>'+
       '<span class="mono" style="font-size:11px;color:var(--dim);white-space:nowrap;">'+Number(g.total_xp||0).toLocaleString()+' total</span>'+
       '<span class="mono" style="font-size:11px;color:var(--faint);white-space:nowrap;">'+(g.members||0)+' member'+((g.members||0)==1?'':'s')+' \u00b7 '+Number(g.solved||0).toLocaleString()+' flags</span>'+
+      (bal?'<span class="mono" style="font-size:11px;color:'+(bal.pct>=80?'var(--ok)':bal.pct>=55?'var(--warn)':'var(--bad)')+';white-space:nowrap;" title="XP contribution balance across members">'+bal.pct+'% '+bal.label+'</span>':'')+
       '<span style="display:flex;gap:6px;margin-left:auto;">'+
         '<button class="btn sm" onclick=\'recolorSquad("'+g.id+'","'+(g.color||"")+'")\'>Colour</button>'+
         '<button class="btn sm" onclick=\'renameGroup("'+g.id+'","'+esc(g.name).replace(/"/g,"")+'")\'>Rename</button>'+
@@ -1812,10 +2550,9 @@ function objectivesView(){
       var l={class:"Class mastery",students:"Per student",growth:"Growth",standards:"Standards",coverage:"Coverage audit"}[v];
       return '<button class="btn sm'+((OBJVIEW===v||(OBJVIEW==="student"&&v==="students"))?' pri':'')+'" onclick="setObjView(\''+v+'\')">'+l+'</button>';
     }).join("")+
-    '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-left:auto;white-space:nowrap;">'+
-      '<input type="checkbox" '+(CUR.objectives_on?'checked':'')+' onchange="toggleObjectives(this.checked)" style="width:16px;height:16px;">'+
-      '<span class="mono" style="font-size:11px;color:'+(CUR.objectives_on?'var(--ok)':'var(--dim)')+';">'+
-        (CUR.objectives_on?'STUDENTS SEE THEIR OWN MAP':'TEACHER-ONLY')+'</span></label>'+
+    '<span style="margin-left:auto;">'+switchHtml(!!CUR.objectives_on,"toggleObjectives",
+      "Visible to students","Teacher-only",
+      CUR.objectives_on?"students see their own objective map":"only you can see objective mastery")+'</span>'+
   '</div>';
 
   if(OBJVIEW==="student") return h+objStudentView(idx);
@@ -2545,6 +3282,77 @@ function teachersPanel(){
   return h+'</tbody></table></div></div>';
 }
 
+/* ----- allowed external emails (supabase/allowed-emails.sql) -----
+   Separate from the teachers table: this only grants SIGN-IN on a domain
+   that isn't one of the two school Workspace domains — it does not grant the
+   dashboard. A guest teacher still also needs an entry in the teachers table
+   above to actually see this dashboard. */
+var ALLOWED_EMAILS=[];
+async function loadAllowedEmails(){
+  try{
+    var r=await rpc("ctf_t_allowed_emails");
+    ALLOWED_EMAILS=Array.isArray(r)?r:(r&&r.error?{error:r.error}:[]);
+  }catch(e){ ALLOWED_EMAILS={error:"missing_rpc"}; }
+}
+async function addAllowedEmail(){
+  var email=(el("aeEmail")||{}).value||"";
+  var note=(el("aeNote")||{}).value||"";
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())){ alert("That doesn’t look like an email address."); return; }
+  try{
+    var r=await rpc("ctf_t_allowed_email_save",{p_email:email,p_note:note});
+    if(r&&r.error) throw new Error(r.error);
+    await loadAllowedEmails(); renderMain();
+  }catch(e){
+    var m=(e&&e.message)||"";
+    alert(/not_owner/.test(m)?"Only an owner can add allowed emails.":
+          /bad_email/.test(m)?"That doesn’t look like an email address.":
+          "Couldn’t add that email — run supabase/allowed-emails.sql.");
+  }
+}
+async function removeAllowedEmail(email){
+  if(!confirm("Revoke sign-in access for "+email+"?")) return;
+  try{
+    await rpc("ctf_t_allowed_email_remove",{p_email:email});
+    await loadAllowedEmails(); renderMain();
+  }catch(e){ alert("Couldn’t remove that email."); }
+}
+function allowedEmailsPanel(){
+  if(ALLOWED_EMAILS&&ALLOWED_EMAILS.error)
+    return '<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+      '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Allowed external emails</div>'+
+      '<div class="empty" style="color:var(--bad);text-align:left;padding:12px 0;">Run supabase/allowed-emails.sql to let specific outside addresses sign in.</div></div>';
+
+  var owner=!!ME.owner;
+  var h='<div style="border-top:1px solid var(--border);margin-top:26px;padding-top:20px;">'+
+    '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Allowed external emails</div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:14px;">'+
+      'Sign-in is normally limited to the two school Google domains. Add a specific outside address here to let just that person sign in — a guest teacher, an outside observer, etc. This only grants sign-in, not the dashboard; add them as a teacher above too if they need that. Also requires the Google Cloud OAuth consent screen to be set to \u201cExternal\u201d.'+
+      (owner?'':'<br><b style="color:var(--warn)">You have staff access, so you can see this list but not change it.</b>')+
+    '</div>';
+
+  if(owner){
+    h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
+      '<input id="aeEmail" type="email" placeholder="name@gmail.com" '+
+        'style="flex:1;min-width:210px;padding:9px 11px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;">'+
+      '<input id="aeNote" placeholder="Note (optional)" '+
+        'style="min-width:150px;padding:9px 11px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;">'+
+      '<button class="btn pri" onclick="addAllowedEmail()">Allow email</button></div>';
+  }
+
+  if(!ALLOWED_EMAILS.length) return h+'<div class="empty" style="text-align:left;padding:8px 0;">No external emails allowed yet.</div></div>';
+
+  h+='<div style="overflow:auto;"><table><thead><tr><th>Email</th><th>Note</th><th>Added</th>'+(owner?'<th></th>':'')+'</tr></thead><tbody>';
+  ALLOWED_EMAILS.forEach(function(a){
+    h+='<tr>'+
+      '<td class="mono" style="font-size:12px;color:var(--bright)">'+esc(a.email)+'</td>'+
+      '<td style="color:var(--dim)">'+esc(a.note||"\u2014")+'</td>'+
+      '<td style="color:var(--faint);white-space:nowrap">'+(a.created_at?ago(a.created_at):"\u2014")+'</td>'+
+      (owner?'<td style="text-align:right;"><button class="btn sm danger" onclick=\'removeAllowedEmail("'+esc(a.email)+'")\'>Remove</button></td>':'')+
+    '</tr>';
+  });
+  return h+'</tbody></table></div></div>';
+}
+
 /* ----- settings: streak-freeze, code, delete ----- */
 function settingsView(){
   var frozen=(CUR.frozen_dates||[]).slice().sort();
@@ -2568,6 +3376,7 @@ function settingsView(){
     '<button class="btn danger" onclick="deleteClass()">Delete this class</button>'+
   '</div>';
   h+=teachersPanel();
+  h+=allowedEmailsPanel();
   h+=rejectsPanel();
   h+='</div>';
   return h;

@@ -18,6 +18,16 @@ window.SUPABASE_CONFIG = {
   schoolDomain: "southfayette.org",
   teacherEmail: "rnreasey@southfayette.org",
 
+  // One-off external addresses allowed to sign in even though they're not on
+  // either domain above (a guest teacher, an outside observer, etc). Also
+  // requires: (1) supabase/allowed-emails.sql run in the database, and
+  // (2) the Google Cloud OAuth consent screen set to "External" user type —
+  // with "Internal" selected there, Google blocks non-Workspace accounts
+  // before this list is ever checked. Managed from the teacher dashboard's
+  // Settings tab once allowed-emails.sql is installed; edit here only if you
+  // need to seed one before the dashboard is reachable.
+  allowedExternalEmails: [],
+
   url: "https://nbyuwsvtnnpsymmzpkqs.supabase.co",       // e.g. "https://abcdefgh.supabase.co"
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ieXV3c3Z0bm5wc3ltbXpwa3FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MTMyMTYsImV4cCI6MjEwMDQ4OTIxNn0.RaPjfaHmx3Xko6Oey8Shg5ua_pH63TVEa71snwqbbgI"    // e.g. "eyJhbGciOiJI..."
 };
