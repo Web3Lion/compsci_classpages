@@ -4,14 +4,14 @@
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Syllabus — Intro to Web 3.0</title>
+<title>Syllabus — AP Computer Science Principles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
-:root{--bg:#0c0a15;--panel:#15111f;--panel2:#1a1526;--panel3:#20192e;--border:#342a47;--border2:#241d33;--border3:#4a3b63;--border-hi:#6b5788;--amber-bd:#6a4d20;--amber-bg:#241a0c;--text:#ddd6ea;--bright:#f6f2ff;--muted:#b0a6c6;--dim:#877ba0;--faint:#5f5479;--fainter:#3f374f;--accent:#f7a01f;--accent2:#ffc25c;--amber:#f7a01f;--via:rgba(247,160,31,.10);--trace:rgba(247,160,31,.035);}
-:root[data-theme="light"]{--bg:#f1eef7;--panel:#ffffff;--panel2:#f6f3fb;--panel3:#f1ecf8;--border:#d7cfe4;--border2:#e4ddf0;--border3:#b8accf;--border-hi:#897ba8;--amber-bd:#d3ba7a;--amber-bg:#f8f0d6;--text:#2e2740;--bright:#150e26;--muted:#554a6a;--dim:#71668c;--faint:#8f83a6;--fainter:#aca3c0;--accent:#a56a0c;--accent2:#7d4f08;--amber:#8f6b12;--via:rgba(165,106,12,.16);--trace:rgba(165,106,12,.05);}
+:root{--bg:#0a0d12;--panel:#111620;--panel2:#151b27;--panel3:#1a2130;--border:#2b3346;--border2:#1f2735;--border3:#3d4a63;--border-hi:#5b6a88;--amber-bd:#5a3d6a;--amber-bg:#1e0f28;--text:#d5dced;--bright:#f4f7ff;--muted:#a3adc6;--dim:#7c8aa6;--faint:#56637d;--fainter:#3a4c63;--accent:#a855f7;--accent2:#c98bff;--amber:#a855f7;--via:rgba(168,85,247,.10);--trace:rgba(168,85,247,.035);}
+:root[data-theme="light"]{--bg:#eef1f5;--panel:#ffffff;--panel2:#f3f6fb;--panel3:#eef3fa;--border:#ccd5e4;--border2:#dbe3f0;--border3:#aebccf;--border-hi:#7f92ad;--amber-bd:#c9a9dc;--amber-bg:#f3e6fb;--text:#26303f;--bright:#0d1420;--muted:#47546a;--dim:#67748c;--faint:#8592a6;--fainter:#a7b3c4;--accent:#8b2fd6;--accent2:#6f1fb0;--amber:#8b2fd6;--via:rgba(139,47,214,.16);--trace:rgba(139,47,214,.05);}
 body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
 .themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
 .themebtn:hover{border-color:var(--accent);}
@@ -62,21 +62,21 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="banner">
     <div class="grain"></div>
     <div style="position:relative;z-index:1;">
-      <div class="kick mono">&gt; ./syllabus --course=web3</div>
+      <div class="kick mono">&gt; ./syllabus --course=ap-csp</div>
       <h1 class="mono">Course Syllabus<span class="cursor"></span></h1>
-      <p class="lead">The official syllabus, policies, and expectations for Intro to Web 3.0 &amp; Blockchain. <a href="index.html">&larr; back to course home</a></p>
+      <p class="lead">The official syllabus, policies, and expectations for AP Computer Science Principles. <a href="index.html">&larr; back to course home</a></p>
     </div>
   </div>
 
   <div class="bar">
     <span class="live mono"><span class="dot"></span> LIVE — updates automatically when the document is edited</span>
-    <a class="btn" href="https://docs.google.com/document/d/1RRTF3_Fx9cOlcpw_lzPCHfNu7e0NowQm8GmnfjFDx48/view" id="docLink" target="_blank" rel="noopener">open full document &nearr;</a>
+    <a class="btn" href="https://docs.google.com/document/d/18D2JRB9IIiCVwels8u2fLulD9I6tr8LHMN_CoFk7KGw/view" id="docLink" target="_blank" rel="noopener">open full document &nearr;</a>
   </div>
 
   <div class="docframe">
     <div class="loading" id="loading"><div class="spinner"></div>loading live syllabus…</div>
     <iframe id="doc"
-      src="https://docs.google.com/document/d/1RRTF3_Fx9cOlcpw_lzPCHfNu7e0NowQm8GmnfjFDx48/preview"
+      src="https://docs.google.com/document/d/18D2JRB9IIiCVwels8u2fLulD9I6tr8LHMN_CoFk7KGw/preview"
       title="Course Syllabus"
       onload="const l=document.getElementById('loading'); l.style.opacity=0; setTimeout(()=>l.remove(),400);"></iframe>
   </div>
@@ -87,14 +87,14 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 <script src="../config.js"></script>
 <script>
 (function(){
-  var CFG=(window.COURSE_CONFIG&&window.COURSE_CONFIG.web3)||{};
+  var CFG=(window.COURSE_CONFIG&&window.COURSE_CONFIG.apcsp)||{};
   var id=CFG.syllabusDocId; if(!id) return;
-  var base='https://docs.google.com/document/d/'+id;
+  var base=CFG.syllabusIsFile ? 'https://drive.google.com/file/d/'+id : 'https://docs.google.com/document/d/'+id;
   var f=document.getElementById('doc'); if(f && f.src.indexOf(id)<0) f.src=base+'/preview';
   var a=document.getElementById('docLink'); if(a) a.href=base+'/view';
 })();
 </script>
 <script src="../supabase-config.js"></script>
-<script src="consensus-intro.js"></script>
+<script src="packet-intro.js"></script>
 </body>
 </html>
