@@ -37,7 +37,8 @@ window.COURSE_CONFIG = {
     sheetId:       "1fr61cdKc5anGkY-hqjHkvOtdKZo_X24RZjC72ggHGIY",
     sheetGid:      "118090459",
     exam:          null,
-    syllabusDocId: "1lTdE2nVxgmZvZG8H5wLFJ1vLOvsU6eYn3A2OlYQWO-0",
+    syllabusDocId: "1r7jnkbEg9m888u8zsLKf9jHngtmBg8Cf",
+    syllabusIsFile: true,
     resourceCards: [
       { title: "RESOURCES", items: [
         { name: "CYBER.ORG",              desc: "Apps & cyber range login",      url: "https://apps.cyber.org/login",                icon: "shield" },
@@ -57,7 +58,8 @@ window.COURSE_CONFIG = {
     sheetId:       "1QK16rbnhGoegU101VnkfikWIeu54L_eKm3zfNQnqbPU",
     sheetGid:      "118090459",
     exam:          { name: "AP Exam", date: "2027-05-05T08:00:00", from: "2026-08-25" },
-    syllabusDocId: "1S4d61MaNLeReiA9bc-1xKIUbZsUVznPMVz9kNstI_vQ",
+    syllabusDocId: "1Ch6zJ8IXiobkGbPx66AyH_79y60FdCS3",
+    syllabusIsFile: true,
     resourceCards: [
       { title: "RESOURCES", items: [
         { name: "CYBER.ORG",              desc: "Apps & cyber range login",      url: "https://apps.cyber.org/login",                icon: "shield" },
@@ -77,17 +79,20 @@ window.COURSE_CONFIG = {
   apcsp: {
     meet:          "https://meet.google.com/mro-asqu-djt",
     sheetId:       "1er9y-g7uGIEkAgCB-GWIXnBvybBAta6jYVxAZXUO_60",
-    sheetGid:      "1728534605",
+    sheetGid:      "118090459",
     exam:          { name: "AP Exam", date: "2027-05-14T08:00:00", from: "2026-08-25" },
-    syllabusDocId: "18D2JRB9IIiCVwels8u2fLulD9I6tr8LHMN_CoFk7KGw",
+    syllabusDocId: "168yJVYJCFKtTWsZ_LhaHF6Rhp1gR5Sm5",
+    syllabusIsFile: true,
     resourceCards: [
       { title: "RESOURCES", items: [
         { name: "Code.org",     desc: "CS Principles curriculum & labs",             url: "https://studio.code.org",   icon: "code" },
-        { name: "AP Classroom", desc: "College Board \u00b7 videos & progress checks", url: "https://myap.collegeboard.org", icon: "classroom" },
-        { name: "AP CSP — Exam & Create Task", desc: "Course description & performance task", url: "https://apstudents.collegeboard.org/courses/ap-computer-science-principles", icon: "doc" }
+        { name: "AP Classroom", desc: "College Board \u00b7 videos & progress checks", url: "https://myap.collegeboard.org", icon: "classroom" }
       ]},
       { title: "CONTENT RESOURCES", items: [
         { name: "Khan Academy — AP CSP", desc: "Free lessons, practice & exam review", url: "https://www.khanacademy.org/computing/ap-computer-science-principles", icon: "book" }
+      ]},
+      { title: "TEST RESOURCES", items: [
+        { name: "Create Task Student Handout", desc: "Shared review resource", url: "https://drive.google.com/file/d/1ntd_J4U4nzdSr9qHcDXqTqfFeS71zZZ8/view?usp=sharing", icon: "exam" }
       ]}
     ]
   },

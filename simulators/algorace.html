@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithm Race — Sorting/Search Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.controls{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;}
+.ctrlGroup{display:flex;flex-direction:column;gap:6px;}
+.ctrlGroup label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--faint);}
+select{border-radius:9px;border:1px solid var(--border2);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:12.5px;padding:9px 12px;}
+.btn{padding:11px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn:disabled{opacity:.4;cursor:default;}
+.raceGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:820px){.raceGrid{grid-template-columns:1fr;}}
+.lane{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:18px;}
+.laneHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.laneHead .name{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--bright);font-weight:700;}
+.laneHead .status{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 9px;border-radius:6px;background:var(--panel3);color:var(--dim);}
+.laneHead .status.done{color:var(--ok);}
+.bars{display:flex;align-items:flex-end;gap:3px;height:140px;padding:0 4px;}
+.bar{flex:1;background:var(--panel3);border-radius:3px 3px 0 0;position:relative;transition:height .12s;}
+.bar.compare{background:var(--warn);}
+.bar.sorted{background:var(--ok);}
+.bar.found{background:var(--accent);}
+.statsRow{display:flex;gap:14px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);}
+.statsRow b{color:var(--bright);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>ALGORITHM RACE</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">sorting &amp; search simulator · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Pick two algorithms and race them on the exact same list. Watch the comparison count — that's the real measure of efficiency, not just who finishes first on screen.</p>
+
+  <div class="controls">
+    <div class="ctrlGroup"><label>LEFT ALGORITHM</label>
+      <select id="leftAlgo"><option value="bubble">Bubble Sort</option><option value="selection">Selection Sort</option><option value="insertion">Insertion Sort</option><option value="merge">Merge Sort</option><option value="linear">Linear Search</option><option value="binary">Binary Search</option></select>
+    </div>
+    <div class="ctrlGroup"><label>RIGHT ALGORITHM</label>
+      <select id="rightAlgo"><option value="selection">Selection Sort</option><option value="bubble">Bubble Sort</option><option value="insertion">Insertion Sort</option><option value="merge" selected>Merge Sort</option><option value="linear">Linear Search</option><option value="binary">Binary Search</option></select>
+    </div>
+    <div class="ctrlGroup"><label>LIST SIZE</label>
+      <select id="listSize"><option value="16">16 items</option><option value="24" selected>24 items</option><option value="40">40 items</option></select>
+    </div>
+    <div class="ctrlGroup"><label>SPEED</label>
+      <select id="speed"><option value="120">Slow</option><option value="45" selected>Normal</option><option value="10">Fast</option></select>
+    </div>
+    <button class="btn" onclick="startRace()">▶ START RACE</button>
+    <button class="btn" onclick="newList()">↻ NEW LIST</button>
+  </div>
+
+  <div class="raceGrid">
+    <div class="lane">
+      <div class="laneHead"><span class="name" id="leftName">Bubble Sort</span><span class="status" id="leftStatus">READY</span></div>
+      <div class="bars" id="leftBars"></div>
+      <div class="statsRow">COMPARISONS <b id="leftComps">0</b> &nbsp; SWAPS/STEPS <b id="leftSwaps">0</b></div>
+    </div>
+    <div class="lane">
+      <div class="laneHead"><span class="name" id="rightName">Merge Sort</span><span class="status" id="rightStatus">READY</span></div>
+      <div class="bars" id="rightBars"></div>
+      <div class="statsRow">COMPARISONS <b id="rightComps">0</b> &nbsp; SWAPS/STEPS <b id="rightSwaps">0</b></div>
+    </div>
+  </div>
+</div>
+<script>
+var ALGO_NAMES = {bubble:'Bubble Sort', selection:'Selection Sort', insertion:'Insertion Sort', merge:'Merge Sort', linear:'Linear Search', binary:'Binary Search'};
+var baseList = [];
+var target = 0;
+var running = false;
+
+function newList(){
+  var n = parseInt(document.getElementById('listSize').value,10);
+  baseList = [];
+  var used = {};
+  while(baseList.length < n){
+    var v = 1 + Math.floor(Math.random()*99);
+    if(!used[v]){ used[v]=true; baseList.push(v); }
+  }
+  target = baseList[Math.floor(Math.random()*baseList.length)];
+  renderStatic('leftBars', baseList);
+  renderStatic('rightBars', baseList);
+  document.getElementById('leftStatus').textContent='READY'; document.getElementById('leftStatus').className='status';
+  document.getElementById('rightStatus').textContent='READY'; document.getElementById('rightStatus').className='status';
+  document.getElementById('leftComps').textContent='0'; document.getElementById('leftSwaps').textContent='0';
+  document.getElementById('rightComps').textContent='0'; document.getElementById('rightSwaps').textContent='0';
+}
+function renderStatic(containerId, arr){
+  var max = Math.max.apply(null, arr);
+  document.getElementById(containerId).innerHTML = arr.map(function(v){
+    return '<div class="bar" style="height:'+Math.max(6,(v/max)*130)+'px" data-v="'+v+'"></div>';
+  }).join('');
+}
+
+/* ---- generator-style step producers: each yields {arr, highlights:{i:'compare'|'sorted'|'found'}, comps, ops} ---- */
+function* bubbleSortSteps(arr){
+  arr = arr.slice(); var comps=0, swaps=0; var n=arr.length;
+  for(var i=0;i<n-1;i++){
+    for(var j=0;j<n-1-i;j++){
+      comps++;
+      yield {arr:arr.slice(), hi:{[j]:'compare',[j+1]:'compare'}, comps, ops:swaps};
+      if(arr[j] > arr[j+1]){ var t=arr[j]; arr[j]=arr[j+1]; arr[j+1]=t; swaps++; }
+    }
+  }
+  yield {arr:arr.slice(), hi:allSorted(arr.length), comps, ops:swaps, done:true};
+}
+function* selectionSortSteps(arr){
+  arr = arr.slice(); var comps=0, swaps=0; var n=arr.length;
+  for(var i=0;i<n-1;i++){
+    var minIdx=i;
+    for(var j=i+1;j<n;j++){
+      comps++;
+      yield {arr:arr.slice(), hi:{[minIdx]:'compare',[j]:'compare'}, comps, ops:swaps};
+      if(arr[j] < arr[minIdx]) minIdx=j;
+    }
+    if(minIdx!==i){ var t=arr[i]; arr[i]=arr[minIdx]; arr[minIdx]=t; swaps++; }
+  }
+  yield {arr:arr.slice(), hi:allSorted(arr.length), comps, ops:swaps, done:true};
+}
+function* insertionSortSteps(arr){
+  arr = arr.slice(); var comps=0, swaps=0;
+  for(var i=1;i<arr.length;i++){
+    var key=arr[i], j=i-1;
+    while(j>=0){
+      comps++;
+      yield {arr:arr.slice(), hi:{[j]:'compare',[j+1]:'compare'}, comps, ops:swaps};
+      if(arr[j] > key){ arr[j+1]=arr[j]; j--; swaps++; } else break;
+    }
+    arr[j+1]=key;
+  }
+  yield {arr:arr.slice(), hi:allSorted(arr.length), comps, ops:swaps, done:true};
+}
+function* mergeSortSteps(arrIn){
+  var arr = arrIn.slice(); var comps=0, ops=0;
+  function* msort(lo, hi){
+    if(hi-lo<=1) return;
+    var mid=Math.floor((lo+hi)/2);
+    yield* msort(lo,mid);
+    yield* msort(mid,hi);
+    var left=arr.slice(lo,mid), right=arr.slice(mid,hi);
+    var i=0,j=0,k=lo;
+    while(i<left.length && j<right.length){
+      comps++;
+      yield {arr:arr.slice(), hi:{[k]:'compare'}, comps, ops};
+      if(left[i]<=right[j]) arr[k++]=left[i++]; else arr[k++]=right[j++];
+      ops++;
+    }
+    while(i<left.length){ arr[k++]=left[i++]; ops++; yield {arr:arr.slice(), hi:{[k-1]:'compare'}, comps, ops}; }
+    while(j<right.length){ arr[k++]=right[j++]; ops++; yield {arr:arr.slice(), hi:{[k-1]:'compare'}, comps, ops}; }
+  }
+  yield* msort(0, arr.length);
+  yield {arr:arr.slice(), hi:allSorted(arr.length), comps, ops, done:true};
+}
+function* linearSearchSteps(arr, tgt){
+  var comps=0;
+  for(var i=0;i<arr.length;i++){
+    comps++;
+    if(arr[i]===tgt){ yield {arr:arr.slice(), hi:{[i]:'found'}, comps, ops:i+1, done:true}; return; }
+    yield {arr:arr.slice(), hi:{[i]:'compare'}, comps, ops:i+1};
+  }
+  yield {arr:arr.slice(), hi:{}, comps, ops:arr.length, done:true};
+}
+function* binarySearchSteps(arrIn, tgt){
+  var sorted = arrIn.slice().sort(function(a,b){return a-b;});
+  var lo=0, hi=sorted.length-1, comps=0, ops=0;
+  while(lo<=hi){
+    var mid=Math.floor((lo+hi)/2);
+    comps++; ops++;
+    if(sorted[mid]===tgt){ yield {arr:sorted.slice(), hi:{[mid]:'found'}, comps, ops, done:true}; return; }
+    yield {arr:sorted.slice(), hi:{[mid]:'compare'}, comps, ops};
+    if(sorted[mid] < tgt) lo=mid+1; else hi=mid-1;
+  }
+  yield {arr:sorted.slice(), hi:{}, comps, ops, done:true};
+}
+function allSorted(n){ var o={}; for(var i=0;i<n;i++) o[i]='sorted'; return o; }
+
+function makeGen(algoKey, arr, tgt){
+  switch(algoKey){
+    case 'bubble': return bubbleSortSteps(arr);
+    case 'selection': return selectionSortSteps(arr);
+    case 'insertion': return insertionSortSteps(arr);
+    case 'merge': return mergeSortSteps(arr);
+    case 'linear': return linearSearchSteps(arr, tgt);
+    case 'binary': return binarySearchSteps(arr, tgt);
+  }
+}
+
+function renderLane(prefix, step, maxVal){
+  var arr = step.arr;
+  var el = document.getElementById(prefix+'Bars');
+  el.innerHTML = arr.map(function(v,i){
+    var cls = step.hi[i] ? ' '+step.hi[i] : '';
+    return '<div class="bar'+cls+'" style="height:'+Math.max(6,(v/maxVal)*130)+'px"></div>';
+  }).join('');
+  document.getElementById(prefix+'Comps').textContent = step.comps;
+  document.getElementById(prefix+'Swaps').textContent = step.ops;
+  if(step.done){
+    document.getElementById(prefix+'Status').textContent='DONE';
+    document.getElementById(prefix+'Status').className='status done';
+  }
+}
+
+function runLane(prefix, algoKey){
+  var speed = parseInt(document.getElementById('speed').value,10);
+  var gen = makeGen(algoKey, baseList, target);
+  var maxVal = Math.max.apply(null, baseList);
+  document.getElementById(prefix+'Status').textContent='RUNNING';
+  document.getElementById(prefix+'Status').className='status';
+  function step(){
+    var r = gen.next();
+    if(r.done){ return; }
+    renderLane(prefix, r.value, maxVal);
+    if(!r.value.done) setTimeout(step, speed);
+  }
+  step();
+}
+
+function startRace(){
+  var leftAlgo = document.getElementById('leftAlgo').value;
+  var rightAlgo = document.getElementById('rightAlgo').value;
+  document.getElementById('leftName').textContent = ALGO_NAMES[leftAlgo];
+  document.getElementById('rightName').textContent = ALGO_NAMES[rightAlgo];
+  runLane('left', leftAlgo);
+  runLane('right', rightAlgo);
+}
+
+newList();
+</script>
+</body>
+</html>

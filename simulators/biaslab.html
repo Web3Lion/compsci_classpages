@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bias Lab — Big Data Bias Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:1020px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:72ch;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;margin-bottom:16px;}
+.rowLabel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--faint);margin-bottom:8px;display:block;}
+.scenarioPicker{display:flex;gap:8px;flex-wrap:wrap;}
+.scBtn{padding:9px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
+.scBtn.active{border-color:var(--accent);background:var(--panel3);color:var(--bright);}
+.sliderRow{display:flex;align-items:center;gap:14px;margin-top:14px;}
+input[type=range]{flex:1;accent-color:var(--accent);}
+.sliderVal{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--accent2);font-weight:800;min-width:120px;text-align:right;}
+.hint{font-size:12.5px;color:var(--faint);line-height:1.6;margin-top:10px;}
+.btn{padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;margin-top:16px;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.trainSample{display:flex;flex-wrap:wrap;gap:4px;margin-top:14px;}
+.dot2{width:14px;height:14px;border-radius:3px;}
+.dot2.gA{background:var(--accent);}
+.dot2.gB{background:var(--warn);}
+.legendRow{display:flex;gap:16px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--dim);}
+.legendRow span{display:flex;align-items:center;gap:6px;}
+.legendRow .sw{width:11px;height:11px;border-radius:3px;}
+.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:700px){.resultGrid{grid-template-columns:1fr;}}
+.resultCard{border:1px solid var(--border2);border-radius:12px;background:var(--panel2);padding:16px;}
+.resultCard .gname{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--bright);font-weight:700;margin-bottom:10px;}
+.approveBar{height:14px;border-radius:8px;background:var(--panel3);overflow:hidden;margin-bottom:8px;}
+.approveFill{height:100%;border-radius:8px;transition:width .3s;}
+.approvePct{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--bright);}
+.approveSub{font-size:11.5px;color:var(--faint);margin-top:2px;}
+.gapBox{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13px;line-height:1.6;}
+.gapBox.big{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);color:var(--text);}
+.gapBox.small{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);color:var(--text);}
+.gapBox b{display:block;margin-bottom:4px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.explainBox{margin-top:16px;padding:14px 16px;border-radius:10px;background:rgba(0,179,255,.06);border:1px solid var(--border3);font-size:12.5px;color:var(--muted);line-height:1.65;}
+.proxyCard{padding:12px 14px;border-radius:9px;background:var(--panel2);border:1px solid var(--border2);margin-top:8px;}
+.proxyCard .trait{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--accent2);font-weight:700;margin-bottom:4px;}
+.proxyCard .why{font-size:12.5px;color:var(--muted);line-height:1.55;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>BIAS LAB</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">big data bias simulator · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Train a simple scoring rule on a sample of past decisions, then test it on a brand-new, perfectly balanced group of applicants. No group label is ever used as a rule input — watch what happens anyway when the training data itself is skewed.</p>
+
+  <div class="panel">
+    <span class="rowLabel">SCENARIO</span>
+    <div class="scenarioPicker" id="scenarioPicker"></div>
+
+    <span class="rowLabel" style="margin-top:20px;">TRAINING DATA — % OF PAST "APPROVED" EXAMPLES FROM GROUP A</span>
+    <div class="sliderRow">
+      <input type="range" id="skewSlider" min="10" max="90" value="85" step="5" oninput="onSkewChange()">
+      <div class="sliderVal" id="skewVal">85% Group A</div>
+    </div>
+    <div class="hint" id="scenarioHint"></div>
+    <div class="trainSample" id="trainSample"></div>
+    <div class="legendRow">
+      <span><span class="sw" style="background:var(--accent);"></span>Group A</span>
+      <span><span class="sw" style="background:var(--warn);"></span>Group B</span>
+    </div>
+    <button class="btn" onclick="runTest()">▶ TRAIN RULE &amp; TEST ON NEW APPLICANTS</button>
+  </div>
+
+  <div class="panel" id="resultsPanel" style="display:none;">
+    <span class="rowLabel">TEST RESULTS — 40 NEW APPLICANTS (20 GROUP A, 20 GROUP B)</span>
+    <div class="resultGrid">
+      <div class="resultCard">
+        <div class="gname">GROUP A</div>
+        <div class="approvePct" id="pctA">—</div>
+        <div class="approveBar"><div class="approveFill" id="fillA" style="background:var(--accent);width:0%;"></div></div>
+        <div class="approveSub" id="subA"></div>
+      </div>
+      <div class="resultCard">
+        <div class="gname">GROUP B</div>
+        <div class="approvePct" id="pctB">—</div>
+        <div class="approveBar"><div class="approveFill" id="fillB" style="background:var(--warn);width:0%;"></div></div>
+        <div class="approveSub" id="subB"></div>
+      </div>
+    </div>
+    <div id="gapSlot"></div>
+    <div class="explainBox">🔍 <b>What just happened:</b> the rule never saw a "Group A/B" field — it only learned from patterns in the training examples (which features tended to show up in past approvals). Because the training sample itself was skewed toward one group, the rule picked up on features correlated with that group and carried the imbalance forward, even though it looks "neutral" on paper. This is how real-world bias creeps into automated systems: not through explicit discrimination in the code, but through skewed historical data.</div>
+    <div class="rowLabel" style="margin-top:18px;">PROXY TRAITS — how two "identical on paper" applicants still get scored differently</div>
+    <div id="proxyList"></div>
+  </div>
+</div>
+<script>
+var SCENARIOS = {
+  hiring: { label:'HIRING SCREENER', hint:'Past "hired" examples are drawn mostly from one group — the rule learns which resume features tend to appear in hires.', featureName:'relevant keyword match score',
+    proxies:[
+      { trait:'School name / zip code on resume', why:'Correlates with neighborhood demographics even though two candidates have identical GPA and skills.' },
+      { trait:'Employment gap length', why:'Caregiving-related gaps skew by group, even when the candidates\' actual qualifications are the same.' },
+      { trait:'Wording style ("led" vs. "helped")', why:'Language patterns can track group/gender norms, not ability — yet the model reads it as a competence signal.' },
+      { trait:'Extracurricular club names', why:'Certain clubs are more common in some communities; identical leadership experience gets scored differently.' }
+    ] },
+  loan: { label:'LOAN APPROVAL', hint:'Past "approved" loan examples skew toward one group — the rule learns which application features tend to appear in approvals.', featureName:'credit history length',
+    proxies:[
+      { trait:'Zip code / neighborhood', why:'Historically redlined areas correlate with group membership — two applicants with the same income get different risk scores.' },
+      { trait:'Length of credit history', why:'Groups with less generational access to banking start their credit history later, even with identical current income and savings.' },
+      { trait:'Type of bank used', why:'Community banks vs. major banks can correlate with group membership without reflecting actual repayment risk.' },
+      { trait:'Employer name', why:'Same salary, different employer "prestige" score — a proxy for industries certain groups were historically excluded from.' }
+    ] },
+  photo: { label:'PHOTO SORTING', hint:'Past "correctly tagged" training photos skew toward one group — the rule learns which visual features it saw most often.', featureName:'training image similarity score',
+    proxies:[
+      { trait:'Skin tone / lighting contrast', why:'Training photos were mostly lighter-skinned faces in bright light — the model is less confident on identical photo quality for darker skin tones.' },
+      { trait:'Hair texture', why:'Pattern recognition trained mostly on one hair type misreads another type as "not a clear match," even at equal image resolution.' },
+      { trait:'Background setting', why:'Certain backgrounds appeared more in one group\'s training photos, so the model partly keys off background instead of the face.' },
+      { trait:'Camera / device quality', why:'If one group\'s training photos came from lower-resolution phone cameras, the model treats that resolution range as "harder to classify" regardless of the actual subject.' }
+    ] }
+};
+var currentScenario = 'hiring';
+var skewPct = 85;
+
+function renderScenarioPicker(){
+  document.getElementById('scenarioPicker').innerHTML = Object.keys(SCENARIOS).map(function(k){
+    return '<div class="scBtn '+(k===currentScenario?'active':'')+'" onclick="setScenario(\''+k+'\')">'+SCENARIOS[k].label+'</div>';
+  }).join('');
+  document.getElementById('scenarioHint').textContent = SCENARIOS[currentScenario].hint;
+}
+function setScenario(k){ currentScenario=k; renderScenarioPicker(); renderTrainSample(); renderProxyList(); document.getElementById('resultsPanel').style.display='none'; }
+function renderProxyList(){
+  var list = SCENARIOS[currentScenario].proxies || [];
+  document.getElementById('proxyList').innerHTML = list.map(function(p){
+    return '<div class="proxyCard"><div class="trait">'+p.trait+'</div><div class="why">'+p.why+'</div></div>';
+  }).join('');
+}
+function onSkewChange(){
+  skewPct = parseInt(document.getElementById('skewSlider').value,10);
+  document.getElementById('skewVal').textContent = skewPct+'% Group A';
+  renderTrainSample();
+  document.getElementById('resultsPanel').style.display='none';
+}
+function renderTrainSample(){
+  var total=40;
+  var aCount = Math.round(total * skewPct/100);
+  var bCount = total - aCount;
+  var dots=[];
+  for(var i=0;i<aCount;i++) dots.push('<div class="dot2 gA"></div>');
+  for(var i=0;i<bCount;i++) dots.push('<div class="dot2 gB"></div>');
+  // shuffle for visual variety
+  for(var i=dots.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=dots[i]; dots[i]=dots[j]; dots[j]=t; }
+  document.getElementById('trainSample').innerHTML = dots.join('');
+}
+
+/* Simulate: each applicant has an underlying "true qualification" score (0-100, same distribution for both groups —
+   they are equally qualified on average). But the training data's skew determines a bias weight that gets added
+   on top for whichever group dominated the training set, mimicking a proxy-feature correlation the rule picked up. */
+function gaussianRandom(){
+  var u=0,v=0; while(u===0) u=Math.random(); while(v===0) v=Math.random();
+  return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+}
+function runTest(){
+  var biasWeight = (skewPct - 50) * 0.6; // scales bias strength with how skewed training was
+  var threshold = 55;
+  var groups = ['A','B'];
+  var results = {A:{approved:0,total:20}, B:{approved:0,total:20}};
+  groups.forEach(function(g){
+    for(var i=0;i<20;i++){
+      var trueQual = 60 + gaussianRandom()*12; // both groups equally qualified on average
+      var proxyBoost = g==='A' ? biasWeight : -biasWeight; // rule favors whichever group dominated training
+      var score = trueQual + proxyBoost;
+      if(score >= threshold) results[g].approved++;
+    }
+  });
+  var pctA = Math.round(results.A.approved/results.A.total*100);
+  var pctB = Math.round(results.B.approved/results.B.total*100);
+  document.getElementById('resultsPanel').style.display='';
+  document.getElementById('pctA').textContent = pctA+'%';
+  document.getElementById('pctB').textContent = pctB+'%';
+  document.getElementById('fillA').style.width = pctA+'%';
+  document.getElementById('fillB').style.width = pctB+'%';
+  document.getElementById('subA').textContent = results.A.approved+' of '+results.A.total+' approved';
+  document.getElementById('subB').textContent = results.B.approved+' of '+results.B.total+' approved';
+  var gap = Math.abs(pctA-pctB);
+  var gapEl = document.getElementById('gapSlot');
+  if(gap >= 15){
+    gapEl.innerHTML = '<div class="gapBox big"><b>⚠ '+gap+' point gap</b>Both groups were equally qualified in this test set — the training skew alone produced this outcome gap. Try lowering the training skew slider toward 50% and re-testing.</div>';
+  } else {
+    gapEl.innerHTML = '<div class="gapBox small"><b>✓ '+gap+' point gap</b>With training data closer to balanced, approval rates land much closer together — even though both groups\' true qualifications never changed.</div>';
+  }
+}
+
+renderScenarioPicker();
+renderTrainSample();
+renderProxyList();
+</script>
+</body>
+</html>

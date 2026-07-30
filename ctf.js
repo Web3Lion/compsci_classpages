@@ -608,7 +608,7 @@
   var VKEY = "ctf-nemesis-voice";
   var nemVoices = [], nemMoodEl = null, nemBooted = false;
   function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
-  function vGet(){ try{ return Object.assign({enabled:true,pitch:0.35,rate:0.9,volume:0.85,voice:""}, JSON.parse(localStorage.getItem(VKEY)||"{}")); }catch(e){ return {enabled:true,pitch:0.35,rate:0.9,volume:0.85,voice:""}; } }
+  function vGet(){ try{ return Object.assign({enabled:true,pitch:1.20,rate:0.9,volume:0.40,voice:"Google UK English Female"}, JSON.parse(localStorage.getItem(VKEY)||"{}")); }catch(e){ return {enabled:true,pitch:1.20,rate:0.9,volume:0.40,voice:"Google UK English Female"}; } }
   function vSet(o){ try{ localStorage.setItem(VKEY, JSON.stringify(o)); }catch(e){} }
   function loadVoices(){ try{ nemVoices = (window.speechSynthesis ? speechSynthesis.getVoices() : []) || []; }catch(e){ nemVoices = []; } }
   function nemesisSpeak(text){

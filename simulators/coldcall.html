@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cold Call — Social Engineering Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--bad);box-shadow:0 0 10px var(--bad);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
+.pill{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 10px;border-radius:999px;letter-spacing:.5px;}
+/* ---------- menu ---------- */
+#menu .lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 22px;}
+.scenGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:560px){.scenGrid{grid-template-columns:1fr;}}
+.scenCard{text-align:left;border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:16px;cursor:pointer;font-family:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;min-height:44px;}
+.scenCard:hover{border-color:var(--border-hi);background:var(--panel3);}
+.scenCard .ic{font-size:22px;}
+.scenCard b{color:var(--bright);font-size:14.5px;}
+.scenCard span.d{color:var(--dim);font-size:12.5px;line-height:1.5;}
+.randBtn{margin-top:16px;width:100%;font-family:'JetBrains Mono',monospace;font-size:13px;padding:13px 16px;border-radius:10px;border:1px solid var(--border-hi);background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;cursor:pointer;min-height:44px;}
+.randBtn:hover{filter:brightness(1.08);}
+/* ---------- ringing ---------- */
+#ring{display:none;text-align:center;padding:50px 20px;}
+#ring .avatar{width:96px;height:96px;border-radius:50%;background:var(--panel3);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 18px;animation:pulse 1.1s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,122,.35);}50%{box-shadow:0 0 0 14px rgba(255,92,122,0);}}
+#ring .num{font-family:'JetBrains Mono',monospace;color:var(--dim);font-size:13px;margin-bottom:4px;}
+#ring .name{font-size:22px;color:var(--bright);font-weight:700;margin-bottom:22px;}
+#ring .status{font-family:'JetBrains Mono',monospace;color:var(--warn);font-size:13px;letter-spacing:1px;margin-bottom:30px;}
+.ringBtns{display:flex;justify-content:center;gap:26px;}
+.rbtn{width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;color:#fff;}
+.rbtn.answer{background:var(--ok);}
+.rbtn.answer:hover{filter:brightness(1.1);}
+.rbtn.decline{background:var(--bad);}
+.rbtn.decline:hover{filter:brightness(1.1);}
+/* ---------- call ---------- */
+#call{display:none;}
+.callHead{display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--border2);margin-bottom:16px;}
+.callHead .av{width:38px;height:38px;border-radius:50%;background:var(--panel3);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;font-size:17px;flex:none;}
+.callHead .who{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.callHead .who b{color:var(--bright);font-size:14.5px;}
+.callHead .who span{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;}
+.callHead .timer{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);}
+#transcript{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;max-height:46vh;overflow-y:auto;padding-right:2px;}
+.bub{max-width:86%;padding:11px 14px;border-radius:12px;font-size:14px;line-height:1.5;}
+.bub.them{align-self:flex-start;background:var(--panel3);border:1px solid var(--border3);color:var(--text);border-bottom-left-radius:3px;}
+.bub.me{align-self:flex-end;background:color-mix(in srgb,var(--accent) 16%,var(--panel));border:1px solid var(--border-hi);color:var(--bright);border-bottom-right-radius:3px;}
+.bub.me .flagIcon{color:var(--bad);margin-right:5px;}
+#choices{display:flex;flex-direction:column;gap:8px;}
+.choiceBtn{text-align:left;font-family:inherit;font-size:14px;line-height:1.4;padding:12px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);color:var(--text);cursor:pointer;min-height:44px;}
+.choiceBtn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.hangupRow{margin-top:14px;text-align:center;}
+.hangupBtn{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--bad);background:none;border:1px solid var(--border2);border-radius:999px;padding:9px 18px;cursor:pointer;min-height:44px;}
+.hangupBtn:hover{border-color:var(--bad);}
+/* ---------- debrief ---------- */
+#debrief{display:none;}
+.gradeBig{text-align:center;padding:8px 0 22px;}
+.gradeBig .letter{font-size:64px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
+.gradeBig .sub{color:var(--dim);font-size:13.5px;margin-top:8px;}
+.section{margin-bottom:20px;}
+.section h3{font-size:12px;letter-spacing:1.2px;color:var(--faint);margin:0 0 10px;font-family:'JetBrains Mono',monospace;}
+.itemRow{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border2);font-size:13.5px;line-height:1.5;}
+.itemRow:last-child{border-bottom:none;}
+.itemRow .ic{flex:none;margin-top:1px;}
+.debBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+.dbtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);cursor:pointer;min-height:44px;}
+.dbtn:hover{background:var(--panel3);}
+.dbtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;border:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>COLD CALL</h1></div>
+    <span class="back mono">social engineering simulator · free play, no XP</span>
+  </div>
+
+  <div class="card" id="menu">
+    <p class="lead">Someone's calling. They want something they shouldn't have. Pick up, hear the pitch, and choose your responses — see what you give away.</p>
+    <div class="scenGrid" id="scenGrid"></div>
+    <button class="randBtn" onclick="startCall(null)">📞 SURPRISE ME — random caller</button>
+  </div>
+
+  <div class="card" id="ring">
+    <div class="avatar">📞</div>
+    <div class="num mono" id="ringNum">Unknown Number</div>
+    <div class="name" id="ringName">Incoming Call</div>
+    <div class="status mono">RINGING…</div>
+    <div class="ringBtns">
+      <button class="rbtn decline" onclick="declineCall()" title="Decline">✕</button>
+      <button class="rbtn answer" onclick="answerCall()" title="Answer">✓</button>
+    </div>
+  </div>
+
+  <div class="card" id="call">
+    <div class="callHead">
+      <div class="av" id="callAv">📞</div>
+      <div class="who"><b id="callName"></b><span id="callNum"></span></div>
+      <div class="timer mono" id="callTimer">00:00</div>
+    </div>
+    <div id="transcript"></div>
+    <div id="choices"></div>
+    <div class="hangupRow"><button class="hangupBtn" onclick="hangUp('you hung up')">⏻ HANG UP</button></div>
+  </div>
+
+  <div class="card" id="debrief"></div>
+</div>
+
+<script>
+/* ---------------- scenarios ----------------
+   Each turn: attacker line, then 2-3 responses. leak: what info type it gives
+   up ('' = safe/deflect). endsCall:true on a response that ends the scenario
+   immediately (hang up / attacker gives up). */
+var SCENARIOS = [
+{ id:"helpdesk", icon:"🛠️", name:"'IT Help Desk'", number:"+1 (412) 555-0148",
+  title:"IT Help Desk", blurb:"Caller claims your account is locked and needs your reset code.",
+  avatar:"🛠️",
+  turns:[
+    { line:"Hi, this is Marcus from the IT Help Desk. We're seeing repeated failed logins on your account — I need to verify you real quick before it gets locked.",
+      choices:[
+        { text:"Okay, what do you need?", leak:"", note:"Cooperating isn't itself a leak — depends what he asks next." },
+        { text:"I didn't request any help. What's your employee ID?", leak:"", note:"Good instinct — asking THEM to verify first." },
+        { text:"My username is jsmith22 and I'm a sophomore.", leak:"identity", note:"Volunteered info before he even asked." }
+      ] },
+    { line:"Great — to confirm it's you, can you give me the code we just texted to your phone?",
+      choices:[
+        { text:"Sure, one sec... it's 8 8 4 2 1 1.", leak:"otp", note:"That code exists to prove YOU are logging in — reading it to a caller hands them your account." },
+        { text:"I didn't get a text, and I'm not sharing a code over the phone. What department are you actually in?", leak:"", note:"Real IT never needs your OTP read aloud." },
+        { text:"I'll call the help desk back on the number on our IT page instead.", leak:"", endsCall:true, note:"Textbook move — verify through a channel you control." }
+      ] },
+    { line:"No worries — while I've got you, what's the password on the account? I can just reset it directly so you don't have to deal with the code.",
+      choices:[
+        { text:"It's Wildcats2024!", leak:"password", note:"No help desk, real or fake, ever needs your actual password." },
+        { text:"Real IT can reset it without me telling you my password.", leak:"", note:"Correct — resets don't require your current password." },
+        { text:"I'm hanging up and reporting this call.", leak:"", endsCall:true, note:"Ended it clean." }
+      ] }
+  ]},
+{ id:"bank", icon:"🏦", name:"'Bank Fraud Dept'", number:"+1 (855) 555-0199",
+  title:"Bank Fraud Department", blurb:"Caller says a suspicious charge was just blocked on your card.",
+  avatar:"🏦",
+  turns:[
+    { line:"This is the Fraud Prevention line — we just blocked a $940 charge in Miami on your card. Was that you?",
+      choices:[
+        { text:"No, that wasn't me!", leak:"", note:"Reasonable reaction, no info given yet." },
+        { text:"No — and I'm calling my bank back on the number on my card to check this.", leak:"", endsCall:true, note:"The right move: verify independently, never through the inbound caller." },
+        { text:"No, that's scary. My card is a Visa ending in 4471.", leak:"card_partial", note:"You handed over card details unprompted." }
+      ] },
+    { line:"Don't worry, we'll reverse it — I just need the 16-digit card number and the 3-digit code on the back to cancel the fraudulent one and issue a new card.",
+      choices:[
+        { text:"4539 1122 8890 4471, and the code is 902.", leak:"card_full", note:"You just read your full card number and CVV to a stranger." },
+        { text:"My bank already has that — you tell me the last 4 digits if this is real.", leak:"", note:"Flips the verification — a real bank already has your number." },
+        { text:"I'm not giving card details over an inbound call. Goodbye.", leak:"", endsCall:true, note:"Correct — banks never ask for your full card + CVV on a call they placed." }
+      ] },
+    { line:"I understand the caution, but this charge is going through in the next few minutes unless you confirm your online banking password so I can freeze it now.",
+      choices:[
+        { text:"It's Sunshine!91", leak:"password", note:"No bank department can freeze anything faster because they know your password — that's not how freezes work." },
+        { text:"A bank can freeze a card without my password. I'm calling the number on my card.", leak:"", endsCall:true, note:"Correct instinct, and correct reasoning." },
+        { text:"Fine, my birthday is 04/18/2009 too if that helps verify me.", leak:"dob", note:"Extra identity info handed over for nothing." }
+      ] }
+  ]},
+{ id:"delivery", icon:"📦", name:"'Package Carrier'", number:"+1 (203) 555-0117",
+  title:"Delivery Carrier", blurb:"Caller says a package is stuck and needs a redelivery fee.",
+  avatar:"📦",
+  turns:[
+    { line:"Hi, this is Metro Express — we have a package for you that's on hold at the depot for an unpaid customs fee of $2.99. Can I get your address to confirm it's the right delivery?",
+      choices:[
+        { text:"Sure, it's 214 Larkspur Ln.", leak:"address", note:"A real carrier holding your package already has your address — they wouldn't be asking you for it." },
+        { text:"I'm not expecting anything. What's the tracking number?", leak:"", note:"Good — legit carriers can give you a tracking number, not just ask for your address." },
+        { text:"I'll check the tracking myself on the carrier's site.", leak:"", endsCall:true, note:"Clean way to sidestep it entirely." }
+      ] },
+    { line:"No problem, I have it here — 1Z...never mind, I can just text you a link to pay the $2.99 fee and release it today. What's a good card to use?",
+      choices:[
+        { text:"Sure — Visa 4712 8890 1123 5541.", leak:"card_full", note:"A $2.99 'fee' is the classic hook to get a full card number." },
+        { text:"I'll pay any real fee through the carrier's official app, not a text link.", leak:"", endsCall:true, note:"Right call — never pay through a link a caller sends you." },
+        { text:"Just my name and zip should be enough, right? Jordan Kim, 15108.", leak:"identity", note:"Not payment info, but still handed over for no reason." }
+      ] },
+    { line:"That works too — and while I've got you, can you confirm your date of birth for our records? Just a formality.",
+      choices:[
+        { text:"04/02/2008.", leak:"dob", note:"Delivery fee confirmation never needs your birth date — that's an identity-theft data point." },
+        { text:"A shipping fee doesn't need my date of birth. I'm done here.", leak:"", endsCall:true, note:"Correctly refused an irrelevant ask." },
+        { text:"Why do you need that for a package fee?", leak:"", note:"Good pushback — see how they answer." }
+      ] }
+  ]},
+{ id:"prize", icon:"🎁", name:"'Prize Notification'", number:"+1 (877) 555-0163",
+  title:"Prize Notification Center", blurb:"Caller says you've won a gift card and just needs to verify you.",
+  avatar:"🎁",
+  turns:[
+    { line:"Congratulations! Your number was selected to win a $500 gift card. I just need to verify your identity before we can process the prize.",
+      choices:[
+        { text:"Awesome! I'm Jordan Kim, born 04/02/2008.", leak:"dob", note:"A prize you never entered for is the giveaway — and you handed over your identity anyway." },
+        { text:"I never entered a contest. What company is this?", leak:"", note:"Good — legit prizes come from contests you actually entered." },
+        { text:"That's not real. Goodbye.", leak:"", endsCall:true, note:"Correct — hang up on unsolicited prize calls." }
+      ] },
+    { line:"It's from our partner rewards program tied to your last online purchase. I just need your email and the password on that account to link the reward.",
+      choices:[
+        { text:"My email is jkim08@gmail.com, password Skyline!22.", leak:"password", note:"No legitimate reward program ever needs your account password." },
+        { text:"No legitimate company needs my account password to give me a prize.", leak:"", endsCall:true, note:"Exactly right — that request alone unmasks the scam." },
+        { text:"I'll give you my email but not a password.", leak:"identity", note:"Better than giving the password, but still feeding a scammer your email." }
+      ] },
+    { line:"Understood — last step, we just need a small $4.99 verification charge on a card to release the $500. What card should I use?",
+      choices:[
+        { text:"Visa 4118 2290 3345 7712.", leak:"card_full", note:"A 'small fee to unlock a bigger prize' is one of the oldest scripts in the book." },
+        { text:"Real prizes don't charge the winner. I'm hanging up.", leak:"", endsCall:true, note:"Correctly identified the advance-fee scam pattern." },
+        { text:"Can you mail the prize instead, no card needed?", leak:"", note:"Reasonable pushback — watch how they react to a payment-free option." }
+      ] }
+  ]}
+];
+
+var current=null, transcript=[], leaks=[], turnIdx=0, timerSec=0, timerHandle=null, riskyTotal=0;
+
+function renderMenu(){
+  var g=document.getElementById('scenGrid');
+  g.innerHTML=SCENARIOS.map(function(s,i){
+    return '<button class="scenCard" onclick="startCall('+i+')"><span class="ic">'+s.icon+'</span><b>'+s.title+'</b><span class="d">'+s.blurb+'</span></button>';
+  }).join('');
+}
+renderMenu();
+
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+function startCall(i){
+  current = (i==null) ? pick(SCENARIOS) : SCENARIOS[i];
+  document.getElementById('menu').style.display='none';
+  document.getElementById('debrief').style.display='none';
+  document.getElementById('ring').style.display='block';
+  document.getElementById('ringNum').textContent=current.number;
+  document.getElementById('ringName').textContent=current.name;
+}
+function declineCall(){
+  document.getElementById('ring').style.display='none';
+  document.getElementById('menu').style.display='block';
+}
+function answerCall(){
+  document.getElementById('ring').style.display='none';
+  document.getElementById('call').style.display='block';
+  document.getElementById('callAv').textContent=current.avatar;
+  document.getElementById('callName').textContent=current.name;
+  document.getElementById('callNum').textContent=current.number;
+  transcript=[]; leaks=[]; turnIdx=0; timerSec=0; riskyTotal=0;
+  document.getElementById('transcript').innerHTML='';
+  clearInterval(timerHandle);
+  timerHandle=setInterval(function(){ timerSec++; var m=String(Math.floor(timerSec/60)).padStart(2,'0'),s=String(timerSec%60).padStart(2,'0'); document.getElementById('callTimer').textContent=m+':'+s; },1000);
+  nextTurn();
+}
+function addBubble(who,text,leak){
+  var wrap=document.getElementById('transcript');
+  var div=document.createElement('div');
+  div.className='bub '+(who==='them'?'them':'me');
+  div.innerHTML=(leak?'<span class="flagIcon">⚠</span>':'')+text;
+  wrap.appendChild(div);
+  wrap.scrollTop=wrap.scrollHeight;
+}
+function nextTurn(){
+  if(turnIdx>=current.turns.length){ hangUp('call completed'); return; }
+  var t=current.turns[turnIdx];
+  riskyTotal++;
+  addBubble('them', t.line);
+  var box=document.getElementById('choices');
+  box.innerHTML='';
+  t.choices.forEach(function(c){
+    var b=document.createElement('button');
+    b.className='choiceBtn';
+    b.textContent=c.text;
+    b.onclick=function(){ choose(t,c); };
+    box.appendChild(b);
+  });
+}
+function choose(t,c){
+  addBubble('me', c.text, !!c.leak);
+  transcript.push({attacker:t.line, response:c.text, note:c.note});
+  if(c.leak) leaks.push({type:c.leak, text:c.text, note:c.note});
+  document.getElementById('choices').innerHTML='';
+  if(c.endsCall){ setTimeout(function(){ hangUp(c.leak?'gave up info, then hung up':'hung up in time'); },500); return; }
+  turnIdx++;
+  setTimeout(nextTurn, 550);
+}
+function hangUp(reason){
+  clearInterval(timerHandle);
+  document.getElementById('call').style.display='none';
+  showDebrief(reason);
+}
+
+var LEAK_LABELS={ password:"account password", otp:"one-time login code", card_full:"full card number + CVV", card_partial:"partial card details",
+  identity:"name/username", dob:"date of birth", address:"home address" };
+var LEAK_WEIGHT={ password:3, otp:3, card_full:3, card_partial:1.5, dob:1.5, address:1, identity:0.5 };
+
+function showDebrief(reason){
+  var weight=0; leaks.forEach(function(l){ weight+=LEAK_WEIGHT[l.type]||1; });
+  var grade, color, headline;
+  if(weight===0){ grade="A"; color="var(--ok)"; headline="Nothing given up. That call ended with nothing to show for it."; }
+  else if(weight<=1.5){ grade="B"; color="var(--ok)"; headline="Mostly held the line — one soft spot."; }
+  else if(weight<=3){ grade="C"; color="var(--warn)"; headline="Gave up more than you should have."; }
+  else if(weight<=5){ grade="D"; color="var(--bad)"; headline="That's enough for real damage."; }
+  else { grade="F"; color="var(--bad)"; headline="Full account + payment info, handed over on a phone call."; }
+
+  var protectedMoves=transcript.filter(function(x){ return !leaks.some(function(l){ return l.text===x.response; }); });
+
+  var html = '<div class="gradeBig"><div class="letter" style="color:'+color+'">'+grade+'</div><div class="sub">'+headline+' &middot; call ended: '+reason+'</div></div>';
+
+  html += '<div class="section"><h3>WHAT YOU GAVE UP ('+leaks.length+')</h3>';
+  if(!leaks.length){ html += '<div class="itemRow"><span class="ic">✓</span><span>Nothing. '+current.title+' hung up with nothing usable.</span></div>'; }
+  else leaks.forEach(function(l){ html += '<div class="itemRow"><span class="ic" style="color:var(--bad)">⚠</span><span><b style="color:var(--bright)">'+LEAK_LABELS[l.type]+'</b><br><span style="color:var(--dim);">'+l.note+'</span></span></div>'; });
+  html += '</div>';
+
+  html += '<div class="section"><h3>MOVES THAT PROTECTED YOU</h3>';
+  var goodOnes=protectedMoves.filter(function(x){ return x.note && x.note.length; });
+  if(!goodOnes.length){ html += '<div class="itemRow"><span>No safe moves this call — try pushing back harder on the next one.</span></div>'; }
+  else goodOnes.forEach(function(x){ html += '<div class="itemRow"><span class="ic" style="color:var(--ok)">✓</span><span>'+x.note+'</span></div>'; });
+  html += '</div>';
+
+  html += '<div class="section"><h3>THE PLAY, EVERY TIME</h3><div class="itemRow"><span>Hang up and call back on a number YOU look up — never one the caller gives you, texts you, or that shows up on caller ID (it can be spoofed). No legitimate caller — bank, IT, delivery, or otherwise — needs your password, OTP, or full card number read aloud.</span></div></div>';
+
+  html += '<div class="debBtns"><button class="dbtn primary" onclick="retryCurrent()">↻ Same caller again</button><button class="dbtn" onclick="backToMenu()">← Different caller</button></div>';
+
+  var d=document.getElementById('debrief');
+  d.innerHTML=html;
+  d.style.display='block';
+}
+function retryCurrent(){ var i=SCENARIOS.indexOf(current); startCall(i>=0?i:null); answerCall(); }
+function backToMenu(){ document.getElementById('debrief').style.display='none'; document.getElementById('menu').style.display='block'; }
+</script>
+</body>
+</html>

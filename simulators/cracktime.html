@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breach Clock — Password Cracking Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--warn);box-shadow:0 0 10px var(--warn);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
+.card + .card{margin-top:16px;}
+.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 20px;}
+.inputRow{position:relative;margin-bottom:12px;}
+#pwInput{width:100%;font-family:'JetBrains Mono',monospace;font-size:16px;padding:14px 46px 14px 14px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);min-height:44px;}
+#pwInput:focus{outline:none;border-color:var(--accent);}
+.eyeBtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--faint);cursor:pointer;font-size:17px;padding:8px;min-height:32px;}
+.eyeBtn:hover{color:var(--accent);}
+.hint{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;margin-bottom:16px;}
+.chipRow{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:32px;}
+.chip:hover{border-color:var(--border-hi);color:var(--accent2);}
+.colTitle{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.3px;color:var(--faint);margin:20px 0 10px;}
+.rigRow{display:flex;flex-direction:column;gap:8px;}
+.rigOpt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);cursor:pointer;min-height:44px;}
+.rigOpt.sel{border-color:var(--accent);background:var(--panel3);}
+.rigOpt input{accent-color:var(--accent);width:16px;height:16px;flex:none;}
+.rigOpt .t{font-size:13.5px;color:var(--bright);font-weight:600;}
+.rigOpt .d{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;}
+/* ---------- results ---------- */
+#empty{color:var(--faint);font-size:13.5px;text-align:center;padding:20px 0;}
+#results{display:none;}
+.dictBanner{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:18px;line-height:1.5;}
+.bigTime{text-align:center;padding:6px 0 18px;}
+.bigTime .val{font-size:34px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1;}
+.bigTime .cat{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;margin-top:6px;padding:4px 12px;border-radius:999px;display:inline-block;}
+.statsRow{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.statsRow b{color:var(--bright);font-size:15px;display:block;}
+.statBox{cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid transparent;position:relative;}
+.statBox:hover{border-color:var(--border-hi);background:var(--panel3);}
+.statBox .qmark{font-size:10px;color:var(--accent);margin-left:3px;}
+.popOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+.popOverlay.on{display:flex;}
+.popCard{max-width:440px;width:100%;background:var(--panel);border:1px solid var(--border3);border-radius:14px;padding:22px;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
+.popCard h3{margin:0 0 10px;font-size:16px;color:var(--bright);}
+.popCard p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:var(--muted);}
+.popCard .ex{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin:10px 0;color:var(--accent2);line-height:1.7;}
+.popCard .closeBtn{margin-top:8px;width:100%;padding:11px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:12.5px;cursor:pointer;min-height:44px;}
+.popCard .closeBtn:hover{border-color:var(--accent);}
+.chartWrap{padding:8px 4px 0;}
+.chartAxis{position:relative;height:200px;border-bottom:1px solid var(--border2);}
+.gridLine{position:absolute;left:0;right:0;border-top:1px dashed var(--border2);}
+.gridLine span{position:absolute;left:0;top:-8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);background:var(--panel);padding-right:6px;}
+.chartBars{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:space-around;gap:18px;padding:0 10px;}
+.chartBarCol{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;width:100%;max-width:120px;}
+.chartBarVal{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;margin-bottom:6px;white-space:nowrap;}
+.chartBar{width:56%;border-radius:6px 6px 0 0;min-height:3px;transition:height .3s ease;}
+.chartLabels{display:flex;justify-content:space-around;gap:18px;padding:10px 10px 0;}
+.chartLabelCol{flex:1;max-width:120px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);line-height:1.4;}
+.note{margin-top:20px;font-size:12.5px;color:var(--faint);line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>BREACH CLOCK</h1></div>
+    <span class="back mono">password cracking simulator · free play, no XP</span>
+  </div>
+
+  <div class="card">
+    <p class="lead">Type a password to see how long it would actually take to crack — and why the same password can be instant on one system and unbreakable on another. Nothing here ever leaves your browser.</p>
+    <div class="inputRow">
+      <input type="password" id="pwInput" placeholder="Try a password…" autocomplete="off" spellcheck="false">
+      <button class="eyeBtn" id="eyeBtn" onclick="toggleEye()" title="Show/hide">👁</button>
+    </div>
+    <div class="hint">Nothing is sent anywhere — this all runs locally, right here.</div>
+    <div class="chipRow" id="chips"></div>
+
+    <div class="colTitle">ATTACK SCENARIO</div>
+    <div class="rigRow" id="rigRow"></div>
+  </div>
+
+  <div class="card">
+    <div id="empty">Type or pick a password above to see how it holds up.</div>
+    <div id="results"></div>
+  </div>
+</div>
+
+<div class="popOverlay" id="popOverlay" onclick="if(event.target===this)closePop()">
+  <div class="popCard" id="popCard"></div>
+</div>
+
+<script>
+var COMMON = ["password","123456","123456789","qwerty","password1","12345678","111111","1234567","sunshine","iloveyou",
+  "admin","welcome","monkey","letmein","dragon","football","baseball","master","superman","trustno1","abc123","000000",
+  "121212","qwerty123","zaq1zaq1","password123","freedom","whatever","qazwsx","michael","shadow","princess","summer",
+  "flower","hunter2","charlie","robert","jordan23","hockey","killer"];
+
+var CHIPS = [
+  {label:"\u201cpassword1\u201d", pw:"password1"},
+  {label:"\u201cSpring2025!\u201d", pw:"Spring2025!"},
+  {label:"\u201cTr0ub4dor&3\u201d", pw:"Tr0ub4dor&3"},
+  {label:"\u201ccorrecthorsebatterystaple\u201d", pw:"correcthorsebatterystaple"},
+  {label:"\u201cJ9\\$mLp2#qV\u201d", pw:"J9$mLp2#qV"}
+];
+
+var RIGS = [
+  { id:"online", name:"Online login (rate-limited)", rate:10, desc:"A website that throttles/locks after failed attempts \u2014 10 guesses/sec" },
+  { id:"bcrypt", name:"Leaked database, slow hash (bcrypt)", rate:20000, desc:"Hashes designed to be slow to check \u2014 ~20,000 guesses/sec on a cracking rig" },
+  { id:"md5", name:"Leaked database, fast hash (MD5, GPU rig)", rate:50000000000, desc:"A weak, fast hash cracked with GPUs \u2014 ~50 billion guesses/sec" }
+];
+var selectedRig = "bcrypt";
+
+function renderChips(){
+  document.getElementById('chips').innerHTML = CHIPS.map(function(c){
+    return '<button class="chip" onclick="tryChip(\''+c.pw.replace(/'/g,"\\'")+'\')">'+c.label+'</button>';
+  }).join('');
+}
+function renderRigs(){
+  document.getElementById('rigRow').innerHTML = RIGS.map(function(r){
+    return '<label class="rigOpt '+(r.id===selectedRig?'sel':'')+'"><input type="radio" name="rig" '+(r.id===selectedRig?'checked':'')+' onchange="selectRig(\''+r.id+'\')">'+
+      '<span><span class="t">'+r.name+'</span><br><span class="d">'+r.desc+'</span></span></label>';
+  }).join('');
+}
+function selectRig(id){ selectedRig=id; renderRigs(); analyze(); }
+function tryChip(pw){ var el=document.getElementById('pwInput'); el.value=pw; el.type='text'; document.getElementById('eyeBtn').textContent='🙈'; analyze(); }
+function toggleEye(){
+  var el=document.getElementById('pwInput'), btn=document.getElementById('eyeBtn');
+  if(el.type==='password'){ el.type='text'; btn.textContent='🙈'; } else { el.type='password'; btn.textContent='👁'; }
+}
+renderChips(); renderRigs();
+document.getElementById('pwInput').addEventListener('input', analyze);
+
+function fmtTime(seconds){
+  if(seconds<1) return "instantly";
+  if(seconds<60) return Math.ceil(seconds)+" sec";
+  if(seconds<3600) return Math.ceil(seconds/60)+" min";
+  if(seconds<86400) return Math.ceil(seconds/3600)+" hours";
+  if(seconds<31536000) return Math.ceil(seconds/86400)+" days";
+  var years=seconds/31536000;
+  if(years<1000) return Math.ceil(years)+" years";
+  if(years<1e6) return Math.round(years/1000)+"K years";
+  if(years<1e9) return Math.round(years/1e6)+"M years";
+  if(years<1e12) return Math.round(years/1e9)+"B years";
+  var exp=Math.round(Math.log10(years));
+  return "~10^"+exp+" years";
+}
+function crackSeconds(keyspace, rate){ return keyspace/rate/2; }
+
+function analyze(){
+  var pw=document.getElementById('pwInput').value;
+  var emptyEl=document.getElementById('empty'), resEl=document.getElementById('results');
+  if(!pw){ emptyEl.style.display='block'; resEl.style.display='none'; return; }
+  emptyEl.style.display='none'; resEl.style.display='block';
+
+  var lower=/[a-z]/.test(pw), upper=/[A-Z]/.test(pw), digit=/[0-9]/.test(pw), symbol=/[^a-zA-Z0-9]/.test(pw);
+  var charset=0; if(lower) charset+=26; if(upper) charset+=26; if(digit) charset+=10; if(symbol) charset+=32;
+  charset=charset||1;
+  var length=pw.length;
+  var entropyBits=Math.round(length*Math.log2(charset));
+  var keyspace=Math.pow(charset,length);
+  var isCommon=COMMON.indexOf(pw.toLowerCase())!==-1;
+
+  var rig=RIGS.find(function(r){return r.id===selectedRig;});
+  var seconds = isCommon ? (COMMON.indexOf(pw.toLowerCase())+1)/rig.rate : crackSeconds(keyspace, rig.rate);
+  var timeStr = fmtTime(seconds);
+  var cat, color;
+  if(isCommon || seconds<60){ cat="INSTANT"; color="var(--bad)"; }
+  else if(seconds<86400){ cat="WEAK"; color="var(--bad)"; }
+  else if(seconds<31536000){ cat="MODERATE"; color="var(--warn)"; }
+  else if(seconds<31536000*100){ cat="STRONG"; color="var(--ok)"; }
+  else { cat="VERY STRONG"; color="var(--ok)"; }
+
+  var html='';
+  if(isCommon){
+    html+='<div class="dictBanner">⚠ This is one of the most common passwords ever leaked. Attackers try dictionary lists like this <i>before</i> brute force \u2014 length and symbols don\u2019t help if the whole password is already on the list.</div>';
+  }
+  html+='<div class="bigTime"><div class="val" style="color:'+color+'">'+timeStr+'</div><div class="cat" style="background:color-mix(in srgb,'+color+' 16%,transparent);color:'+color+'">'+cat+'</div></div>';
+  html+='<div class="statsRow"><span class="statBox" onclick="showPop(\'length\','+length+','+charset+')"><b>'+length+'</b>characters<span class="qmark">\u24d8</span></span><span class="statBox" onclick="showPop(\'charset\','+length+','+charset+')"><b>'+charset+'</b>possible characters<span class="qmark">\u24d8</span></span><span class="statBox" onclick="showPop(\'entropy\','+length+','+charset+')"><b>'+entropyBits+'</b>bits of entropy<span class="qmark">\u24d8</span></span></div>';
+
+  html+='<div class="colTitle">SAME PASSWORD, DIFFERENT SYSTEMS — TIME TO CRACK</div>';
+  var secs = RIGS.map(function(r){ return isCommon ? (COMMON.indexOf(pw.toLowerCase())+1)/r.rate : crackSeconds(keyspace,r.rate); });
+  var maxSec=Math.max.apply(null, secs.concat([1]));
+  var maxLog=Math.log10(maxSec+1)||1;
+  var gridSteps=4;
+  html+='<div class="chartWrap"><div class="chartAxis">';
+  for(var g=0; g<=gridSteps; g++){
+    var frac=g/gridSteps;
+    var gridSec=Math.pow(10, frac*maxLog)-1;
+    html+='<div class="gridLine" style="bottom:'+(frac*100)+'%"><span>'+fmtTime(Math.max(gridSec,0))+'</span></div>';
+  }
+  html+='<div class="chartBars">';
+  RIGS.forEach(function(r,i){
+    var s=secs[i];
+    var pctHeight = Math.max(1.5, Math.min(100, Math.round((Math.log10(s+1)/maxLog)*100)));
+    var barColor = s<86400?"var(--bad)":s<31536000*100?"var(--warn)":"var(--ok)";
+    html+='<div class="chartBarCol"><span class="chartBarVal" style="color:'+barColor+'">'+fmtTime(s)+'</span><div class="chartBar" style="height:'+pctHeight+'%;background:'+barColor+'"></div></div>';
+  });
+  html+='</div></div>';
+  html+='<div class="chartLabels">'+RIGS.map(function(r){ return '<div class="chartLabelCol">'+r.name+'</div>'; }).join('')+'</div>';
+  html+='</div>';
+  html+='<div class="note">Crack time assumes an attacker checks on average half the possible combinations before finding a match. The gap between rows above is the real lesson: how a password is <i>stored</i> (a slow hash like bcrypt vs. a fast one like MD5) changes crack time by orders of magnitude \u2014 which is why you can\u2019t control that part, only your password.</div>';
+
+  resEl.innerHTML=html;
+}
+
+function fmtBig(n){
+  if(n<1000) return Math.round(n).toString();
+  var exp=Math.floor(Math.log10(n));
+  return "~10^"+exp;
+}
+
+function showPop(kind, length, charset){
+  var card=document.getElementById('popCard');
+  var html='';
+  if(kind==='length'){
+    var small=Math.pow(charset,Math.max(1,length-4)), big=Math.pow(charset,length);
+    html='<h3>Why length matters so much</h3>'+
+      '<p>Every extra character <b>multiplies</b> the number of possible passwords by the charset size — it does not just add to it. Guessing grows <i>exponentially</i> with length.</p>'+
+      '<div class="ex">'+(length-4)+' chars \u2192 '+fmtBig(small)+' combinations<br>'+length+' chars \u2192 '+fmtBig(big)+' combinations</div>'+
+      '<p>Those 4 extra characters made the password roughly '+fmtBig(charset*charset*charset*charset)+'\u00d7 harder to guess.</p>';
+  } else if(kind==='charset'){
+    html='<h3>Why adding numbers &amp; symbols matters</h3>'+
+      '<p>An attacker has to try every possible character at every position. A bigger character set means more guesses per position \u2014 and that gets raised to the power of the length.</p>'+
+      '<div class="ex">lowercase only: 26 choices/char<br>+ uppercase: 52 choices/char<br>+ digits: 62 choices/char<br>+ symbols: 94 choices/char</div>'+
+      '<p>At '+length+' characters: 26 choices gives '+fmtBig(Math.pow(26,length))+' combinations, but 94 choices gives '+fmtBig(Math.pow(94,length))+' \u2014 the jump comes from that base number being raised to the length, not added to it.</p>';
+  } else {
+    html='<h3>What "bits of entropy" means</h3>'+
+      '<p>Entropy measures uncertainty. Each bit doubles the number of possible passwords an attacker has to search through.</p>'+
+      '<div class="ex">40 bits \u2248 10^12 guesses<br>60 bits \u2248 10^18 guesses<br>80 bits \u2248 10^24 guesses</div>'+
+      '<p>Every extra character of length or every new character type (digits, symbols) you add pushes this number up \u2014 and because it\u2019s exponential, even a few extra bits can turn an instant crack into one that outlives the sun.</p>';
+  }
+  html+='<button class="closeBtn" onclick="closePop()">GOT IT</button>';
+  card.innerHTML=html;
+  document.getElementById('popOverlay').classList.add('on');
+}
+function closePop(){ document.getElementById('popOverlay').classList.remove('on'); }
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePop(); });
+</script>
+</body>
+</html>

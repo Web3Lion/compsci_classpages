@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phish Box — Phishing Inbox Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--bad);box-shadow:0 0 10px var(--bad);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 20px;max-width:72ch;}
+.scoreBar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.scorePill{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);padding:8px 14px;border-radius:999px;border:1px solid var(--border2);background:var(--panel);}
+.scorePill b{color:var(--bright);}
+.resetBtn{font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;}
+.resetBtn:hover{border-color:var(--border-hi);}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start;}
+@media(max-width:820px){.layout{grid-template-columns:1fr;}}
+.inboxCard{border:1px solid var(--border);border-radius:14px;background:var(--panel);overflow:hidden;}
+.inboxHead{padding:14px 16px;border-bottom:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.2px;color:var(--faint);}
+.mailItem{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-bottom:1px solid var(--border2);cursor:pointer;}
+.mailItem:last-child{border-bottom:none;}
+.mailItem:hover{background:var(--panel3);}
+.mailItem.active{background:var(--panel3);border-left:3px solid var(--accent);}
+.mailItem .row1{display:flex;justify-content:space-between;gap:8px;align-items:baseline;}
+.mailItem .sender{font-size:13.5px;font-weight:600;color:var(--bright);}
+.mailItem .badge{font-family:'JetBrains Mono',monospace;font-size:14px;flex:none;}
+.mailItem .subj{font-size:13px;color:var(--muted);}
+.mailItem .prev{font-size:12px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.readerCard{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;min-height:420px;display:flex;flex-direction:column;}
+.readerHead{border-bottom:1px solid var(--border2);padding-bottom:16px;margin-bottom:16px;}
+.readerHead .subj{font-size:18px;font-weight:700;color:var(--bright);margin:0 0 10px;}
+.fromRow{display:flex;flex-direction:column;gap:2px;font-size:13px;}
+.fromRow .name{color:var(--text);}
+.fromRow .addr{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.body{color:var(--muted);line-height:1.7;font-size:14.5px;flex:1;white-space:pre-line;}
+.body .lnk{color:var(--accent2);text-decoration:underline;cursor:default;font-family:'JetBrains Mono',monospace;font-size:13px;}
+.decideRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--border2);}
+.decBtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:12px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--text);cursor:pointer;min-height:44px;}
+.decBtn.report{color:var(--bad);}
+.decBtn.report:hover{background:color-mix(in srgb,var(--bad) 12%,transparent);}
+.decBtn.trust{color:var(--ok);}
+.decBtn.trust:hover{background:color-mix(in srgb,var(--ok) 12%,transparent);}
+.verdict{margin-top:18px;padding:16px;border-radius:12px;font-size:13.5px;line-height:1.6;}
+.verdict.correct{background:color-mix(in srgb,var(--ok) 10%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);color:var(--text);}
+.verdict.wrong{background:color-mix(in srgb,var(--bad) 10%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--text);}
+.verdict b{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.5px;}
+.verdict ul{margin:8px 0 0;padding-left:18px;}
+.empty{color:var(--faint);font-size:14px;display:flex;align-items:center;justify-content:center;flex:1;text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>PHISH BOX</h1></div>
+    <span class="back mono">phishing inbox simulator &middot; free play, no XP</span>
+  </div>
+  <p class="lead">A mixed inbox is waiting. Open each message, read it like it's addressed to you, and decide: report it as phishing, or trust it. Every call reveals the tells you should've caught — or confirms what made it safe.</p>
+
+  <div class="scoreBar">
+    <span class="scorePill mono">SCORE <b id="scoreVal">0 / 0</b></span>
+    <button class="resetBtn mono" onclick="resetInbox()">↺ RESET INBOX</button>
+  </div>
+
+  <div class="layout">
+    <div class="inboxCard">
+      <div class="inboxHead">INBOX (<span id="inboxCount">10</span>)</div>
+      <div id="mailList"></div>
+    </div>
+    <div class="readerCard" id="reader">
+      <div class="empty">Select a message to open it</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var EMAILS=[
+  { sender:"IT Help Desk", addr:"it-support@southfayette-helpdesk.com", subj:"Action Required: Password Expires Today",
+    preview:"Your password will expire in 2 hours. Click below to keep access...",
+    body:"Your network password expires TODAY at 3:00 PM.\n\nTo avoid losing access to your email and files, verify your credentials immediately using the secure link below.\n\n[lnk]Verify My Account Now → southfayette-id-verify.net/login[/lnk]\n\nIf you do not act within 2 hours, your account will be locked and IT will require a $25 unlock fee.\n\n— IT Support Team",
+    isPhish:true, tells:["Sender domain isn't the real school domain (southfayette-helpdesk.com, not southfayette.org)","Manufactured urgency — a 2-hour deadline pressures you to skip thinking","Link goes to a lookalike domain, not an official login page","A real IT department would never charge a fee to 'unlock' your account"] },
+  { sender:"Sarah Chen", addr:"schen@southfayette.org", subj:"Notes from today's chem lab",
+    preview:"Hey! Here are the notes from lab in case you missed anything...",
+    body:"Hey!\n\nHere are my notes from today's titration lab in case you missed the last part — the endpoint color change and the final calculation. Let me know if you want to compare answers before it's due Friday.\n\nSee you tomorrow,\nSarah",
+    isPhish:false, tells:["Sender address matches the real school domain","No links, no urgency, no request for credentials or money","Content matches an ordinary, expected conversation between classmates"] },
+  { sender:"Amazon Order Update", addr:"order-notice@amaz0n-shipping.info", subj:"Your package could not be delivered",
+    preview:"We attempted delivery of your package but were unable to...",
+    body:"We attempted to deliver your package today but no one was available to sign for it.\n\nTo reschedule delivery, please confirm your address and payment details within 24 hours or the item will be returned to sender.\n\n[lnk]Reschedule Delivery → amaz0n-shipping.info/confirm[/lnk]\n\nThank you for shopping with us.",
+    isPhish:true, tells:["Domain uses a zero in place of the 'o' (amaz0n) — a classic lookalike trick","Asks you to 're-confirm payment details' for a delivery issue, which real carriers don't require","Vague — no order number, tracking number, or item name","24-hour pressure window pushes you to act before checking"] },
+  { sender:"Mr. Reasey", addr:"rnreasey@southfayette.org", subj:"Tomorrow's quiz moved to Friday",
+    preview:"Just a heads up — I'm pushing the quiz to Friday to give us...",
+    body:"Hi everyone,\n\nJust a heads up that I'm moving tomorrow's quiz to Friday to give us one more day to cover binary arithmetic. No action needed — just come to class ready Friday instead.\n\nSee you tomorrow,\nMr. Reasey",
+    isPhish:false, tells:["Sender matches your real teacher's known school email","No links, attachments, or requests for information","Ordinary, low-stakes classroom announcement"] },
+  { sender:"Bank Security Alert", addr:"alerts@secure-bankverify.com", subj:"Unusual sign-in attempt detected",
+    preview:"We noticed a sign-in from a new device. If this wasn't you...",
+    body:"We detected a sign-in attempt from a new device in a different location.\n\nIf this wasn't you, your account may be compromised. Verify your identity immediately to prevent unauthorized transactions.\n\n[lnk]Secure My Account → secure-bankverify.com/id-check[/lnk]\n\nFailure to verify within 1 hour will result in a temporary account freeze.",
+    isPhish:true, tells:["Generic 'Bank Security' sender — real banks use their own named domain, not a generic verification service","Link domain doesn't match any real bank's actual site","1-hour freeze threat is designed to trigger panic clicking","No account number or last-4 digits — legitimate alerts usually reference specifics"] },
+  { sender:"Google Classroom", addr:"no-reply@classroom.google.com", subj:"New assignment posted in AP CSP",
+    preview:"Mr. Reasey posted a new assignment: Unit 4 Practice Set...",
+    body:"A new assignment has been posted in AP Computer Science Principles:\n\n\"Unit 4 Practice Set — Binary Representation\"\n\nDue: Friday, 11:59 PM\n\nOpen Google Classroom to view the assignment.",
+    isPhish:false, tells:["Sent from Google Classroom's real, well-known notification domain","No urgency, no request for credentials, no suspicious link destination","Matches an expected, routine system notification"] },
+  { sender:"HR Payroll Dept", addr:"payroll-update@companyhr-portal.net", subj:"Direct deposit form needs your signature",
+    preview:"Please review and sign the attached direct deposit update form...",
+    body:"Please review and electronically sign the attached direct deposit update form to avoid a delay in your next paycheck.\n\n[lnk]Sign Document → companyhr-portal.net/esign?id=8841[/lnk]\n\nThis must be completed by end of day.",
+    isPhish:true, tells:["Domain isn't a company or school domain you recognize","Payroll/direct-deposit changes are classic bait — money-related urgency gets clicks","'By end of day' deadline discourages verifying with the actual HR office first","E-signature links like this are a common credential-harvesting trick"] },
+  { sender:"Jordan (Robotics Club)", addr:"jvance@southfayette.org", subj:"Robotics meeting moved to room B12",
+    preview:"Quick note — today's meeting is in B12 instead of the usual room...",
+    body:"Hey, quick note — today's robotics meeting is in B12 instead of our usual room because the shop is being used for a demo. Same time, 3:15.\n\nSee you there,\nJordan",
+    isPhish:false, tells:["Sender matches the real school domain","Plain, low-stakes logistical update with no links or requests"] },
+  { sender:"Apple Support", addr:"support@apple-id-secure.com", subj:"Your Apple ID has been locked",
+    preview:"Your Apple ID has been locked for security reasons. Unlock it now...",
+    body:"Your Apple ID has been locked due to suspicious activity.\n\nTo restore access to iCloud, the App Store, and Find My iPhone, verify your identity now.\n\n[lnk]Unlock My Apple ID → apple-id-secure.com/unlock[/lnk]\n\nAccounts not verified within 24 hours may be permanently disabled.",
+    isPhish:true, tells:["Real Apple domains are apple.com — this is a lookalike ('apple-id-secure.com')","Threat of permanent account loss is designed to bypass careful thinking","Generic greeting, no specific device or account detail referenced"] },
+  { sender:"South Fayette Athletics", addr:"athletics@southfayette.org", subj:"Friday's game moved to 6 PM",
+    preview:"Due to a scheduling conflict, Friday's home game has been moved...",
+    body:"Due to a scheduling conflict, Friday's home game has been moved from 7:00 PM to 6:00 PM. Same location. See the athletics calendar for the full updated schedule.\n\n— South Fayette Athletics",
+    isPhish:false, tells:["Sender matches the real school domain","Informational only — no links requesting login, no urgency tactics beyond a normal schedule change"] }
+];
+var decided={};
+var score={correct:0,total:0};
+
+function renderList(){
+  var list=document.getElementById('mailList');
+  document.getElementById('inboxCount').textContent=EMAILS.length;
+  list.innerHTML=EMAILS.map(function(e,i){
+    var badge = decided[i]===undefined ? '' : (decided[i] ? '<span class="badge" style="color:var(--ok)">✓</span>' : '<span class="badge" style="color:var(--bad)">✕</span>');
+    return '<div class="mailItem'+(activeIdx===i?' active':'')+'" onclick="openMail('+i+')">'+
+      '<div class="row1"><span class="sender">'+e.sender+'</span>'+badge+'</div>'+
+      '<div class="subj">'+e.subj+'</div>'+
+      '<div class="prev">'+e.preview+'</div></div>';
+  }).join('');
+}
+var activeIdx=null;
+function bodyHtml(b){
+  return b.replace(/\n/g,'<br>').replace(/\[lnk\](.*?)\[\/lnk\]/g,'<br><span class="lnk">$1</span><br>');
+}
+function openMail(i){
+  activeIdx=i;
+  renderList();
+  var e=EMAILS[i];
+  var already=decided[i]!==undefined;
+  var html='<div class="readerHead"><p class="subj">'+e.subj+'</p><div class="fromRow"><span class="name">'+e.sender+'</span><span class="addr mono">'+e.addr+'</span></div></div>'+
+    '<div class="body">'+bodyHtml(e.body)+'</div>';
+  if(already){
+    html+=verdictHtml(i);
+  } else {
+    html+='<div class="decideRow"><button class="decBtn report" onclick="decide('+i+',true)">🚩 Report as Phishing</button><button class="decBtn trust" onclick="decide('+i+',false)">✓ Looks Legit</button></div>';
+  }
+  document.getElementById('reader').innerHTML=html;
+}
+function verdictHtml(i){
+  var e=EMAILS[i];
+  var userSaidPhish=decided[i];
+  var correct=userSaidPhish===e.isPhish;
+  var cls=correct?'correct':'wrong';
+  var head=correct ? '✓ CORRECT' : '✕ NOT QUITE';
+  var lead = e.isPhish ? (correct?'You caught it — this was phishing.':'This one was actually phishing.') : (correct?'You trusted it — this one was legit.':'This one was actually a legit email.');
+  return '<div class="verdict '+cls+'"><b>'+head+'</b>'+lead+'<ul>'+e.tells.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div>';
+}
+function decide(i,saidPhish){
+  if(decided[i]!==undefined) return;
+  decided[i]=saidPhish;
+  score.total++;
+  if(saidPhish===EMAILS[i].isPhish) score.correct++;
+  document.getElementById('scoreVal').textContent=score.correct+' / '+score.total;
+  renderList();
+  openMail(i);
+}
+function resetInbox(){
+  decided={}; activeIdx=null; score={correct:0,total:0};
+  document.getElementById('scoreVal').textContent='0 / 0';
+  document.getElementById('reader').innerHTML='<div class="empty">Select a message to open it</div>';
+  renderList();
+}
+renderList();
+</script>
+</body>
+</html>

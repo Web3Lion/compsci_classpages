@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Least Privilege — Access Control Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.layout{display:grid;grid-template-columns:1fr 320px;gap:16px;}
+@media(max-width:820px){.layout{grid-template-columns:1fr;}}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:20px;}
+.rolesGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:10px;}
+.roleCard{border:1px solid var(--border2);border-radius:12px;background:var(--panel2);padding:14px;}
+.roleCard .rname{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--bright);font-weight:700;margin-bottom:2px;}
+.roleCard .rusers{font-size:11.5px;color:var(--faint);margin-bottom:12px;}
+.permRow{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-top:1px solid var(--border2);font-size:12.5px;}
+.permRow:first-of-type{border-top:none;}
+.permRow .pname{color:var(--dim);}
+.toggle{width:38px;height:20px;border-radius:12px;background:var(--panel3);border:1px solid var(--border2);cursor:pointer;position:relative;flex-shrink:0;}
+.toggle .knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--faint);transition:left .15s,background .15s;}
+.toggle.on{background:rgba(0,179,255,.18);border-color:var(--accent);}
+.toggle.on .knob{left:20px;background:var(--accent);}
+.scenarioBar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.scBtn{padding:8px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11.5px;cursor:pointer;}
+.scBtn.active{border-color:var(--accent);background:var(--panel3);color:var(--bright);}
+.blastPanel{position:sticky;top:20px;}
+.blastPanel h3{font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.5px;color:var(--faint);margin:0 0 12px;}
+.compromisedTag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 9px;border-radius:6px;background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.35);color:var(--bad);margin-bottom:14px;}
+.riskMeter{height:10px;border-radius:6px;background:var(--panel3);overflow:hidden;margin-bottom:8px;}
+.riskFill{height:100%;border-radius:6px;transition:width .3s,background .3s;}
+.riskLabel{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;margin-bottom:16px;}
+.exposedList{display:flex;flex-direction:column;gap:6px;}
+.exposedList .item{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:8px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--border2);}
+.exposedList .item.high{border-color:rgba(255,92,122,.4);}
+.exposedList .item .icn{font-size:14px;}
+.exposedList .item .lbl{color:var(--text);}
+.exposedList .item .impact{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);}
+.noneMsg{font-size:12.5px;color:var(--dim);padding:14px;text-align:center;border:1px dashed var(--border2);border-radius:10px;}
+.principleBox{margin-top:16px;padding:12px 14px;border-radius:10px;background:rgba(0,179,255,.06);border:1px solid var(--border3);font-size:12px;color:var(--muted);line-height:1.6;}
+.resetBtn{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);background:none;border:1px solid var(--border2);border-radius:8px;padding:7px 12px;cursor:pointer;}
+.resetBtn:hover{color:var(--dim);border-color:var(--border3);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>LEAST PRIVILEGE</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">access control simulator · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Assign permissions to each role, then compromise one to see what an attacker could actually reach. Fewer permissions per role means a smaller blast radius when something goes wrong.</p>
+
+  <div class="scenarioBar" id="scenarioBar"></div>
+
+  <div class="layout">
+    <div class="panel">
+      <div class="rolesGrid" id="rolesGrid"></div>
+      <button class="resetBtn" onclick="resetAll()">↻ RESET PERMISSIONS</button>
+    </div>
+    <div class="panel blastPanel">
+      <h3>BLAST RADIUS — IF THIS ROLE IS COMPROMISED</h3>
+      <div id="compromisedTagSlot"></div>
+      <div class="riskMeter"><div class="riskFill" id="riskFill" style="width:0%;background:var(--ok);"></div></div>
+      <div class="riskLabel" id="riskLabel" style="color:var(--ok);">LOW RISK</div>
+      <div class="exposedList" id="exposedList"></div>
+      <div class="principleBox">🔑 <b>Principle of least privilege:</b> every role should hold only the permissions it needs to do its job — nothing more. Fewer permissions per account means a breach anywhere does less damage.</div>
+    </div>
+  </div>
+</div>
+<script>
+var PERMS = [
+  {key:'readStudentGrades', label:'Read student grades', impact:'FERPA data'},
+  {key:'editStudentGrades', label:'Edit student grades', impact:'academic integrity'},
+  {key:'readPII', label:'Read student PII (address, DOB)', impact:'identity risk'},
+  {key:'financialSystems', label:'Access financial/payroll system', impact:'money movement'},
+  {key:'networkAdmin', label:'Network / server admin', impact:'full network access'},
+  {key:'emailAllStaff', label:'Send email to all staff/students', impact:'mass phishing vector'},
+  {key:'deviceMgmt', label:'Manage school devices remotely', impact:'malware push to devices'},
+  {key:'cameraAccess', label:'View security camera feeds', impact:'physical surveillance'}
+];
+
+var SCENARIOS = {
+  reasonable: {
+    label:'REASONABLE DEFAULT',
+    roles:[
+      {name:'Teacher', users:'~140 accounts', perms:['readStudentGrades','editStudentGrades']},
+      {name:'Front Office', users:'6 accounts', perms:['readPII','emailAllStaff']},
+      {name:'IT Staff', users:'3 accounts', perms:['networkAdmin','deviceMgmt']},
+      {name:'Business Office', users:'2 accounts', perms:['financialSystems']}
+    ]
+  },
+  overprivileged: {
+    label:'OVER-PRIVILEGED (risky)',
+    roles:[
+      {name:'Teacher', users:'~140 accounts', perms:['readStudentGrades','editStudentGrades','readPII','emailAllStaff','deviceMgmt']},
+      {name:'Front Office', users:'6 accounts', perms:['readPII','emailAllStaff','readStudentGrades','financialSystems']},
+      {name:'IT Staff', users:'3 accounts', perms:['networkAdmin','deviceMgmt','cameraAccess','readPII','financialSystems','emailAllStaff']},
+      {name:'Business Office', users:'2 accounts', perms:['financialSystems','readPII','emailAllStaff']}
+    ]
+  }
+};
+
+var roles = [];
+var compromisedIdx = 0;
+
+function loadScenario(key){
+  roles = SCENARIOS[key].roles.map(function(r){ return {name:r.name, users:r.users, perms:{}}; });
+  SCENARIOS[key].roles.forEach(function(r,i){ PERMS.forEach(function(p){ roles[i].perms[p.key] = r.perms.indexOf(p.key)>-1; }); });
+  compromisedIdx = 0;
+  renderScenarioBar(key);
+  renderRoles();
+  renderBlast();
+}
+function renderScenarioBar(activeKey){
+  var el = document.getElementById('scenarioBar');
+  el.innerHTML = Object.keys(SCENARIOS).map(function(k){
+    return '<div class="scBtn '+(k===activeKey?'active':'')+'" onclick="loadScenario(\''+k+'\')">'+SCENARIOS[k].label+'</div>';
+  }).join('');
+}
+function resetAll(){ loadScenario('reasonable'); }
+
+function renderRoles(){
+  var el = document.getElementById('rolesGrid');
+  el.innerHTML = roles.map(function(role, ri){
+    var permsHtml = PERMS.map(function(p){
+      var on = role.perms[p.key];
+      return '<div class="permRow"><span class="pname">'+p.label+'</span><div class="toggle '+(on?'on':'')+'" onclick="togglePerm('+ri+',\''+p.key+'\')"><div class="knob"></div></div></div>';
+    }).join('');
+    var compClass = ri===compromisedIdx ? 'style="border-color:var(--bad);box-shadow:0 0 0 1px rgba(255,92,122,.25);"' : '';
+    return '<div class="roleCard" '+compClass+'>'+
+      '<div class="rname" style="cursor:pointer;" onclick="setCompromised('+ri+')">'+role.name+' '+(ri===compromisedIdx?'🎯':'')+'</div>'+
+      '<div class="rusers">'+role.users+' &middot; <span style="color:var(--accent2);cursor:pointer;" onclick="setCompromised('+ri+')">simulate breach here</span></div>'+
+      permsHtml+'</div>';
+  }).join('');
+}
+function togglePerm(ri, key){
+  roles[ri].perms[key] = !roles[ri].perms[key];
+  renderRoles();
+  renderBlast();
+}
+function setCompromised(ri){ compromisedIdx = ri; renderRoles(); renderBlast(); }
+
+function renderBlast(){
+  var role = roles[compromisedIdx];
+  var exposed = PERMS.filter(function(p){ return role.perms[p.key]; });
+  var pct = Math.min(100, Math.round((exposed.length / PERMS.length) * 100));
+  var color = pct===0?'var(--ok)': pct<=25?'var(--ok)': pct<=50?'var(--warn)':'var(--bad)';
+  var label = pct===0?'NO RISK': pct<=25?'LOW RISK': pct<=50?'MODERATE RISK':'HIGH RISK';
+  document.getElementById('compromisedTagSlot').innerHTML = '<div class="compromisedTag">⚠ '+role.name+' compromised</div>';
+  document.getElementById('riskFill').style.width = pct+'%';
+  document.getElementById('riskFill').style.background = color;
+  document.getElementById('riskLabel').textContent = label;
+  document.getElementById('riskLabel').style.color = color;
+  var el = document.getElementById('exposedList');
+  if(exposed.length===0){
+    el.innerHTML = '<div class="noneMsg">This role has zero permissions granted — nothing to expose.</div>';
+  } else {
+    el.innerHTML = exposed.map(function(p){
+      return '<div class="item high"><span class="icn">🔓</span><span class="lbl">'+p.label+'</span><span class="impact">'+p.impact+'</span></div>';
+    }).join('');
+  }
+}
+
+loadScenario('reasonable');
+</script>
+</body>
+</html>
