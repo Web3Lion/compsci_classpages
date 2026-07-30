@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cipher Lab — Caesar &amp; Vigenère Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.tabs{display:flex;gap:8px;margin-bottom:18px;}
+.tab{padding:10px 18px;border-radius:10px;border:1px solid var(--border2);background:var(--panel);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:13px;cursor:pointer;font-weight:700;}
+.tab.active{background:var(--panel3);border-color:var(--accent);color:var(--bright);}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;}
+.row{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.row label{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.5px;color:var(--faint);}
+textarea{width:100%;min-height:88px;resize:vertical;border-radius:10px;border:1px solid var(--border2);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:15px;padding:12px 14px;line-height:1.5;}
+textarea:focus{outline:none;border-color:var(--border-hi);}
+input[type=text]{border-radius:10px;border:1px solid var(--border2);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:15px;padding:10px 14px;}
+input[type=text]:focus{outline:none;border-color:var(--border-hi);}
+.sliderRow{display:flex;align-items:center;gap:14px;}
+input[type=range]{flex:1;accent-color:var(--accent);}
+.shiftVal{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--accent2);font-weight:800;min-width:38px;text-align:center;}
+.modeBtns{display:flex;gap:8px;}
+.modeBtn{padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
+.modeBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--bright);}
+.outBox{border-radius:10px;border:1px solid var(--border3);background:var(--panel2);padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ok);min-height:40px;word-break:break-word;line-height:1.6;letter-spacing:.5px;}
+.alphaTrack{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px;}
+.aCell{width:28px;height:28px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);position:relative;}
+.aCell .shifted{position:absolute;top:-26px;font-size:10px;color:var(--accent2);}
+.hint{font-size:12.5px;color:var(--faint);margin-top:6px;line-height:1.5;}
+.keyDemo{display:flex;flex-wrap:wrap;gap:4px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:13px;}
+.keyDemo .col{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);min-width:34px;}
+.keyDemo .plain{color:var(--muted);}
+.keyDemo .key{color:var(--warn);}
+.keyDemo .cip{color:var(--ok);font-weight:700;}
+.practice{margin-top:26px;border-top:1px solid var(--border2);padding-top:20px;}
+.practiceRow{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--border2);border-radius:10px;background:var(--panel2);margin-bottom:12px;}
+.practiceRow .q{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--bright);}
+.practiceRow .meta{font-size:11.5px;color:var(--faint);}
+.pInputRow{display:flex;gap:8px;flex-wrap:wrap;}
+.pInputRow input{flex:1;min-width:160px;}
+.checkBtn{padding:10px 16px;border-radius:8px;border:1px solid var(--border3);background:var(--panel3);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;cursor:pointer;}
+.checkBtn:hover{border-color:var(--border-hi);}
+.pFeedback{font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+.pFeedback.ok{color:var(--ok);}
+.pFeedback.bad{color:var(--bad);}
+.newSetBtn{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);background:none;border:1px solid var(--border2);border-radius:8px;padding:7px 12px;cursor:pointer;}
+.newSetBtn:hover{color:var(--dim);border-color:var(--border3);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>CIPHER LAB</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">caesar &amp; vigenère · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Type a message, watch it shift into ciphertext letter by letter. Switch ciphers to see how a repeating keyword changes everything.</p>
+
+  <div class="tabs">
+    <div class="tab active" id="tabCaesar" onclick="setCipher('caesar')">CAESAR SHIFT</div>
+    <div class="tab" id="tabVig" onclick="setCipher('vigenere')">VIGENÈRE</div>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <label>MESSAGE</label>
+      <textarea id="plainInput" placeholder="Type a message to encode…">MEET AT THE OLD BRIDGE AT MIDNIGHT</textarea>
+    </div>
+
+    <div id="caesarControls" class="row">
+      <label>SHIFT AMOUNT</label>
+      <div class="sliderRow">
+        <input type="range" id="shiftSlider" min="0" max="25" value="3" oninput="onShiftChange()">
+        <div class="shiftVal" id="shiftVal">3</div>
+      </div>
+      <div class="modeBtns">
+        <div class="modeBtn active" id="encBtn" onclick="setMode('encode')">ENCODE</div>
+        <div class="modeBtn" id="decBtn" onclick="setMode('decode')">DECODE</div>
+      </div>
+      <div class="hint">Each letter slides forward (encode) or back (decode) through the alphabet by the shift amount. Shift 3: A→D, B→E, C→F…</div>
+    </div>
+
+    <div id="vigControls" class="row" style="display:none;">
+      <label>KEYWORD</label>
+      <input type="text" id="keyInput" value="KEY" oninput="render()">
+      <div class="modeBtns">
+        <div class="modeBtn active" id="encBtnV" onclick="setMode('encode')">ENCODE</div>
+        <div class="modeBtn" id="decBtnV" onclick="setMode('decode')">DECODE</div>
+      </div>
+      <div class="hint">The keyword repeats under the message. Each letter's shift amount comes from the matching key letter's position in the alphabet (A=0, B=1…).</div>
+      <div class="keyDemo" id="keyDemo"></div>
+    </div>
+
+    <div class="row">
+      <label id="outLabel">CIPHERTEXT</label>
+      <div class="outBox" id="outBox">DPHW...</div>
+    </div>
+
+    <div class="alphaTrack" id="alphaTrack"></div>
+  </div>
+
+  <div class="practice">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <span class="mono" style="font-size:12px;letter-spacing:1px;color:var(--faint);">PRACTICE — DECODE THESE</span>
+      <button class="newSetBtn" onclick="newPractice()">↻ NEW SET</button>
+    </div>
+    <div id="practiceList"></div>
+  </div>
+</div>
+<script>
+var A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var cipherType = 'caesar';
+var mode = 'encode';
+
+function setCipher(t){
+  cipherType = t;
+  document.getElementById('tabCaesar').classList.toggle('active', t==='caesar');
+  document.getElementById('tabVig').classList.toggle('active', t==='vigenere');
+  document.getElementById('caesarControls').style.display = t==='caesar' ? '' : 'none';
+  document.getElementById('vigControls').style.display = t==='vigenere' ? '' : 'none';
+  render();
+}
+function setMode(m){
+  mode = m;
+  ['encBtn','decBtn','encBtnV','decBtnV'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  if(m==='encode'){ document.getElementById('encBtn').classList.add('active'); document.getElementById('encBtnV').classList.add('active'); }
+  else { document.getElementById('decBtn').classList.add('active'); document.getElementById('decBtnV').classList.add('active'); }
+  document.getElementById('outLabel').textContent = mode==='encode' ? 'CIPHERTEXT' : 'PLAINTEXT (decoded)';
+  render();
+}
+function onShiftChange(){
+  document.getElementById('shiftVal').textContent = document.getElementById('shiftSlider').value;
+  render();
+}
+
+function caesarShiftChar(ch, shift){
+  var i = A.indexOf(ch.toUpperCase());
+  if(i===-1) return ch;
+  var s = ((i + shift) % 26 + 26) % 26;
+  return A[s];
+}
+function caesarTransform(text, shift, decode){
+  var s = decode ? -shift : shift;
+  return text.split('').map(function(c){ return caesarShiftChar(c, s); }).join('');
+}
+function vigenereTransform(text, key, decode){
+  key = key.replace(/[^A-Za-z]/g,'').toUpperCase();
+  if(!key) key = 'A';
+  var ki = 0, out=[];
+  for(var idx=0; idx<text.length; idx++){
+    var ch = text[idx];
+    if(/[A-Za-z]/.test(ch)){
+      var kshift = A.indexOf(key[ki % key.length]);
+      out.push(caesarShiftChar(ch, decode ? -kshift : kshift));
+      ki++;
+    } else out.push(ch);
+  }
+  return out.join('');
+}
+
+function render(){
+  var plain = document.getElementById('plainInput').value.toUpperCase();
+  var out;
+  if(cipherType==='caesar'){
+    var shift = parseInt(document.getElementById('shiftSlider').value,10);
+    out = caesarTransform(plain, shift, mode==='decode');
+    renderAlphaTrack(shift);
+  } else {
+    var key = document.getElementById('keyInput').value || 'KEY';
+    out = vigenereTransform(plain, key, mode==='decode');
+    renderKeyDemo(plain, key);
+    document.getElementById('alphaTrack').innerHTML='';
+  }
+  document.getElementById('outBox').textContent = out || '—';
+}
+
+function renderAlphaTrack(shift){
+  var el = document.getElementById('alphaTrack');
+  el.innerHTML = A.split('').map(function(c,i){
+    var s = A[((i+shift)%26+26)%26];
+    return '<div class="aCell"><span class="shifted">'+s+'</span>'+c+'</div>';
+  }).join('');
+}
+function renderKeyDemo(plain, key){
+  key = key.replace(/[^A-Za-z]/g,'').toUpperCase() || 'A';
+  var el = document.getElementById('keyDemo');
+  var letters = plain.replace(/[^A-Za-z]/g,'').split('').slice(0,16);
+  var ki=0;
+  el.innerHTML = letters.map(function(c){
+    var k = key[ki % key.length]; ki++;
+    var shift = A.indexOf(k);
+    var cip = caesarShiftChar(c, mode==='decode' ? -shift : shift);
+    return '<div class="col"><span class="plain">'+c+'</span><span class="key">'+k+'</span><span class="cip">'+cip+'</span></div>';
+  }).join('') + (letters.length < plain.replace(/[^A-Za-z]/g,'').length ? '<div class="col" style="color:var(--faint);">…</div>' : '');
+}
+
+document.getElementById('plainInput').addEventListener('input', render);
+
+/* ---- practice ---- */
+var PRACTICE_WORDS = ['ATTACK','DEFEND','FIREWALL','ROUTER','PACKET','ENCRYPT','FIREWALL','PHISHING','SPOOFED','GATEWAY','PROTOCOL','MALWARE','BACKDOOR','KEYWORD','CIPHER'];
+var practiceSet = [];
+function newPractice(){
+  practiceSet = [];
+  var used = [];
+  for(var i=0;i<3;i++){
+    var word;
+    do { word = PRACTICE_WORDS[Math.floor(Math.random()*PRACTICE_WORDS.length)]; } while(used.indexOf(word)>-1);
+    used.push(word);
+    var isVig = i===2;
+    var shift = 1 + Math.floor(Math.random()*25);
+    var key = ['SUN','KEY','LOCK','CODE'][Math.floor(Math.random()*4)];
+    var cipherText = isVig ? vigenereTransform(word, key, false) : caesarTransform(word, shift, false);
+    practiceSet.push({word:word, isVig:isVig, shift:shift, key:key, cipherText:cipherText});
+  }
+  renderPractice();
+}
+function renderPractice(){
+  var el = document.getElementById('practiceList');
+  el.innerHTML = practiceSet.map(function(p, idx){
+    var meta = p.isVig ? 'Vigenère · keyword "'+p.key+'"' : 'Caesar shift '+p.shift;
+    return '<div class="practiceRow"><div class="q">'+p.cipherText+'</div><div class="meta">'+meta+' — decode it</div>'+
+      '<div class="pInputRow"><input type="text" id="pAns'+idx+'" placeholder="Your answer…"><button class="checkBtn" onclick="checkPractice('+idx+')">CHECK</button></div>'+
+      '<div class="pFeedback" id="pFb'+idx+'"></div></div>';
+  }).join('');
+}
+function checkPractice(idx){
+  var p = practiceSet[idx];
+  var ans = document.getElementById('pAns'+idx).value.trim().toUpperCase();
+  var fb = document.getElementById('pFb'+idx);
+  if(ans === p.word){ fb.textContent='✓ Correct — it decodes to "'+p.word+'"'; fb.className='pFeedback ok'; }
+  else { fb.textContent='✗ Not quite. It decodes to "'+p.word+'"'; fb.className='pFeedback bad'; }
+}
+
+setCipher('caesar');
+newPractice();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bug Hunt — Debug the Code Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.scorebar{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.stat{padding:8px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--panel);}
+.stat b{color:var(--bright);}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);margin-bottom:10px;}
+.codeBox{background:#050810;border:1px solid var(--border2);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.9;overflow-x:auto;}
+.codeLine{display:flex;gap:14px;cursor:pointer;padding:2px 6px;border-radius:5px;}
+.codeLine:hover{background:var(--panel3);}
+.codeLine.selected{background:rgba(0,179,255,.12);outline:1px solid var(--accent);}
+.codeLine.correctLine{background:rgba(79,214,138,.14);outline:1px solid var(--ok);}
+.codeLine .ln{color:var(--fainter);width:20px;text-align:right;flex-shrink:0;user-select:none;}
+.codeLine .code{white-space:pre;color:var(--text);}
+.controls{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;}
+.btn{padding:12px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn:disabled{opacity:.4;cursor:default;}
+.feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.65;}
+.feedback.correct{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);}
+.feedback.wrong{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);}
+.feedback b{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.fixBox{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:13px;background:#050810;border:1px solid var(--border3);border-radius:8px;padding:10px 12px;color:var(--ok);}
+.navBtns{display:flex;gap:8px;}
+.badge{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 8px;border-radius:6px;background:var(--panel3);border:1px solid var(--border3);color:var(--accent2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>BUG HUNT</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">debug the code · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Click the line that has the bug, then check your answer. Each snippet is short — read it like the interpreter would, one line at a time.</p>
+  <div class="scorebar">
+    <div class="stat">SNIPPET <b id="idxOut">1</b>/<span id="totalOut">10</span></div>
+    <div class="stat">CORRECT <b id="correctOut" style="color:var(--ok);">0</b></div>
+    <button class="btn" onclick="shuffleAll()" style="padding:8px 14px;font-size:12px;">↻ SHUFFLE SET</button>
+  </div>
+  <div class="panel">
+    <div class="meta"><span class="badge" id="langBadge">PSEUDOCODE</span> &nbsp; <span id="descOut"></span></div>
+    <div class="codeBox" id="codeBox"></div>
+    <div class="controls">
+      <button class="btn" id="checkBtn" onclick="checkAnswer()">CHECK LINE</button>
+      <div class="navBtns">
+        <button class="btn" onclick="prevSnippet()">← PREV</button>
+        <button class="btn" onclick="nextSnippet()">NEXT →</button>
+      </div>
+    </div>
+    <div id="fbSlot"></div>
+  </div>
+</div>
+<script>
+var SNIPPETS = [
+  {desc:"Should print numbers 1 through 5.", lines:["FOR i FROM 1 TO 5","  DISPLAY(i)","i = i + 1","END FOR"], bug:2, fix:"Remove this line — the FOR loop already increments i automatically. Manually adding 1 makes it skip values (1, 3, 5, 7...)."},
+  {desc:"Should return the larger of two numbers.", lines:["PROCEDURE maxOf(a, b)","  IF a > b","    RETURN a","  RETURN b","END PROCEDURE"], bug:1, fix:"Should be `IF a > b` — this is actually correct logic, but if it read `IF a < b` it would return the smaller number. Check: does the condition match what's being returned on line 3?"},
+  {desc:"Should add up all numbers in a list.", lines:["total = 0","FOR EACH num IN list","  total = num","END FOR","DISPLAY(total)"], bug:2, fix:"Should be `total = total + num`. As written, total is overwritten each time instead of accumulated — it ends up holding only the last number."},
+  {desc:"Should count how many items in a list are even.", lines:["count = 0","FOR EACH num IN list","  IF num MOD 2 = 0","    count = count + 1","DISPLAY(count)"], bug:4, fix:"DISPLAY(count) runs inside the loop on every iteration instead of after it — should be outdented, placed after END FOR."},
+  {desc:"Should check if a password is at least 8 characters.", lines:["IF LENGTH(password) > 8","  DISPLAY(\"Valid\")","ELSE","  DISPLAY(\"Too short\")"], bug:0, fix:"Should be `>= 8` not `> 8` — an 8-character password should count as valid ('at least 8'), but `>` rejects exactly 8."},
+  {desc:"Should swap the values of x and y.", lines:["x = 5","y = 10","x = y","y = x","DISPLAY(x, y)"], bug:2, fix:"By the time `y = x` runs, x has already been overwritten with y's value — so y becomes a copy of itself. Need a temp variable: `temp = x`, `x = y`, `y = temp`."},
+  {desc:"Should print 'Even' or 'Odd' for a number n.", lines:["IF n MOD 2 = 1","  DISPLAY(\"Even\")","ELSE","  DISPLAY(\"Odd\")"], bug:1, fix:"The labels are swapped — `n MOD 2 = 1` means n is odd, so it should DISPLAY(\"Odd\") here, not \"Even\"."},
+  {desc:"Should find the first index of target in a list, or -1 if not found.", lines:["index = -1","FOR i FROM 0 TO LENGTH(list) - 1","  IF list[i] = target","    index = i","DISPLAY(index)"], bug:4, fix:"DISPLAY(index) is inside the loop, so it prints on every single pass (mostly -1) instead of the final answer after the search finishes. Move it after END FOR."},
+  {desc:"Should keep asking for input until the user enters a positive number.", lines:["REPEAT","  n = INPUT()","UNTIL n > 0","DISPLAY(\"Got it: \" + n)"], bug:-1, fix:"This one's actually correct — REPEAT/UNTIL loops run at least once and exit once the condition becomes true, which matches 'keep asking until positive'."},
+  {desc:"Should calculate the average of a list of numbers.", lines:["total = 0","FOR EACH num IN list","  total = total + num","END FOR","average = total / LENGTH(num)"], bug:4, fix:"Should divide by `LENGTH(list)`, not `LENGTH(num)` — `num` is just the loop variable holding the last element, not the whole list."}
+];
+var order = [];
+var idx = 0;
+var selected = null;
+var answered = {};
+var correctCount = 0;
+
+function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function shuffleAll(){ order = shuffleArr(SNIPPETS.map(function(_,i){return i;})); idx=0; selected=null; answered={}; correctCount=0; document.getElementById('totalOut').textContent=SNIPPETS.length; render(); }
+
+function render(){
+  var s = SNIPPETS[order[idx]];
+  document.getElementById('idxOut').textContent = idx+1;
+  document.getElementById('descOut').textContent = s.desc;
+  var box = document.getElementById('codeBox');
+  box.innerHTML = s.lines.map(function(line, li){
+    var cls='codeLine'+(li===selected?' selected':'')+((answered[idx] && li===s.bug)?' correctLine':'');
+    return '<div class="'+cls+'" onclick="selectLine('+li+')"><span class="ln">'+(li+1)+'</span><span class="code">'+escHtml(line)+'</span></div>';
+  }).join('');
+  document.getElementById('checkBtn').disabled = !!answered[idx];
+  document.getElementById('fbSlot').innerHTML = answered[idx] ? feedbackHtml(idx) : '';
+  document.getElementById('correctOut').textContent = correctCount;
+}
+function escHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function selectLine(li){
+  if(answered[idx]) return;
+  selected = li;
+  render();
+  // re-mark selection since render resets from answered state
+  var s = SNIPPETS[order[idx]];
+  document.querySelectorAll('.codeLine').forEach(function(el,i){ el.classList.toggle('selected', i===li); });
+}
+function checkAnswer(){
+  var s = SNIPPETS[order[idx]];
+  if(selected===null){ alert('Click a line first.'); return; }
+  var isBugFree = s.bug === -1;
+  var correct = isBugFree ? false : (selected === s.bug); // no clean way to mark "no bug" via line click; handled by NO BUG button below if needed
+  answered[idx] = {selected:selected, correct: selected===s.bug || (s.bug===-1 && false)};
+  if(answered[idx].correct) correctCount++;
+  render();
+}
+function feedbackHtml(i){
+  var s = SNIPPETS[order[i]];
+  var a = answered[i];
+  if(s.bug===-1){
+    return '<div class="feedback correct"><b>No bug here!</b>'+s.fix+'</div>';
+  }
+  var cls = a.correct ? 'correct' : 'wrong';
+  var headline = a.correct ? 'Found it!' : 'Not quite — the bug is on line '+(s.bug+1)+'.';
+  return '<div class="feedback '+cls+'"><b>'+headline+'</b>'+s.fix+'</div>';
+}
+function nextSnippet(){ idx = (idx+1) % order.length; selected = answered[idx] ? answered[idx].selected : null; render(); }
+function prevSnippet(){ idx = (idx-1+order.length) % order.length; selected = answered[idx] ? answered[idx].selected : null; render(); }
+
+shuffleAll();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gatekeeper — Firewall Rule Simulator</title>
+<title>Breach Clock — Password Cracking Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,270 +14,240 @@ body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--te
 .mono{font-family:'JetBrains Mono',monospace;}
 a{color:var(--accent);text-decoration:none;}
 a:hover{color:var(--accent2);}
-.wrap{max-width:920px;margin:0 auto;padding:28px 20px 70px;}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 70px;}
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
 .brand{display:flex;align-items:center;gap:10px;}
-.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--warn);box-shadow:0 0 10px var(--warn);}
 .brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
 .back{font-size:13px;color:var(--faint);}
 .card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
-/* ---------- menu ---------- */
-#menu .lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 22px;}
-.scenGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-@media(max-width:720px){.scenGrid{grid-template-columns:1fr;}}
-.scenCard{text-align:left;border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:16px;cursor:pointer;font-family:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;min-height:44px;}
-.scenCard:hover{border-color:var(--border-hi);background:var(--panel3);}
-.scenCard .ic{font-size:22px;}
-.scenCard b{color:var(--bright);font-size:14.5px;}
-.scenCard span.d{color:var(--dim);font-size:12.5px;line-height:1.5;}
-.randBtn{margin-top:16px;width:100%;font-family:'JetBrains Mono',monospace;font-size:13px;padding:13px 16px;border-radius:10px;border:1px solid var(--border-hi);background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;cursor:pointer;min-height:44px;}
-.randBtn:hover{filter:brightness(1.08);}
-/* ---------- builder ---------- */
-#builder{display:none;}
-.bHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
-.bHead h2{margin:0 0 4px;font-size:19px;color:var(--bright);}
-.bHead p{margin:0;color:var(--dim);font-size:13.5px;max-width:60ch;line-height:1.5;}
-.changeLink{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--accent);background:none;border:1px solid var(--border2);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:44px;white-space:nowrap;}
-.changeLink:hover{border-color:var(--border-hi);}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
-@media(max-width:720px){.cols{grid-template-columns:1fr;}}
-.colTitle{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.3px;color:var(--faint);margin-bottom:10px;}
-.ruleCard{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);margin-bottom:8px;font-size:13px;}
-.ruleCard .act{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:5px;flex:none;}
-.ruleCard .act.allow{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok);}
-.ruleCard .act.deny{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad);}
-.ruleCard .lbl{flex:1;color:var(--text);line-height:1.4;}
-.ruleCard button{font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--border3);background:var(--panel3);color:var(--accent);border-radius:7px;padding:6px 9px;cursor:pointer;min-height:32px;flex:none;}
-.ruleCard button:hover{background:var(--panel2);}
-.ruleCard button:disabled{opacity:.3;cursor:default;}
-.ruleCard .num{font-family:'JetBrains Mono',monospace;color:var(--faint);font-size:11.5px;width:16px;flex:none;}
-.paletteEmpty,.activeEmpty{color:var(--faint);font-size:12.5px;font-family:'JetBrains Mono',monospace;padding:14px 0;}
-.defaultRow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px dashed var(--border3);background:transparent;font-size:12.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;margin-top:2px;}
-.runBtn{width:100%;font-family:'JetBrains Mono',monospace;font-size:13.5px;padding:14px 16px;border-radius:10px;border:none;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;cursor:pointer;min-height:44px;}
-.runBtn:hover{filter:brightness(1.08);}
-.runBtn:disabled{opacity:.4;cursor:default;filter:none;}
+.card + .card{margin-top:16px;}
+.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 20px;}
+.inputRow{position:relative;margin-bottom:12px;}
+#pwInput{width:100%;font-family:'JetBrains Mono',monospace;font-size:16px;padding:14px 46px 14px 14px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);min-height:44px;}
+#pwInput:focus{outline:none;border-color:var(--accent);}
+.eyeBtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--faint);cursor:pointer;font-size:17px;padding:8px;min-height:32px;}
+.eyeBtn:hover{color:var(--accent);}
+.hint{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;margin-bottom:16px;}
+.chipRow{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:32px;}
+.chip:hover{border-color:var(--border-hi);color:var(--accent2);}
+.colTitle{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.3px;color:var(--faint);margin:20px 0 10px;}
+.rigRow{display:flex;flex-direction:column;gap:8px;}
+.rigOpt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);cursor:pointer;min-height:44px;}
+.rigOpt.sel{border-color:var(--accent);background:var(--panel3);}
+.rigOpt input{accent-color:var(--accent);width:16px;height:16px;flex:none;}
+.rigOpt .t{font-size:13.5px;color:var(--bright);font-weight:600;}
+.rigOpt .d{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;}
 /* ---------- results ---------- */
-#results{display:none;margin-top:24px;padding-top:22px;border-top:1px solid var(--border2);}
-.gradeBig{text-align:center;padding:4px 0 20px;}
-.gradeBig .letter{font-size:56px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
-.gradeBig .sub{color:var(--dim);font-size:13.5px;margin-top:6px;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.8px;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--border2);}
-td{padding:10px 10px;border-bottom:1px solid var(--border2);vertical-align:top;color:var(--text);}
-tr:last-child td{border-bottom:none;}
-.tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap;}
-.tag.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);}
-.tag.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);}
-.why{color:var(--faint);font-size:12px;margin-top:3px;line-height:1.4;}
-.debBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
-.dbtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);cursor:pointer;min-height:44px;}
-.dbtn:hover{background:var(--panel3);}
-.dbtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;border:none;}
-.dead{margin-top:16px;font-size:12.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;line-height:1.6;}
+#empty{color:var(--faint);font-size:13.5px;text-align:center;padding:20px 0;}
+#results{display:none;}
+.dictBanner{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:18px;line-height:1.5;}
+.bigTime{text-align:center;padding:6px 0 18px;}
+.bigTime .val{font-size:34px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1;}
+.bigTime .cat{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;margin-top:6px;padding:4px 12px;border-radius:999px;display:inline-block;}
+.statsRow{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.statsRow b{color:var(--bright);font-size:15px;display:block;}
+.statBox{cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid transparent;position:relative;}
+.statBox:hover{border-color:var(--border-hi);background:var(--panel3);}
+.statBox .qmark{font-size:10px;color:var(--accent);margin-left:3px;}
+.popOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+.popOverlay.on{display:flex;}
+.popCard{max-width:440px;width:100%;background:var(--panel);border:1px solid var(--border3);border-radius:14px;padding:22px;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
+.popCard h3{margin:0 0 10px;font-size:16px;color:var(--bright);}
+.popCard p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:var(--muted);}
+.popCard .ex{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin:10px 0;color:var(--accent2);line-height:1.7;}
+.popCard .closeBtn{margin-top:8px;width:100%;padding:11px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:12.5px;cursor:pointer;min-height:44px;}
+.popCard .closeBtn:hover{border-color:var(--accent);}
+.chartWrap{padding:8px 4px 0;}
+.chartAxis{position:relative;height:200px;border-bottom:1px solid var(--border2);}
+.gridLine{position:absolute;left:0;right:0;border-top:1px dashed var(--border2);}
+.gridLine span{position:absolute;left:0;top:-8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);background:var(--panel);padding-right:6px;}
+.chartBars{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:space-around;gap:18px;padding:0 10px;}
+.chartBarCol{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;width:100%;max-width:120px;}
+.chartBarVal{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;margin-bottom:6px;white-space:nowrap;}
+.chartBar{width:56%;border-radius:6px 6px 0 0;min-height:3px;transition:height .3s ease;}
+.chartLabels{display:flex;justify-content:space-around;gap:18px;padding:10px 10px 0;}
+.chartLabelCol{flex:1;max-width:120px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);line-height:1.4;}
+.note{margin-top:20px;font-size:12.5px;color:var(--faint);line-height:1.6;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <div class="brand"><span class="dot"></span><h1>GATEKEEPER</h1></div>
-    <span class="back mono">firewall rule simulator · free play, no XP</span>
+    <div class="brand"><span class="dot"></span><h1>BREACH CLOCK</h1></div>
+    <span class="back mono">password cracking simulator · free play, no XP</span>
   </div>
 
-  <div class="card" id="menu">
-    <p class="lead">Build a firewall's rule list, top to bottom, then send real traffic through it. Rules are checked in order — first match wins, and anything left unmatched is denied by default.</p>
-    <div class="scenGrid" id="scenGrid"></div>
-    <button class="randBtn" onclick="startScenario(null)">🔀 SURPRISE ME — random network</button>
+  <div class="card">
+    <p class="lead">Type a password to see how long it would actually take to crack — and why the same password can be instant on one system and unbreakable on another. Nothing here ever leaves your browser.</p>
+    <div class="inputRow">
+      <input type="password" id="pwInput" placeholder="Try a password…" autocomplete="off" spellcheck="false">
+      <button class="eyeBtn" id="eyeBtn" onclick="toggleEye()" title="Show/hide">👁</button>
+    </div>
+    <div class="hint">Nothing is sent anywhere — this all runs locally, right here.</div>
+    <div class="chipRow" id="chips"></div>
+
+    <div class="colTitle">ATTACK SCENARIO</div>
+    <div class="rigRow" id="rigRow"></div>
   </div>
 
-  <div class="card" id="builder">
-    <div class="bHead">
-      <div><h2 id="scenTitle"></h2><p id="scenBlurb"></p></div>
-      <button class="changeLink" onclick="backToMenu()">← change network</button>
-    </div>
-    <div class="cols">
-      <div>
-        <div class="colTitle">RULE PALETTE — click to add</div>
-        <div id="palette"></div>
-      </div>
-      <div>
-        <div class="colTitle">ACTIVE RULE LIST — checked top to bottom</div>
-        <div id="activeList"></div>
-        <div class="defaultRow">— everything else: DEFAULT DENY —</div>
-      </div>
-    </div>
-    <button class="runBtn" id="runBtn" onclick="runTraffic()">▶ RUN TRAFFIC</button>
+  <div class="card">
+    <div id="empty">Type or pick a password above to see how it holds up.</div>
     <div id="results"></div>
   </div>
 </div>
 
+<div class="popOverlay" id="popOverlay" onclick="if(event.target===this)closePop()">
+  <div class="popCard" id="popCard"></div>
+</div>
+
 <script>
-/* cond fields use '*' as wildcard; a rule matches a packet when every field
-   is '*' or equal. First matching rule in the active list wins; no match =
-   default deny. */
-var SCENARIOS = [
-{ id:"web", icon:"🌐", title:"School Web Server", blurb:"A public web server. Only the services it's meant to offer should be reachable — everything else should be denied, especially remote admin from outside.",
-  packets:[
-    { desc:"Visitor loads the site over HTTPS", proto:"tcp", port:443, src:"external", dst:"*", expected:"ALLOW" },
-    { desc:"Visitor loads the site over HTTP", proto:"tcp", port:80, src:"external", dst:"*", expected:"ALLOW" },
-    { desc:"Someone outside tries to SSH into the server", proto:"tcp", port:22, src:"external", dst:"*", expected:"DENY", why:"Remote admin access should never be open to the internet." },
-    { desc:"IT staff SSH in from the internal network to do maintenance", proto:"tcp", port:22, src:"internal", dst:"*", expected:"ALLOW", why:"Admin access is fine from inside, on a controlled network." },
-    { desc:"Someone outside tries Telnet (port 23)", proto:"tcp", port:23, src:"external", dst:"*", expected:"DENY", why:"Telnet sends everything, including passwords, in plaintext — never allowed." },
-    { desc:"A scanner probes an unpublished app port (8080)", proto:"tcp", port:8080, src:"external", dst:"*", expected:"DENY", why:"Nothing is supposed to be running there — it should fall to the default deny." }
-  ],
-  rules:[
-    { id:"a", label:"ALLOW HTTPS (tcp/443) from anywhere", cond:{proto:"tcp",port:443,src:"*",dst:"*"}, action:"ALLOW" },
-    { id:"b", label:"ALLOW HTTP (tcp/80) from anywhere", cond:{proto:"tcp",port:80,src:"*",dst:"*"}, action:"ALLOW" },
-    { id:"c", label:"ALLOW SSH (tcp/22) from the internal network only", cond:{proto:"tcp",port:22,src:"internal",dst:"*"}, action:"ALLOW" },
-    { id:"d", label:"DENY SSH (tcp/22) from anywhere", cond:{proto:"tcp",port:22,src:"*",dst:"*"}, action:"DENY" },
-    { id:"e", label:"DENY Telnet (tcp/23) from anywhere", cond:{proto:"tcp",port:23,src:"*",dst:"*"}, action:"DENY" },
-    { id:"f", label:"ALLOW ALL inbound TCP traffic", cond:{proto:"tcp",port:"*",src:"*",dst:"*"}, action:"ALLOW" },
-    { id:"g", label:"ALLOW app port 8080 from anywhere", cond:{proto:"tcp",port:8080,src:"*",dst:"*"}, action:"ALLOW" },
-    { id:"h", label:"DENY DNS (udp/53) from anywhere", cond:{proto:"udp",port:53,src:"*",dst:"*"}, action:"DENY" }
-  ]},
-{ id:"guest", icon:"📶", title:"Guest Wi-Fi Network", blurb:"Guests and staff share the building's network. Guests should reach the internet — and nothing that belongs to staff.",
-  packets:[
-    { desc:"Guest device browses the internet (HTTPS)", proto:"tcp", port:443, src:"guest", dst:"internet", expected:"ALLOW" },
-    { desc:"Guest device tries to open the internal file share", proto:"tcp", port:445, src:"guest", dst:"internal", expected:"DENY", why:"Guests have no business reaching staff file shares." },
-    { desc:"Staff laptop opens the internal file share", proto:"tcp", port:445, src:"staff", dst:"internal", expected:"ALLOW" },
-    { desc:"Guest device tries to print to the office printer", proto:"tcp", port:9100, src:"guest", dst:"internal", expected:"DENY", why:"Printer access is a staff-only resource." },
-    { desc:"Staff laptop prints to the office printer", proto:"tcp", port:9100, src:"staff", dst:"internal", expected:"ALLOW" },
-    { desc:"Guest device probes the internal admin panel (8443)", proto:"tcp", port:8443, src:"guest", dst:"internal", expected:"DENY", why:"Never published to guests — should fall to default deny." }
-  ],
-  rules:[
-    { id:"a", label:"ALLOW HTTPS out to the internet, from anyone", cond:{proto:"tcp",port:443,src:"*",dst:"internet"}, action:"ALLOW" },
-    { id:"b", label:"ALLOW staff to the internal file share (tcp/445)", cond:{proto:"tcp",port:445,src:"staff",dst:"internal"}, action:"ALLOW" },
-    { id:"c", label:"DENY the internal file share (tcp/445) from anyone", cond:{proto:"tcp",port:445,src:"*",dst:"internal"}, action:"DENY" },
-    { id:"d", label:"ALLOW staff to the printer (tcp/9100)", cond:{proto:"tcp",port:9100,src:"staff",dst:"internal"}, action:"ALLOW" },
-    { id:"e", label:"DENY the printer (tcp/9100) from anyone", cond:{proto:"tcp",port:9100,src:"*",dst:"internal"}, action:"DENY" },
-    { id:"f", label:"ALLOW guests full access to the internal network", cond:{proto:"tcp",port:"*",src:"guest",dst:"internal"}, action:"ALLOW" },
-    { id:"g", label:"ALLOW the admin panel (tcp/8443) from anyone", cond:{proto:"tcp",port:8443,src:"*",dst:"internal"}, action:"ALLOW" }
-  ]},
-{ id:"cam", icon:"📷", title:"Smart Camera Network", blurb:"Security cameras only need to talk to the recorder. A compromised camera phoning out to the internet is exactly what this firewall exists to stop.",
-  packets:[
-    { desc:"Camera streams video to the recorder (RTSP, tcp/554)", proto:"tcp", port:554, src:"camera", dst:"internal", expected:"ALLOW" },
-    { desc:"A compromised camera tries to call out to the internet (HTTPS)", proto:"tcp", port:443, src:"camera", dst:"internet", expected:"DENY", why:"Cameras don't need internet access — this is what botnet callback traffic looks like." },
-    { desc:"A compromised camera tries a Telnet callback", proto:"tcp", port:23, src:"camera", dst:"internet", expected:"DENY", why:"No reason for outbound Telnet ever, from a camera especially." },
-    { desc:"Admin laptop opens a camera's web UI", proto:"tcp", port:80, src:"staff", dst:"internal", expected:"ALLOW" },
-    { desc:"One camera tries to SSH into another camera", proto:"tcp", port:22, src:"camera", dst:"internal", expected:"DENY", why:"Cameras have no reason to reach each other directly." },
-    { desc:"The recorder backs up footage to the cloud (HTTPS)", proto:"tcp", port:443, src:"nvr", dst:"internet", expected:"ALLOW" }
-  ],
-  rules:[
-    { id:"a", label:"ALLOW cameras to stream to the recorder (tcp/554)", cond:{proto:"tcp",port:554,src:"camera",dst:"internal"}, action:"ALLOW" },
-    { id:"b", label:"ALLOW staff to a camera's web UI (tcp/80)", cond:{proto:"tcp",port:80,src:"staff",dst:"internal"}, action:"ALLOW" },
-    { id:"c", label:"ALLOW the recorder out to the internet (tcp/443)", cond:{proto:"tcp",port:443,src:"nvr",dst:"internet"}, action:"ALLOW" },
-    { id:"d", label:"DENY cameras from reaching the internet at all", cond:{proto:"tcp",port:"*",src:"camera",dst:"internet"}, action:"DENY" },
-    { id:"e", label:"DENY camera-to-camera traffic (tcp/22)", cond:{proto:"tcp",port:22,src:"camera",dst:"internal"}, action:"DENY" },
-    { id:"f", label:"ALLOW cameras HTTPS out to the internet", cond:{proto:"tcp",port:443,src:"camera",dst:"internet"}, action:"ALLOW" },
-    { id:"g", label:"ALLOW cameras full network access", cond:{proto:"tcp",port:"*",src:"camera",dst:"*"}, action:"ALLOW" }
-  ]}
+var COMMON = ["password","123456","123456789","qwerty","password1","12345678","111111","1234567","sunshine","iloveyou",
+  "admin","welcome","monkey","letmein","dragon","football","baseball","master","superman","trustno1","abc123","000000",
+  "121212","qwerty123","zaq1zaq1","password123","freedom","whatever","qazwsx","michael","shadow","princess","summer",
+  "flower","hunter2","charlie","robert","jordan23","hockey","killer"];
+
+var CHIPS = [
+  {label:"\u201cpassword1\u201d", pw:"password1"},
+  {label:"\u201cSpring2025!\u201d", pw:"Spring2025!"},
+  {label:"\u201cTr0ub4dor&3\u201d", pw:"Tr0ub4dor&3"},
+  {label:"\u201ccorrecthorsebatterystaple\u201d", pw:"correcthorsebatterystaple"},
+  {label:"\u201cJ9\\$mLp2#qV\u201d", pw:"J9$mLp2#qV"}
 ];
 
-var current=null, activeRules=[], lastResults=null;
+var RIGS = [
+  { id:"online", name:"Online login (rate-limited)", rate:10, desc:"A website that throttles/locks after failed attempts \u2014 10 guesses/sec" },
+  { id:"bcrypt", name:"Leaked database, slow hash (bcrypt)", rate:20000, desc:"Hashes designed to be slow to check \u2014 ~20,000 guesses/sec on a cracking rig" },
+  { id:"md5", name:"Leaked database, fast hash (MD5, GPU rig)", rate:50000000000, desc:"A weak, fast hash cracked with GPUs \u2014 ~50 billion guesses/sec" }
+];
+var selectedRig = "bcrypt";
 
-function renderMenu(){
-  document.getElementById('scenGrid').innerHTML=SCENARIOS.map(function(s,i){
-    return '<button class="scenCard" onclick="startScenario('+i+')"><span class="ic">'+s.icon+'</span><b>'+s.title+'</b><span class="d">'+s.blurb+'</span></button>';
+function renderChips(){
+  document.getElementById('chips').innerHTML = CHIPS.map(function(c){
+    return '<button class="chip" onclick="tryChip(\''+c.pw.replace(/'/g,"\\'")+'\')">'+c.label+'</button>';
   }).join('');
 }
-renderMenu();
-function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function renderRigs(){
+  document.getElementById('rigRow').innerHTML = RIGS.map(function(r){
+    return '<label class="rigOpt '+(r.id===selectedRig?'sel':'')+'"><input type="radio" name="rig" '+(r.id===selectedRig?'checked':'')+' onchange="selectRig(\''+r.id+'\')">'+
+      '<span><span class="t">'+r.name+'</span><br><span class="d">'+r.desc+'</span></span></label>';
+  }).join('');
+}
+function selectRig(id){ selectedRig=id; renderRigs(); analyze(); }
+function tryChip(pw){ var el=document.getElementById('pwInput'); el.value=pw; el.type='text'; document.getElementById('eyeBtn').textContent='🙈'; analyze(); }
+function toggleEye(){
+  var el=document.getElementById('pwInput'), btn=document.getElementById('eyeBtn');
+  if(el.type==='password'){ el.type='text'; btn.textContent='🙈'; } else { el.type='password'; btn.textContent='👁'; }
+}
+renderChips(); renderRigs();
+document.getElementById('pwInput').addEventListener('input', analyze);
 
-function startScenario(i){
-  current = (i==null) ? pick(SCENARIOS) : SCENARIOS[i];
-  activeRules=[]; lastResults=null;
-  document.getElementById('menu').style.display='none';
-  document.getElementById('builder').style.display='block';
-  document.getElementById('scenTitle').textContent=current.icon+'  '+current.title;
-  document.getElementById('scenBlurb').textContent=current.blurb;
-  document.getElementById('results').style.display='none';
-  renderBuilder();
+function fmtTime(seconds){
+  if(seconds<1) return "instantly";
+  if(seconds<60) return Math.ceil(seconds)+" sec";
+  if(seconds<3600) return Math.ceil(seconds/60)+" min";
+  if(seconds<86400) return Math.ceil(seconds/3600)+" hours";
+  if(seconds<31536000) return Math.ceil(seconds/86400)+" days";
+  var years=seconds/31536000;
+  if(years<1000) return Math.ceil(years)+" years";
+  if(years<1e6) return Math.round(years/1000)+"K years";
+  if(years<1e9) return Math.round(years/1e6)+"M years";
+  if(years<1e12) return Math.round(years/1e9)+"B years";
+  var exp=Math.round(Math.log10(years));
+  return "~10^"+exp+" years";
 }
-function backToMenu(){
-  document.getElementById('builder').style.display='none';
-  document.getElementById('menu').style.display='block';
-}
-function renderBuilder(){
-  var usedIds=activeRules.map(function(r){return r.id;});
-  var palette=current.rules.filter(function(r){ return usedIds.indexOf(r.id)===-1; });
-  var pEl=document.getElementById('palette');
-  pEl.innerHTML = palette.length ? palette.map(function(r){
-    return '<div class="ruleCard"><span class="act '+(r.action==='ALLOW'?'allow':'deny')+'">'+r.action+'</span><span class="lbl">'+r.label+'</span><button onclick="addRule(\''+r.id+'\')">+ add</button></div>';
-  }).join('') : '<div class="paletteEmpty">All rules placed.</div>';
+function crackSeconds(keyspace, rate){ return keyspace/rate/2; }
 
-  var aEl=document.getElementById('activeList');
-  aEl.innerHTML = activeRules.length ? activeRules.map(function(r,i){
-    return '<div class="ruleCard"><span class="num">'+(i+1)+'</span><span class="act '+(r.action==='ALLOW'?'allow':'deny')+'">'+r.action+'</span><span class="lbl">'+r.label+'</span>'+
-      '<button onclick="moveRule('+i+',-1)" '+(i===0?'disabled':'')+' title="move up">↑</button>'+
-      '<button onclick="moveRule('+i+',1)" '+(i===activeRules.length-1?'disabled':'')+' title="move down">↓</button>'+
-      '<button onclick="removeRule('+i+')" title="remove">✕</button></div>';
-  }).join('') : '<div class="activeEmpty">No rules yet — add some from the palette.</div>';
+function analyze(){
+  var pw=document.getElementById('pwInput').value;
+  var emptyEl=document.getElementById('empty'), resEl=document.getElementById('results');
+  if(!pw){ emptyEl.style.display='block'; resEl.style.display='none'; return; }
+  emptyEl.style.display='none'; resEl.style.display='block';
 
-  document.getElementById('runBtn').disabled = activeRules.length===0;
-}
-function addRule(id){
-  var r=current.rules.find(function(x){return x.id===id;});
-  activeRules.push(r);
-  invalidateResults();
-  renderBuilder();
-}
-function moveRule(i,dir){
-  var j=i+dir; if(j<0||j>=activeRules.length) return;
-  var tmp=activeRules[i]; activeRules[i]=activeRules[j]; activeRules[j]=tmp;
-  invalidateResults();
-  renderBuilder();
-}
-function removeRule(i){
-  activeRules.splice(i,1);
-  invalidateResults();
-  renderBuilder();
-}
-function invalidateResults(){
-  lastResults=null;
-  document.getElementById('results').style.display='none';
-}
-function fieldMatch(a,b){ return a==='*' || String(a)===String(b); }
-function matches(rule, pkt){
-  return fieldMatch(rule.cond.proto,pkt.proto) && fieldMatch(rule.cond.port,pkt.port) &&
-         fieldMatch(rule.cond.src,pkt.src) && fieldMatch(rule.cond.dst,pkt.dst);
-}
-function runTraffic(){
-  var matchedIds={};
-  var results = current.packets.map(function(pkt){
-    var hit=null;
-    for(var i=0;i<activeRules.length;i++){ if(matches(activeRules[i],pkt)){ hit=activeRules[i]; break; } }
-    if(hit) matchedIds[hit.id]=true;
-    var outcome = hit ? hit.action : "DENY";
-    return { pkt:pkt, outcome:outcome, correct: outcome===pkt.expected, matchedLabel: hit?hit.label:"(default deny)" };
-  });
-  lastResults=results;
-  var correctCount=results.filter(function(r){return r.correct;}).length;
-  var pct=correctCount/results.length;
-  var grade, color;
-  if(pct===1){ grade="A"; color="var(--ok)"; }
-  else if(pct>=0.83){ grade="B"; color="var(--ok)"; }
-  else if(pct>=0.66){ grade="C"; color="var(--warn)"; }
-  else if(pct>=0.5){ grade="D"; color="var(--bad)"; }
-  else { grade="F"; color="var(--bad)"; }
+  var lower=/[a-z]/.test(pw), upper=/[A-Z]/.test(pw), digit=/[0-9]/.test(pw), symbol=/[^a-zA-Z0-9]/.test(pw);
+  var charset=0; if(lower) charset+=26; if(upper) charset+=26; if(digit) charset+=10; if(symbol) charset+=32;
+  charset=charset||1;
+  var length=pw.length;
+  var entropyBits=Math.round(length*Math.log2(charset));
+  var keyspace=Math.pow(charset,length);
+  var isCommon=COMMON.indexOf(pw.toLowerCase())!==-1;
 
-  var html='<div class="gradeBig"><div class="letter" style="color:'+color+'">'+grade+'</div><div class="sub">'+correctCount+' of '+results.length+' packets handled correctly</div></div>';
-  html+='<table><thead><tr><th>Traffic</th><th>Matched rule</th><th>Result</th></tr></thead><tbody>';
-  results.forEach(function(r){
-    html+='<tr><td>'+r.pkt.desc+(!r.correct&&r.pkt.why?'<div class="why">'+r.pkt.why+'</div>':'')+'</td>'+
-      '<td class="mono" style="color:var(--dim);font-size:12px;">'+r.matchedLabel+'</td>'+
-      '<td><span class="tag '+(r.correct?'ok':'bad')+'">'+r.outcome+(r.correct?'':' — expected '+r.pkt.expected)+'</span></td></tr>';
-  });
-  html+='</tbody></table>';
+  var rig=RIGS.find(function(r){return r.id===selectedRig;});
+  var seconds = isCommon ? (COMMON.indexOf(pw.toLowerCase())+1)/rig.rate : crackSeconds(keyspace, rig.rate);
+  var timeStr = fmtTime(seconds);
+  var cat, color;
+  if(isCommon || seconds<60){ cat="INSTANT"; color="var(--bad)"; }
+  else if(seconds<86400){ cat="WEAK"; color="var(--bad)"; }
+  else if(seconds<31536000){ cat="MODERATE"; color="var(--warn)"; }
+  else if(seconds<31536000*100){ cat="STRONG"; color="var(--ok)"; }
+  else { cat="VERY STRONG"; color="var(--ok)"; }
 
-  var unused=current.rules.filter(function(r){ return activeRules.indexOf(r)>=0 && !matchedIds[r.id]; });
-  if(unused.length){
-    html+='<div class="dead">Never triggered by any traffic: '+unused.map(function(r){return r.label;}).join('; ')+'. A rule that never fires is worth questioning — either the traffic it targets doesn\u2019t exist, or something above it is already catching everything it would.</div>';
+  var html='';
+  if(isCommon){
+    html+='<div class="dictBanner">⚠ This is one of the most common passwords ever leaked. Attackers try dictionary lists like this <i>before</i> brute force \u2014 length and symbols don\u2019t help if the whole password is already on the list.</div>';
   }
-  html+='<div class="debBtns"><button class="dbtn primary" onclick="runTraffic()">↻ Run again</button><button class="dbtn" onclick="startScenario(SCENARIOS.indexOf(current))">↺ Reset rules</button><button class="dbtn" onclick="backToMenu()">← Different network</button></div>';
+  html+='<div class="bigTime"><div class="val" style="color:'+color+'">'+timeStr+'</div><div class="cat" style="background:color-mix(in srgb,'+color+' 16%,transparent);color:'+color+'">'+cat+'</div></div>';
+  html+='<div class="statsRow"><span class="statBox" onclick="showPop(\'length\','+length+','+charset+')"><b>'+length+'</b>characters<span class="qmark">\u24d8</span></span><span class="statBox" onclick="showPop(\'charset\','+length+','+charset+')"><b>'+charset+'</b>possible characters<span class="qmark">\u24d8</span></span><span class="statBox" onclick="showPop(\'entropy\','+length+','+charset+')"><b>'+entropyBits+'</b>bits of entropy<span class="qmark">\u24d8</span></span></div>';
 
-  var el=document.getElementById('results');
-  el.innerHTML=html;
-  el.style.display='block';
+  html+='<div class="colTitle">SAME PASSWORD, DIFFERENT SYSTEMS — TIME TO CRACK</div>';
+  var secs = RIGS.map(function(r){ return isCommon ? (COMMON.indexOf(pw.toLowerCase())+1)/r.rate : crackSeconds(keyspace,r.rate); });
+  var maxSec=Math.max.apply(null, secs.concat([1]));
+  var maxLog=Math.log10(maxSec+1)||1;
+  var gridSteps=4;
+  html+='<div class="chartWrap"><div class="chartAxis">';
+  for(var g=0; g<=gridSteps; g++){
+    var frac=g/gridSteps;
+    var gridSec=Math.pow(10, frac*maxLog)-1;
+    html+='<div class="gridLine" style="bottom:'+(frac*100)+'%"><span>'+fmtTime(Math.max(gridSec,0))+'</span></div>';
+  }
+  html+='<div class="chartBars">';
+  RIGS.forEach(function(r,i){
+    var s=secs[i];
+    var pctHeight = Math.max(1.5, Math.min(100, Math.round((Math.log10(s+1)/maxLog)*100)));
+    var barColor = s<86400?"var(--bad)":s<31536000*100?"var(--warn)":"var(--ok)";
+    html+='<div class="chartBarCol"><span class="chartBarVal" style="color:'+barColor+'">'+fmtTime(s)+'</span><div class="chartBar" style="height:'+pctHeight+'%;background:'+barColor+'"></div></div>';
+  });
+  html+='</div></div>';
+  html+='<div class="chartLabels">'+RIGS.map(function(r){ return '<div class="chartLabelCol">'+r.name+'</div>'; }).join('')+'</div>';
+  html+='</div>';
+  html+='<div class="note">Crack time assumes an attacker checks on average half the possible combinations before finding a match. The gap between rows above is the real lesson: how a password is <i>stored</i> (a slow hash like bcrypt vs. a fast one like MD5) changes crack time by orders of magnitude \u2014 which is why you can\u2019t control that part, only your password.</div>';
+
+  resEl.innerHTML=html;
 }
+
+function fmtBig(n){
+  if(n<1000) return Math.round(n).toString();
+  var exp=Math.floor(Math.log10(n));
+  return "~10^"+exp;
+}
+
+function showPop(kind, length, charset){
+  var card=document.getElementById('popCard');
+  var html='';
+  if(kind==='length'){
+    var small=Math.pow(charset,Math.max(1,length-4)), big=Math.pow(charset,length);
+    html='<h3>Why length matters so much</h3>'+
+      '<p>Every extra character <b>multiplies</b> the number of possible passwords by the charset size — it does not just add to it. Guessing grows <i>exponentially</i> with length.</p>'+
+      '<div class="ex">'+(length-4)+' chars \u2192 '+fmtBig(small)+' combinations<br>'+length+' chars \u2192 '+fmtBig(big)+' combinations</div>'+
+      '<p>Those 4 extra characters made the password roughly '+fmtBig(charset*charset*charset*charset)+'\u00d7 harder to guess.</p>';
+  } else if(kind==='charset'){
+    html='<h3>Why adding numbers &amp; symbols matters</h3>'+
+      '<p>An attacker has to try every possible character at every position. A bigger character set means more guesses per position \u2014 and that gets raised to the power of the length.</p>'+
+      '<div class="ex">lowercase only: 26 choices/char<br>+ uppercase: 52 choices/char<br>+ digits: 62 choices/char<br>+ symbols: 94 choices/char</div>'+
+      '<p>At '+length+' characters: 26 choices gives '+fmtBig(Math.pow(26,length))+' combinations, but 94 choices gives '+fmtBig(Math.pow(94,length))+' \u2014 the jump comes from that base number being raised to the length, not added to it.</p>';
+  } else {
+    html='<h3>What "bits of entropy" means</h3>'+
+      '<p>Entropy measures uncertainty. Each bit doubles the number of possible passwords an attacker has to search through.</p>'+
+      '<div class="ex">40 bits \u2248 10^12 guesses<br>60 bits \u2248 10^18 guesses<br>80 bits \u2248 10^24 guesses</div>'+
+      '<p>Every extra character of length or every new character type (digits, symbols) you add pushes this number up \u2014 and because it\u2019s exponential, even a few extra bits can turn an instant crack into one that outlives the sun.</p>';
+  }
+  html+='<button class="closeBtn" onclick="closePop()">GOT IT</button>';
+  card.innerHTML=html;
+  document.getElementById('popOverlay').classList.add('on');
+}
+function closePop(){ document.getElementById('popOverlay').classList.remove('on'); }
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePop(); });
 </script>
 </body>
 </html>

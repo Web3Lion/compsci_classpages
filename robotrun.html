@@ -3,305 +3,323 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Robot Run — Algorithm Tracing Simulator</title>
+<title>Proof of Life — Deepfake Verification Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#a855f7;--accent2:#c98bff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
 *{box-sizing:border-box;}
 body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
 .mono{font-family:'JetBrains Mono',monospace;}
 a{color:var(--accent);text-decoration:none;}
 a:hover{color:var(--accent2);}
-.wrap{max-width:900px;margin:0 auto;padding:28px 20px 70px;}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 70px;}
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
 .brand{display:flex;align-items:center;gap:10px;}
-.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--bad);box-shadow:0 0 10px var(--bad);}
 .brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
 .back{font-size:13px;color:var(--faint);}
 .card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
-.card + .card{margin-top:16px;}
-.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 18px;}
-.probRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
-.probBtn{font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 15px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:40px;}
-.probBtn:hover{border-color:var(--border-hi);}
-.probBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--accent2);}
-/* ---------- grid ---------- */
-.gridStage{display:flex;justify-content:center;padding:16px 0;}
-.grid{display:grid;background:#04070c;border:1px solid var(--border3);border-radius:10px;padding:6px;position:relative;}
-.cell{width:38px;height:38px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;position:relative;}
-.cell.goal{background:color-mix(in srgb,var(--warn) 16%,transparent);border-color:color-mix(in srgb,var(--warn) 50%,transparent);}
-.cell .arrow{font-size:15px;color:var(--fainter);}
-.cell.trail{background:color-mix(in srgb,var(--accent) 16%,transparent);}
-.robot{position:absolute;width:38px;height:38px;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform .34s cubic-bezier(.4,0,.2,1),left .34s cubic-bezier(.4,0,.2,1),top .34s cubic-bezier(.4,0,.2,1);}
-.robot .tri{font-size:20px;color:var(--accent2);text-shadow:0 0 10px rgba(200,139,255,.6);}
-.startMark{position:absolute;width:38px;height:38px;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.35;}
-.startMark .tri{font-size:20px;color:var(--dim);}
-.goalFlag{font-size:15px;}
-.legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);margin-top:6px;}
-.legend span{display:inline-flex;align-items:center;gap:6px;}
-.legDot{width:10px;height:10px;border-radius:3px;display:inline-block;}
-/* ---------- options ---------- */
-.optGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
-@media(max-width:640px){.optGrid{grid-template-columns:1fr;}}
-.optCard{border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:14px 16px;cursor:pointer;}
-.optCard:hover{border-color:var(--border-hi);}
-.optCard.sel{border-color:var(--accent);background:var(--panel3);}
-.optCard .letter{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);font-weight:700;margin-bottom:8px;letter-spacing:1px;}
-.codeLine{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);line-height:1.65;white-space:pre;}
-.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
-.ctrlBtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent2);cursor:pointer;min-height:44px;}
-.ctrlBtn:hover{background:var(--panel3);}
-.ctrlBtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#1c0a30;font-weight:700;border:none;}
-.ctrlBtn.primary:hover{filter:brightness(1.08);}
-.ctrlBtn:disabled{opacity:.4;cursor:default;filter:none;}
-.gradeBanner{margin-top:18px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.6;display:none;}
-.gradeBanner.show{display:block;}
-.gradeBanner.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);}
-.gradeBanner.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);}
-.note{margin-top:18px;font-size:12.5px;color:var(--faint);line-height:1.6;}
-.note b{color:var(--dim);}
+/* ---------- menu ---------- */
+#menu .lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 22px;}
+.scenGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:560px){.scenGrid{grid-template-columns:1fr;}}
+.scenCard{text-align:left;border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:16px;cursor:pointer;font-family:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;min-height:44px;}
+.scenCard:hover{border-color:var(--border-hi);background:var(--panel3);}
+.scenCard .ic{font-size:22px;}
+.scenCard b{color:var(--bright);font-size:14.5px;}
+.scenCard span.d{color:var(--dim);font-size:12.5px;line-height:1.5;}
+.randBtn{margin-top:16px;width:100%;font-family:'JetBrains Mono',monospace;font-size:13px;padding:13px 16px;border-radius:10px;border:1px solid var(--border-hi);background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;cursor:pointer;min-height:44px;}
+.randBtn:hover{filter:brightness(1.08);}
+/* ---------- ringing ---------- */
+#ring{display:none;text-align:center;padding:44px 20px;}
+#ring .frame{width:150px;height:112px;border-radius:12px;background:var(--panel3);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;font-size:44px;margin:0 auto 18px;position:relative;overflow:hidden;}
+#ring .frame::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,179,255,.08) 0,rgba(0,179,255,.08) 1px,transparent 2px,transparent 4px);}
+#ring .num{font-family:'JetBrains Mono',monospace;color:var(--dim);font-size:13px;margin-bottom:4px;}
+#ring .name{font-size:22px;color:var(--bright);font-weight:700;margin-bottom:22px;}
+#ring .status{font-family:'JetBrains Mono',monospace;color:var(--warn);font-size:13px;letter-spacing:1px;margin-bottom:30px;}
+.ringBtns{display:flex;justify-content:center;gap:26px;}
+.rbtn{width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;color:#fff;}
+.rbtn.answer{background:var(--ok);}
+.rbtn.answer:hover{filter:brightness(1.1);}
+.rbtn.decline{background:var(--bad);}
+.rbtn.decline:hover{filter:brightness(1.1);}
+/* ---------- call ---------- */
+#call{display:none;}
+.videoPane{position:relative;height:150px;border-radius:12px;background:var(--panel3);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;font-size:52px;overflow:hidden;margin-bottom:14px;}
+.videoPane::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,179,255,.07) 0,rgba(0,179,255,.07) 1px,transparent 2px,transparent 4px);}
+.videoPane.glitch{animation:glitchFx 2.4s infinite;}
+@keyframes glitchFx{0%,88%{filter:none;transform:none;}89%{filter:hue-rotate(20deg) saturate(2);transform:translateX(-2px);}90%{filter:none;transform:translateX(2px);}91%,100%{filter:none;transform:none;}}
+.videoTag{position:absolute;bottom:8px;left:10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--warn);background:rgba(0,0,0,.45);padding:3px 8px;border-radius:5px;letter-spacing:.5px;}
+.callHead{display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--border2);margin-bottom:16px;}
+.callHead .who{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.callHead .who b{color:var(--bright);font-size:14.5px;}
+.callHead .who span{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;}
+.callHead .timer{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);}
+#transcript{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;max-height:40vh;overflow-y:auto;padding-right:2px;}
+.bub{max-width:86%;padding:11px 14px;border-radius:12px;font-size:14px;line-height:1.5;}
+.bub.them{align-self:flex-start;background:var(--panel3);border:1px solid var(--border3);color:var(--text);border-bottom-left-radius:3px;}
+.bub.me{align-self:flex-end;background:color-mix(in srgb,var(--accent) 16%,var(--panel));border:1px solid var(--border-hi);color:var(--bright);border-bottom-right-radius:3px;}
+.bub.me .flagIcon{color:var(--bad);margin-right:5px;}
+.tellNote{font-size:11.5px;color:var(--warn);font-family:'JetBrains Mono',monospace;margin-top:4px;padding-left:2px;}
+#choices{display:flex;flex-direction:column;gap:8px;}
+.choiceBtn{text-align:left;font-family:inherit;font-size:14px;line-height:1.4;padding:12px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);color:var(--text);cursor:pointer;min-height:44px;}
+.choiceBtn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.hangupRow{margin-top:14px;text-align:center;}
+.hangupBtn{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--bad);background:none;border:1px solid var(--border2);border-radius:999px;padding:9px 18px;cursor:pointer;min-height:44px;}
+.hangupBtn:hover{border-color:var(--bad);}
+/* ---------- debrief ---------- */
+#debrief{display:none;}
+.gradeBig{text-align:center;padding:8px 0 22px;}
+.gradeBig .letter{font-size:64px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
+.gradeBig .sub{color:var(--dim);font-size:13.5px;margin-top:8px;}
+.section{margin-bottom:20px;}
+.section h3{font-size:12px;letter-spacing:1.2px;color:var(--faint);margin:0 0 10px;font-family:'JetBrains Mono',monospace;}
+.itemRow{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border2);font-size:13.5px;line-height:1.5;}
+.itemRow:last-child{border-bottom:none;}
+.itemRow .ic{flex:none;margin-top:1px;}
+.debBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+.dbtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);cursor:pointer;min-height:44px;}
+.dbtn:hover{background:var(--panel3);}
+.dbtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04141f;font-weight:700;border:none;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <div class="brand"><span class="dot"></span><h1>ROBOT RUN</h1></div>
-    <span class="back mono">algorithm tracing simulator · free play, no XP</span>
+    <div class="brand"><span class="dot"></span><h1>PROOF OF LIFE</h1></div>
+    <span class="back mono">deepfake verification simulator · free play, no XP</span>
   </div>
 
-  <div class="card">
-    <p class="lead">The robot (triangle) needs to follow the arrow path to the goal square. Four pseudocode options are given — pick the one that actually does it, then run it and watch. Each option is real, runnable code: what you see is exactly what it does.</p>
-    <div class="probRow" id="probRow"></div>
+  <div class="card" id="menu">
+    <p class="lead">A video call comes in from someone you trust — voice, face, everything. Something's urgent, and they need you to act right now. Spot the tells, and verify before you comply.</p>
+    <div class="scenGrid" id="scenGrid"></div>
+    <button class="randBtn" onclick="startCall(null)">🎥 SURPRISE ME — random caller</button>
   </div>
 
-  <div class="card">
-    <div class="gridStage"><div class="grid" id="gridEl"></div></div>
-    <div class="legend">
-      <span><span class="legDot" style="background:color-mix(in srgb,var(--warn) 30%,transparent);"></span>goal</span>
-      <span><span class="legDot" style="background:color-mix(in srgb,var(--accent) 30%,transparent);"></span>path taken</span>
-      <span><span style="color:var(--fainter);">→</span>target path</span>
+  <div class="card" id="ring">
+    <div class="frame">🎥</div>
+    <div class="num mono" id="ringNum">Unknown Number</div>
+    <div class="name" id="ringName">Incoming Video Call</div>
+    <div class="status mono">CONNECTING…</div>
+    <div class="ringBtns">
+      <button class="rbtn decline" onclick="declineCall()" title="Decline">✕</button>
+      <button class="rbtn answer" onclick="answerCall()" title="Answer">✓</button>
     </div>
-
-    <div class="optGrid" id="optGrid"></div>
-
-    <div class="controls">
-      <button class="ctrlBtn primary" id="runBtn" onclick="runSelected()" disabled>▶ RUN SELECTED CODE</button>
-      <button class="ctrlBtn" onclick="loadProblem(currentIdx)">↺ RESET GRID</button>
-      <button class="ctrlBtn" onclick="randomProblem()">🔀 NEW PROBLEM</button>
-    </div>
-    <div class="gradeBanner mono" id="gradeBanner"></div>
-    <div class="note">Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you're told; the grid shows you exactly what each option does. <b>REPEAT n TIMES</b> reads the value of <b>n</b> once, right when that loop starts — changing n partway through a loop doesn't change how many times that loop was already set to repeat.</div>
   </div>
+
+  <div class="card" id="call">
+    <div class="videoPane glitch" id="videoPane">
+      <span id="videoIcon">🎥</span>
+      <span class="videoTag" id="videoTag">LIVE · 480p</span>
+    </div>
+    <div class="callHead">
+      <div class="who"><b id="callName"></b><span id="callNum"></span></div>
+      <div class="timer mono" id="callTimer">00:00</div>
+    </div>
+    <div id="transcript"></div>
+    <div id="choices"></div>
+    <div class="hangupRow"><button class="hangupBtn" onclick="hangUp('you ended the call')">⏻ END CALL</button></div>
+  </div>
+
+  <div class="card" id="debrief"></div>
 </div>
 
 <script>
-/* ---------- tiny robot-pseudocode interpreter ---------- */
-var DIRV=[[0,-1],[1,0],[0,1],[-1,0]]; // up, right, down, left
-var DIRCH=['\u25B2','\u25B6','\u25BC','\u25C0'];
-function runAST(ast, start, grid){
-  var state={x:start.x,y:start.y,dir:start.dir,n:0};
-  var steps=[{x:state.x,y:state.y,dir:state.dir}];
-  var crashed=false;
-  function exec(node){
-    if(crashed) return;
-    if(Array.isArray(node)){ for(var k=0;k<node.length;k++) exec(node[k]); return; }
-    if(node.t==='assign1'){ state.n=1; }
-    else if(node.t==='inc'){ state.n=state.n+1; }
-    else if(node.t==='move'){
-      var d=DIRV[state.dir], nx=state.x+d[0], ny=state.y+d[1];
-      if(nx<0||nx>=grid.w||ny<0||ny>=grid.h){ crashed=true; return; }
-      state.x=nx; state.y=ny; steps.push({x:state.x,y:state.y,dir:state.dir});
-    }
-    else if(node.t==='left'){ state.dir=(state.dir+3)%4; steps.push({x:state.x,y:state.y,dir:state.dir}); }
-    else if(node.t==='right'){ state.dir=(state.dir+1)%4; steps.push({x:state.x,y:state.y,dir:state.dir}); }
-    else if(node.t==='repeatFixed'){ for(var i=0;i<node.n;i++) exec(node.body); }
-    else if(node.t==='repeatVar'){ var times=state.n; for(var j=0;j<times;j++) exec(node.body); }
-  }
-  exec(ast);
-  return {steps:steps, crashed:crashed};
-}
-function uniqueCells(steps){
-  var out=[]; steps.forEach(function(s){ var last=out[out.length-1]; if(!last||last.x!==s.x||last.y!==s.y) out.push({x:s.x,y:s.y}); });
-  return out;
-}
-function renderLines(node, depth, lines){
-  if(Array.isArray(node)){ node.forEach(function(n){ renderLines(n,depth,lines); }); return; }
-  var pad='  '.repeat(depth);
-  if(node.t==='assign1') lines.push(pad+'n \u2190 1');
-  else if(node.t==='inc') lines.push(pad+'n \u2190 n + 1');
-  else if(node.t==='move') lines.push(pad+'MOVE_FORWARD');
-  else if(node.t==='left') lines.push(pad+'ROTATE_LEFT');
-  else if(node.t==='right') lines.push(pad+'ROTATE_RIGHT');
-  else if(node.t==='repeatFixed'){ lines.push(pad+'REPEAT '+node.n+' TIMES {'); renderLines(node.body,depth+1,lines); lines.push(pad+'}'); }
-  else if(node.t==='repeatVar'){ lines.push(pad+'REPEAT n TIMES {'); renderLines(node.body,depth+1,lines); lines.push(pad+'}'); }
-}
-/* Generic option generator: given the turn direction and outer loop count,
-   produces the target program plus three classic misconception variants —
-   incrementing n too early, turning before moving, and incrementing n from
-   inside the very loop whose length n controls. */
-function buildPrograms(turn, times){
-  var t={t:turn};
-  return {
-    correct:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'repeatVar',body:[{t:'move'}]},t,{t:'inc'}]}],
-    incBefore:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'inc'},{t:'repeatVar',body:[{t:'move'}]},t]}],
-    turnBefore:[{t:'assign1'},{t:'repeatFixed',n:times,body:[t,{t:'repeatVar',body:[{t:'move'}]},{t:'inc'}]}],
-    incInside:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'repeatVar',body:[{t:'move'},{t:'inc'}]},t]}]
-  };
-}
-
-/* ---------- practice problem bank ---------- */
-var PROBLEMS=[
-  { title:"Rising Staircase", grid:{w:8,h:8}, start:{x:3,y:6,dir:1}, turn:'left', times:3 },
-  { title:"Descending Steps", grid:{w:8,h:8}, start:{x:2,y:4,dir:1}, turn:'right', times:3 },
-  { title:"Corner Climb", grid:{w:7,h:7}, start:{x:2,y:5,dir:1}, turn:'left', times:3 },
-  { title:"Spiral In", grid:{w:9,h:9}, start:{x:4,y:5,dir:1}, turn:'right', times:3 },
-  { title:"Long Way Round", grid:{w:9,h:9}, start:{x:1,y:5,dir:2}, turn:'left', times:3 },
-  { title:"Quick Turn", grid:{w:9,h:9}, start:{x:4,y:6,dir:0}, turn:'right', times:3 }
+/* Each turn: attacker line + a "tell" (an audio/video artifact the player
+   could have noticed) + choices. leak: what's handed over/done ('' = safe).
+   endsCall:true ends the scenario immediately (verified / refused). */
+var SCENARIOS = [
+{ id:"mom", icon:"👩", name:"'Mom'", number:"Video call · Mom", title:"'Mom' — Emergency",
+  blurb:"Panicked video call: she's been in an accident and needs money wired now.",
+  icon2:"👩",
+  turns:[
+    { line:"Sweetie, thank god — I got in an accident, I'm okay but they need $800 for the tow and deductible RIGHT NOW or they won't release the car.",
+      tell:"Her mouth moves slightly out of sync with her voice, and the call keeps freezing on the same expression.",
+      choices:[
+        { text:"Oh no! What's your account, I'll send it now.", leak:"money_wire", note:"Sent money to an urgent, unverifiable request — exactly the pressure a deepfake counts on." },
+        { text:"What's the name of our dog growing up? Answer that first.", leak:"", endsCall:true, note:"A pre-agreed verification question a deepfake can't answer — smart move." },
+        { text:"I'll call you back on your actual phone number right now.", leak:"", endsCall:true, note:"Hanging up and calling a number YOU already have beats trusting the incoming call." }
+      ] },
+    { line:"There's no time, they're threatening to tow it away — can you just send it through the gift card kiosk at the pharmacy instead, it's faster?",
+      tell:"Gift cards are untraceable and irreversible — no legitimate tow company or hospital takes them.",
+      choices:[
+        { text:"Okay, heading to the pharmacy now.", leak:"gift_cards", note:"Gift cards as 'payment' is a scam signature, not a real emergency process." },
+        { text:"No real business asks for gift cards. I'm not doing that.", leak:"", endsCall:true, note:"Correctly flagged the payment method itself as the tell." },
+        { text:"Send me a picture of the accident scene first.", leak:"", note:"Reasonable ask — see what 'evidence' actually shows up." }
+      ] }
+  ]},
+{ id:"ceo", icon:"💼", name:"'CEO — J. Alvarez'", number:"Video call · J. Alvarez", title:"CEO Video Request",
+  blurb:"Company leadership video-calls with an urgent, confidential wire request.",
+  turns:[
+    { line:"Hey — I'm on a video call with a client right now, camera's a little choppy on my end. I need you to process a $12,000 wire to a new vendor before end of day, very confidential, don't mention it in the group chat.",
+      tell:"His face freezes for a half-second every time he says a number, and the lighting on his face doesn't match the background behind him.",
+      choices:[
+        { text:"On it — sending the wire now.", leak:"money_wire", note:"An urgent, secret, off-channel money request is the whole CEO-fraud playbook — deepfake or not." },
+        { text:"I'll confirm this with you over our usual Slack channel before processing anything.", leak:"", endsCall:true, note:"Moving to a separate, established channel is exactly the right check." },
+        { text:"Sure, what's the new vendor's account number?", leak:"", note:"Getting details isn't itself a leak, but see what comes next before acting." }
+      ] },
+    { line:"Good, send the account details to this number over text — and I need your login for the finance portal too, so I can double check the transfer went through.",
+      tell:"He's asking for a password on a call he insists stays secret — a real executive would never need your login to check a wire.",
+      choices:[
+        { text:"Sure, my login is jalvarez.ap / Quarterly24!", leak:"credentials", note:"No executive needs your personal login to verify a transfer — that's a separate red flag stacked on the first." },
+        { text:"I don't share my login with anyone, including you. I'll verify the transfer myself.", leak:"", endsCall:true, note:"Correctly refused — finance systems have their own audit trail." },
+        { text:"I'll loop in our finance director before doing anything further.", leak:"", endsCall:true, note:"Escalating a suspicious 'secret' request is exactly the move." }
+      ] }
+  ]},
+{ id:"friend", icon:"🧑", name:"'Best Friend'", number:"Video call · Sam", title:"Friend Stranded Abroad",
+  blurb:"A friend's face and voice, calling stressed out from an airport overseas.",
+  turns:[
+    { line:"Dude, I'm so glad you picked up — my card got frozen at the airport in Lisbon and I need like $600 to get a flight home, can you send it through crypto, it's the fastest way?",
+      tell:"The audio has a slight robotic flatness on certain words, and his eyes don't quite blink at a normal rate.",
+      choices:[
+        { text:"Yeah of course, send me the wallet address.", leak:"money_wire", note:"Crypto is irreversible and untraceable — a favorite ask for impersonation scams." },
+        { text:"Say the name of the restaurant we went to for your birthday last year.", leak:"", endsCall:true, note:"A shared, specific memory is hard for a deepfake script to fake convincingly." },
+        { text:"I'll call your actual number and your parents to check in.", leak:"", endsCall:true, note:"Verifying through a second, independent channel is the safe move." }
+      ] },
+    { line:"I don't have another phone to answer, just trust me — can you also send me your bank login so you can transfer straight from my account once I'm back, it'll save time?",
+      tell:"Asking for your bank login 'to save time' is a request no real emergency actually requires.",
+      choices:[
+        { text:"Okay, here's my login info...", leak:"credentials", note:"There is never a legitimate reason a friend's emergency requires your bank login." },
+        { text:"Absolutely not — I'll send money directly once I've verified it's really you.", leak:"", endsCall:true, note:"Correctly refused and held the verification line." },
+        { text:"I'll ask a mutual friend to check on you in person instead.", leak:"", endsCall:true, note:"A real-world, independent check beats anything said on the call." }
+      ] }
+  ]},
+{ id:"itdirector", icon:"🖥️", name:"'IT Director'", number:"Video call · R. Chen", title:"IT Director — Outage",
+  blurb:"A familiar face on video, claiming an urgent outage needs your MFA code.",
+  turns:[
+    { line:"Hey, sorry to video call out of nowhere — we've got a critical outage and I need your MFA code to push an emergency fix to your account before it locks everyone out.",
+      tell:"His voice has odd pauses mid-sentence, like clips stitched together, and the video briefly pixelates around his mouth.",
+      choices:[
+        { text:"It's 7 7 3 9 0 2, hurry.", leak:"otp", note:"No IT fix, urgent or not, ever requires reading your MFA code aloud." },
+        { text:"IT can push fixes without my MFA code. I'm calling the help desk line directly.", leak:"", endsCall:true, note:"Correct — and routes through a channel you control." },
+        { text:"What ticket number is this under? I'll check the IT status page.", leak:"", endsCall:true, note:"Asking for a verifiable ticket number is a solid check outages always have one." }
+      ] },
+    { line:"There's no time for a ticket — just share your screen with me so I can see what's happening on your end.",
+      tell:"Screen-sharing with an unverified caller hands over everything on your screen, session cookies included.",
+      choices:[
+        { text:"Sure, sharing now.", leak:"credentials", note:"Screen sharing to an unverified caller during a live outage claim is a common credential-theft vector." },
+        { text:"I'm not sharing my screen over an unverified call. I'll reach out to IT myself.", leak:"", endsCall:true, note:"Correct — verify identity before granting any access." },
+        { text:"I'll restart my machine and see if the issue's still there.", leak:"", note:"A reasonable stall, but doesn't address whether the caller is real." }
+      ] }
+  ]}
 ];
 
-var currentIdx=0, currentProbs=null, currentTarget=null, selectedKey=null, CELL=38;
+var current=null, transcript=[], leaks=[], turnIdx=0, timerSec=0, timerHandle=null;
 
-function renderProbTabs(){
-  document.getElementById('probRow').innerHTML = PROBLEMS.map(function(p,i){
-    return '<button class="probBtn'+(i===currentIdx?' active':'')+'" onclick="loadProblem('+i+')">'+p.title+'</button>';
+function renderMenu(){
+  var g=document.getElementById('scenGrid');
+  g.innerHTML=SCENARIOS.map(function(s,i){
+    return '<button class="scenCard" onclick="startCall('+i+')"><span class="ic">'+s.icon+'</span><b>'+s.title+'</b><span class="d">'+s.blurb+'</span></button>';
   }).join('');
 }
-function randomProblem(){ loadProblem(Math.floor(Math.random()*PROBLEMS.length)); }
+renderMenu();
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
 
-function loadProblem(idx){
-  currentIdx=idx;
-  renderProbTabs();
-  var p=PROBLEMS[idx];
-  var progs=buildPrograms(p.turn, p.times);
-  currentTarget=runAST(progs.correct, p.start, p.grid);
-  currentProbs=p;
-
-  // shuffle option order fresh each load
-  var entries=[
-    {key:'correct',ast:progs.correct},
-    {key:'incBefore',ast:progs.incBefore},
-    {key:'turnBefore',ast:progs.turnBefore},
-    {key:'incInside',ast:progs.incInside}
-  ];
-  for(var i=entries.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=entries[i]; entries[i]=entries[j]; entries[j]=tmp; }
-  currentOptions=entries;
-  selectedKey=null;
-
-  buildGrid(p);
-  drawTargetOverlay(p, currentTarget);
-  renderOptions();
-  placeRobot(p.start, false);
-  document.getElementById('runBtn').disabled=true;
-  var gb=document.getElementById('gradeBanner'); gb.classList.remove('show','ok','bad');
+function startCall(i){
+  current = (i==null) ? pick(SCENARIOS) : SCENARIOS[i];
+  document.getElementById('menu').style.display='none';
+  document.getElementById('debrief').style.display='none';
+  document.getElementById('ring').style.display='block';
+  document.getElementById('ringNum').textContent=current.number;
+  document.getElementById('ringName').textContent=current.name;
 }
-
-function buildGrid(p){
-  var el=document.getElementById('gridEl');
-  el.style.gridTemplateColumns='repeat('+p.grid.w+', '+CELL+'px)';
-  el.style.gridTemplateRows='repeat('+p.grid.h+', '+CELL+'px)';
-  var html='';
-  for(var y=0;y<p.grid.h;y++){
-    for(var x=0;x<p.grid.w;x++){ html+='<div class="cell" id="cell-'+x+'-'+y+'"></div>'; }
+function declineCall(){
+  document.getElementById('ring').style.display='none';
+  document.getElementById('menu').style.display='block';
+}
+function answerCall(){
+  document.getElementById('ring').style.display='none';
+  document.getElementById('call').style.display='block';
+  document.getElementById('videoIcon').textContent=current.icon;
+  document.getElementById('callName').textContent=current.name;
+  document.getElementById('callNum').textContent=current.title;
+  transcript=[]; leaks=[]; turnIdx=0; timerSec=0;
+  document.getElementById('transcript').innerHTML='';
+  clearInterval(timerHandle);
+  timerHandle=setInterval(function(){ timerSec++; var m=String(Math.floor(timerSec/60)).padStart(2,'0'),s=String(timerSec%60).padStart(2,'0'); document.getElementById('callTimer').textContent=m+':'+s; },1000);
+  nextTurn();
+}
+function addBubble(who,text,leak,tell){
+  var wrap=document.getElementById('transcript');
+  var div=document.createElement('div');
+  div.className='bub '+(who==='them'?'them':'me');
+  div.innerHTML=(leak?'<span class="flagIcon">⚠</span>':'')+text;
+  wrap.appendChild(div);
+  if(tell){
+    var note=document.createElement('div');
+    note.className='tellNote';
+    note.textContent='⚠ TELL: '+tell;
+    wrap.appendChild(note);
   }
-  html+='<div class="robot" id="robotEl"><span class="tri">\u25B2</span></div>';
-  html+='<div class="startMark" id="startMark"><span class="tri">\u25B2</span></div>';
-  el.innerHTML=html;
+  wrap.scrollTop=wrap.scrollHeight;
 }
-function drawTargetOverlay(p, target){
-  var cells=uniqueCells(target.steps);
-  var goal=cells[cells.length-1];
-  document.getElementById('cell-'+goal.x+'-'+goal.y).classList.add('goal');
-  document.getElementById('cell-'+goal.x+'-'+goal.y).innerHTML='<span class="goalFlag">\u2691</span>';
-  var arrowFor={ '1,0':'\u2192','-1,0':'\u2190','0,1':'\u2193','0,-1':'\u2191' };
-  for(var i=1;i<cells.length;i++){
-    var prev=cells[i-1], cur=cells[i];
-    if(cur.x===goal.x && cur.y===goal.y) continue;
-    var key=(cur.x-prev.x)+','+(cur.y-prev.y);
-    var cellEl=document.getElementById('cell-'+cur.x+'-'+cur.y);
-    if(cellEl && !cellEl.querySelector('.goalFlag')) cellEl.innerHTML='<span class="arrow">'+(arrowFor[key]||'')+'</span>';
-  }
-  var startMark=document.getElementById('startMark');
-  startMark.style.left=(p.start.x*CELL)+'px'; startMark.style.top=(p.start.y*CELL)+'px';
-  startMark.querySelector('.tri').style.transform='rotate('+(p.start.dir*90)+'deg)';
+function nextTurn(){
+  if(turnIdx>=current.turns.length){ hangUp('call completed'); return; }
+  var t=current.turns[turnIdx];
+  addBubble('them', t.line, false, t.tell);
+  var box=document.getElementById('choices');
+  box.innerHTML='';
+  t.choices.forEach(function(c){
+    var b=document.createElement('button');
+    b.className='choiceBtn';
+    b.textContent=c.text;
+    b.onclick=function(){ choose(t,c); };
+    box.appendChild(b);
+  });
 }
-function placeRobot(state, animate){
-  var el=document.getElementById('robotEl');
-  el.style.transition = animate ? 'left .34s cubic-bezier(.4,0,.2,1),top .34s cubic-bezier(.4,0,.2,1),transform .34s cubic-bezier(.4,0,.2,1)' : 'none';
-  el.style.left=(state.x*CELL)+'px'; el.style.top=(state.y*CELL)+'px';
-  el.querySelector('.tri').style.transform='rotate('+(state.dir*90)+'deg)';
-  if(!animate){ void el.offsetHeight; }
+function choose(t,c){
+  addBubble('me', c.text, !!c.leak);
+  transcript.push({attacker:t.line, response:c.text, note:c.note});
+  if(c.leak) leaks.push({type:c.leak, text:c.text, note:c.note});
+  document.getElementById('choices').innerHTML='';
+  if(c.endsCall){ setTimeout(function(){ hangUp(c.leak?'complied, then ended call':'verified and ended call'); },500); return; }
+  turnIdx++;
+  setTimeout(nextTurn, 550);
 }
-function renderOptions(){
-  var letters=['A','B','C','D'];
-  document.getElementById('optGrid').innerHTML = currentOptions.map(function(opt,i){
-    var lines=[]; renderLines(opt.ast,0,lines);
-    return '<div class="optCard" id="opt-'+opt.key+'" onclick="selectOption(\''+opt.key+'\')">'+
-      '<div class="letter">('+letters[i]+')</div>'+
-      '<div class="codeLine">'+lines.join('\n')+'</div></div>';
-  }).join('');
-}
-function selectOption(key){
-  selectedKey=key;
-  document.querySelectorAll('.optCard').forEach(function(c){ c.classList.toggle('sel', c.id==='opt-'+key); });
-  document.getElementById('runBtn').disabled=false;
-}
-function clearTrail(){
-  document.querySelectorAll('.cell.trail').forEach(function(c){ c.classList.remove('trail'); });
-}
-function runSelected(){
-  if(!selectedKey) return;
-  clearTrail();
-  document.getElementById('runBtn').disabled=true;
-  var opt=currentOptions.find(function(o){ return o.key===selectedKey; });
-  var result=runAST(opt.ast, currentProbs.start, currentProbs.grid);
-  var i=0;
-  (function playStep(){
-    if(i>=result.steps.length){
-      if(result.crashed){
-        var flag=document.createElement('div'); // brief visual: nothing extra needed, banner explains
-      }
-      finishRun(result);
-      return;
-    }
-    var s=result.steps[i];
-    document.getElementById('cell-'+s.x+'-'+s.y).classList.add('trail');
-    placeRobot(s, true);
-    i++;
-    setTimeout(playStep, 380);
-  })();
-}
-function finishRun(result){
-  document.getElementById('runBtn').disabled=false;
-  var gb=document.getElementById('gradeBanner');
-  gb.classList.remove('ok','bad'); gb.classList.add('show');
-  if(result.crashed){
-    gb.classList.add('bad');
-    gb.textContent='✗ This code drives the robot off the edge of the grid before it finishes — not a valid path to the goal.';
-    return;
-  }
-  var tCells=uniqueCells(currentTarget.steps), aCells=uniqueCells(result.steps);
-  var tFinal=result.steps[result.steps.length-1];
-  var same = tCells.length===aCells.length && tCells.every(function(c,i){ return c.x===aCells[i].x && c.y===aCells[i].y; })
-             && tFinal.dir===currentTarget.steps[currentTarget.steps.length-1].dir;
-  if(same){
-    gb.classList.add('ok');
-    gb.textContent='✓ Correct — this code follows the exact path to the goal, facing the right direction.';
-  } else {
-    gb.classList.add('bad');
-    var idx=0; while(idx<Math.min(tCells.length,aCells.length) && tCells[idx].x===aCells[idx].x && tCells[idx].y===aCells[idx].y) idx++;
-    var lastA=aCells[aCells.length-1];
-    if(idx>=Math.min(tCells.length,aCells.length) && tCells.length!==aCells.length){
-      gb.textContent='✗ Not quite — this path matches the target the whole way, but '+(aCells.length>tCells.length?'keeps going past the goal.':'stops short of the goal.')+' Ends at ('+lastA.x+','+lastA.y+').';
-    } else {
-      var tc=tCells[idx];
-      gb.textContent='✗ Not quite — this path matches the target for the first '+idx+' cell'+(idx===1?'':'s')+', then goes to ('+aCells[idx].x+','+aCells[idx].y+') instead of ('+tc.x+','+tc.y+'). Ends at ('+lastA.x+','+lastA.y+') instead of the goal.';
-    }
-  }
+function hangUp(reason){
+  clearInterval(timerHandle);
+  document.getElementById('call').style.display='none';
+  showDebrief(reason);
 }
 
-loadProblem(0);
+var LEAK_LABELS={ money_wire:"wired money to an unverified request", gift_cards:"bought gift cards on request",
+  credentials:"login credentials / screen access", otp:"MFA code" };
+var LEAK_WEIGHT={ money_wire:3, gift_cards:3, credentials:3, otp:3 };
+
+function showDebrief(reason){
+  var weight=0; leaks.forEach(function(l){ weight+=LEAK_WEIGHT[l.type]||1; });
+  var grade, color, headline;
+  if(weight===0){ grade="A"; color="var(--ok)"; headline="Verified before acting. Nothing handed over."; }
+  else if(weight<=3){ grade="C"; color="var(--warn)"; headline="One request got through before you caught it."; }
+  else { grade="F"; color="var(--bad)"; headline="Money, access, or both — gone, based on a face and a voice."; }
+
+  var protectedMoves=transcript.filter(function(x){ return !leaks.some(function(l){ return l.text===x.response; }); });
+
+  var html = '<div class="gradeBig"><div class="letter" style="color:'+color+'">'+grade+'</div><div class="sub">'+headline+' &middot; call ended: '+reason+'</div></div>';
+
+  html += '<div class="section"><h3>WHAT YOU GAVE UP ('+leaks.length+')</h3>';
+  if(!leaks.length){ html += '<div class="itemRow"><span class="ic">✓</span><span>Nothing. The caller got no money, access, or codes.</span></div>'; }
+  else leaks.forEach(function(l){ html += '<div class="itemRow"><span class="ic" style="color:var(--bad)">⚠</span><span><b style="color:var(--bright)">'+LEAK_LABELS[l.type]+'</b><br><span style="color:var(--dim);">'+l.note+'</span></span></div>'; });
+  html += '</div>';
+
+  html += '<div class="section"><h3>MOVES THAT PROTECTED YOU</h3>';
+  var goodOnes=protectedMoves.filter(function(x){ return x.note && x.note.length; });
+  if(!goodOnes.length){ html += '<div class="itemRow"><span>No safe moves this call — try verifying harder next time.</span></div>'; }
+  else goodOnes.forEach(function(x){ html += '<div class="itemRow"><span class="ic" style="color:var(--ok)">✓</span><span>'+x.note+'</span></div>'; });
+  html += '</div>';
+
+  html += '<div class="section"><h3>THE PLAY, EVERY TIME</h3><div class="itemRow"><span>Voice and video can be faked convincingly today. Urgency + secrecy + an unusual payment method (gift cards, crypto, wire) is the pattern, not the proof. Verify through a channel the caller did not give you — a callback number you already had, a pre-agreed code word, or checking in person — before money, access, or codes move.</span></div></div>';
+
+  html += '<div class="debBtns"><button class="dbtn primary" onclick="retryCurrent()">↻ Same caller again</button><button class="dbtn" onclick="backToMenu()">← Different caller</button></div>';
+
+  var d=document.getElementById('debrief');
+  d.innerHTML=html;
+  d.style.display='block';
+}
+function retryCurrent(){ var i=SCENARIOS.indexOf(current); startCall(i>=0?i:null); answerCall(); }
+function backToMenu(){ document.getElementById('debrief').style.display='none'; document.getElementById('menu').style.display='block'; }
 </script>
 </body>
 </html>
