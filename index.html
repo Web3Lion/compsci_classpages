@@ -1,159 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Incident Command — Branching Case Study Simulator</title>
+<title>Mr. Reasey — Course Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root{--bg:#0a0e14;--panel:#0e141d;--panel2:#121a26;--border:#20304a;--text:#c6d4e6;--bright:#eef4ff;--muted:#9db0cc;--dim:#6f88a8;--faint:#4c627e;}
+:root[data-theme="light"]{--bg:#eaeef4;--panel:#ffffff;--panel2:#f3f6fb;--border:#d3dce8;--text:#2a3646;--bright:#0d1826;--muted:#4a5a70;--dim:#6a7c93;--faint:#93a3b8;}
 *{box-sizing:border-box;}
 body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
 .mono{font-family:'JetBrains Mono',monospace;}
-a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
-.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
-.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
-.brand{display:flex;align-items:center;gap:10px;}
-.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
-.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
-.backLink{font-size:13px;color:var(--faint);}
-.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
-.statusBar{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
-.stat{padding:8px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--panel);}
-.stat b{color:var(--bright);}
-.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;}
-.sceneHead{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.5px;color:var(--faint);margin-bottom:10px;}
-.sceneTxt{font-size:15px;line-height:1.75;color:var(--text);margin-bottom:20px;}
-.choices{display:flex;flex-direction:column;gap:10px;}
-.choiceBtn{text-align:left;padding:14px 16px;border-radius:10px;border:1px solid var(--border2);background:var(--panel2);color:var(--bright);font-size:13.5px;cursor:pointer;line-height:1.5;}
-.choiceBtn:hover{border-color:var(--border-hi);background:var(--panel3);}
-.outcomeBox{margin-top:8px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.65;}
-.outcomeBox.good{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);}
-.outcomeBox.bad{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);}
-.outcomeBox.neutral{background:rgba(255,207,92,.08);border:1px solid rgba(255,207,92,.28);}
-.outcomeBox b{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px;}
-.contBtn{margin-top:14px;padding:11px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;cursor:pointer;}
-.contBtn:hover{border-color:var(--border-hi);}
-.endCard{text-align:center;padding:30px 10px;}
-.endCard .emoji{font-size:38px;margin-bottom:12px;}
-.endCard h2{color:var(--bright);font-size:18px;margin:0 0 8px;}
-.endCard p{color:var(--muted);font-size:13.5px;line-height:1.6;max-width:52ch;margin:0 auto 18px;}
-.scenarioPicker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-.scBtn{padding:8px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11.5px;cursor:pointer;}
-.scBtn.active{border-color:var(--accent);background:var(--panel3);color:var(--bright);}
+a{text-decoration:none;color:inherit;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:100;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--muted);cursor:pointer;transition:.2s;}
+.themebtn:hover{border-color:var(--dim);color:var(--bright);}
+.wrap{max-width:1120px;margin:0 auto;padding:72px 24px 80px;}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:44px;}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:640px){.grid{grid-template-columns:1fr;}}
+.card{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:340px;border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:28px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.card:hover{transform:translateY(-4px);border-color:var(--ac);box-shadow:0 24px 60px -34px var(--ac);}
+.chip{align-self:flex-start;max-width:100%;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;padding:6px 12px;border-radius:999px;border:1px solid var(--ac);color:var(--ac);white-space:nowrap;}
+.enter{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--ac);}
+.tex{position:absolute;inset:0;opacity:.5;pointer-events:none;}
+.card:hover .chip{box-shadow:0 0 16px -2px var(--ac);}
 </style>
 </head>
 <body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
-  <div class="top">
-    <div class="brand"><span class="dot"></span><h1>INCIDENT COMMAND</h1></div>
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <span class="mono" style="font-size:12.5px;color:var(--faint);">branching case study · free play, no XP</span>
-      <a class="backLink mono" href="index.html">&larr; simulators</a>
-    </div>
-  </div>
-  <p class="lead">You're the on-call IT responder. Every choice branches the story — there's no single correct path, but some decisions contain damage far better than others.</p>
-  <div class="scenarioPicker" id="scenarioPicker"></div>
-  <div class="statusBar">
-    <div class="stat">DAMAGE CONTAINED <b id="scoreOut" style="color:var(--ok);">100%</b></div>
-    <button class="scBtn" onclick="restart()">↻ RESTART SCENARIO</button>
-  </div>
-  <div class="panel" id="panel"></div>
-</div>
-<script>
-var SCENARIOS = {
-  ransomware: { label:"RANSOMWARE OUTBREAK", start:"s1", score:100, nodes: {
-    s1:{ head:"MONDAY, 8:14 AM", text:"A teacher reports their classroom PC screen is showing a ransom note: files are encrypted and there's a countdown timer demanding payment. Several shared drive folders now show the same garbled filenames.", choices:[
-      {label:"Immediately disconnect that PC from the network", next:"s2a", delta:0},
-      {label:"Let the teacher keep working while you investigate remotely", next:"s2b", delta:-30},
-      {label:"Power off the entire building's network switch right now", next:"s2c", delta:-10}
-    ]},
-    s2a:{ head:"8:16 AM", text:"Good call — you unplug the Ethernet cable immediately. This stops the ransomware from spreading further across the shared drives, but some files were already encrypted before you got there.", outcome:"good", outcomeText:"Isolating the infected device fast is the single most effective containment move — it stops lateral spread even though it can't undo damage already done.", choices:[
-      {label:"Check backups for the affected shared folders", next:"s3a", delta:0},
-      {label:"Pay the ransom to get files back quickly", next:"s3b", delta:-40}
-    ]},
-    s2b:{ head:"8:22 AM", text:"While you investigate, the ransomware keeps running and spreads to two more shared drives before you finally isolate the machine eight minutes later.", outcome:"bad", outcomeText:"Every extra minute connected let the malware encrypt more shared files. Speed of isolation is critical in ransomware response.", choices:[
-      {label:"Isolate the machine now and check backups", next:"s3a", delta:0}
-    ]},
-    s2c:{ head:"8:15 AM", text:"Cutting power to the whole building switch does stop the spread — but it also knocks every classroom, the front office, and phones offline building-wide, for a problem that was contained to a few drives.", outcome:"neutral", outcomeText:"This stops the attack, but the response was disproportionate — you caused a much bigger disruption than necessary. Targeted isolation is usually better than a building-wide shutdown.", choices:[
-      {label:"Bring the network back up and isolate just the infected PC", next:"s3a", delta:0}
-    ]},
-    s3a:{ head:"8:40 AM", text:"You find that the shared drive has automated backups from last night, before the infection. Most files can be restored cleanly.", outcome:"good", outcomeText:"Regular, tested backups are the best defense against ransomware — they make the attacker's leverage (your data) worthless.", choices:[
-      {label:"Restore from backup and report the incident to admin", next:"end_good", delta:0}
-    ]},
-    s3b:{ head:"8:45 AM", text:"You pay the ransom. The attacker sends a decryption tool, but it only partially works, and there's no guarantee they won't come back — you've also confirmed this school will pay if attacked again.", outcome:"bad", outcomeText:"Paying ransoms funds future attacks, doesn't guarantee full recovery, and marks the school as a soft target. It should be a last resort, not a first response.", choices:[
-      {label:"Report the incident and review backup policy", next:"end_bad", delta:0}
-    ]},
-    end_good:{ end:true, emoji:"🛡️", title:"Incident Contained", text:"Fast isolation plus solid backups meant minimal data loss and no ransom paid. Textbook response." },
-    end_bad:{ end:true, emoji:"⚠️", title:"Costly Resolution", text:"The incident is over, but it cost money, trust, and set a bad precedent. Next time, isolate faster and lean on backups instead of paying." }
-  }},
-  phishing: { label:"CREDENTIAL PHISHING", start:"p1", score:100, nodes: {
-    p1:{ head:"WEDNESDAY, 1:03 PM", text:"A staff member calls: they clicked a link in an email claiming to be from IT, and typed their username and password on a page that then errored out. They're worried but not sure if it was real.", choices:[
-      {label:"Have them change their password immediately, then investigate", next:"p2a", delta:0},
-      {label:"Tell them it's probably fine since nothing bad happened yet", next:"p2b", delta:-35},
-      {label:"Reset passwords for the entire staff, right now, without investigating", next:"p2c", delta:-15}
-    ]},
-    p2a:{ head:"1:06 PM", text:"They change their password right away. You pull the email and confirm it was a phishing attempt using a lookalike domain.", outcome:"good", outcomeText:"Assuming compromise and acting fast — password reset first, investigate second — limits the attacker's window to use stolen credentials.", choices:[
-      {label:"Check login logs for suspicious activity on that account", next:"p3a", delta:0}
-    ]},
-    p2b:{ head:"1:20 PM", text:"Ten minutes later, the account is used to send phishing emails to 40 other staff members from the compromised inbox.", outcome:"bad", outcomeText:"A typed password on a fake page is a real compromise — assume the credential is stolen the moment it's entered, even if nothing 'visibly' happened.", choices:[
-      {label:"Reset the password now and check the damage", next:"p3a", delta:0}
-    ]},
-    p2c:{ head:"1:10 PM", text:"Every staff member is locked out and has to reset — causing building-wide disruption for an incident that only affected one account so far.", outcome:"neutral", outcomeText:"A blanket reset without evidence of wider compromise creates unnecessary disruption. Investigate scope first, then decide how wide the response needs to be.", choices:[
-      {label:"Check whether the phishing email actually reached other accounts", next:"p3a", delta:0}
-    ]},
-    p3a:{ head:"1:30 PM", text:"Logs show the compromised account was used once, briefly, before the password reset locked the attacker out. No further spread.", outcome:"good", outcomeText:"Checking logs confirms the scope, so you know exactly who to notify and don't over- or under-react.", choices:[
-      {label:"Report the incident and remind staff how to spot phishing", next:"end_good", delta:0}
-    ]},
-    end_good:{ end:true, emoji:"🛡️", title:"Incident Contained", text:"Quick password reset plus a log check kept this to a single account with no lasting damage." }
-  }}
-};
-var currentKey='ransomware', currentNode=null, score=100;
+  <div class="mono" style="font-size:13px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;">South Fayette High School</div>
+  <h1 style="font-weight:800;font-size:clamp(34px,5vw,52px);letter-spacing:-1px;margin:12px 0 10px;color:var(--bright);">Mr. Reasey&rsquo;s Courses</h1>
+  <p style="font-size:17px;line-height:1.6;max-width:620px;margin:0;color:var(--muted);">Pick a course to open its live home page &mdash; weekly schedule, syllabus, and study tools, all updated automatically.</p>
 
-function renderScenarioPicker(){
-  var el = document.getElementById('scenarioPicker');
-  el.innerHTML = Object.keys(SCENARIOS).map(function(k){
-    return '<div class="scBtn '+(k===currentKey?'active':'')+'" onclick="loadScenario(\''+k+'\')">'+SCENARIOS[k].label+'</div>';
-  }).join('');
-}
-function loadScenario(key){
-  currentKey = key; score = 100; currentNode = SCENARIOS[key].start;
-  renderScenarioPicker();
-  renderScore();
-  renderNode();
-}
-function restart(){ loadScenario(currentKey); }
-function renderScore(){
-  var el = document.getElementById('scoreOut');
-  el.textContent = score+'%';
-  el.style.color = score>=80?'var(--ok)':score>=50?'var(--warn)':'var(--bad)';
-}
-function renderNode(){
-  var sc = SCENARIOS[currentKey];
-  var node = sc.nodes[currentNode];
-  var panel = document.getElementById('panel');
-  if(node.end){
-    panel.innerHTML = '<div class="endCard"><div class="emoji">'+node.emoji+'</div><h2>'+node.title+'</h2><p>'+node.text+'</p><button class="contBtn" onclick="restart()">↻ RUN IT AGAIN</button></div>';
-    return;
-  }
-  var outcomeHtml = node.outcome ? '<div class="outcomeBox '+node.outcome+'"><b>'+(node.outcome==='good'?'Good move':node.outcome==='bad'?'That backfired':'Mixed result')+'</b>'+node.outcomeText+'</div>' : '';
-  panel.innerHTML = '<div class="sceneHead">'+node.head+'</div><div class="sceneTxt">'+node.text+'</div>'+outcomeHtml+
-    '<div class="choices" id="choicesSlot" style="margin-top:'+(node.outcome?'16px':'0')+';"></div>';
-  var slot = document.getElementById('choicesSlot');
-  slot.innerHTML = node.choices.map(function(c,i){ return '<div class="choiceBtn" onclick="pick('+i+')">'+c.label+'</div>'; }).join('');
-}
-function pick(i){
-  var sc = SCENARIOS[currentKey];
-  var node = sc.nodes[currentNode];
-  var choice = node.choices[i];
-  score = Math.max(0, score + choice.delta);
-  currentNode = choice.next;
-  renderScore();
-  renderNode();
-}
-loadScenario('ransomware');
-</script>
+  <div class="grid">
+    <!-- WEB 3.0 -->
+    <a class="card" href="web3/index.html" style="--ac:#f7a01f;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(247,160,31,.16), transparent 60%);"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ELECTIVE · BLOCKCHAIN</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#f7a01f;margin-bottom:6px;">00 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Intro to Web 3.0</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">Blockchain, crypto &amp; smart contracts &mdash; how the decentralized web is built.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- CYBER 1 -->
+    <a class="card" href="cyber1/index.html" style="--ac:#00b3ff;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(0,179,255,.14), transparent 60%);"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip" style="letter-spacing:1px;">CHS · ROBERT MORRIS</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#00b3ff;margin-bottom:6px;">01 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cyber Security 1</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">College-credit foundations: networks, systems, threats, and defense.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- CYBER 2 -->
+    <a class="card" href="cyber2/index.html" style="--ac:#39ff88;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(57,255,136,.14), transparent 60%);"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ADVANCED PLACEMENT</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#39ff88;margin-bottom:6px;">02 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cyber Security 2</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">Think like an attacker, defend like a pro &mdash; the advanced, hands-on course.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- AP CSP -->
+    <a class="card" href="apcsp/index.html" style="--ac:#a855f7;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(168,85,247,.18), transparent 60%);opacity:.7;"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ADVANCED PLACEMENT</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#a855f7;margin-bottom:6px;">03 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Computer Science Principles</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">The big ideas of computing &mdash; create, analyze data, and explore algorithms.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="mono" style="margin-top:40px;font-size:12px;color:var(--faint);">rnreasey@southfayette.org &middot; Room AB212</div>
+</div>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 </body>
 </html>
