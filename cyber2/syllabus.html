@@ -76,7 +76,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="docframe">
     <div class="loading" id="loading"><div class="spinner"></div>loading live syllabus…</div>
     <iframe id="doc"
-      src="https://docs.google.com/document/d/1S4d61MaNLeReiA9bc-1xKIUbZsUVznPMVz9kNstI_vQ/preview"
+      src="https://drive.google.com/file/d/1S4d61MaNLeReiA9bc-1xKIUbZsUVznPMVz9kNstI_vQ/preview"
       title="Course Syllabus"
       onload="const l=document.getElementById('loading'); l.style.opacity=0; setTimeout(()=>l.remove(),400);"></iframe>
   </div>
@@ -89,7 +89,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 (function(){
   var CFG=(window.COURSE_CONFIG&&window.COURSE_CONFIG.cyber2)||{};
   var id=CFG.syllabusDocId; if(!id) return;
-  var base='https://docs.google.com/document/d/'+id;
+  var base=CFG.syllabusIsFile ? 'https://drive.google.com/file/d/'+id : 'https://docs.google.com/document/d/'+id;
   var f=document.getElementById('doc'); if(f && f.src.indexOf(id)<0) f.src=base+'/preview';
   var a=document.getElementById('docLink'); if(a) a.href=base+'/view';
 })();
