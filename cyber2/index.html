@@ -66,6 +66,9 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     .card{padding:12px !important;}
     .big{font-size:30px !important;}
   }
+  @media(max-width:760px){
+    .instrGrid{grid-template-columns:1fr !important;}
+  }
 </style>
 </head>
 <body>
@@ -86,7 +89,40 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     </div>
   </div>
 
-  <div class="grid2">
+<div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(135deg, var(--panel2) 0%, var(--bg) 65%); padding: 30px 32px; margin-top: 22px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(57,255,136,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
+        <div style="position: relative; z-index: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 36px;" class="instrGrid">
+          <div>
+            <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// INSTRUCTOR</div>
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+              <div class="mono" style="width: 54px; height: 54px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--accent);">MR</div>
+              <div><div style="font-weight: 700; font-size: 20px; color: var(--bright);">Mr. Reasey</div><div style="font-size: 13px; color: var(--dim);">AP Cyber Security Instructor</div></div>
+            </div>
+            <div class="mono" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+              <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">EMAIL</span><span style="color: var(--accent); word-break: break-all;">rnreasey@southfayette.org</span></div>
+              <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">PHONE</span><a href="tel:4122214542">412-221-4542 ext. 688</a></div>
+            </div>
+            <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border2);">
+              <div class="mono" style="font-size: 11px; letter-spacing: 1.5px; color: var(--faint); margin-bottom: 12px;">OFFICE HOURS</div>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border2);"><span style="font-size: 14px; color: var(--text);">After School</span><span class="mono" style="font-size: 13px; color: var(--dim);">2:00 – 2:35 PM</span></div>
+                <div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; color: var(--text);">By appointment</span><span class="mono" style="font-size: 13px; color: var(--dim);">Room AB212</span></div>
+              </div>
+              <p style="margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: var(--dim);">Stuck on a lab? Confused about a concept? Drop by — no appointment needed during office hours.</p>
+            </div>
+          </div>
+          <div>
+            <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// QUICK LINKS</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <a class="qlink" id="meetLink" href="https://meet.google.com/mro-asqu-djt" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M16 10l5-3v10l-5-3z" fill="var(--accent)"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Join Class Google Meet</span><span style="font-size:12px;color:var(--dim);">Live class video room</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+              <a class="qlink" href="syllabus.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 3v4h4M9 12h6M9 16h6" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Syllabus</span><span style="font-size:12px;color:var(--dim);">Policies &amp; expectations</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+              <a class="qlink" href="https://southfayette.powerschool.com/public/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 4L3 8l9 4 9-4-9-4z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.1 2.2 2 5 2s5-.9 5-2v-4.5" style="stroke:var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Grades</span><span style="font-size:12px;color:var(--dim);">PowerSchool portal</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="grid2">
     <div style="display: flex; flex-direction: column; gap: 24px;">
 
       <div class="card">
@@ -158,44 +194,15 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
         <div style="height: 6px; border-radius: 999px; background: var(--panel2); overflow: hidden; margin-top: 16px;"><div id="examBar" style="height: 100%; width: 0; background: var(--accent); transition: width .6s ease;"></div></div>
       </div>
 
-      <div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(160deg, var(--panel3) 0%, var(--panel) 100%); padding: 26px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(57,255,136,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
-        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// INSTRUCTOR</div>
-        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
-          <div class="mono" style="width: 54px; height: 54px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--accent);">MR</div>
-          <div><div style="font-weight: 700; font-size: 20px; color: var(--bright);">Mr. Reasey</div><div style="font-size: 13px; color: var(--dim);">AP Cyber Security Instructor</div></div>
-        </div>
-        <div class="mono" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
-          <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">EMAIL</span><span style="color: var(--accent); word-break: break-all;">rnreasey@southfayette.org</span></div>
-          <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">PHONE</span><a href="tel:4122214542">412-221-4542 ext. 688</a></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// OFFICE HOURS</div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--border2);"><span style="font-size: 14px; color: var(--text);">Tue &amp; Thu</span><span class="mono" style="font-size: 13px; color: var(--dim);">3:00 – 4:00 PM</span></div>
-          <div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; color: var(--text);">By appointment</span><span class="mono" style="font-size: 13px; color: var(--dim);">Room AB212</span></div>
-        </div>
-        <p style="margin: 18px 0 0; font-size: 13px; line-height: 1.6; color: var(--dim);">Stuck on a lab? Confused about a concept? Drop by — no appointment needed during office hours.</p>
-      </div>
-
-      <div class="card">
-        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// QUICK LINKS</div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <a class="qlink" id="meetLink" href="https://meet.google.com/mro-asqu-djt" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M16 10l5-3v10l-5-3z" fill="var(--accent)"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Join Class Google Meet</span><span style="font-size:12px;color:var(--dim);">Live class video room</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
-          <a class="qlink" href="syllabus.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 3v4h4M9 12h6M9 16h6" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Syllabus</span><span style="font-size:12px;color:var(--dim);">Policies & expectations</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
-          <a class="qlink" href="https://southfayette.powerschool.com/public/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4L3 8l9 4 9-4-9-4z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.1 2.2 2 5 2s5-.9 5-2v-4.5" style="stroke:var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Grades</span><span style="font-size:12px;color:var(--dim);">PowerSchool portal</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
-        </div>
-      </div>
+      
 
       <div class="card">
         <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// CLASS LINKS</div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
-          <a class="qlink" href="vocab.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 6c-1.6-1-4.2-1.5-6.5-1v12.5c2.3-.5 4.9 0 6.5 1 1.6-1 4.2-1.5 6.5-1V5c-2.3-.5-4.9 0-6.5 1z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 6v12.5" style="stroke:var(--accent)" stroke-width="1.5"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Vocabulary Lab</span><span style="font-size:12px;color:var(--dim);">Study terms & games</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
-          <a class="qlink" href="ctf.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 21V4M6 4c3-1.6 6 1.6 9 0v9c-3 1.6-6-1.6-9 0" style="stroke:var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Capture the Flag</span><span style="font-size:12px;color:var(--dim);">Solve challenges, earn XP</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
-          <a class="qlink" href="news.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="1.6" style="stroke:var(--accent)" stroke-width="1.5"/><path d="M6.5 9h5M6.5 12h5M6.5 15h3.5M15 9h2.5v6H15z" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Cybersecurity News Feed</span><span style="font-size:12px;color:var(--dim);">Latest headlines, daily</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
-          <a class="qlink" href="../simulators/index.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Simulators</span><span style="font-size:12px;color:var(--dim);">Hands-on interactive tools</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+          <a class="qlink" href="https://centra.paradigmcyberventures.com/dashboard" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 4L3 8l9 4 9-4-9-4z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.1 2.2 2 5 2s5-.9 5-2v-4.5" style="stroke:var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Paradigm Cyber Ventures</span><span style="font-size:12px;color:var(--dim);">Training dashboard</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+          <a class="qlink" href="vocab.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 6c-1.6-1-4.2-1.5-6.5-1v12.5c2.3-.5 4.9 0 6.5 1 1.6-1 4.2-1.5 6.5-1V5c-2.3-.5-4.9 0-6.5 1z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 6v12.5" style="stroke:var(--accent)" stroke-width="1.5"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Vocabulary Lab</span><span style="font-size:12px;color:var(--dim);">Study terms & games</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+          <a class="qlink" href="ctf.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 21V4M6 4c3-1.6 6 1.6 9 0v9c-3 1.6-6-1.6-9 0" style="stroke:var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Capture the Flag</span><span style="font-size:12px;color:var(--dim);">Solve challenges, earn XP</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+          <a class="qlink" href="../simulators/index.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Simulators</span><span style="font-size:12px;color:var(--dim);">Hands-on interactive tools</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
         </div>
       </div>
 
@@ -208,7 +215,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 16px;">// BELL SCHEDULE</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:4px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;margin-bottom:14px;max-width:640px;">
       <button type="button" data-b="0" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">REGULAR</button>
-      <button type="button" data-b="1" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">FLEX</button>
+      <button type="button" data-b="1" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">💪 FLEX</button>
       <button type="button" data-b="2" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">2-HR DELAY</button>
       <button type="button" data-b="3" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">EARLY OUT</button>
     </div>
@@ -227,13 +234,14 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     function row(r){return '<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:baseline;padding:9px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:14px;font-weight:600;color:var(--bright);">'+r[0]+'</span>'+(r[2]?'<span class="mono" style="font-size:11px;color:var(--dim);">'+r[2]+'</span>':'')+'</div><span class="mono" style="font-size:13px;color:var(--accent);white-space:nowrap;">'+r[1]+'</span></div>';}
     function show(i){body.innerHTML=SCHED[i].rows.map(row).join('');note.textContent='// '+SCHED[i].note;segs.forEach(function(s,j){var on=j===i;s.style.background=on?'var(--accent)':'transparent';s.style.color=on?'var(--bg)':'var(--dim)';});}
     segs.forEach(function(s){s.onclick=function(){show(+s.dataset.b);};});
-    show(0);
+    show(1);
   })();
   </script>
 
   <div class="mono" style="margin-top: 28px; text-align: center; font-size: 12px; color: var(--fainter);">&gt; end_of_transmission // stay curious, stay safe_</div>
 </div>
 
+<script src="vocab-data.js"></script>
 <script src="../config.js"></script>
 <script src="../resources.js"></script>
 <script>
@@ -378,6 +386,23 @@ renderExam(); setInterval(renderExam, 60*60*1000);
   #objList li{position:relative;padding:13px 0 13px 38px;border-bottom:1px solid var(--border2);color:var(--text);line-height:1.5;font-size:15px;}
   #objList li:last-child{border-bottom:none;}
   #objList li::before{content:"\2713";position:absolute;left:0;top:12px;width:22px;height:22px;border-radius:6px;background:var(--accent);color:#06140a;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px -3px var(--accent);}
+  .objTabs{display:flex;gap:8px;padding:16px 24px 0;}
+  .objTab{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.5px;padding:9px 14px;border-radius:8px 8px 0 0;border:1px solid var(--border2);border-bottom:none;background:var(--panel2);color:var(--faint);cursor:pointer;}
+  .objTab.on{background:var(--panel);color:var(--bright);border-color:var(--border3);}
+  .fcWrap{padding:20px 24px 26px;display:none;}
+  .fcWrap.on{display:block;}
+  .fcScene{perspective:1200px;}
+  .fcCard{position:relative;height:180px;border-radius:12px;cursor:pointer;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,.2,.2,1);}
+  .fcCard.flipped{transform:rotateY(180deg);}
+  .fcFace{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;border:1px solid var(--border3);background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center;}
+  .fcFace.back{transform:rotateY(180deg);background:var(--panel3);}
+  .fcTerm{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--accent2);}
+  .fcDef{font-size:14.5px;line-height:1.55;color:var(--text);}
+  .fcHint{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--faint);letter-spacing:.5px;}
+  .fcNav{display:flex;align-items:center;justify-content:space-between;margin-top:16px;gap:10px;}
+  .fcBtn{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);cursor:pointer;}
+  .fcBtn:hover{border-color:var(--border-hi);background:var(--panel3);}
+  .fcCount{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);}
 
   /* --- touch targets: phones and Chromebook touchscreens ---
      A 17px-tall text link is a coin toss with a fingertip. On coarse pointers
@@ -423,7 +448,22 @@ renderExam(); setInterval(renderExam, 60*60*1000);
       <button id="objClose" onclick="__closeObj()" aria-label="Close">ESC ✕</button>
     </div>
     <div class="mono" style="padding:18px 24px 0;font-size:11px;color:var(--accent);letter-spacing:2px;">LEARNING OBJECTIVES · YOU WILL BE ABLE TO</div>
+    <div class="objTabs">
+      <button type="button" class="objTab on" id="objTabObj" onclick="__objSwitch('obj')">OBJECTIVES</button>
+      <button type="button" class="objTab" id="objTabVocab" onclick="__objSwitch('vocab')">VOCAB FLASHCARDS</button>
+    </div>
     <ul id="objList"></ul>
+    <div class="fcWrap" id="fcWrap">
+      <div class="fcScene"><div class="fcCard" id="fcCard" onclick="__fcFlip()">
+        <div class="fcFace"><span class="fcTerm" id="fcTerm"></span><span class="fcHint">TAP TO FLIP</span></div>
+        <div class="fcFace back"><span class="fcDef" id="fcDef"></span><span class="fcHint">TAP TO FLIP BACK</span></div>
+      </div></div>
+      <div class="fcNav">
+        <button type="button" class="fcBtn" onclick="__fcNav(-1)">&larr; PREV</button>
+        <span class="fcCount" id="fcCount"></span>
+        <button type="button" class="fcBtn" onclick="__fcNav(1)">NEXT &rarr;</button>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -439,6 +479,52 @@ renderExam(); setInterval(renderExam, 60*60*1000);
     document.getElementById('objClose').focus();
   }
   window.__closeObj=function(){ov.classList.remove('on');};
+  var fcDeck=[], fcIdx=0, fcFlipped=false;
+  function loadDeck(moduleNum){
+    var terms = (window.CY2_VOCAB && window.CY2_VOCAB.terms) || [];
+    fcDeck = terms.filter(function(v){ return v.m === moduleNum; });
+    fcIdx = 0; fcFlipped = false;
+    renderCard();
+  }
+  function renderCard(){
+    var card=document.getElementById('fcCard');
+    if(!fcDeck.length){
+      document.getElementById('fcTerm').textContent='No vocab yet';
+      document.getElementById('fcDef').textContent='';
+      document.getElementById('fcCount').textContent='';
+      return;
+    }
+    var v=fcDeck[fcIdx];
+    document.getElementById('fcTerm').textContent=v.t;
+    document.getElementById('fcDef').textContent=v.d;
+    document.getElementById('fcCount').textContent=(fcIdx+1)+' / '+fcDeck.length;
+    card.classList.remove('flipped'); fcFlipped=false;
+  }
+  window.__fcFlip=function(){
+    if(!fcDeck.length) return;
+    fcFlipped=!fcFlipped;
+    document.getElementById('fcCard').classList.toggle('flipped',fcFlipped);
+  };
+  window.__fcNav=function(dir){
+    if(!fcDeck.length) return;
+    fcIdx=(fcIdx+dir+fcDeck.length)%fcDeck.length;
+    renderCard();
+  };
+  window.__objSwitch=function(which){
+    var isObj=which==='obj';
+    document.getElementById('objTabObj').classList.toggle('on',isObj);
+    document.getElementById('objTabVocab').classList.toggle('on',!isObj);
+    document.getElementById('objList').style.display=isObj?'':'none';
+    document.getElementById('fcWrap').classList.toggle('on',!isObj);
+    if(!isObj) loadDeck(currentModule+1);
+  };
+  var currentModule=0;
+  var origOpen=open;
+  open=function(i){
+    currentModule=i;
+    origOpen(i);
+    window.__objSwitch('obj');
+  };
   document.querySelectorAll('.mod').forEach(function(c){
     c.addEventListener('click',function(){open(+c.getAttribute('data-m'));});
     c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(+c.getAttribute('data-m'));}});
@@ -453,11 +539,11 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 
 <div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
   <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
   </a>
-  <span style="font-size:11px;color:var(--faint);">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only</span>
+  <span style="font-size:13px;color:var(--faint);font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
 </div>
 </body>
 </html>
