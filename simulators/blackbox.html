@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Box — API & Abstraction Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#a855f7;--accent2:#c98bff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#7c3fc0;--accent2:#6a2fb0;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.panel{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:76ch;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;margin-bottom:16px;}
+.rowLabel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--faint);margin-bottom:8px;display:block;}
+.apiPicker{display:flex;gap:8px;flex-wrap:wrap;}
+.apiBtn{padding:9px 15px;border-radius:9px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12.5px;cursor:pointer;}
+.apiBtn.active{border-color:var(--accent);background:var(--panel3);color:var(--bright);}
+.stage{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.sig{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--bright);background:var(--panel2);border:1px solid var(--border3);border-radius:10px;padding:12px 18px;}
+.sig .fn{color:var(--accent2);font-weight:700;}
+.arrowDown{font-size:22px;color:var(--faint);}
+.box{position:relative;width:230px;height:150px;border-radius:16px;border:2px solid var(--border3);background:repeating-linear-gradient(135deg,var(--panel2) 0 10px,var(--panel3) 10px 20px);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:border-color .3s;}
+.box.open{border-color:var(--accent);background:var(--panel2);}
+.boxLabel{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1.5px;color:var(--fainter);}
+.implCode{display:none;width:100%;height:100%;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;color:var(--text);white-space:pre-wrap;overflow:auto;}
+.box.open .implCode{display:block;}
+.box.open .boxLabel{display:none;}
+.resultBubble{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);border-radius:10px;padding:12px 18px;min-width:80px;text-align:center;}
+.callRow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;}
+.argInput{width:70px;padding:9px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;}
+.argInput:focus{outline:none;border-color:var(--border-hi);}
+.btn{padding:11px 18px;border-radius:10px;border:1px solid var(--border3);background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;cursor:pointer;}
+.btn:hover{filter:brightness(1.08);}
+.btn2{padding:9px 15px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;cursor:pointer;}
+.btn2:hover{border-color:var(--border-hi);background:var(--panel3);}
+.note{font-size:12.5px;color:var(--faint);line-height:1.65;margin-top:16px;}
+.note b{color:var(--dim);}
+.docBox{margin-top:10px;padding:12px 14px;border-radius:9px;background:var(--panel2);border:1px solid var(--border2);font-size:12.5px;color:var(--muted);line-height:1.6;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>BLACK BOX</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">API &amp; abstraction simulator · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">An API lets you call a function using only its name, its inputs, and what it promises to return \u2014 you never need to know HOW it works inside. Call each function below using just its signature, then reveal the box to see the implementation you never needed to know about.</p>
+
+  <div class="panel">
+    <span class="rowLabel">PICK A FUNCTION</span>
+    <div class="apiPicker" id="apiPicker"></div>
+  </div>
+
+  <div class="panel">
+    <div class="stage">
+      <div class="sig mono" id="sigLine"></div>
+    </div>
+    <div class="docBox" id="docBox"></div>
+    <div class="callRow" id="callRow"></div>
+    <div style="display:flex;justify-content:center;margin-top:18px;">
+      <div class="box" id="box"><span class="boxLabel">? ? ?</span><div class="implCode mono" id="implCode"></div></div>
+    </div>
+    <div class="callRow">
+      <button class="btn2" id="revealBtn" onclick="toggleReveal()">\uD83D\uDD0D REVEAL IMPLEMENTATION</button>
+    </div>
+    <div class="callRow" id="resultRow"></div>
+    <div class="note">Notice the result comes out the same way <b>no matter what's inside the box</b>. That's the point of an API: your code only depends on the signature (name, parameters, return type) staying the same. The person who wrote this function could completely rewrite the inside \u2014 swap the algorithm, make it 10x faster \u2014 and every program calling it keeps working without a single change, as long as the promise (inputs in, output out) doesn't change.</div>
+  </div>
+</div>
+
+<script>
+var APIS = {
+  sqrt: {
+    label:'squareRoot(n)', sig:'<span class="fn">squareRoot</span>(n) \u2192 number',
+    doc:'Takes a non-negative number and returns its square root. That\\u2019s the whole contract \\u2014 nothing about HOW it computes that is part of the promise.',
+    args:[{name:'n', def:16}],
+    run:function(a){ return Math.sqrt(a.n); },
+    impl:'function squareRoot(n) {\n  // Newton\\u2019s method \u2014 guess, then refine\n  let guess = n / 2;\n  for (let i = 0; i < 20; i++) {\n    guess = (guess + n / guess) / 2;\n  }\n  return guess;\n}'
+  },
+  sort: {
+    label:'sortAscending(list)', sig:'<span class="fn">sortAscending</span>(list) \u2192 list',
+    doc:'Takes a list of numbers and returns them in ascending order. The promise says nothing about which sorting algorithm is used underneath.',
+    args:[{name:'list', def:'5,2,8,1,9'}],
+    run:function(a){ return a.list.split(',').map(Number).sort(function(x,y){return x-y;}).join(', '); },
+    impl:'function sortAscending(list) {\n  // Bubble sort \u2014 simple, but O(n\\u00b2)\n  for (let i = 0; i < list.length; i++) {\n    for (let j = 0; j < list.length-1-i; j++) {\n      if (list[j] > list[j+1]) {\n        [list[j], list[j+1]] = [list[j+1], list[j]];\n      }\n    }\n  }\n  return list;\n}'
+  },
+  isPrime: {
+    label:'isPrime(n)', sig:'<span class="fn">isPrime</span>(n) \u2192 boolean',
+    doc:'Takes a whole number and returns true or false. Whether it checks every divisor or uses a clever shortcut is invisible to whoever calls it.',
+    args:[{name:'n', def:29}],
+    run:function(a){
+      var n=+a.n; if(n<2) return false;
+      for(var i=2;i*i<=n;i++) if(n%i===0) return false;
+      return true;
+    },
+    impl:'function isPrime(n) {\n  if (n < 2) return false;\n  for (let i = 2; i * i <= n; i++) {\n    if (n % i === 0) return false;\n  }\n  return true;\n}'
+  },
+  reverse: {
+    label:'reverseText(s)', sig:'<span class="fn">reverseText</span>(s) \u2192 string',
+    doc:'Takes text and returns it backwards. A caller only needs to know that\\u2014not how the reversal happens character by character.',
+    args:[{name:'s', def:'hello'}],
+    run:function(a){ return String(a.s).split('').reverse().join(''); },
+    impl:'function reverseText(s) {\n  let out = "";\n  for (let i = s.length - 1; i >= 0; i--) {\n    out += s[i];\n  }\n  return out;\n}'
+  }
+};
+var current = 'sqrt', revealed = false;
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderPicker(){
+  document.getElementById('apiPicker').innerHTML = Object.keys(APIS).map(function(k){
+    return '<button class="apiBtn'+(k===current?' active':'')+'" onclick="pick(\''+k+'\')">'+esc(APIS[k].label)+'</button>';
+  }).join('');
+}
+function pick(k){ current = k; revealed = false; render(); }
+function toggleReveal(){
+  revealed = !revealed;
+  document.getElementById('box').className = 'box'+(revealed?' open':'');
+  document.getElementById('revealBtn').textContent = revealed ? '\uD83D\uDD12 HIDE IMPLEMENTATION' : '\uD83D\uDD0D REVEAL IMPLEMENTATION';
+}
+function render(){
+  var api = APIS[current];
+  renderPicker();
+  document.getElementById('sigLine').innerHTML = api.sig;
+  document.getElementById('docBox').textContent = api.doc;
+  document.getElementById('implCode').textContent = api.impl;
+  document.getElementById('box').className = 'box'+(revealed?' open':'');
+  document.getElementById('revealBtn').textContent = revealed ? '\uD83D\uDD12 HIDE IMPLEMENTATION' : '\uD83D\uDD0D REVEAL IMPLEMENTATION';
+  document.getElementById('callRow').innerHTML = api.args.map(function(a){
+    return '<span class="mono" style="color:var(--dim);font-size:12.5px;">'+esc(a.name)+' =</span> <input class="argInput mono" id="arg-'+esc(a.name)+'" value="'+esc(a.def)+'">';
+  }).join('') + ' <button class="btn" onclick="callIt()">\u25b6 CALL</button>';
+  document.getElementById('resultRow').innerHTML = '';
+}
+function callIt(){
+  var api = APIS[current];
+  var a = {};
+  api.args.forEach(function(arg){ a[arg.name] = document.getElementById('arg-'+arg.name).value; });
+  var result;
+  try{ result = api.run(a); }catch(e){ result = 'error'; }
+  document.getElementById('resultRow').innerHTML = '<span class="mono" style="color:var(--dim);">returns</span> <div class="resultBubble">'+esc(String(result))+'</div>';
+}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocol Stack — Encapsulation Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#3f5fd0;--accent2:#7d97ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#3049a8;--accent2:#243c8a;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.panel{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:76ch;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;margin-bottom:16px;}
+.rowLabel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--faint);margin-bottom:8px;display:block;}
+.presetRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.presetBtn{padding:9px 15px;border-radius:9px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12.5px;cursor:pointer;}
+.presetBtn.active{border-color:var(--accent);background:var(--panel3);color:var(--bright);}
+.stage{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;}
+.side{flex:1;min-width:220px;text-align:center;}
+.sideLabel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;}
+.parcel{display:inline-flex;flex-direction:column;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px -18px #000;min-width:170px;}
+.layerBand{padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#04070c;text-align:left;opacity:.18;transition:opacity .35s ease,transform .3s ease;transform:scale(.94);}
+.layerBand.on{opacity:1;transform:scale(1);}
+.layerBand .name{display:block;font-size:10px;letter-spacing:.5px;}
+.layerBand .data{display:block;font-size:9px;font-weight:500;margin-top:2px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.midCol{flex:none;display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:40px;min-width:150px;}
+.arrow{font-size:26px;color:var(--accent2);}
+.stepLabel{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--bright);text-align:center;min-height:36px;}
+.btnRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;justify-content:center;}
+.stepSliderRow{display:flex;align-items:center;gap:12px;margin-top:16px;}
+.stepSliderRow input[type=range]{flex:1;accent-color:var(--accent);}
+.stepSliderRow .stepNum{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);min-width:64px;text-align:right;}
+.btn{padding:11px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border:none;}
+.btn:disabled{opacity:.4;cursor:default;filter:none;}
+.note{font-size:12.5px;color:var(--faint);line-height:1.65;margin-top:16px;}
+.note b{color:var(--dim);}
+.layerKey{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);}
+.layerKey span{display:inline-flex;align-items:center;gap:6px;}
+.sw{width:11px;height:11px;border-radius:3px;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>PROTOCOL STACK</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">encapsulation simulator · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Sending "Hi!" from your phone to a server means wrapping it in three more headers before it can leave the building, then unwrapping the same three headers in reverse on arrival. Watch the parcel get built up on send, and torn back down on receive.</p>
+
+  <div class="panel">
+    <span class="rowLabel">MESSAGE</span>
+    <div class="presetRow" id="presetRow"></div>
+  </div>
+
+  <div class="panel">
+    <div class="stage">
+      <div class="side">
+        <div class="sideLabel">SENDER</div>
+        <div class="parcel" id="sendParcel"></div>
+      </div>
+      <div class="midCol">
+        <div class="arrow" id="midArrow">&rarr;</div>
+        <div class="stepLabel" id="stepLabel">Click Play to send</div>
+      </div>
+      <div class="side">
+        <div class="sideLabel">RECEIVER</div>
+        <div class="parcel" id="recvParcel"></div>
+      </div>
+    </div>
+    <div class="btnRow">
+      <button class="btn primary" id="playBtn" onclick="play()">▶ SEND MESSAGE</button>
+      <button class="btn" id="pauseBtn" onclick="togglePause()" disabled>⏸ PAUSE</button>
+      <button class="btn" onclick="reset()">↺ RESET</button>
+    </div>
+    <div class="stepSliderRow">
+      <span class="mono" style="font-size:11px;color:var(--faint);">STEP</span>
+      <input type="range" id="stepSlider" min="0" max="8" value="0" step="1" oninput="scrub(this.value)">
+      <span class="stepNum mono" id="stepNum">0 / 8</span>
+    </div>
+    <div class="layerKey" id="layerKey"></div>
+    <div class="note" id="explainNote"></div>
+  </div>
+</div>
+
+<script>
+var LAYERS = [
+  { key:'app',  name:'APPLICATION',  color:'#7dd8ff', wrap:function(d){ return d; },
+    explain:'The actual message — what your app wants to say. Nothing here knows or cares how it will travel.' },
+  { key:'tcp',  name:'TRANSPORT (TCP)', color:'#ffcf5c', wrap:function(d){ return '[SEQ #, PORT] '+d; },
+    explain:'Adds a port number (which app on the destination should receive this) and a sequence number, so pieces can be reassembled in order and resent if lost.' },
+  { key:'ip',   name:'INTERNET (IP)', color:'#ff9de0', wrap:function(d){ return '[SRC\u2192DST IP] '+d; },
+    explain:'Adds source and destination addresses, so routers along the way know where this packet came from and where it\\u2019s headed \\u2014 without opening it.' },
+  { key:'link', name:'LINK (WI-FI/ETHERNET)', color:'#a3ffb0', wrap:function(d){ return '[MAC ADDR] '+d; },
+    explain:'Adds the physical hardware address for the very next hop \\u2014 your router, not the final destination. This layer changes at every hop; IP and TCP headers don\\u2019t.' }
+];
+var MESSAGES = ['Hi!', 'grade=91', 'GET /photo.jpg'];
+var current = MESSAGES[0];
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderPresets(){
+  document.getElementById('presetRow').innerHTML = MESSAGES.map(function(m){
+    return '<button class="presetBtn'+(m===current?' active':'')+'" onclick="setMsg(\''+esc(m).replace(/'/g,"\\\\'")+'\')">"'+esc(m)+'"</button>';
+  }).join('');
+}
+function setMsg(m){ current = m; renderPresets(); reset(); }
+
+function layerHtml(activeUpTo, data){
+  return LAYERS.map(function(L, i){
+    var on = i <= activeUpTo;
+    var payload = data;
+    for(var j=1;j<=i;j++) payload = LAYERS[j].wrap(payload);
+    // show cumulative wrap up to this layer, innermost app layer always shows raw message
+    var shown = i===0 ? current : payload;
+    return '<div class="layerBand'+(on?' on':'')+'" style="background:'+L.color+';">'+
+      '<span class="name">'+L.name+'</span><span class="data">'+(on?esc(shown):'&mdash;')+'</span></div>';
+  }).join('');
+}
+function renderKey(){
+  document.getElementById('layerKey').innerHTML = LAYERS.map(function(L){
+    return '<span><span class="sw" style="background:'+L.color+';"></span>'+L.name+'</span>';
+  }).join('');
+}
+
+var playing = false, curStep = 0, timer = null;
+var N = LAYERS.length, TOTAL = N*2;
+
+function setUI(sendUpTo, recvUpTo, label, arrow, explain){
+  document.getElementById('sendParcel').innerHTML = layerHtml(sendUpTo, current);
+  document.getElementById('recvParcel').innerHTML = layerHtml(recvUpTo, current);
+  document.getElementById('stepLabel').textContent = label;
+  document.getElementById('midArrow').textContent = arrow;
+  document.getElementById('explainNote').innerHTML = explain;
+  document.getElementById('stepSlider').value = curStep;
+  document.getElementById('stepNum').textContent = curStep+' / '+TOTAL;
+}
+
+function renderStep(i){
+  curStep = Math.max(0, Math.min(TOTAL, i));
+  if(curStep===0){
+    setUI(-1, -1, 'Click Play or drag the slider to send', '\u2192', '');
+  } else if(curStep>=1 && curStep<=N){
+    var li = curStep-1;
+    setUI(li, -1, 'Sender adds: '+LAYERS[li].name, '\u2192', '<b>'+LAYERS[li].name+':</b> '+LAYERS[li].explain);
+  } else if(curStep===N+1){
+    setUI(N-1, N-1, 'Fully wrapped \u2014 arrived at receiver', '\u21c9', '');
+  } else {
+    var activeUpTo = 2*N - curStep;
+    var strippedIdx = activeUpTo + 1;
+    var isLast = curStep===TOTAL;
+    setUI(N-1, activeUpTo,
+      isLast ? '\u2713 Message delivered to the receiving app' : 'Receiver strips off: '+LAYERS[strippedIdx].name,
+      isLast ? '\u2713' : '\u2192',
+      '<b>'+LAYERS[strippedIdx].name+' removed:</b> '+LAYERS[strippedIdx].explain+' Its job is done, so this header is discarded before handing the rest up to the next layer.');
+  }
+  document.getElementById('playBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = curStep>=TOTAL;
+}
+
+function reset(){
+  playing = false; clearInterval(timer); timer=null;
+  document.getElementById('pauseBtn').textContent = '\u23f8 PAUSE';
+  document.getElementById('pauseBtn').disabled = true;
+  renderStep(0);
+}
+
+function play(){
+  clearInterval(timer);
+  curStep = 0; playing = true;
+  document.getElementById('pauseBtn').disabled = false;
+  document.getElementById('pauseBtn').textContent = '\u23f8 PAUSE';
+  renderStep(0);
+  timer = setInterval(function(){
+    if(curStep>=TOTAL){ clearInterval(timer); playing=false; document.getElementById('pauseBtn').disabled=true; return; }
+    renderStep(curStep+1);
+  }, 640);
+}
+function togglePause(){
+  if(playing){
+    playing=false; clearInterval(timer);
+    document.getElementById('pauseBtn').textContent = '\u25b6 RESUME';
+  } else if(curStep<TOTAL){
+    playing=true;
+    document.getElementById('pauseBtn').textContent = '\u23f8 PAUSE';
+    timer = setInterval(function(){
+      if(curStep>=TOTAL){ clearInterval(timer); playing=false; document.getElementById('pauseBtn').disabled=true; return; }
+      renderStep(curStep+1);
+    }, 640);
+  }
+}
+function scrub(v){
+  playing=false; clearInterval(timer);
+  document.getElementById('pauseBtn').textContent = '\u23f8 PAUSE';
+  renderStep(+v);
+}
+
+renderPresets(); renderKey(); reset();
+</script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Crew — Parallel vs. Sequential Computing Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#0d9d63;--accent2:#4fd68a;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#0a7d4e;--accent2:#0d9d63;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.panel{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:74ch;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;margin-bottom:16px;}
+.rowLabel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--faint);margin-bottom:8px;display:block;}
+.pickRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.pickBtn{padding:9px 16px;border-radius:9px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:13px;cursor:pointer;}
+.pickBtn.active{border-color:var(--accent);background:var(--panel3);color:var(--bright);}
+.sliderRow{display:flex;align-items:center;gap:14px;}
+input[type=range]{flex:1;accent-color:var(--accent);}
+.sliderVal{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--accent2);font-weight:800;min-width:90px;text-align:right;}
+.laneLabel{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--dim);margin:14px 0 6px;display:flex;justify-content:space-between;}
+.laneLabel b{color:var(--bright);}
+.lane{display:flex;gap:4px;flex-wrap:wrap;padding:8px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);min-height:38px;}
+.tile{width:20px;height:20px;border-radius:4px;background:var(--panel3);border:1px solid var(--border2);flex:none;transition:background .1s;}
+.tile.done{background:var(--worker-color,var(--accent));border-color:transparent;}
+.tile.active{background:var(--worker-color,var(--accent));opacity:.55;box-shadow:0 0 0 2px var(--worker-color,var(--accent));}
+.timeReadout{display:flex;gap:26px;flex-wrap:wrap;margin-top:18px;}
+.timeStat{min-width:140px;}
+.timeStat .k{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;color:var(--faint);}
+.timeStat .v{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;color:var(--bright);margin-top:2px;}
+.timeStat .v.ok{color:var(--ok);}
+.btn{padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:linear-gradient(120deg,var(--accent),var(--accent2));color:#04120a;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;cursor:pointer;margin-top:16px;}
+.btn:hover{filter:brightness(1.08);}
+.btn:disabled{opacity:.5;cursor:default;filter:none;}
+.resultBox{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.6;display:none;}
+.resultBox.show{display:block;}
+.resultBox.good{background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);color:var(--text);}
+.resultBox.meh{background:color-mix(in srgb,var(--warn) 14%,transparent);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);color:var(--text);}
+.note{font-size:12.5px;color:var(--faint);line-height:1.65;margin-top:14px;}
+.note b{color:var(--dim);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>WORK CREW</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">parallel vs. sequential computing simulator · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">A job of painting tiles gets done by 1 worker (sequential) or split across a crew (parallel). More workers finish the tiles faster — but coordinating a crew costs time too. Pick a job size and crew size, then race them and watch when adding workers stops actually helping.</p>
+
+  <div class="panel">
+    <span class="rowLabel">JOB SIZE (TILES TO PAINT)</span>
+    <div class="sliderRow">
+      <input type="range" id="taskSlider" min="8" max="64" value="24" step="1" oninput="onTaskChange()">
+      <div class="sliderVal" id="taskVal">24 tiles</div>
+    </div>
+    <span class="rowLabel" style="margin-top:18px;">CREW SIZE</span>
+    <div class="pickRow" id="workerPicker"></div>
+    <button class="btn" id="runBtn" onclick="runRace()">▶ START THE RACE</button>
+  </div>
+
+  <div class="panel">
+    <div class="laneLabel"><span>SEQUENTIAL &mdash; 1 worker, no coordination needed</span><b id="seqTime">0.0s</b></div>
+    <div class="lane" id="seqLane"></div>
+
+    <div class="laneLabel" style="margin-top:22px;"><span>PARALLEL &mdash; crew of <b id="crewCount">4</b>, plus coordination overhead</span><b id="parTime">0.0s</b></div>
+    <div id="parLanes"></div>
+
+    <div class="timeReadout">
+      <div class="timeStat"><div class="k">SEQUENTIAL TIME</div><div class="v" id="statSeq">&mdash;</div></div>
+      <div class="timeStat"><div class="k">PARALLEL TIME</div><div class="v ok" id="statPar">&mdash;</div></div>
+      <div class="timeStat"><div class="k">ACTUAL SPEEDUP</div><div class="v" id="statSpeedup">&mdash;</div></div>
+      <div class="timeStat"><div class="k">IDEAL SPEEDUP (LINEAR)</div><div class="v" id="statIdeal">&mdash;</div></div>
+    </div>
+    <div class="resultBox mono" id="resultBox"></div>
+    <div class="note">Ideal speedup assumes doubling the crew halves the time \u2014 real systems never quite get there because of <b>coordination overhead</b>: splitting the work, assigning it, and merging results back together all take time too. A big crew on a small job can even end up <b>slower</b> than doing it alone \u2014 the overhead costs more than the parallel work saves.</div>
+  </div>
+</div>
+
+<script>
+var MS_PER_TILE = 240;
+var COORD_BASE = 220, COORD_PER_WORKER = 160;
+var WORKER_COLORS = ['#7dd8ff','#ffcf5c','#ff9de0','#a3ffb0','#c98bff','#ff9838','#5fe0d0','#ffa1a1'];
+var N = 24, workers = 4, running = false;
+
+function onTaskChange(){ N = +document.getElementById('taskSlider').value; document.getElementById('taskVal').textContent = N+' tiles'; buildLanes(); }
+function pickWorkers(w){ workers = w; document.getElementById('crewCount').textContent = w; renderWorkerPicker(); buildLanes(); }
+function renderWorkerPicker(){
+  document.getElementById('workerPicker').innerHTML = [1,2,4,8].map(function(w){
+    return '<button class="pickBtn'+(w===workers?' active':'')+'" onclick="pickWorkers('+w+')">'+w+' worker'+(w>1?'s':'')+'</button>';
+  }).join('');
+}
+function coordOverheadMs(w){ return w<=1 ? 0 : COORD_BASE + (w-1)*COORD_PER_WORKER; }
+
+function buildLanes(){
+  document.getElementById('seqLane').innerHTML = tileHtml(N, 'var(--accent2)');
+  var perWorker = Math.ceil(N/workers);
+  var html='';
+  for(var w=0; w<workers; w++){
+    var count = Math.min(perWorker, Math.max(0, N - w*perWorker));
+    html += '<div class="lane" style="--worker-color:'+WORKER_COLORS[w%WORKER_COLORS.length]+';margin-top:6px;">'+tileHtml(count, WORKER_COLORS[w%WORKER_COLORS.length])+'</div>';
+  }
+  document.getElementById('parLanes').innerHTML = html;
+  document.getElementById('seqTime').textContent = (N*MS_PER_TILE/1000).toFixed(1)+'s';
+  document.getElementById('parTime').textContent = ((coordOverheadMs(workers)+perWorker*MS_PER_TILE)/1000).toFixed(1)+'s';
+  document.getElementById('resultBox').className='resultBox mono';
+}
+function tileHtml(n, color){
+  var s=''; for(var i=0;i<n;i++) s += '<div class="tile" style="--worker-color:'+color+';"></div>';
+  return s;
+}
+
+function runRace(){
+  if(running) return; running=true;
+  document.getElementById('runBtn').disabled=true;
+  var seqTiles = document.querySelectorAll('#seqLane .tile');
+  var parLaneEls = document.querySelectorAll('#parLanes .lane');
+  seqTiles.forEach(function(t){ t.className='tile'; });
+  parLaneEls.forEach(function(l){ l.querySelectorAll('.tile').forEach(function(t){ t.className='tile'; }); });
+
+  var perWorker = Math.ceil(N/workers);
+  var overhead = coordOverheadMs(workers);
+  var seqTotal = N*MS_PER_TILE;
+  var parTotal = overhead + perWorker*MS_PER_TILE;
+  var maxTotal = Math.max(seqTotal, parTotal);
+  var t0 = performance.now();
+
+  function frame(){
+    var elapsed = performance.now()-t0;
+
+    var seqDone = Math.min(N, Math.floor(elapsed/MS_PER_TILE));
+    seqTiles.forEach(function(t,i){ t.className = 'tile'+(i<seqDone?' done':(i===seqDone?' active':'')); });
+
+    parLaneEls.forEach(function(lane){
+      var tiles = lane.querySelectorAll('.tile');
+      var laneElapsed = Math.max(0, elapsed-overhead);
+      var done = Math.min(tiles.length, Math.floor(laneElapsed/MS_PER_TILE));
+      tiles.forEach(function(t,i){ t.className = 'tile'+(i<done?' done':(i===done?' active':'')); });
+    });
+
+    if(elapsed < maxTotal + 60){ requestAnimationFrame(frame); }
+    else finish(seqTotal, parTotal);
+  }
+  requestAnimationFrame(frame);
+}
+
+function finish(seqTotal, parTotal){
+  running=false;
+  document.getElementById('runBtn').disabled=false;
+  var speedup = seqTotal/parTotal;
+  document.getElementById('statSeq').textContent = (seqTotal/1000).toFixed(2)+'s';
+  document.getElementById('statPar').textContent = (parTotal/1000).toFixed(2)+'s';
+  document.getElementById('statSpeedup').textContent = speedup.toFixed(2)+'x';
+  document.getElementById('statIdeal').textContent = workers+'x';
+  var box = document.getElementById('resultBox');
+  if(workers===1){
+    box.className='resultBox mono show meh';
+    box.textContent = 'Crew of 1 is just the sequential run \u2014 no coordination cost, no speedup either.';
+  } else if(speedup >= workers*0.75){
+    box.className='resultBox mono show good';
+    box.textContent = '\u2713 Close to ideal '+workers+'x speedup \u2014 the job was big enough that coordination overhead barely mattered.';
+  } else if(parTotal >= seqTotal){
+    box.className='resultBox mono show meh';
+    box.textContent = '\u26a0 The crew was SLOWER than doing it alone \u2014 the job was too small to be worth splitting; coordination overhead ('+(coordOverheadMs(workers)/1000).toFixed(2)+'s) ate all the savings.';
+  } else {
+    box.className='resultBox mono show meh';
+    box.textContent = '\u25b3 Real speedup ('+speedup.toFixed(2)+'x) fell well short of the ideal '+workers+'x \u2014 this is diminishing returns: coordination overhead grows with crew size, so doubling workers never quite doubles speed.';
+  }
+}
+
+renderWorkerPicker();
+buildLanes();
+</script>
+</body>
+</html>

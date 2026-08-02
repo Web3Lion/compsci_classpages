@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Address Space — IPv4 vs. IPv6 Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#0d9d63;--accent2:#4fd68a;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;--v4:#ffcf5c;--v6:#7dd8ff;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#0a7d4e;--accent2:#0d9d63;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;--v4:#8a6300;--v6:#0072b8;}
+body,.card,.panel{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:76ch;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;margin-bottom:16px;}
+.rowLabel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--faint);margin-bottom:8px;display:block;}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:800px){.cols{grid-template-columns:1fr;}}
+.verCard{border-radius:12px;padding:18px 20px;border:1px solid var(--border2);background:var(--panel2);}
+.verCard.v4{border-color:color-mix(in srgb,var(--v4) 45%,transparent);}
+.verCard.v6{border-color:color-mix(in srgb,var(--v6) 45%,transparent);}
+.verHead{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;}
+.verHead b{font-size:16px;color:var(--bright);}
+.verHead span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);}
+.addrDisplay{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;color:var(--bright);background:#04070c;border-radius:9px;padding:12px 14px;word-break:break-all;line-height:1.5;letter-spacing:.4px;}
+.addrDisplay .grp{padding:1px 2px;border-radius:3px;}
+.metricRow{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim);padding:7px 0;border-bottom:1px solid var(--border2);}
+.metricRow b{color:var(--bright);}
+.metricRow:last-child{border-bottom:none;}
+.bitBar{display:flex;height:22px;border-radius:6px;overflow:hidden;margin-top:6px;border:1px solid var(--border2);}
+.bitSeg{height:100%;}
+.scaleWrap{margin-top:10px;}
+.scaleTrack{height:26px;border-radius:8px;background:var(--panel3);position:relative;overflow:hidden;}
+.scaleFill{position:absolute;left:0;top:0;bottom:0;border-radius:8px;}
+.scaleFill.v4{background:var(--v4);}
+.scaleFill.v6{background:var(--v6);width:100%;}
+.scaleLabel{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#04070c;}
+.diffGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:6px;}
+.diffCard{border:1px solid var(--border2);border-radius:10px;background:var(--bg);padding:13px 15px;}
+.diffCard .k{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;color:var(--faint);margin-bottom:6px;}
+.diffCard .v{font-size:13px;color:var(--text);line-height:1.55;}
+.regenRow{display:flex;gap:8px;margin-top:14px;}
+.btn{padding:10px 16px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.note{font-size:12.5px;color:var(--faint);line-height:1.65;margin-top:14px;}
+.note b{color:var(--dim);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>ADDRESS SPACE</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">IPv4 vs. IPv6 simulator · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Both are just addresses — a unique number for every device on a network. The difference is how many bits each one uses, and that gap is enormous: IPv6 doesn't just add a few more addresses, it adds enough that IPv4's <b>entire</b> address space would fit inside a single rounding error of IPv6's.</p>
+
+  <div class="panel">
+    <div class="cols">
+      <div class="verCard v4">
+        <div class="verHead"><b>IPv4</b><span>32 bits &middot; 4 groups of 8 bits</span></div>
+        <div class="addrDisplay" id="addrV4"></div>
+        <div class="bitBar" id="bitsV4"></div>
+        <div class="metricRow"><span>Total possible addresses</span><b>4,294,967,296 (~4.3 billion)</b></div>
+        <div class="metricRow"><span>Written as</span><b>4 decimal groups, dot-separated</b></div>
+        <div class="metricRow"><span>Status today</span><b style="color:var(--warn);">Exhausted \u2014 reused via NAT</b></div>
+      </div>
+      <div class="verCard v6">
+        <div class="verHead"><b>IPv6</b><span>128 bits &middot; 8 groups of 16 bits</span></div>
+        <div class="addrDisplay" id="addrV6"></div>
+        <div class="bitBar" id="bitsV6"></div>
+        <div class="metricRow"><span>Total possible addresses</span><b>340 undecillion (3.4\u00d710<sup>38</sup>)</b></div>
+        <div class="metricRow"><span>Written as</span><b>8 hexadecimal groups, colon-separated</b></div>
+        <div class="metricRow"><span>Status today</span><b style="color:var(--ok);">Enough for every grain of sand on Earth, many times over</b></div>
+      </div>
+    </div>
+    <div class="regenRow">
+      <button class="btn" onclick="regen()">\u21bb GENERATE NEW RANDOM ADDRESSES</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="rowLabel">ADDRESS SPACE, DRAWN TO SCALE</span>
+    <div class="note" style="margin-top:0;margin-bottom:16px;">Each bar's <b>width</b> represents how many total addresses that version can create. Same scale, side by side — not two separate charts.</div>
+    <div class="scaleWrap">
+      <div class="scaleHead"><span class="mono" style="font-size:11px;color:var(--v6);font-weight:700;">IPv6</span><span class="mono" style="font-size:11px;color:var(--faint);">3.4×10<sup>38</sup> possible addresses</span></div>
+      <div class="scaleTrack"><div class="scaleFill v6"></div><div class="scaleLabel">100% of the scale</div></div>
+    </div>
+    <div class="scaleWrap" style="margin-top:22px;">
+      <div class="scaleHead"><span class="mono" style="font-size:11px;color:var(--v4);font-weight:700;">IPv4</span><span class="mono" style="font-size:11px;color:var(--faint);">4.3×10<sup>9</sup> possible addresses</span></div>
+      <div class="scaleTrack">
+        <div class="scaleFill v4" style="width:0.0000000013%;min-width:1px;"></div>
+        <div class="scaleCallout"><div class="stub"></div><div class="txt">← this hairline is IPv4's ENTIRE bar, drawn at the exact same scale as IPv6's above</div></div>
+      </div>
+    </div>
+    <div class="note">That IPv4 bar isn't rounded down to nothing — it's drawn at its real, honest width; it's just that small next to IPv6. IPv6 has roughly <b>79 octillion times</b> as many addresses as IPv4 has, total. If IPv4's whole address space were one grain of sand, IPv6's would be bigger than every grain of sand on every beach on Earth.</div>
+  </div>
+
+  <div class="panel">
+    <span class="rowLabel">WHY THE SWITCH WAS NECESSARY</span>
+    <div class="diffGrid">
+      <div class="diffCard"><div class="k">THE PROBLEM</div><div class="v">IPv4 was designed in 1981, when nobody expected billions of phones, laptops, and smart devices to each need their own address. 4.3 billion sounded infinite \u2014 it wasn't.</div></div>
+      <div class="diffCard"><div class="k">THE WORKAROUND</div><div class="v">NAT (Network Address Translation) lets many devices on one home/school network share a single public IPv4 address \u2014 it stretched IPv4's life by years, but it's a patch, not a fix.</div></div>
+      <div class="diffCard"><div class="k">THE REAL FIX</div><div class="v">IPv6 quadruples the bit length (32 \u2192 128), and because address space grows exponentially with bits, that's not 4x more addresses \u2014 it's billions of billions of times more.</div></div>
+      <div class="diffCard"><div class="k">WHY NOT JUST ADD A FEW BITS?</div><div class="v">Designers wanted headroom that would never run out again \u2014 128 bits leaves room for every device, every network, and every future use case without ever repeating this crisis.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function esc(s){ return String(s); }
+function rand(max){ return Math.floor(Math.random()*max); }
+function hex(n,len){ return n.toString(16).padStart(len,'0'); }
+
+function genV4(){
+  var parts = [rand(256),rand(256),rand(256),rand(256)];
+  return parts;
+}
+function genV6(){
+  var parts = [];
+  for(var i=0;i<8;i++) parts.push(hex(rand(65536),4));
+  return parts;
+}
+
+var V4_COLORS = ['#ffcf5c','#ffb85c','#ff9d5c','#ff835c'];
+var V6_COLORS = ['#7dd8ff','#7dc0ff','#7da8ff','#8f9dff','#a88fff','#c17dff','#e07dff','#ff7de0'];
+
+function renderV4(){
+  var parts = genV4();
+  var html = parts.map(function(p,i){ return '<span class="grp" style="background:color-mix(in srgb,'+V4_COLORS[i]+' 22%,transparent);color:'+V4_COLORS[i]+';">'+p+'</span>'; }).join('<span style="color:var(--faint);">.</span>');
+  document.getElementById('addrV4').innerHTML = html;
+  document.getElementById('bitsV4').innerHTML = parts.map(function(p,i){
+    return '<div class="bitSeg" style="flex:1;background:'+V4_COLORS[i]+';" title="'+p+' = '+p.toString(2).padStart(8,'0')+' (8 bits)"></div>';
+  }).join('');
+}
+function renderV6(){
+  var parts = genV6();
+  var html = parts.map(function(p,i){ return '<span class="grp" style="background:color-mix(in srgb,'+V6_COLORS[i]+' 20%,transparent);color:'+V6_COLORS[i]+';">'+p+'</span>'; }).join('<span style="color:var(--faint);">:</span>');
+  document.getElementById('addrV6').innerHTML = html;
+  document.getElementById('bitsV6').innerHTML = parts.map(function(p,i){
+    return '<div class="bitSeg" style="flex:1;background:'+V6_COLORS[i]+';" title="'+p+' = 16 bits"></div>';
+  }).join('');
+}
+function regen(){ renderV4(); renderV6(); }
+regen();
+</script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error Identifier — Syntax, Runtime &amp; Logic Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#0072b8;--accent2:#005c94;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.panel,.tab,.btn,.slot,.row{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.scorebar{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);align-items:center;}
+.stat{padding:8px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--panel);}
+.stat b{color:var(--bright);}
+.filterBtns{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;}
+.fBtn{padding:7px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11.5px;cursor:pointer;font-weight:700;}
+.fBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--bright);}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);margin-bottom:10px;}
+.codeBox{background:#050810;border:1px solid var(--border2);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.9;overflow-x:auto;white-space:pre;color:var(--text);}
+.codeBox .errLine{background:rgba(255,92,122,.12);display:block;margin:0 -18px;padding:0 18px;}
+.badge{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 8px;border-radius:6px;background:var(--panel3);border:1px solid var(--border3);color:var(--accent2);}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;}
+.choice{padding:16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;text-align:center;}
+.choice:hover{border-color:var(--border-hi);background:var(--panel3);}
+.choice.correctPick{border-color:var(--ok);background:rgba(79,214,138,.14);}
+.choice.wrongPick{border-color:var(--bad);background:rgba(255,92,122,.14);}
+.choice:disabled{cursor:default;}
+.choice small{display:block;font-weight:400;color:var(--faint);font-size:10.5px;margin-top:4px;}
+.controls{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:space-between;}
+.navBtns{display:flex;gap:8px;}
+.btn{padding:12px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.65;}
+.feedback.correct{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);}
+.feedback.wrong{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);}
+.feedback b{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>ERROR IDENTIFIER</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">syntax vs. runtime vs. logic · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Read the snippet and decide what kind of error it has: a <b>syntax</b> error (breaks the language's rules, won't even run), a <b>runtime</b> error (crashes mid-execution), or a <b>logic</b> error (runs fine, produces the wrong result).</p>
+
+  <div class="scorebar">
+    <div class="stat">PROBLEM <b id="idxOut">1</b>/<span id="totalOut">1</span></div>
+    <div class="stat">CORRECT <b id="correctOut" style="color:var(--ok);">0</b></div>
+    <div class="filterBtns" id="filterBtns"></div>
+  </div>
+
+  <div class="panel">
+    <div class="meta"><span class="badge" id="typeBadgeHidden">PSEUDOCODE</span> &nbsp; <span id="descOut"></span></div>
+    <div class="codeBox" id="codeBox"></div>
+
+    <div class="choices" id="choices"></div>
+
+    <div id="fbSlot"></div>
+
+    <div class="controls">
+      <button class="btn" onclick="shuffleAll()">↻ SHUFFLE SET</button>
+      <div class="navBtns">
+        <button class="btn" onclick="prevQ()">← PREV</button>
+        <button class="btn" onclick="nextQ()">NEXT →</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var PROBLEMS = [
+  // ---- SYNTAX ----
+  {type:'syntax', desc:"Should display a greeting.", code:["PROCEDURE greet(name)","  DISPLAY(\"Hello, \" + name\nEND PROCEDURE"], errLine:1, explain:"The closing parenthesis on DISPLAY(...) is missing. The interpreter can't even parse this line — that's a syntax error, caught before the program ever runs."},
+  {type:'syntax', desc:"Should check if x is positive.", code:["IF x > 0","  DISPLAY(\"Positive\")","ELSE","  DISPLAY(\"Not positive\")"], errLine:3, explain:"There's no END IF / closing block for the IF statement. Missing block terminators are a classic syntax error — the structure itself is malformed."},
+  {type:'syntax', desc:"Should set a variable to a list of scores.", code:["scores = [85, 92, 78 100]","DISPLAY(scores)"], errLine:0, explain:"There's a missing comma between 78 and 100 inside the list literal. The parser can't read this as a valid list — syntax error."},
+  {type:'syntax', desc:"Should define a loop that counts to 10.", code:["FOR i FROM 1 TO 10","  DISPLAY(i","END FOR"], errLine:1, explain:"DISPLAY(i is missing its closing parenthesis — an incomplete expression. The program fails to parse before it can run."},
+  {type:'syntax', desc:"Should compare two values for equality.", code:["IF a == b","  DISPLAY(\"Equal\")","END IF"], errLine:0, explain:"This pseudocode dialect uses a single `=` for comparison, not `==`. Using the wrong comparison operator entirely (not just wrong logic) is treated as a syntax error here — the statement isn't valid in this language."},
+  // ---- RUNTIME ----
+  {type:'runtime', desc:"Should print the first element of a list.", code:["list = []","DISPLAY(list[0])"], errLine:1, explain:"The list is empty, so there is no index 0 to access. This is valid syntax and valid logic in general, but it crashes the instant it executes — a runtime error (index out of bounds)."},
+  {type:'runtime', desc:"Should divide total points by number of students.", code:["total = 450","students = 0","average = total / students","DISPLAY(average)"], errLine:2, explain:"Dividing by zero is syntactically fine and often intended, but it causes the program to crash when this line actually executes — a runtime error."},
+  {type:'runtime', desc:"Should read a value the user typed as a number.", code:["input = GET_INPUT()","doubled = input * 2","DISPLAY(doubled)"], errLine:1, explain:"If the user types text instead of a number, multiplying a string by 2 fails when this line runs — the program compiles/parses fine, but crashes during execution based on the actual input."},
+  {type:'runtime', desc:"Should access the 5th item in a 3-item list.", code:["list = [10, 20, 30]","DISPLAY(list[4])"], errLine:1, explain:"Index 4 doesn't exist in a 3-item list (valid indices are 0–2). The code is well-formed, but it fails the moment this line executes — a runtime error."},
+  {type:'runtime', desc:"Should call a function that was never defined in this run.", code:["IF conditionRareyTrue","  result = computeSpecialCase()","DISPLAY(result)"], errLine:1, explain:"computeSpecialCase() was never defined anywhere in the program. The parser accepts the call syntactically, but the program crashes only if/when this line is actually reached — a runtime error."},
+  // ---- LOGIC ----
+  {type:'logic', desc:"Should add up all numbers in a list.", code:["total = 0","FOR EACH num IN list","  total = num","END FOR","DISPLAY(total)"], errLine:2, explain:"This runs without crashing and produces an answer — just the wrong one. `total = num` overwrites instead of accumulating, so it ends up holding only the last number. Runs fine, wrong result: a logic error."},
+  {type:'logic', desc:"Should print 'Even' or 'Odd' for a number n.", code:["IF n MOD 2 = 1","  DISPLAY(\"Even\")","ELSE","  DISPLAY(\"Odd\")"], errLine:1, explain:"The program runs and always prints something — it's just backwards. `n MOD 2 = 1` means n is odd, so this should say 'Odd'. It executes fine and gives a confidently wrong answer: a logic error."},
+  {type:'logic', desc:"Should check if a password is at least 8 characters.", code:["IF LENGTH(password) > 8","  DISPLAY(\"Valid\")","ELSE","  DISPLAY(\"Too short\")"], errLine:0, explain:"An 8-character password should be valid ('at least 8'), but `>` rejects exactly 8, requiring 9+. The program runs fine every time — it just enforces the wrong rule: a logic error."},
+  {type:'logic', desc:"Should count how many items in a list are even.", code:["count = 0","FOR EACH num IN list","  IF num MOD 2 = 0","    count = count + 1","DISPLAY(count)"], errLine:4, explain:"DISPLAY(count) is indented inside the loop, so it prints a running (wrong) total on every pass instead of the final count once. It runs without error the whole time — a logic error, not a crash."},
+  {type:'logic', desc:"Should swap the values of x and y.", code:["x = 5","y = 10","x = y","y = x","DISPLAY(x, y)"], errLine:2, explain:"By the time `y = x` runs, x was already overwritten with y's value, so y just becomes a copy of itself. Nothing crashes — the program finishes and prints wrong values: a logic error (needs a temp variable)."}
+];
+var TYPES = [
+  {key:'syntax', label:'SYNTAX', hint:'breaks language rules'},
+  {key:'runtime', label:'RUNTIME', hint:'crashes while running'},
+  {key:'logic', label:'LOGIC', hint:'runs, wrong result'}
+];
+var activeFilter = 'all';
+var order = [], idx = 0, answered = {}, correctCount = 0;
+
+function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function currentPool(){
+  return PROBLEMS.map(function(_,i){return i;}).filter(function(i){ return activeFilter==='all' || PROBLEMS[i].type===activeFilter; });
+}
+function shuffleAll(){
+  order = shuffleArr(currentPool());
+  idx = 0; answered = {}; correctCount = 0;
+  document.getElementById('totalOut').textContent = order.length;
+  document.getElementById('correctOut').textContent = 0;
+  render();
+}
+function setFilter(f){
+  activeFilter = f;
+  renderFilterBtns();
+  shuffleAll();
+}
+function renderFilterBtns(){
+  var opts = [{key:'all',label:'ALL'}].concat(TYPES.map(function(t){return {key:t.key,label:t.label};}));
+  document.getElementById('filterBtns').innerHTML = opts.map(function(o){
+    return '<div class="fBtn'+(o.key===activeFilter?' active':'')+'" onclick="setFilter(\''+o.key+'\')">'+o.label+'</div>';
+  }).join('');
+}
+
+function render(){
+  if(order.length===0){ document.getElementById('codeBox').innerHTML=''; document.getElementById('choices').innerHTML=''; document.getElementById('descOut').textContent='No problems in this filter.'; return; }
+  var p = PROBLEMS[order[idx]];
+  document.getElementById('idxOut').textContent = idx+1;
+  document.getElementById('descOut').textContent = p.desc;
+  var box = document.getElementById('codeBox');
+  box.innerHTML = p.code.map(function(line, li){
+    var cls = (answered[idx] && li===p.errLine) ? ' class="errLine"' : '';
+    return '<span'+cls+'>'+escHtml(line)+'</span>';
+  }).join('\n');
+
+  var a = answered[idx];
+  document.getElementById('choices').innerHTML = TYPES.map(function(t){
+    var cls = 'choice';
+    if(a){
+      if(t.key===p.type) cls += ' correctPick';
+      else if(t.key===a.pick) cls += ' wrongPick';
+    }
+    return '<button class="'+cls+'" '+(a?'disabled':'')+' onclick="pick(\''+t.key+'\')">'+t.label+'<small>'+t.hint+'</small></button>';
+  }).join('');
+
+  document.getElementById('fbSlot').innerHTML = a ? feedbackHtml(p, a) : '';
+  document.getElementById('correctOut').textContent = correctCount;
+}
+function escHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function pick(key){
+  var p = PROBLEMS[order[idx]];
+  if(answered[idx]) return;
+  var correct = key === p.type;
+  answered[idx] = {pick:key, correct:correct};
+  if(correct) correctCount++;
+  render();
+}
+function feedbackHtml(p, a){
+  var cls = a.correct ? 'correct' : 'wrong';
+  var headline = a.correct ? 'Correct — ' + p.type.toUpperCase() + ' error.' : 'Not quite — this is a ' + p.type.toUpperCase() + ' error.';
+  return '<div class="feedback '+cls+'"><b>'+headline+'</b>'+p.explain+'</div>';
+}
+function nextQ(){ if(order.length===0) return; idx = (idx+1) % order.length; render(); }
+function prevQ(){ if(order.length===0) return; idx = (idx-1+order.length) % order.length; render(); }
+
+renderFilterBtns();
+shuffleAll();
+</script>
+
+<div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
+  </a>
+  <span style="font-size:13px;color:#7f9cb8;font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
+</div>
+</body>
+</html>

@@ -59,11 +59,19 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
   .row { display: grid; grid-template-columns: 84px 1fr 150px; align-items: start; gap: 14px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--border2); border-radius: 10px; }
   .spin { width: 20px; height: 20px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
   /* blockchain "block" module cards */
-  .block { position: relative; overflow: hidden; padding: 16px 16px 16px 16px; background: linear-gradient(158deg, var(--panel2), var(--panel)); border: 1px solid var(--border2); border-radius: 10px; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+  .block { position: relative; overflow: hidden; padding: 16px 16px 16px 16px; background: linear-gradient(158deg, var(--panel2), var(--panel)); border: 1px solid var(--border2); border-radius: 10px; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; cursor: pointer; }
   .block:hover { transform: translateY(-3px); border-color: var(--cc); box-shadow: 0 0 0 1px var(--cc), 0 16px 36px -18px var(--cc); }
   .block .lnk { position: absolute; left: -7px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 3px; border: 1px solid var(--cc); background: var(--panel); transform: rotate(45deg); }
   .block .led { position: absolute; top: 13px; right: 13px; width: 8px; height: 8px; border-radius: 50%; background: var(--cc); box-shadow: 0 0 9px var(--cc); animation: led 1.9s ease-in-out infinite; }
   .block .hash { font-size: 10px; color: var(--faint); letter-spacing: .5px; margin-top: 10px; word-break: break-all; }
+  #objOverlay{position:fixed;inset:0;background:rgba(8,6,3,.72);backdrop-filter:blur(3px);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px;}
+  #objOverlay.on{display:flex;}
+  #objCard{width:100%;max-width:560px;max-height:82vh;overflow-y:auto;background:var(--panel);border:1px solid var(--border3);border-radius:14px;position:relative;}
+  #objClose{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:8px;border:1px solid var(--border2);background:var(--panel2);color:var(--faint);cursor:pointer;font-size:16px;line-height:1;}
+  #objList{list-style:none;margin:0;padding:0 24px 24px;}
+  #objList li{position:relative;padding:13px 0 13px 38px;border-bottom:1px solid var(--border2);color:var(--text);font-size:14.5px;line-height:1.5;}
+  #objList li:last-child{border-bottom:none;}
+  #objList li::before{content:"\2713";position:absolute;left:0;top:12px;width:22px;height:22px;border-radius:6px;background:var(--accent);color:#241a0c;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px -3px var(--accent);}
 
   /* --- touch targets: phones and Chromebook touchscreens ---
      A 17px-tall text link is a coin toss with a fingertip. On coarse pointers
@@ -97,6 +105,9 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
   @media(max-width:420px){
     .card{padding:12px !important;}
     .big{font-size:30px !important;}
+  }
+  @media(max-width:760px){
+    .instrGrid{grid-template-columns:1fr !important;}
   }
 </style>
 </head>
@@ -237,7 +248,40 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
   })();
   </script>
 
-  <div class="grid2">
+<div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(135deg, var(--panel2) 0%, var(--bg) 65%); padding: 30px 32px; margin-top: 22px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(247,160,31,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
+        <div style="position: relative; z-index: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 36px;" class="instrGrid">
+          <div>
+            <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// INSTRUCTOR</div>
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+              <div class="mono" style="width: 54px; height: 54px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--accent);">MR</div>
+              <div><div style="font-weight: 700; font-size: 20px; color: var(--bright);">Mr. Reasey</div><div style="font-size: 13px; color: var(--dim);">Web 3.0 &amp; Blockchain Instructor</div></div>
+            </div>
+            <div class="mono" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+              <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">EMAIL</span><span style="color: var(--accent); word-break: break-all;">rnreasey@southfayette.org</span></div>
+              <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">PHONE</span><a href="tel:4122214542">412-221-4542 ext. 688</a></div>
+            </div>
+            <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border2);">
+              <div class="mono" style="font-size: 11px; letter-spacing: 1.5px; color: var(--faint); margin-bottom: 12px;">OFFICE HOURS</div>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border2);"><span style="font-size: 14px; color: var(--text);">After School By Apt.</span><span class="mono" style="font-size: 13px; color: var(--dim);">2:00 – 2:35 PM</span></div>
+                <div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; color: var(--text);">By appointment</span><span class="mono" style="font-size: 13px; color: var(--dim);">Room AB212</span></div>
+              </div>
+              <p style="margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: var(--dim);">Stuck on a smart contract? Confused about a concept? Drop by — no appointment needed during office hours.</p>
+            </div>
+          </div>
+          <div>
+            <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// QUICK LINKS</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <a class="qlink" id="meetLink" href="https://meet.google.com/mro-asqu-djt" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M16 10l5-3v10l-5-3z" fill="var(--accent)"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Join Class Google Meet</span><span style="font-size:12px;color:var(--dim);">Live class video room</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+              <a class="qlink" href="syllabus.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 3v4h4M9 12h6M9 16h6" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Syllabus</span><span style="font-size:12px;color:var(--dim);">Policies &amp; expectations</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+              <a class="qlink" href="https://southfayette.powerschool.com/public/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 4L3 8l9 4 9-4-9-4z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.1 2.2 2 5 2s5-.9 5-2v-4.5" style="stroke:var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Grades</span><span style="font-size:12px;color:var(--dim);">PowerSchool portal</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="grid2">
     <div style="display: flex; flex-direction: column; gap: 24px;">
 
       <div class="card">
@@ -257,16 +301,18 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
           <span class="mono" style="color: var(--accent); font-size: 15px;">02 //</span>
           <h2 class="mono" style="font-size: 20px; margin: 0; color: var(--bright);">THE CHAIN</h2>
-          <span class="mono" style="margin-left:auto;font-size:11px;color:var(--faint);">7 MODULES</span>
+          <span class="mono" style="margin-left:auto;font-size:11px;color:var(--faint);">9 MODULES · CLICK A BLOCK FOR OBJECTIVES</span>
         </div>
         <div class="mgrid">
-          <div class="block" style="--cc:#f7a01f;"><span class="lnk"></span><span class="led" style="animation-delay:0s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 01 <span style="color:var(--faint);">/ BASICS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Blockchain Basics</div><div class="hash mono">0x00a1 · what a ledger is</div></div>
-          <div class="block" style="--cc:#ffc25c;"><span class="lnk"></span><span class="led" style="animation-delay:.3s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 02 <span style="color:var(--faint);">/ WALLETS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Digital Wallets</div><div class="hash mono">0x1f3c · keys &amp; custody</div></div>
-          <div class="block" style="--cc:#5ad1c9;"><span class="lnk"></span><span class="led" style="animation-delay:.6s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 03 <span style="color:var(--faint);">/ TOKENS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Tokens</div><div class="hash mono">0x2b8e · coins &amp; standards</div></div>
-          <div class="block" style="--cc:#9d8cff;"><span class="lnk"></span><span class="led" style="animation-delay:.9s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 04 <span style="color:var(--faint);">/ NFTS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">NFTs</div><div class="hash mono">0x3d7a · unique on-chain</div></div>
-          <div class="block" style="--cc:#5aa9ff;"><span class="lnk"></span><span class="led" style="animation-delay:1.2s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 05 <span style="color:var(--faint);">/ CODING</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Coding</div><div class="hash mono">0x4e21 · smart contracts</div></div>
-          <div class="block" style="--cc:#ff8fb0;"><span class="lnk"></span><span class="led" style="animation-delay:1.5s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 06 <span style="color:var(--faint);">/ DAPPS &amp; DAOS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">DApps &amp; DAOs</div><div class="hash mono">0x5f90 · decentralized apps</div></div>
-          <div class="block" style="--cc:#7ee08a;"><span class="lnk"></span><span class="led" style="animation-delay:1.8s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 07 <span style="color:var(--faint);">/ PROJECT</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Class Project</div><div class="hash mono">0x6a4d · build &amp; ship</div></div>
+          <div class="block" data-m="1" style="--cc:#f7a01f;"><span class="lnk"></span><span class="led" style="animation-delay:0s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 01 <span style="color:var(--faint);">/ FOUNDATIONS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Web 3 Principles &amp; Blockchain</div><div class="hash mono">0x00a1 · what a ledger is</div></div>
+          <div class="block" data-m="2" style="--cc:#ffc25c;"><span class="lnk"></span><span class="led" style="animation-delay:.3s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 02 <span style="color:var(--faint);">/ TOKENS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Cryptocurrency Coins &amp; Tokens</div><div class="hash mono">0x1f3c · coins &amp; tokenomics</div></div>
+          <div class="block" data-m="3" style="--cc:#9d8cff;"><span class="lnk"></span><span class="led" style="animation-delay:.6s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 03 <span style="color:var(--faint);">/ NFTS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">NFTs</div><div class="hash mono">0x2b8e · unique on-chain</div></div>
+          <div class="block" data-m="4" style="--cc:#5ad1c9;"><span class="lnk"></span><span class="led" style="animation-delay:.9s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 04 <span style="color:var(--faint);">/ WALLETS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Digital Wallets</div><div class="hash mono">0x3d7a · keys &amp; custody</div></div>
+          <div class="block" data-m="5" style="--cc:#5aa9ff;"><span class="lnk"></span><span class="led" style="animation-delay:1.2s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 05 <span style="color:var(--faint);">/ CODING</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Intro to Blockchain Coding</div><div class="hash mono">0x4e21 · smart contracts</div></div>
+          <div class="block" data-m="6" style="--cc:#ff8fb0;"><span class="lnk"></span><span class="led" style="animation-delay:1.5s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 06 <span style="color:var(--faint);">/ GOVERNANCE</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">DAOs</div><div class="hash mono">0x5f90 · decentralized orgs</div></div>
+          <div class="block" data-m="7" style="--cc:#7ee08a;"><span class="lnk"></span><span class="led" style="animation-delay:1.8s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 07 <span style="color:var(--faint);">/ DAPPS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">DApps</div><div class="hash mono">0x6a4d · decentralized apps</div></div>
+          <div class="block" data-m="8" style="--cc:#ff6b6b;"><span class="lnk"></span><span class="led" style="animation-delay:2.1s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 08 <span style="color:var(--faint);">/ ETHICS</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Ethical &amp; Legal Considerations</div><div class="hash mono">0x7b18 · law &amp; responsibility</div></div>
+          <div class="block" data-m="9" style="--cc:#f7931a;"><span class="lnk"></span><span class="led" style="animation-delay:2.4s;"></span><div class="mono" style="font-size:12px;color:var(--cc);margin-bottom:8px;">BLOCK 09 <span style="color:var(--faint);">/ PROJECT</span></div><div style="font-weight:600;font-size:16px;color:var(--bright);">Applied Project</div><div class="hash mono">0x8c02 · build &amp; ship</div></div>
         </div>
       </div>
 
@@ -307,44 +353,15 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
         <div style="height: 6px; border-radius: 999px; background: var(--panel2); overflow: hidden; margin-top: 16px;"><div id="examBar" style="height: 100%; width: 0; background: var(--amber); transition: width .6s ease;"></div></div>
       </div>
 
-      <div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(160deg, var(--panel3) 0%, var(--panel) 100%); padding: 26px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(247,160,31,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
-        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// INSTRUCTOR</div>
-        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
-          <div class="mono" style="width: 54px; height: 54px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--accent);">MR</div>
-          <div><div style="font-weight: 700; font-size: 20px; color: var(--bright);">Mr. Reasey</div><div style="font-size: 13px; color: var(--dim);">Web 3.0 &amp; Blockchain Instructor</div></div>
-        </div>
-        <div class="mono" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
-          <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">EMAIL</span><span style="color: var(--accent); word-break: break-all;">rnreasey@southfayette.org</span></div>
-          <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">PHONE</span><a href="tel:4122214542">412-221-4542 ext. 688</a></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// OFFICE HOURS</div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--border2);"><span style="font-size: 14px; color: var(--text);">After School By Apt.</span><span class="mono" style="font-size: 13px; color: var(--dim);">2:00 – 2:35 PM</span></div>
-          <div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; color: var(--text);">By appointment</span><span class="mono" style="font-size: 13px; color: var(--dim);">Room AB212</span></div>
-        </div>
-        <p style="margin: 18px 0 0; font-size: 13px; line-height: 1.6; color: var(--dim);">Stuck on a smart contract? Confused about a concept? Drop by — no appointment needed during office hours.</p>
-      </div>
-
-      <div class="card">
-        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// QUICK LINKS</div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <a class="qlink" id="meetLink" href="https://meet.google.com/mro-asqu-djt" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M16 10l5-3v10l-5-3z" fill="var(--accent)"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Join Class Google Meet</span><span style="font-size:12px;color:var(--dim);">Live class video room</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
-          <a class="qlink" href="syllabus.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 3v4h4M9 12h6M9 16h6" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Syllabus</span><span style="font-size:12px;color:var(--dim);">Policies & expectations</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
-          <a class="qlink" href="https://southfayette.powerschool.com/public/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4L3 8l9 4 9-4-9-4z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.1 2.2 2 5 2s5-.9 5-2v-4.5" style="stroke:var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Grades</span><span style="font-size:12px;color:var(--dim);">PowerSchool portal</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
-        </div>
-      </div>
+      
 
       <div class="card">
         <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// CLASS LINKS</div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
-          <a class="qlink" href="ctf.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--panel3);border:1px solid var(--border3);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border-hi);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 4v10l-7 4-7-4V7z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 3v18M5 7l7 4 7-4" style="stroke:var(--accent)" stroke-width="1.4" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:700;color:var(--bright);">Proof of Work</span><span style="font-size:12px;color:var(--dim);">Challenge arena · guided by ORACLE</span></span><span class="mono" style="margin-left:auto;color:var(--accent);font-size:13px;">&rarr;</span></a>
-          <a class="qlink" href="vocab.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 6c-1.6-1-4.2-1.5-6.5-1v12.5c2.3-.5 4.9 0 6.5 1 1.6-1 4.2-1.5 6.5-1V5c-2.3-.5-4.9 0-6.5 1z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 6v12.5" style="stroke:var(--accent)" stroke-width="1.5"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Vocabulary Lab</span><span style="font-size:12px;color:var(--dim);">Study terms & games</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
-          <a class="qlink" href="news.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="1.6" style="stroke:var(--accent)" stroke-width="1.5"/><path d="M6.5 9h5M6.5 12h5M6.5 15h3.5M15 9h2.5v6H15z" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Crypto News Feed</span><span style="font-size:12px;color:var(--dim);">Latest headlines, daily</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
-          <a class="qlink" href="../simulators/index.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Simulators</span><span style="font-size:12px;color:var(--dim);">Hands-on interactive tools</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+          <a class="qlink" href="ctf.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--panel3);border:1px solid var(--border3);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border-hi);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 4v10l-7 4-7-4V7z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 3v18M5 7l7 4 7-4" style="stroke:var(--accent)" stroke-width="1.4" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:700;color:var(--bright);">Proof of Work</span><span style="font-size:12px;color:var(--dim);">Challenge arena · guided by ORACLE</span></span><span class="mono" style="margin-left:auto;color:var(--accent);font-size:13px;">&rarr;</span></a>
+          <a class="qlink" href="vocab.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 6c-1.6-1-4.2-1.5-6.5-1v12.5c2.3-.5 4.9 0 6.5 1 1.6-1 4.2-1.5 6.5-1V5c-2.3-.5-4.9 0-6.5 1z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 6v12.5" style="stroke:var(--accent)" stroke-width="1.5"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Vocabulary Lab</span><span style="font-size:12px;color:var(--dim);">Study terms & games</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+          <a class="qlink" href="news.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="1.6" style="stroke:var(--accent)" stroke-width="1.5"/><path d="M6.5 9h5M6.5 12h5M6.5 15h3.5M15 9h2.5v6H15z" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Crypto News Feed</span><span style="font-size:12px;color:var(--dim);">Latest headlines, daily</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+          <a class="qlink" href="../simulators/index.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" style="stroke:var(--accent)" stroke-width="1.6"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Simulators</span><span style="font-size:12px;color:var(--dim);">Hands-on interactive tools</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
         </div>
       </div>
 
@@ -386,6 +403,35 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
 
   <div class="mono" style="margin-top: 28px; text-align: center; font-size: 12px; color: var(--fainter);">&gt; block_appended // decentralize, build, own_</div>
 </div>
+
+<div id="objOverlay">
+  <div id="objCard">
+    <button type="button" id="objClose" onclick="__closeObj()">&times;</button>
+    <div class="mono" style="padding:22px 24px 4px;font-size:11px;color:var(--accent);letter-spacing:2px;" id="objModTag">MODULE</div>
+    <h3 style="margin:4px 24px 14px;font-size:22px;color:var(--bright);" id="objModTitle"></h3>
+    <div class="mono" style="padding:0 24px 12px;font-size:11px;color:var(--faint);letter-spacing:1.5px;">LEARNING OBJECTIVES · YOU WILL BE ABLE TO</div>
+    <ul id="objList"></ul>
+  </div>
+</div>
+<script>
+(function(){
+  var MODS={1:"Web 3 Principles & Blockchain",2:"Cryptocurrency Coins & Tokens",3:"NFTs",4:"Digital Wallets",5:"Intro to Blockchain Coding",6:"DAOs",7:"DApps",8:"Ethical & Legal Considerations",9:"Applied Project"};
+  var ov=document.getElementById('objOverlay');
+  window.__closeObj=function(){ov.classList.remove('on');};
+  ov.addEventListener('click',function(e){ if(e.target===ov) __closeObj(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') __closeObj(); });
+  document.querySelectorAll('.block[data-m]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var m=+b.dataset.m;
+      var objs=(window.COURSE_CONFIG && window.COURSE_CONFIG.web3 && window.COURSE_CONFIG.web3.ctf && window.COURSE_CONFIG.web3.ctf.moduleObjectives && window.COURSE_CONFIG.web3.ctf.moduleObjectives[m]) || [];
+      document.getElementById('objModTag').textContent='MODULE '+String(m).padStart(2,'0');
+      document.getElementById('objModTitle').textContent=MODS[m]||'';
+      document.getElementById('objList').innerHTML=objs.map(function(o){return '<li>'+o.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</li>';}).join('');
+      ov.classList.add('on');
+    });
+  });
+})();
+</script>
 
 <script src="../config.js"></script>
 <script src="../resources.js"></script>
@@ -502,11 +548,11 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 
 <div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
   <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
   </a>
-  <span style="font-size:11px;color:var(--faint);">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only</span>
+  <span style="font-size:13px;color:var(--faint);font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
 </div>
 </body>
 </html>

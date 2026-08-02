@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rubric Check — Create Task Self-Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#6a3fc0;--accent2:#a880ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#5527a0;--accent2:#4a1f8c;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.panel{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 6px;max-width:74ch;}
+.disclaimer{font-size:12px;color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:9px;padding:10px 14px;margin-bottom:20px;line-height:1.6;}
+.scoreBar{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:14px;border:1px solid var(--border);background:var(--panel);margin-bottom:18px;position:sticky;top:10px;z-index:5;}
+.scoreBig{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:800;color:var(--bright);}
+.scoreBig span{font-size:16px;color:var(--faint);font-weight:600;}
+.scoreDots{display:flex;gap:6px;}
+.sdot{width:14px;height:14px;border-radius:4px;background:var(--border2);border:1px solid var(--border3);}
+.sdot.pass{background:var(--ok);border-color:transparent;}
+.sdot.warn{background:var(--warn);border-color:transparent;}
+.sdot.fail{background:var(--bad);border-color:transparent;}
+.row{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:20px 22px;margin-bottom:14px;}
+.rowTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.rowTitle{font-size:14.5px;font-weight:700;color:var(--bright);}
+.rowSub{font-size:12px;color:var(--faint);margin-top:3px;line-height:1.5;}
+.pill{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:800;letter-spacing:.5px;padding:4px 10px;border-radius:999px;white-space:nowrap;}
+.pill.pass{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);}
+.pill.warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);}
+.pill.fail{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);}
+.pill.empty{background:var(--panel2);color:var(--faint);}
+textarea{width:100%;min-height:74px;resize:vertical;border-radius:10px;border:1px solid var(--border2);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;padding:12px 14px;line-height:1.55;}
+textarea:focus{outline:none;border-color:var(--border-hi);}
+.feedback{margin-top:10px;padding:10px 13px;border-radius:9px;font-size:12.5px;line-height:1.6;background:var(--panel2);border:1px solid var(--border2);color:var(--muted);}
+.feedback.fail{border-color:color-mix(in srgb,var(--bad) 35%,transparent);}
+.feedback.warn{border-color:color-mix(in srgb,var(--warn) 35%,transparent);}
+.feedback.pass{border-color:color-mix(in srgb,var(--ok) 35%,transparent);}
+.btnRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 11px;border-radius:999px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);cursor:pointer;}
+.chip:hover{border-color:var(--border-hi);color:var(--accent2);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>RUBRIC CHECK</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">create task self-checker · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">Paste each part of your Create Task response below. This runs quick keyword/pattern checks for the things that most often cost students points \u2014 especially row 4, Managing Complexity, the single most-missed row on the real rubric.</p>
+  <div class="disclaimer mono">\u26a0 This is a heuristic practice checker, NOT an official College Board score. A green check here does not guarantee credit \u2014 use it to catch obvious gaps before you submit, then have a teacher review your real response.</div>
+
+  <div class="scoreBar">
+    <div class="scoreBig" id="scoreBig">0 <span>/ 6 rows look solid</span></div>
+    <div class="scoreDots" id="scoreDots"></div>
+  </div>
+
+  <div id="rows"></div>
+</div>
+
+<script>
+var ROWS = [
+  { id:'purpose', title:'Row 1 \u2014 Program Purpose & Function', sub:'Explain what your program does AND why someone would want to run it \u2014 both parts, not just one.',
+    placeholder:'My program is a study-flashcard app. It lets a user...',
+    check:function(t){
+      if(!t.trim()) return null;
+      var hasWhat = /(does|shows|lets|allows|displays|calculates|generates|tracks|simulates)/i.test(t);
+      var hasWhy = /(because|so that|useful|helps|purpose|users? (can|want|need)|in order to)/i.test(t);
+      var len = t.trim().length;
+      if(len < 40) return {level:'fail', msg:'Too short to cover both parts. Explain what it does, then separately explain WHY it\\u2019s useful \\u2014 aim for at least 2\\u20133 sentences.'};
+      if(hasWhat && hasWhy) return {level:'pass', msg:'Covers both what the program does and why it matters \\u2014 that\\u2019s exactly what this row wants.'};
+      if(hasWhat && !hasWhy) return {level:'warn', msg:'You explain WHAT it does, but the purpose/motivation ("why would someone use this") isn\\u2019t clear yet. Add that.'};
+      return {level:'warn', msg:'Make sure you clearly state what the program actually does when it runs, not just its goal.'};
+    }},
+  { id:'dataCode', title:'Row 2 \u2014 Data Abstraction (code segment)', sub:'Paste the code segment where you CREATE and use a list.',
+    placeholder:'scores = []\nscores.append(newScore)\naverage = sum(scores) / len(scores)',
+    check:function(t){
+      if(!t.trim()) return null;
+      var hasList = /(\[\s*\]|list\s*\(|arraylist|:\s*list|new list)/i.test(t);
+      var hasOp = /(append|add|insert|push|for\s+each|foreach|for\s*\(|\.get\(|\[[a-z0-9_]+\]|len\(|length\()/i.test(t);
+      if(hasList && hasOp) return {level:'pass', msg:'Shows a list being created AND used (looped over / indexed / appended to). That\\u2019s the code half of this row.'};
+      if(hasList && !hasOp) return {level:'warn', msg:'A list appears, but there\\u2019s no clear operation on it yet (loop, index, append). Show it actually being used, not just declared.'};
+      return {level:'fail', msg:'No list-like structure detected. This row specifically requires a list (or array/ArrayList) \\u2014 a handful of separate variables does not satisfy it.'};
+    }},
+  { id:'dataWritten', title:'Row 3 \u2014 Data Abstraction (written response)', sub:'Explain what the list represents and how the program uses it.',
+    placeholder:'The list "scores" stores every quiz score entered by the user so the program can calculate an average across any number of entries...',
+    check:function(t){
+      if(!t.trim()) return null;
+      var mentionsList = /(list|array)/i.test(t);
+      var explainsUse = /(store|hold|represent|contain|track|collect)/i.test(t);
+      if(mentionsList && explainsUse && t.trim().length>=30) return {level:'pass', msg:'Names the list and explains what it stores/represents \\u2014 good.'};
+      if(!mentionsList) return {level:'fail', msg:'Doesn\\u2019t clearly refer to the list by name. Reference the actual variable name from your code segment.'};
+      return {level:'warn', msg:'Say more about what the list is FOR \\u2014 what real-world thing does each entry represent?'};
+    }},
+  { id:'complexity', title:'Row 4 \u2014 Managing Complexity', sub:'The most-missed row. Explain WHY a list was structurally necessary \\u2014 not just that it was convenient.',
+    placeholder:'Without a list, I would need a separate variable for every score, and the program would only work for a fixed number of inputs. The list lets the same code handle any number of scores without being rewritten...',
+    check:function(t){
+      if(!t.trim()) return null;
+      var namesAlternative = /(individual variable|separate variable|without (a |the )?list|hardcod|fixed number)/i.test(t);
+      var explainsScale = /(any number|scale|grow|regardless of|no matter how many|without (rewriting|changing|editing))/i.test(t);
+      if(namesAlternative && explainsScale) return {level:'pass', msg:'This is exactly the reasoning row 4 wants: naming the individual-variable alternative AND explaining why it fails to scale.'};
+      if(namesAlternative && !explainsScale) return {level:'warn', msg:'You mention the alternative (separate variables) \\u2014 now explicitly say why that approach breaks down as the amount of data changes.'};
+      if(!namesAlternative && explainsScale) return {level:'warn', msg:'You mention scaling, but the rubric wants you to explicitly contrast this with the individual-variables approach you would have needed otherwise.'};
+      return {level:'fail', msg:'This is the row students lose the most points on. Don\\u2019t just say "a list was needed" \\u2014 explain what would break WITHOUT it (e.g., a fixed number of hardcoded variables that can\\u2019t handle new data).'};
+    }},
+  { id:'procCode', title:'Row 5 \u2014 Procedural Abstraction (code segment)', sub:'Paste a procedure/function YOU wrote, with a parameter, being called at least once.',
+    placeholder:'def calculateAverage(scoreList):\n    return sum(scoreList) / len(scoreList)\n\nresult = calculateAverage(scores)',
+    check:function(t){
+      if(!t.trim()) return null;
+      var hasDef = /(def\s+\w+\s*\(|function\s+\w+\s*\(|void\s+\w+\s*\(|PROCEDURE\s+\w+)/i.test(t);
+      var hasParam = /\(\s*[a-z_][a-z0-9_]*\s*[,)]/i.test(t);
+      var hasCall = (t.match(/\w+\s*\(/g)||[]).length >= 2;
+      if(hasDef && hasParam && hasCall) return {level:'pass', msg:'A defined procedure with a parameter, and it looks like it\\u2019s called elsewhere too. Good.'};
+      if(hasDef && !hasParam) return {level:'warn', msg:'Found a procedure definition, but it doesn\\u2019t look like it takes a parameter. The rubric specifically wants a parameterized procedure.'};
+      if(!hasDef) return {level:'fail', msg:'No procedure/function definition detected. Paste the actual def/function block, not just where it\\u2019s called.'};
+      return {level:'warn', msg:'Make sure the procedure is both DEFINED with a parameter and CALLED somewhere in your code.'};
+    }},
+  { id:'procWritten', title:'Row 6 \u2014 Procedural Abstraction (written response)', sub:'Explain what the procedure does and how the parameter is used inside it.',
+    placeholder:'The calculateAverage procedure takes a list of scores as a parameter and returns their average, so the same logic can run on any list I pass to it...',
+    check:function(t){
+      if(!t.trim()) return null;
+      var mentionsParam = /(parameter|argument|input)/i.test(t);
+      var mentionsReuse = /(any|reus|different|whatever|multiple|called (with|from))/i.test(t);
+      if(mentionsParam && mentionsReuse) return {level:'pass', msg:'Explains the parameter\\u2019s role AND why that makes the procedure reusable \\u2014 solid.'};
+      if(mentionsParam && !mentionsReuse) return {level:'warn', msg:'You mention the parameter, but not why using one (instead of hardcoding a value) is useful. Say what it lets you reuse.'};
+      return {level:'fail', msg:'Doesn\\u2019t clearly explain the parameter\\u2019s role in the procedure. Name it and explain what happens to the value passed in.'};
+    }}
+];
+
+var values = {};
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function boot(){
+  document.getElementById('rows').innerHTML = ROWS.map(function(r,i){
+    return '<div class="row" id="row-'+r.id+'">'+
+      '<div class="rowTop"><div><div class="rowTitle">'+esc(r.title)+'</div><div class="rowSub">'+esc(r.sub)+'</div></div>'+
+      '<span class="pill empty" id="pill-'+r.id+'">NOT STARTED</span></div>'+
+      '<textarea id="ta-'+r.id+'" placeholder="'+esc(r.placeholder)+'" oninput="onInput(\''+r.id+'\')"></textarea>'+
+      '<div class="feedback" id="fb-'+r.id+'" style="display:none;"></div>'+
+    '</div>';
+  }).join('');
+  updateScore();
+}
+function onInput(id){
+  var row = ROWS.filter(function(r){return r.id===id;})[0];
+  var text = document.getElementById('ta-'+id).value;
+  var res = row.check(text);
+  var pill = document.getElementById('pill-'+id);
+  var fb = document.getElementById('fb-'+id);
+  if(!res){
+    pill.className='pill empty'; pill.textContent='NOT STARTED';
+    fb.style.display='none';
+  } else {
+    pill.className='pill '+res.level; pill.textContent = res.level==='pass'?'LOOKS SOLID':res.level==='warn'?'NEEDS MORE':'MISSING KEY PIECE';
+    fb.style.display='block'; fb.className='feedback '+res.level; fb.textContent = res.msg;
+  }
+  updateScore();
+}
+function updateScore(){
+  var pass=0, dots='';
+  ROWS.forEach(function(r){
+    var text = (document.getElementById('ta-'+r.id)||{}).value || '';
+    var res = r.check(text);
+    var cls = !res ? '' : (res.level==='pass'?'pass':res.level==='warn'?'warn':'fail');
+    if(res && res.level==='pass') pass++;
+    dots += '<div class="sdot '+cls+'" title="'+esc(r.title)+'"></div>';
+  });
+  document.getElementById('scoreBig').innerHTML = pass+' <span>/ 6 rows look solid</span>';
+  document.getElementById('scoreDots').innerHTML = dots;
+}
+boot();
+</script>
+</body>
+</html>

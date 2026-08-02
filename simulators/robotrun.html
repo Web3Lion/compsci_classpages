@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Robot Run — Algorithm Tracing Simulator</title>
@@ -9,6 +10,11 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#a855f7;--accent2:#c98bff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#7c3fc0;--accent2:#6a2fb0;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.panel,.tab,.btn,.slot,.row{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+
 *{box-sizing:border-box;}
 body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
 .mono{font-family:'JetBrains Mono',monospace;}
@@ -62,13 +68,28 @@ a:hover{color:var(--accent2);}
 .gradeBanner.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);}
 .note{margin-top:18px;font-size:12.5px;color:var(--faint);line-height:1.6;}
 .note b{color:var(--dim);}
+.layerToggleRow{display:flex;align-items:center;gap:10px;margin-top:16px;}
+.layerToggle{padding:8px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
+.layerToggle.on{border-color:var(--accent);background:var(--panel3);color:var(--accent2);}
+.stackWrap{display:none;margin-top:16px;flex-direction:column;gap:6px;}
+.stackWrap.show{display:flex;}
+.stackLayer{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--bg);opacity:.3;transition:opacity .25s,background .25s;}
+.stackLayer.active{opacity:1;background:var(--panel3);border-color:var(--accent);}
+.stackLayer .ln{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);font-weight:700;min-width:120px;}
+.stackLayer .ld{font-size:12px;color:var(--muted);flex:1;}
 </style>
 </head>
 <body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 <div class="wrap">
   <div class="top">
     <div class="brand"><span class="dot"></span><h1>ROBOT RUN</h1></div>
-    <span class="back mono">algorithm tracing simulator · free play, no XP</span>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="back mono">algorithm tracing simulator · free play, no XP</span>
+      <a class="back mono" href="index.html">&larr; simulators</a>
+    </div>
   </div>
 
   <div class="card">
@@ -93,6 +114,18 @@ a:hover{color:var(--accent2);}
     </div>
     <div class="gradeBanner mono" id="gradeBanner"></div>
     <div class="note">Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you're told; the grid shows you exactly what each option does. <b>REPEAT n TIMES</b> reads the value of <b>n</b> once, right when that loop starts — changing n partway through a loop doesn't change how many times that loop was already set to repeat.</div>
+
+    <div class="layerToggleRow">
+      <button class="layerToggle" id="layerBtn" onclick="toggleLayers()">▾ SHOW ABSTRACTION LAYERS</button>
+      <span class="mono" style="font-size:11.5px;color:var(--faint);">watch what "MOVE_FORWARD" actually costs underneath, one layer at a time</span>
+    </div>
+    <div class="stackWrap" id="stackWrap">
+      <div class="stackLayer" data-layer="0"><span class="ln">YOUR PSEUDOCODE</span><span class="ld">MOVE_FORWARD — one line, one idea: go forward one cell.</span></div>
+      <div class="stackLayer" data-layer="1"><span class="ln">APPLICATION</span><span class="ld">Interpreter reads that line and updates the robot's stored (x, y, direction) state.</span></div>
+      <div class="stackLayer" data-layer="2"><span class="ln">OPERATING SYSTEM</span><span class="ld">Schedules the redraw, hands the browser a request to repaint the page.</span></div>
+      <div class="stackLayer" data-layer="3"><span class="ln">HARDWARE</span><span class="ld">GPU renders new pixels; the change becomes light your eyes actually see.</span></div>
+    </div>
+    <div class="note" id="stackNote" style="display:none;"><b>Abstraction</b> is why one line of pseudocode is usable at all — you never think about pixels or schedulers when you write MOVE_FORWARD. Run the program above with layers shown and watch each layer light up in sequence on every move.</div>
   </div>
 </div>
 
@@ -162,6 +195,25 @@ var PROBLEMS=[
 ];
 
 var currentIdx=0, currentProbs=null, currentTarget=null, selectedKey=null, CELL=38;
+var layersOn=false;
+function toggleLayers(){
+  layersOn=!layersOn;
+  document.getElementById('layerBtn').className='layerToggle'+(layersOn?' on':'');
+  document.getElementById('layerBtn').textContent=(layersOn?'▴ HIDE':'▾ SHOW')+' ABSTRACTION LAYERS';
+  document.getElementById('stackWrap').className='stackWrap'+(layersOn?' show':'');
+  document.getElementById('stackNote').style.display=layersOn?'block':'none';
+}
+function pulseLayers(){
+  if(!layersOn) return;
+  var layers=document.querySelectorAll('.stackLayer');
+  layers.forEach(function(l){ l.classList.remove('active'); });
+  var i=0;
+  (function step(){
+    if(i>=layers.length) return;
+    layers[i].classList.add('active');
+    setTimeout(function(){ layers[i].classList.remove('active'); i++; step(); }, 220);
+  })();
+}
 
 function renderProbTabs(){
   document.getElementById('probRow').innerHTML = PROBLEMS.map(function(p,i){
@@ -268,6 +320,7 @@ function runSelected(){
     var s=result.steps[i];
     document.getElementById('cell-'+s.x+'-'+s.y).classList.add('trail');
     placeRobot(s, true);
+    pulseLayers();
     i++;
     setTimeout(playStep, 380);
   })();
@@ -306,11 +359,11 @@ loadProblem(0);
 
 <div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
   <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
   </a>
-  <span style="font-size:11px;color:#7f9cb8;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only</span>
+  <span style="font-size:13px;color:#7f9cb8;font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
 </div>
 </body>
 </html>

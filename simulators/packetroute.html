@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Packet Route — Network Fault Tolerance Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#3f5fd0;--accent2:#7d97ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#3049a8;--accent2:#243c8a;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.panel{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:74ch;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;margin-bottom:16px;}
+.rowLabel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--faint);margin-bottom:8px;display:block;}
+.netStage{position:relative;width:100%;background:#04070c;border:1px solid var(--border3);border-radius:12px;overflow:hidden;}
+.netSvg{display:block;width:100%;height:auto;}
+.edge{stroke:var(--border3);stroke-width:2;}
+.edge.blocked{stroke:var(--bad);stroke-dasharray:5 5;opacity:.4;}
+.nodeCircle{fill:var(--panel2);stroke:var(--border-hi);stroke-width:2;cursor:pointer;}
+.nodeCircle.dead{fill:color-mix(in srgb,var(--bad) 30%,var(--panel2));stroke:var(--bad);}
+.nodeCircle.fixed{cursor:default;fill:var(--panel3);stroke:var(--accent2);}
+.nodeLabel{font-family:'JetBrains Mono',monospace;font-size:12px;fill:var(--bright);font-weight:700;pointer-events:none;text-anchor:middle;}
+.nodeSub{font-family:'JetBrains Mono',monospace;font-size:9px;fill:var(--dim);pointer-events:none;text-anchor:middle;}
+.packet{position:absolute;width:16px;height:16px;border-radius:4px;transform:translate(-50%,-50%);transition:left .55s cubic-bezier(.4,0,.2,1),top .55s cubic-bezier(.4,0,.2,1),opacity .3s;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:800;color:#04070c;box-shadow:0 0 10px currentColor;z-index:2;}
+.packet.lost{opacity:0;}
+.dropMark{position:absolute;width:22px;height:22px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;color:var(--bad);font-weight:800;font-size:14px;text-shadow:0 0 8px var(--bad);pointer-events:none;animation:dropPop .3s ease;z-index:3;}
+@keyframes dropPop{from{transform:translate(-50%,-50%) scale(.4);opacity:0;}to{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+.btnRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.btn{padding:11px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border:none;}
+.btn.primary:hover{filter:brightness(1.08);}
+.btn:disabled{opacity:.4;cursor:default;filter:none;}
+.btn.dead{border-color:var(--bad);color:var(--bad);}
+.arrivalRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;min-height:36px;}
+.arrChip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 11px;border-radius:999px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);}
+.arrChip.ok{border-color:var(--ok);color:var(--ok);}
+.arrChip.bad{border-color:var(--bad);color:var(--bad);}
+.msgBanner{margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.6;display:none;}
+.msgBanner.show{display:block;}
+.msgBanner.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);}
+.msgBanner.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);}
+.note{font-size:12.5px;color:var(--faint);line-height:1.65;margin-top:14px;}
+.note b{color:var(--dim);}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);margin-top:10px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.legDot{width:10px;height:10px;border-radius:3px;display:inline-block;}
+.issuePicker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.issueBtn{padding:10px 16px;border-radius:9px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12.5px;cursor:pointer;text-align:left;}
+.issueBtn:hover{border-color:var(--border-hi);}
+.issueBtn.active{border-color:var(--bad);background:var(--panel3);color:var(--bright);}
+.miniStage{position:relative;height:100px;border:1px solid var(--border2);border-radius:12px;background:#04070c;overflow:hidden;}
+.miniLine{position:absolute;left:8%;right:8%;top:50%;height:2px;background:var(--border3);}
+.miniEnd{position:absolute;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);}
+.miniEnd.l{left:2px;} .miniEnd.r{right:2px;text-align:right;}
+.miniDot{position:absolute;top:50%;width:16px;height:16px;border-radius:4px;transform:translate(-50%,-50%);transition:left .5s ease,top .5s ease,opacity .3s;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:800;color:#04070c;}
+.miniDot.lost{opacity:.15;}
+.miniDot.ack{background:var(--ok)!important;}
+.miniCaption{margin-top:12px;font-size:13px;color:var(--text);line-height:1.6;min-height:22px;}
+.fixBadge{display:none;margin-top:10px;padding:10px 14px;border-radius:9px;background:color-mix(in srgb,var(--ok) 15%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;}
+.fixBadge.show{display:block;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>PACKET ROUTE</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">network fault tolerance simulator · free play, no XP</span>
+      <a class="backLink mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+  <p class="lead">A message doesn't travel the internet as one piece — it's split into packets that can each take a different path and get reassembled at the destination. Send a message, then click a relay to take it offline and resend. Watch packets reroute around the failure — that's fault tolerance. Each packet only knows its NEXT hop, not the whole route, so a packet that hits a dead relay travels as far as it can and gets dropped right there, not silently lost at the source.</p>
+
+  <div class="panel">
+    <span class="rowLabel">NETWORK — CLICK ANY RELAY TO TAKE IT OFFLINE OR BRING IT BACK</span>
+    <div class="netStage">
+      <svg class="netSvg" viewBox="0 0 640 320" id="netSvg"></svg>
+      <div id="packetLayer" style="position:absolute;inset:0;pointer-events:none;"></div>
+    </div>
+    <div class="legend">
+      <span><span class="legDot" style="background:var(--accent2);"></span>relay online</span>
+      <span><span class="legDot" style="background:var(--bad);"></span>relay offline</span>
+      <span><span class="legDot" style="background:var(--warn);"></span>packet in transit</span>
+    </div>
+    <div class="btnRow">
+      <button class="btn primary" id="sendBtn" onclick="sendMessage()">▶ SEND MESSAGE (8 PACKETS)</button>
+      <button class="btn" onclick="resetNet()">↺ RESET NETWORK</button>
+    </div>
+    <div class="arrivalRow" id="arrivalRow"></div>
+    <div class="msgBanner mono" id="msgBanner"></div>
+    <div class="note">Real routing is hop-by-hop: each relay only knows which of its own neighbors gets a packet closer to the destination, not the full path in advance. A packet keeps moving forward through <b>online</b> relays until it either reaches the server or lands on a relay with no working next hop — that's where it's dropped, marked with a ✗ right at that node. Redundant paths (multiple relays, multiple links) are what let most packets route around a single failure; enough failures and even hop-by-hop forwarding runs out of road.</div>
+  </div>
+
+  <div class="panel">
+    <span class="rowLabel">COMMON NETWORK PROBLEMS — CLICK ONE TO SEE HOW TCP SOLVES IT</span>
+    <div class="issuePicker" id="issuePicker"></div>
+    <div class="miniStage" id="miniStage">
+      <div class="miniLine"></div>
+      <div class="miniEnd l mono">YOU</div>
+      <div class="miniEnd r mono">SERVER</div>
+    </div>
+    <div class="miniCaption mono" id="miniCaption">Pick a problem above to see it happen, then get fixed.</div>
+    <div class="fixBadge" id="fixBadge"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- topology ---------- */
+var NODES = {
+  you:    {x:40,  y:170, label:'YOU',    fixed:true},
+  a:      {x:170, y:60,  label:'A'},
+  b:      {x:170, y:280, label:'B'},
+  c:      {x:330, y:30,  label:'C'},
+  d:      {x:330, y:170, label:'D'},
+  e:      {x:330, y:310, label:'E'},
+  f:      {x:490, y:60,  label:'F'},
+  g:      {x:490, y:280, label:'G'},
+  server: {x:620, y:170, label:'SERVER', fixed:true}
+};
+var VBW=680, VBH=340;
+var EDGES = [
+  ['you','a'],['you','b'],['a','b'],
+  ['a','c'],['a','d'],['b','d'],['b','e'],
+  ['c','d'],['d','e'],
+  ['c','f'],['d','f'],['d','g'],['e','g'],
+  ['f','g'],
+  ['f','server'],['g','server']
+];
+var dead = {};
+
+function alive(id){ return !dead[id]; }
+function neighbors(id){
+  var out=[];
+  EDGES.forEach(function(e){
+    if(e[0]===id && alive(e[1])) out.push(e[1]);
+    if(e[1]===id && alive(e[0])) out.push(e[0]);
+  });
+  return out;
+}
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function distancesTo(to){
+  var dist={}; if(!alive(to)) return dist;
+  dist[to]=0; var queue=[to];
+  while(queue.length){
+    var cur=queue.shift();
+    neighbors(cur).forEach(function(n){
+      if(dist[n]===undefined){ dist[n]=dist[cur]+1; queue.push(n); }
+    });
+  }
+  return dist;
+}
+function nextHop(at, dist){
+  if(dist[at]===undefined) return null;
+  var options = neighbors(at).filter(function(n){ return dist[n]!==undefined && dist[n]<dist[at]; });
+  if(!options.length) return null;
+  return shuffle(options)[0];
+}
+
+/* ---------- render network ---------- */
+function edgeBlocked(e){ return !alive(e[0]) || !alive(e[1]); }
+function renderNet(){
+  var svg=document.getElementById('netSvg');
+  svg.setAttribute('viewBox','0 0 '+VBW+' '+VBH);
+  var html='';
+  EDGES.forEach(function(e){
+    var n1=NODES[e[0]], n2=NODES[e[1]];
+    html += '<line class="edge'+(edgeBlocked(e)?' blocked':'')+'" x1="'+n1.x+'" y1="'+n1.y+'" x2="'+n2.x+'" y2="'+n2.y+'"></line>';
+  });
+  Object.keys(NODES).forEach(function(id){
+    var n=NODES[id];
+    var cls='nodeCircle'+(n.fixed?' fixed':'')+(dead[id]?' dead':'');
+    html += '<circle class="'+cls+'" cx="'+n.x+'" cy="'+n.y+'" r="26" onclick="'+(n.fixed?'':'toggleNode(\''+id+'\')')+'"></circle>';
+    html += '<text class="nodeLabel" x="'+n.x+'" y="'+(n.y+5)+'">'+n.label+'</text>';
+    if(!n.fixed) html += '<text class="nodeSub" x="'+n.x+'" y="'+(n.y+40)+'">'+(dead[id]?'OFFLINE \u2014 click to restore':'click to take offline')+'</text>';
+  });
+  svg.innerHTML = html;
+}
+function toggleNode(id){ dead[id] = !dead[id]; renderNet(); }
+function resetNet(){ dead={}; renderNet(); document.getElementById('arrivalRow').innerHTML=''; hideBanner(); document.getElementById('packetLayer').innerHTML=''; }
+
+/* ---------- send + animate ---------- */
+var PACKET_COLORS=['#ffcf5c','#7dd8ff','#ff9de0','#a3ffb0','#c98bff','#ff9838','#5fe0d0','#ffa1a1'];
+var PACKET_COUNT = 8;
+var MESSAGE = 'HELLO SERVER, PACKETS ARRIVED!';
+function hideBanner(){ var b=document.getElementById('msgBanner'); b.className='msgBanner mono'; b.textContent=''; }
+function showBanner(ok,text){ var b=document.getElementById('msgBanner'); b.className='msgBanner mono show '+(ok?'ok':'bad'); b.textContent=text; }
+
+function sendMessage(){
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('arrivalRow').innerHTML='';
+  hideBanner();
+  var layer = document.getElementById('packetLayer');
+  layer.innerHTML='';
+  var stageRect = document.getElementById('netSvg').getBoundingClientRect();
+  var scaleX = stageRect.width/VBW, scaleY = stageRect.height/VBH;
+  var results = []; var pending = 4;
+  var dist = distancesTo('server');
+
+  for(var i=0;i<PACKET_COUNT;i++){
+    (function(i){
+      setTimeout(function(){
+        var el = document.createElement('div');
+        el.className='packet mono';
+        el.style.background = PACKET_COLORS[i];
+        el.style.color = '#04070c';
+        el.textContent = (i+1);
+        var start = NODES['you'];
+        el.style.left = (start.x*scaleX)+'px'; el.style.top = (start.y*scaleY)+'px';
+        layer.appendChild(el);
+
+        var at = 'you', hops = 0, maxHops = 14;
+        function step(){
+          if(at === 'server'){
+            results.push(true);
+            addArrival(i+1,true);
+            pending--; if(pending===0) finish(results);
+            return;
+          }
+          var nxt = (hops < maxHops) ? nextHop(at, dist) : null;
+          if(!nxt){
+            var n = NODES[at];
+            var mark = document.createElement('div');
+            mark.className = 'dropMark';
+            mark.textContent = '\u2717';
+            mark.style.left = (n.x*scaleX)+'px'; mark.style.top = (n.y*scaleY)+'px';
+            layer.appendChild(mark);
+            el.classList.add('lost');
+            results.push(false);
+            addArrival(i+1,false,n.label);
+            pending--; if(pending===0) finish(results);
+            return;
+          }
+          at = nxt; hops++;
+          var n2 = NODES[at];
+          el.style.left = (n2.x*scaleX)+'px'; el.style.top = (n2.y*scaleY)+'px';
+          setTimeout(step, 560);
+        }
+        setTimeout(step, 40);
+      }, i*180);
+    })(i);
+  }
+}
+function addArrival(n,ok,droppedAt){
+  var row = document.getElementById('arrivalRow');
+  var chip = document.createElement('span');
+  chip.className='arrChip mono '+(ok?'ok':'bad');
+  chip.textContent = ok ? ('packet '+n+' \u2713 delivered') : ('packet '+n+' \u2717 dropped at '+droppedAt);
+  row.appendChild(chip);
+}
+function finish(results){
+  document.getElementById('sendBtn').disabled = false;
+  var allOk = results.every(Boolean);
+  if(allOk) showBanner(true, '\u2713 MESSAGE REASSEMBLED: "'+MESSAGE+'" \u2014 all '+PACKET_COUNT+' packets arrived, even though they may have taken different paths.');
+  else showBanner(false, '\u2717 MESSAGE INCOMPLETE \u2014 '+results.filter(function(r){return !r;}).length+' packet(s) had no path to the server. Bring a relay back online and resend.');
+}
+renderNet();
+
+/* ---------- common network problems + how TCP fixes them ---------- */
+var ISSUES = {
+  loss: {
+    label: 'Packet Lost In Transit',
+    fix: '\u2713 Solved by: TCP retransmission (ARQ) \u2014 sender starts a timer per packet; no ACK before it expires means "assume lost" and resend.',
+    steps: function(run){
+      run.dot(1, '10%', 0, '#ffcf5c');
+      run.move(1, '50%', 300);
+      run.after(300, function(){ run.caption('Packet 1 vanishes mid-network \u2014 a router dropped it (congestion, a bad link, anything).'); run.lose(1); });
+      run.after(1100, function(){ run.caption('Sender started a timer when it sent packet 1. No ACK arrives before it expires.'); });
+      run.after(1900, function(){ run.caption('Timeout! TCP assumes packet 1 was lost and sends it again.'); run.dot(2,'10%',0,'#ffcf5c'); });
+      run.after(2200, function(){ run.move(2, '90%', 500); });
+      run.after(2750, function(){ run.caption('Resent copy arrives \u2014 the message is complete.'); run.showFix(); });
+    }
+  },
+  order: {
+    label: 'Packets Arrive Out Of Order',
+    fix: '\u2713 Solved by: TCP sequence numbers \u2014 every packet is numbered on send, so the receiver can put them back in order no matter what order they show up in.',
+    steps: function(run){
+      run.dot(1,'10%',0,'#7dd8ff','1');
+      run.dot(2,'10%',0,'#ff9de0','2');
+      run.after(150, function(){ run.move(1,'90%',900); });
+      run.after(150, function(){ run.move(2,'90%',480); }); // packet 2 takes a faster path, arrives first
+      run.after(700, function(){ run.caption('Packet 2 took a shorter path and arrived BEFORE packet 1 \u2014 this happens constantly on real networks.'); });
+      run.after(1500, function(){ run.caption('Both arrived, but out of order: 2, then 1.'); });
+      run.after(2200, function(){ run.caption('TCP reads the sequence numbers stamped on each packet and reorders them before handing data to the app: 1, then 2.'); run.showFix(); });
+    }
+  },
+  noack: {
+    label: 'No Confirmation Of Delivery',
+    fix: '\u2713 Solved by: TCP acknowledgments (ACKs) \u2014 the receiver sends a small reply for every packet it gets, so the sender KNOWS it arrived instead of guessing.',
+    steps: function(run){
+      run.dot(1,'10%',0,'#a3ffb0','1');
+      run.after(150, function(){ run.move(1,'90%',700); });
+      run.after(900, function(){ run.caption('Packet 1 arrived \u2014 but the sender has no way to know that yet.'); });
+      run.after(1700, function(){ run.caption('Without confirmation, the sender can\\u2019t tell "arrived" apart from "lost" \u2014 it would have to guess, or resend everything just in case.'); });
+      run.after(2600, function(){
+        run.caption('The receiver sends a tiny ACK packet back.');
+        run.dot(2,'90%',0,'#4fd68a','\u2713'); run.move(2,'10%',700,true);
+      });
+      run.after(3400, function(){ run.caption('ACK received \u2014 now the sender knows for certain that packet 1 arrived.'); run.showFix(); });
+    }
+  }
+};
+var curIssue = null, issueTimers = [];
+function renderIssuePicker(){
+  document.getElementById('issuePicker').innerHTML = Object.keys(ISSUES).map(function(k){
+    return '<button class="issueBtn'+(k===curIssue?' active':'')+'" onclick="playIssue(\''+k+'\')">'+esc(ISSUES[k].label)+'</button>';
+  }).join('');
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+function playIssue(key){
+  curIssue = key;
+  renderIssuePicker();
+  issueTimers.forEach(clearTimeout); issueTimers = [];
+  var stage = document.getElementById('miniStage');
+  stage.innerHTML = '<div class="miniLine"></div><div class="miniEnd l mono">YOU</div><div class="miniEnd r mono">SERVER</div>';
+  document.getElementById('fixBadge').className = 'fixBadge';
+  document.getElementById('miniCaption').textContent = '';
+
+  var run = {
+    dot: function(id, leftPct, topOffset, color, label){
+      var d = document.createElement('div');
+      d.className = 'miniDot mono'; d.id = 'mdot-'+id;
+      d.style.left = leftPct; d.style.top = 'calc(50% + '+topOffset+'px)';
+      d.style.background = color; d.textContent = label || '';
+      stage.appendChild(d);
+    },
+    move: function(id, leftPct){ var d = document.getElementById('mdot-'+id); if(d) d.style.left = leftPct; },
+    lose: function(id){ var d = document.getElementById('mdot-'+id); if(d) d.classList.add('lost'); },
+    caption: function(text){ document.getElementById('miniCaption').textContent = text; },
+    showFix: function(){ var b = document.getElementById('fixBadge'); b.className = 'fixBadge show'; b.textContent = ISSUES[key].fix; },
+    after: function(ms, fn){ issueTimers.push(setTimeout(fn, ms)); }
+  };
+  ISSUES[key].steps(run);
+}
+renderIssuePicker();
+</script>
+</body>
+</html>
