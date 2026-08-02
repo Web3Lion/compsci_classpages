@@ -13,4 +13,4 @@ Under the following terms:
 Full license text: https://creativecommons.org/licenses/by-nc/4.0/
 
 Attribution:
-"Cybersecurity & CS Classroom Site" by Robert Reasey, South Fayette School District, licensed under CC BY-NC 4.0.
+"Cybersecurity & CS Classroom Site" by Robert Reasey (github.com/Web3Lion), South Fayette School District, licensed under CC BY-NC 4.0.

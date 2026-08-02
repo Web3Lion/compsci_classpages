@@ -238,10 +238,10 @@ const MODULES = {
 };
 const VOCAB = [
   {m:1,t:"Problem",d:"A general description of a task that can (or cannot) be solved with an algorithm."},
-  {m:1,t:"Algorithm",d:"A finite set of instructions that accomplish a task."},
+  {m:1,t:"Algorithm",d:"A finite set of instructions that accomplish a specific task. Every algorithm can be constructed using combinations of sequencing, selection, and iteration."},
   {m:1,t:"Sequencing",d:"Putting the steps of an algorithm in order."},
-  {m:1,t:"Selection",d:"Deciding which steps to do next, usually based on a condition."},
-  {m:1,t:"Iteration",d:"Repeating a group of steps over and over."},
+  {m:1,t:"Selection",d:"Determines which parts of an algorithm are executed based on a condition being true or false. The use of try / exception statements is a form of selection."},
+  {m:1,t:"Iteration",d:"A repetitive portion of an algorithm. Iteration repeats until a given condition is met or for a specified number of times. The use of recursion is a form of iteration."},
   {m:1,t:"Efficiency",d:"A measure of how many steps are needed to complete an algorithm."},
   {m:1,t:"Linear Search",d:"A search that checks each element of a list in order until the value is found or the list ends."},
   {m:1,t:"Binary Search",d:"A search that starts in the middle of a sorted list and removes half the data each step until the value is found."},
@@ -278,8 +278,8 @@ const VOCAB = [
   {m:2,t:"Index",d:"A number used to reference an element in a list or string."},
   {m:2,t:"Infinite Loop",d:"A loop whose ending condition never becomes true, so it never stops."},
   {m:2,t:"Traversal",d:"The process of accessing each item in a list one at a time."},
-  {m:2,t:"Parameter",d:"A variable in a function definition that holds a value passed in."},
-  {m:2,t:"Argument",d:"The value passed to a parameter when a function is called."},
+  {m:2,t:"Parameter",d:"An input variable of a procedure. Explicit parameters are defined in the procedure header; implicit parameters are assigned in anticipation of a call to the procedure, such as through interaction with a user interface."},
+  {m:2,t:"Argument",d:"The value of a parameter when a procedure is called."},
   {m:2,t:"Return",d:"Sends control (and a value) back to where the function was called."},
   {m:2,t:"Procedural Abstraction",d:"Using a procedure by knowing what it does, not how it does it."},
   {m:2,t:"Data Abstraction",d:"Giving a collection of data a name without specifying representation details."},
@@ -357,7 +357,26 @@ const VOCAB = [
   {m:6,t:"Metadata",d:"Data that describes other data, such as a photo's date, size, or location."},
   {m:6,t:"Routing",d:"The process of choosing the path that data takes across a network."},
   {m:6,t:"Data Streams",d:"Data broken into packets and sent in sequence across a network."},
-  {m:6,t:"Computer Virus",d:"Malware that attaches to a file and spreads when that file is run."}
+  {m:6,t:"Computer Virus",d:"Malware that attaches to a file and spreads when that file is run."},
+  {m:3,t:"Central Processing Unit (CPU)",d:"The component of a computer that carries out the instructions of a program by performing calculations and decision-making."},
+  {m:3,t:"Integer",d:"A whole number — positive, negative, or zero — with no fractional or decimal part."},
+  {m:3,t:"Floating Point Number",d:"A number represented with a decimal point, used to approximate real numbers that include fractional values."},
+  {m:3,t:"Logic Gate",d:"A physical or idealized device that performs a Boolean operation on one or more binary inputs to produce a single binary output."},
+  {m:3,t:"Moore's Law",d:"The observation that the number of transistors on a computer chip (and roughly its processing power) doubles about every two years."},
+  {m:2,t:"Global Variable",d:"A variable defined outside of any procedure, accessible from anywhere in the program."},
+  {m:2,t:"Local Variable",d:"A variable defined inside a procedure, accessible only within that procedure."},
+  {m:4,t:"Data Mining",d:"Analyzing large data sets to find patterns, anomalies, and correlations that can be used to predict outcomes."},
+  {m:6,t:"Firewall",d:"A network security system that monitors and controls incoming and outgoing traffic based on a set of rules."},
+  {m:6,t:"Denial of Service Attack (DoS/DDoS)",d:"An attack that floods a server or network with traffic to overwhelm it and deny service to legitimate users; a distributed denial of service attack (DDoS) launches the flood from many devices at once."},
+  {m:6,t:"Digital Certificate",d:"An electronic document, issued by a trusted certificate authority, that verifies the identity of a website or sender and enables secure encrypted communication."},
+  {m:5,t:"Procedure",d:"A named group of programming instructions that may have parameters and return values. Procedures are referred to by different names, such as method, function, or constructor, depending on the programming language."},
+  {m:5,t:"Purpose",d:"The problem being solved or creative interest being pursued through the program."},
+  {m:5,t:"Program Functionality",d:"The behavior of a program during execution, often described by how a user interacts with it."},
+  {m:5,t:"Program Code Segment",d:"A collection of program statements that are part of a program. For text-based code, the segment should be continuous and within the same procedure; for block-based code, contained in the same starter (\u201cHat\u201d) block."},
+  {m:5,t:"Collection Type",d:"Aggregates elements in a single structure. Examples include databases, hash tables, dictionaries, sets, or any other type that aggregates elements in a single structure."},
+  {m:5,t:"Data Stored in a List",d:"Input into a list can come through an initialization or through computation on other variables or list elements."},
+  {m:5,t:"List Being Used",d:"A list is being used when a program creates new data from existing data or accesses multiple elements in the list."},
+  {m:5,t:"Student-Developed Procedure / Algorithm",d:"Program code that has been written (individually or collaboratively) by the student who submitted the response. Calls to existing program code or libraries can be included but are not considered student developed; built-in event handlers are also not considered student developed."}
 ];
 
 /* ---------- shared ---------- */
@@ -925,5 +944,14 @@ render();
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 <script src="../supabase-config.js"></script>
 <script src="packet-intro.js"></script>
+
+<div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
+  </a>
+  <span style="font-size:13px;color:#7f9cb8;font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
+</div>
 </body>
 </html>

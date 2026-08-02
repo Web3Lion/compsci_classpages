@@ -4,14 +4,14 @@
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cyber Security 1 — Course Home</title>
+<title>Cyber Security 3 — Course Home</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
-:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;}
-:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--border-hi:#8fabc7;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--fainter:#a6b3c2;--accent:#0a74d6;--accent2:#075aa8;--amber:#9a7d16;}
+:root{--bg:#1c160a;--panel:#26200f;--panel2:#2c2411;--panel3:#372c14;--border:#4a3d1c;--border2:#362d16;--border3:#5e4c22;--border-hi:#7c632c;--amber-bd:#6b5220;--amber-bg:#2a2010;--text:#f0e6cf;--bright:#fff8e6;--muted:#cdbd8c;--dim:#ac9a62;--faint:#8c7c50;--fainter:#6b5d3d;--accent:#d4af37;--accent2:#f4d160;--amber:#ffcf5c;}
+:root[data-theme="light"]{--bg:#faf6e8;--panel:#ffffff;--panel2:#fdf8ea;--panel3:#fbf1d6;--border:#e6d9ad;--border2:#f0e6c8;--border3:#d4bd78;--border-hi:#b89a4a;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#3a2f14;--bright:#1f1806;--muted:#6b5a2e;--dim:#8a7540;--faint:#a3915f;--fainter:#c2b287;--accent:#a67c1e;--accent2:#7d5e14;--amber:#9a7d16;}
 body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
 .themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
 .themebtn:hover{border-color:var(--accent);}
@@ -40,14 +40,16 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   .glitching { animation: glShake .45s steps(3) 2; }
   #glitch { position: fixed; inset: 0; z-index: 9999; display: none; pointer-events: none; overflow: hidden; }
   #glitch.on { display: block; }
-  #glitch .scan { position:absolute; inset:0; background: repeating-linear-gradient(0deg, rgba(0,179,255,.14) 0, rgba(0,179,255,.14) 1px, transparent 2px, transparent 4px); mix-blend-mode: screen; }
+  #glitch .scan { position:absolute; inset:0; background: repeating-linear-gradient(0deg, rgba(212,175,55,.14) 0, rgba(212,175,55,.14) 1px, transparent 2px, transparent 4px); mix-blend-mode: screen; }
   #glitch .noise { position:absolute; inset:0; color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.15; opacity:.22; white-space:pre-wrap; word-break:break-all; overflow:hidden; }
-  #glitch .slice { position:absolute; left:0; right:0; height:16px; background:rgba(0,179,255,.10); }
+  #glitch .slice { position:absolute; left:0; right:0; height:16px; background:rgba(212,175,55,.10); }
   #glitch .msg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'JetBrains Mono',monospace; font-weight:800; font-size:clamp(22px,5vw,48px); color:var(--bright); text-shadow: 2px 0 #ff2d5e, -2px 0 #2de2ff; letter-spacing:1px; text-align:center; }
   /* mobile pass */
   @media(max-width:720px){
     .wrap{padding-left:12px !important;padding-right:12px !important;}
     .card{padding:14px !important;border-radius:12px;}
+    .teacherWide{grid-template-columns:1fr !important;}
+    .teacherLinksCol{border-left:none !important;padding-left:0 !important;border-top:1px solid var(--border2);padding-top:20px;margin-top:4px;}
     /* every tappable thing clears the 44px minimum */
     button,.btn,a.qlink,input[type=submit]{min-height:44px;}
     input,select,textarea{font-size:16px;}   /* stops iOS zooming the page on focus */
@@ -66,9 +68,6 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     .card{padding:12px !important;}
     .big{font-size:30px !important;}
   }
-  @media(max-width:760px){
-    .instrGrid{grid-template-columns:1fr !important;}
-  }
 </style>
 </head>
 <body>
@@ -78,51 +77,52 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div style="position: relative; overflow: hidden; margin-top: 28px; border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(135deg, var(--panel2) 0%, var(--bg) 60%); padding: 44px 40px;">
     <div style="position: absolute; inset: 0; opacity: 0.06; background-image: repeating-linear-gradient(0deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 4px); pointer-events: none;"></div>
     <div style="position: relative; z-index: 1;">
-      <div class="mono" style="font-size: 13px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px;">&gt; ./welcome --course=cybersec-1 --level=CHS</div>
-      <h1 class="mono" style="font-weight: 800; font-size: 52px; line-height: 1.05; margin: 0 0 16px; color: var(--bright); letter-spacing: -1px;">Cyber Security 1<span style="display: inline-block; width: 16px; height: 46px; background: var(--accent); margin-left: 10px; vertical-align: middle; animation: blink 1.1s step-end infinite;"></span></h1>
-      <p style="font-size: 18px; line-height: 1.6; max-width: 640px; margin: 0 0 24px; color: var(--muted);">Where it all begins. Build the foundations of cybersecurity — networks, systems, threats, and defense — in this college-credit course offered through Robert Morris University. Start thinking like a defender.</p>
+      <div class="mono" style="font-size: 13px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px;">&gt; ./welcome --course=cybersec-3 --level=gold-standard</div>
+      <h1 class="mono" style="font-weight: 800; font-size: 52px; line-height: 1.05; margin: 0 0 16px; color: var(--bright); letter-spacing: -1px;">Cyber Security 3<span style="display: inline-block; width: 16px; height: 46px; background: var(--accent); margin-left: 10px; vertical-align: middle; animation: blink 1.1s step-end infinite;"></span></h1>
+      <p style="font-size: 18px; line-height: 1.6; max-width: 640px; margin: 0 0 24px; color: var(--muted);">The gold standard in cybersecurity practice. A capstone, career-readiness course — internships, personalized learning plans, competitions, industry certifications, and a passion project that puts your skills to real-world use.</p>
       <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <span class="badge" style="border: 1px solid var(--border); background: var(--panel2); color: var(--accent); display: inline-flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1.15;">STATUS: ENROLLED<span style="font-size: 10px; font-weight: 400; letter-spacing: .5px; opacity: .85;">Active this term</span></span>
-        <span class="badge" style="border: 1px solid var(--amber-bd); background: var(--amber-bg); color: var(--amber); display: inline-flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1.15;">COLLEGE IN HIGH SCHOOL<span style="font-size: 10px; font-weight: 400; letter-spacing: .5px; opacity: .85;">Robert Morris University</span></span>
-        <span class="badge" style="border: 1px solid var(--border); background: var(--panel2); color: var(--dim); display: inline-flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1.15;">CLEARANCE: FOUNDATIONAL<span style="font-size: 10px; font-weight: 400; letter-spacing: .5px; opacity: .85;">Level 1</span></span>
+        <span class="badge" style="border: 1px solid var(--border); background: var(--panel2); color: var(--accent);">STATUS: ENROLLED</span>
+        <span class="badge" style="border: 1px solid var(--amber-bd); background: var(--amber-bg); color: var(--amber);">GOLD STANDARD</span>
+        <span class="badge" style="border: 1px solid var(--border); background: var(--panel2); color: var(--dim);">CLEARANCE: MASTERY</span>
       </div>
     </div>
   </div>
 
-<div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(135deg, var(--panel2) 0%, var(--bg) 65%); padding: 30px 32px; margin-top: 22px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(0,179,255,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
-        <div style="position: relative; z-index: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 36px;" class="instrGrid">
-          <div>
-            <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// INSTRUCTOR</div>
-            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
-              <div class="mono" style="width: 54px; height: 54px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--accent);">MR</div>
-              <div><div style="font-weight: 700; font-size: 20px; color: var(--bright);">Mr. Reasey</div><div style="font-size: 13px; color: var(--dim);">Cyber Security Instructor</div></div>
-            </div>
-            <div class="mono" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
-              <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">EMAIL</span><span style="color: var(--accent); word-break: break-all;">rnreasey@southfayette.org</span></div>
-              <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">PHONE</span><a href="tel:4122214542">412-221-4542 ext. 688</a></div>
-            </div>
-            <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border2);">
-              <div class="mono" style="font-size: 11px; letter-spacing: 1.5px; color: var(--faint); margin-bottom: 12px;">OFFICE HOURS</div>
-              <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border2);"><span style="font-size: 14px; color: var(--text);">After School</span><span class="mono" style="font-size: 13px; color: var(--dim);">2:00 – 2:35 PM</span></div>
-                <div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; color: var(--text);">By appointment</span><span class="mono" style="font-size: 13px; color: var(--dim);">Room AB212</span></div>
-              </div>
-              <p style="margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: var(--dim);">Stuck on a lab? Confused about a concept? Drop by — no appointment needed during office hours.</p>
-            </div>
+  <div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(135deg, var(--panel2) 0%, var(--bg) 65%); padding: 30px 32px; margin-top: 22px; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(212,175,55,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
+    <div style="position: relative; z-index: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 36px;" class="instrGrid">
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// INSTRUCTOR</div>
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+          <div class="mono" style="width: 54px; height: 54px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--accent);">MR</div>
+          <div><div style="font-weight: 700; font-size: 20px; color: var(--bright);">Mr. Reasey</div><div style="font-size: 13px; color: var(--dim);">Cyber Security Instructor</div></div>
+        </div>
+        <div class="mono" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+          <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">EMAIL</span><span style="color: var(--accent); word-break: break-all;">rnreasey@southfayette.org</span></div>
+          <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">PHONE</span><a href="tel:4122214542">412-221-4542 ext. 688</a></div>
+        </div>
+        <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border2);">
+          <div class="mono" style="font-size: 11px; letter-spacing: 1.5px; color: var(--faint); margin-bottom: 12px;">OFFICE HOURS</div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border2);"><span style="font-size: 14px; color: var(--text);">After School</span><span class="mono" style="font-size: 13px; color: var(--dim);">2:00 – 2:35 PM</span></div>
+            <div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; color: var(--text);">By appointment</span><span class="mono" style="font-size: 13px; color: var(--dim);">Room AB212</span></div>
           </div>
-          <div>
-            <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// QUICK LINKS</div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <a class="qlink" id="meetLink" href="https://meet.google.com/mro-asqu-djt" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M16 10l5-3v10l-5-3z" fill="var(--accent)"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Join Class Google Meet</span><span style="font-size:12px;color:var(--dim);">Live class video room</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
-              <a class="qlink" href="syllabus.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 3v4h4M9 12h6M9 16h6" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Syllabus</span><span style="font-size:12px;color:var(--dim);">Policies &amp; expectations</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
-              <a class="qlink" href="https://southfayette.powerschool.com/public/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 4L3 8l9 4 9-4-9-4z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.1 2.2 2 5 2s5-.9 5-2v-4.5" style="stroke:var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Grades</span><span style="font-size:12px;color:var(--dim);">PowerSchool portal</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
-            </div>
-          </div>
+          <p style="margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: var(--dim);">Stuck on a lab? Confused about a concept? Drop by — no appointment needed during office hours.</p>
         </div>
       </div>
+      <div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// QUICK LINKS</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a class="qlink" id="meetLink" href="https://meet.google.com/mro-asqu-djt" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" style="stroke:var(--accent)" stroke-width="1.6"/><path d="M16 10l5-3v10l-5-3z" fill="var(--accent)"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Join Class Google Meet</span><span style="font-size:12px;color:var(--dim);">Live class video room</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+          <a class="qlink" href="syllabus.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 3v4h4M9 12h6M9 16h6" style="stroke:var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Syllabus</span><span style="font-size:12px;color:var(--dim);">Policies &amp; expectations</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&rarr;</span></a>
+          <a class="qlink" href="https://sites.google.com/paradigmcyberventures.com/paradigmcyber3/home?authuser=0" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 13l2 2 4-4" style="stroke:var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Capstone Assignment</span><span style="font-size:12px;color:var(--dim);">Cybersecurity 3 project site</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+          <a class="qlink" href="https://southfayette.powerschool.com/public/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 4L3 8l9 4 9-4-9-4z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.1 2.2 2 5 2s5-.9 5-2v-4.5" style="stroke:var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Grades</span><span style="font-size:12px;color:var(--dim);">PowerSchool portal</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <div class="grid2">
+  <div class="grid2">
     <div style="display: flex; flex-direction: column; gap: 24px;">
 
       <div class="card">
@@ -139,25 +139,29 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
       </div>
 
       <div class="card">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
+          <span class="mono" style="color: var(--accent); font-size: 15px;">// CYBER COMPETITION</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a class="qlink" href="https://cyberskyline.com/events/ncl" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Fall National Cyber League</span><span style="font-size:12px;color:var(--dim);">cyberskyline.com/events/ncl</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+          <a class="qlink" href="https://cyberskyline.com/events/ncl" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;"><span style="flex:none;width:42px;height:42px;border-radius:9px;background:var(--panel2);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" style="stroke:var(--accent)" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:15px;font-weight:600;color:var(--bright);">Spring National Cyber League</span><span style="font-size:12px;color:var(--dim);">cyberskyline.com/events/ncl</span></span><span class="mono" style="margin-left:auto;color:var(--faint);font-size:13px;">&nearr;</span></a>
+        </div>
+      </div>
+
+      <div class="card">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
           <span class="mono" style="color: var(--accent); font-size: 15px;">02 //</span>
-          <h2 class="mono" style="font-size: 20px; margin: 0; color: var(--bright);">CLASSROOM MODULES</h2>
-          <span class="mono" style="margin-left:auto;font-size:11px;color:var(--faint);">13 UNITS</span>
+          <h2 class="mono" style="font-size: 20px; margin: 0; color: var(--bright);">COURSE MODULES</h2>
         </div>
         <div class="mgrid">
-          <div class="mcard mod" data-m="0" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 1</div><div style="font-size:15px;font-weight:600;color:var(--bright);">What is Cybersecurity?</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="1" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 2</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Cybersecurity Ethics</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="2" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 3</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Computer Number Systems</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="3" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 4</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Intro to Cryptology</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="4" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 5</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Social Engineering</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="5" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 6</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Intro to Linux</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="6" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 7</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Linux System Administration</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="7" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 8</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Windows System Administration</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="8" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 9</div><div style="font-size:15px;font-weight:600;color:var(--bright);">National Cyber League</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="9" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 10</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Network Basics</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="10" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 11</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Malware, Vulnerabilities, Exploits &amp; Cyber Kill Chain</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="11" role="button" tabindex="0"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 12</div><div style="font-size:15px;font-weight:600;color:var(--bright);">SQL and Databases</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
-          <div class="mcard mod" data-m="12" role="button" tabindex="0" style="grid-column:1/-1;"><div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:6px;">MODULE 13</div><div style="font-size:15px;font-weight:600;color:var(--bright);">Preparing for Cyber II</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
+          <div class="mcard mod" data-m="0" role="button" tabindex="0"><div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 8px;">MODULE 01</div><div style="font-weight: 600; font-size: 16px; color: var(--bright);">Job Shadowing / Internship</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
+          <div class="mcard mod" data-m="1" role="button" tabindex="0"><div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 8px;">MODULE 02</div><div style="font-weight: 600; font-size: 16px; color: var(--bright);">Personalized Cybersecurity Learning Plan</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
+          <div class="mcard mod" data-m="2" role="button" tabindex="0"><div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 8px;">MODULE 03</div><div style="font-weight: 600; font-size: 16px; color: var(--bright);">Preparing for Your Cybersecurity Career</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
+          <div class="mcard mod" data-m="3" role="button" tabindex="0"><div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 8px;">MODULE 04</div><div style="font-weight: 600; font-size: 16px; color: var(--bright);">Independent Module: Career Pathway</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
+          <div class="mcard mod" data-m="4" role="button" tabindex="0"><div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 8px;">MODULE 05</div><div style="font-weight: 600; font-size: 16px; color: var(--bright);">Independent Module: Cyber Trends</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
+          <div class="mcard mod" data-m="5" role="button" tabindex="0"><div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 8px;">MODULE 06</div><div style="font-weight: 600; font-size: 16px; color: var(--bright);">Cybersecurity Competition</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
+          <div class="mcard mod" data-m="6" role="button" tabindex="0"><div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 8px;">MODULE 07</div><div style="font-weight: 600; font-size: 16px; color: var(--bright);">Industry Certification</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
+          <div class="mcard mod" data-m="7" role="button" tabindex="0"><div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 8px;">MODULE 08</div><div style="font-weight: 600; font-size: 16px; color: var(--bright);">Impactful / Passion Project</div><div class="mono modhint" style="font-size:10px;color:var(--faint);margin-top:8px;letter-spacing:.5px;">&gt; objectives</div></div>
         </div>
       </div>
 
@@ -165,7 +169,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
           <span class="mono" style="color: var(--accent); font-size: 15px;">03 //</span>
           <h2 class="mono" style="font-size: 20px; margin: 0; color: var(--bright);">THIS WEEK</h2>
-          <a href="https://docs.google.com/spreadsheets/d/1fr61cdKc5anGkY-hqjHkvOtdKZo_X24RZjC72ggHGIY/edit?gid=118090459#gid=118090459" target="_blank" rel="noopener" class="mono" style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--amber); border: 1px solid var(--amber-bd); background: var(--amber-bg); padding: 6px 12px; border-radius: 999px; text-decoration: none;">Full Tentative Schedule <span style="font-size:13px;">&nearr;</span></a>
+          <a href="https://docs.google.com/spreadsheets/d/1pW9wTqdcYD7eNXD8Tp0M-wbD15Lfq1QM55qp7UhGGQw/edit?usp=sharing" target="_blank" rel="noopener" class="mono" style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--amber); border: 1px solid var(--amber-bd); background: var(--amber-bg); padding: 6px 12px; border-radius: 999px; text-decoration: none;">Full Tentative Schedule <span style="font-size:13px;">&nearr;</span></a>
           <span id="weekLabel" class="mono" style="font-size: 12px; color: var(--amber); border: 1px solid var(--amber-bd); background: var(--amber-bg); padding: 6px 12px; border-radius: 999px; display: none;"></span>
         </div>
         <div class="mono" style="font-size: 12px; color: var(--dim); margin: -4px 0 14px;">// tentative schedule — subject to change</div>
@@ -186,7 +190,17 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 
     <div style="display: flex; flex-direction: column; gap: 24px;">
 
-      
+      <div id="examCard" class="card" style="position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(212,175,55,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
+        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 14px;">// COUNTDOWN</div>
+        <div style="display: flex; align-items: baseline; gap: 10px;">
+          <span id="examDays" class="mono" style="font-size: 56px; font-weight: 800; line-height: 1; color: var(--accent);">—</span>
+          <span id="examUnit" class="mono" style="font-size: 15px; color: var(--dim);">days to go</span>
+        </div>
+        <div id="examName" style="font-weight: 700; font-size: 16px; color: var(--bright); margin-top: 12px;">AP Exam</div>
+        <div id="examDate" class="mono" style="font-size: 13px; color: var(--dim); margin-top: 4px;"></div>
+        <div style="height: 6px; border-radius: 999px; background: var(--panel2); overflow: hidden; margin-top: 16px;"><div id="examBar" style="height: 100%; width: 0; background: var(--accent); transition: width .6s ease;"></div></div>
+      </div>
 
       <div class="card">
         <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// CLASS LINKS</div>
@@ -233,12 +247,13 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="mono" style="margin-top: 28px; text-align: center; font-size: 12px; color: var(--fainter);">&gt; end_of_transmission // stay curious, stay safe_</div>
 </div>
 
+<script src="vocab-data.js"></script>
 <script src="../config.js"></script>
 <script src="../resources.js"></script>
 <script>
-const CFG = (window.COURSE_CONFIG && window.COURSE_CONFIG.cyber1) || {};
-const SHEET_ID = CFG.sheetId || "1fr61cdKc5anGkY-hqjHkvOtdKZo_X24RZjC72ggHGIY";
-const SHEET_GID = CFG.sheetGid || "118090459";
+const CFG = (window.COURSE_CONFIG && window.COURSE_CONFIG.cyber3) || {};
+const SHEET_ID = CFG.sheetId || "1pW9wTqdcYD7eNXD8Tp0M-wbD15Lfq1QM55qp7UhGGQw";
+const SHEET_GID = CFG.sheetGid || "0";
 if(CFG.meet){var __ml=document.getElementById('meetLink'); if(__ml)__ml.href=CFG.meet;}
 renderResourceCards(CFG.resourceCards);
 
@@ -273,8 +288,7 @@ async function load(){
     let hi=clean.findIndex(r=>r.some(c=>/weekday/i.test(c))); if(hi<0)hi=0;
     const header=clean[hi].map(c=>(c||'').trim().toLowerCase());
     const find=k=>header.findIndex(c=>c.includes(k));
-    const findAny=arr=>{for(const k of arr){const i=header.findIndex(c=>c.includes(k));if(i>-1)return i;}return -1;};
-    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=findAny(['topic','textbook section','learning','lesson']),cHw=find('homework');
+    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=find('topic'),cHw=find('homework');
     const wd=/^(mon|tue|wed|thu|fri|sat|sun)/i;
     const m=r=>{
       const lines=(cTopic>-1?(r[cTopic]||''):'').split(/\n+/).map(t=>t.trim()).filter(Boolean);
@@ -308,6 +322,25 @@ async function load(){
   }catch(e){ stateInto('week','Could not reach the schedule sheet. Make sure it is shared "Anyone with the link → Viewer".'); stateInto('next','—'); }
 }
 load(); setInterval(load, 5*60*1000);
+
+// ==== EXAM COUNTDOWN — set your final/cert exam name & date here ====
+const EXAM = CFG.exam || null;
+// ===================================================================
+function renderExam(){
+  const g=id=>document.getElementById(id);
+  if(!EXAM){ if(g('examCard')) g('examCard').style.display='none'; return; }
+  if(!g('examDays'))return;
+  const now=new Date(), target=new Date(EXAM.date), start=new Date(EXAM.from);
+  const days=Math.ceil((target-now)/86400000);
+  g('examName').textContent=EXAM.name;
+  g('examDate').textContent=target.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const big=g('examDays'), unit=g('examUnit');
+  if(days>1){ big.textContent=days; big.style.fontSize='56px'; unit.textContent='days to go'; g('examBar').style.width=Math.max(2,Math.min(100,((now-start)/(target-start))*100))+'%'; }
+  else if(days===1){ big.textContent='1'; big.style.fontSize='56px'; unit.textContent='day to go'; g('examBar').style.width='99%'; }
+  else if(days===0){ big.textContent='Today'; big.style.fontSize='34px'; unit.textContent='· good luck!'; g('examBar').style.width='100%'; }
+  else { big.textContent='\u2713'; big.style.fontSize='44px'; unit.textContent='exam complete'; g('examDate').textContent='Great work \u2014 see you next cycle.'; g('examBar').style.width='100%'; }
+}
+renderExam(); setInterval(renderExam, 60*60*1000);
 </script>
 
 <div id="glitch"><div class="scan"></div><div class="noise" id="glNoise"></div><div class="msg" id="glMsg"></div></div>
@@ -317,7 +350,7 @@ load(); setInterval(load, 5*60*1000);
   const wrap=document.querySelector('.wrap');
   const chars='01ABCDEF#$%&<>/\\|_=+*';
   const rnd=n=>{let s='';for(let i=0;i<n;i++)s+=chars[Math.floor(Math.random()*chars.length)];return s;};
-  const msgs=['ACCESS DETECTED','INTRUSION ALERT','root@cybersec1:~#','SIGNAL LOST','DECRYPTING\u2026','THEY ARE IN'];
+  const msgs=['ACCESS DETECTED','INTRUSION ALERT','root@cybersec2:~#','SIGNAL LOST','DECRYPTING\u2026','THEY ARE IN'];
   function glitch(){
     let lines='';for(let i=0;i<60;i++)lines+=rnd(140)+'\n';
     noise.textContent=lines;
@@ -355,21 +388,21 @@ load(); setInterval(load, 5*60*1000);
   #objModal{width:100%;max-width:620px;max-height:85vh;overflow:auto;background:var(--panel);border:1px solid var(--border3);border-radius:14px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7),0 0 0 1px var(--accent);transform:translateY(10px) scale(.98);opacity:0;transition:transform .2s ease,opacity .2s ease;}
   #objOverlay.on #objModal{transform:none;opacity:1;}
   #objModal .oh{position:sticky;top:0;background:linear-gradient(120deg,var(--accent),var(--accent2));border-bottom:1px solid var(--border2);padding:22px 24px;display:flex;align-items:flex-start;gap:14px;}
-  #objClose{margin-left:auto;flex:none;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1;padding:8px 11px;border-radius:8px;border:1px solid rgba(0,0,0,.28);background:rgba(0,0,0,.14);color:#1a1206;cursor:pointer;}
+  #objClose{margin-left:auto;flex:none;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1;padding:8px 11px;border-radius:8px;border:1px solid rgba(0,0,0,.28);background:rgba(0,0,0,.14);color:#06140a;cursor:pointer;}
   #objClose:hover{background:rgba(0,0,0,.24);}
   #objList{list-style:none;margin:0;padding:12px 24px 26px;}
   #objList li{position:relative;padding:13px 0 13px 38px;border-bottom:1px solid var(--border2);color:var(--text);line-height:1.5;font-size:15px;}
   #objList li:last-child{border-bottom:none;}
-  #objList li::before{content:"\2713";position:absolute;left:0;top:12px;width:22px;height:22px;border-radius:6px;background:var(--accent);color:#140e04;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px -3px var(--accent);}
+  #objList li::before{content:"\2713";position:absolute;left:0;top:12px;width:22px;height:22px;border-radius:6px;background:var(--accent);color:#06140a;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px -3px var(--accent);}
   .objTabs{display:flex;gap:8px;padding:16px 24px 0;}
-  .objTab{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.5px;padding:9px 14px;border-radius:8px 8px 0 0;border:1px solid var(--border2);border-bottom:none;background:var(--panel2);color:var(--dim);cursor:pointer;}
+  .objTab{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.5px;padding:9px 14px;border-radius:8px 8px 0 0;border:1px solid var(--border2);border-bottom:none;background:var(--panel2);color:var(--faint);cursor:pointer;}
   .objTab.on{background:var(--panel);color:var(--bright);border-color:var(--border3);}
   .fcWrap{padding:20px 24px 26px;display:none;}
   .fcWrap.on{display:block;}
   .fcScene{perspective:1200px;}
   .fcCard{position:relative;height:180px;border-radius:12px;cursor:pointer;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,.2,.2,1);}
   .fcCard.flipped{transform:rotateY(180deg);}
-  .fcFace{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;border:1px solid var(--border3);background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;gap:8px;}
+  .fcFace{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;border:1px solid var(--border3);background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center;}
   .fcFace.back{transform:rotateY(180deg);background:var(--panel3);}
   .fcTerm{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--accent2);}
   .fcDef{font-size:14.5px;line-height:1.55;color:var(--text);}
@@ -394,6 +427,8 @@ load(); setInterval(load, 5*60*1000);
   @media(max-width:720px){
     .wrap{padding-left:12px !important;padding-right:12px !important;}
     .card{padding:14px !important;border-radius:12px;}
+    .teacherWide{grid-template-columns:1fr !important;}
+    .teacherLinksCol{border-left:none !important;padding-left:0 !important;border-top:1px solid var(--border2);padding-top:20px;margin-top:4px;}
     /* every tappable thing clears the 44px minimum */
     button,.btn,a.qlink,input[type=submit]{min-height:44px;}
     input,select,textarea{font-size:16px;}   /* stops iOS zooming the page on focus */
@@ -417,8 +452,8 @@ load(); setInterval(load, 5*60*1000);
   <div id="objModal" role="dialog" aria-modal="true" aria-labelledby="objTitle">
     <div class="oh">
       <div>
-        <div class="mono" id="objTag" style="font-size:12px;color:rgba(20,14,4,.72);letter-spacing:2px;margin-bottom:6px;">MODULE</div>
-        <h3 id="objTitle" class="mono" style="margin:0;font-size:22px;color:#140e04;line-height:1.15;font-weight:800;">Title</h3>
+        <div class="mono" id="objTag" style="font-size:12px;color:rgba(6,20,10,.72);letter-spacing:2px;margin-bottom:6px;">MODULE</div>
+        <h3 id="objTitle" class="mono" style="margin:0;font-size:22px;color:#06140a;line-height:1.15;font-weight:800;">Title</h3>
       </div>
       <button id="objClose" onclick="__closeObj()" aria-label="Close">ESC ✕</button>
     </div>
@@ -443,26 +478,29 @@ load(); setInterval(load, 5*60*1000);
 </div>
 <script>
 (function(){
-  var OBJ=[["understand the tenets of and begin using cybersecurity mindset","understand and have the foundational knowledge of the cyber industry and history","understand and have foundational knowledge of common threats and threat landscape","understand and have foundational knowledge of personal information security"],["learn the what and why of cyber ethics","understand the need and importance of ethics for responsible cyber citizenship","understand the basic principles of cyber ethics","learn the basic principles associated with the Association for Computing Machinery (ACM) Code of Ethics and Professional Conduct","understand the decision making process when approaching an ethical scenario"],["know the basics of computers and how computers function","develop an understanding of how computers store and process information including binary, octal and hexadecimal number systems","understand how computers use binary to encode information"],["gain a basic knowledge of cryptology (along with cryptography and cryptanalysis) and how they are all related","understand some basic cryptographic attacks and how they vary from one another","introduction to basic cryptology terms (e.g. plaintext, ciphertext, key, etc.) and concepts such as encryption vs. encoding","understand the difference between a monoalphabetic and polyalphabetic cipher and have a basic understanding of the most common types of ciphers","develop a foundational knowledge of the historical and geo-political aspects of cybersecurity"],["explain how and why social engineering is related to cybersecurity","analyze how particular social engineering attacks take advantage of specific features of the Internet and of human nature","discuss the limitations of visual inspection for preventing phishing attacks","identify strategies for avoiding social engineering scams"],["understand the difference between the Graphical User Interface (GUI) and the Command Line Interface (CLI)","use the CLI and be able to view and complete a variety of commands","complete picoCTF challenges around the basics of CLI"],["learn basic user account management","learn basic file system commands","use the tcpdump command and identify key elements within the packet capture","learn a basic text editor within a Linux system and be able to use the text editor","learn basic networking skills and how those can be managed within the CLI","continue to develop their interpersonal skills"],["introduction to Windows OS","understanding of group management","understanding of software management","use and understand Windows Command Prompt and PowerShell"],["develop cyber mindsets through NCL spring competition","introduction to and application of Security+ topics such as OSINT, password cracking, Wireshark and .pcap, log analysis, and enumeration"],["learn basic networking terminology","learn the 7 layers in the OSI model as well as the differences between the OSI model and TCP/IP model","create a basic network diagram including the correct components","identify ways to mitigate risks associated with connected devices"],["learn different types of malware and be able to identify examples of each","learn about different types of vulnerabilities along with the exploits that take advantage of these weaknesses","demonstrate understanding in how malware, vulnerabilities and exploits are all linked together","gain a basic understanding on how Cyber Kill Chains and Mitre Att&cks are used by cyber professionals"],["understand the basics of SQL and relational databases","explore SQL in the context of cybersecurity","introduce students to SQL injections","develop technical writing skills","develop evaluation and feedback skills"],["complete a Brag Sheet highlighting their key learning throughout Cyber 1","explore the wide range of careers in cybersecurity and recognize the certifications and training needed","reflect on all of their learning from the 13 units in Cyber 1"]];
-  var TITLES=["What is Cybersecurity?","Cybersecurity Ethics","Computer Number Systems","Intro to Cryptology","Social Engineering","Intro to Linux","Linux System Administration","Windows System Administration","National Cyber League","Network Basics","Malware, Vulnerabilities, Exploits & Cyber Kill Chain","SQL and Databases","Preparing for Cyber II"];
+  var OBJ=[
+    ["Reflect on past experiences with guest speakers and mentors to identify potential opportunities for job shadowing or internships in cybersecurity.","Develop effective networking strategies to expand professional connections and engage with industry professionals.","Create a professional communication plan, including drafting outreach emails and practicing cold calls, to inquire about job shadowing or internship opportunities.","Prepare for and conduct informational interviews with cybersecurity professionals to explore potential career opportunities and build relationships."],
+    ["Recognize my strengths and identify areas where I can grow.","Use my self-assessment to explore careers, goals, and learning opportunities that interest me.","Build a clear plan to help me stay on track with my learning and future goals.","Improve my plan using feedback from classmates, teachers, and mentors.","Keep an updated document that shows how I'm learning and growing throughout the year."],
+    ["Craft a professional cybersecurity resume tailored to specific roles.","Practice effective interviewing techniques to build confidence.","Build a personal brand with a compelling LinkedIn profile.","Explore college programs and scholarships in cybersecurity.","Design a strategic career plan with key steps and certifications."],
+    ["Describe what different entry-level cybersecurity jobs are like and what professionals in those roles do each day.","Explain how cybersecurity professionals protect systems, investigate threats, and secure networks across a variety of roles.","Use beginner-friendly tools and techniques used in careers like penetration testing, cryptography, and network security.","Complete hands-on labs and real-world scenarios that simulate tasks from real cybersecurity jobs.","Identify the skills, certifications, and training paths that are recommended for each cybersecurity career.","Compare different cybersecurity roles to find out which ones match my personal interests and strengths.","Recognize the difference between defensive and offensive cybersecurity roles and what skills are needed for each.","Explain how cybersecurity jobs connect to real-world problems like data breaches, privacy, and national security.","Clearly communicate what I've learned about cybersecurity careers through writing, speaking, or creating a final project.","Reflect on which cybersecurity job(s) interest me most and what I can do now to start preparing for that path."],
+    ["Explain how cybersecurity connects to real-world events and global issues.","Identify current cybersecurity threats and trends that are shaping the future of the field.","Describe how professionals respond to modern cyber challenges using real-life strategies and tools.","Understand how emerging technologies create both risks and opportunities in cybersecurity.","Recognize how cyber threats can impact individuals, organizations, and national security.","Analyze different viewpoints and responses to cybersecurity issues in today's world.","Make connections between what I'm learning and real careers in cybersecurity.","Engage with interactive and real-world examples to build a deeper understanding of cyber trends.","Reflect on how cybersecurity is constantly evolving and why staying current matters.","Communicate what I've learned in a clear and thoughtful way through writing, discussion, or projects."],
+    ["Apply cybersecurity skills to real-world challenges in a competition setting.","Work under pressure to solve problems like decoding, analyzing logs, or identifying threats.","Collaborate with teammates to complete complex cybersecurity tasks.","Use tools and techniques that professionals rely on in real cyber incidents.","Practice thinking like a hacker or defender to outsmart cyber threats.","Understand how competitions help prepare me for cybersecurity careers.","Gain hands-on experience that I can include in my resume or portfolio.","Learn from my mistakes and improve through feedback during competitions.","Explore what it's like to compete at a national or even international level in cybersecurity.","Build confidence in my cybersecurity abilities by competing and problem-solving in a real event."],
+    ["Research and choose a cybersecurity certification that aligns with my goals.","Create and follow a study plan to prepare for a professional certification exam.","Use practice exams and study tools to measure my readiness.","Demonstrate advanced cybersecurity knowledge by earning an industry-recognized certification.","Explain how my certification can support my future college or career opportunities."],
+    ["Use my cybersecurity knowledge to create a project that helps or educates others.","Identify a cybersecurity issue that affects my community and develop a plan to address it.","Communicate important cybersecurity concepts in a way that's clear and meaningful for my audience.","Work independently or with a team to organize and complete a real-world outreach project.","Reflect on how my project makes a difference and how I can use these skills in future careers."]
+  ];
+  var TITLES=["Job Shadowing / Internship","Personalized Cybersecurity Learning Plan","Preparing for Your Cybersecurity Career","Independent Module: Career Pathway","Independent Module: Cyber Trends","Cybersecurity Competition","Industry Certification","Impactful / Passion Project"];
   var ov=document.getElementById('objOverlay');
   function open(i){
-    document.getElementById('objTag').textContent='MODULE '+(i+1);
+    document.getElementById('objTag').textContent='MODULE '+String(i+1).padStart(2,'0');
     document.getElementById('objTitle').innerHTML=TITLES[i];
-    var ul=document.getElementById('objList');
-    ul.innerHTML=OBJ[i].map(function(o){return '<li>'+o+'</li>';}).join('');
+    document.getElementById('objList').innerHTML=OBJ[i].map(function(o){return '<li>'+o+'</li>';}).join('');
     ov.classList.add('on');
     document.getElementById('objClose').focus();
   }
   window.__closeObj=function(){ov.classList.remove('on');};
-  document.querySelectorAll('.mod').forEach(function(c){
-    c.addEventListener('click',function(){open(+c.getAttribute('data-m'));});
-    c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(+c.getAttribute('data-m'));}});
-  });
-
   var fcDeck=[], fcIdx=0, fcFlipped=false;
   function loadDeck(moduleNum){
-    var terms = (window.CY1_VOCAB && window.CY1_VOCAB.terms) || [];
+    var terms = (window.CY3_VOCAB && window.CY3_VOCAB.terms) || [];
     fcDeck = terms.filter(function(v){ return v.m === moduleNum; });
     fcIdx = 0; fcFlipped = false;
     renderCard();
@@ -506,11 +544,14 @@ load(); setInterval(load, 5*60*1000);
     origOpen(i);
     window.__objSwitch('obj');
   };
+  document.querySelectorAll('.mod').forEach(function(c){
+    c.addEventListener('click',function(){open(+c.getAttribute('data-m'));});
+    c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(+c.getAttribute('data-m'));}});
+  });
   document.addEventListener('keydown',function(e){if(e.key==='Escape')window.__closeObj();});
 })();
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="vocab-data.js"></script>
 <script src="../supabase-config.js"></script>
 <script src="../nemesis-intro.js"></script>
 <script src="../profile-link.js"></script>

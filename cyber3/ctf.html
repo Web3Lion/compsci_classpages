@@ -4,14 +4,14 @@
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Byte Bounty — AP Computer Science Principles</title>
+<title>Capture The Flag — AP Cyber Security 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
-:root{--bg:#0c0a14;--panel:#15111d;--panel2:#1a1524;--panel3:#20182e;--border:#332845;--border2:#241d33;--border3:#48395f;--border-hi:#6a5788;--amber-bd:#5a3d6a;--amber-bg:#1e0f28;--text:#d8d2e6;--bright:#f5f2ff;--muted:#aca2c4;--dim:#867ba0;--faint:#5d5279;--fainter:#3f374f;--accent:#a855f7;--accent2:#c98bff;--amber:#a855f7;--via:rgba(168,85,247,.10);--trace:rgba(168,85,247,.035);}
-:root[data-theme="light"]{--bg:#f1eef7;--panel:#ffffff;--panel2:#f6f3fb;--panel3:#f1ecf8;--border:#d7cfe4;--border2:#e4ddf0;--border3:#b8accf;--border-hi:#897ba8;--amber-bd:#c9a9dc;--amber-bg:#f3e6fb;--text:#2c2740;--bright:#140e26;--muted:#524a6a;--dim:#6f668c;--faint:#8d83a6;--fainter:#aaa3c0;--accent:#8b2fd6;--accent2:#6f1fb0;--amber:#8b2fd6;--via:rgba(139,47,214,.16);--trace:rgba(139,47,214,.05);}
+:root{--bg:#1c160a;--panel:#26200f;--panel2:#2c2411;--panel3:#372c14;--border:#4a3d1c;--border2:#362d16;--border3:#5e4c22;--border-hi:#7c632c;--amber-bd:#6b5220;--amber-bg:#2a2010;--text:#f0e6cf;--bright:#fff8e6;--muted:#cdbd8c;--dim:#ac9a62;--faint:#8c7c50;--fainter:#6b5d3d;--accent:#d4af37;--accent2:#f4d160;--amber:#ffcf5c;}
+:root[data-theme="light"]{--bg:#faf6e8;--panel:#ffffff;--panel2:#fdf8ea;--panel3:#fbf1d6;--border:#e6d9ad;--border2:#f0e6c8;--border3:#d4bd78;--border-hi:#b89a4a;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#3a2f14;--bright:#1f1806;--muted:#6b5a2e;--dim:#8a7540;--faint:#a3915f;--fainter:#c2b287;--accent:#a67c1e;--accent2:#7d5e14;--amber:#9a7d16;}
 body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
 .themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
 .themebtn:hover{border-color:var(--accent);}
@@ -38,6 +38,12 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   .spin { width: 20px; height: 20px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
   @keyframes glShake {0%,100%{transform:translate(0)}10%{transform:translate(-4px,2px)}20%{transform:translate(4px,-2px)}30%{transform:translate(-3px,-1px) skewX(3deg)}40%{transform:translate(3px,1px) skewX(-3deg)}50%{transform:translate(-2px,2px)}60%{transform:translate(2px,-2px)}70%{transform:translate(-3px,1px) skewX(2deg)}80%{transform:translate(3px,-1px)}90%{transform:translate(-1px,1px)}}
   .glitching { animation: glShake .45s steps(3) 2; }
+  #glitch { position: fixed; inset: 0; z-index: 9999; display: none; pointer-events: none; overflow: hidden; }
+  #glitch.on { display: block; }
+  #glitch .scan { position:absolute; inset:0; background: repeating-linear-gradient(0deg, rgba(212,175,55,.14) 0, rgba(212,175,55,.14) 1px, transparent 2px, transparent 4px); mix-blend-mode: screen; }
+  #glitch .noise { position:absolute; inset:0; color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.15; opacity:.22; white-space:pre-wrap; word-break:break-all; overflow:hidden; }
+  #glitch .slice { position:absolute; left:0; right:0; height:16px; background:rgba(212,175,55,.10); }
+  #glitch .msg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'JetBrains Mono',monospace; font-weight:800; font-size:clamp(22px,5vw,48px); color:var(--bright); text-shadow: 2px 0 #ff2d5e, -2px 0 #2de2ff; letter-spacing:1px; text-align:center; }
   /* PERF — the arena renders every challenge card up front (100+ on some
      courses), which is a lot of layout and paint for a school Chromebook.
      content-visibility lets the browser skip offscreen cards entirely; the
@@ -96,13 +102,14 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 </style>
 </head>
 <body>
+<!-- flag{read_the_source_luke} -->
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap" style="padding-top:20px;">
   <div id="ctfRoot"></div>
 </div>
 <script src="../config.js"></script>
 <script src="vocab-data.js"></script>
-<script>window.CTF_COURSE="apcsp";window.CTF_VOCAB=(window.APCSP_VOCAB||{}).terms||[];</script>
+<script>window.CTF_COURSE="cyber3";window.CTF_VOCAB=(window.CY3_VOCAB||{}).terms||[];</script>
 <script src="../cipher.js"></script>
 <script src="../ctf.js"></script>
 <script src="../name-filter.js"></script>
@@ -111,7 +118,6 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 <script src="../gate-art.js"></script>
 <script src="../sync.js"></script>
 <script src="../welcome.js"></script>
-<script src="packet-intro.js"></script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 <style>@keyframes ctfShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   /* --- touch targets: phones and Chromebook touchscreens ---

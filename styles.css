@@ -1,0 +1,12 @@
+/* CTF Course Platform — global CSS entry point.
+   Consumers link this one file. Import list only; never inline rules here. */
+@import url("design-system/tokens/fonts.css");
+@import url("design-system/tokens/typography.css");
+@import url("design-system/tokens/colors.css");
+@import url("design-system/tokens/course-cyber1.css");
+@import url("design-system/tokens/course-cyber2.css");
+@import url("design-system/tokens/course-apcsp.css");
+@import url("design-system/tokens/course-web3.css");
+@import url("design-system/tokens/spacing.css");
+@import url("design-system/tokens/effects.css");
+@import url("design-system/tokens/motion.css");

@@ -4,13 +4,13 @@
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cybersecurity News — Cyber Security 1</title>
+<title>Cybersecurity News — AP Cyber Security 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--via:rgba(0,179,255,.10);--trace:rgba(0,179,255,.035);}
-:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--border-hi:#8fabc7;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--fainter:#a6b3c2;--accent:#0a74d6;--accent2:#075aa8;--amber:#9a7d16;--via:rgba(10,116,214,.16);--trace:rgba(10,116,214,.05);}
+:root{--bg:#1c160a;--panel:#26200f;--panel2:#2c2411;--panel3:#372c14;--border:#4a3d1c;--border2:#362d16;--border3:#5e4c22;--border-hi:#7c632c;--amber-bd:#6b5220;--amber-bg:#2a2010;--text:#f0e6cf;--bright:#fff8e6;--muted:#cdbd8c;--dim:#ac9a62;--faint:#8c7c50;--fainter:#6b5d3d;--accent:#d4af37;--accent2:#f4d160;--amber:#ffcf5c;--via:rgba(212,175,55,.10);--trace:rgba(212,175,55,.035);}
+:root[data-theme="light"]{--bg:#faf6e8;--panel:#ffffff;--panel2:#fdf8ea;--panel3:#fbf1d6;--border:#e6d9ad;--border2:#f0e6c8;--border3:#d4bd78;--border-hi:#b89a4a;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#3a2f14;--bright:#1f1806;--muted:#6b5a2e;--dim:#8a7540;--faint:#a3915f;--fainter:#c2b287;--accent:#a67c1e;--accent2:#7d5e14;--amber:#9a7d16;--via:rgba(166,124,30,.16);--trace:rgba(166,124,30,.05);}
 body,.card{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
 .themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
 .themebtn:hover{border-color:var(--accent);}
@@ -82,7 +82,7 @@ const FEEDS = [
   { name: 'SecurityWeek',      url: 'https://feeds.feedburner.com/securityweek' },
   { name: 'The Record',        url: 'https://therecord.media/feed/' }
 ];
-const CACHE_KEY = 'cyber1-news-cache-v1';
+const CACHE_KEY = 'cyber3-news-cache-v1';
 const PER_FEED = 4;
 
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
