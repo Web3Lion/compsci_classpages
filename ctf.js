@@ -252,6 +252,51 @@
     render();
     if (ds) setTimeout(function(){ nemesisToast("\u25b2 DAY " + ds.count + " STREAK", "+" + ds.bonus + " XP daily login bonus" + (ds.count >= 10 ? " \u00b7 max streak!" : ""), "var(--amber)"); }, 500);
     if (nb.length) setTimeout(function(){ announceBadges(nb); }, 1100);
+    initUltimateFlag5();
+  }
+
+  /* ULTIMATE FLAG 5 — "The Night Owl". Only appears on this page, only between
+     00:00:00 and 00:09:59 local time, only once per calendar night. 300 XP. */
+  function initUltimateFlag5(){
+    function nightKey(){ const d = new Date(); return "uf5-" + d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate(); }
+    function inWindow(){ const d = new Date(); return d.getHours() === 0 && d.getMinutes() < 10; }
+    function claimedTonight(){ try { return !!localStorage.getItem(nightKey()); } catch(e){ return false; } }
+    function tick(){
+      const existing = document.getElementById("uf5Banner");
+      if (!inWindow() || claimedTonight() || state.solved["ultimate-flag-5"]) { if (existing) existing.remove(); return; }
+      if (existing) return;
+      const b = document.createElement("div");
+      b.id = "uf5Banner";
+      b.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:11000;max-width:420px;width:calc(100% - 32px);border:2px solid var(--accent);border-radius:16px;background:linear-gradient(160deg,var(--panel3),var(--panel));padding:20px 22px;box-shadow:0 0 0 6px color-mix(in oklch, var(--accent) 12%, transparent),0 30px 70px -20px color-mix(in oklch, var(--accent) 45%, transparent);font-family:'JetBrains Mono',monospace;text-align:center;";
+      b.innerHTML = '<div style="font-size:11px;letter-spacing:2px;color:var(--accent);margin-bottom:8px;">\u2605 ULTIMATE FLAG 5 \u2014 THE NIGHT OWL</div>' +
+        '<div style="font-size:14px;color:var(--bright);font-weight:700;margin-bottom:6px;">You\'re here at midnight. That\'s dedication.</div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-bottom:14px;">This flag only exists for the next few minutes. Claim it before it vanishes.</div>' +
+        '<button id="uf5Claim" style="font-family:inherit;font-weight:800;font-size:13px;letter-spacing:.5px;padding:11px 22px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#06140a;cursor:pointer;">CLAIM +300 XP</button>';
+      document.body.appendChild(b);
+      document.getElementById("uf5Claim").onclick = function(){
+        if (state.solved["ultimate-flag-5"]) return;
+        state.solved["ultimate-flag-5"] = true;
+        state.earned["ultimate-flag-5"] = 300;
+        state.bonus = (state.bonus || 0) + 300;
+        save(state);
+        try { localStorage.setItem(nightKey(), "1"); } catch(e){}
+        b.remove();
+        nemesisToast("\u2605 ULTIMATE FLAG 5 CAPTURED", "+300 XP \u00b7 The Night Owl", "var(--accent)");
+        if (!personaOn()) {
+          const t = document.createElement("div");
+          t.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:11000;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:13px;letter-spacing:.5px;padding:14px 22px;border-radius:12px;border:1px solid var(--accent);background:var(--panel);color:var(--accent);";
+          t.textContent = "\u2605 ULTIMATE FLAG 5 CAPTURED \u00b7 +300 XP";
+          document.body.appendChild(t);
+          setTimeout(function(){ t.remove(); }, 3200);
+        }
+        if (typeof window.CTF_REPORT === "function") {
+          try { window.CTF_REPORT({ course, handle: getHandle(), challengeId: "ultimate-flag-5", key: "ultimate-flag-5", points: 300, totalPoints: stats().pts, ts: Date.now() }); } catch(e){}
+        }
+        render();
+      };
+    }
+    tick();
+    setInterval(tick, 15000);
   }
 
   async function sha256(str) {

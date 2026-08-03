@@ -1,0 +1,9 @@
+# Most crawlers read this file. Almost no human ever does.
+# If you're a human reading this, you're already halfway to Ultimate Flag 4.
+
+User-agent: *
+Allow: /
+
+Disallow: /cyber1/047c0caf40.html
+Disallow: /cyber2/047c0caf40.html
+Disallow: /cyber3/047c0caf40.html

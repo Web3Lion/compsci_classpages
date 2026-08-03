@@ -50,9 +50,11 @@ window.COURSE_CONFIG = {
         { name: "Professor Messer — Network+ (N10-009)",  desc: "Free full CompTIA Network+ video course",  url: "https://www.professormesser.com/network-plus/n10-009/n10-009-video/n10-009-training-course/", icon: "video" },
         { name: "Khan Academy — Internet & Cybersecurity", desc: "Free lessons on online data security", url: "https://www.khanacademy.org/computing/computers-and-internet/xcae6f4a7ff015e7d:online-data-security", icon: "book" }
       ]},
-      { title: "LIVE TOOLS", items: [
-        { name: "Cybersecurity News Feed", desc: "Daily curated security headlines", url: "news.html", icon: "link" },
-        { name: "Kaspersky Cyberthreat Map", desc: "Real-time global attack visualization", url: "https://cybermap.kaspersky.com/", icon: "globe" }
+      { title: "DAILY TOOLS", items: [
+        { name: "Check Point Live Cyber Threat Map", desc: "Real-time global attack visualization", url: "https://threatmap.checkpoint.com/", icon: "globe" },
+        { name: "NETSCOUT Cyber Threat Horizon", desc: "Real-time global attack visualization", url: "https://horizon.netscout.com/", icon: "globe" },
+        { name: "Kaspersky Cyberthreat Map", desc: "Real-time global attack visualization", url: "https://cybermap.kaspersky.com/", icon: "globe" },
+        { name: "Cybersecurity News Feed", desc: "Daily curated security headlines", url: "news.html", icon: "link" }
       ]}
     ]
   },
@@ -78,9 +80,11 @@ window.COURSE_CONFIG = {
         { name: "ExamCompass — Practice Tests", desc: "Free CompTIA-style practice quizzes & exams", url: "https://www.examcompass.com/", icon: "exam" },
         { name: "AP Students — Cybersecurity", desc: "College Board course home", url: "https://apstudents.collegeboard.org/courses/ap-cybersecurity", icon: "exam" }
       ]},
-      { title: "LIVE TOOLS", items: [
-        { name: "Cybersecurity News Feed", desc: "Daily curated security headlines", url: "news.html", icon: "link" },
-        { name: "Kaspersky Cyberthreat Map", desc: "Real-time global attack visualization", url: "https://cybermap.kaspersky.com/", icon: "globe" }
+      { title: "DAILY TOOLS", items: [
+        { name: "Check Point Live Cyber Threat Map", desc: "Real-time global attack visualization", url: "https://threatmap.checkpoint.com/", icon: "globe" },
+        { name: "NETSCOUT Cyber Threat Horizon", desc: "Real-time global attack visualization", url: "https://horizon.netscout.com/", icon: "globe" },
+        { name: "Kaspersky Cyberthreat Map", desc: "Real-time global attack visualization", url: "https://cybermap.kaspersky.com/", icon: "globe" },
+        { name: "Cybersecurity News Feed", desc: "Daily curated security headlines", url: "news.html", icon: "link" }
       ]}
     ]
   },
@@ -125,9 +129,11 @@ window.COURSE_CONFIG = {
         { name: "Professor Messer — Security+ (SY0-701)", desc: "Free full CompTIA Security+ video course", url: "https://www.professormesser.com/security-plus/sy0-701/sy0-701-video/sy0-701-comptia-security-plus-course/", icon: "video" },
         { name: "Professor Messer — Network+ (N10-009)",  desc: "Free full CompTIA Network+ video course",  url: "https://www.professormesser.com/network-plus/n10-009/n10-009-video/n10-009-training-course/", icon: "video" }
       ]},
-      { title: "LIVE TOOLS", items: [
-        { name: "Cybersecurity News Feed", desc: "Daily curated security headlines", url: "news.html", icon: "link" },
-        { name: "Kaspersky Cyberthreat Map", desc: "Real-time global attack visualization", url: "https://cybermap.kaspersky.com/", icon: "globe" }
+      { title: "DAILY TOOLS", items: [
+        { name: "Check Point Live Cyber Threat Map", desc: "Real-time global attack visualization", url: "https://threatmap.checkpoint.com/", icon: "globe" },
+        { name: "NETSCOUT Cyber Threat Horizon", desc: "Real-time global attack visualization", url: "https://horizon.netscout.com/", icon: "globe" },
+        { name: "Kaspersky Cyberthreat Map", desc: "Real-time global attack visualization", url: "https://cybermap.kaspersky.com/", icon: "globe" },
+        { name: "Cybersecurity News Feed", desc: "Daily curated security headlines", url: "news.html", icon: "link" }
       ]}
     ]
   },
@@ -170,8 +176,42 @@ window.COURSE_CONFIG.cyber1.ctf = {
   modules: ["What is Cybersecurity?","Cybersecurity Ethics","Computer Number Systems","Intro to Cryptology","Social Engineering","Intro to Linux","Linux System Administration","Windows System Administration","National Cyber League","Network Basics","Malware, Vulnerabilities, Exploits & Cyber Kill Chain","SQL and Databases","Preparing for Cyber II"],
   challenges: [
 
-  /* MODULE 1 — What is Cybersecurity? ─────────────────────────────────────── */
-  { id: "c1-m1-cia", module: 1, title: "The CIA Triad", category: "Foundations",
+  /* MODULE 1 — What is Cybersecurity? (Play → 1.1–1.4, 1.6–1.7 → Perform) ─── */
+  { id: "c1-m1-day0-play", module: 1, title: "Day 0 — Play, Learn, Perform", category: "Play",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Play Activity — Cybersecurity Scenario EMATE. In the learning model this course uses, the very first stage — diving into a challenge before you know the vocabulary — is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's literally what you're doing right now: jumping in and playing around.",
+        flagHash: "0a45fb5471aa0f38735f1abc83415c64b04c015c4ae29d7ea1ea20aff885203b" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Guidance — Unit 1. Struggling and failing at first when trying something totally new, before you have the background to solve it, is expected in this field and called productive ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It sounds negative, but 'productive' is the key word.",
+        flagHash: "60be6ecae86d6364bcfbb350d3109882c1cb0248d286332d40c036c143278e2e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Play, Learn, ___. The stage after Play and Learn, where you apply your new knowledge to demonstrate what you can do, is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's the third word in the model's name.",
+        flagHash: "fc7c6a8653ebcd109ece0a4ea3b420d18abfac27fa1fb16978b924715cc4a4b0" }
+    ] },
+
+  { id: "c1-m1-1.1-core", module: 1, title: "1.1 — What is Cybersecurity?", category: "Foundations",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Develop a foundational understanding of the cybersecurity field. The overall field concerned with protecting systems, networks, and data from digital attacks is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's the name of this entire course.",
+        flagHash: "f31e245e950d387f69a7577159dc176a60870584c74a80c29b9104d1424f93c1" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Activity 1: What is Cybersecurity? The lesson's featured case study is a real hotel lock company whose flawed keycard system became a famous lesson in why cybersecurity matters. Name the company.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's also the name of the reading guide used in this lesson.",
+        flagHash: "bed04dd502b2e0db979233f2b81fa731ad218185612ff613a330e3c9cffaf45b" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Kick Start — Mind Map intro. Cybersecurity protects things far beyond just computers — from personal texts to national power ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Think about what would happen if the electric utility got hacked.",
+        flagHash: "91a02c561404220cfff0efdc5f5b26b3ed33f412ab74b6804d6a07e937a66282" }
+    ] },
+
+  { id: "c1-m1-cia", module: 1, title: "1.1 — The CIA Triad", category: "Foundations",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Foundational security knowledge. The CIA triad leg that ensures only authorized people can access information.\n\nSubmit as flag{word} (lowercase).",
@@ -187,17 +227,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" }
     ] },
 
-  { id: "c1-m1-actors", module: 1, title: "Spot the Threat Actor", category: "Threat Landscape", type: "match", points: 150,
-    intro: "Objective — Foundational knowledge of common threats. Match each description to the threat actor. Tap a description, then tap the actor.",
-    pairs: [
-      { left: "Breaks in for a political or social cause", right: "Hacktivist" },
-      { left: "Beginner using others' ready-made tools", right: "Script Kiddie" },
-      { left: "Trusted employee who misuses access", right: "Insider Threat" },
-      { left: "Well-funded, government-backed group", right: "Nation-State" },
-      { left: "Attacks purely for financial gain", right: "Cybercriminal" }
-    ] },
-
-  { id: "c1-m1-cia2", module: 1, title: "CIA Triad in Action", category: "Foundations", type: "match", points: 150,
+  { id: "c1-m1-cia2", module: 1, title: "1.1 — CIA Triad in Action", category: "Foundations", type: "match", points: 150,
     intro: "Objective — Personal information security. Match each safeguard to the CIA leg it protects. Tap a safeguard, then tap the leg.",
     pairs: [
       { left: "Encrypting a private file", right: "Confidentiality" },
@@ -207,32 +237,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "A digital signature", right: "Integrity" }
     ] },
 
-  { id: "c1-m1-secure", module: 1, title: "Secure Your Account", category: "Personal Security", type: "order", points: 150,
-    intro: "Objective — Personal information security. Order these steps to lock down a personal account, first to last.",
-    steps: [
-      "Create a long, unique password",
-      "Turn on multi-factor authentication",
-      "Update your software & apps",
-      "Learn to spot phishing messages",
-      "Back up your important data"
-    ] },
-
-  { id: "c1-m1-vocab", module: 1, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["cybersecurity","confidential","integrity","availability","threat","risk","hacker","asset"],
-    hardMode: "rapid" },
-
-  { id: "c1-m1-domains", module: 1, title: "Match the Security Domain", category: "Foundations", type: "match", points: 150,
-    intro: "Objective — Foundational security knowledge. Match each task to its security domain. Tap the task, then tap the domain.",
-    pairs: [
-      { left: "Encrypting stored data", right: "Data Security" },
-      { left: "Configuring a firewall", right: "Network Security" },
-      { left: "Managing user logins", right: "Access Control" },
-      { left: "Training staff on phishing", right: "Awareness" },
-      { left: "Responding to a breach", right: "Incident Response" }
-    ] },
-
-  { id: "c1-m1-triad-rank", module: 1, title: "Rank the Impact", category: "Foundations", type: "order", points: 150,
-    intro: "Objective — Personal information security. Order these breaches from LEAST to MOST severe impact on confidentiality.",
+  { id: "c1-m1-triad-rank", module: 1, title: "1.1 ext — Rank the Impact", category: "Foundations", type: "order", points: 150,
+    intro: "Extension of 1.1 — Order these breaches from LEAST to MOST severe impact on confidentiality.",
     steps: [
       "A public blog post is copied",
       "An email address leaks",
@@ -241,20 +247,173 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "A full identity is stolen"
     ] },
 
-  { id: "c1-m1-defense", module: 1, title: "Defense Basics", category: "Foundations",
+  { id: "c1-m1-domains", module: 1, title: "1.1 ext — Match the Security Domain", category: "Foundations", type: "match", points: 150,
+    intro: "Extension of 1.1 (Cybersecurity Snapshot Jigsaw) — match each task to its security domain. Tap the task, then tap the domain.",
+    pairs: [
+      { left: "Encrypting stored data", right: "Data Security" },
+      { left: "Configuring a firewall", right: "Network Security" },
+      { left: "Managing user logins", right: "Access Control" },
+      { left: "Training staff on phishing", right: "Awareness" },
+      { left: "Responding to a breach", right: "Incident Response" }
+    ] },
+
+  { id: "c1-m1-defense", module: 1, title: "1.1 ext — Defense Basics", category: "Foundations",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Personal information security. The secret word or phrase you use to log in to an account.\n\nSubmit as flag{word} (lowercase).",
+        prompt: "Extension of 1.1 (Cybersecurity Snapshot Jigsaw: Defenses against hacking) — The secret word or phrase you use to log in to an account.\n\nSubmit as flag{word} (lowercase).",
         hint: "You type it to sign in.",
         flagHash: "96b5fddda749f35d9a65a86c361df2192719f5d933ce22d46eb470bf8ffa1c62" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Personal security. Requiring a second proof (like a phone code) in addition to a password. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        prompt: "Extension of 1.1 — Requiring a second proof (like a phone code) in addition to a password. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
         hint: "Three letters. Something you know, plus something you have.",
         flagHash: "b54b228a7dd04447468f32451d10e2a025f9bb5775ae2b74ef2cb377eadbed73" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Foundational knowledge. Software designed to detect and remove malicious programs is called ___ software.\n\nSubmit as flag{word} (lowercase).",
+        prompt: "Extension of 1.1 — Software designed to detect and remove malicious programs is called ___ software.\n\nSubmit as flag{word} (lowercase).",
         hint: "Software that scans for and removes known malicious programs, traditionally by matching signatures. One word.",
         flagHash: "a48a572a3d37576eb1bd74ec613f4006a8ce60e1aa8948b5fe28ac5c82c6c78f" }
+    ] },
+
+  { id: "c1-m1-secure", module: 1, title: "1.1 ext — Secure Your Account", category: "Personal Security", type: "order", points: 150,
+    intro: "Extension of 1.1 — order these steps to lock down a personal account, first to last.",
+    steps: [
+      "Create a long, unique password",
+      "Turn on multi-factor authentication",
+      "Update your software & apps",
+      "Learn to spot phishing messages",
+      "Back up your important data"
+    ] },
+
+  { id: "c1-m1-1.2-history", module: 1, title: "1.2 — History of Cyber Threats", category: "Cyber History",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explore historical cybersecurity incidents. Kick Start: research 'Creeper.' The very first computer virus, created in the early 1970s, was called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It displayed the message \"I'm the creeper, catch me if you can!\"",
+        flagHash: "42c31e9a61ca27e5a2faec9514cb8887d099410a279b8dd59501426b7ed156af" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — History of Cyber Threats Timeline. The 2010 malware that famously sabotaged Iranian nuclear centrifuges by targeting industrial control systems is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "One of the timeline's assigned events — a nation-state-grade cyberweapon.",
+        flagHash: "b68b08479d8d1b9d986b55c15310c3a71ef65dc4d46e0017977fda67ae8f448e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Present Cyber Threats / History Timeline. The 2021 ransomware attack that shut down a major U.S. fuel pipeline for several days, causing gas shortages, targeted the ___ Pipeline.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "One of the timeline's assigned events — named after the pipeline company itself.",
+        flagHash: "6b7f6ac8b3ac02c940eff66e366e88dd0f487abe33faa83aa2a1cabecf6e5707" }
+    ] },
+
+  { id: "c1-m1-actors", module: 1, title: "1.2 ext — Spot the Threat Actor", category: "Threat Landscape", type: "match", points: 150,
+    intro: "Extension of 1.2 (who was behind history's biggest attacks) — match each description to the threat actor. Tap a description, then tap the actor.",
+    pairs: [
+      { left: "Breaks in for a political or social cause", right: "Hacktivist" },
+      { left: "Beginner using others' ready-made tools", right: "Script Kiddie" },
+      { left: "Trusted employee who misuses access", right: "Insider Threat" },
+      { left: "Well-funded, government-backed group", right: "Nation-State" },
+      { left: "Attacks purely for financial gain", right: "Cybercriminal" }
+    ] },
+
+  { id: "c1-m1-1.3-careers", module: 1, title: "1.3 — Cyber Careers", category: "Careers",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explore a variety of cybersecurity careers. The most common 'first job' team in the industry, which monitors an organization's systems around the clock for threats. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Security Operations Center.",
+        flagHash: "4225c6abc26069ccbfd4646075ff0579d4d8f8d4a31b1f235f5001fa91e89138" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Cyber Career Playlist. A widely-used site for researching cybersecurity career data, salaries, and required skills is called Cyber___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's listed as a recommended digital resource for this lesson.",
+        flagHash: "8d743a86b8d18e9763b1d4d81553c2bafb4ffa0701369cc95bc8ffbaf8d700f2" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Identify three cybersecurity careers of personal interest. The compilation of career research, flyers, and self-reflection artifacts built throughout this course is called a career ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Artists and photographers keep one of these too.",
+        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" }
+    ] },
+
+  { id: "c1-m1-1.4-mindsets", module: 1, title: "1.4 — Cyber Mindsets & Competitions", category: "Mindsets & Competitions",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 100,
+        prompt: "Objective — Identify the Cyber Mindsets. The list of 10 professional skills cybersecurity employers look for is abbreviated ___ (a letters+number combo, no space).\n\nSubmit as flag{answer} (lowercase, no space).",
+        hint: "Two letters, then the number ten.",
+        flagHash: "4e47ed44760085460f72e409a08e30c455d03027bb5c4689f466557966aebdc7" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain how the mindsets connect to cybersecurity competitions. The national, team-based cybersecurity competition this course prepares students for. Give its three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "National Cyber ___.",
+        flagHash: "5908bc07412f19991426f90bdf778501ff5b94ad2ba2e81a1588cfb964eced0c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — PC10 Question Lens. The PC10 skill describing cybersecurity as a field requiring constant learning because it never stops evolving is called relentless ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's what drives professionals to keep learning in a field that never stands still.",
+        flagHash: "f50736e89d3dadfc9d167498932e04e33c452a20ddec06d82181967413f6bb83" }
+    ] },
+
+  { id: "c1-m1-1.5-ethics", module: 1, title: "1.5 — Cyber Ethics Kickoff", category: "Ethics",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Describe ethical considerations in real-world digital scenarios. Kick Start: this lesson introduces the branch of philosophy concerned with right and wrong conduct, applied to cybersecurity. Give the two-word term.\n\nSubmit as flag{answer} — one lowercase word (just the discipline itself, not the word \"cyber\").",
+        hint: "The root of the word \"ethical.\"",
+        flagHash: "4f5aa4b3844ca967570aec04e2c900315a6b22b40fe710de60b27d22ccdc8fc4" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Cyber Ethics Play Games. This lesson's PLAY activity uses ethics games and a scavenger hunt hosted on a specific site. Give its name (no .com).\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's named for a U.S. region — Pacific North West.",
+        flagHash: "3150e0415e73eeef591f1cf19a1ffb82ab76e9efb38dbbc4b605729026c61d7e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Wrap-Up: Cyber Ethics Contract. The document students read and sign at the end of this lesson, committing to behave ethically throughout the course, is called the Cyber Ethics ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "A legal-sounding word for a signed agreement.",
+        flagHash: "86f0e6b100c80f230ec8664619cdc3e89df1184a63364eec30b41d2b22977275" }
+    ] },
+
+  { id: "c1-m1-1.6-cert", module: 1, title: "1.6 — PC/Trusted Sec Certification", category: "Certification",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Prepare for the Paradigm/TrustedSec certification. The industry-recognized credential earned by demonstrating foundational cybersecurity knowledge is called the Cyber ___ Certification.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It certifies the basics — the fundamentals of the field.",
+        flagHash: "f33204aa42b1d4f9e0667501c6041938ab5200dcb62e91520d0091e682576430" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Certification Prep Questions. After completing prep activities, students attempt a prep quiz with this many questions. Give the number.\n\nSubmit as flag{number}.",
+        hint: "It's mentioned directly in the lesson's Activity 2.",
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Certification value. Earning this certification serves as both a milestone and a ___ into the broader cybersecurity field.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Something that launches you forward into what's next.",
+        flagHash: "ee78221233c80800ce4a1bd4bb41dd8c3fbe249bc455c35002ed86c7b0d3da67" }
+    ] },
+
+  { id: "c1-m1-1.7-ctf", module: 1, title: "1.7 — Intro to Paradigm Cyber CTFs", category: "Capture the Flag",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Define Capture the Flag (CTF) challenges. The hands-on puzzle-solving challenges used throughout this course, where you find hidden strings to earn points. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "You're doing one right now.",
+        flagHash: "88c2db7bb864afa527b23b21878c59971448174a79bd875a0024639047fa8122" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Paradigm Cyber CTFs Introduction Scavenger Hunt. Students complete a ___ ___ in Centra to find items related to CTFs.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "It's literally the name of the lesson's main activity.",
+        flagHash: "3a8b39c0bfdc44e095804996b11f43257802b31c3d56548545660138fe03f590" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — CTF Overview. CTFs introduce students to the mindset of investigators and ethical ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Someone who breaks into systems, but with permission and good intent.",
+        flagHash: "728ba6afbd09db59edb2a2fd3e4d20fcf4829aef0573c4a9804cd49bb3e394c6" }
+    ] },
+
+  { id: "c1-m1-vocab", module: 1, title: "1.7 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["cybersecurity","confidential","integrity","availability","threat","risk","hacker","asset"],
+    hardMode: "rapid" },
+
+  { id: "c1-m1-perform", module: 1, title: "Perform — Unit Portfolio", category: "Performance Task",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Performance Task — compile unit tasks into a unit portfolio. The end-of-unit task where you compile your reflection, flyer, character profile, and threat report together is called a unit ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "The same word used for the career compilation in lesson 1.3.",
+        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Performance Task — this unit followed a three-stage learning model. Name the middle stage: Play, ___, Perform.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It comes after the hands-on Play stage and before you demonstrate mastery.",
+        flagHash: "09ef290e34fc9225fd7ae9d6e01b11105a8249ac08376af4cf4e6e9df58b9a88" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Assessment Reflection Questions — describing a moment you felt frustrated or stuck, and which mindset helped you get unstuck, is a ___ question.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Looking back at your own experience to draw a lesson from it.",
+        flagHash: "0ca2e3b7594bd8fea1650855e98d60523b13d2c2880c3c10b657b47b811d96c3" }
     ] },
 
   /* MODULE 2 — Cybersecurity Ethics ───────────────────────────────────────── */
@@ -1813,79 +1972,140 @@ window.COURSE_CONFIG.cyber2.ctf = {
   modules: ["Threats, Adversaries & Attacks","Organizational Security","Fall National Cyber League","Architecture & Design / Network Security","Identity & Access Management","Cryptography & PKI","Spring National Cyber League","Risk Management & Incident Response","Portfolio & Spring Showcase","Preparing for Cyber 3 & RWL Opportunities"],
   challenges: [
 
-  /* MODULE 1 — Threats, Adversaries & Attacks ─────────────────────────────── */
-  { id: "m1-malware", module: 1, title: "Know Your Malware", category: "Malware",
+  /* MODULE 1 — Threats, Adversaries & Attacks (Play → 1.1–1.7 → Perform) ──── */
+  { id: "m1-day0-teams", module: 1, title: "Day 0 — Red Team, Blue Team", category: "Play",
+    frameworks: null,
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Malware that encrypts a victim's files and holds them hostage until a ransom is paid.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "It takes your data hostage and demands payment. The word combines the fee a kidnapper asks for with the ending in 'software'.",
-        flagHash: "c3eab0cae2df20bf8a4b32c23cfe39e1d2e2f630a2c77d8b989431866e84712c" },
+        prompt: "Play Activity — Red Team / Blue Team Simulation. The team whose job is to defend a device or network against adversaries is the ___ Team.\n\nSubmit as flag{color}.",
+        hint: "The calm, defensive color.",
+        flagHash: "a2ee629b127f80f26f54a69d355aafb8ee467376e92ac43b1a69eddc9676722f" },
       { difficulty: "Medium", points: 100,
-        prompt: "Malware disguised as a legitimate program to trick a user into installing it — named after a Greek war story.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "Think of the hollow wooden horse the Greeks wheeled into Troy — it looked like a gift.",
-        flagHash: "2e1c246c31b91f70ac8737c92773bbe13223720716f51b0a69614245134f57e5" },
+        prompt: "Play Activity — Red Team / Blue Team Simulation. The team whose job is to find ways to infiltrate or gain access to a device is the ___ Team.\n\nSubmit as flag{color}.",
+        hint: "The aggressive, attacking color.",
+        flagHash: "bf6f3698101cfd591741b21fe5dbc2ab0910fd1014e79bb17fafd9e4fde5cf59" },
       { difficulty: "Hard", points: 150,
-        prompt: "Self-replicating malware that spreads across a network on its own — no user action and no host file required.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "Unlike a virus it needs no host file and no click. It burrows through the network by itself — named after something that tunnels.",
-        flagHash: "5e71e44abcc73b58779ed4dd1faf938177c1e855d874532e4235d2cdc5e62b74" }
+        prompt: "Play Activity — Red Team / Blue Team Simulation. When attackers and defenders collaborate in real time, sharing findings to improve security together, this blended approach is called the ___ Team.\n\nSubmit as flag{color}.",
+        hint: "Mix red and blue.",
+        flagHash: "aace8178f3d561f8869af5d387e767ecf118fcde1d4c72b024e1e29598f39564" }
     ] },
 
-  { id: "m1-lure", module: 1, title: "Decode the Lure", category: "Social Engineering",
+  { id: "m1-1.1-field", module: 1, title: "1.1 — The Field of Cybersecurity", category: "Intro to Cybersecurity",
+    frameworks: null,
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "A broad, mass email scam that tries to trick anyone who bites. Decode its name (Base64):\n\nZmxhZ3twaGlzaGluZ30=",
-        hint: "Base64 — try CyberChef or 'base64 -d'.",
-        flagHash: "01fbd5d51977823ec0902cc5fdd02dacc020930a12ed4fe0a328d5b4edd6c6c8" },
+        prompt: "Objective — Describe the field of cybersecurity, including its importance and impact. The overall field concerned with protecting systems, networks, and data from digital attacks is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's the name of this entire course.",
+        flagHash: "f31e245e950d387f69a7577159dc176a60870584c74a80c29b9104d1424f93c1" },
       { difficulty: "Medium", points: 100,
-        prompt: "The targeted version, aimed at a specific person or role. Decode it (ROT13):\n\nsynt{fcrne_cuvfuvat}",
-        hint: "ROT13 shifts each letter 13 places; apply it again to reverse.",
-        flagHash: "cee534b38030771eb0db5302eaaa1a27c26fef6459bfab3958474ffac94a3bb7" },
+        prompt: "Objective — Discussion Carousel. Which of these sectors is especially high-stakes for cybersecurity because a breach can expose patient records and even affect life-saving medical devices?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Think hospitals and patient data.",
+        flagHash: "c519c457064ade3afb265543687be849e5c7a1707bb9540631d5e4971efe505c" },
       { difficulty: "Hard", points: 150,
-        prompt: "The version that targets a company's executives — the 'big fish'. Decode it (binary, 8 bits per character):\n\n01100110 01101100 01100001 01100111 01111011 01110111 01101000 01100001 01101100 01101001 01101110 01100111 01111101",
-        hint: "Each 8-bit group is one ASCII character. 01100110 = 102 = 'f'.",
-        flagHash: "ba23888f3dc8b11a72c8c06e9caddbcb2c8e31d5e6247472539987b8c5e43bd1" }
+        prompt: "Objective — Wrap-Up: Current Event. The wrap-up assignment for this lesson asks students to research and write up a recent, real cybersecurity incident. This kind of write-up is called a ___ ___.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "It happened recently — that's the whole point.",
+        flagHash: "78f6e3449e4b6e2e44e04295ca64c3ef57597e24369a29ea3730522e61facc61" }
     ] },
 
-  { id: "m1-adversary", module: 1, title: "Know the Adversary", category: "Threat Actors",
+  { id: "m1-1.2-adversary", module: 1, title: "1.2 — Know the Adversary", category: "Threat Actors",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "An attacker motivated by a political or social cause rather than money.\n\nSubmit as flag{answer} — one lowercase word.",
+        prompt: "Objective — 1.3.A: Identify the type of adversary conducting a cyberattack. An attacker motivated by a political or social cause rather than money.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "Combine 'hack' with the word for someone who campaigns for a cause.",
         flagHash: "964498e1be46865ebc13d81c8f293e01e0cb1e1e5ed840b16e845070de0ad960" },
       { difficulty: "Medium", points: 100,
-        prompt: "A stealthy, well-resourced attacker (often nation-state backed) that maintains long-term access to a network. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        prompt: "Objective — 1.3.A: Identify the type of adversary conducting a cyberattack. A stealthy, well-resourced attacker (often nation-state backed) that maintains long-term access to a network. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
         hint: "Three words describing an attacker that is Advanced, Persistent, and a Threat — give the three-letter acronym.",
         flagHash: "1e01ef12436e5142fb83ece5126a839e0d48dc1b42058bde32c08136f96ce5a7" },
       { difficulty: "Hard", points: 150,
-        prompt: "A trusted employee or contractor who abuses their legitimate access to harm the organization.\n\nSubmit as flag{two_words} with an underscore.",
+        prompt: "Objective — 1.3.A: Identify the type of adversary conducting a cyberattack. A trusted employee or contractor who abuses their legitimate access to harm the organization.\n\nSubmit as flag{two_words} with an underscore.",
         hint: "The danger is already inside the building. Two words: someone on the inside, plus what they represent.",
         flagHash: "0153707293c5f5aaf8bb1ae32ada44c96ed397e58bab74256b857c6ccae06d2e" }
     ] },
 
-  { id: "m1-phish", module: 1, title: "Phish or Legit?", category: "Threats", type: "phish", points: 150,
-    intro: "Below are five emails — one each from PayPal, eBay, Amazon, Spotify, and Instagram. Some are real; some are phishing. Read the sender address, the links, and the tone. Enter a binary string: 1 = phishing, 0 = legitimate, one digit per email in the order shown. The emails reshuffle on every attempt.",
-    companies: [{"name":"PayPal","emails":[{"phish":true,"from":"service@paypa1-security.com","subject":"Your account has been limited","body":"Dear Customer, we detected unusual activity. Your account will be permanently suspended within 24 hours unless you verify now:\nhttp://paypal-verify-account.co/login"},{"phish":true,"from":"paypal@secure-mail.ru","subject":"Payment of $749.99 to Best Buy — cancel now","body":"You sent $749.99. If you did NOT authorize this, cancel immediately by logging in here:\nhttp://pp-cancel.net/stop"},{"phish":true,"from":"noreply@paypal-support.help","subject":"Confirm your information","body":"To keep your account active, re-confirm your full SSN and card number by replying to this email."},{"phish":false,"from":"service@paypal.com","subject":"You sent $25.00 to Jordan Lee","body":"Hi Alex, you sent $25.00 USD to Jordan Lee. Transaction ID 4XR21. View it anytime in your PayPal activity."},{"phish":false,"from":"service@paypal.com","subject":"Your receipt from Etsy","body":"You paid $18.40 to Etsy Inc. Log in at paypal.com to see the full transaction details."}]},{"name":"eBay","emails":[{"phish":true,"from":"ebay@ebay-resolution-center.com","subject":"Action required: verify to avoid suspension","body":"Your selling privileges are on hold. Verify within 24h:\nhttp://signin-ebay.security-check.com"},{"phish":true,"from":"support@ebay.com.account-alert.co","subject":"You won the auction — pay to save fees","body":"Congratulations! To avoid eBay fees, pay the seller directly with gift cards or a wire transfer."},{"phish":true,"from":"member@e-bay-support.net","subject":"Unusual sign-in from Russia","body":"We blocked a login attempt. Confirm your password immediately here: http://ebay-unlock.net"},{"phish":false,"from":"ebay@ebay.com","subject":"Your order has shipped","body":"Hi Alex, your order (Logitech Mouse) shipped via USPS. Tracking: 9400 1000. Track it in My eBay."},{"phish":false,"from":"ebay@ebay.com","subject":"You're the highest bidder","body":"Good news — you're currently the top bidder on 'Vintage Camera'. Auction ends Saturday."}]},{"name":"Amazon","emails":[{"phish":true,"from":"auto-confirm@amaz0n-orders.com","subject":"Your order could not be shipped — update payment","body":"Order #112-5590 is on hold. Update your payment method now:\nhttp://amazon-billing-update.com"},{"phish":true,"from":"security@amazon-account-verify.com","subject":"Suspicious login — verify within 24h","body":"We detected a sign-in from a new device. Verify your identity or your account will be closed: http://verify-amazon.co"},{"phish":true,"from":"prime@amazon-rewards.info","subject":"You've won a $500 Amazon gift card!","body":"You were selected! Claim your $500 gift card now by entering your login and card details."},{"phish":false,"from":"shipment-tracking@amazon.com","subject":"Arriving today: your package","body":"Hi Alex, your package with 'USB-C Cable' is out for delivery and arriving today by 9pm."},{"phish":false,"from":"no-reply@amazon.com","subject":"Your Amazon.com order of 'USB-C Cable'","body":"Thanks for your order. Order total: $12.99. You can view or manage your order in Your Orders."}]},{"name":"Spotify","emails":[{"phish":true,"from":"no-reply@spotify-premium-billing.com","subject":"Payment failed — update to keep Premium","body":"Your Premium payment failed. Update your card in the next 24h or lose access:\nhttp://spotify-billing.co/update"},{"phish":true,"from":"account@spotify.com.verify-user.net","subject":"New device detected — confirm password","body":"Someone accessed your account. Confirm your password here to secure it: http://spotify-secure.net"},{"phish":true,"from":"promo@spotify-free.co","subject":"Get 3 months of Premium FREE","body":"Limited offer! Enter your card details to claim 3 free months before it expires tonight."},{"phish":false,"from":"no-reply@spotify.com","subject":"Your July receipt","body":"Hi Alex, here's your receipt for Spotify Premium Individual — $10.99. Manage your plan in your account."},{"phish":false,"from":"no-reply@spotify.com","subject":"New login to your account","body":"We noticed a new login from Chrome on Windows. If this was you, no action is needed."}]},{"name":"Instagram","emails":[{"phish":true,"from":"security@instagram-help-center.com","subject":"Someone tried to log in","body":"We blocked a login attempt. Verify it was you by confirming your password here:\nhttp://instagram-verify.co"},{"phish":true,"from":"copyright@instagram-support.co","subject":"Your account will be deleted (copyright)","body":"Your account violated copyright and will be deleted in 24 hours. Appeal now: http://ig-appeal.net"},{"phish":true,"from":"verify@instagobadge.com","subject":"You're eligible for a verified badge!","body":"Confirm your login details to claim your free blue verification badge today."},{"phish":false,"from":"security@mail.instagram.com","subject":"New login to your Instagram","body":"We noticed a login from an iPhone in Pittsburgh. If this was you, you can ignore this message."},{"phish":false,"from":"no-reply@mail.instagram.com","subject":"Your password was changed","body":"The password for your Instagram account was just changed. If you didn't do this, secure your account."}]}] },
+  { id: "m1-1.3-surface", module: 1, title: "1.3 — Map the Attack Surface", category: "Attack Surface",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Mapping the Attack Surface. The sum of all points where an attacker could potentially enter or extract data from a system is called the attack ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Like the outer boundary of a shape — but for vulnerabilities.",
+        flagHash: "3c9552d0cb96cd033f80e05aa98ef7a90ab2bc3410936248d49204636e1c7b68" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — 1.2.B: Explain how adversaries take advantage of weak authentication. An attack surface exposed through outdated software, open ports, or weak logins is classified as the ___ attack surface.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Software, networks, and logins — not people or buildings.",
+        flagHash: "b9b5de0035244af41de746c4d4da719ca22c83f53e1063a1b6152f7e5c63454e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Identify YOUR Attack Surface. An attack surface created by employees or individuals who can be tricked, careless, or socially manipulated is classified as the ___ attack surface.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "People are part of the attack surface too.",
+        flagHash: "dcae4f40242fec3de70c594ed0d893313f9cf3ad392c8ff5a482755061a93762" }
+    ] },
 
-  { id: "m1-vocab", module: 1, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["social engineering","phishing","pretext","elicit","adversary","script kiddie","hacktivist","insider","zero-day","reconnaissance","osint","malware","threat","attack"] },
+  { id: "m1-1.4-stations", module: 1, title: "1.4 — Cyber Attack Stations", category: "Cyber Attacks",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — 1.3.B: Identify types of wireless cyberattacks. A rogue Wi-Fi access point disguised as a legitimate one, used to trick victims into connecting, is called an ___ ___ attack.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "It looks identical to the real network — like a twin, but up to no good.",
+        flagHash: "1b6d8a64da85ed1ee0eb0a45f6d53304d231e45e6adf5a189f59b549d2cca101" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — 1.3.B: Identify types of wireless cyberattacks. Deliberately flooding a wireless frequency with noise to disrupt a legitimate signal is called a ___ attack.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Think of static drowning out a radio station on purpose.",
+        flagHash: "10e54e13c67537242580923d7c0cb809e71c8acf30e738f549d800cc2b6bd77c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — 1.3.B: Identify types of wireless cyberattacks. Driving around with a laptop or phone to discover and map open or vulnerable Wi-Fi networks is called ___ ___.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "It literally involves driving — searching for open networks block by block.",
+        flagHash: "7e255e846aee7f82d0dd1365d49b3674ff6298916e0f437e096b377a8a623c52" }
+    ] },
 
-  { id: "m1-spot", module: 1, title: "Spot the Red Flags", category: "Phishing", type: "spot", points: 150,
-    intro: "This email is a phishing attempt. Click every element that is a red flag — the sender, the subject, the link, and anything suspicious in the body. Click again to deselect, then submit. You must find them all and select nothing safe.",
-    items: [{"field":"from","text":"security@","click":false},{"field":"from","text":"paypa1-secure.com","click":true,"bad":true},{"field":"subject","text":"URGENT: ","click":true,"bad":true},{"field":"subject","text":"Your account will be ","click":false},{"field":"subject","text":"permanently closed in 24 hours","click":true,"bad":true},{"field":"body","text":"Dear Valued Customer,\n\n","click":true,"bad":true},{"field":"body","text":"We noticed unusual activity on your account. ","click":false},{"field":"body","text":"You must verify your identity immediately or lose access. ","click":false},{"field":"body","text":"Click here to confirm your details: ","click":false},{"field":"body","text":"http://paypal-verify-login.co/secure","click":true,"bad":true,"link":true},{"field":"body","text":"\n\nPlease provide your ","click":false},{"field":"body","text":"password and full Social Security number","click":true,"bad":true},{"field":"body","text":" to complete verification.\n\nThank you,\nThe PayPal Team","click":false}] },
-
-  { id: "m1-match", module: 1, title: "Match the Attack", category: "Attacks", type: "match", points: 150,
-    intro: "Each scenario on the left describes a common attack. Tap a scenario, then tap the attack type that matches it. Get all of them right and submit to capture the flag.",
+  { id: "m1-1.4-match", module: 1, title: "1.4 — Match the Attack", category: "Cyber Attacks", type: "match", points: 150,
+    intro: "Objective — 1.2.A / 1.3.B: Identify common attacks. Each scenario on the left describes a common attack. Tap a scenario, then tap the attack type that matches it.",
     pairs: [
       { left: "Thousands of hijacked devices flood a website with traffic until it goes offline for everyone.", right: "DDoS" },
       { left: "A fake bank login page tricks a user into typing their username and password.", right: "Phishing" },
-      { left: "An attacker secretly sits between two parties on a network, relaying and reading their messages.", right: "Man-in-the-Middle" },
+      { left: "An attacker secretly sits between two parties on a network, relaying and reading their messages.", right: "On-Path (Man-in-the-Middle)" },
       { left: "Software silently tries millions of password combinations until one finally works.", right: "Brute Force" },
       { left: "Malicious commands are typed into a website's search box to trick its database into leaking data.", right: "SQL Injection" },
       { left: "A caller pretends to be IT support and talks an employee into revealing their password.", right: "Social Engineering" }
     ] },
 
-  { id: "m1-order", module: 1, title: "Order the Kill Chain", category: "Attacks", type: "order", points: 150,
-    intro: "The Lockheed Martin Cyber Kill Chain breaks an intrusion into seven stages. Use the arrows to put them in the order an attacker actually follows, from first to last.",
+  { id: "m1-1.4ext-malware", module: 1, title: "1.4 ext — Know Your Malware", category: "Malware",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Extension of 1.4 (The What: Cyber Attacks) — Malware that encrypts a victim's files and holds them hostage until a ransom is paid.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It takes your data hostage and demands payment. The word combines the fee a kidnapper asks for with the ending in 'software'.",
+        flagHash: "c3eab0cae2df20bf8a4b32c23cfe39e1d2e2f630a2c77d8b989431866e84712c" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Extension of 1.4 — Malware disguised as a legitimate program to trick a user into installing it — named after a Greek war story.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Think of the hollow wooden horse the Greeks wheeled into Troy — it looked like a gift.",
+        flagHash: "2e1c246c31b91f70ac8737c92773bbe13223720716f51b0a69614245134f57e5" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Extension of 1.4 — Self-replicating malware that spreads across a network on its own — no user action and no host file required.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Unlike a virus it needs no host file and no click. It burrows through the network by itself — named after something that tunnels.",
+        flagHash: "5e71e44abcc73b58779ed4dd1faf938177c1e855d874532e4235d2cdc5e62b74" }
+    ] },
+
+  { id: "m1-1.4ext-lure", module: 1, title: "1.4 ext — Decode the Lure", category: "Social Engineering",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Extension of 1.4 — A broad, mass email scam that tries to trick anyone who bites. Decode its name (Base64):\n\nZmxhZ3twaGlzaGluZ30=",
+        hint: "Base64 — try CyberChef or 'base64 -d'.",
+        flagHash: "01fbd5d51977823ec0902cc5fdd02dacc020930a12ed4fe0a328d5b4edd6c6c8" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Extension of 1.4 — The targeted version, aimed at a specific person or role. Decode it (ROT13):\n\nsynt{fcrne_cuvfuvat}",
+        hint: "ROT13 shifts each letter 13 places; apply it again to reverse.",
+        flagHash: "cee534b38030771eb0db5302eaaa1a27c26fef6459bfab3958474ffac94a3bb7" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Extension of 1.4 — The version that targets a company's executives — the 'big fish'. Decode it (binary, 8 bits per character):\n\n01100110 01101100 01100001 01100111 01111011 01110111 01101000 01100001 01101100 01101001 01101110 01100111 01111101",
+        hint: "Each 8-bit group is one ASCII character. 01100110 = 102 = 'f'.",
+        flagHash: "ba23888f3dc8b11a72c8c06e9caddbcb2c8e31d5e6247472539987b8c5e43bd1" }
+    ] },
+
+  { id: "m1-1.4ext-spot", module: 1, title: "1.4 ext — Spot the Red Flags", category: "Phishing", type: "spot", points: 150,
+    intro: "Extension of 1.4 (kickstart: Suspicious Wi-Fi Scenario) — this email is a phishing attempt. Click every element that is a red flag — the sender, the subject, the link, and anything suspicious in the body. Click again to deselect, then submit. You must find them all and select nothing safe.",
+    items: [{"field":"from","text":"security@","click":false},{"field":"from","text":"paypa1-secure.com","click":true,"bad":true},{"field":"subject","text":"URGENT: ","click":true,"bad":true},{"field":"subject","text":"Your account will be ","click":false},{"field":"subject","text":"permanently closed in 24 hours","click":true,"bad":true},{"field":"body","text":"Dear Valued Customer,\n\n","click":true,"bad":true},{"field":"body","text":"We noticed unusual activity on your account. ","click":false},{"field":"body","text":"You must verify your identity immediately or lose access. ","click":false},{"field":"body","text":"Click here to confirm your details: ","click":false},{"field":"body","text":"http://paypal-verify-login.co/secure","click":true,"bad":true,"link":true},{"field":"body","text":"\n\nPlease provide your ","click":false},{"field":"body","text":"password and full Social Security number","click":true,"bad":true},{"field":"body","text":" to complete verification.\n\nThank you,\nThe PayPal Team","click":false}] },
+
+  { id: "m1-1.4ext-order", module: 1, title: "1.4 ext — Order the Kill Chain", category: "Cyber Attacks", type: "order", points: 150,
+    intro: "Extension of 1.4 — The Lockheed Martin Cyber Kill Chain breaks an intrusion into seven stages. Use the arrows to put them in the order an attacker actually follows, from first to last.",
     steps: [
       "Reconnaissance — research and pick the target",
       "Weaponization — build the malware payload",
@@ -1896,20 +2116,95 @@ window.COURSE_CONFIG.cyber2.ctf = {
       "Actions on Objectives — steal, encrypt, or destroy data"
     ] },
 
-  { id: "m1-data", module: 1, title: "Protecting Data & Devices", category: "Data Security",
+  { id: "m1-1.5-auth", module: 1, title: "1.5 — Strengthen Authentication", category: "Protecting from Attacks",
+    frameworks: null,
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Data security. Data sitting on a hard drive or in a database, not currently moving anywhere, is described as data at ___. (one word)",
+        prompt: "Objective — 1.2.C: Explain how to make authentication stronger. Requiring a second proof of identity beyond just a password — like a text code or authenticator app — is called ___ ___ authentication.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "It's abbreviated MFA — spell out the first two words.",
+        flagHash: "1dc8de7d96e4fa72fa8805c50b6908f63a49694a1ab6a64c6d11ee11c6b193e8" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — 1.3.C: Explain how individuals can protect themselves from some cyberattacks. On public Wi-Fi, encrypting your traffic with a private tunnel is best done using a ___.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Three letters — a Virtual Private ___.",
+        flagHash: "b3a0764be04faf15332dc4957f485eb305416832f701c86f09dcdd588cb7c909" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — 1.2.C: Explain how to make authentication stronger. Using the exact same password across multiple accounts creates a serious risk known as password ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "One breach then compromises every account where you did this.",
+        flagHash: "fdcbfa68612604d1891e2cfd09e07633a0147ac60e36639a74e880f169b6c486" }
+    ] },
+
+  { id: "m1-1.5-phish", module: 1, title: "1.5 — Phish or Legit?", category: "Threats", type: "phish", points: 150,
+    intro: "Objective — 1.3.C: Explain how individuals can protect themselves from some cyberattacks. Below are five emails — one each from PayPal, eBay, Amazon, Spotify, and Instagram. Some are real; some are phishing. Read the sender address, the links, and the tone. Enter a binary string: 1 = phishing, 0 = legitimate, one digit per email in the order shown. The emails reshuffle on every attempt.",
+    companies: [{"name":"PayPal","emails":[{"phish":true,"from":"service@paypa1-security.com","subject":"Your account has been limited","body":"Dear Customer, we detected unusual activity. Your account will be permanently suspended within 24 hours unless you verify now:\nhttp://paypal-verify-account.co/login"},{"phish":true,"from":"paypal@secure-mail.ru","subject":"Payment of $749.99 to Best Buy — cancel now","body":"You sent $749.99. If you did NOT authorize this, cancel immediately by logging in here:\nhttp://pp-cancel.net/stop"},{"phish":true,"from":"noreply@paypal-support.help","subject":"Confirm your information","body":"To keep your account active, re-confirm your full SSN and card number by replying to this email."},{"phish":false,"from":"service@paypal.com","subject":"You sent $25.00 to Jordan Lee","body":"Hi Alex, you sent $25.00 USD to Jordan Lee. Transaction ID 4XR21. View it anytime in your PayPal activity."},{"phish":false,"from":"service@paypal.com","subject":"Your receipt from Etsy","body":"You paid $18.40 to Etsy Inc. Log in at paypal.com to see the full transaction details."}]},{"name":"eBay","emails":[{"phish":true,"from":"ebay@ebay-resolution-center.com","subject":"Action required: verify to avoid suspension","body":"Your selling privileges are on hold. Verify within 24h:\nhttp://signin-ebay.security-check.com"},{"phish":true,"from":"support@ebay.com.account-alert.co","subject":"You won the auction — pay to save fees","body":"Congratulations! To avoid eBay fees, pay the seller directly with gift cards or a wire transfer."},{"phish":true,"from":"member@e-bay-support.net","subject":"Unusual sign-in from Russia","body":"We blocked a login attempt. Confirm your password immediately here: http://ebay-unlock.net"},{"phish":false,"from":"ebay@ebay.com","subject":"Your order has shipped","body":"Hi Alex, your order (Logitech Mouse) shipped via USPS. Tracking: 9400 1000. Track it in My eBay."},{"phish":false,"from":"ebay@ebay.com","subject":"You're the highest bidder","body":"You're currently winning: Vintage Camera Lens. Auction ends in 2 hours. Check your bid at ebay.com."}]},{"name":"Amazon","emails":[{"phish":true,"from":"amazon-support@order-verify.co","subject":"Your order could not be delivered","body":"We could not deliver your package. Update your payment info within 24 hours or your order will be cancelled:\nhttp://amazon-redelivery.net"},{"phish":true,"from":"account@amaz0n-secure.com","subject":"Refund of $312.00 processed in error","body":"We accidentally refunded you $312.00. Please return the funds by clicking here and logging in: http://amazon-refund-return.com"},{"phish":true,"from":"prime@amazon.billing-issue.info","subject":"Your Prime membership payment failed","body":"Update your billing information now to avoid losing Prime benefits: http://prime-amazon-billing.net"},{"phish":false,"from":"auto-confirm@amazon.com","subject":"Your Amazon.com order has shipped","body":"Hello, your order #112-4498821 has shipped and will arrive Thursday. Track your package in Your Orders."},{"phish":false,"from":"digital-no-reply@amazon.com","subject":"Your Kindle book is ready","body":"Your purchased book is now available in Your Content and Devices. Enjoy your read!"}]},{"name":"Spotify","emails":[{"phish":true,"from":"spotify@account-billing-alert.com","subject":"Your payment method was declined","body":"Update your payment details now or lose Premium access:\nhttp://spotify-billing-update.net"},{"phish":true,"from":"no-reply@spotify-security.info","subject":"Unusual login detected","body":"We noticed a login from a new device. If this wasn't you, secure your account here: http://spotify-secure-login.com"},{"phish":false,"from":"no-reply@spotify.com","subject":"Your Premium receipt","body":"Thanks for being a Premium subscriber. Your receipt for this month is attached. Manage your plan at spotify.com/account."},{"phish":false,"from":"news@spotify.com","subject":"Your 2025 Wrapped is here","body":"See your top artists, songs, and genres from this year in your Spotify Wrapped."},{"phish":true,"from":"rewards@spotify-fanclub.net","subject":"You've won free Premium for a year","body":"Congratulations! Claim your free year of Premium by verifying your account here: http://spotify-claim-prize.com"}]},{"name":"Instagram","emails":[{"phish":true,"from":"support@instagram-appeal.com","subject":"Your account will be disabled","body":"We found content that violates our guidelines. Appeal within 24 hours or your account will be permanently disabled:\nhttp://instagram-appeal-form.net"},{"phish":true,"from":"copyright@instagram-legal.info","subject":"Copyright infringement notice","body":"Your account has been reported for copyright infringement. Verify your identity immediately to avoid suspension: http://ig-copyright-verify.com"},{"phish":false,"from":"security@mail.instagram.com","subject":"New login to your account","body":"We noticed a new login to your account from a new device. If this was you, no action is needed."},{"phish":false,"from":"no-reply@mail.instagram.com","subject":"Your weekly activity","body":"See how your posts performed this week. Check your insights in the app."},{"phish":true,"from":"verify@instagram-badge.net","subject":"You've been selected for the blue checkmark","body":"You qualify for a free verification badge. Confirm your account now: http://instagram-badge-verify.com"}]}] },
+
+  { id: "m1-1.5ext-data", module: 1, title: "1.5 ext — Protecting Data & Devices", category: "Data Security",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Extension of 1.5 (Protecting from Attacks) — Data sitting on a hard drive or in a database, not currently moving anywhere, is described as data at ___.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "The opposite of in transit.",
         flagHash: "e7f3d16a8140295d9129dd948d86e1f907b753b64ad9c652ca46f1718b6a249a" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Information security. The three goals of information security — confidentiality, integrity, and availability — are together known as the ___ triad. (three-letter acronym)",
+        prompt: "Extension of 1.5 — The three goals of information security — confidentiality, integrity, and availability — are together known as the ___ triad.\n\nSubmit as flag{acronym} (lowercase).",
         hint: "Nothing to do with the agency.",
         flagHash: "75b809f3c402c54caa92ef0d1740407c9787b7ba1c7089e1ee16bc3501d4d42c" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Physical security. A small entry room with two interlocking doors that permits only one person through at a time, defeating tailgating, is called a ___. (one word)",
+        prompt: "Extension of 1.5 — A small entry room with two interlocking doors that permits only one person through at a time, defeating tailgating, is called a ___.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "You get trapped between two doors.",
         flagHash: "ff7d95e3eaf09f91058d3e88f49939185db91efab2576544fe1e0aebfe69710d" }
+    ] },
+
+  { id: "m1-1.6-mindsets", module: 1, title: "1.6 — Cyber Mindsets & Competitions", category: "Mindsets & Competitions",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Cybersecurity Mindsets, Skills, and Competitions. This course expects students to compete in at least one national, team-based competition. Give its three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "National Cyber ___.",
+        flagHash: "5908bc07412f19991426f90bdf778501ff5b94ad2ba2e81a1588cfb964eced0c" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Cybersecurity Mindsets, Skills, and Competitions. The list of 10 professional skills needed to succeed in cybersecurity, highlighted throughout this course, is abbreviated ___ (a letters+number combo, no space).\n\nSubmit as flag{answer} (lowercase, no space).",
+        hint: "Two letters, then the number ten.",
+        flagHash: "4e47ed44760085460f72e409a08e30c455d03027bb5c4689f466557966aebdc7" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Introduction to Cyber Portfolio. A professional compilation of artifacts designed to demonstrate your skills, knowledge, growth, and accomplishments over time is called a ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Artists and photographers keep one of these too.",
+        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" }
+    ] },
+
+  { id: "m1-1.7-ctf", module: 1, title: "1.7 — Intro to Paradigm Cyber CTFs", category: "Capture the Flag",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Paradigm Cyber CTFs Introduction. The hands-on puzzle-solving challenges used throughout this course, where you find hidden strings to earn points, are called ___ ___ ___ challenges. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "You're doing one right now.",
+        flagHash: "88c2db7bb864afa527b23b21878c59971448174a79bd875a0024639047fa8122" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Cyber Mindsets. When you're stuck on a CTF, re-reading the prompt, digging for more clues, and trying a new angle reflects the PC10 mindset of relentless ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's what drives professionals to keep learning in a field that never stops evolving.",
+        flagHash: "f50736e89d3dadfc9d167498932e04e33c452a20ddec06d82181967413f6bb83" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Guidance from Unit 1: cybersecurity practitioners are expected to jump into challenges before they have all the background knowledge. Failing, adjusting, and trying again in that situation is called productive ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It sounds negative, but it's the whole point — the 'productive' kind of difficulty.",
+        flagHash: "60be6ecae86d6364bcfbb350d3109882c1cb0248d286332d40c036c143278e2e" }
+    ] },
+
+  { id: "m1-1.7ext-vocab", module: 1, title: "1.7 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["social engineering","phishing","pretext","elicit","adversary","script kiddie","hacktivist","insider","zero-day","reconnaissance","osint","malware","threat","attack"] },
+
+  { id: "m1-perform-audit", module: 1, title: "Perform — Personal Cybersecurity Audit", category: "Performance Task",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Performance Task — Personal Cybersecurity Audit. The end-of-unit task where you evaluate your own security habits and recommend improvements is called a personal cybersecurity ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Companies do this to check their own security — you're doing it to check yours.",
+        flagHash: "de298d79fd1cf82ff02e6e7764b36cc280d8e7dbde822b187a46ef8cbab47367" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Performance Task — Personal Cybersecurity Audit. Enabling MFA, using strong unique passwords, and avoiding public Wi-Fi without a VPN are all examples of improving your personal security ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Like a stance or position, but for how well-defended you are.",
+        flagHash: "282e9133ac565ec62078a8d59f4169a5944781be935906cdb5ebea451a974b27" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Performance Task — Assessment Reflection Questions. Answering prompts like 'What did I learn about my own habits?' after completing a task is called a self-___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Looking back at your own experience to draw a lesson from it.",
+        flagHash: "0ca2e3b7594bd8fea1650855e98d60523b13d2c2880c3c10b657b47b811d96c3" }
     ] },
 
   /* MODULE 2 — Organizational Security ────────────────────────────────────── */

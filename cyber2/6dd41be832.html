@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Flag 3 — Cyber Security 2 (AP)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0d1410;--panel2:#0d1a12;--panel3:#0f2318;--border:#1e3a2e;--border2:#17281f;--border3:#244d38;--border-hi:#2f5d44;--text:#cfe3d8;--bright:#eafff2;--muted:#a9c4b6;--dim:#7fa896;--faint:#5c7a6b;--accent:#ff3b3b;--accent2:#ff8080;}
+:root[data-theme="light"]{--bg:#f3f4f6;--panel:#ffffff;--panel2:#f7f8fa;--panel3:#eef0f3;--border:#d7dbe2;--border2:#e5e8ed;--border3:#c3c9d4;--border-hi:#a7b0c0;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#ff3b3b;--accent2:#ff8080;}
+*{box-sizing:border-box;}
+#rain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;}
+.wrap{position:relative;z-index:1;max-width:560px;width:100%;padding:24px;}
+body{margin:0;padding:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);}
+.card{border:2px solid var(--accent);border-radius:20px;background:linear-gradient(160deg,var(--panel3) 0%,var(--panel) 100%);padding:52px 36px;text-align:center;position:relative;overflow:hidden;box-shadow:0 0 0 6px color-mix(in oklch, var(--accent) 10%, transparent), 0 30px 80px -20px color-mix(in oklch, var(--accent) 40%, transparent);}
+.scan{position:absolute;top:0;left:0;right:0;height:40px;background:linear-gradient(180deg, color-mix(in oklch, var(--accent) 16%, transparent), transparent);animation:scan 3.5s linear infinite;}
+@keyframes scan{0%{transform:translateY(-40px);}100%{transform:translateY(420px);}}
+.badge{display:inline-block;font-size:11px;letter-spacing:2px;color:var(--accent);border:1px solid var(--border3);background:var(--panel2);border-radius:999px;padding:6px 14px;margin-bottom:18px;}
+h1{font-size:28px;margin:0 0 12px;color:var(--bright);font-family:'JetBrains Mono',monospace;text-shadow:0 0 24px color-mix(in oklch, var(--accent) 55%, transparent);}
+.xpBadge{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:15px;letter-spacing:1px;color:#06140a;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:999px;padding:10px 20px;margin-bottom:20px;box-shadow:0 8px 24px -6px color-mix(in oklch, var(--accent) 60%, transparent);}
+p{font-size:14px;line-height:1.6;color:var(--muted);margin:0 0 22px;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.5px;padding:13px 22px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);cursor:pointer;text-decoration:none;display:inline-block;}
+.btn.primary{background:var(--accent);color:#06140a;border-color:var(--accent);}
+.btn:hover{border-color:var(--border-hi);}
+.hint{margin-top:16px;font-size:11px;color:var(--faint);}
+#cert{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #cert, #cert *{visibility:visible;}
+  #cert{display:block;position:fixed;inset:0;background:#fff;color:#111;padding:60px;}
+}
+.certBox{border:3px double #333;padding:48px;text-align:center;font-family:'JetBrains Mono',monospace;}
+.certBox h2{font-size:13px;letter-spacing:4px;color:#666;margin:0 0 6px;}
+.certBox h1{font-size:30px;color:#111;margin:0 0 8px;font-family:'Inter',sans-serif;}
+.certBox .name{font-size:26px;margin:24px 0;border-bottom:2px solid #333;display:inline-block;padding:0 30px 8px;}
+.certBox .meta{font-size:12px;color:#444;margin-top:30px;line-height:1.8;}
+.certMind{margin-top:18px;padding-top:18px;border-top:1px solid #ccc;font-size:11px;color:#555;text-align:left;line-height:1.6;}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+<script>
+(function(){
+  var c = document.getElementById('rain'), ctx = c.getContext('2d');
+  var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#39ff88';
+  var fontSize = 16, cols, drops;
+  function resize(){ c.width = window.innerWidth; c.height = window.innerHeight; cols = Math.floor(c.width / fontSize); drops = new Array(cols).fill(0).map(function(){ return Math.random() * -50; }); }
+  window.addEventListener('resize', resize); resize();
+  var chars = '01アイウエオカキクケコ0123456789';
+  function draw(){
+    ctx.fillStyle = 'rgba(0,0,0,0.06)'; ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle = accent; ctx.font = fontSize + 'px monospace';
+    for (var i=0;i<drops.length;i++){ var ch = chars[Math.floor(Math.random()*chars.length)]; ctx.fillText(ch, i*fontSize, drops[i]*fontSize); if (drops[i]*fontSize > c.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; }
+  }
+  setInterval(draw, 45);
+})();
+</script>
+<div class="wrap" id="app"></div>
+
+<div id="cert">
+  <div class="certBox">
+    <h2>CYBER SECURITY 2 (AP) · ULTIMATE FLAG 3</h2>
+    <h1>Certificate of Ultimate Achievement</h1>
+    <div style="font-size:11px;letter-spacing:3px;color:#888;margin-bottom:24px;">RARE · FOUND VIA A BROKEN LINK · WORTH 250 XP</div>
+    <p>This certifies that</p>
+    <div class="name" id="certName">—</div>
+    <p>found the flag behind a mistyped, broken URL.</p>
+    <div class="meta">
+      Class: <span id="certClass">—</span><br>
+      Date found: <span id="certDate">—</span><br>
+      XP awarded: <strong>250</strong> · Present this certificate to your teacher for the glory.
+    </div>
+    <div class="certMind"><strong>AP Cybersecurity Connection:</strong> This flag reflects <em>Skill Category 1: Analyze Risk</em> and the PC10 mindset of <em>Relentless Curiosity</em> — a broken or mistyped link is often where misconfigurations live — checking it instead of ignoring it is a real attack-surface habit.</div>
+  </div>
+</div>
+
+<script>
+var course = "cyber2";
+var SESS_KEY = "ctf-sess-" + course;
+var FLAG_ID = "3";
+var FOUND_KEY = "uf" + FLAG_ID + "-found-" + course;
+var XP = 250;
+function loadSess(){ try { return JSON.parse(localStorage.getItem(SESS_KEY)) || null; } catch(e){ return null; } }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+function awardFlag(){
+  var already = false;
+  try { already = !!localStorage.getItem(FOUND_KEY); } catch(e){}
+  var today = new Date();
+  var dateStr = today.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  if (!already) {
+    try { localStorage.setItem(FOUND_KEY, dateStr); } catch(e){}
+    try {
+      var STATE_KEY = "ctf-" + course;
+      var state = JSON.parse(localStorage.getItem(STATE_KEY) || "{}");
+      state.solved = state.solved || {}; state.earned = state.earned || {};
+      var key = "ultimate-flag-" + FLAG_ID;
+      if (!state.solved[key]) {
+        state.solved[key] = true; state.earned[key] = XP; state.bonus = (state.bonus || 0) + XP;
+        localStorage.setItem(STATE_KEY, JSON.stringify(state));
+      }
+    } catch(e){}
+  }
+  return { already: already, dateStr: already ? (localStorage.getItem(FOUND_KEY) || dateStr) : dateStr };
+}
+
+var sess = loadSess();
+var app = document.getElementById("app");
+
+function renderNotSignedIn(){
+  app.innerHTML =
+    '<div class="card"><div class="scan"></div>' +
+    '<div class="badge">./secret — ULTIMATE FLAG 3</div>' +
+    '<h1>\ud83d\udea9 ULTIMATE FLAG FOUND!</h1>' +
+    '<p>This flag lives behind a link that was never supposed to work. This page only recognizes students already signed in through the Capture The Flag arena. Sign in there first, then come back. Log in through the Capture The Flag arena, then come straight back here — your certificate will be ready to print.</p>' +
+    '<a class="btn primary" href="ctf.html">Log in to claim →</a>' +
+    '<div class="hint">ID: cyber2-uf3 · NEMESIS is watching</div>' +
+    '</div>';
+}
+
+function renderFound(result){
+  app.innerHTML =
+    '<div class="card"><div class="scan"></div>' +
+    '<div class="badge">./secret — ULTIMATE FLAG 3 CAPTURED</div>' +
+    '<h1>' + (result.already ? 'ULTIMATE FLAG 3 — already yours, ' : 'ULTIMATE FLAG 3 CAPTURED, ') + esc(sess.handle || "agent") + '.</h1>' +
+    '<div class="xpBadge">★ +' + XP + ' XP' + (result.already ? ' (already banked)' : '') + '</div>' +
+    '<p>You noticed a URL that didn't look quite right, tried it anyway, and it led somewhere real. That's the exact instinct behind path traversal and misconfigured route discovery.</p>' +
+    '<button class="btn primary" id="printBtn">Print Certificate</button>' +
+    '<div class="hint">Class: ' + esc(sess.className || '—') + ' · First found: ' + esc(result.dateStr) + '</div>' +
+    '</div>';
+  document.getElementById("certName").textContent = sess.handle || "Agent";
+  document.getElementById("certClass").textContent = sess.className || "—";
+  document.getElementById("certDate").textContent = result.dateStr;
+  document.getElementById("printBtn").onclick = function(){ window.print(); };
+}
+
+if (!sess) { renderNotSignedIn(); }
+else { renderFound(awardFlag()); }
+</script>
+</body>
+</html>
