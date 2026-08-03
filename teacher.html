@@ -403,7 +403,7 @@ function renderMain(){
   // tabs
   h+='<div class="tabs">'+
       tabBtn("summary","Summary")+tabBtn("spread","Distributions")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
-      tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+
+      tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+tabBtn("ultimate","Ultimate Flags")+
       tabBtn("vocab","Vocab Lab")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("enroll","Enrollment")+
       tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
     '</div><div style="padding-top:16px;">';
@@ -414,6 +414,7 @@ function renderMain(){
   else if(TAB==="gates") h+=gatesView();
   else if(TAB==="flagstats") h+=flagStatsView();
   else if(TAB==="flags") h+=flagsView();
+  else if(TAB==="ultimate") h+=ultimateView();
   else if(TAB==="vocab") h+=vocabView();
   else if(TAB==="squads") h+=squadsView();
   else if(TAB==="objectives") h+=objectivesView();
@@ -1843,6 +1844,46 @@ function pioneerPanel(){
     '</tr>';
   });
   return h+'</tbody></table></div>';
+}
+
+function ultimateView(){
+  var UF=[
+    {n:1,name:"Hidden Page",mech:"Discoverable only via an HTML comment at the very top of the course homepage's page source (view-source / \u2018Inspect\u2019 \u2192 first lines of &lt;head&gt;). Filename is a random 10-char hex string, never linked anywhere.",pc10:"Relentless Curiosity"},
+    {n:2,name:"Console Whisper",mech:"A styled console.log() message on the course homepage, only visible in the browser DevTools console.",pc10:"Critical Analysis"},
+    {n:3,name:"Broken Link",mech:"Triggered by a mistyped course URL missing its number (e.g. .../compsci_classpages/cyber/ instead of /cyber1/). Lands on the site's custom root 404.html, which detects any signed-in course session and offers the claim.",pc10:"Relentless Curiosity"},
+    {n:4,name:"Robots.txt Trail",mech:"A Disallow entry in the site's root robots.txt file names the flag's path directly \u2014 visible only to those who think to check that file.",pc10:"Relentless Curiosity"},
+    {n:6,name:"Cross-Course Ring",mech:"Each course's homepage hides (in an HTML comment) the passphrase needed to unlock a DIFFERENT course's Flag 6: Cyber 1 hides Cyber 2's word, Cyber 2 hides Cyber 3's, Cyber 3 hides Cyber 1's. Students must explore more than one course.",pc10:"Inclusive Collaboration"},
+    {n:7,name:"QR Code",mech:"A QR code printed at the bottom of each course's Syllabus page, scannable with any phone camera.",pc10:"Effective Communication"},
+    {n:8,name:"Image Alt-Text",mech:"A 1x1 transparent tracking-style image on the course homepage carries a Base64-encoded clue in its alt attribute \u2014 only visible by inspecting the image or reading page source.",pc10:"Precise Documentation"},
+    {n:9,name:"Broken Button",mech:"A button on the Syllabus page styled to look disabled/broken (\u2018known bug \u2014 ignore\u2019) actually works when clicked.",pc10:"Critical Analysis"}
+  ];
+  var h='<div class="empty" style="text-align:left;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;margin-bottom:18px;">'+
+    '<b style="color:var(--bright);">Teacher reference only \u2014 do not share exact locations with students.</b> '+
+    'Each Ultimate Flag is worth <b style="color:var(--accent);">250 XP</b>, hidden completely outside the graded arena, and prints its own certificate on discovery. '+
+    'Captures below come from the same log as regular Flag Captures (title starts with \u201cUltimate Flag\u201d).</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">';
+  UF.forEach(function(f){
+    h+='<div style="padding:12px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--bg2);">'+
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><b style="color:var(--bright);">Ultimate Flag '+f.n+' \u2014 '+esc(f.name)+'</b>'+
+      '<span class="pill" style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);">PC10: '+esc(f.pc10)+'</span></div>'+
+      '<div style="font-size:13px;color:var(--dim);line-height:1.5;">'+esc(f.mech)+'</div>'+
+    '</div>';
+  });
+  h+='</div>';
+  var caps=FLAGS.filter(function(f){ return /ultimate-flag-/i.test(f.challenge_id||"")||/Ultimate Flag/i.test(f.title||""); });
+  h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">CAPTURES LOGGED</div>';
+  if(!caps.length) h+='<div class="empty">No Ultimate Flag captures logged yet for this class.</div>';
+  else{
+    h+='<div style="overflow:auto;"><table><thead><tr><th>When</th><th>Handle</th><th>Flag</th><th>XP</th></tr></thead><tbody>';
+    caps.forEach(function(f){
+      h+='<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(f.created_at)+'</td>'+
+        '<td><b style="color:var(--bright)">'+esc(f.handle)+'</b></td>'+
+        '<td>'+esc(f.title||f.challenge_id)+'</td>'+
+        '<td class="mono" style="color:var(--accent);font-weight:700">'+(f.points||0)+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+  return h;
 }
 
 function flagsView(){

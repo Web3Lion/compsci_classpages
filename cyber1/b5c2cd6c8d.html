@@ -61,6 +61,8 @@ input.pf{font-family:'JetBrains Mono',monospace;font-size:15px;text-align:center
   setInterval(draw, 45);
 })();
 </script>
+<script src="../supabase-config.js"></script>
+<script src="../auth.js"></script>
 <div class="wrap" id="app"></div>
 
 <div id="cert">
@@ -105,6 +107,15 @@ function awardFlag(){
       if (!state.solved[key]) {
         state.solved[key] = true; state.earned[key] = XP; state.bonus = (state.bonus || 0) + XP;
         localStorage.setItem(STATE_KEY, JSON.stringify(state));
+        try {
+          if (window.AUTH && typeof window.AUTH.rpc === "function") {
+            window.AUTH.rpc("ctf_flag_google", {
+              p_student: sess.studentId, p_key: key, p_challenge: key,
+              p_title: "Ultimate Flag 7 — QR Code", p_level: "Ultimate", p_points: XP,
+              p_secs: -1, p_retries: 0, p_tainted: false, p_hint_used: false
+            }).catch(function(){});
+          }
+        } catch(e){}
       }
     } catch(e){}
   }
