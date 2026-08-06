@@ -5,5 +5,4 @@ User-agent: *
 Allow: /
 
 Disallow: /cyber1/047c0caf40.html
-Disallow: /cyber2/047c0caf40.html
 Disallow: /cyber3/047c0caf40.html

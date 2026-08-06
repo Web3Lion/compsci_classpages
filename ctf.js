@@ -134,6 +134,7 @@
     const bonus = streakBonusFor(st.count);
     state.streak = st;
     state.bonus = (state.bonus||0) + bonus;
+    state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: bonus, reason: "Daily login streak · day " + st.count });
     save(state);
     return { count: st.count, bonus: bonus };
   }
@@ -252,7 +253,50 @@
     render();
     if (ds) setTimeout(function(){ nemesisToast("\u25b2 DAY " + ds.count + " STREAK", "+" + ds.bonus + " XP daily login bonus" + (ds.count >= 10 ? " \u00b7 max streak!" : ""), "var(--amber)"); }, 500);
     if (nb.length) setTimeout(function(){ announceBadges(nb); }, 1100);
-    initUltimateFlag5();
+    if (course === "cyber1") { initUltimateFlag5(); initUltimateFlag14(); }
+  }
+
+  /* ULTIMATE FLAG 14 — "The Marathon". 45 minutes of accumulated active
+     time on this page (tab visible), tracked across visits. 300 XP. */
+  function initUltimateFlag14(){
+    const ACCUM_KEY = "uf14-accum-" + course;
+    const THRESHOLD = 45 * 60;
+    let ticking = null;
+    function accum(){ try { return Number(localStorage.getItem(ACCUM_KEY)) || 0; } catch(e){ return 0; } }
+    function setAccum(v){ try { localStorage.setItem(ACCUM_KEY, String(v)); } catch(e){} }
+    function tick(){
+      if (state.solved["ultimate-flag-14"]) { clearInterval(ticking); return; }
+      if (document.visibilityState !== "visible") return;
+      const v = accum() + 30;
+      setAccum(v);
+      if (v >= THRESHOLD) showBanner();
+    }
+    function showBanner(){
+      if (document.getElementById("uf14Banner") || state.solved["ultimate-flag-14"]) return;
+      const b = document.createElement("div");
+      b.id = "uf14Banner";
+      b.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:11000;max-width:420px;width:calc(100% - 32px);border:2px solid var(--accent);border-radius:16px;background:linear-gradient(160deg,var(--panel3),var(--panel));padding:20px 22px;box-shadow:0 0 0 6px color-mix(in oklch, var(--accent) 12%, transparent),0 30px 70px -20px color-mix(in oklch, var(--accent) 45%, transparent);font-family:'JetBrains Mono',monospace;text-align:center;";
+      b.innerHTML = '<div style="font-size:11px;letter-spacing:2px;color:var(--accent);margin-bottom:8px;">\u2605 ULTIMATE FLAG 14 \u2014 THE MARATHON</div>' +
+        '<div style="font-size:14px;color:var(--bright);font-weight:700;margin-bottom:6px;">45 minutes here. That\'s persistence.</div>' +
+        '<button id="uf14Claim" style="font-family:inherit;font-weight:800;font-size:13px;letter-spacing:.5px;padding:11px 22px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#06140a;cursor:pointer;">CLAIM +300 XP</button>';
+      document.body.appendChild(b);
+      document.getElementById("uf14Claim").onclick = function(){
+        if (state.solved["ultimate-flag-14"]) return;
+        state.solved["ultimate-flag-14"] = true;
+        state.earned["ultimate-flag-14"] = 300;
+        state.bonus = (state.bonus || 0) + 300;
+        state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: 300, reason: "Ultimate Flag 14 — The Marathon" });
+        save(state);
+        b.remove();
+        nemesisToast("\u2605 ULTIMATE FLAG 14 CAPTURED", "+300 XP \u00b7 The Marathon", "var(--accent)");
+        if (typeof window.CTF_REPORT === "function") {
+          try { window.CTF_REPORT({ course, handle: getHandle(), challengeId: "ultimate-flag-14", key: "ultimate-flag-14", points: 300, totalPoints: stats().pts, ts: Date.now() }); } catch(e){}
+        }
+        render();
+      };
+    }
+    if (accum() >= THRESHOLD && !state.solved["ultimate-flag-14"]) showBanner();
+    ticking = setInterval(tick, 30000);
   }
 
   /* ULTIMATE FLAG 5 — "The Night Owl". Only appears on this page, only between
@@ -278,6 +322,7 @@
         state.solved["ultimate-flag-5"] = true;
         state.earned["ultimate-flag-5"] = 300;
         state.bonus = (state.bonus || 0) + 300;
+        state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: 300, reason: "Ultimate Flag 5 — The Night Owl" });
         save(state);
         try { localStorage.setItem(nightKey(), "1"); } catch(e){}
         b.remove();
@@ -387,6 +432,7 @@
     state.reviewPaid = state.reviewPaid || {};
     state.reviewPaid[key] = true;
     state.bonus = (state.bonus || 0) + REVIEW_BOUNTY;
+    state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: REVIEW_BOUNTY, reason: "Peer review bounty" });
     return REVIEW_BOUNTY;
   }
   function stats() {
@@ -425,7 +471,7 @@
   const VOCAB_DIFFS = ["Easy", "Medium", "Hard"];
   const RAPID_SECS = 240, RAPID_PER = 20;   // hard rapid-fire: 4 min, XP per correct term
   // per-flag timing: full XP within FULL_SECS, decaying to FLOOR by MAX_SECS; each retry caps at RETRY_FACTOR of the last
-  const MAX_SECS = 300, FULL_SECS = 20, FLOOR = 0.6, RETRY_FACTOR = 0.95;
+  const MAX_SECS = 300, FULL_SECS = 60, FLOOR = 0.75, RETRY_FACTOR = 0.95;
   let timers = {}, rapidTimer = null, tickTimer = null;
 
   function tMult(sec) { if (sec <= FULL_SECS) return 1; if (sec >= MAX_SECS) return FLOOR; return 1 - (1 - FLOOR) * (sec - FULL_SECS) / (MAX_SECS - FULL_SECS); }
@@ -2330,6 +2376,7 @@
     state.solved[key] = true;
     state.earned[key] = points;
     state.points = (state.points || 0) + points;
+    state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: points, reason: chal.title || key });
     const bounty = wasQueued ? payReviewBounty(key) : 0;
     if (bounty) setTimeout(() => nemesisToast(GLYPH + " " + ADV,
       MENTOR ? "you came back and got it \u2014 +" + bounty + " XP comeback bonus."
@@ -2373,6 +2420,7 @@
         if (!r || !r.pioneer) return;
         const amt = r.bonus || PIONEER_XP;
         state.bonus = (state.bonus || 0) + amt;
+        state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: amt, reason: "First to solve — Pioneer bonus" });
         save(state);
         render();
         nemesisToast(GLYPH + " " + ADV + " // PIONEER",

@@ -138,6 +138,20 @@
 .sw:hover .track{border-color:var(--border-hi,var(--accent));}
 .sw .swLabel{font-size:14px;font-weight:700;}
 .sw .swHint{font-size:11px;font-weight:400;color:var(--faint);}
+#ufCert{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #ufCert, #ufCert *{visibility:visible;}
+  #ufCert{display:flex;position:fixed;inset:0;background:#fff;align-items:center;justify-content:center;padding:60px;z-index:9999;}
+}
+.ufCertBox{border:4px double var(--uf-accent);border-radius:6px;padding:48px;text-align:center;font-family:'JetBrains Mono',monospace;position:relative;background:linear-gradient(165deg, color-mix(in oklch, var(--uf-accent) 8%, white) 0%, #ffffff 60%);max-width:560px;color:#111;}
+.ufCertBox .seal{width:60px;height:60px;margin:0 auto 18px;border-radius:50%;background:var(--uf-accent);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;}
+.ufCertBox h2{font-size:12px;letter-spacing:4px;color:var(--uf-accent);margin:0 0 6px;font-weight:700;}
+.ufCertBox h1{font-size:28px;color:#111;margin:0 0 20px;font-family:'Inter',sans-serif;}
+.ufCertBox p{font-size:14px;color:#333;margin:0 0 6px;}
+.ufCertBox .name{font-size:24px;margin:20px 0;border-bottom:2px solid var(--uf-accent);display:inline-block;padding:0 30px 8px;color:#161616;font-family:'Inter',sans-serif;font-weight:600;}
+.ufCertBox .meta{font-size:12px;color:#444;margin-top:24px;line-height:1.8;text-align:left;}
+.ufCertBox .meta strong{color:var(--uf-accent);}
 </style>
 </head>
 <body>
@@ -213,6 +227,7 @@
 
 <div id="studentModal" class="modal" style="display:none;"></div>
 <div id="flagModal" class="modal" style="display:none;z-index:600;"></div>
+<div id="ufCert"></div>
 
 <!-- create-class modal -->
 <div id="createModal" class="modal" style="display:none;">
@@ -1848,44 +1863,102 @@ function pioneerPanel(){
 
 function ultimateView(){
   var UF=[
-    {n:1,name:"Hidden Page",mech:"Discoverable only via an HTML comment at the very top of the course homepage's page source (view-source / \u2018Inspect\u2019 \u2192 first lines of &lt;head&gt;). Filename is a random 10-char hex string, never linked anywhere.",pc10:"Relentless Curiosity"},
-    {n:2,name:"Console Whisper",mech:"A styled console.log() message on the course homepage, only visible in the browser DevTools console.",pc10:"Critical Analysis"},
-    {n:3,name:"Broken Link",mech:"Triggered by a mistyped course URL missing its number (e.g. .../compsci_classpages/cyber/ instead of /cyber1/). Lands on the site's custom root 404.html, which detects any signed-in course session and offers the claim.",pc10:"Relentless Curiosity"},
-    {n:4,name:"Robots.txt Trail",mech:"A Disallow entry in the site's root robots.txt file names the flag's path directly \u2014 visible only to those who think to check that file.",pc10:"Relentless Curiosity"},
+    {n:1,name:"Hidden Page",mech:"Discoverable only via an HTML comment at the very top of the course homepage's page source (view-source / \u2018Inspect\u2019 \u2192 first lines of &lt;head&gt;). Filename is a random 10-char hex string, never linked anywhere.",pc10:"Relentless Curiosity",only:"cyber1"},
+    {n:2,name:"Console Whisper",mech:"A styled console.log() message on the course homepage, only visible in the browser DevTools console.",pc10:"Critical Analysis",only:"cyber2"},
+    {n:3,name:"Broken Link",mech:"Triggered by a mistyped course URL missing its number (e.g. .../compsci_classpages/cyber/ instead of /cyber1/). Lands on the site's custom root 404.html, which detects any signed-in course session and offers the claim.",pc10:"Relentless Curiosity",only:"cyber2"},
+    {n:4,name:"Robots.txt Trail",mech:"A Disallow entry in the site's root robots.txt file names the flag's path directly \u2014 visible only to those who think to check that file.",pc10:"Relentless Curiosity",only:"cyber1"},
+    {n:5,name:"The Night Owl",mech:"Appears only on the CTF arena page, only between 12:00\u201312:09 AM local time, once per calendar night \u2014 a claim banner shows up automatically if a student happens to be there. 300 XP.",pc10:"Relentless Curiosity",only:"cyber1"},
     {n:6,name:"Cross-Course Ring",mech:"Each course's homepage hides (in an HTML comment) the passphrase needed to unlock a DIFFERENT course's Flag 6: Cyber 1 hides Cyber 2's word, Cyber 2 hides Cyber 3's, Cyber 3 hides Cyber 1's. Students must explore more than one course.",pc10:"Inclusive Collaboration"},
-    {n:7,name:"QR Code",mech:"A QR code printed at the bottom of each course's Syllabus page, scannable with any phone camera.",pc10:"Effective Communication"},
-    {n:8,name:"Image Alt-Text",mech:"A 1x1 transparent tracking-style image on the course homepage carries a Base64-encoded clue in its alt attribute \u2014 only visible by inspecting the image or reading page source.",pc10:"Precise Documentation"},
-    {n:9,name:"Broken Button",mech:"A button on the Syllabus page styled to look disabled/broken (\u2018known bug \u2014 ignore\u2019) actually works when clicked.",pc10:"Critical Analysis"}
+    {n:7,name:"QR Code",mech:"A QR code printed at the bottom of each course's Syllabus page, scannable with any phone camera.",pc10:"Effective Communication",only:"cyber1"},
+    {n:8,name:"Image Alt-Text",mech:"A 1x1 transparent tracking-style image on the course homepage carries a Base64-encoded clue in its alt attribute \u2014 only visible by inspecting the image or reading page source.",pc10:"Precise Documentation",only:"cyber1"},
+    {n:9,name:"Broken Button",mech:"A button on the Syllabus page styled to look disabled/broken (\u2018known bug \u2014 ignore\u2019) actually works when clicked.",pc10:"Critical Analysis",only:"cyber1"},
+    {n:10,name:"Malicious Link Bait",mech:"A fake headline (\u2018Student clicks malicious link and loses points!\u2019) planted in the last row of the News page. Clicking it is safe \u2014 it awards the flag instead of punishing the click, rewarding students who click and reason through what happened rather than clicking blindly.",pc10:"Critical Analysis",only:"cyber1"},
+    {n:11,name:"Icon Flicker",mech:"Roughly 20\u201335 seconds after loading the course homepage, the browser tab's favicon silently swaps to a red dot for ~9 seconds, and the <link rel=\"icon\"> tag gains a data-flag attribute naming the claim page. Students must notice the flicker and inspect the element while it's swapped.",pc10:"Critical Analysis",only:"cyber1"},
+    {n:12,name:"Comment Ring",mech:"A CSS comment (not an HTML comment) inside the Syllabus page's <style> block names the claim page. Only found by reading the stylesheet source, not just the page markup.",pc10:"Relentless Curiosity",only:"cyber2"},
+    {n:13,name:"Guard Script Bait",mech:"The Profile page blocks right-click via an external file, interaction-guard.js. The file itself \u2014 viewable via view-source or the DevTools Sources panel \u2014 contains a comment naming the claim page.",pc10:"Critical Analysis",only:"cyber2"},
+    {n:14,name:"The Marathon",mech:"Awarded automatically after 45 cumulative minutes of the CTF arena tab being open and visible (tracked across visits, resets never). A claim banner appears in-arena once the threshold is crossed. 300 XP.",pc10:"Relentless Curiosity",only:"cyber1"},
+    {n:15,name:"Invisible Ink",mech:"A near-invisible line of text sits on the Syllabus page (matches the background, 1px font on screen) but is styled fully visible in @media print. Only appears in Print Preview / Ctrl+P or an exported PDF.",pc10:"Relentless Curiosity",only:"cyber2"},
+    {n:16,name:"Access Fragment",mech:"Visiting the course homepage with a specific, never-linked URL fragment (#access-&lt;course&gt;) reveals an inline claim card. The fragment is hinted only in an HTML comment on the Profile page's source.",pc10:"Precise Documentation",only:"cyber2"},
+    {n:17,name:"Storage Locker",mech:"The course homepage silently writes the claim page's filename into a localStorage key (__diag_&lt;course&gt;) on every load \u2014 visible only via DevTools' Application/Storage tab.",pc10:"Precise Documentation",only:"cyber2"},
+    {n:18,name:"Header Whisper",mech:"A service worker registered on the Syllabus page answers a background request to telemetry.beacon with a custom X-Ultimate-Flag response header naming the claim page \u2014 visible only by inspecting that request's Response Headers in the Network tab. 300 XP.",pc10:"Critical Analysis",only:"cyber2"}
   ];
   var h='<div class="empty" style="text-align:left;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;margin-bottom:18px;">'+
     '<b style="color:var(--bright);">Teacher reference only \u2014 do not share exact locations with students.</b> '+
     'Each Ultimate Flag is worth <b style="color:var(--accent);">250 XP</b>, hidden completely outside the graded arena, and prints its own certificate on discovery. '+
+    'Flags 1, 4\u201311, 14 live only in Cyber 1; flags 2, 3, 12, 13, 15\u201318 live only in Cyber 2 (no repeat locations for students who take both courses). Flag 6 (Cross-Course Ring) and Cyber 3 / AP CSP / Web 3.0 are unaffected by the split. '+
     'Captures below come from the same log as regular Flag Captures (title starts with \u201cUltimate Flag\u201d).</div>';
   h+='<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">';
+  var allCaps=FLAGS.filter(function(f){ return /ultimate-flag-/i.test(f.challenge_id||"")||/Ultimate Flag/i.test(f.title||""); });
   UF.forEach(function(f){
-    h+='<div style="padding:12px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--bg2);">'+
+    var open=!!UF_EXPANDED[f.n];
+    var earners=allCaps.filter(function(c){ return (c.challenge_id||"")===("ultimate-flag-"+f.n) || new RegExp("Ultimate Flag "+f.n+"\\b").test(c.title||""); });
+    h+='<div style="padding:12px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--bg2);cursor:pointer;" onclick=\'toggleUFCard('+f.n+')\'>'+
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><b style="color:var(--bright);">Ultimate Flag '+f.n+' \u2014 '+esc(f.name)+'</b>'+
-      '<span class="pill" style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);">PC10: '+esc(f.pc10)+'</span></div>'+
-      '<div style="font-size:13px;color:var(--dim);line-height:1.5;">'+esc(f.mech)+'</div>'+
-    '</div>';
+      '<span class="pill" style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);">PC10: '+esc(f.pc10)+'</span>'+
+      (f.only?('<span class="pill" style="background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn);">'+(f.only==="cyber1"?"CYBER 1 ONLY":"CYBER 2 ONLY")+'</span>'):'')+
+      (earners.length?'<span class="pill" style="background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok);margin-left:auto;">'+earners.length+' earned</span>':'<span style="margin-left:auto;font-size:11px;color:var(--faint);">not yet earned</span>')+
+      '<span class="mono" style="font-size:11px;color:var(--faint);">'+(open?'\u25b2':'\u25bc')+'</span></div>';
+    if(open){
+      h+='<div style="font-size:13px;color:var(--dim);line-height:1.5;margin-top:6px;">'+esc(f.mech)+'</div>';
+      h+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2);">';
+      if(!earners.length) h+='<div style="font-size:12px;color:var(--faint);">No one has earned this flag yet.</div>';
+      else earners.forEach(function(c){
+        var gi=allCaps.indexOf(c);
+        h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12.5px;">'+
+          '<b style="color:var(--bright);">'+esc(c.handle)+'</b>'+
+          '<span style="color:var(--faint);">'+fmtDate(c.created_at)+'</span>'+
+          '<button class="btn sm" style="margin-left:auto;padding:3px 8px;font-size:11px;" onclick=\'event.stopPropagation();printUltimateCert('+gi+')\'>Print certificate</button></div>';
+      });
+      h+='</div>';
+    }
+    h+='</div>';
   });
   h+='</div>';
-  var caps=FLAGS.filter(function(f){ return /ultimate-flag-/i.test(f.challenge_id||"")||/Ultimate Flag/i.test(f.title||""); });
+  var caps=allCaps;
   h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">CAPTURES LOGGED</div>';
   if(!caps.length) h+='<div class="empty">No Ultimate Flag captures logged yet for this class.</div>';
   else{
-    h+='<div style="overflow:auto;"><table><thead><tr><th>When</th><th>Handle</th><th>Flag</th><th>XP</th></tr></thead><tbody>';
-    caps.forEach(function(f){
+    h+='<div style="overflow:auto;"><table><thead><tr><th>When</th><th>Handle</th><th>Flag</th><th>XP</th><th></th></tr></thead><tbody>';
+    UF_CAPS=caps;
+    caps.forEach(function(f,i){
       h+='<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(f.created_at)+'</td>'+
-        '<td><b style="color:var(--bright)">'+esc(f.handle)+'</b></td>'+
+        '<td><button onclick=\'printUltimateCert('+i+')\' style="background:none;border:none;padding:0;cursor:pointer;font:inherit;"><b style="color:var(--accent);border-bottom:1px dotted var(--border3);">'+esc(f.handle)+'</b></button></td>'+
         '<td>'+esc(f.title||f.challenge_id)+'</td>'+
-        '<td class="mono" style="color:var(--accent);font-weight:700">'+(f.points||0)+'</td></tr>';
+        '<td class="mono" style="color:var(--accent);font-weight:700">'+(f.points||0)+'</td>'+
+        '<td><button class="btn sm" style="padding:3px 8px;font-size:11px;" onclick=\'printUltimateCert('+i+')\'>Print certificate</button></td></tr>';
     });
     h+='</tbody></table></div>';
   }
   return h;
 }
 
+var UF_CAPS=[];
+var UF_EXPANDED={};
+function toggleUFCard(n){ UF_EXPANDED[n]=!UF_EXPANDED[n]; renderMain(); }
+function printUltimateCert(i){
+  var f=UF_CAPS[i]; if(!f) return;
+  var m=courseMeta(CUR.course);
+  var accentHex={"var(--cyber1)":"#2ee6a6","var(--cyber2)":"#3fb2ff","var(--apcsp)":"#a855f7","var(--web3)":"#ff9838"}[m.c]||"#4ba3ff";
+  var s=(ROSTER||[]).filter(function(r){return r.handle===f.handle;})[0];
+  var dateStr=fmtDate(f.created_at);
+  document.getElementById("ufCert").innerHTML=
+    '<div class="ufCertBox" style="--uf-accent:'+accentHex+';">'+
+      '<div class="seal">\u2605</div>'+
+      '<h2>'+esc(CUR.name).toUpperCase()+' \u00b7 ULTIMATE FLAG</h2>'+
+      '<h1>Certificate of Ultimate Achievement</h1>'+
+      '<p>This certifies that</p>'+
+      '<div class="name">'+esc(f.handle)+'</div>'+
+      '<p>captured \u201c'+esc(f.title||f.challenge_id)+'.\u201d</p>'+
+      '<div class="meta">'+
+        'Class: '+esc(CUR.name)+'<br>'+
+        'Date found: '+esc(dateStr)+'<br>'+
+        'XP awarded: <strong>'+(f.points||0)+'</strong><br><br>'+
+        (s&&s.email?'Student email: '+esc(s.email)+'<br>':'')+
+        'Reprinted from the teacher dashboard.'+
+      '</div>'+
+    '</div>';
+  setTimeout(function(){ window.print(); },50);
+}
 function flagsView(){
   var pre=pioneerPanel();
   if(!FLAGS.length) return pre+'<div class="empty">No flag captures logged yet.</div>';
@@ -3211,11 +3284,25 @@ function outlierPanel(){
   return h+'</tbody></table></div>';
 }
 
+var HONEYPOTS=[
+  {name:"Secret-File Chain",mech:"An unlinked chain of guessable file paths (secret.html\u2013secret6.html) baiting path-guessing instead of legitimate discovery.",only:"cyber1"},
+  {name:"Console Command Bait",mech:"A console.log() message on the course homepage suggesting a function to run for a shortcut.",only:"cyber1"},
+  {name:"Master Flag Code",mech:"A \u2018master code\u2019 redeem box on the CTF arena page claiming to unlock every flag at once.",only:"cyber2"},
+  {name:"Auto-Solve Helper",mech:"A fake browser-extension prompt on the CTF arena page claiming to auto-solve every challenge.",only:"cyber2"},
+  {name:"Leaked Answers",mech:"A \u2018Reveal All Answers\u2019 debug button on the Profile page, plus a linked page of fake leaked flag answers.",only:"cyber2"},
+  {name:"Staff Portal",mech:"A fake admin/staff login link on the site's root homepage. Shared across every course \u2014 not part of the per-course split.",only:null}
+];
 function cheatsView(){
   var pre=outlierPanel();
-  if(!CHEATS.length) return pre+'<div class="empty">No integrity events. 🎉<br><span style="font-size:12px">Looking things up is allowed — these only flag paste / focus-loss / honeypot / devtools activity.</span></div>';
+  var hp='<div class="empty" style="text-align:left;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;margin-bottom:18px;">'+
+    '<b style="color:var(--bright);">Teacher reference only.</b> Each honeypot costs \u221225 XP and never blocks a flag \u2014 looking things up is allowed, these only catch shortcuts. '+
+    'Secret-File Chain and Console Command Bait live only in Cyber 1; Master Flag Code, Auto-Solve Helper, and Leaked Answers live only in Cyber 2 (no repeat locations for students who take both). '+
+    'Staff Portal is shared at the site root. Cyber 3 / AP CSP / Web 3.0 each keep their own independent full set, unaffected by the split.<div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;">'+
+    HONEYPOTS.map(function(t){ return '<div style="font-size:12.5px;color:var(--dim);"><b style="color:var(--bright);">'+esc(t.name)+'</b>'+(t.only?' <span style="color:var(--faint);">('+(t.only==="cyber1"?"Cyber 1 only":"Cyber 2 only")+')</span>':' <span style="color:var(--faint);">(shared)</span>')+' \u2014 '+esc(t.mech)+'</div>'; }).join('')+
+    '</div></div>';
+  if(!CHEATS.length) return pre+hp+'<div class="empty">No integrity events. 🎉<br><span style="font-size:12px">Looking things up is allowed — these only flag paste / focus-loss / honeypot / devtools activity.</span></div>';
   var kindC={paste:"var(--warn)",focus:"var(--dim)",canary:"var(--bad)",copy:"var(--warn)",devtools:"var(--bad)",decoy:"var(--bad)"};
-  var h=pre+'<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">INTEGRITY EVENTS ('+CHEATS.length+')</div>'+
+  var h=pre+hp+'<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">INTEGRITY EVENTS ('+CHEATS.length+')</div>'+
     '<div style="overflow:auto;"><table><thead><tr><th>When</th><th>Handle</th><th>Event</th><th>Detail</th></tr></thead><tbody>';
   CHEATS.forEach(function(c){
     var col=kindC[c.kind]||"var(--dim)";

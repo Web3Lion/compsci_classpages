@@ -90,11 +90,30 @@
       '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;">' + pct + '% of all XP in this course</div>' +
       line("Rank", esc(s.rank || "\u2014"), "var(--bright)") +
       line("Flag XP", flagXp.toLocaleString()) +
-      line("Daily bonus XP", "+" + bonusXp.toLocaleString(), bonusXp ? "var(--amber)" : "var(--faint)") +
+      line("Daily bonus XP", (bonusXp >= 0 ? "+" : "") + bonusXp.toLocaleString(), bonusXp > 0 ? "var(--amber)" : (bonusXp < 0 ? "var(--bad, #ff6b6b)" : "var(--faint)")) +
       line("Vocab practice XP", "+" + vocabXp.toLocaleString(), vocabXp ? "var(--amber)" : "var(--faint)") +
       line("Flags captured", (s.solvedCount || 0) + " / " + (s.count || 0)) +
       line("Current streak", (streak.count || 0) + " day" + ((streak.count || 0) === 1 ? "" : "s"), streak.count ? "var(--amber)" : "var(--faint)") +
       line("Best streak", (streak.best || 0) + " day" + ((streak.best || 0) === 1 ? "" : "s")) +
+    '</div>';
+  }
+
+  function xpLogCard() {
+    var st = API.getState ? API.getState() : {};
+    var log = (st.xpLog || []).slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, 50);
+    var row = function (e) {
+      var pos = e.delta >= 0;
+      var d = new Date(e.ts);
+      return '<div style="display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--border2);">' +
+        '<span class="mono" style="font-size:11px;color:var(--faint);white-space:nowrap;">' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' +
+        '<span style="font-size:13px;color:var(--dim);flex:1;">' + esc(e.reason || "\u2014") + '</span>' +
+        '<span class="mono" style="font-size:13px;font-weight:700;color:' + (pos ? "var(--ok, #3ecf8e)" : "var(--bad, #ff6b6b)") + ';white-space:nowrap;">' + (pos ? "+" : "") + e.delta + '</span></div>';
+    };
+    return '<div class="card" style="padding:22px;">' +
+      '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:14px;">XP LOG</div>' +
+      (log.length
+        ? log.map(row).join("")
+        : '<div class="mono" style="font-size:12px;color:var(--faint);">No XP events logged yet \u2014 this fills in as you earn (or lose) XP going forward.</div>') +
     '</div>';
   }
 
@@ -317,7 +336,7 @@
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start;">' +
         identityCard() + xpCard() +
       '</div>' +
-      badgeCase() + objectiveCard() + leaderboardCard();
+      badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
     wireIdentity();
     loadObjectives();
     loadLb();

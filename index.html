@@ -120,6 +120,27 @@ a{text-decoration:none;color:inherit;}
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
   </a>
   <span style="font-size:13px;color:var(--faint);font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
+  <a href="#" onclick="document.getElementById('staffPortalModal').style.display='flex';return false;" style="margin-left:auto;font-size:11px;color:var(--faint);text-decoration:none;">Staff Portal</a>
 </div>
+<div id="staffPortalModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:340px;width:100%;background:#15181c;border:1px solid #333;border-radius:14px;padding:28px;font-family:'JetBrains Mono',monospace;color:#eee;">
+    <div style="font-size:11px;letter-spacing:2px;color:#888;margin-bottom:14px;">STAFF / ADMIN LOGIN</div>
+    <input id="spUser" placeholder="Username" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #444;background:#0c0f13;color:#eee;">
+    <input id="spPass" type="password" placeholder="Password" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #444;background:#0c0f13;color:#eee;">
+    <button id="spSubmit" style="width:100%;font-family:inherit;font-size:13px;font-weight:700;padding:11px;border-radius:8px;border:none;background:#3ecf8e;color:#06140a;cursor:pointer;">Log in</button>
+    <button onclick="document.getElementById('staffPortalModal').style.display='none';" style="width:100%;margin-top:8px;font-family:inherit;font-size:12px;padding:9px;border-radius:8px;border:1px solid #333;background:transparent;color:#999;cursor:pointer;">Cancel</button>
+  </div>
+</div>
+<script>
+document.getElementById('spSubmit').onclick = function(){
+  var courses = ['cyber1','cyber3'];
+  var found = null;
+  for (var i=0;i<courses.length;i++){
+    try { if (JSON.parse(localStorage.getItem('ctf-sess-'+courses[i]))) { found = courses[i]; break; } } catch(e){}
+  }
+  if (found) { location.href = found + '/honeypot.html?trap=adminlogin'; }
+  else { alert('Access denied.'); }
+};
+</script>
 </body>
 </html>

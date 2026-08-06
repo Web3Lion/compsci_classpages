@@ -50,6 +50,9 @@ window.COURSE_CONFIG = {
         { name: "Professor Messer — Network+ (N10-009)",  desc: "Free full CompTIA Network+ video course",  url: "https://www.professormesser.com/network-plus/n10-009/n10-009-video/n10-009-training-course/", icon: "video" },
         { name: "Khan Academy — Internet & Cybersecurity", desc: "Free lessons on online data security", url: "https://www.khanacademy.org/computing/computers-and-internet/xcae6f4a7ff015e7d:online-data-security", icon: "book" }
       ]},
+      { title: "AP TEST RESOURCES", items: [
+        { name: "Albert.io", desc: "AP-aligned practice questions", url: "https://www.albert.io/", icon: "exam" }
+      ]},
       { title: "DAILY TOOLS", items: [
         { name: "Check Point Live Cyber Threat Map", desc: "Real-time global attack visualization", url: "https://threatmap.checkpoint.com/", icon: "globe" },
         { name: "NETSCOUT Cyber Threat Horizon", desc: "Real-time global attack visualization", url: "https://horizon.netscout.com/", icon: "globe" },
@@ -78,7 +81,8 @@ window.COURSE_CONFIG = {
       ]},
       { title: "AP TEST RESOURCES", items: [
         { name: "ExamCompass — Practice Tests", desc: "Free CompTIA-style practice quizzes & exams", url: "https://www.examcompass.com/", icon: "exam" },
-        { name: "AP Students — Cybersecurity", desc: "College Board course home", url: "https://apstudents.collegeboard.org/courses/ap-cybersecurity", icon: "exam" }
+        { name: "AP Students — Cybersecurity", desc: "College Board course home", url: "https://apstudents.collegeboard.org/courses/ap-cybersecurity", icon: "exam" },
+        { name: "Albert.io", desc: "AP-aligned practice questions", url: "https://www.albert.io/", icon: "exam" }
       ]},
       { title: "DAILY TOOLS", items: [
         { name: "Check Point Live Cyber Threat Map", desc: "Real-time global attack visualization", url: "https://threatmap.checkpoint.com/", icon: "globe" },
@@ -107,7 +111,8 @@ window.COURSE_CONFIG = {
       ]},
       { title: "AP TEST RESOURCES", items: [
         { name: "Create Task Student Handout", desc: "Shared review resource", url: "https://drive.google.com/file/d/1ntd_J4U4nzdSr9qHcDXqTqfFeS71zZZ8/view?usp=sharing", icon: "exam" },
-        { name: "AP Central — CSP", desc: "College Board course home", url: "https://apcentral.collegeboard.org/courses/ap-computer-science-principles", icon: "exam" }
+        { name: "AP Central — CSP", desc: "College Board course home", url: "https://apcentral.collegeboard.org/courses/ap-computer-science-principles", icon: "exam" },
+        { name: "Albert.io", desc: "AP-aligned practice questions", url: "https://www.albert.io/", icon: "exam" }
       ]}
     ]
   },
@@ -173,7 +178,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
   adversaryColor: "#ff4c00",
   adversaryColor2: "#ff7a3d",
   adversaryGlow: "#ff2e00",
-  modules: ["What is Cybersecurity?","Cybersecurity Ethics","Computer Number Systems","Intro to Cryptology","Social Engineering","Intro to Linux","Linux System Administration","Windows System Administration","National Cyber League","Network Basics","Malware, Vulnerabilities, Exploits & Cyber Kill Chain","SQL and Databases","Preparing for Cyber II"],
+  modules: ["What is Cybersecurity?","Digital Footprint & Cyber Hygiene","Social Engineering","Computer Number Systems","OS Basics & Command Lines","Network Basics","Cyber Threats","Intro to Security Controls","Cryptology","Cyber Competitions","Intro to Cyber Frameworks"],
   challenges: [
 
   /* MODULE 1 — What is Cybersecurity? (Play → 1.1–1.4, 1.6–1.7 → Perform) ─── */
@@ -416,8 +421,233 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "0ca2e3b7594bd8fea1650855e98d60523b13d2c2880c3c10b657b47b811d96c3" }
     ] },
 
-  /* MODULE 2 — Cybersecurity Ethics ───────────────────────────────────────── */
-  { id: "c1-m2-ethics", module: 2, title: "The Ethics Code", category: "Ethics",
+  /* MODULE 1 — Daily Warm-Ups (bell-ringers, review of the previous day) ─── */
+  { id: "c1-m1-daily-1.1-1", module: 1, title: "1.1-1 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday's Play activity put you into an EMATE interactive called the Cybersecurity ___, before you knew any of the vocabulary.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's the second word in the interactive's name.",
+        flagHash: "4f8ca0c42274649b6837a332d918815e41af2617a8a6dbb71f80f5fb40f3a7b5" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — struggling and failing at first, before you have the background to solve a problem, is expected in this field and is called productive ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It sounds negative, but 'productive' is the key word.",
+        flagHash: "60be6ecae86d6364bcfbb350d3109882c1cb0248d286332d40c036c143278e2e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — Paradigm's learning model has three stages: Play, Learn, and ___ — the stage where you apply what you know.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's the third word in the model's name.",
+        flagHash: "fc7c6a8653ebcd109ece0a4ea3b420d18abfac27fa1fb16978b924715cc4a4b0" }
+    ] },
+
+  { id: "c1-m1-daily-1.1-2", module: 1, title: "1.1-2 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday's mind map put one word in the center: the field concerned with protecting systems, networks, and data from digital attacks. That word is ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's the name of this entire course.",
+        flagHash: "f31e245e950d387f69a7577159dc176a60870584c74a80c29b9104d1424f93c1" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — yesterday's reading guide covered a hotel lock company whose flawed keycard system became a famous cybersecurity lesson. Name the company.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's also the name of the reading guide used in that lesson.",
+        flagHash: "bed04dd502b2e0db979233f2b81fa731ad218185612ff613a330e3c9cffaf45b" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — cybersecurity protects far more than computers. Yesterday's kickoff mentioned it also protects national power ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Think about what would happen if the electric utility got hacked.",
+        flagHash: "91a02c561404220cfff0efdc5f5b26b3ed33f412ab74b6804d6a07e937a66282" }
+    ] },
+
+  { id: "c1-m1-daily-1.2-1", module: 1, title: "1.2-1 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — one Cybersecurity Snapshot Jigsaw group covered a hotel lock company with a flawed keycard system. Name the company again — you'll need it all unit.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Same answer as yesterday's reading guide.",
+        flagHash: "bed04dd502b2e0db979233f2b81fa731ad218185612ff613a330e3c9cffaf45b" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — another jigsaw group covered defenses against hacking. Name a basic defense that combines two proofs of identity to log in.\n\nSubmit as flag{answer} — the acronym, lowercase.",
+        hint: "You'll be asked to turn this on for nearly every account you own.",
+        flagHash: "b54b228a7dd04447468f32451d10e2a025f9bb5775ae2b74ef2cb377eadbed73" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — a third jigsaw group covered types of attacks. Name the attack where someone impersonates a trustworthy source to trick you into giving up information.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It rhymes with 'fishing' because that's exactly the idea.",
+        flagHash: "01fbd5d51977823ec0902cc5fdd02dacc020930a12ed4fe0a328d5b4edd6c6c8" }
+    ] },
+
+  { id: "c1-m1-daily-1.2-2", module: 1, title: "1.2-2 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday's research challenge had you dig up the very first computer virus, from the early 1970s. Name it.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It also 'crept' across the ARPANET displaying a taunting message.",
+        flagHash: "42c31e9a61ca27e5a2faec9514cb8887d099410a279b8dd59501426b7ed156af" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — yesterday's history timeline included a 2010 worm that targeted industrial control systems and set back a nuclear program. Name it.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "One of the most famous cyberweapons ever discovered.",
+        flagHash: "b68b08479d8d1b9d986b55c15310c3a71ef65dc4d46e0017977fda67ae8f448e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — the timeline also covered a 2021 attack on a major fuel pipeline that led to gas shortages on the East Coast. Name the pipeline company (one word).\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "The event marker was titled with the pipeline's first name.",
+        flagHash: "6b7f6ac8b3ac02c940eff66e366e88dd0f487abe33faa83aa2a1cabecf6e5707" }
+    ] },
+
+  { id: "c1-m1-daily-1.2-3", module: 1, title: "1.2-3 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday you explored live cyber threat maps. What do these maps show happening in real time around the world?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's the whole point of the maps — showing digital ___.",
+        flagHash: "a571168914adedf3d4100074621a7f9b88c9a8782f6d30a5950920c4f3105650" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — the threat maps aren't 100% accurate; they exist to help people ___ the threat landscape.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Turning raw data into something you can see and understand.",
+        flagHash: "ae5cb2f6a06d72485e7299a23deae024c065c39e20e9c48b6859d6e3909e94f3" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — name one type of attack a threat map might highlight: a flood of traffic meant to take a website offline.\n\nSubmit as flag{answer} — the acronym, lowercase.",
+        hint: "It's the 'distributed' version of a denial-of-service attack.",
+        flagHash: "da95c631b466fc86796850982341f91a7addba535a0bafdc9ea3589dbd4e2606" }
+    ] },
+
+  { id: "c1-m1-daily-1.3-1", module: 1, title: "1.3-1 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday's Past/Present/Future activity asked for one major historical attack. Name the 2020 supply-chain breach of a major IT vendor used by the U.S. government.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "The company's name is also on your history timeline.",
+        flagHash: "04f2a72bd93f8ad2a5ee7df4fa34ddf3619f12e1347e58f05f072f1f1a82bbfc" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — the 'Present' part of yesterday's activity asked for one insight or stat. What kind of tool did that insight come from?\n\nSubmit as flag{answer} — two lowercase words.",
+        hint: "You used one of these in the previous lesson to visualize live attacks.",
+        flagHash: "55ed1aea6c5c458387ad9272c51f9bda375e1ef207b449b6fbd85b4f0344170e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — the 'Future' part had you post a prediction, then walk around reading everyone else's. What was that walk-and-read activity called?\n\nSubmit as flag{answer} — two lowercase words.",
+        hint: "Like walking through an art museum, but for predictions.",
+        flagHash: "a02b1d845bf6a3e190367c9c29791292cc4877a425f62a11ba71065e430adeca" }
+    ] },
+
+  { id: "c1-m1-daily-1.3-2", module: 1, title: "1.3-2 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday's Cyber Career Playlist had you explore a site that maps supply and demand for cybersecurity jobs by state. Name it.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's also listed as a recommended resource for this whole unit.",
+        flagHash: "b6fad574e8f673d3ea5ba5497acbfe241baa2f04fa3f8484ad4cbd8cc381bb01" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — yesterday you began mapping out the cybersecurity industry and recording notes on your Unit 1 ___ Sheet.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "The same sheet you've been filling out since lesson 1.1.",
+        flagHash: "954111648b53f49f9c5fe0652e4e8abfba7506ecd50a7a1dcad716a6f827870c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — name one cybersecurity career role: an analyst who monitors a company's network from a security operations center.\n\nSubmit as flag{answer} — two lowercase words.",
+        hint: "The center's initials come first in this job title.",
+        flagHash: "a010a6e3a40c575ec49c772215d1729a3d0a04424b9ad0475f778682e9e02a89" }
+    ] },
+
+  { id: "c1-m1-daily-1.4-1", module: 1, title: "1.4-1 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday you designed a piece to teach others about a specific cyber career and convince them to pursue it. What kind of visual artifact was that?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "A flyer that combines images, data, and text to explain something.",
+        flagHash: "a70599144a4cedee1632d7587d48ae4be84b53714cdedaeed1bfc519fbcd5849" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — after the showcase, you had to pick your top ___ careers you were most interested in.\n\nSubmit as flag{answer} — the number, spelled out, lowercase.",
+        hint: "It's a small number — you wrote it on your Activity Sheet.",
+        flagHash: "0fbc084f58beba51a7fe730c38af50d01d2959cd8085df866f8b74064bd1c4d3" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — your career flyer needed to include education, skills, and ___ needed for that career.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Credentials like Security+ or CCNA fall into this category.",
+        flagHash: "dccd78b4d8f0d71192985dde88390826923b9ee4da2c0fc9c507006691eaad35" }
+    ] },
+
+  { id: "c1-m1-daily-1.4-2", module: 1, title: "1.4-2 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday you were introduced to a list of 10 professional skills needed to succeed in cybersecurity. What's that list called?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's an acronym ending in the number of skills on the list.",
+        flagHash: "4e47ed44760085460f72e409a08e30c455d03027bb5c4689f466557966aebdc7" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — one of those skills is about never stopping learning and always asking questions. Name it.\n\nSubmit as flag{answer} — two lowercase words.",
+        hint: "It's also the PC10 skill this course keeps coming back to.",
+        flagHash: "c5d8cf331ecf6077fa2988512eb09be19117e08a53ee508538926aa1f4c3970c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — cyber competitions were introduced as a way to build these mindsets and skills. Name the acronym for the national scouting competition mentioned.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "You'll see this same acronym again in a later unit's CTF.",
+        flagHash: "5908bc07412f19991426f90bdf778501ff5b94ad2ba2e81a1588cfb964eced0c" }
+    ] },
+
+  { id: "c1-m1-daily-1.5-1", module: 1, title: "1.5-1 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday you were introduced to the professional compilation of artifacts you'll build all course to show your skills and growth. What's it called?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Same word as the Performance Task at the end of this unit.",
+        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — you also built one of these to evaluate your current strengths and weaknesses in mindsets and skills. What was that activity called?\n\nSubmit as flag{answer} — two lowercase words.",
+        hint: "You're building a cybersecurity ___ ___, like a character sheet.",
+        flagHash: "7d699e5cf02b03020c3ece47c5aa407e2acafe0edd6afb070f193bfc5df41b16" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — yesterday's PC10 activity split the class into 6 small groups, one skill each. How many PC10 skills are there in total?\n\nSubmit as flag{answer} — the number.",
+        hint: "It's right there in the name of the skill list.",
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" }
+    ] },
+
+  { id: "c1-m1-daily-1.6-1", module: 1, title: "1.6-1 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday you played ethics games on a site used throughout the course for cyber games and challenges. Name the site (just the name, no .com).\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's also a recommended resource listed for this unit.",
+        flagHash: "3150e0415e73eeef591f1cf19a1ffb82ab76e9efb38dbbc4b605729026c61d7e" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — yesterday you signed a document committing to behave ethically and use your skills appropriately all course. What's it called?\n\nSubmit as flag{answer} — two lowercase words.",
+        hint: "It's a legal-sounding word for a promise you put your name on.",
+        flagHash: "546c7eb5dd080798cf99a7a8a61da6166e52173c986b609bd6d162d3099000f4" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — ethics is woven through every unit in this course. How many units total?\n\nSubmit as flag{answer} — the number.",
+        hint: "Check the unit number on this very lesson's materials.",
+        flagHash: "bf54bcd49d2a45eeba9ec402813a4a00fdd7f070d59b6f8dbb9fa573ab0a19e1" }
+    ] },
+
+  { id: "c1-m1-daily-1.6-2", module: 1, title: "1.6-2 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday you were introduced to a certification that validates your foundational cybersecurity knowledge. It's called Paradigm/TrustedSec Cyber ___.\n\nSubmit as flag{answer} — two lowercase words.",
+        hint: "The word suggests the basics — the essential building blocks.",
+        flagHash: "68f119bb44dd472b7df0921e771eca594bdae1cb3e21162f3cd0d1699b1fc542" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — that certification covers network basics, cryptography, social engineering, Linux, number systems, and one more topic: malicious software. What's that called?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "The general term for viruses, worms, ransomware, and trojans.",
+        flagHash: "2aedb3e75aad5e62f6ca43787074f19854bee7654b92a301a6349bd0736acc44" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — you'll prepare for this certification at the end of every unit, then attempt a prep quiz with how many questions?\n\nSubmit as flag{answer} — the number.",
+        hint: "Same number as the PC10 skill list.",
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" }
+    ] },
+
+  { id: "c1-m1-daily-1.7-1", module: 1, title: "1.7-1 — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — yesterday you went to a platform's Certifications tab and attempted prep questions for this unit's certification. Name the platform.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's also where students access Paradigm's CTF challenges.",
+        flagHash: "35c66f608498c2bb672e563927dca16b0986ed1d2e5d6c1b5a5a86629171f859" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — after attempting the prep quiz, you were asked to reflect with a partner on what you did well and what you ___ with.\n\nSubmit as flag{answer} — one lowercase word, past tense.",
+        hint: "The opposite of doing well on something.",
+        flagHash: "29e6cdd18e25bdc5e427d4a78aa9b388bacc03ea97df85bf0308a43819ca59ff" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — the certification you're prepping for is a partnership between Paradigm and which cybersecurity company?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's the second half of the certification's full name.",
+        flagHash: "4562dc3c0f1632c982c1d5641e3fcad4c57f19c35a75df9c85dee18fb72e8c58" }
+    ] },
+
+  { id: "c1-m1-daily-1.7-ext", module: 1, title: "1.7-ext — Daily Warm-Up", category: "Daily Warm-Up",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Warm-Up — extension of 1.7. Yesterday's scavenger hunt introduced you to hands-on puzzles where you apply cybersecurity skills to find hidden ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's literally the F in CTF.",
+        flagHash: "463a1293599e0bde314a198aed8f42ac9f2b090f7abfcfff3ff551abbeb219d7" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Warm-Up — extension of 1.7. CTFs introduce you to the mindset of investigators and ethical ___ as you explore how systems are attacked and defended.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Someone who breaks into systems, but with permission and good intent.",
+        flagHash: "728ba6afbd09db59edb2a2fd3e4d20fcf4829aef0573c4a9804cd49bb3e394c6" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Warm-Up — extension of 1.7. Today is your Perform day — you'll compile everything from this unit into one collection of evidence. What is that collection called?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Same word as your 1.5-1 warm-up.",
+        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" }
+    ] },
+
+  /* UNIT 1 cont'd — Cybersecurity Ethics (merged into Unit 1) ─────────────── */
+  { id: "c1-m2-ethics", module: 1, title: "The Ethics Code", category: "Ethics",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — The what and why of cyber ethics. The study of what is morally right and wrong is called ___.\n\nSubmit as flag{word} (lowercase).",
@@ -433,7 +663,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "21142ee75274040bb79254242d419572166433004ffd6c08a8da71fcbefbe76c" }
     ] },
 
-  { id: "c1-m2-judge", module: 2, title: "Ethical or Unethical?", category: "Ethics", type: "match", points: 150,
+  { id: "c1-m2-judge", module: 1, title: "Ethical or Unethical?", category: "Ethics", type: "match", points: 150,
     intro: "Objective — Ethical decision making. Judge each action. Tap the action, then tap the verdict.",
     pairs: [
       { left: "Reporting a bug you found responsibly", right: "Ethical" },
@@ -443,7 +673,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Sharing someone's password 'to help'", right: "Unethical" }
     ] },
 
-  { id: "c1-m2-decide", module: 2, title: "The Ethical Decision Process", category: "Ethics", type: "order", points: 150,
+  { id: "c1-m2-decide", module: 1, title: "The Ethical Decision Process", category: "Ethics", type: "order", points: 150,
     intro: "Objective — Decision making in an ethical scenario. Order the steps of working through an ethical dilemma.",
     steps: [
       "Identify the ethical problem",
@@ -453,7 +683,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Decide, act, and reflect"
     ] },
 
-  { id: "c1-m2-principles", module: 2, title: "Match the Ethics Principle", category: "Ethics", type: "match", points: 150,
+  { id: "c1-m2-principles", module: 1, title: "Match the Ethics Principle", category: "Ethics", type: "match", points: 150,
     intro: "Objective — Basic principles of cyber ethics. Match each principle to an example. Tap a principle, then tap the example.",
     pairs: [
       { left: "Honesty", right: "Report findings truthfully" },
@@ -462,11 +692,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Fairness", right: "Treat all users equally" }
     ] },
 
-  { id: "c1-m2-vocab", module: 2, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m2-vocab", module: 1, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["ethic","privacy","consent","responsib","law","acm","moral"],
     hardMode: "unscramble" },
 
-  { id: "c1-m2-law", module: 2, title: "Ethical, Legal, Both, or Neither", category: "Ethics", type: "match", points: 150,
+  { id: "c1-m2-law", module: 1, title: "Ethical, Legal, Both, or Neither", category: "Ethics", type: "match", points: 150,
     intro: "Objective — Ethics and the law. Match each action to its category. Tap the action, then tap the category.",
     pairs: [
       { left: "Pen-testing with a signed contract", right: "Ethical & Legal" },
@@ -475,7 +705,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Ignoring a bug that harms users", right: "Legal but Unethical" }
     ] },
 
-  { id: "c1-m2-disclose", module: 2, title: "Responsible Disclosure", category: "Ethics", type: "order", points: 150,
+  { id: "c1-m2-disclose", module: 1, title: "Responsible Disclosure", category: "Ethics", type: "order", points: 150,
     intro: "Objective — Responsible cyber citizenship. Order the steps of responsibly disclosing a vulnerability.",
     steps: [
       "Find the vulnerability",
@@ -485,7 +715,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Publish details responsibly"
     ] },
 
-  { id: "c1-m2-law2", module: 2, title: "Law & Order", category: "Ethics",
+  { id: "c1-m2-law2", module: 1, title: "Law & Order", category: "Ethics",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Ethics and the law. Accessing a computer system without permission is generally ___ (legal or illegal)?\n\nSubmit as flag{word} (lowercase).",
@@ -501,8 +731,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "e0f6519553979b886476cc5cdb737cc9b2499d51c61c0d01c007ee8f313320be" }
     ] },
 
-  /* MODULE 3 — Computer Number Systems ────────────────────────────────────── */
-  { id: "c1-m3-convert", module: 3, title: "Convert the Number", category: "Number Systems",
+  /* MODULE 4 — Computer Number Systems ────────────────────────────────────── */
+  { id: "c1-m3-convert", module: 4, title: "Convert the Number", category: "Number Systems",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — How computers store information. Convert this binary number to decimal:\n\n1010\n\nSubmit as flag{number}.",
@@ -518,7 +748,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "67916076f3a35700873e2946da257eb2e6e42ff7fdcfa963c0c1967c509f4225" }
     ] },
 
-  { id: "c1-m3-base", module: 3, title: "Match the Base", category: "Number Systems", type: "match", points: 150,
+  { id: "c1-m3-base", module: 4, title: "Match the Base", category: "Number Systems", type: "match", points: 150,
     intro: "Objective — Number systems. Match each prefix/example to its base. Tap the example, then tap the base.",
     pairs: [
       { left: "0b1010", right: "Binary (base 2)" },
@@ -527,7 +757,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "0x2A", right: "Hexadecimal (base 16)" }
     ] },
 
-  { id: "c1-m3-bits", module: 3, title: "Order the Bit Values", category: "Number Systems", type: "order", points: 150,
+  { id: "c1-m3-bits", module: 4, title: "Order the Bit Values", category: "Number Systems", type: "order", points: 150,
     intro: "Objective — How computers use binary. Order these 8-bit place values from smallest to largest.",
     steps: [
       "1",
@@ -540,7 +770,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "128"
     ] },
 
-  { id: "c1-m3-b2d", module: 3, title: "Binary to Decimal", category: "Number Systems", type: "match", points: 150,
+  { id: "c1-m3-b2d", module: 4, title: "Binary to Decimal", category: "Number Systems", type: "match", points: 150,
     intro: "Objective — Binary to decimal. Match each 4-bit binary value to its decimal number. Tap the binary, then tap the number.",
     pairs: [
       { left: "0001", right: "1" },
@@ -550,11 +780,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "1111", right: "15" }
     ] },
 
-  { id: "c1-m3-vocab", module: 3, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m3-vocab", module: 4, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["binary","hexadecimal","octal","bit","byte","decimal","ascii","base"],
     hardMode: "speedmatch" },
 
-  { id: "c1-m3-hex", module: 3, title: "Hex to Decimal", category: "Number Systems", type: "match", points: 150,
+  { id: "c1-m3-hex", module: 4, title: "Hex to Decimal", category: "Number Systems", type: "match", points: 150,
     intro: "Objective — Hexadecimal. Match each hex value to its decimal number. Tap the hex, then tap the number.",
     pairs: [
       { left: "0xA", right: "10" },
@@ -563,7 +793,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "0xFF", right: "255" }
     ] },
 
-  { id: "c1-m3-sizes", module: 3, title: "Order the Data Sizes", category: "Number Systems", type: "order", points: 150,
+  { id: "c1-m3-sizes", module: 4, title: "Order the Data Sizes", category: "Number Systems", type: "order", points: 150,
     intro: "Objective — How computers store information. Order these data units from smallest to largest.",
     steps: [
       "Bit",
@@ -574,7 +804,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Gigabyte"
     ] },
 
-  { id: "c1-m3-units", module: 3, title: "Bits & Bytes", category: "Number Systems",
+  { id: "c1-m3-units", module: 4, title: "Bits & Bytes", category: "Number Systems",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — How computers store data. How many bits are in one byte?\n\nSubmit as flag{number}.",
@@ -590,8 +820,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "7be5aec942dbdcfb4e21cd12dd137de80acf61b69c924a3500a50673253943c2" }
     ] },
 
-  /* MODULE 4 — Intro to Cryptology ────────────────────────────────────────── */
-  { id: "c1-m4-crypto", module: 4, title: "Decode & Define", category: "Cryptology",
+  /* MODULE 9 — Cryptology ─────────────────────────────────────────────────── */
+  { id: "c1-m4-crypto", module: 9, title: "Decode & Define", category: "Cryptology",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Basic cryptology concepts. Decode this ROT13 term:\n\nsynt{pvcure}\n\nApply ROT13 to reverse it.",
@@ -607,7 +837,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "fce2dcd36e00cf9c443b37e2374c239b2ae0d5ccc2632f372bff092bd75db45f" }
     ] },
 
-  { id: "c1-m4-terms", module: 4, title: "Match the Crypto Term", category: "Cryptology", type: "match", points: 150,
+  { id: "c1-m4-terms", module: 9, title: "Match the Crypto Term", category: "Cryptology", type: "match", points: 150,
     intro: "Objective — Basic cryptology terms. Match each term to its meaning. Tap a term, then tap its meaning.",
     pairs: [
       { left: "Plaintext", right: "The original readable message" },
@@ -617,7 +847,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Cryptanalysis", right: "The art of breaking ciphers" }
     ] },
 
-  { id: "c1-m4-encvs", module: 4, title: "Encoding vs Encryption", category: "Cryptology", type: "match", points: 150,
+  { id: "c1-m4-encvs", module: 9, title: "Encoding vs Encryption", category: "Cryptology", type: "match", points: 150,
     intro: "Objective — Encryption vs encoding. Sort each into the right bucket. Tap the item, then tap its category.",
     pairs: [
       { left: "Base64", right: "Encoding" },
@@ -627,7 +857,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Caesar cipher with a key", right: "Encryption" }
     ] },
 
-  { id: "c1-m4-encrypt", module: 4, title: "Encrypt a Message", category: "Cryptology", type: "order", points: 150,
+  { id: "c1-m4-encrypt", module: 9, title: "Encrypt a Message", category: "Cryptology", type: "order", points: 150,
     intro: "Objective — Cryptography basics. Order the steps to encrypt and send a secret message.",
     steps: [
       "Start with the plaintext",
@@ -637,11 +867,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Transmit it to the recipient"
     ] },
 
-  { id: "c1-m4-vocab", module: 4, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m4-vocab", module: 9, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["cipher","encrypt","decrypt","plaintext","ciphertext","key","caesar","substitution"],
     hardMode: "cipher" },
 
-  { id: "c1-m4-ciphers", module: 4, title: "Match the Classic Cipher", category: "Cryptology", type: "match", points: 150,
+  { id: "c1-m4-ciphers", module: 9, title: "Match the Classic Cipher", category: "Cryptology", type: "match", points: 150,
     intro: "Objective — Basic cryptology concepts. Match each cipher to its description. Tap the cipher, then tap its description.",
     pairs: [
       { left: "Caesar", right: "Shift every letter by a fixed amount" },
@@ -650,7 +880,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Transposition", right: "Rearrange the letter order" }
     ] },
 
-  { id: "c1-m4-decrypt", module: 4, title: "Decrypt a Message", category: "Cryptology", type: "order", points: 150,
+  { id: "c1-m4-decrypt", module: 9, title: "Decrypt a Message", category: "Cryptology", type: "order", points: 150,
     intro: "Objective — Cryptography basics. Order the steps to decrypt a received secret message.",
     steps: [
       "Receive the ciphertext",
@@ -660,7 +890,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Read the plaintext"
     ] },
 
-  { id: "c1-m4-keys", module: 4, title: "Keys & Codes", category: "Cryptology",
+  { id: "c1-m4-keys", module: 9, title: "Keys & Codes", category: "Cryptology",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Cryptology basics. In a Caesar cipher, the number of positions each letter is shifted is called the ___.\n\nSubmit as flag{word} (lowercase).",
@@ -676,8 +906,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "deaed1f0d22fe5f2c4aa644d8fa1a50028d36f4e36358e9ea9545ec274adaa4e" }
     ] },
 
-  /* MODULE 5 — Social Engineering ─────────────────────────────────────────── */
-  { id: "c1-m5-se", module: 5, title: "Name the Con", category: "Social Engineering",
+  /* MODULE 3 — Social Engineering ─────────────────────────────────────────── */
+  { id: "c1-m5-se", module: 3, title: "Name the Con", category: "Social Engineering",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — How social engineering relates to cybersecurity. Fraudulent emails that trick users into revealing information or clicking malicious links.\n\nSubmit as flag{word} (lowercase).",
@@ -693,7 +923,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "d16c145e707f262577ae6ff50359b1c7ce4df00c280d2b692a78bb9a147f9be4" }
     ] },
 
-  { id: "c1-m5-attacks", module: 5, title: "Match the SE Attack", category: "Social Engineering", type: "match", points: 150,
+  { id: "c1-m5-attacks", module: 3, title: "Match the SE Attack", category: "Social Engineering", type: "match", points: 150,
     intro: "Objective — How SE attacks exploit human nature. Match each attack to its description. Tap the attack, then tap the description.",
     pairs: [
       { left: "Phishing", right: "Deceptive mass email" },
@@ -703,7 +933,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Baiting", right: "Leaving an infected USB to be found" }
     ] },
 
-  { id: "c1-m5-redflags", module: 5, title: "Red Flag or Fine?", category: "Social Engineering", type: "match", points: 150,
+  { id: "c1-m5-redflags", module: 3, title: "Red Flag or Fine?", category: "Social Engineering", type: "match", points: 150,
     intro: "Objective — Limits of visual inspection. Judge each email trait. Tap the trait, then tap the verdict.",
     pairs: [
       { left: "Urgent 'act now or lose access!'", right: "Red Flag" },
@@ -713,7 +943,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Mismatched link on hover", right: "Red Flag" }
     ] },
 
-  { id: "c1-m5-anatomy", module: 5, title: "Anatomy of a Phishing Attack", category: "Social Engineering", type: "order", points: 150,
+  { id: "c1-m5-anatomy", module: 3, title: "Anatomy of a Phishing Attack", category: "Social Engineering", type: "order", points: 150,
     intro: "Objective — How phishing attacks work. Order the stages of a phishing campaign, first to last.",
     steps: [
       "Research the target",
@@ -723,11 +953,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Harvest credentials"
     ] },
 
-  { id: "c1-m5-vocab", module: 5, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m5-vocab", module: 3, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["phish","social engineer","pretext","bait","spoof","vishing","smishing","manipulat"],
     hardMode: "blitz" },
 
-  { id: "c1-m5-defense", module: 5, title: "Match the Defense", category: "Social Engineering", type: "match", points: 150,
+  { id: "c1-m5-defense", module: 3, title: "Match the Defense", category: "Social Engineering", type: "match", points: 150,
     intro: "Objective — Avoiding social engineering. Match each attack to its best defense. Tap the attack, then tap the defense.",
     pairs: [
       { left: "Phishing email", right: "Verify sender & don't click" },
@@ -737,7 +967,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Shoulder surfing", right: "Use a privacy screen" }
     ] },
 
-  { id: "c1-m5-verify", module: 5, title: "Verify a Suspicious Email", category: "Social Engineering", type: "order", points: 150,
+  { id: "c1-m5-verify", module: 3, title: "Verify a Suspicious Email", category: "Social Engineering", type: "order", points: 150,
     intro: "Objective — Limits of visual inspection. Order the steps to verify a suspicious email.",
     steps: [
       "Check the sender's real address",
@@ -747,7 +977,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Report it to IT"
     ] },
 
-  { id: "c1-m5-targets", module: 5, title: "Know the Lure", category: "Social Engineering",
+  { id: "c1-m5-targets", module: 3, title: "Know the Lure", category: "Social Engineering",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Social engineering. Phishing sent as a text message is called ___.\n\nSubmit as flag{word} (lowercase).",
@@ -763,8 +993,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "ba23888f3dc8b11a72c8c06e9caddbcb2c8e31d5e6247472539987b8c5e43bd1" }
     ] },
 
-  /* MODULE 6 — Intro to Linux ─────────────────────────────────────────────── */
-  { id: "c1-m6-cli", module: 6, title: "The Command Line", category: "Linux",
+  /* MODULE 5 — OS Basics & Command Lines (Linux) ──────────────────────────── */
+  { id: "c1-m6-cli", module: 5, title: "The Command Line", category: "Linux",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — GUI vs CLI. The text-based interface where you type commands instead of clicking is called the ___. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
@@ -780,7 +1010,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "c0953f2e81ac4a2b9d1274810a2c213ec6dbf67c7681cbcd4add2337e2f1c5af" }
     ] },
 
-  { id: "c1-m6-cmds", module: 6, title: "Match the Linux Command", category: "Linux", type: "match", points: 150,
+  { id: "c1-m6-cmds", module: 5, title: "Match the Linux Command", category: "Linux", type: "match", points: 150,
     intro: "Objective — Basic Linux commands. Match each command to what it does. Tap the command, then tap its job.",
     pairs: [
       { left: "ls", right: "List directory contents" },
@@ -791,7 +1021,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "rm", right: "Remove a file" }
     ] },
 
-  { id: "c1-m6-nav", module: 6, title: "Navigate the Filesystem", category: "Linux", type: "order", points: 150,
+  { id: "c1-m6-nav", module: 5, title: "Navigate the Filesystem", category: "Linux", type: "order", points: 150,
     intro: "Objective — Use the CLI. Order the commands to find where you are, look around, enter a folder, and read a file.",
     steps: [
       "pwd  (where am I?)",
@@ -801,7 +1031,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "cat notes.txt  (read file)"
     ] },
 
-  { id: "c1-m6-guicli", module: 6, title: "GUI or CLI?", category: "Linux", type: "match", points: 150,
+  { id: "c1-m6-guicli", module: 5, title: "GUI or CLI?", category: "Linux", type: "match", points: 150,
     intro: "Objective — GUI vs CLI. Sort each trait. Tap the trait, then tap the interface.",
     pairs: [
       { left: "Click icons and windows", right: "GUI" },
@@ -810,11 +1040,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Beginner-friendly and visual", right: "GUI" }
     ] },
 
-  { id: "c1-m6-vocab", module: 6, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m6-vocab", module: 5, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["linux","command","terminal","directory","file","shell","cli","gui"],
     hardMode: "unscramble" },
 
-  { id: "c1-m6-paths", module: 6, title: "Match the Linux Path", category: "Linux", type: "match", points: 150,
+  { id: "c1-m6-paths", module: 5, title: "Match the Linux Path", category: "Linux", type: "match", points: 150,
     intro: "Objective — The filesystem. Match each path to what it holds. Tap the path, then tap its contents.",
     pairs: [
       { left: "/home", right: "User home directories" },
@@ -824,7 +1054,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "/tmp", right: "Temporary files" }
     ] },
 
-  { id: "c1-m6-pipe", module: 6, title: "Build a Pipeline", category: "Linux", type: "order", points: 150,
+  { id: "c1-m6-pipe", module: 5, title: "Build a Pipeline", category: "Linux", type: "order", points: 150,
     intro: "Objective — Use the CLI. Order these commands to list files, filter for '.txt', and count them.",
     steps: [
       "ls -l",
@@ -832,7 +1062,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "| wc -l"
     ] },
 
-  { id: "c1-m6-fs", module: 6, title: "Filesystem Facts", category: "Linux",
+  { id: "c1-m6-fs", module: 5, title: "Filesystem Facts", category: "Linux",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — The filesystem. In Linux, the very top of the filesystem is represented by which single character?\n\nSubmit as flag{symbol}.",
@@ -848,8 +1078,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "5cb771e2ee27334891b49db43f8a90e958b00708b5baaef45808f1abb52396b6" }
     ] },
 
-  /* MODULE 7 — Linux System Administration ────────────────────────────────── */
-  { id: "c1-m7-admin", module: 7, title: "Admin the System", category: "Linux Admin",
+  /* MODULE 5 cont'd — Linux System Administration ─────────────────────────── */
+  { id: "c1-m7-admin", module: 5, title: "Admin the System", category: "Linux Admin",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Basic file system commands. Which command displays the contents of a text file to the screen?\n\nSubmit as flag{command} (lowercase).",
@@ -865,7 +1095,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "405f577adebd25f3aec09e0fbf6147489834388dca05a532a82b63b064e28a67" }
     ] },
 
-  { id: "c1-m7-tasks", module: 7, title: "Match the Admin Task", category: "Linux Admin", type: "match", points: 150,
+  { id: "c1-m7-tasks", module: 5, title: "Match the Admin Task", category: "Linux Admin", type: "match", points: 150,
     intro: "Objective — User account & file management. Match each task to its command. Tap the task, then tap the command.",
     pairs: [
       { left: "Add a new user", right: "useradd" },
@@ -875,7 +1105,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Capture network traffic", right: "tcpdump" }
     ] },
 
-  { id: "c1-m7-perms", module: 7, title: "Read the Permissions", category: "Linux Admin", type: "match", points: 150,
+  { id: "c1-m7-perms", module: 5, title: "Read the Permissions", category: "Linux Admin", type: "match", points: 150,
     intro: "Objective — File permissions. Match each permission letter to what it allows. Tap the letter, then tap its meaning.",
     pairs: [
       { left: "r", right: "Read the file" },
@@ -884,7 +1114,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "rwx", right: "Full access" }
     ] },
 
-  { id: "c1-m7-user", module: 7, title: "Create & Secure a User", category: "Linux Admin", type: "order", points: 150,
+  { id: "c1-m7-user", module: 5, title: "Create & Secure a User", category: "Linux Admin", type: "order", points: 150,
     intro: "Objective — User account management. Order the steps to add and secure a new Linux user.",
     steps: [
       "useradd alice  (create the account)",
@@ -894,11 +1124,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "id alice  (verify the account)"
     ] },
 
-  { id: "c1-m7-vocab", module: 7, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m7-vocab", module: 5, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["user","permission","group","chmod","root","sudo","tcpdump","packet"],
     hardMode: "speedmatch" },
 
-  { id: "c1-m7-numperm", module: 7, title: "Match the Permission Number", category: "Linux Admin", type: "match", points: 150,
+  { id: "c1-m7-numperm", module: 5, title: "Match the Permission Number", category: "Linux Admin", type: "match", points: 150,
     intro: "Objective — File permissions. Match each chmod number to its access. Tap the number, then tap the access.",
     pairs: [
       { left: "7", right: "read + write + execute" },
@@ -908,7 +1138,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "0", right: "no access" }
     ] },
 
-  { id: "c1-m7-troubleshoot", module: 7, title: "Troubleshoot a Service", category: "Linux Admin", type: "order", points: 150,
+  { id: "c1-m7-troubleshoot", module: 5, title: "Troubleshoot a Service", category: "Linux Admin", type: "order", points: 150,
     intro: "Objective — System administration. Order the steps to troubleshoot a stopped service.",
     steps: [
       "systemctl status svc  (check state)",
@@ -918,7 +1148,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Verify it's running"
     ] },
 
-  { id: "c1-m7-manage", module: 7, title: "System Control", category: "Linux Admin",
+  { id: "c1-m7-manage", module: 5, title: "System Control", category: "Linux Admin",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — System administration. Which command runs another command with superuser (root) privileges?\n\nSubmit as flag{command} (lowercase).",
@@ -934,8 +1164,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "be7595c0f12b250b68f6ab6b6ae30639f7cd896ab76ace462047f8fe34515c82" }
     ] },
 
-  /* MODULE 8 — Windows System Administration ──────────────────────────────── */
-  { id: "c1-m8-win", module: 8, title: "Windows Admin", category: "Windows Admin",
+  /* MODULE 5 cont'd — Windows System Administration ────────────────────────── */
+  { id: "c1-m8-win", module: 5, title: "Windows Admin", category: "Windows Admin",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Windows Command Prompt. What is the classic Windows command-line interpreter, launched by typing its three-letter name into Run?\n\nSubmit as flag{name} (lowercase).",
@@ -951,7 +1181,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "7c1f5fb2f4a26b42975d51f91c2f9cbcffcf5e9b5903a0765210344a00632a8b" }
     ] },
 
-  { id: "c1-m8-tools", module: 8, title: "Match the Windows Tool", category: "Windows Admin", type: "match", points: 150,
+  { id: "c1-m8-tools", module: 5, title: "Match the Windows Tool", category: "Windows Admin", type: "match", points: 150,
     intro: "Objective — Introduction to Windows. Match each tool to its purpose. Tap the tool, then tap its purpose.",
     pairs: [
       { left: "Task Manager", right: "View & end running processes" },
@@ -961,7 +1191,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Control Panel", right: "Adjust system settings" }
     ] },
 
-  { id: "c1-m8-cmds", module: 8, title: "cmd Command Match", category: "Windows Admin", type: "match", points: 150,
+  { id: "c1-m8-cmds", module: 5, title: "cmd Command Match", category: "Windows Admin", type: "match", points: 150,
     intro: "Objective — Windows Command Prompt. Match each cmd command to what it does. Tap the command, then tap its job.",
     pairs: [
       { left: "dir", right: "List directory contents" },
@@ -971,7 +1201,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "tasklist", right: "List running processes" }
     ] },
 
-  { id: "c1-m8-software", module: 8, title: "Install Software Safely", category: "Windows Admin", type: "order", points: 150,
+  { id: "c1-m8-software", module: 5, title: "Install Software Safely", category: "Windows Admin", type: "order", points: 150,
     intro: "Objective — Software management. Order the steps to safely install a program on Windows.",
     steps: [
       "Download from the official source",
@@ -981,11 +1211,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Check for updates"
     ] },
 
-  { id: "c1-m8-vocab", module: 8, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m8-vocab", module: 5, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["windows","registry","powershell","group","process","administrator","policy","service"],
     hardMode: "blitz" },
 
-  { id: "c1-m8-shortcuts", module: 8, title: "Match the Windows Shortcut", category: "Windows Admin", type: "match", points: 150,
+  { id: "c1-m8-shortcuts", module: 5, title: "Match the Windows Shortcut", category: "Windows Admin", type: "match", points: 150,
     intro: "Objective — Windows basics. Match each shortcut to what it opens. Tap the shortcut, then tap the result.",
     pairs: [
       { left: "Ctrl+Shift+Esc", right: "Task Manager" },
@@ -994,7 +1224,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Win+L", right: "Lock the screen" }
     ] },
 
-  { id: "c1-m8-account", module: 8, title: "Create a Windows User", category: "Windows Admin", type: "order", points: 150,
+  { id: "c1-m8-account", module: 5, title: "Create a Windows User", category: "Windows Admin", type: "order", points: 150,
     intro: "Objective — Group & account management. Order the steps to add and secure a Windows user.",
     steps: [
       "Open Settings > Accounts",
@@ -1004,7 +1234,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Sign in to verify"
     ] },
 
-  { id: "c1-m8-winfacts", module: 8, title: "Windows Know-How", category: "Windows Admin",
+  { id: "c1-m8-winfacts", module: 5, title: "Windows Know-How", category: "Windows Admin",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Windows basics. The hierarchical database that stores Windows settings and configuration is called the ___.\n\nSubmit as flag{word} (lowercase).",
@@ -1020,8 +1250,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "189afbe00a674e2d78c03c3812e6f5d6bd580ebc90f3057e1d2cb26b1699dadc" }
     ] },
 
-  /* MODULE 9 — National Cyber League ──────────────────────────────────────── */
-  { id: "c1-m9-ncl", module: 9, title: "Game On", category: "NCL",
+  /* MODULE 10 — Cyber Competitions (NCL) ───────────────────────────────────── */
+  { id: "c1-m9-ncl", module: 10, title: "Game On", category: "NCL",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — NCL competition. What does 'NCL' stand for? Give the three words.\n\nSubmit as flag{three_words} with underscores.",
@@ -1037,7 +1267,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "3fc15149e5c1961d82e51cdad33971ac2a87aa79e609c6f425d47bbc05bbb365" }
     ] },
 
-  { id: "c1-m9-domains", module: 9, title: "Match the NCL Domain", category: "NCL", type: "match", points: 150,
+  { id: "c1-m9-domains", module: 10, title: "Match the NCL Domain", category: "NCL", type: "match", points: 150,
     intro: "Objective — NCL competition domains. Match each domain to its focus. Tap the domain, then tap its focus.",
     pairs: [
       { left: "OSINT", right: "Public-source intel gathering" },
@@ -1048,7 +1278,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Scanning", right: "Mapping hosts & services" }
     ] },
 
-  { id: "c1-m9-tools", module: 9, title: "Match the NCL Tool", category: "NCL", type: "match", points: 150,
+  { id: "c1-m9-tools", module: 10, title: "Match the NCL Tool", category: "NCL", type: "match", points: 150,
     intro: "Objective — Applying skills. Match each tool to its use. Tap the tool, then tap its use.",
     pairs: [
       { left: "Wireshark", right: "Inspect network traffic" },
@@ -1057,7 +1287,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "CyberChef", right: "Decode & transform data" }
     ] },
 
-  { id: "c1-m9-plan", module: 9, title: "NCL Game Plan", category: "NCL", type: "order", points: 150,
+  { id: "c1-m9-plan", module: 10, title: "NCL Game Plan", category: "NCL", type: "order", points: 150,
     intro: "Objective — Cyber mindset. Order how to approach an NCL challenge.",
     steps: [
       "Read the challenge carefully",
@@ -1067,11 +1297,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Review & learn from it"
     ] },
 
-  { id: "c1-m9-vocab", module: 9, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m9-vocab", module: 10, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["osint","forensic","crack","scan","exploit","cipher","flag","reconnaissance"],
     hardMode: "cipher" },
 
-  { id: "c1-m9-encodings", module: 9, title: "Recognize the Encoding", category: "NCL", type: "match", points: 150,
+  { id: "c1-m9-encodings", module: 10, title: "Recognize the Encoding", category: "NCL", type: "match", points: 150,
     intro: "Objective — NCL cryptography domain. Match each sample to its encoding. Tap the sample, then tap what it is.",
     pairs: [
       { left: "SGVsbG8=", right: "Base64" },
@@ -1080,7 +1310,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "01001000", right: "Binary" }
     ] },
 
-  { id: "c1-m9-forensics", module: 9, title: "NCL Forensics Steps", category: "NCL", type: "order", points: 150,
+  { id: "c1-m9-forensics", module: 10, title: "NCL Forensics Steps", category: "NCL", type: "order", points: 150,
     intro: "Objective — NCL forensics domain. Order the steps to analyze a suspicious file in a challenge.",
     steps: [
       "Download the evidence file",
@@ -1090,7 +1320,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Recover the flag"
     ] },
 
-  { id: "c1-m9-nclfacts", module: 9, title: "Competition Ready", category: "NCL",
+  { id: "c1-m9-nclfacts", module: 10, title: "Competition Ready", category: "NCL",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — NCL. In a CTF, the secret string you submit to prove you solved a challenge is called a ___.\n\nSubmit as flag{word} (lowercase).",
@@ -1106,8 +1336,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "8c1ed041d1c82dbb252a0dbb64671344e9ef31c93e1d7698e0f5460f8e38d43f" }
     ] },
 
-  /* MODULE 10 — Network Basics ────────────────────────────────────────────── */
-  { id: "c1-m10-net", module: 10, title: "Layers & Addresses", category: "Networking",
+  /* MODULE 6 — Network Basics ──────────────────────────────────────────────── */
+  { id: "c1-m10-net", module: 6, title: "Layers & Addresses", category: "Networking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — OSI model. How many layers are in the OSI model?\n\nSubmit as flag{number}.",
@@ -1123,7 +1353,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "4d1477a3f1d2dcbf8954946fc70fa848cffe609deea649a1de7e99db056a2ccc" }
     ] },
 
-  { id: "c1-m10-osi", module: 10, title: "Order the OSI Model", category: "Networking", type: "order", points: 150,
+  { id: "c1-m10-osi", module: 6, title: "Order the OSI Model", category: "Networking", type: "order", points: 150,
     intro: "Objective — The 7 OSI layers. Order the OSI layers from Layer 1 (bottom) to Layer 7 (top).",
     steps: [
       "Physical",
@@ -1135,7 +1365,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Application"
     ] },
 
-  { id: "c1-m10-devices", module: 10, title: "Match the Network Device", category: "Networking", type: "match", points: 150,
+  { id: "c1-m10-devices", module: 6, title: "Match the Network Device", category: "Networking", type: "match", points: 150,
     intro: "Objective — Network diagrams. Match each device to its role. Tap the device, then tap its role.",
     pairs: [
       { left: "Router", right: "Connects different networks" },
@@ -1145,7 +1375,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Hub", right: "Repeats traffic to all ports" }
     ] },
 
-  { id: "c1-m10-layer", module: 10, title: "Match the OSI Layer", category: "Networking", type: "match", points: 150,
+  { id: "c1-m10-layer", module: 6, title: "Match the OSI Layer", category: "Networking", type: "match", points: 150,
     intro: "Objective — OSI model. Match each example to its OSI layer. Tap the example, then tap the layer.",
     pairs: [
       { left: "Ethernet cable & signals", right: "Physical" },
@@ -1155,11 +1385,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "HTTP, DNS, email", right: "Application" }
     ] },
 
-  { id: "c1-m10-vocab", module: 10, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m10-vocab", module: 6, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["network","osi","protocol","router","switch","packet","ip address","firewall"],
     hardMode: "wordsearch" },
 
-  { id: "c1-m10-ports", module: 10, title: "Match the Port to the Service", category: "Networking", type: "match", points: 150,
+  { id: "c1-m10-ports", module: 6, title: "Match the Port to the Service", category: "Networking", type: "match", points: 150,
     intro: "Objective — Networking terminology. Match each port to its service. Tap the port, then tap the service.",
     pairs: [
       { left: "80", right: "HTTP" },
@@ -1169,7 +1399,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "25", right: "SMTP" }
     ] },
 
-  { id: "c1-m10-request", module: 10, title: "Follow a Web Request", category: "Networking", type: "order", points: 150,
+  { id: "c1-m10-request", module: 6, title: "Follow a Web Request", category: "Networking", type: "order", points: 150,
     intro: "Objective — How networks communicate. Order what happens when you visit a website.",
     steps: [
       "Type the URL",
@@ -1179,7 +1409,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Browser renders it"
     ] },
 
-  { id: "c1-m10-netfacts", module: 10, title: "Network Numbers", category: "Networking",
+  { id: "c1-m10-netfacts", module: 6, title: "Network Numbers", category: "Networking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Networking terms. A unique address burned into a network card, written like 00:1A:2B:3C:4D:5E, is called a ___ address.\n\nSubmit as flag{acronym} (lowercase).",
@@ -1195,8 +1425,8 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "03f990510f8d903f3584165553ec31f1c2ce25c7cacbd6c61249af8fceda402b" }
     ] },
 
-  /* MODULE 11 — Malware, Vulnerabilities, Exploits & Cyber Kill Chain ─────── */
-  { id: "c1-m11-mal", module: 11, title: "Know the Threat", category: "Malware & Exploits",
+  /* MODULE 7 — Cyber Threats (Malware, Vulnerabilities, Exploits & Kill Chain) */
+  { id: "c1-m11-mal", module: 7, title: "Know the Threat", category: "Malware & Exploits",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Types of malware. Malware that encrypts your files and demands payment to unlock them.\n\nSubmit as flag{word} (lowercase).",
@@ -1212,7 +1442,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "ac9874bc3b6204632610ff73ee5698c0388bce80ba1f493f91e309bbbe2a06ed" }
     ] },
 
-  { id: "c1-m11-killchain", module: 11, title: "Order the Cyber Kill Chain", category: "Malware & Exploits", type: "order", points: 150,
+  { id: "c1-m11-killchain", module: 7, title: "Order the Cyber Kill Chain", category: "Malware & Exploits", type: "order", points: 150,
     intro: "Objective — The Cyber Kill Chain. Order Lockheed Martin's 7 kill-chain stages, first to last.",
     steps: [
       "Reconnaissance",
@@ -1224,7 +1454,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Actions on Objectives"
     ] },
 
-  { id: "c1-m11-types", module: 11, title: "Match the Malware", category: "Malware & Exploits", type: "match", points: 150,
+  { id: "c1-m11-types", module: 7, title: "Match the Malware", category: "Malware & Exploits", type: "match", points: 150,
     intro: "Objective — Types of malware. Match each malware to its behavior. Tap the malware, then tap its behavior.",
     pairs: [
       { left: "Virus", right: "Attaches to files, needs a host" },
@@ -1235,7 +1465,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Rootkit", right: "Hides deep to keep access" }
     ] },
 
-  { id: "c1-m11-vex", module: 11, title: "Vulnerability vs Exploit", category: "Malware & Exploits", type: "match", points: 150,
+  { id: "c1-m11-vex", module: 7, title: "Vulnerability vs Exploit", category: "Malware & Exploits", type: "match", points: 150,
     intro: "Objective — Vulnerabilities and exploits. Sort each item. Tap the item, then tap the category.",
     pairs: [
       { left: "Unpatched software flaw", right: "Vulnerability" },
@@ -1245,11 +1475,11 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Misconfigured firewall rule", right: "Vulnerability" }
     ] },
 
-  { id: "c1-m11-vocab", module: 11, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
+  { id: "c1-m11-vocab", module: 7, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["malware","virus","worm","trojan","ransomware","exploit","vulnerabilit","payload","kill chain"],
     hardMode: "rapid" },
 
-  { id: "c1-m11-defense", module: 11, title: "Match the Malware Defense", category: "Malware & Exploits", type: "match", points: 150,
+  { id: "c1-m11-defense", module: 7, title: "Match the Malware Defense", category: "Malware & Exploits", type: "match", points: 150,
     intro: "Objective — Defending against malware. Match each defense to the threat it counters. Tap the defense, then tap the threat.",
     pairs: [
       { left: "Antivirus scan", right: "Known viruses" },
@@ -1259,7 +1489,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Least privilege", right: "Malware spread" }
     ] },
 
-  { id: "c1-m11-response", module: 11, title: "Respond to an Infection", category: "Malware & Exploits", type: "order", points: 150,
+  { id: "c1-m11-response", module: 7, title: "Respond to an Infection", category: "Malware & Exploits", type: "order", points: 150,
     intro: "Objective — Incident basics. Order the steps to respond to a malware infection.",
     steps: [
       "Disconnect the device from the network",
@@ -1269,7 +1499,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Patch the entry point"
     ] },
 
-  { id: "c1-m11-malfacts", module: 11, title: "Threat Intel", category: "Malware & Exploits",
+  { id: "c1-m11-malfacts", module: 7, title: "Threat Intel", category: "Malware & Exploits",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Malware types. A network of compromised computers controlled by an attacker is called a ___.\n\nSubmit as flag{word} (lowercase).",
@@ -1285,178 +1515,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "b0a44b47a826666e0b5deefb3bb16a55daf57f048ae92e3aba9390b625c501b7" }
     ] },
 
-  /* MODULE 12 — SQL and Databases ─────────────────────────────────────────── */
-  { id: "c1-m12-sql", module: 12, title: "Query the Database", category: "SQL & Databases",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Basic SQL. Which SQL keyword RETRIEVES data from a table?\n\nSubmit as flag{keyword} (lowercase).",
-        hint: "The first keyword of nearly every query you'll ever write.",
-        flagHash: "604028290213f435d1278a005c3c5a5fbbadc0aeefe0c116eb2f7ea1230451a2" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Database structure. In a relational database, a single record (horizontal entry) in a table is called a ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Three letters. A table's horizontal entry — one complete record.",
-        flagHash: "abe5b34eb94c38ec1dc3e0c951f0ba8a4fa7633a8338ee339cb362728f7e1dfd" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Database security. Injecting malicious SQL through a web input to manipulate the database is called SQL ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Nine letters. The attacker's input becomes part of the query itself.",
-        flagHash: "f12d2b3415eca631fd6b8726f5f357abad758199e0b4a73cee13c98719d52230" }
-    ] },
 
-  { id: "c1-m12-keywords", module: 12, title: "Match the SQL Keyword", category: "SQL & Databases", type: "match", points: 150,
-    intro: "Objective — Basic SQL commands. Match each keyword to what it does. Tap the keyword, then tap its job.",
-    pairs: [
-      { left: "SELECT", right: "Retrieve rows" },
-      { left: "INSERT", right: "Add a new row" },
-      { left: "UPDATE", right: "Change existing rows" },
-      { left: "DELETE", right: "Remove rows" },
-      { left: "WHERE", right: "Filter which rows" }
-    ] },
-
-  { id: "c1-m12-parts", module: 12, title: "Match the Database Part", category: "SQL & Databases", type: "match", points: 150,
-    intro: "Objective — Database structure. Match each term to its meaning. Tap the term, then tap its meaning.",
-    pairs: [
-      { left: "Table", right: "A collection of related records" },
-      { left: "Row", right: "One record" },
-      { left: "Column", right: "One field/attribute" },
-      { left: "Primary Key", right: "Uniquely identifies a row" },
-      { left: "Query", right: "A request for data" }
-    ] },
-
-  { id: "c1-m12-query", module: 12, title: "Build a Query", category: "SQL & Databases", type: "order", points: 150,
-    intro: "Objective — Writing SQL. Order the clauses of a basic SQL query.",
-    steps: [
-      "SELECT name",
-      "FROM students",
-      "WHERE grade = 12",
-      "ORDER BY name",
-      "LIMIT 10"
-    ] },
-
-  { id: "c1-m12-vocab", module: 12, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["database","sql","query","table","record","primary key","injection","select"],
-    hardMode: "unscramble" },
-
-  { id: "c1-m12-clauses", module: 12, title: "Match the SQL Clause", category: "SQL & Databases", type: "match", points: 150,
-    intro: "Objective — Writing SQL. Match each clause to its role. Tap the clause, then tap its role.",
-    pairs: [
-      { left: "ORDER BY", right: "Sort the results" },
-      { left: "GROUP BY", right: "Group rows for aggregation" },
-      { left: "JOIN", right: "Combine two tables" },
-      { left: "LIMIT", right: "Cap the number of rows" },
-      { left: "COUNT()", right: "Count matching rows" }
-    ] },
-
-  { id: "c1-m12-design", module: 12, title: "Design a Table", category: "SQL & Databases", type: "order", points: 150,
-    intro: "Objective — Database structure. Order the steps to design a simple database table.",
-    steps: [
-      "Decide what to store",
-      "Name the table",
-      "Define the columns & types",
-      "Choose a primary key",
-      "Insert the first rows"
-    ] },
-
-  { id: "c1-m12-sqlfacts", module: 12, title: "Data Handling", category: "SQL & Databases",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Databases. What does SQL stand for? Give the three words.\n\nSubmit as flag{three_words} with underscores.",
-        hint: "Structured ___ Language.",
-        flagHash: "fc1c9e99d4ef154c1d49425339af67f303bd0ba38b810e6baf9fc7402978f8f1" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Database structure. A column (or set) that uniquely identifies each row in a table is the ___ key. Give the word.\n\nSubmit as flag{word} (lowercase).",
-        hint: "The column that uniquely identifies each row in a table. Every table should have exactly one.",
-        flagHash: "3eaa4ce0517d9fcb6d6f44cc09bfe3e3929faab3d09174d3cccf98dd00c576c6" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Database security. Which SQL keyword permanently removes an entire table? \n\nSubmit as flag{keyword} (lowercase).",
-        hint: "Four letters. Harsher than DELETE — the table itself is gone.",
-        flagHash: "7b854cc6dd581aa9a81ef1fbc1ba27ea95197f1010d47ab0113abd73130b13bd" }
-    ] },
-
-  /* MODULE 13 — Preparing for Cyber II ────────────────────────────────────── */
-  { id: "c1-m13-prep", module: 13, title: "Level Up", category: "Prep for Cyber II",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Career readiness. The entry-level CompTIA certification that Cyber II helps prepare you for. Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
-        hint: "___ plus.",
-        flagHash: "2e573dcb5716af6154ae28cd7f204d7f3ce8bcba8827a3b5c10d13d503e1ae4f" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Continued learning. Decode this mindset every cyber pro needs:\n\nZmxhZ3tuZXZlcl9zdG9wX2xlYXJuaW5nfQ==\n\n(It's Base64.)",
-        hint: "Decode the Base64. Three words about staying current in a field that changes every year.",
-        flagHash: "10b22c3c3be40d829b83bda0e7739afbd365ea5d17f6be8d0e51fa5b39768e4b" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Hands-on practice. Name the national cyber competition (three words) you'll compete in during Cyber II to sharpen real skills.\n\nSubmit as flag{three_words} with underscores.",
-        hint: "Three words. This module's competition is referred to by its initials throughout — expand them.",
-        flagHash: "3212383c7d281b5dd34552bf45195dc477bb462bce8e62be085e003715bba5c9" }
-    ] },
-
-  { id: "c1-m13-path", module: 13, title: "Your Cyber II Roadmap", category: "Prep for Cyber II", type: "order", points: 150,
-    intro: "Objective — Planning ahead. Order these steps to get ready for Cyber II, first to last.",
-    steps: [
-      "Master the Cyber I fundamentals",
-      "Build a strong Linux & networking base",
-      "Practice in the National Cyber League",
-      "Study toward Security+",
-      "Build a portfolio of your work"
-    ] },
-
-  { id: "c1-m13-skills", module: 13, title: "Match the Skill to the Domain", category: "Prep for Cyber II", type: "match", points: 150,
-    intro: "Objective — Skills review. Match each skill to its area. Tap the skill, then tap the area.",
-    pairs: [
-      { left: "Writing SELECT queries", right: "Databases" },
-      { left: "chmod & permissions", right: "Linux" },
-      { left: "Spotting a phishing email", right: "Social Engineering" },
-      { left: "Decoding a Caesar cipher", right: "Cryptology" },
-      { left: "Reading the OSI layers", right: "Networking" }
-    ] },
-
-  { id: "c1-m13-habits", module: 13, title: "Habits of a Cyber Pro", category: "Prep for Cyber II", type: "match", points: 150,
-    intro: "Objective — Professional growth. Match each habit to why it matters. Tap the habit, then tap the reason.",
-    pairs: [
-      { left: "Document everything", right: "Others can follow your work" },
-      { left: "Keep learning", right: "Threats change constantly" },
-      { left: "Practice ethically", right: "Trust & legality" },
-      { left: "Build a network", right: "Opportunities & mentorship" }
-    ] },
-
-  { id: "c1-m13-vocab", module: 13, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["security","certification","comptia","portfolio","career","competition","fundamental","review"],
-    hardMode: "speedmatch" },
-
-  { id: "c1-m13-review", module: 13, title: "Course Concept Review", category: "Prep for Cyber II", type: "match", points: 150,
-    intro: "Objective — Skills review. Match each concept to its module topic. Tap the concept, then tap the topic.",
-    pairs: [
-      { left: "CIA triad", right: "What is Cybersecurity?" },
-      { left: "ROT13 & keys", right: "Cryptology" },
-      { left: "chmod 755", right: "Linux Admin" },
-      { left: "SELECT * FROM", right: "SQL & Databases" },
-      { left: "Cyber Kill Chain", right: "Malware & Exploits" }
-    ] },
-
-  { id: "c1-m13-goals", module: 13, title: "Set Your Goals", category: "Prep for Cyber II", type: "order", points: 150,
-    intro: "Objective — Planning ahead. Order these goal-setting steps for a strong Cyber II start.",
-    steps: [
-      "Review weak areas from Cyber I",
-      "Set a certification target",
-      "Make a study schedule",
-      "Join a practice competition",
-      "Track your progress"
-    ] },
-
-  { id: "c1-m13-prepfacts", module: 13, title: "Ready to Advance", category: "Prep for Cyber II",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Career readiness. A short, one-page document summarizing your skills and experience for employers.\n\nSubmit as flag{word} (lowercase).",
-        hint: "You submit it with a job application.",
-        flagHash: "5c9825b2206faa1aacb9d18a697f9966b4dd72bf26f675d008ab30103805ddfd" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Continued learning. A curated collection of your projects that proves your skills is called a ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "You build one all through Cyber II.",
-        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Networking (career). The professional networking website where you connect with recruiters and peers. (one word)\n\nSubmit as flag{word} (lowercase).",
-        hint: "The professional networking site where you post your résumé, connect with recruiters, and follow companies. One word, no space.",
-        flagHash: "3288b4fbe3f74ae514beaba00684f4607157e172704a5b8f68587913de5bbdf8" }
-    ] }
 
   ]
 };
@@ -1465,36 +1524,33 @@ window.COURSE_CONFIG.cyber1.ctf.bossQuestions = [
   { module: 1, topic: "M1", diff: "Easy", kind: "mc",
     prompt: "Which is NOT part of the CIA triad?",
     choices: ["Authentication", "Confidentiality", "Integrity", "Availability"], answer: "Authentication" },
-  { module: 2, topic: "M2", diff: "Medium", kind: "mc",
+  { module: 1, topic: "M2", diff: "Medium", kind: "mc",
     prompt: "You find a security bug in a website. The ethical first step is to:",
     choices: ["Report it responsibly to the owner", "Post it publicly for fun", "Exploit it quietly", "Ignore it"], answer: "Report it responsibly to the owner" },
-  { module: 3, topic: "M3", diff: "Medium", kind: "text",
+  { module: 4, topic: "M3", diff: "Medium", kind: "text",
     prompt: "Convert binary 1111 to decimal.",
     answer: "15" },
-  { module: 4, topic: "M4", diff: "Medium", kind: "mc",
+  { module: 9, topic: "M4", diff: "Medium", kind: "mc",
     prompt: "Which of these is ENCODING, not encryption?",
     choices: ["Base64", "AES", "RSA", "A cipher with a secret key"], answer: "Base64" },
-  { module: 5, topic: "M5", diff: "Easy", kind: "mc",
+  { module: 3, topic: "M5", diff: "Easy", kind: "mc",
     prompt: "A text message trying to trick you into clicking a bad link is called:",
     choices: ["Smishing", "Vishing", "Tailgating", "Baiting"], answer: "Smishing" },
-  { module: 6, topic: "M6", diff: "Easy", kind: "mc",
+  { module: 5, topic: "M6", diff: "Easy", kind: "mc",
     prompt: "Which Linux command lists files in the current directory?",
     choices: ["ls", "cd", "pwd", "rm"], answer: "ls" },
-  { module: 7, topic: "M7", diff: "Medium", kind: "text",
+  { module: 5, topic: "M7", diff: "Medium", kind: "text",
     prompt: "Which Linux command changes a file's permissions? (one word)",
     answer: "chmod" },
-  { module: 8, topic: "M8", diff: "Medium", kind: "mc",
+  { module: 5, topic: "M8", diff: "Medium", kind: "mc",
     prompt: "Microsoft's directory service for users, groups, and computers is:",
     choices: ["Active Directory", "PowerShell", "Task Manager", "Registry"], answer: "Active Directory" },
-  { module: 10, topic: "M10", diff: "Hard", kind: "text",
+  { module: 6, topic: "M10", diff: "Hard", kind: "text",
     prompt: "How many layers are in the OSI model? (number)",
     answer: "7" },
-  { module: 11, topic: "M11", diff: "Medium", kind: "mc",
+  { module: 7, topic: "M11", diff: "Medium", kind: "mc",
     prompt: "Malware that self-replicates across a network with no user action is a:",
-    choices: ["Worm", "Virus", "Trojan", "Rootkit"], answer: "Worm" },
-  { module: 12, topic: "M12", diff: "Easy", kind: "mc",
-    prompt: "Which SQL keyword retrieves data from a table?",
-    choices: ["SELECT", "INSERT", "DELETE", "UPDATE"], answer: "SELECT" }
+    choices: ["Worm", "Virus", "Trojan", "Rootkit"], answer: "Worm" }
 ];
 
 window.COURSE_CONFIG.cyber3.ctf = {
