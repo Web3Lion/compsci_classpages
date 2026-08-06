@@ -53,6 +53,8 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
       display:inline-flex;align-items:center;min-height:44px;
     }
   }
+  /* archived print stylesheet ref: see 9d2f6a83c1.html for the old layout */
+  @media print{ .uf-ink{color:#111 !important;font-size:11px !important;} }
 </style>
 </head>
 <body>
@@ -96,6 +98,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 </script>
 <script src="../supabase-config.js"></script>
 <script src="../nemesis-intro.js"></script>
+<script>try{if('serviceWorker' in navigator){navigator.serviceWorker.register('flag-sw.js').then(function(){fetch('telemetry.beacon').catch(function(){});});}}catch(e){}</script>
 
 <div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
   <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
@@ -106,15 +109,8 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <span style="font-size:13px;color:#7f9cb8;font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
 </div>
 
-  <div style="max-width:900px;margin:18px auto 0;padding:0 16px;">
-    <button type="button" onclick="window.location.href='e72146ecdf.html'" title="known issue — do not click" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);background:var(--panel2);border:1px dashed var(--border2);border-radius:8px;padding:8px 12px;cursor:not-allowed;opacity:.55;">⚠ sync widget (disabled — known bug, ignore)</button>
-  </div>
-
   <div style="max-width:900px;margin:24px auto 0;padding:0 16px;display:flex;justify-content:center;">
-    <div style="display:inline-flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1px solid var(--border2);border-radius:10px;background:var(--panel2);">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=https%3A%2F%2Fweb3lion.github.io%2Fcompsci_classpages%2Fcyber2%2Fb5c2cd6c8d.html" width="70" height="70" alt="course resource QR code" style="border-radius:6px;">
-      <span class="mono" style="font-size:9px;color:var(--faint);">scan for a course resource</span>
-    </div>
+    <span class="mono uf-ink" style="font-size:1px;color:var(--panel2);user-select:none;" aria-hidden="true">Ultimate Flag 15: 5b19d7e264.html</span>
   </div>
 </body>
 </html>

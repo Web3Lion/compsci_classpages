@@ -34,11 +34,14 @@ p{font-size:14px;line-height:1.6;color:var(--muted);margin:0 0 22px;}
   #cert, #cert *{visibility:visible;}
   #cert{display:block;position:fixed;inset:0;background:#fff;color:#111;padding:60px;}
 }
-.certBox{border:3px double #333;padding:48px;text-align:center;font-family:'JetBrains Mono',monospace;}
-.certBox h2{font-size:13px;letter-spacing:4px;color:#666;margin:0 0 6px;}
+.certBox{border:4px double #ff4c00;border-radius:6px;padding:48px;text-align:center;font-family:'JetBrains Mono',monospace;position:relative;background:linear-gradient(165deg, color-mix(in oklch, #ff4c00 8%, white) 0%, #ffffff 60%);}
+.certBox::before{content:'';position:absolute;inset:9px;border:1px solid color-mix(in oklch, #ff4c00 30%, white);border-radius:2px;pointer-events:none;}
+.certBox .seal{width:60px;height:60px;margin:0 auto 18px;border-radius:50%;background:linear-gradient(135deg,#ff4c00,#ff7a3d);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px -6px color-mix(in oklch, #ff4c00 60%, transparent);}
+.certBox h2{font-size:12px;letter-spacing:4px;color:#ff4c00;margin:0 0 6px;font-weight:700;}
 .certBox h1{font-size:30px;color:#111;margin:0 0 30px;font-family:'Inter',sans-serif;}
 .certBox .name{font-size:26px;margin:24px 0;border-bottom:2px solid #333;display:inline-block;padding:0 30px 8px;}
 .certBox .meta{font-size:12px;color:#444;margin-top:30px;line-height:1.8;}
+.certBox .meta strong{color:#ff4c00;}
 </style>
 </head>
 <body>
@@ -79,6 +82,7 @@ p{font-size:14px;line-height:1.6;color:var(--muted);margin:0 0 22px;}
     <h2>CYBER SECURITY 1 · ULTIMATE FLAG 1</h2>
     <h1>Certificate of Ultimate Achievement</h1>
     <div style="font-size:11px;letter-spacing:3px;color:#888;margin-bottom:24px;">RARE · FOUND OUTSIDE THE ARENA · WORTH 250 XP</div>
+    <div class="seal">★</div>
     <p>This certifies that</p>
     <div class="name" id="certName">—</div>
     <p>found the hidden page that SPECTER didn't want discovered.</p>
@@ -128,6 +132,7 @@ if (!sess) {
         state.solved["ultimate-flag-1"] = true;
         state.earned["ultimate-flag-1"] = 250;
         state.bonus = (state.bonus || 0) + 250;
+        state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: 250, reason: "Ultimate Flag 1 — Hidden Page" });
         localStorage.setItem(STATE_KEY, JSON.stringify(state));
       }
     } catch(e){}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warm-Up Review — Are You a Target? — Cyber Security 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#ff4c00;--accent2:#ff7a3d;}
+:root[data-theme="light"]{--bg:#f3f4f6;--panel:#ffffff;--panel2:#f7f8fa;--panel3:#eef0f3;--border:#d7dbe2;--border2:#e5e8ed;--border3:#c3c9d4;--border-hi:#a7b0c0;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#ff4c00;--accent2:#ff7a3d;}
+*{box-sizing:border-box;}
+body{margin:0;padding:40px 16px 80px;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);}
+a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:920px;margin:0 auto;}
+h1{font-size:22px;margin:0 0 4px;color:var(--bright);}
+.sub{font-size:13px;color:var(--dim);margin:0 0 26px;}
+.card{border:1px solid var(--border3);border-radius:14px;background:var(--panel);padding:22px;margin-bottom:16px;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;padding:11px 18px;border-radius:9px;border:1px solid var(--accent);background:var(--accent);color:#1a0800;cursor:pointer;}
+.btn.ghost{background:transparent;color:var(--accent);}
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);}
+.resp{border:1px solid var(--border2);border-radius:10px;padding:16px 18px;margin-bottom:12px;background:var(--panel2);}
+.resp .who{display:flex;justify-content:space-between;gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);margin-bottom:10px;}
+.resp .who b{color:var(--bright);font-family:'Inter',sans-serif;font-size:14px;}
+.qa{margin-bottom:8px;}
+.qa .q{font-size:11.5px;letter-spacing:.3px;color:var(--faint);text-transform:uppercase;margin-bottom:2px;}
+.qa .a{font-size:14px;color:var(--text);line-height:1.5;}
+.empty{color:var(--faint);font-size:13.5px;padding:30px;text-align:center;}
+.gate{max-width:420px;margin:80px auto;text-align:center;}
+.gate .btn{width:100%;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel2);color:var(--dim);cursor:pointer;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div id="app"><div class="empty">Loading…</div></div>
+</div>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'\u25d0 DARK':'\u25d1 LIGHT';}window.__toggleTheme=function(){var cur=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',cur);try{localStorage.setItem(K,cur);}catch(e){}lbl();};lbl();})();</script>
+<script src="../supabase-config.js"></script>
+<script src="../auth.js"></script>
+<script>
+var course = "cyber1";
+var LOCAL_KEY = "target-warmup-" + course;
+var app = document.getElementById("app");
+
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+var QLABELS = {
+  target: "Am I a target?", accounts: "How many accounts?", happened: "Has it happened before?",
+  worst: "Worst case if my email were breached", habit: "What I actually do with a sketchy link"
+};
+
+function renderList(rows, source){
+  if (!rows.length) { app.innerHTML = '<div class="card"><div class="empty">No responses yet' + (source === 'local' ? ' on this device' : '') + '.</div></div>'; return; }
+  var toolbar = '<div class="toolbar"><input type="text" id="search" placeholder="Filter by name or period…">' +
+    '<button class="btn ghost" id="csvBtn">Export CSV</button>' +
+    '<span class="mono" style="color:var(--faint);font-size:12px;margin-left:auto;">' + rows.length + ' response' + (rows.length === 1 ? '' : 's') + (source === 'local' ? ' · saved on this device only' : ' · from all devices') + '</span></div>';
+
+  function card(r){
+    var qa = Object.keys(QLABELS).map(function(k){
+      return '<div class="qa"><div class="q">' + esc(QLABELS[k]) + '</div><div class="a">' + esc(r.answers[k] || '—') + '</div></div>';
+    }).join("");
+    var when = new Date(r.ts || r.created_at).toLocaleString();
+    return '<div class="resp" data-name="' + esc((r.name||'').toLowerCase()) + '" data-period="' + esc((r.period||'').toLowerCase()) + '">' +
+      '<div class="who"><b>' + esc(r.name || 'Unnamed') + '</b><span>' + esc(r.period || '—') + ' · ' + esc(when) + '</span></div>' + qa + '</div>';
+  }
+
+  app.innerHTML = '<h1>Are You a Target? — responses</h1><div class="sub">Cyber Security 1 · Day 1 warm-up</div>' + toolbar +
+    '<div id="list">' + rows.map(card).join("") + '</div>';
+
+  document.getElementById("search").addEventListener("input", function(e){
+    var v = e.target.value.toLowerCase();
+    document.querySelectorAll("#list .resp").forEach(function(el){
+      var hit = el.getAttribute("data-name").indexOf(v) !== -1 || el.getAttribute("data-period").indexOf(v) !== -1;
+      el.style.display = hit ? "" : "none";
+    });
+  });
+  document.getElementById("csvBtn").addEventListener("click", function(){
+    var head = ["name","period","when"].concat(Object.keys(QLABELS));
+    var lines = [head.join(",")];
+    rows.forEach(function(r){
+      var when = new Date(r.ts || r.created_at).toISOString();
+      var cells = [r.name || "", r.period || "", when].concat(Object.keys(QLABELS).map(function(k){ return r.answers[k] || ""; }));
+      lines.push(cells.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(","));
+    });
+    var blob = new Blob([lines.join("\n")], {type:"text/csv"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "are-you-a-target-responses.csv"; a.click();
+  });
+}
+
+function loadLocal(){
+  try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); } catch(e) { return []; }
+}
+
+async function loadCloud(){
+  if (!window.CTF_AUTH || !window.CTF_AUTH.online) return null;
+  var u = await window.CTF_AUTH.requireSchool();
+  if (!u || u.wrongDomain) return "gate";
+  if (!window.CTF_AUTH.isTeacher(u)) return "gate";
+  try {
+    var rows = await window.CTF_AUTH.rpc("ctf_t_target_warmup", { p_course: course });
+    return Array.isArray(rows) ? rows : [];
+  } catch(e) { return null; }
+}
+
+function renderGate(){
+  app.innerHTML = '<div class="gate"><h1>Teacher sign-in required</h1><p class="sub">Sign in with your school Google account to view responses saved to the shared backend.</p><button class="btn" id="signinBtn">Sign in with Google</button></div>';
+  document.getElementById("signinBtn").addEventListener("click", function(){ window.CTF_AUTH.signIn(); });
+}
+
+(async function(){
+  var cloud = await loadCloud();
+  if (cloud === "gate") { renderGate(); return; }
+  if (Array.isArray(cloud)) { renderList(cloud, "cloud"); return; }
+  renderList(loadLocal(), "local");
+})();
+</script>
+</body>
+</html>

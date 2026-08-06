@@ -35,11 +35,14 @@ input.pf{font-family:'JetBrains Mono',monospace;font-size:15px;text-align:center
   #cert, #cert *{visibility:visible;}
   #cert{display:block;position:fixed;inset:0;background:#fff;color:#111;padding:60px;}
 }
-.certBox{border:3px double #333;padding:48px;text-align:center;font-family:'JetBrains Mono',monospace;}
-.certBox h2{font-size:13px;letter-spacing:4px;color:#666;margin:0 0 6px;}
+.certBox{border:4px double #d4af37;border-radius:6px;padding:48px;text-align:center;font-family:'JetBrains Mono',monospace;position:relative;background:linear-gradient(165deg, color-mix(in oklch, #d4af37 8%, white) 0%, #ffffff 60%);}
+.certBox::before{content:'';position:absolute;inset:9px;border:1px solid color-mix(in oklch, #d4af37 30%, white);border-radius:2px;pointer-events:none;}
+.certBox .seal{width:60px;height:60px;margin:0 auto 18px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#f4d160);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px -6px color-mix(in oklch, #d4af37 60%, transparent);}
+.certBox h2{font-size:12px;letter-spacing:4px;color:#d4af37;margin:0 0 6px;font-weight:700;}
 .certBox h1{font-size:30px;color:#111;margin:0 0 8px;font-family:'Inter',sans-serif;}
 .certBox .name{font-size:26px;margin:24px 0;border-bottom:2px solid #333;display:inline-block;padding:0 30px 8px;}
 .certBox .meta{font-size:12px;color:#444;margin-top:30px;line-height:1.8;}
+.certBox .meta strong{color:#d4af37;}
 .certMind{margin-top:18px;padding-top:18px;border-top:1px solid #ccc;font-size:11px;color:#555;text-align:left;line-height:1.6;}
 </style>
 </head>
@@ -70,6 +73,7 @@ input.pf{font-family:'JetBrains Mono',monospace;font-size:15px;text-align:center
     <h2>CYBER SECURITY 3 · ULTIMATE FLAG 6</h2>
     <h1>Certificate of Ultimate Achievement</h1>
     <div style="font-size:11px;letter-spacing:3px;color:#888;margin-bottom:24px;">RARE · FOUND ACROSS COURSES · WORTH 250 XP</div>
+    <div class="seal">★</div>
     <p>This certifies that</p>
     <div class="name" id="certName">—</div>
     <p>found the flag that required exploring beyond a single course.</p>
@@ -106,6 +110,7 @@ function awardFlag(){
       var key = "ultimate-flag-" + FLAG_ID;
       if (!state.solved[key]) {
         state.solved[key] = true; state.earned[key] = XP; state.bonus = (state.bonus || 0) + XP;
+        state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: XP, reason: "Ultimate Flag " + FLAG_ID });
         localStorage.setItem(STATE_KEY, JSON.stringify(state));
         try {
           if (window.AUTH && typeof window.AUTH.rpc === "function") {

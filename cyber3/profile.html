@@ -93,6 +93,11 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap" style="padding-top:20px;">
+  <div style="max-width:720px;margin:0 auto 14px;padding:12px 14px;border:1px dashed var(--border3,#444);border-radius:10px;background:var(--panel2,#161a20);display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px;">
+    <span style="color:var(--faint,#888);">DEBUG</span>
+    <button onclick="location.href='honeypot.html?trap=debugreveal'" style="font:inherit;padding:6px 12px;border-radius:7px;border:1px solid #999;background:transparent;color:inherit;cursor:pointer;">Reveal All Answers</button>
+    <span style="margin-left:auto;color:var(--faint,#888);font-size:11px;">psst — <a href="leaked-flags.html" style="color:inherit;text-decoration:underline;">someone shared their notes</a></span>
+  </div>
   <div id="profileRoot"></div>
 </div>
 <script src="../config.js"></script>
@@ -104,6 +109,8 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 <script src="../supabase-config.js"></script>
 <script src="../auth.js"></script>
 <script src="../profile.js"></script>
+<script src="interaction-guard.js"></script>
+<!-- diagnostics: index.html#access-cyber3 -->
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 
 <div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">

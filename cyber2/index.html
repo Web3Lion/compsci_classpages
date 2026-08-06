@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- NEMESIS hid a trail in plain sight. Curious minds check every file: ./fc004b2ae3.html -->
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -544,6 +543,62 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 <script src="../supabase-config.js"></script>
 <script src="../nemesis-intro.js"></script>
 <script src="../profile-link.js"></script>
+<script>
+(function(){
+  try { localStorage.setItem('__diag_cyber2', 'af307c1e58.html'); } catch(e){}
+})();
+</script>
+<script>
+(function(){
+  var course = "cyber2";
+  function loadSess(){ try { return JSON.parse(localStorage.getItem('ctf-sess-'+course)) || null; } catch(e){ return null; } }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  function tryHash(){
+    if (location.hash !== "#access-cyber2") return;
+    var sess = loadSess();
+    var overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;";
+    if (!sess){
+      overlay.innerHTML = '<div style="max-width:420px;background:var(--panel,#111);border:2px solid var(--accent,#ff4c00);border-radius:16px;padding:32px;text-align:center;font-family:JetBrains Mono,monospace;color:#eee;">' +
+        '<div style="font-size:11px;letter-spacing:2px;color:var(--accent,#ff4c00);margin-bottom:10px;">ACCESS FRAGMENT FOUND</div>' +
+        '<p style="font-size:13px;color:#ccc;">Sign in through the Capture The Flag arena first, then revisit this link to claim it.</p>' +
+        '<a href="ctf.html" style="display:inline-block;margin-top:10px;color:var(--accent,#ff4c00);">Go to arena \u2192</a></div>';
+      overlay.onclick = function(e){ if (e.target === overlay) overlay.remove(); };
+      document.body.appendChild(overlay);
+      return;
+    }
+    var FOUND_KEY = "uf16-found-" + course, XP = 250;
+    var already = false;
+    try { already = !!localStorage.getItem(FOUND_KEY); } catch(e){}
+    var dateStr = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    if (!already){
+      try { localStorage.setItem(FOUND_KEY, dateStr); } catch(e){}
+      try {
+        var state = JSON.parse(localStorage.getItem("ctf-"+course) || "{}");
+        state.solved = state.solved || {}; state.earned = state.earned || {};
+        if (!state.solved["ultimate-flag-16"]){
+          state.solved["ultimate-flag-16"] = true; state.earned["ultimate-flag-16"] = XP; state.bonus = (state.bonus||0)+XP;
+          state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: XP, reason: "Ultimate Flag 16 — Access Fragment" });
+          localStorage.setItem("ctf-"+course, JSON.stringify(state));
+          if (window.AUTH && typeof window.AUTH.rpc === "function"){
+            window.AUTH.rpc("ctf_flag_google", { p_student: sess.studentId, p_key:"ultimate-flag-16", p_challenge:"ultimate-flag-16",
+              p_title:"Ultimate Flag 16 — Access Fragment", p_level:"Ultimate", p_points: XP, p_secs:-1, p_retries:0, p_tainted:false, p_hint_used:false }).catch(function(){});
+          }
+        }
+      } catch(e){}
+    }
+    overlay.innerHTML = '<div style="max-width:440px;background:#fff;border:4px double var(--accent,#ff4c00);border-radius:6px;padding:36px;text-align:center;font-family:JetBrains Mono,monospace;color:#111;">' +
+      '<div style="font-size:11px;letter-spacing:3px;color:var(--accent,#ff4c00);margin-bottom:14px;">ULTIMATE FLAG 16 \u2014 ACCESS FRAGMENT' + (already?' (ALREADY CAPTURED)':' CAPTURED') + '</div>' +
+      '<div style="font-size:22px;margin:10px 0;">' + esc(sess.handle||"Agent") + '</div>' +
+      '<p style="font-size:12px;color:#444;">found the never-linked URL fragment that unlocks this page. +' + XP + ' XP' + (already?' (already banked)':'') + '.</p>' +
+      '<button id="ufCloseBtn" style="margin-top:14px;font-family:inherit;font-size:12px;font-weight:700;padding:9px 16px;border-radius:8px;border:1px solid #ccc;background:#f5f5f5;cursor:pointer;">Close</button></div>';
+    document.body.appendChild(overlay);
+    document.getElementById("ufCloseBtn").onclick = function(){ overlay.remove(); };
+  }
+  tryHash();
+  window.addEventListener("hashchange", tryHash);
+})();
+</script>
 
 <div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
   <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
@@ -556,6 +611,5 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 <script>console.log("%c\u2605 there's more here than a scoreboard. try the console... wait, you're already here. keep looking: ./f7e71d0032.html", "color:#7dd8ff;font-family:monospace;font-size:13px;");</script>
 
 <!-- ring fragment: onyx -->
-<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7" alt="diagnostic marker 0x8 — decode: Li9hOTRhNWQ2ZjlmLmh0bWw=" style="width:1px;height:1px;opacity:0;position:absolute;" aria-hidden="true">
 </body>
 </html>

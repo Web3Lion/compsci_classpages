@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="../image-slot.js"></script>
 <style>
 :root{--bg:#0a0e14;--panel:#0d1410;--panel2:#0d1a12;--panel3:#0f2318;--border:#1e3a2e;--border2:#17281f;--border3:#244d38;--border-hi:#2f5d44;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe3d8;--bright:#eafff2;--muted:#a9c4b6;--dim:#7fa896;--faint:#5c7a6b;--fainter:#3d5749;--accent:#39ff88;--accent2:#7dffb3;--amber:#ffcf5c;--via:rgba(57,255,136,.10);--trace:rgba(57,255,136,.035);}
 :root[data-theme="light"]{--bg:#e9efe9;--panel:#ffffff;--panel2:#f2f7f2;--panel3:#e8f6ee;--border:#cdddd2;--border2:#dde8e0;--border3:#b6d4c1;--border-hi:#8fbfa2;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#2b3a31;--bright:#0e1a13;--muted:#48594f;--dim:#5f7568;--faint:#839a8c;--fainter:#a6b8ac;--accent:#0f9d58;--accent2:#0b7e45;--amber:#9a7d16;--via:rgba(15,157,88,.16);--trace:rgba(15,157,88,.05);}
@@ -49,6 +50,23 @@ body,.card{transition:background-color .25s ease,border-color .25s ease,color .2
       display:inline-flex;align-items:center;min-height:44px;
     }
   }
+
+#cert{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #cert, #cert *{visibility:visible;}
+  #cert{display:block;position:fixed;inset:0;background:#fff;color:#111;padding:60px;}
+}
+#certOverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px;}
+.certBox{border:4px double #ff3b3b;border-radius:6px;padding:48px;text-align:center;font-family:'JetBrains Mono',monospace;position:relative;background:linear-gradient(165deg, color-mix(in oklch, #ff3b3b 8%, white) 0%, #ffffff 60%);max-width:560px;width:100%;}
+.certBox::before{content:'';position:absolute;inset:9px;border:1px solid color-mix(in oklch, #ff3b3b 30%, white);border-radius:2px;pointer-events:none;}
+.certBox .seal{width:60px;height:60px;margin:0 auto 18px;border-radius:50%;background:linear-gradient(135deg,#ff3b3b,#ff8080);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px -6px color-mix(in oklch, #ff3b3b 60%, transparent);}
+.certBox h2{font-size:12px;letter-spacing:4px;color:#ff3b3b;margin:0 0 6px;font-weight:700;}
+.certBox h1{font-size:26px;color:#111;margin:0 0 20px;font-family:'Inter',sans-serif;}
+.certBox .name{font-size:24px;margin:20px 0;border-bottom:2px solid #ff3b3b;display:inline-block;padding:0 30px 8px;color:#161616;font-family:'Inter',sans-serif;font-weight:600;}
+.certBox .meta{font-size:12px;color:#444;margin-top:24px;line-height:1.8;text-align:left;}
+.certBox .meta strong{color:#ff3b3b;}
+.certCloseBtn{margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:10px 18px;border-radius:8px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);cursor:pointer;}
 </style>
 </head>
 <body>
@@ -69,6 +87,23 @@ body,.card{transition:background-color .25s ease,border-color .25s ease,color .2
   </div>
 
   <div id="grid" class="grid"></div>
+<div id="certOverlay" style="display:none;">
+  <div id="cert">
+    <div class="certBox">
+      <div class="seal">★</div>
+      <h2>CYBER SECURITY 2 (AP) · ULTIMATE FLAG</h2>
+      <h1>Certificate of Ultimate Achievement</h1>
+      <p style="font-size:14px;color:#333;">This certifies that</p>
+      <div class="name" id="linkCertName">—</div>
+      <p style="font-size:13px;color:#333;">clicked the fake malicious-link headline on the News page — and lived to tell about it. Recognizing a manufactured, too-perfect story is exactly the instinct that stops real phishing.</p>
+      <div class="meta">
+        Class: <span id="linkCertClass">—</span><br>
+        Date found: <span id="linkCertDate">—</span><br>
+        XP awarded: <strong>250</strong> · Present this certificate to your teacher for the glory.
+      </div>
+    </div>
+  </div>
+</div>
 
   <div class="mono" style="margin-top: 34px; text-align: center; font-size: 11px; color: var(--fainter); line-height: 1.7;">Sources: The Hacker News · BleepingComputer · Krebs on Security · Dark Reading · SecurityWeek · The Record<br>Headlines are external links — always evaluate sources critically.</div>
 </div>
@@ -108,6 +143,16 @@ function needsRefresh(ts){
 
 var ALL_ITEMS=[];
 function cardHTML(it){
+  if(it.fake){
+    return '<div class="ncard" style="cursor:pointer;" onclick="claimLinkFlag()">'
+      + '<image-slot id="fakeNewsImg-cyber2" class="nimg" shape="rect" placeholder="Shocked student" src="'+FAKE_IMG+'" style="aspect-ratio:16/9;width:100%;display:block;"></image-slot>'
+      + '<div class="nbody">'
+      + '<span class="nsrc"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent);"></span>'+esc(it.source)+'</span>'
+      + '<div class="ntitle">'+esc(it.title)+'</div>'
+      + '<div class="ndesc">'+esc(it.desc)+'</div>'
+      + '<div class="nmeta">'+esc(it.ago)+'</div>'
+      + '</div></div>';
+  }
   var img=it.img
     ? '<img class="nimg" src="'+esc(it.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
     : '<div class="nimg ph"><div style="position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,var(--via),transparent 60%);"></div><span class="mono" style="position:relative;font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-.5px;text-align:center;padding:0 14px;line-height:1.2;">'+esc(it.source)+'</span></div>';
@@ -128,8 +173,20 @@ function applyFilter(){
   if(!items.length){ grid.innerHTML='<div class="mono" style="grid-column:1/-1;padding:34px;text-align:center;color:var(--dim);font-size:14px;">No headlines match your search.</div>'; return; }
   grid.innerHTML = items.map(cardHTML).join('');
 }
+var FAKE_IMGS = [
+  "../uploads/Gemini_Generated_Image_ipdh8cipdh8cipdh.png",
+  "../uploads/news-img-1.png",
+  "../uploads/news-img-2.png",
+  "../uploads/news-img-3.png",
+  "../uploads/news-img-4.png"
+];
+var FAKE_IMG = FAKE_IMGS[Math.floor(Math.random()*FAKE_IMGS.length)];
+var FAKE_ITEM = { fake:true, source:"Campus Wire", title:"Student clicks malicious link and loses points! Can a malicious link influence your grade?", desc:"A student's leaderboard score dropped sharply right after clicking an unfamiliar link during class. Teachers say the timing isn't a coincidence.", ago:"" };
 function render(items){
-  ALL_ITEMS = items||[];
+  var real = items||[];
+  var rem = real.length>=2 ? ((real.length-2)%3+3)%3 : 0;
+  var trimmed = real.slice(0, real.length-rem);
+  ALL_ITEMS = trimmed;
   var grid=document.getElementById('grid');
   if(!ALL_ITEMS.length){ document.getElementById('status').innerHTML='Could not load headlines right now. Try again later.'; grid.innerHTML=''; return; }
   applyFilter();
@@ -174,11 +231,19 @@ function normalize(feedName, data){
 
 async function fetchAll(){
   const results=await Promise.all(FEEDS.map(function(f){
-    var api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url);
+    var api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url)+'&api_key=fpenknek5crbtruopb3o1g5picx5ohkywwlerbn1';
     return fetch(api).then(function(r){return r.json();}).then(function(j){ return normalize(f.name,j); }).catch(function(){ return []; });
   }));
   var all=[].concat.apply([],results);
-  all.sort(function(a,b){ return new Date(b.pub)-new Date(a.pub); });
+  var RELEVANCE_KEYWORDS = ["vulnerability","exploit","zero-day","cve","penetration test","incident response","malware","ransomware","breach","patch","network security","encryption","threat actor","soc","forensics","credential"];
+  function relevanceScore(it){
+    var t=((it.title||'')+' '+(it.desc||'')).toLowerCase();
+    var s=0;
+    for(var i=0;i<RELEVANCE_KEYWORDS.length;i++){ if(t.indexOf(RELEVANCE_KEYWORDS[i])>-1) s++; }
+    return s;
+  }
+  all.forEach(function(it){ it.rel = relevanceScore(it); });
+  all.sort(function(a,b){ if(b.rel!==a.rel) return b.rel-a.rel; return new Date(b.pub)-new Date(a.pub); });
   return all;
 }
 
@@ -218,5 +283,50 @@ load();
   </a>
   <span style="font-size:13px;color:#7f9cb8;font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
 </div>
+
+<script>
+(function(){
+  var course = "cyber2";
+  var SESS_KEY = "ctf-sess-" + course;
+  var FOUND_KEY = "linkflag-found-" + course;
+  function loadSess(){ try { return JSON.parse(localStorage.getItem(SESS_KEY)) || null; } catch(e){ return null; } }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  window.claimLinkFlag = function(){
+    var sess = loadSess();
+    if (!sess){
+      alert("Sign in through the Capture The Flag arena first, then click this article again to claim the flag.");
+      return;
+    }
+    var already = false;
+    try { already = !!localStorage.getItem(FOUND_KEY); } catch(e){}
+    var today = new Date();
+    var dateStr = today.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+    if (!already){
+      try { localStorage.setItem(FOUND_KEY, dateStr); } catch(e){}
+      try {
+        var STATE_KEY = "ctf-" + course;
+        var state = JSON.parse(localStorage.getItem(STATE_KEY) || "{}");
+        state.solved = state.solved || {};
+        state.earned = state.earned || {};
+        if (!state.solved["ultimate-flag-link"]){
+          state.solved["ultimate-flag-link"] = true;
+          state.earned["ultimate-flag-link"] = 250;
+          state.bonus = (state.bonus || 0) + 250;
+          state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: 250, reason: "Ultimate Flag 10 — Malicious Link Bait" });
+          localStorage.setItem(STATE_KEY, JSON.stringify(state));
+        }
+      } catch(e){}
+    }
+    var foundDate = already ? (localStorage.getItem(FOUND_KEY) || dateStr) : dateStr;
+    document.getElementById("linkCertName").textContent = sess.handle || "Agent";
+    document.getElementById("linkCertClass").textContent = sess.className || "\u2014";
+    document.getElementById("linkCertDate").textContent = foundDate;
+    document.getElementById("certOverlay").style.display = "flex";
+  };
+  document.addEventListener("click", function(e){
+    if (e.target && e.target.id === "certOverlay") document.getElementById("certOverlay").style.display = "none";
+  });
+})();
+</script>
 </body>
 </html>

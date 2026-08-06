@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Are You a Target? — Cyber Security 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#ff4c00;--accent2:#ff7a3d;}
+:root[data-theme="light"]{--bg:#f3f4f6;--panel:#ffffff;--panel2:#f7f8fa;--panel3:#eef0f3;--border:#d7dbe2;--border2:#e5e8ed;--border3:#c3c9d4;--border-hi:#a7b0c0;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#ff4c00;--accent2:#ff7a3d;}
+*{box-sizing:border-box;}
+body{margin:0;padding:40px 16px 80px;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);}
+a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:620px;margin:0 auto;}
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--accent);border:1px solid var(--border3);background:var(--panel2);border-radius:999px;padding:6px 14px;margin-bottom:16px;}
+h1{font-size:26px;margin:0 0 10px;color:var(--bright);letter-spacing:-.3px;}
+.lede{font-size:14.5px;line-height:1.7;color:var(--muted);margin:0 0 28px;}
+.card{border:1px solid var(--border3);border-radius:14px;background:var(--panel);padding:26px 24px;margin-bottom:18px;}
+label.field{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--dim);margin-bottom:8px;}
+input[type=text], textarea{width:100%;font-family:'Inter',sans-serif;font-size:14.5px;padding:12px 14px;border-radius:9px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);margin-bottom:16px;}
+textarea{resize:vertical;min-height:70px;line-height:1.5;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.q{margin-bottom:26px;}
+.q:last-child{margin-bottom:0;}
+.qtext{font-size:15px;font-weight:600;color:var(--bright);margin-bottom:12px;line-height:1.5;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--border2);border-radius:9px;background:var(--bg);cursor:pointer;font-size:14px;}
+.opt:hover{border-color:var(--border-hi);}
+.opt.sel{border-color:var(--accent);background:color-mix(in oklch, var(--accent) 10%, var(--bg));}
+.opt input{accent-color:var(--accent);}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.5px;padding:14px 22px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#1a0800;cursor:pointer;width:100%;}
+.btn:hover{background:var(--accent2);border-color:var(--accent2);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.err{font-size:12.5px;color:var(--accent);margin-top:-8px;margin-bottom:14px;min-height:16px;}
+.hint{margin-top:14px;font-size:11.5px;color:var(--faint);line-height:1.6;text-align:center;}
+.done h1{margin-bottom:14px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel2);color:var(--dim);cursor:pointer;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div class="badge">DAY 1 · WARM-UP</div>
+  <h1>Are You a Target?</h1>
+  <p class="lede">Before we open the course, answer honestly. There's no wrong answer, no grade attached, and no flag to capture — just your teacher reading these to kick off the first discussion.</p>
+  <div id="app"></div>
+</div>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'\u25d0 DARK':'\u25d1 LIGHT';}window.__toggleTheme=function(){var cur=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',cur);try{localStorage.setItem(K,cur);}catch(e){}lbl();};lbl();})();</script>
+<script src="../supabase-config.js"></script>
+<script src="../auth.js"></script>
+<script>
+var course = "cyber1";
+var LOCAL_KEY = "target-warmup-" + course;
+var app = document.getElementById("app");
+
+var QUESTIONS = [
+  { id: "target", text: "Do you think people your age are actually targets for cyberattacks, or is that just a problem for big companies and governments?",
+    type: "choice", options: ["Yes — anyone can be a target, including me", "Only big organizations get targeted", "Not sure"] },
+  { id: "accounts", text: "Roughly how many online accounts do you have that hold personal information (email, social media, gaming, school, banking apps, etc.)?",
+    type: "choice", options: ["0–3", "4–9", "10 or more", "No idea"] },
+  { id: "happened", text: "Has anything of yours — an account, a device, a game, a friend's DMs — ever been hacked, scammed, or leaked?",
+    type: "choice", options: ["Yes", "No", "Not sure / maybe"] },
+  { id: "worst", text: "If someone got into your main email account right now, what's the worst thing they could do with it?",
+    type: "text" },
+  { id: "habit", text: "Be honest — when you get a link or message that looks a little off, what do you actually do?",
+    type: "text" }
+];
+
+var picks = {};
+
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+function render(){
+  var qHtml = QUESTIONS.map(function(q, qi){
+    if (q.type === "choice") {
+      var opts = q.options.map(function(o, oi){
+        var id = "opt_" + qi + "_" + oi;
+        var sel = picks[q.id] === o;
+        return '<label class="opt' + (sel ? ' sel' : '') + '" for="' + id + '">' +
+          '<input type="radio" name="q' + qi + '" id="' + id + '" value="' + oi + '"' + (sel ? ' checked' : '') + '>' +
+          '<span>' + esc(o) + '</span></label>';
+      }).join("");
+      return '<div class="q"><div class="qtext">' + esc(q.text) + '</div><div class="opts">' + opts + '</div></div>';
+    }
+    return '<div class="q"><div class="qtext">' + esc(q.text) + '</div><textarea data-qid="' + q.id + '" placeholder="Type your answer...">' + esc(picks[q.id] || "") + '</textarea></div>';
+  }).join("");
+
+  app.innerHTML =
+    '<div class="card">' +
+      '<label class="field">YOUR NAME</label>' +
+      '<div class="row2">' +
+        '<input type="text" id="firstInput" placeholder="First name" value="' + esc(picks._first || "") + '">' +
+        '<input type="text" id="lastInput" placeholder="Last name" value="' + esc(picks._last || "") + '">' +
+      '</div>' +
+      '<label class="field">CLASS PERIOD</label>' +
+      '<input type="text" id="periodInput" placeholder="Class period" value="' + esc(picks._period || "") + '">' +
+    '</div>' +
+    '<div class="card">' + qHtml + '</div>' +
+    '<div class="err" id="errMsg"></div>' +
+    '<button class="btn" id="submitBtn">SUBMIT</button>' +
+    '<div class="hint">Your teacher reviews these before or during class — nothing here is scored.</div>';
+
+  document.getElementById("firstInput").addEventListener("input", function(e){ picks._first = e.target.value; });
+  document.getElementById("lastInput").addEventListener("input", function(e){ picks._last = e.target.value; });
+  document.getElementById("periodInput").addEventListener("input", function(e){ picks._period = e.target.value; });
+  QUESTIONS.forEach(function(q, qi){
+    if (q.type === "choice") {
+      app.querySelectorAll('input[name="q' + qi + '"]').forEach(function(inp){
+        inp.addEventListener("change", function(){
+          picks[q.id] = q.options[+inp.value];
+          render();
+        });
+      });
+    } else {
+      var ta = app.querySelector('textarea[data-qid="' + q.id + '"]');
+      ta.addEventListener("input", function(e){ picks[q.id] = e.target.value; });
+    }
+  });
+  document.getElementById("submitBtn").addEventListener("click", submit);
+}
+
+function submit(){
+  var errEl = document.getElementById("errMsg");
+  errEl.textContent = "";
+  var first = (picks._first || "").trim();
+  var last = (picks._last || "").trim();
+  var name = (first + " " + last).trim();
+  if (!first || !last) { errEl.textContent = "Enter your first and last name so your teacher knows whose answers these are."; return; }
+  var missing = QUESTIONS.some(function(q){ return !picks[q.id] || !String(picks[q.id]).trim(); });
+  if (missing) { errEl.textContent = "Answer every question before submitting."; return; }
+
+  var answers = {};
+  QUESTIONS.forEach(function(q){ answers[q.id] = picks[q.id]; });
+  var record = { name: name, period: (picks._period || "").trim(), answers: answers, ts: Date.now() };
+
+  try {
+    var all = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+    all.push(record);
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(all));
+  } catch(e) {}
+
+  try {
+    if (window.CTF_AUTH && typeof window.CTF_AUTH.rpc === "function") {
+      window.CTF_AUTH.rpc("ctf_target_warmup_submit", {
+        p_course: course, p_name: name, p_period: record.period, p_answers: answers
+      }).catch(function(){});
+    }
+  } catch(e) {}
+
+  app.innerHTML = '<div class="card done"><h1>Thanks, ' + esc(name) + '.</h1>' +
+    '<p class="lede" style="margin-bottom:0;">Your answers are recorded. Hang onto that gut feeling — over the next few weeks we\'ll see how close it was.</p></div>';
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incident Report — Cyber Security 2 (AP)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#140a0a;--panel:#1c0f0f;--panel2:#211212;--panel3:#2b1616;--border:#4a1e1e;--border2:#361616;--border3:#5e2424;--border-hi:#7c2f2f;--text:#f0d8d8;--bright:#fff0f0;--muted:#cd9c9c;--dim:#ac7a7a;--faint:#8c5c5c;--accent:#ff3b3b;--accent2:#ff8080;}
+:root[data-theme="light"]{--bg:#fbeaea;--panel:#ffffff;--panel2:#fdf2f2;--panel3:#fbe0e0;--border:#e6b3b3;--border2:#f0d0d0;--border3:#d47878;--border-hi:#b84a4a;--text:#3a1414;--bright:#1f0606;--muted:#6b2e2e;--dim:#8a4040;--faint:#a35f5f;--accent:#c22a2a;--accent2:#7d1414;}
+*{box-sizing:border-box;}
+#rain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;}
+.wrap{position:relative;z-index:1;max-width:560px;width:100%;padding:24px;}
+body{margin:0;padding:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);}
+.card{border:2px solid var(--accent);border-radius:20px;background:linear-gradient(160deg,var(--panel3) 0%,var(--panel) 100%);padding:52px 36px;text-align:center;position:relative;overflow:hidden;box-shadow:0 0 0 6px color-mix(in oklch, var(--accent) 10%, transparent), 0 30px 80px -20px color-mix(in oklch, var(--accent) 40%, transparent);}
+.badge{display:inline-block;font-size:11px;letter-spacing:2px;color:var(--accent);border:1px solid var(--border3);background:var(--panel2);border-radius:999px;padding:6px 14px;margin-bottom:18px;}
+h1{font-size:26px;margin:0 0 12px;color:var(--bright);font-family:'JetBrains Mono',monospace;}
+.xpBadge{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:15px;letter-spacing:1px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:999px;padding:10px 20px;margin-bottom:20px;}
+p{font-size:14px;line-height:1.6;color:var(--muted);margin:0 0 22px;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.5px;padding:13px 22px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);cursor:pointer;text-decoration:none;display:inline-block;}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.hint{margin-top:16px;font-size:11px;color:var(--faint);}
+#cert{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #cert, #cert *{visibility:visible;}
+  #cert{display:block;position:fixed;inset:0;background:#fff;color:#111;padding:60px;}
+}
+.certBox{border:4px double #c22a2a;border-radius:6px;padding:48px;text-align:center;font-family:'JetBrains Mono',monospace;position:relative;overflow:hidden;background:linear-gradient(165deg,#fff5f5 0%,#ffffff 60%);}
+.certBox::before{content:'';position:absolute;inset:9px;border:1px solid #e8b4b4;border-radius:2px;pointer-events:none;}
+.certBox .stamp{position:absolute;top:32px;right:-40px;background:#c22a2a;color:#fff;font-size:11px;font-weight:800;letter-spacing:2px;padding:6px 44px;transform:rotate(35deg);box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.certBox .seal{width:60px;height:60px;margin:0 auto 18px;border-radius:50%;background:linear-gradient(135deg,#c22a2a,#7d1414);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px -6px rgba(194,42,42,.5);}
+.certBox h2{font-size:12px;letter-spacing:4px;color:#c22a2a;margin:0 0 6px;font-weight:700;}
+.certBox h1{font-size:28px;color:#111;margin:0 0 8px;font-family:'Inter',sans-serif;}
+.certBox .name{font-size:26px;margin:24px 0;border-bottom:2px solid #c22a2a;display:inline-block;padding:0 30px 8px;color:#161616;font-family:'Inter',sans-serif;font-weight:600;}
+.certBox .meta{font-size:12px;color:#444;margin-top:30px;line-height:1.8;}
+.certBox .meta strong{color:#c22a2a;}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+<script>
+(function(){
+  var c = document.getElementById('rain'), ctx = c.getContext('2d');
+  var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff3b3b';
+  var fontSize = 18, cols, drops;
+  function resize(){ c.width = window.innerWidth; c.height = window.innerHeight; cols = Math.floor(c.width / fontSize); drops = new Array(cols).fill(0).map(function(){ return Math.random() * -50; }); }
+  window.addEventListener('resize', resize); resize();
+  var chars = ['H','A'];
+  function draw(){
+    ctx.fillStyle = 'rgba(0,0,0,0.07)'; ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle = accent; ctx.font = '800 ' + fontSize + 'px "JetBrains Mono",monospace';
+    for (var i=0;i<drops.length;i++){ var ch = chars[Math.floor(Math.random()*chars.length)]; ctx.fillText(ch, i*fontSize, drops[i]*fontSize); if (drops[i]*fontSize > c.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; }
+  }
+  setInterval(draw, 55);
+})();
+</script>
+<script src="../supabase-config.js"></script>
+<script src="../auth.js"></script>
+<div class="wrap" id="app"></div>
+
+<div id="cert">
+  <div class="certBox">
+    <div class="stamp">FLAGGED</div>
+    <div class="seal">⚠</div>
+    <h2>CYBER SECURITY 2 (AP) · HONEYPOT INCIDENT REPORT</h2>
+    <h1 id="certTitle">Certificate of a Learning Moment</h1>
+    <p>This certifies that</p>
+    <div class="name" id="certName">—</div>
+    <p id="certLure">—</p>
+    <div class="meta">
+      Class: <span id="certClass">—</span><br>
+      Date triggered: <span id="certDate">—</span><br>
+      XP deducted: <strong>−25</strong><br><br>
+      Present this to your teacher — they can review it and re-award the XP at their discretion.
+    </div>
+  </div>
+</div>
+
+<script>
+var course = "cyber2";
+var SESS_KEY = "ctf-sess-" + course;
+var TRAPS = {"adminlogin":{"title":"Staff Portal Login","lure":"tried logging into a fake staff/admin portal linked from the site's main page.","lesson":"Real credentials aren't guessed, brute-forced, or typed into a random login box — and a genuine staff portal for a class site would never be linked from the public homepage in the first place."},"console":{"title":"Console Command Bait","lure":"ran a function it found suggested in the browser console without knowing what it actually did.","lesson":"Real analysts read code before executing it — especially code they didn't write, sitting in a console message baiting them to run it."},"mastercode":{"title":"Master Flag Code","lure":"tried redeeming a ‘master code’ that supposedly unlocks every flag at once.","lesson":"There's no such thing as a master code. No real access-control system has a single string that unlocks everything — and wanting one is exactly the instinct social engineers exploit. This is the kind of shortcut academic-integrity policy exists to catch — trying to get answers without doing the work undermines the point of the class, not just the score."},"extension":{"title":"Auto-Solve Helper","lure":"almost installed a tool that promised to auto-solve every challenge.","lesson":"Downloading and running software from an unverified prompt — even one that claims to help — is exactly how real malware spreads. This is the kind of shortcut academic-integrity policy exists to catch — trying to get answers without doing the work undermines the point of the class, not just the score."},"leak":{"title":"Leaked Answers","lure":"found a page of supposedly leaked flag answers and tried to use them.","lesson":"Real leaked credentials or answers are almost always poisoned, outdated, or bait. Trusting an anonymous leak instead of doing the work is a real-world security mistake, not just a classroom one. This is the kind of shortcut academic-integrity policy exists to catch — trying to get answers without doing the work undermines the point of the class, not just the score."},"debugreveal":{"title":"Debug Reveal-All Button","lure":"clicked a ‘DEBUG: reveal all answers’ button left sitting in the arena.","lesson":"Legitimate systems don't leave admin shortcuts sitting in the open for anyone to click. A tempting debug button in production is itself a red flag. This is the kind of shortcut academic-integrity policy exists to catch — trying to get answers without doing the work undermines the point of the class, not just the score."}};
+var trapId = new URLSearchParams(location.search).get("trap") || "adminlogin";
+var trap = TRAPS[trapId] || TRAPS.adminlogin;
+var FOUND_KEY = "honeypot-" + trapId + "-" + course;
+function loadSess(){ try { return JSON.parse(localStorage.getItem(SESS_KEY)) || null; } catch(e){ return null; } }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+var sess = loadSess();
+var app = document.getElementById("app");
+
+if (!sess) {
+  app.innerHTML =
+    '<div class="card">' +
+    '<div class="badge">⛔ ACCESS DENIED</div>' +
+    '<h1>This page belongs to Cyber Security 2 (AP).</h1>' +
+    '<p>You\'re not signed in to this class\'s Capture The Flag arena, so there\'s nothing here for you. If this is your class, sign in through its arena first.</p>' +
+    '<a class="btn primary" href="ctf.html">Go to Cyber Security 2 (AP) arena \u2192</a>' +
+    '</div>';
+} else {
+  var already = false;
+  try { already = !!localStorage.getItem(FOUND_KEY); } catch(e){}
+  var today = new Date();
+  var dateStr = today.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+
+  if (!already) {
+    try { localStorage.setItem(FOUND_KEY, dateStr); } catch(e){}
+    try {
+      var STATE_KEY = "ctf-" + course;
+      var state = JSON.parse(localStorage.getItem(STATE_KEY) || "{}");
+      state.bonus = (state.bonus || 0) - 25;
+      state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: -25, reason: "Honeypot: " + trap.title });
+      localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    } catch(e){}
+    try {
+      if (window.AUTH && typeof window.AUTH.rpc === "function") {
+        window.AUTH.rpc("ctf_cheat_google", {
+          p_student: sess.studentId, p_kind: "honeypot-" + trapId,
+          p_detail: "Triggered the " + trap.title + " honeypot. \u221225 XP applied.",
+          p_flag: "honeypot-" + trapId
+        }).catch(function(){});
+      }
+    } catch(e){}
+  }
+
+  app.innerHTML =
+    '<div class="card">' +
+    '<div class="badge">⚠ HONEYPOT TRIGGERED — ' + esc(trap.title.toUpperCase()) + '</div>' +
+    '<div style="display:inline-grid;grid-template-columns:repeat(8,7px);grid-template-rows:repeat(5,7px);gap:1px;margin-bottom:16px;padding:8px;background:rgba(0,0,0,.25);border-radius:6px;"><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:#fff;"></i><i style="display:block;width:7px;height:7px;background:#fff;"></i><i style="display:block;width:7px;height:7px;background:#fff;"></i><i style="display:block;width:7px;height:7px;background:#fff;"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:var(--accent);"></i><i style="display:block;width:7px;height:7px;background:transparent;"></i></div>' +
+    '<h1>Gotcha, ' + esc(sess.handle || "agent") + '.</h1>' +
+    '<div class="xpBadge">−25 XP' + (already ? ' (already applied)' : '') + '</div>' +
+    '<p>You ' + esc(trap.lure) + '</p>' +
+    '<p style="font-size:12.5px;">' + esc(trap.lesson) + '</p>' +
+    '<button class="btn primary" id="printBtn">Print Incident Report</button>' +
+    '<div class="hint">Class: ' + esc(sess.className || '—') + ' · Triggered: ' + esc(already ? (localStorage.getItem(FOUND_KEY) || dateStr) : dateStr) + '</div>' +
+    '</div>';
+
+  document.getElementById("certTitle").textContent = "Certificate — " + trap.title;
+  document.getElementById("certName").textContent = sess.handle || "Agent";
+  document.getElementById("certLure").textContent = "you " + trap.lure;
+  document.getElementById("certClass").textContent = sess.className || "—";
+  document.getElementById("certDate").textContent = already ? (localStorage.getItem(FOUND_KEY) || dateStr) : dateStr;
+  document.getElementById("printBtn").onclick = function(){ window.print(); };
+}
+</script>
+</body>
+</html>

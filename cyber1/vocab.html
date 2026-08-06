@@ -194,6 +194,10 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="card">
     <div class="label mono">// SELECT MODULE(S)</div>
     <div class="chips" id="chips"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+      <button type="button" id="addToggle" class="chip" style="border-color:var(--amber-bd);">+ INCLUDE ADDITIONAL TERMS</button>
+      <span class="mono" style="font-size:11px;color:var(--faint);line-height:1.4;">Official unit vocabulary is shown by default. Additional terms are extra context kept from the prior term set.</span>
+    </div>
     <div class="count mono" id="count"></div>
     <div class="pdfbar">
       <span class="mono" style="font-size:11px;color:var(--faint);letter-spacing:1px;">DOWNLOAD GLOSSARY (PDF)</span>
@@ -235,8 +239,9 @@ const $ = s => document.querySelector(s);
 const panel = $("#panel");
 let selected = new Set(Object.keys(MODULES).map(Number));
 let mode = "cards";
+let includeAdditional = false;
 const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
-const pool = () => VOCAB.filter(v => selected.has(v.m));
+const pool = () => VOCAB.filter(v => selected.has(v.m) && (includeAdditional || !v.add));
 /* modules a finished game drew its terms from — drives the practice-XP award */
 const modsOf = items => [...new Set((items||[]).map(v => v.m))];
 const xpBlock = (game, items, acc) => {
@@ -261,8 +266,14 @@ function renderChips(){
   });
   html += `</div>`;
   c.innerHTML = html;
-  $("#count").textContent = `// ${pool().length} terms across ${selected.size} module${selected.size===1?'':'s'} selected`;
+  $("#count").textContent = `// ${pool().length} terms across ${selected.size} unit${selected.size===1?'':'s'} selected${includeAdditional?'':' · '+VOCAB.filter(v=>selected.has(v.m)&&v.add).length+' additional hidden'}`;
 }
+$("#addToggle").addEventListener("click", () => {
+  includeAdditional = !includeAdditional;
+  $("#addToggle").classList.toggle("on", includeAdditional);
+  $("#addToggle").textContent = includeAdditional ? "✓ ADDITIONAL TERMS INCLUDED" : "+ INCLUDE ADDITIONAL TERMS";
+  renderChips(); render();
+});
 $("#chips").addEventListener("click", e => {
   const el = e.target.closest(".chip"); if(!el) return;
   if(el.dataset.all){
