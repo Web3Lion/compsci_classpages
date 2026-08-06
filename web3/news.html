@@ -174,11 +174,19 @@ function normalize(feedName, data){
 
 async function fetchAll(){
   const results=await Promise.all(FEEDS.map(function(f){
-    var api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url);
+    var api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url)+'&api_key=fpenknek5crbtruopb3o1g5picx5ohkywwlerbn1';
     return fetch(api).then(function(r){return r.json();}).then(function(j){ return normalize(f.name,j); }).catch(function(){ return []; });
   }));
   var all=[].concat.apply([],results);
-  all.sort(function(a,b){ return new Date(b.pub)-new Date(a.pub); });
+  var RELEVANCE_KEYWORDS = ["bitcoin","ethereum","blockchain","crypto","defi","nft","smart contract","stablecoin","web3","token","mining","wallet","regulation","sec"];
+  function relevanceScore(it){
+    var t=((it.title||'')+' '+(it.desc||'')).toLowerCase();
+    var s=0;
+    for(var i=0;i<RELEVANCE_KEYWORDS.length;i++){ if(t.indexOf(RELEVANCE_KEYWORDS[i])>-1) s++; }
+    return s;
+  }
+  all.forEach(function(it){ it.rel = relevanceScore(it); });
+  all.sort(function(a,b){ if(b.rel!==a.rel) return b.rel-a.rel; return new Date(b.pub)-new Date(a.pub); });
   return all;
 }
 
