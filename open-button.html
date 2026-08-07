@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;background:#0a0e14;display:flex;align-items:center;justify-content:center;}
+a.btn{
+  font-family:'JetBrains Mono',monospace;
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:16px;font-weight:800;letter-spacing:.5px;
+  padding:16px 26px;border-radius:12px;
+  background:linear-gradient(160deg, color-mix(in oklch, var(--ac,#00b3ff) 18%, #121a26) 0%, #0e141d 100%);
+  border:1px solid var(--ac,#00b3ff);
+  color:#eef4ff;text-decoration:none;
+  box-shadow:0 14px 34px -18px var(--ac,#00b3ff);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+a.btn:hover{transform:translateY(-2px);box-shadow:0 20px 46px -18px var(--ac,#00b3ff);}
+a.btn svg{flex:none;}
+</style>
+</head>
+<body>
+<a class="btn" id="goBtn" target="_blank" rel="noopener">
+  <span id="label">Open Course</span>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</a>
+<script>
+// Configure via query string: ?to=cyber1/index.html&label=Cyber%20Security%201&color=%2300b3ff
+var params = new URLSearchParams(location.search.replace(/\+/g,'%20'));
+var to = params.get('to') || 'index.html';
+var label = (params.get('label') || 'Open Course').replace(/\+/g,' ');
+var color = params.get('color') || '#00b3ff';
+if(color.charAt(0)!=='#') color = '#'+color;
+document.getElementById('goBtn').href = to;
+document.getElementById('label').textContent = label;
+document.documentElement.style.setProperty('--ac', color);
+</script>
+</body>
+</html>
