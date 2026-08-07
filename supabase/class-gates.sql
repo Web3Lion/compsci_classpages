@@ -18,6 +18,7 @@ alter table classes add column if not exists locked_modules int[]  not null defa
 alter table classes add column if not exists locked_flags   text[] not null default '{}';
 alter table classes add column if not exists persona_on     boolean not null default false;
 alter table classes add column if not exists answer_key_on  boolean not null default false;
+alter table classes add column if not exists ultimate_flags_on boolean not null default true;
 
 -- ---- students read their own class's gates ----------------------------------
 create or replace function ctf_gates(p_class uuid)
@@ -30,6 +31,7 @@ begin
     'locked_modules', coalesce(locked_modules,'{}'),
     'locked_flags',   coalesce(locked_flags,'{}'),
     'persona_on',     persona_on,
+    'ultimate_flags_on', ultimate_flags_on,
     'frozen_dates',   coalesce(frozen_dates,'{}')
   ) into v from classes where id = p_class;
   return coalesce(v, json_build_object('error','no_class'));
@@ -38,15 +40,16 @@ end $$;
 -- ---- teacher writes them ----------------------------------------------------
 create or replace function ctf_t_set_gates(
   p_class uuid, p_locked_modules int[], p_locked_flags text[],
-  p_persona boolean, p_answer_key boolean
+  p_persona boolean, p_answer_key boolean, p_ultimate_flags boolean default null
 ) returns json language plpgsql security definer set search_path = public as $$
 begin
   if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
   update classes set
-    locked_modules = coalesce(p_locked_modules,'{}'),
-    locked_flags   = coalesce(p_locked_flags,'{}'),
-    persona_on     = coalesce(p_persona, persona_on),
-    answer_key_on  = coalesce(p_answer_key, answer_key_on)
+    locked_modules   = coalesce(p_locked_modules,'{}'),
+    locked_flags     = coalesce(p_locked_flags,'{}'),
+    persona_on       = coalesce(p_persona, persona_on),
+    answer_key_on    = coalesce(p_answer_key, answer_key_on),
+    ultimate_flags_on = coalesce(p_ultimate_flags, ultimate_flags_on)
   where id = p_class;
   return json_build_object('ok', true);
 end $$;
@@ -62,6 +65,7 @@ begin
     'locked_flags',   coalesce(locked_flags,'{}'),
     'persona_on',     persona_on,
     'answer_key_on',  answer_key_on,
+    'ultimate_flags_on', ultimate_flags_on,
     'course',         course,
     'name',           name
   ) into v from classes where id = p_class;
@@ -77,7 +81,7 @@ begin
     select c.id, c.course, c.name, c.code, c.frozen_dates, c.created_at,
            coalesce(c.locked_modules,'{}') as locked_modules,
            coalesce(c.locked_flags,'{}')   as locked_flags,
-           c.persona_on, c.answer_key_on,
+           c.persona_on, c.answer_key_on, c.ultimate_flags_on,
            (select count(*) from students s where s.class_id = c.id) as student_count
     from classes c
   ) t), '[]'::json);
@@ -88,7 +92,7 @@ declare f text;
 begin
   foreach f in array array[
     'ctf_gates(uuid)',
-    'ctf_t_set_gates(uuid,int[],text[],boolean,boolean)',
+    'ctf_t_set_gates(uuid,int[],text[],boolean,boolean,boolean)',
     'ctf_t_gates(uuid)'
   ] loop
     execute format('revoke all on function %s from public, anon', f);
