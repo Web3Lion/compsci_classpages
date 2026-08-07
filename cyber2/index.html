@@ -4,7 +4,7 @@
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AP Cyber Security 2 — Course Home</title>
+<title>AP Cybersecurity 2 — Course Home</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -79,7 +79,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     <div style="position: absolute; inset: 0; opacity: 0.06; background-image: repeating-linear-gradient(0deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 4px); pointer-events: none;"></div>
     <div style="position: relative; z-index: 1;">
       <div class="mono" style="font-size: 13px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px;">&gt; ./welcome --course=cybersec-2 --level=AP</div>
-      <h1 class="mono" style="font-weight: 800; font-size: 52px; line-height: 1.05; margin: 0 0 16px; color: var(--bright); letter-spacing: -1px;">Cyber Security 2<span style="display: inline-block; width: 16px; height: 46px; background: var(--accent); margin-left: 10px; vertical-align: middle; animation: blink 1.1s step-end infinite;"></span></h1>
+      <h1 class="mono" style="font-weight: 800; font-size: 52px; line-height: 1.05; margin: 0 0 16px; color: var(--bright); letter-spacing: -1px;">Cybersecurity 2<span style="display: inline-block; width: 16px; height: 46px; background: var(--accent); margin-left: 10px; vertical-align: middle; animation: blink 1.1s step-end infinite;"></span></h1>
       <p style="font-size: 18px; line-height: 1.6; max-width: 640px; margin: 0 0 24px; color: var(--muted);">Break it to understand it. Learn how systems get compromised — and how to defend them. This is an advanced, college-level course: think like an attacker, defend like a pro.</p>
       <div style="display: flex; gap: 12px; flex-wrap: wrap;">
         <span class="badge" style="border: 1px solid var(--border); background: var(--panel2); color: var(--accent);">STATUS: ENROLLED</span>
@@ -96,7 +96,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
             <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px;">// INSTRUCTOR</div>
             <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
               <div class="mono" style="width: 54px; height: 54px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--accent);">MR</div>
-              <div><div style="font-weight: 700; font-size: 20px; color: var(--bright);">Mr. Reasey</div><div style="font-size: 13px; color: var(--dim);">AP Cyber Security Instructor</div></div>
+              <div><div style="font-weight: 700; font-size: 20px; color: var(--bright);">Mr. Reasey</div><div style="font-size: 13px; color: var(--dim);">AP Cybersecurity Instructor</div></div>
             </div>
             <div class="mono" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
               <div style="display: flex; flex-direction: column; gap: 3px;"><span style="color: var(--faint); font-size: 11px;">EMAIL</span><span style="color: var(--accent); word-break: break-all;">rnreasey@southfayette.org</span></div>
@@ -207,7 +207,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
       </div>
 
       
-      <div class="card" style="border-color:var(--accent);background:linear-gradient(160deg, color-mix(in oklch, var(--accent) 10%, var(--panel3)) 0%, var(--panel) 100%);">
+      <div id="ufCard" class="card" style="border-color:var(--accent);background:linear-gradient(160deg, color-mix(in oklch, var(--accent) 10%, var(--panel3)) 0%, var(--panel) 100%);">
         <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 12px;">★ // ULTIMATE FLAGS</div>
         <p style="margin:0 0 10px;font-size:13px;line-height:1.6;color:var(--text);">Scattered outside the arena are rare, hidden flags worth <strong>250 XP</strong> each — not listed in any module. Some hide in places developers look. Some hide in files nobody reads. Some only appear at strange hours. One requires exploring more than one course.</p>
         <p style="margin:0;font-size:12px;line-height:1.6;color:var(--dim);">Find one? A certificate prints itself. Bring it to your teacher for the glory.</p>
@@ -611,5 +611,13 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 <script>console.log("%c\u2605 there's more here than a scoreboard. try the console... wait, you're already here. keep looking: ./f7e71d0032.html", "color:#7dd8ff;font-family:monospace;font-size:13px;");</script>
 
 <!-- ring fragment: onyx -->
+<script>
+(function(){
+  try{
+    var g=JSON.parse(localStorage.getItem('ctf-gates-cyber2'));
+    if(g && g.ultimate_flags_on===false){ var c=document.getElementById('ufCard'); if(c) c.style.display='none'; }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>

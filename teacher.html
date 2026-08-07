@@ -674,7 +674,7 @@ function attendView(){
    Modules and individual flags can be closed per class. A locked flag is still
    listed for students with its title visible and its prompt enciphered, so an
    eager student can crack it early; only submission waits for the unlock. */
-var GATE={mods:{},flags:{},persona:false,answerKey:false},GATE_DIRTY=false;
+var GATE={mods:{},flags:{},persona:false,answerKey:false,ultimateFlags:true},GATE_DIRTY=false;
 
 function courseChals(){
   var cfg=(window.COURSE_CONFIG||{})[CUR.course]||{};
@@ -686,7 +686,7 @@ function courseModules(){
   return m;
 }
 function syncGateFromClass(){
-  GATE={mods:{},flags:{},persona:!!CUR.persona_on,answerKey:!!CUR.answer_key_on};
+  GATE={mods:{},flags:{},persona:!!CUR.persona_on,answerKey:!!CUR.answer_key_on,ultimateFlags:CUR.ultimate_flags_on!==false};
   (CUR.locked_modules||[]).forEach(function(m){ GATE.mods[Number(m)]=true; });
   (CUR.locked_flags||[]).forEach(function(f){ GATE.flags[f]=true; });
   GATE_DIRTY=false;
@@ -700,6 +700,7 @@ function toggleMod(m){
 function toggleFlag(id){ GATE.flags[id]=!GATE.flags[id]; GATE_DIRTY=true; renderMain(); }
 function togglePersona(){ GATE.persona=!GATE.persona; GATE_DIRTY=true; renderMain(); }
 function toggleAnswerKey(){ GATE.answerKey=!GATE.answerKey; GATE_DIRTY=true; renderMain(); }
+function toggleUltimateFlags(){ GATE.ultimateFlags=!GATE.ultimateFlags; GATE_DIRTY=true; renderMain(); }
 function bulkMods(lock){
   Object.keys(courseModules()).forEach(function(m){ GATE.mods[Number(m)]=!!lock; });
   if(lock===false) GATE.flags={};
@@ -711,9 +712,9 @@ async function saveGates(){
   var flags=Object.keys(GATE.flags).filter(function(k){return GATE.flags[k];});
   try{
     await rpc("ctf_t_set_gates",{p_class:CUR.id,p_locked_modules:mods,p_locked_flags:flags,
-      p_persona:GATE.persona,p_answer_key:GATE.answerKey});
+      p_persona:GATE.persona,p_answer_key:GATE.answerKey,p_ultimate_flags:GATE.ultimateFlags});
     CUR.locked_modules=mods; CUR.locked_flags=flags;
-    CUR.persona_on=GATE.persona; CUR.answer_key_on=GATE.answerKey;
+    CUR.persona_on=GATE.persona; CUR.answer_key_on=GATE.answerKey; CUR.ultimate_flags_on=GATE.ultimateFlags;
     GATE_DIRTY=false; await loadClasses(true);
     var m=el("gateMsg"); if(m){ m.style.color="var(--ok)"; m.textContent="\u2713 saved"; setTimeout(function(){var x=el("gateMsg");if(x)x.textContent="";},2500); }
   }catch(e){
@@ -750,6 +751,12 @@ function gatesView(){
     slider(GATE.answerKey,"toggleAnswerKey()","Answer key armed",
       "Unlocks the answer-key page for this class \u2014 every flag, plus how to decrypt the locked ones. Teacher-only.",
       "var(--warn)")+
+    ((CUR.course==="cyber1"||CUR.course==="cyber2")?
+      slider(GATE.ultimateFlags,"toggleUltimateFlags()",
+        "Ultimate Flags "+(GATE.ultimateFlags?"\u25CF ACTIVE":"\u25CB INACTIVE"),
+        "Off: the \u201cUltimate Flags\u201d card is hidden from the course home page and the hunt is paused. On: the card appears and students can hunt for the 250\u2013300 XP hidden flags.",
+        "var(--accent)")
+      :"")+
   '</div>';
 
   h+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">'+

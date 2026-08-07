@@ -27,6 +27,8 @@ a{text-decoration:none;color:inherit;}
 .enter{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--ac);}
 .tex{position:absolute;inset:0;opacity:.5;pointer-events:none;}
 .card:hover .chip{box-shadow:0 0 16px -2px var(--ac);}
+.popout{position:absolute;top:14px;right:14px;z-index:2;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:9px;border:1px solid var(--border);background:var(--panel2);color:var(--dim);transition:.15s;cursor:pointer;padding:0;font:inherit;}
+.popout:hover{border-color:var(--ac);color:var(--ac);}
 </style>
 </head>
 <body>
@@ -41,11 +43,12 @@ a{text-decoration:none;color:inherit;}
     <!-- CYBER 1 -->
     <a class="card" href="cyber1/index.html" style="--ac:#00b3ff;">
       <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(0,179,255,.14), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('cyber1/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
         <span class="chip" style="letter-spacing:1px;">CHS · ROBERT MORRIS</span>
         <div>
           <div class="mono" style="font-size:12px;color:#00b3ff;margin-bottom:6px;">01 //</div>
-          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cyber Security 1</h2>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cybersecurity 1</h2>
         </div>
         <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">College-credit foundations: networks, systems, threats, and defense.</p>
         <span class="enter">ENTER &rarr;</span>
@@ -54,11 +57,12 @@ a{text-decoration:none;color:inherit;}
     <!-- CYBER 2 -->
     <a class="card" href="cyber2/index.html" style="--ac:#39ff88;">
       <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(57,255,136,.14), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('cyber2/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
         <span class="chip">ADVANCED PLACEMENT</span>
         <div>
           <div class="mono" style="font-size:12px;color:#39ff88;margin-bottom:6px;">02 //</div>
-          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cyber Security 2</h2>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cybersecurity 2</h2>
         </div>
         <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">Think like an attacker, defend like a pro &mdash; the advanced, hands-on course.</p>
         <span class="enter">ENTER &rarr;</span>
@@ -67,11 +71,12 @@ a{text-decoration:none;color:inherit;}
     <!-- CYBER 3 -->
     <a class="card" href="cyber3/index.html" style="--ac:#d4af37;">
       <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(212,175,55,.16), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('cyber3/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
         <span class="chip">GOLD STANDARD</span>
         <div>
           <div class="mono" style="font-size:12px;color:#d4af37;margin-bottom:6px;">03 //</div>
-          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cyber Security 3</h2>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cybersecurity 3</h2>
         </div>
         <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">The gold standard in cybersecurity practice &mdash; precision, discipline, and mastery.</p>
         <span class="enter">ENTER &rarr;</span>
@@ -84,6 +89,7 @@ a{text-decoration:none;color:inherit;}
     <!-- WEB 3.0 -->
     <a class="card" href="web3/index.html" style="--ac:#f7a01f;">
       <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(247,160,31,.16), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('web3/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
         <span class="chip">ELECTIVE · BLOCKCHAIN</span>
         <div>
@@ -97,6 +103,7 @@ a{text-decoration:none;color:inherit;}
     <!-- AP CSP -->
     <a class="card" href="apcsp/index.html" style="--ac:#a855f7;">
       <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(168,85,247,.18), transparent 60%);opacity:.7;"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('apcsp/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
         <span class="chip">ADVANCED PLACEMENT</span>
         <div>
