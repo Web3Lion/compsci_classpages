@@ -9,19 +9,23 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;}
-html,body{margin:0;height:100%;background:#ffffff;display:flex;align-items:center;justify-content:center;}
+html,body{margin:0;height:100%;background:#1c160a;display:flex;align-items:center;justify-content:center;}
+@keyframes btnPulse{0%,100%{box-shadow:0 14px 34px -18px var(--ac,#00b3ff),0 0 0 0 color-mix(in srgb,var(--ac,#00b3ff) 55%,transparent);}50%{box-shadow:0 14px 34px -18px var(--ac,#00b3ff),0 0 0 7px color-mix(in srgb,var(--ac,#00b3ff) 0%,transparent);}}
+@keyframes arrowNudge{0%,100%{transform:translate(0,0);}50%{transform:translate(3px,-3px);}}
 a.btn{
   font-family:'JetBrains Mono',monospace;
   display:inline-flex;align-items:center;gap:10px;
   font-size:16px;font-weight:800;letter-spacing:.5px;
   padding:16px 26px;border-radius:12px;
-  background:linear-gradient(160deg, color-mix(in oklch, var(--ac,#00b3ff) 18%, #121a26) 0%, #0e141d 100%);
-  border:1px solid var(--ac,#00b3ff);
+  animation:btnPulse 2.6s ease-in-out infinite;
+  background:linear-gradient(160deg, color-mix(in oklch, #d4af37 16%, #2c2411) 0%, #1c160a 100%);
+  border:1px solid #d4af37;
   color:#eef4ff;text-decoration:none;
-  box-shadow:0 14px 34px -18px var(--ac,#00b3ff);
+  box-shadow:0 14px 34px -18px #d4af37;
   transition:transform .15s ease, box-shadow .15s ease;
 }
-a.btn:hover{transform:translateY(-2px);box-shadow:0 20px 46px -18px var(--ac,#00b3ff);}
+a.btn:hover{transform:translateY(-2px) scale(1.03);animation-play-state:paused;}
+a.btn:hover svg{animation:arrowNudge .7s ease-in-out infinite;}
 a.btn svg{flex:none;}
 </style>
 </head>

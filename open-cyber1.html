@@ -9,29 +9,61 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;}
-html,body{margin:0;height:100%;background:#ffffff;display:flex;align-items:center;justify-content:center;}
+html,body{margin:0;height:100%;background:#0a0e14;display:flex;align-items:center;justify-content:center;}
+@keyframes btnPulse{0%,100%{box-shadow:0 14px 34px -18px var(--ac,#00b3ff),0 0 0 0 color-mix(in srgb,var(--ac,#00b3ff) 55%,transparent);}50%{box-shadow:0 14px 34px -18px var(--ac,#00b3ff),0 0 0 7px color-mix(in srgb,var(--ac,#00b3ff) 0%,transparent);}}
+@keyframes arrowNudge{0%,100%{transform:translate(0,0);}50%{transform:translate(3px,-3px);}}
 a.btn{
   font-family:'JetBrains Mono',monospace;
   display:inline-flex;align-items:center;gap:10px;
   font-size:16px;font-weight:800;letter-spacing:.5px;
   padding:16px 26px;border-radius:12px;
-  background:linear-gradient(160deg, color-mix(in oklch, var(--ac,#00b3ff) 18%, #121a26) 0%, #0e141d 100%);
-  border:1px solid var(--ac,#00b3ff);
+  animation:btnPulse 2.6s ease-in-out infinite;
+  background:linear-gradient(160deg, color-mix(in oklch, #00b3ff 16%, #0c1626) 0%, #0a0e14 100%);
+  border:1px solid #00b3ff;
   color:#eef4ff;text-decoration:none;
-  box-shadow:0 14px 34px -18px var(--ac,#00b3ff);
+  box-shadow:0 14px 34px -18px #00b3ff;
   transition:transform .15s ease, box-shadow .15s ease;
 }
-a.btn:hover{transform:translateY(-2px);box-shadow:0 20px 46px -18px var(--ac,#00b3ff);}
+a.btn:hover{transform:translateY(-2px) scale(1.03);animation-play-state:paused;}
+a.btn:hover svg{animation:arrowNudge .7s ease-in-out infinite;}
 a.btn svg{flex:none;}
 </style>
 </head>
 <body>
-<a class="btn" id="goBtn" href="cyber1/index.html" target="_blank" rel="noopener">
+<canvas id="rain" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;"></canvas>
+<a class="btn" id="goBtn" style="position:relative;z-index:1;" href="cyber1/index.html" target="_blank" rel="noopener">
   <span id="label">Cybersecurity 1</span>
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </a>
 <script>
 document.documentElement.style.setProperty('--ac', '#00b3ff');
+(function(){
+  var canvas = document.getElementById('rain');
+  var ctx = canvas.getContext('2d');
+  var chars = '0123456789'.split('');
+  var fontSize = 16, cols, drops;
+  function resize(){
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    cols = Math.floor(canvas.width / fontSize);
+    drops = new Array(cols).fill(0).map(function(){ return Math.random() * -50; });
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  function draw(){
+    ctx.fillStyle = 'rgba(0,0,0,0.06)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00b3ff';
+    ctx.font = fontSize + 'px monospace';
+    ctx.globalAlpha = 0.35;
+    for (var i = 0; i < drops.length; i++) {
+      var ch = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(ch, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 60);
+})();
 </script>
 </body>
 </html>
