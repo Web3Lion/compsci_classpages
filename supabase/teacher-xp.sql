@@ -2,8 +2,9 @@
 --  TEACHER XP GRANTS  —  hand XP to a student for work the site can't see.
 --
 --  Participation, a good question, helping a neighbor, a paper worksheet, or
---  making good a challenge the site itself got wrong. Capped at ±100 XP per
---  grant (server-enforced), logged with who granted it and why.
+--  making good a challenge the site itself got wrong. Multi-level like every
+--  other flag on the site — Easy/Medium/Hard = 50/100/150 XP — capped at ±150
+--  per grant (server-enforced), logged with who granted it and why.
 --
 --  THE DOUBLE-COUNT TRAP, AND HOW THIS AVOIDS IT
 --  progress.bonus is CLIENT-owned: the student's browser pushes its local bonus
@@ -65,7 +66,7 @@ begin
   select class_id into v_class from students where id = p_student;
   if v_class is null then return json_build_object('error','no_student'); end if;
 
-  v_amt := greatest(-100, least(100, coalesce(p_amount, 0)));
+  v_amt := greatest(-150, least(150, coalesce(p_amount, 0)));
   if v_amt = 0 then return json_build_object('error','zero_amount'); end if;
 
   insert into progress (student_id, course, points, bonus)
@@ -110,7 +111,7 @@ begin
   end loop;
 
   return json_build_object('ok', true, 'students', v_n,
-    'amount', greatest(-100, least(100, coalesce(p_amount,0))));
+    'amount', greatest(-150, least(150, coalesce(p_amount,0))));
 end $$;
 revoke all on function ctf_t_grant_xp_bulk(uuid[], int, text) from public, anon;
 grant execute on function ctf_t_grant_xp_bulk(uuid[], int, text) to authenticated;
