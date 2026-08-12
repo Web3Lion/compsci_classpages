@@ -61,8 +61,13 @@
   contrast in the new theme rather than reusing raw dark-mode hex values.
 
 ## Shared engine
-- `ctf.js` is loaded only by cyber1/ctf.html and cyber2/ctf.html. `nemesis-intro.js`
-  adds the intruder glitch to other cyber pages.
+- `ctf.js` is loaded by all five courses' ctf.html/profile.html (cyber1, cyber2,
+  cyber3, apcsp, web3) — badges, ranks, streaks, and the challenge engine are
+  the same mechanics everywhere, just themed per course (e.g. flags are called
+  "Bug Bounty" captures in AP CSP, "Block Hunter" in Web3). Don't assume any
+  course is missing this system — check for the `<script src="../ctf.js">` tag
+  before treating a course as engine-less.
+- `nemesis-intro.js` adds the intruder glitch to other cyber pages.
 - Non-cyber page transitions: `apcsp/packet-intro.js` (Byte Bounty / ADA, purple —
   RECEIVING PACKETS / ESTABLISHING CONNECTION / COMPILING PROGRAM) and
   `web3/consensus-intro.js` (Proof of Work / ORACLE, orange — REACHING CONSENSUS /

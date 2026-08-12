@@ -1,0 +1,706 @@
+
+
+=====FILE: uploads/Cyber Mindsets.pdf=====
+Cyber
+Mindsets
+Mindsets function as both a compass and a barometer. They help learners
+approach new experiences with the right frame of mind to maximize both
+effectiveness and psychological well-being during difficult work. Mindsets also
+provide a way to evaluate decisions and actions to ensure they stay true to
+positive outcomes. Most people are not born with these mindsets, they are
+developable skills if approached with intention.
+Passion 	“The future belongs to those who believe in the beauty of their
+dreams.”
+Eleanor Roosevelt
+Cybersecurity is a field that never stops changing and is constantly providing practitioners
+new challenges. In order to take on evolving challenges, one must have a passion for
+learning and a passion for problem solving. Taking on challenges with optimism and
+passion, is the embracing of possibility, the idea that even if we don’t know the answer, it’s
+out there and we can find it.
+The world of cybersecurity is broad, limitless, and evolving. Students who develop a passion
+for this work will not only be able to have endless opportunities available to them, but will
+have the ability to create their own.
+Curiosity 	“There’s really no secret to our approach. We keep moving forward,
+opening new doors and doing new things, because we are curious.”
+Walt Disney
+The world is a complex place and those that are curious are the most likely to find success.
+This idea is especially true in the world of cybersecurity. A field where curiosity, asking
+“what if”, is often the path to exploits, intrusions, bugs, and vulnerabilities. When asked what
+skill is most important for leaders, Michael Dell, CEO of Dell Inc., replied, “I would place my
+bet on curiosity.” Get out there and be curious.
+Performance “I hear and I forget. I see and I remember. I do and I understand.”
+Confucius
+Performance is the concept of doing and is not limited to only when a person is ready. In
+the world of cybersecurity, the majority of learning happens through doing real work, getting
+one's “hands dirty”. Learning-by-doing is rooted in the fact that failure, and learning from it,
+is an incredibly powerful tool for learning. We must embrace a “bias towards action”, and do
+things that are “safe enough to try.” Embracing the performance mindset is the belief that
+application of knowledge is critical and only developed by doing, failing, experimenting,
+reflecting and ultimately learning.
+
+-- 1 of 1 --
+
+
+
+=====FILE: uploads/Paradigm Cyber 10 (wo units).pdf ERROR: invalid path "uploads/Paradigm Cyber 10 (wo units).pdf": disallowed characters=====
+
+=====FILE: uploads/1.4  Cyber Competitions Guide.pdf=====
+Paradigm Cyber Ventures: Cyber Competitions Guide
+Cybersecurity competitions are gamified, interactive events designed to challenge students to solve real-world
+technical problems, ranging from patching vulnerabilities in a compromised operating system to deciphering
+cryptographic puzzles. Integrating these competitions into a cybersecurity curriculum transforms passive learning
+into an active, hands-on experience that mirrors the high-stakes environment of the digital workforce. Ultimately,
+cyber competitions bridge the gap between the classroom and the industry, injecting a powerful element of
+excitement that engages diverse student populations and helps cultivate the next generation of digital defenders.
+UNDERSTANDING THE FORMATS
+Before diving into specific competitions, it helps to understand the two primary styles of cyber events:
+● Capture the Flag (CTF): Students solve standalone puzzles (cryptography, web vulnerabilities, reverse engineering) to find a text string
+(the "flag") and submit it for points. These are highly accessible and usually run entirely in a web browser.
+● Blue Team / Cyber Defense: Students are given a simulated, compromised corporate or government network (virtual machines). Their
+job is to find vulnerabilities, fix them, secure the system, and maintain services while keeping "hackers" out. These require more computing
+power and preparation.
+COMPARISON MATRIX
+Competition 	Target
+Grades
+Format
+Style
+Cost 	Dates 	Tech
+Requirements
+Best For...
+CyberPatriot 	6th – 12th 	Blue Team /
+Defense
+~$225/team
+(Fee waivers
+for Title I/
+JROTC)
+Oct 2026 – Mar 2027
+•
+Rounds 1 & 2: Oct 22-25 &
+Nov 12-15, 2026
+•
+State Round: Dec 10-13,
+2026
+•
+National Finals: Mar 12-16,
+2027
+High (Requires
+downloading
+large Virtual
+Machines)
+Schools wanting a
+highly structured,
+season-long team
+experience.
+National
+Cyber League
+(NCL)
+9th – 12th
+(+ College)
+Jeopardy-style
+CTF
+~$45 per
+student
+Aug 2026 – Nov 2026
+(Fall
+Season)
+•
+Practice Gym: Opens Aug 17,
+2026
+Low (Runs
+entirely in a
+standard web
+browser)
+Mapping directly to
+high school CTE/
+CompSci
+
+-- 1 of 2 --
+
+•
+Individual Game: Oct 23-25,
+2026
+•
+Team Game: Nov 6-8, 2026
+Mar-Apr 2027
+(Projected Spring Season)
+curriculum &
+scouting talent.
+CyLab
+Security
+Academy
+(formerly
+picoCTF)
+6th – 12th 	Story-driven
+CTF
+Free 	Year-Round Gym + March
+2027
+(Flagship Event)
+•
+picoGym: Open 365 days a
+year
+•
+Main Competition:
+Mid-March 2027
+(Typically a
+10-day window)
+Low (Web
+browser)
+Absolute beginners
+and classroom
+integration.
+National
+Cyber Cup
+(by
+CYBER.ORG)
+4th – 12th 	Theme-based
+CTF
+Free 	Sept 23 – Sept 24, 2026
+•
+Event Window: Opens Sept
+23 at 7:00 AM ET through Sept
+24 at 10:00 PM ET.
+Low (Web
+browser)
+Introducing
+younger students
+(Upper
+Elem/Middle) to
+cyber concepts
+safely.
+COMPETITIONS & PARADIGM’S CURRICULUM
+Ready to get your students competition-ready? Dive into the Cyber Competitions unit in your Paradigm curriculum. This highly adaptable unit
+can be plugged into your syllabus at any point during the year. Whether you need to stretch activities out or condense them into a quick boot
+camp, you can easily modify the pacing to fit your program's needs. Keep the momentum going by weaving competition-style challenges into
+your daily lessons. Paradigm’s “Learn” CTFs will be explicitly used throughout the curriculum, and use Paradigm’s “Play” CTFs low-stakes
+environment where students can freely explore puzzles, test their skills, and extend their learning.
+
+-- 2 of 2 --
+
+
+
+=====FILE: uploads/1.3 Top 10 Cybersecurity Career Profiles  Intro to Cyber.pdf=====
+Top 10 Cybersecurity
+Career Profiles
+READING
+1. SECURITY ANALYST
+What They Do
+Security Analysts monitor networks and systems for threats, investigate suspicious activity, and help
+protect organizations from cyber attacks.
+Typical Tasks
+● Monitor security alerts
+● Review system logs
+● Investigate incidents
+● Recommend security improvements
+Education
+● High School Diploma + Certifications or Bachelor's Degree
+Common Certifications
+● Security+
+● CySA+
+● SSCP
+Average U.S. Salary
+$75,000–$115,000
+Difficulty Level
+⭐⭐⭐☆☆
+Best For Students Who...
+Enjoy problem-solving, investigating issues, and monitoring systems.
+
+-- 1 of 11 --
+
+2. SOC (SECURITY OPERATIONS CENTER) ANALYST
+What They Do
+SOC Analysts are the first responders to cyber threats. They monitor security tools and investigate
+alerts.
+Typical Tasks
+● Review SIEM alerts
+● Analyze suspicious activity
+● Escalate incidents
+● Create incident reports
+Education
+● Associate or Bachelor's Degree
+Common Certifications
+● Security+
+● CySA+
+● Splunk Certifications
+Average U.S. Salary
+$65,000–$105,000
+Difficulty Level
+⭐⭐⭐☆☆
+Best For Students Who...
+Enjoy fast-paced environments and detective work.
+
+-- 2 of 11 --
+
+3. DIGITAL FORENSICS INVESTIGATOR
+What They Do
+Forensics investigators collect and analyze digital evidence after cyber incidents.
+Typical Tasks
+● Recover deleted files
+● Analyze devices
+● Preserve evidence
+● Support investigations
+Education
+● Bachelor's Degree Preferred
+Common Certifications
+● CHFI
+● GCFA
+● EnCE
+Average U.S. Salary
+$80,000–$130,000
+Difficulty Level
+⭐⭐⭐⭐☆
+Best For Students Who...
+Like investigations, law enforcement, and uncovering hidden evidence.
+
+-- 3 of 11 --
+
+4. PENETRATION TESTER (ETHICAL HACKER)
+What They Do
+Penetration testers legally attempt to break into systems to identify vulnerabilities.
+Typical Tasks
+● Conduct security assessments
+● Test applications
+● Write reports
+● Recommend fixes
+Education
+● Bachelor's Degree Helpful but Not Required
+Common Certifications
+● PenTest+
+● eJPT
+● OSCP
+Average U.S. Salary
+$90,000–$150,000
+Difficulty Level
+⭐⭐⭐⭐⭐
+Best For Students Who...
+Enjoy hacking challenges, puzzles, and creative problem-solving.
+
+-- 4 of 11 --
+
+5. CYBERSECURITY CONSULTANT
+What They Do
+Consultants advise organizations on improving security programs and reducing risk.
+Typical Tasks
+● Assess security posture
+● Recommend solutions
+● Meet with clients
+● Develop policies
+Education
+● Bachelor's Degree
+Common Certifications
+● Security+
+● CISSP
+● CISM
+Average U.S. Salary
+$95,000–$170,000
+Difficulty Level
+⭐⭐⭐⭐☆
+Best For Students Who...
+Enjoy communication, business, and strategic thinking.
+
+-- 5 of 11 --
+
+6. SECURITY ENGINEER
+What They Do
+Security Engineers build and maintain security systems that protect organizations.
+Typical Tasks
+● Configure firewalls
+● Deploy security tools
+● Harden systems
+● Automate security tasks
+Education
+● Bachelor's Degree Preferred
+Common Certifications
+● Security+
+● CASP+
+● CISSP
+Average U.S. Salary
+$100,000–$160,000
+Difficulty Level
+⭐⭐⭐⭐☆
+Best For Students Who...
+Enjoy building, configuring, and improving technology.
+
+-- 6 of 11 --
+
+7. CLOUD SECURITY ENGINEER
+What They Do
+Cloud Security Engineers protect cloud platforms such as AWS, Azure, and Google Cloud.
+Typical Tasks
+● Secure cloud resources
+● Manage identities
+● Configure permissions
+● Monitor cloud environments
+Education
+● Bachelor's Degree Preferred
+Common Certifications
+● AWS Security Specialty
+● Azure Security Engineer
+● Security+
+Average U.S. Salary
+$120,000–$190,000
+Difficulty Level
+⭐⭐⭐⭐⭐
+Best For Students Who...
+Enjoy cloud technologies and large-scale systems.
+
+-- 7 of 11 --
+
+8. INCIDENT RESPONDER
+What They Do
+Incident Responders manage cybersecurity incidents and help organizations recover from attacks.
+Typical Tasks
+● Investigate breaches
+● Contain threats
+● Coordinate recovery
+● Document lessons learned
+Education
+● Bachelor's Degree Preferred
+Common Certifications
+● CySA+
+● GCIH
+● Security+
+Average U.S. Salary
+$90,000–$145,000
+Difficulty Level
+⭐⭐⭐⭐☆
+Best For Students Who...
+Remain calm under pressure and enjoy solving urgent problems.
+
+-- 8 of 11 --
+
+9. GOVERNANCE, RISK, AND COMPLIANCE (GRC) ANALYST
+What They Do
+GRC professionals help organizations follow laws, regulations, and security frameworks.
+Typical Tasks
+● Conduct risk assessments
+● Review policies
+● Support audits
+● Ensure compliance
+Education
+● Bachelor's Degree
+Common Certifications
+● Security+
+● CRISC
+● CISA
+Average U.S. Salary
+$80,000–$135,000
+Difficulty Level
+⭐⭐⭐☆☆
+Best For Students Who...
+Enjoy organization, communication, and business processes.
+
+-- 9 of 11 --
+
+10. CYBERSECURITY MANAGER
+What They Do
+Cybersecurity Managers lead security teams and oversee organizational security programs.
+Typical Tasks
+● Manage personnel
+● Develop strategy
+● Allocate budgets
+● Communicate with executives
+Education
+● Bachelor's Degree Required
+● Master's Degree Helpful
+Common Certifications
+● CISSP
+● CISM
+● Security+
+Average U.S. Salary
+$130,000–$220,000+
+Difficulty Level
+⭐⭐⭐⭐☆
+Best For Students Who...
+Enjoy leadership, communication, and making strategic decisions.
+
+-- 10 of 11 --
+
+Quick Comparison Chart
+Career 	Salary
+Potential
+Technical
+Skill
+Communication
+Skill
+Teamwork
+Security Analyst 	Medium 	High 	Medium 	High
+SOC Analyst 	Medium 	High 	Medium 	High
+Digital Forensics 	High 	High 	Medium 	Medium
+Penetration Tester 	High 	Very High 	Medium 	Medium
+Consultant 	High 	High 	Very High 	High
+Security Engineer 	High 	Very High 	Medium 	Medium
+Cloud Security
+Engineer
+Very High 	Very High 	Medium 	Medium
+Incident Responder 	High 	High 	High 	High
+GRC Analyst 	Medium-High 	Medium 	Very High 	High
+Cybersecurity Manager Very High 	Medium-High 	Very High 	Very High
+
+-- 11 of 11 --
+
+
+
+=====FILE: uploads/1.5 Cybersecurity & Ethics Introduction Scenario  Paradigm CK Security.pdf ERROR: invalid path "uploads/1.5 Cybersecurity & Ethics Introduction Scenario  Paradigm CK Security.pdf": disallowed characters=====
+
+=====FILE: uploads/1.6 CTF Introduction Slides  Intro to Cyber.pdf=====
+Introduction to
+Capture the Flag (CTF)
+Challenges
+1
+
+-- 1 of 17 --
+
+Directions
+● These slides will help us learn about CTFs and how we will use
+them in this course.
+● Between learning slides, there will be scavenger hunt slides
+that ask you to find a certain item in Centra related to CTFs.
+● Record your scavenger hunt answers on your student
+document.
+● Navigate to Centra and have it open as we begin!
+2
+
+-- 2 of 17 --
+
+Discussion
+Question
+Do you have any prior
+knowledge or experience with
+capture the flag (CTF)
+challenges?
+Set a two-minute timer and discuss with
+a nearby partner
+3
+
+-- 3 of 17 --
+
+What are CTFs?
+● CTFs are challenges designed to teach and test cybersecurity
+skills.
+● Students “capture flags” by solving puzzles, finding hidden
+information, or completing tasks.
+● Flags are usually small pieces of text or codes that prove you
+solved the challenge.
+4
+
+-- 4 of 17 --
+
+Scavenger
+Hunt:
+Find CTFs
+5
+● Navigate to Centra
+● Find the tab that says
+“Paradigm CTF”
+● Check out the landing page
+and see what information you
+can find there.
+● Scavenger Hunt: In the “My
+Paradigm CTF Overview”
+section, what level are you
+currently?
+Record your answer on your student
+document.
+
+-- 5 of 17 --
+
+Why do CTFs?
+● They let you practice problem-solving in realistic scenarios.
+● They help you learn key skills before you apply them to
+bigger projects.
+● CTFs will appear regularly in this course, so being familiar
+with them is important.
+6
+
+-- 6 of 17 --
+
+Scavenger
+Hunt:
+Where are CTFs
+7
+● In the “Paradigm CTF” tab…
+● Check out the landing page
+and see what information
+you can find there.
+● Scavenger Hunt: What
+section do you have to
+click on to find the actual
+CTF challenges?
+Record your answer on your student
+document.
+
+-- 7 of 17 --
+
+How do CTFs work?
+CHALLENGES ARE POSTED
+Challenges can be puzzles, hidden files, web tasks, or
+other problem-solving activities. There are “Learn”
+challenges for each unit of our course and additional
+“Play” challenges you can explore on your own!
+LOOK FOR CLUES
+Clues may be hidden in text, images, code, or
+interactives. Sometimes the challenge gives hints about
+where to look or what tool to use.
+SOLVE THE CHALLENGE
+Use your skills and tools to uncover the solution. This
+could involve analyzing files, decoding messages, or
+exploring networks.
+8
+CAPTURE THE FLAG
+A “flag” is a secret piece of information that proves
+you solved the challenge. You will use the same
+format for flags each time!
+● Format: flag{answer}
+● If there are any spaces in the flag, you should
+replace them with an underscore. Ex.
+flag{the_answer}
+SUBMIT YOUR FLAG
+Enter the flag into the CTF platform (Centra) to earn
+points or record completion.
+● Note: Once the timer starts for a challenge, it will
+not stop until you have solved the challenge!
+
+-- 8 of 17 --
+
+Scavenger
+Hunt:
+How to Submit
+9
+● In the “Paradigm CTF” tab…
+● Find the section that says
+“CTF Quick Guide”
+● Scavenger Hunt: What is
+the exact example flag
+format provided in the
+Quick Guide?
+Record your answer on your student
+document.
+
+-- 9 of 17 --
+
+How does Scoring work?
+● Each challenge has a certain number of points you get if you solve it. This
+will be at the top of each challenge.
+● There are three levels of difficulty, each with different point values.
+● You can increase your points by solving the challenge in your first three
+attempts.
+● Hints: Each challenge contains a hint if needed. Hints cost you
+one attempt.
+● Learn Button: Each challenge has a “Learn” button that allows you to learn
+material associated with the challenge. Learn buttons
+do not affect your
+score.
+10
+
+-- 10 of 17 --
+
+Scavenger
+Hunt:
+Scoring
+11
+● In the “Paradigm CTF” tab…
+● Find the section that says
+“CTF Quick Guide”
+● Scavenger Hunt: How much
+does your score multiply if
+you solve the challenge on
+your second attempt?
+Record your answer on your student
+document.
+
+-- 11 of 17 --
+
+How to Approach a CTF?
+● Make sure you’re prepared to start!
+Once the timer starts, it will
+not stop until you solve the challenge.
+● Take your time reading the challenge.
+● Look closely for hidden clues.
+● Take breaks on difficult problems
+● Break challenges into smaller pieces
+● Research unfamiliar tools and techniques
+● Don’t be afraid to try multiple approaches
+● Collaborate and discuss ideas with classmates if allowed
+12
+
+-- 12 of 17 --
+
+Scavenger
+Hunt:
+Open a CTF
+(Part 1)
+13
+● In the “Paradigm CTF” tab…
+● Find the section that says
+“Go to Paradigm CTF
+Dashboard”
+● Find the challenge “Never
+Reuse Passwords” and open
+it.
+● Scavenger Hunt: What three
+things are at the top of the
+challenge on the same line
+as the Briefing?
+Record your answer on your student
+document.
+
+-- 13 of 17 --
+
+Scavenger
+Hunt:
+Open a CTF
+(Part 2)
+14
+● In the challenge “Never
+Reuse Passwords”...
+● Scavenger Hunt: What three
+buttons are at the bottom
+of the challenge under the
+Answer field?
+Record your answer on your student
+document.
+
+-- 14 of 17 --
+
+Let’s try this
+CTF together!
+15	15
+
+-- 15 of 17 --
+
+Never Reuse
+Passwords
+CTF
+16
+Step 1: What is the topic of this CTF?
+Step 2: What specifically are we
+looking for in the answer?
+Step 3: Click the Learn button and
+read the information.
+Step 4: Brainstorm answers with a
+nearby partner! Be prepared to share
+with the class.
+Step 5: Put the answer in the correct
+format: “flag{answer}” and click
+Submit.
+You’ve just solved your first CTF!
+
+-- 16 of 17 --
+
+Scavenger
+Hunt:
+Time
+17
+● In the challenge “Never
+Reuse Passwords”...
+● Scavenger Hunt: How much
+time did it take us to solve
+this challenge?
+Record your answer on your student
+document.
+
+-- 17 of 17 --
+
+
+
+=====FILE: uploads/1.4 Mindsets, Skills, Competitions Slides  Cybersecurity.pdf ERROR: invalid path "uploads/1.4 Mindsets, Skills, Competitions Slides  Cybersecurity.pdf": disallowed characters=====

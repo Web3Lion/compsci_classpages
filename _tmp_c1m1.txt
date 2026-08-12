@@ -1,0 +1,38 @@
+c1-m1-1.1-core | text | 1.1 — What is Cybersecurity?
+c1-m1-cia | text | 1.1 — The CIA Triad
+c1-m1-cia2 | match | 1.1 — CIA Triad in Action
+c1-m1-triad-rank | order | 1.1 ext — Rank the Impact
+c1-m1-domains | match | 1.1 ext — Match the Security Domain
+c1-m1-defense | text | 1.1 ext — Defense Basics
+c1-m1-secure | order | 1.1 ext — Secure Your Account
+c1-m1-1.2-history | text | 1.2 — History of Cyber Threats
+c1-m1-actors | match | 1.2 ext — Spot the Threat Actor
+c1-m1-1.3-careers | text | 1.3 — Cyber Careers
+c1-m1-1.4-mindsets | text | 1.4 — Cyber Mindsets & Competitions
+c1-m1-1.5-ethics | text | 1.5 — Cyber Ethics Kickoff
+c1-m1-1.6-cert | text | 1.6 — PC/Trusted Sec Certification
+c1-m1-1.7-ctf | text | 1.7 — Intro to Paradigm Cyber CTFs
+c1-m1-vocab | vocab | 1.7 ext — Vocabulary Recall
+c1-m1-perform | text | Perform — Unit Portfolio
+c1-m1-daily-1.1-1 | text | 1.1-1 — Daily Warm-Up
+c1-m1-daily-1.1-2 | text | 1.1-2 — Daily Warm-Up
+c1-m1-daily-1.2-1 | text | 1.2-1 — Daily Warm-Up
+c1-m1-daily-1.2-2 | text | 1.2-2 — Daily Warm-Up
+c1-m1-daily-1.2-3 | text | 1.2-3 — Daily Warm-Up
+c1-m1-daily-1.3-1 | text | 1.3-1 — Daily Warm-Up
+c1-m1-daily-1.3-2 | text | 1.3-2 — Daily Warm-Up
+c1-m1-daily-1.4-1 | text | 1.4-1 — Daily Warm-Up
+c1-m1-daily-1.4-2 | text | 1.4-2 — Daily Warm-Up
+c1-m1-daily-1.5-1 | text | 1.5-1 — Daily Warm-Up
+c1-m1-daily-1.6-1 | text | 1.6-1 — Daily Warm-Up
+c1-m1-daily-1.6-2 | text | 1.6-2 — Daily Warm-Up
+c1-m1-daily-1.7-1 | text | 1.7-1 — Daily Warm-Up
+c1-m1-daily-1.7-ext | text | 1.7-ext — Daily Warm-Up
+c1-m2-ethics | text | The Ethics Code
+c1-m2-judge | match | Ethical or Unethical?
+c1-m2-decide | order | The Ethical Decision Process
+c1-m2-principles | match | Match the Ethics Principle
+c1-m2-vocab | vocab | Vocabulary Recall
+c1-m2-law | match | Ethical, Legal, Both, or Neither
+c1-m2-disclose | order | Responsible Disclosure
+c1-m2-law2 | text | Law & Order

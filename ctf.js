@@ -63,6 +63,48 @@
   }
   const PKEY = "ctf-persona-seen-" + course;
 
+  /* PER-FLAG MASK — each flag's real question stays scrambled behind an alien
+     teaser until the student hits START on that specific flag. Hitting Start
+     reveals it (with a quick decode animation) and starts that flag's timer
+     at the same instant, so the clock never runs before the question is even
+     readable. Nothing is withheld for real — cracking the alphabet early is a
+     bragging-rights shortcut, not an exploit. */
+  const startedKeys = {};
+  function isStarted(key) { return !!startedKeys[key]; }
+  let flagAnimating = false;
+  function alienText(s) { return (window.CTF_ALIEN ? window.CTF_ALIEN.encode(course, s) : s); }
+  function gateHtml(key, teaser) {
+    return `
+      <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--warn);margin-bottom:8px;">SCRAMBLED — HIT START TO DECODE</div>
+      <p class="mono flagTeaser" data-key="${esc(key)}" data-real="${esc(teaser)}" style="white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.65;color:var(--accent2);margin:0 0 16px;opacity:.85;">${esc(alienText(teaser))}</p>
+      <button type="button" class="flagStart mono" data-key="${esc(key)}" style="font-size:13px;font-weight:700;padding:12px 22px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;min-height:44px;">▶ START</button>`;
+  }
+  function bindFlagStart() {
+    document.querySelectorAll(".flagStart").forEach(btn => btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-key");
+      flagAnimating = true;
+      btn.disabled = true; btn.textContent = "DECODING…";
+      const glyphs = (window.CTF_ALIEN && window.CTF_ALIEN.glyphs) || ["#"];
+      let frame = 0;
+      const iv = setInterval(() => {
+        frame++;
+        const el = document.querySelector('.flagTeaser[data-key="' + key.replace(/"/g, '\\"') + '"]');
+        if (!el) { clearInterval(iv); flagAnimating = false; startedKeys[key] = true; startTimer(key); render(); return; }
+        const real = el.getAttribute("data-real") || "";
+        const settled = Math.floor((frame / 12) * real.length);
+        let out = "";
+        for (let i = 0; i < real.length; i++) out += i < settled ? real[i] : glyphs[Math.floor(Math.random() * glyphs.length)];
+        el.textContent = out;
+        el.style.color = "var(--bright)";
+        if (frame >= 13) {
+          clearInterval(iv); flagAnimating = false;
+          startedKeys[key] = true; startTimer(key);
+          setTimeout(render, 200);
+        }
+      }, 55);
+    }));
+  }
+
   /* LOCKS — modules and individual flags the teacher hasn't opened yet. A
      locked flag is still listed: title in the clear, prompt enciphered. */
   function locks() {
@@ -95,7 +137,7 @@
   function rankFor(p, total) { const T = total || 1; let r = RANKS[0][1]; for (const [t, n] of RANKS) if (p >= t * T) r = n; return r; }
   function nextRank(p, total) { const T = total || 1; for (const [t, n] of RANKS) if (p < t * T) return { t: Math.ceil(t * T), n }; return null; }
 
-  function load() { try { const s = JSON.parse(localStorage.getItem(KEY)) || {}; s.solved = s.solved || {}; s.points = s.points || 0; s.retry = s.retry || {}; s.earned = s.earned || {}; return s; } catch (e) { return { solved: {}, points: 0, retry: {}, earned: {} }; } }
+  function load() { try { const s = JSON.parse(localStorage.getItem(KEY)) || {}; s.solved = s.solved || {}; s.points = s.points || 0; s.retry = s.retry || {}; s.earned = s.earned || {}; s.solvedAt = s.solvedAt || {}; s.moduleSeenAt = s.moduleSeenAt || {}; return s; } catch (e) { return { solved: {}, points: 0, retry: {}, earned: {} }; } }
   function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
   function getHandle() { try { return localStorage.getItem(NKEY) || ""; } catch (e) { return ""; } }
   function setHandle(v) { try { localStorage.setItem(NKEY, v); } catch (e) {} }
@@ -146,6 +188,37 @@
      ============================================================ */
   function byModule(){ const by = {}; (ctf.challenges || []).forEach(c => { const m = c.module || 0; (by[m] = by[m] || []).push(c); }); return by; }
   function incNeeds(a){ const o = []; let prev = 0; a.forEach(v => { v = Math.max(Math.round(v), prev + 1); o.push(v); prev = v; }); return o; }
+  function moduleFlags(m){ return (byModule()[m] || []).flatMap(flagsOf); }
+  function moduleCleared(m){ const fl = moduleFlags(m); return fl.length > 0 && fl.every(f => state.solved[f.key]); }
+  function keyModuleMap(){ const map = {}; (ctf.challenges || []).forEach(c => { flagsOf(c).forEach(f => { map[f.key] = c.module || 0; }); }); return map; }
+  function stampModuleSeen(){
+    const by = byModule(); let changed = false;
+    Object.keys(by).forEach(m => { if (by[m].some(c => !isLocked(c)) && !state.moduleSeenAt[m]) { state.moduleSeenAt[m] = Date.now(); changed = true; } });
+    if (changed) save(state);
+  }
+  function comebackCount(){ return Object.keys(state.solved).filter(k => state.solved[k] && (state.retry[k] || 0) >= 3).length; }
+  function nightOwlCount(){ return Object.keys(state.solvedAt || {}).filter(k => state.solved[k] && new Date(state.solvedAt[k]).getHours() < 5).length; }
+  function earlyBirdCount(){
+    const km = keyModuleMap();
+    return Object.keys(state.solvedAt || {}).filter(k => {
+      if (!state.solved[k]) return false;
+      const seen = state.moduleSeenAt[km[k]]; if (!seen) return false;
+      return new Date(seen).toDateString() === new Date(state.solvedAt[k]).toDateString();
+    }).length;
+  }
+  function perfectModsCount(){ return Object.keys(byModule()).filter(m => moduleCleared(m) && moduleFlags(m).every(f => !(state.retry[f.key] > 0))).length; }
+  function noHintModsCount(){ return Object.keys(byModule()).filter(m => moduleCleared(m) && moduleFlags(m).every(f => !hintUsed(f.key))).length; }
+  function speedrunModsCount(){
+    const WEEK = 7 * 24 * 60 * 60 * 1000;
+    return Object.keys(byModule()).filter(m => {
+      if (!moduleCleared(m)) return false;
+      const seen = state.moduleSeenAt[m]; if (!seen) return false;
+      const times = moduleFlags(m).map(f => state.solvedAt[f.key]).filter(Boolean);
+      return times.length && (Math.max.apply(null, times) - seen) <= WEEK;
+    }).length;
+  }
+  function weekendCount(){ return Object.keys(state.solvedAt || {}).filter(k => { if (!state.solved[k]) return false; const d = new Date(state.solvedAt[k]).getDay(); return d === 0 || d === 6; }).length; }
+  function fullClearDone(){ const s = stats(); return (s.count > 0 && s.solvedCount >= s.count) ? 1 : 0; }
   function badgeThemes(){
     /* While the guide is asleep the badge case must not name it: the third boss
        tier is the only badge that carries the character's name, and a locked
@@ -160,7 +233,15 @@
       streak:{ name:"Daily Grind", tiers:["Regular","Relentless","Unbroken"] },
       mods: { name:"Sector Sweep", tiers:["Breacher","Sweeper","Total Control"] },
       vocab:{ name:"Cipher Mind",  tiers:["Decoder","Cryptographer","Codebreaker"] },
-      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", bossTop.cyber] }
+      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", bossTop.cyber] },
+      comeback:{ name:"Second Wind", tiers:["Bruised","Resilient","Unbreakable"] },
+      nightowl:{ name:"Night Shift", tiers:["Dusk","Midnight","3 AM Club"] },
+      perfectMods:{ name:"Clean Sweep", tiers:["Tidy","Spotless","Flawless"] },
+      noHintMods:{ name:"No Assist", tiers:["Solo","Independent","Self-Made"] },
+      earlyBird:{ name:"First Light", tiers:["Prompt","Punctual","First Light"] },
+      speedrunner:{ name:"Fast Track", tiers:["Quick","Rapid","Speedrunner"] },
+      weekend:{ name:"Weekend Grind", tiers:["Saturday Shift","Sunday Shift","Weekend Warrior"] },
+      fullClear:{ name:"Total Clear", tiers:["Course Complete"] }
     };
     const csp = {
       flags:{ name:"Bug Bounty",    tiers:["Tester","Debugger","Zero-Day"] },
@@ -168,7 +249,15 @@
       streak:{ name:"Daily Commit", tiers:["Committer","Streaker","Green Board"] },
       mods: { name:"Module Master", tiers:["Runner","Builder","Architect"] },
       vocab:{ name:"Syntax Sage",   tiers:["Parser","Compiler","Interpreter"] },
-      boss: { name:"Boss Slayer",   tiers:["Challenger","Duelist", bossTop.csp] }
+      boss: { name:"Boss Slayer",   tiers:["Challenger","Duelist", bossTop.csp] },
+      comeback:{ name:"Debug Loop", tiers:["Patched","Refactored","Bulletproof"] },
+      nightowl:{ name:"Late Compile", tiers:["Dusk Build","Midnight Build","3 AM Build"] },
+      perfectMods:{ name:"Clean Compile", tiers:["Tidy","Spotless","Flawless"] },
+      noHintMods:{ name:"No Stack Overflow", tiers:["Solo","Independent","Self-Made"] },
+      earlyBird:{ name:"Early Commit", tiers:["Prompt","Punctual","First Light"] },
+      speedrunner:{ name:"Fast Build", tiers:["Quick","Rapid","Speedrunner"] },
+      weekend:{ name:"Weekend Build", tiers:["Saturday Build","Sunday Build","Weekend Warrior"] },
+      fullClear:{ name:"Ship Complete", tiers:["Course Complete"] }
     };
     const web3 = {
       flags:{ name:"Block Hunter", tiers:["Node","Validator","Whale"] },
@@ -176,7 +265,15 @@
       streak:{ name:"Daily Mint",  tiers:["Holder","Diamond Hands","HODLer"] },
       mods: { name:"Chain Cleared",tiers:["Fork","Merge","Mainnet"] },
       vocab:{ name:"Ledger Mind",  tiers:["Ledger","Smart Contract","Oracle"] },
-      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", bossTop.web3] }
+      boss: { name:"Boss Slayer",  tiers:["Challenger","Duelist", bossTop.web3] },
+      comeback:{ name:"HODL Through It", tiers:["Dip Buyer","Resilient","Diamond"] },
+      nightowl:{ name:"Night Miner", tiers:["Dusk","Midnight","3 AM Miner"] },
+      perfectMods:{ name:"Clean Block", tiers:["Tidy","Spotless","Flawless"] },
+      noHintMods:{ name:"No Oracle", tiers:["Solo","Independent","Self-Made"] },
+      earlyBird:{ name:"Early Miner", tiers:["Prompt","Punctual","First Light"] },
+      speedrunner:{ name:"Fast Fork", tiers:["Quick","Rapid","Speedrunner"] },
+      weekend:{ name:"Weekend Mint", tiers:["Saturday Mint","Sunday Mint","Weekend Warrior"] },
+      fullClear:{ name:"Full Ledger", tiers:["Course Complete"] }
     };
     return course === "apcsp" ? csp : course === "web3" ? web3 : cyber;
   }
@@ -196,10 +293,18 @@
     return [
       { id:"flags",  glyph:"\u2691", name:th.flags.name,  value:s.solvedCount, tiers:mk(th.flags,  [5, 15, 30]) },
       { id:"xp",     glyph:"\u25c6", name:th.xp.name,     value:s.pts,         tiers:mk(th.xp,     [300, 900, 1800]) },
-      { id:"streak", glyph:"\u25b2", name:th.streak.name, value:best,          tiers:mk(th.streak, [3, 7, 10]) },
+      { id:"streak", glyph:"\u25b2", name:th.streak.name, value:best,          tiers:mk(th.streak, [5, 15, 45]) },
       { id:"mods",   glyph:"\u25a3", name:th.mods.name,   value:modsCleared,   tiers:mk(th.mods,   [1, Math.ceil(N/2), N]) },
       { id:"vocab",  glyph:"\u2726", name:th.vocab.name,  value:vocabSolved,   tiers:mk(th.vocab,  [3, Math.ceil(Nv/2), Nv]) },
-      { id:"boss",   glyph:"\u2620", name:th.boss.name,   value:bossWins,      tiers:mk(th.boss,   [1, Math.ceil(N/2), N]) }
+      { id:"boss",   glyph:"\u2620", name:th.boss.name,   value:bossWins,      tiers:mk(th.boss,   [1, Math.ceil(N/2), N]) },
+      { id:"comeback", glyph:"\u21bb", name:th.comeback.name, value:comebackCount(), tiers:mk(th.comeback, [1, 5, 15]) },
+      { id:"nightowl", glyph:"\u263e", name:th.nightowl.name, value:nightOwlCount(), tiers:mk(th.nightowl, [1, 5, 15]) },
+      { id:"perfectMods", glyph:"\u2713", name:th.perfectMods.name, value:perfectModsCount(), tiers:mk(th.perfectMods, [1, Math.ceil(N/2), N]) },
+      { id:"noHintMods", glyph:"\u2b21", name:th.noHintMods.name, value:noHintModsCount(), tiers:mk(th.noHintMods, [1, Math.ceil(N/2), N]) },
+      { id:"earlyBird", glyph:"\u2600", name:th.earlyBird.name, value:earlyBirdCount(), tiers:mk(th.earlyBird, [1, 5, 15]) },
+      { id:"speedrunner", glyph:"\u26a1", name:th.speedrunner.name, value:speedrunModsCount(), tiers:mk(th.speedrunner, [1, Math.ceil(N/2), N]) },
+      { id:"weekend", glyph:"\u25d1", name:th.weekend.name, value:weekendCount(), tiers:mk(th.weekend, [1, 5, 15]) },
+      { id:"fullClear", glyph:"\u2605", name:th.fullClear.name, value:fullClearDone(), tiers:mk(th.fullClear, [1]) }
     ];
   }
   function tierColor(t){ return ["var(--faint)", "#cd8a3c", "#c3d0de", "var(--amber)"][t] || "var(--amber)"; }
@@ -247,7 +352,27 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">${defs.map(tile).join("")}</div>
     </div>`;
   }
+  function unitsCard(){
+    const by = byModule();
+    const mods = Object.keys(by).map(Number).sort((a,b) => a - b);
+    const tile = m => {
+      const cleared = moduleCleared(m);
+      const locked = by[m].every(c => isLocked(c));
+      const name = (ctf.modules && ctf.modules[m - 1]) || ("Module " + m);
+      const col = cleared ? "var(--accent)" : "var(--border3)";
+      return `<div style="border:1px solid ${col};border-radius:10px;background:var(--bg);padding:10px 12px;display:flex;align-items:center;gap:8px;${cleared ? "" : "opacity:.65;"}">
+        <span style="flex:none;width:20px;height:20px;border-radius:6px;border:1px solid ${col};display:flex;align-items:center;justify-content:center;font-size:11px;color:${cleared ? col : "var(--faint)"};">${cleared ? "\u2713" : (locked ? "\u2298" : "\u00b7")}</span>
+        <span style="font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(name)}</span>
+      </div>`;
+    };
+    if (!mods.length) return "";
+    return `<div class="card" style="margin-top:20px;">
+      <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:14px;">UNITS CLEARED</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">${mods.map(tile).join("")}</div>
+    </div>`;
+  }
   function bootProgress(){
+    stampModuleSeen();
     const ds = checkDailyLogin();
     const nb = checkBadgeUnlocks();
     render();
@@ -1073,7 +1198,7 @@
       paste: ["\u2620 NEMESIS // PASTE FLAGGED", "i caught that clipboard drop \u00b7 this capture falls to 1/3 XP"],
       focus: ["\u2620 NEMESIS // FOCUS LOST", "you left the arena \u00b7 this capture falls to 1/3 XP"],
       canary: ["\u2620 NEMESIS // HONEYPOT TRIPPED", "that flag was bait \u00b7 nice try, i see you"],
-      copy: ["\u2620 NEMESIS // COPY BLOCKED", "an adversary holds this terminal \u00b7 copy intercepted"]
+      copy: ["\u2620 NEMESIS // COPY BLOCKED", "an adversary holds this terminal. copy intercepted"]
     };
     const t = map[kind] || map.paste;
     nemesisToast(t[0], t[1], "var(--adv2)");
@@ -1134,6 +1259,12 @@
         <div class="mono" style="font-size:13px;color:var(--accent);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;">Nailed it \u2014 you spotted every phish. +${earnedTxt(c.id, c.points || 0)} XP earned.</div></div>`;
     }
     if (!phishState[c.id]) phishState[c.id] = c.companies.map(co => Math.floor(Math.random() * co.emails.length));
+    if (!isStarted(c.id)) {
+      return `<div class="ctfCard card phishCard" data-id="${esc(c.id)}" style="border-color:${border};">
+        ${phishHeader(c, false)}
+        ${gateHtml(c.id, c.intro || "Decide which emails are phishing and which are legitimate.")}
+      </div>`;
+    }
     const sel = phishState[c.id];
     const emails = c.companies.map((co, i) => emailHtml(i + 1, co.name, co.emails[sel[i]])).join("");
     const legend = c.companies.map((co, i) => `${i + 1} = ${esc(co.name)}`).join("   \u00b7   ");
@@ -1231,11 +1362,20 @@
     return Object.keys(byMod).sort((a, b) => a - b).map(m => moduleBlock(+m, names, byMod[m])).join("");
   }
 
+  function ensureGlowStyle() {
+    if (document.getElementById("lvlGlowStyle")) return;
+    var st = document.createElement("style"); st.id = "lvlGlowStyle";
+    st.textContent = "@keyframes lvlGlowPulse{0%,100%{box-shadow:0 0 6px 0 var(--glowc),inset 0 0 0 1px var(--glowc)}50%{box-shadow:0 0 16px 3px var(--glowc),inset 0 0 0 1px var(--glowc)}}" +
+      ".lvlTab.solvedGlow{animation:lvlGlowPulse 2.2s ease-in-out infinite;}";
+    document.head.appendChild(st);
+  }
   function render() {
+    ensureGlowStyle();
     if (rapidTimer) { clearInterval(rapidTimer); rapidTimer = null; }
     hardRunning = false;
     const root = document.getElementById("ctfRoot");
     if (!root) return;
+    if (flagAnimating) return;
     const chals = ctf.challenges || [];
     const s = stats();
     const pct = s.total ? Math.min(100, Math.round((s.pts / s.total) * 100)) : 0;
@@ -1251,7 +1391,7 @@
     }
 
     const cards = buildList(chals);
-    root.innerHTML = banner() + statsCard(s, pct) + squadCard() + badgesCard() + reviewCard() +
+    root.innerHTML = banner() + statsCard(s, pct) + squadCard() + badgesCard() + unitsCard() + reviewCard() +
       `<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px;">${cards}</div>` +
       endgameCard() +
       `<div class="mono" style="margin-top:26px;font-size:11px;color:var(--faint);line-height:1.6;">
@@ -1567,6 +1707,7 @@
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${solved ? "var(--accent)" : "var(--faint)"};">${solved ? "\u2713 SOLVED" : "\u25cb OPEN"}</span>
         </div>
         <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        ${(!solved && !isStarted(c.id)) ? gateHtml(c.id, c.intro || "Click every element of this email that is a phishing red flag.") + `</div>` : `
         <p style="font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(c.intro || "Click every element of this email that is a phishing red flag. Click again to deselect. Then submit.")}</p>
         <div style="border:1px solid var(--border2);border-radius:12px;background:var(--panel);overflow:hidden;margin-bottom:14px;">
           <div style="padding:12px 15px;border-bottom:1px solid var(--border2);">
@@ -1583,7 +1724,7 @@
                <span class="mono" style="font-size:12px;color:var(--dim);">${selCount} selected \u00b7 find ${badCount} red flags</span>
                <button type="submit" class="mono" style="margin-left:auto;font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;">SUBMIT</button>
              </form>
-             <div class="ctfMsg mono" style="margin-top:10px;font-size:12px;min-height:16px;"></div>`}
+             <div class="ctfMsg mono" style="margin-top:10px;font-size:12px;min-height:16px;"></div>`}` }
       </div>`;
   }
   function matchCard(c) {
@@ -1618,6 +1759,7 @@
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${solved ? "var(--accent)" : "var(--faint)"};">${solved ? "\u2713 SOLVED" : "\u25cb OPEN"}</span>
         </div>
         <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        ${(!solved && !isStarted(c.id)) ? gateHtml(c.id, c.intro || "Match each scenario to the attack it describes.") + `</div>` : `
         <p style="font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(c.intro || "Match each scenario to the attack it describes.")}</p>
         ${solved
           ? `<div class="mono" style="font-size:13px;color:var(--accent);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;">All ${n} matched correctly. +${earnedTxt(c.id, c.points || 0)} XP earned.</div>`
@@ -1629,7 +1771,7 @@
                <button type="button" class="mono matchReset" style="font-size:13px;font-weight:700;padding:12px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);cursor:pointer;">CLEAR</button>
                <button type="submit" class="mono" style="margin-left:auto;font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;">SUBMIT</button>
              </form>
-             <div class="ctfMsg mono" style="margin-top:10px;font-size:12px;min-height:16px;"></div>`}
+             <div class="ctfMsg mono" style="margin-top:10px;font-size:12px;min-height:16px;"></div>`}` }
       </div>`;
   }
   function orderCard(c) {
@@ -1653,6 +1795,7 @@
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${solved ? "var(--accent)" : "var(--faint)"};">${solved ? "\u2713 SOLVED" : "\u25cb OPEN"}</span>
         </div>
         <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        ${(!solved && !isStarted(c.id)) ? gateHtml(c.id, c.intro || "Put the stages in the correct order using the arrows.") + `</div>` : `
         <p style="font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(c.intro || "Put the stages in the correct order using the arrows.")}</p>
         ${solved
           ? `<div class="mono" style="font-size:13px;color:var(--accent);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;">Correct sequence. +${earnedTxt(c.id, c.points || 0)} XP earned.</div>`
@@ -1661,7 +1804,7 @@
                <button type="button" class="mono orderShuffle" style="font-size:13px;font-weight:700;padding:12px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);cursor:pointer;">SHUFFLE</button>
                <button type="submit" class="mono" style="margin-left:auto;font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;">SUBMIT</button>
              </form>
-             <div class="ctfMsg mono" style="margin-top:10px;font-size:12px;min-height:16px;"></div>`}
+             <div class="ctfMsg mono" style="margin-top:10px;font-size:12px;min-height:16px;"></div>`}` }
       </div>`;
   }
   function vocabCard(c) {
@@ -1672,7 +1815,7 @@
       const s = !!state.solved[c.id + "#" + i];
       const on = i === li;
       const sub = i === 2 ? hardMeta(c).sub : (VOCAB_COUNTS[i] + " terms \u00b7 " + VOCAB_PTS[i] + " XP");
-      return `<button type="button" class="lvlTab mono" data-id="${esc(c.id)}" data-li="${i}" style="flex:1;min-width:112px;font-size:12px;font-weight:700;padding:9px 8px;border-radius:9px;cursor:pointer;border:1px solid ${on ? "var(--accent)" : "var(--border2)"};background:${on ? "var(--panel3)" : "var(--bg)"};color:${on ? "var(--bright)" : "var(--dim)"};">${s ? "\u2713 " : ""}${VOCAB_DIFFS[i]}<span style="display:block;font-weight:400;font-size:10px;color:var(--faint);margin-top:2px;">${sub}</span></button>`;
+      return `<button type="button" class="lvlTab mono${s ? " solvedGlow" : ""}" data-id="${esc(c.id)}" data-li="${i}" style="flex:1;min-width:112px;font-size:12px;font-weight:700;padding:9px 8px;border-radius:9px;cursor:pointer;border:1px solid ${s ? "var(--accent)" : (on ? "var(--accent)" : "var(--border2)")};background:${on ? "var(--panel3)" : "var(--bg)"};color:${on ? "var(--bright)" : "var(--dim)"};--glowc:var(--accent);">${s ? "\u2713 " : ""}${VOCAB_DIFFS[i]}<span style="display:block;font-weight:400;font-size:10px;color:var(--faint);margin-top:2px;">${sub}</span></button>`;
     }).join("");
     const header = `
       <div class="ctfCard card" data-id="${esc(c.id)}" style="border-color:${all ? "var(--accent)" : "var(--border)"};position:relative;">
@@ -1699,8 +1842,9 @@
 
     const n = VOCAB_COUNTS[li];
     const solvedThis = !!state.solved[c.id + "#" + li];
-    const pool = vocabPool(c);
     const key = c.id + "#" + li;
+    if (!solvedThis && !isStarted(key)) return header + gateHtml(key, "Read each definition and type the matching vocabulary term. All " + n + " must be correct.") + `</div>`;
+    const pool = vocabPool(c);
     if (!vocabState[key]) vocabState[key] = weightedPickDistinct(pool, Math.min(n, pool.length), c.bias);
     const sel = vocabState[key];
     const defs = sel.map((idx, k) => {
@@ -2090,22 +2234,25 @@
   function leveledCard(c) {
     const li = levelSel[c.id] || 0;
     const lv = c.levels[li];
-    const solvedThis = !!state.solved[c.id + "#" + li];
+    const key = c.id + "#" + li;
+    const solvedThis = !!state.solved[key];
     const done = c.levels.filter((_, i) => state.solved[c.id + "#" + i]).length;
     const all = done === c.levels.length;
     const tabs = c.levels.map((L, i) => {
       const s = !!state.solved[c.id + "#" + i];
       const on = i === li;
-      return `<button type="button" class="lvlTab mono" data-id="${esc(c.id)}" data-li="${i}" style="flex:1;min-width:92px;font-size:12px;font-weight:700;padding:9px 8px;border-radius:9px;cursor:pointer;border:1px solid ${on ? "var(--accent)" : "var(--border2)"};background:${on ? "var(--panel3)" : "var(--bg)"};color:${on ? "var(--bright)" : "var(--dim)"};">${s ? "\u2713 " : ""}${esc(L.difficulty)}<span style="display:block;font-weight:400;font-size:10px;color:var(--faint);margin-top:2px;">${L.points || 0} XP</span></button>`;
+      return `<button type="button" class="lvlTab mono${s ? " solvedGlow" : ""}" data-id="${esc(c.id)}" data-li="${i}" style="flex:1;min-width:92px;font-size:12px;font-weight:700;padding:9px 8px;border-radius:9px;cursor:pointer;border:1px solid ${s ? "var(--accent)" : (on ? "var(--accent)" : "var(--border2)")};background:${on ? "var(--panel3)" : "var(--bg)"};color:${on ? "var(--bright)" : "var(--dim)"};--glowc:var(--accent);">${s ? "\u2713 " : ""}${esc(L.difficulty)}<span style="display:block;font-weight:400;font-size:10px;color:var(--faint);margin-top:2px;">${L.points || 0} XP</span></button>`;
     }).join("");
-    return `
+    const header = `
       <div class="ctfCard card" data-id="${esc(c.id)}" style="border-color:${all ? "var(--accent)" : "var(--border)"};position:relative;">
         <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">
           <span class="mono" style="font-size:11px;letter-spacing:1px;padding:5px 10px;border-radius:999px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);">${esc(c.category || "MISC")}</span>
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${all ? "var(--accent)" : "var(--faint)"};">${done}/${c.levels.length} flags</span>
         </div>
         <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:12px;">${esc(c.title)}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">${tabs}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">${tabs}</div>`;
+    if (!solvedThis && !isStarted(key)) return header + gateHtml(key, lv.prompt) + `</div>`;
+    return header + `
         <p style="white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(lv.prompt)}</p>
         ${hintMarkup(c.id + "#" + li, (lv.points || 0), lv.hint)}
         ${solvedThis
@@ -2121,7 +2268,7 @@
   function simpleCard(c) {
     const solved = !!state.solved[c.id];
     const border = solved ? "var(--accent)" : "var(--border)";
-    return `
+    const header = `
       <div class="ctfCard card" data-id="${esc(c.id)}" style="border-color:${border};position:relative;">
         <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">
           <span class="mono" style="font-size:11px;letter-spacing:1px;padding:5px 10px;border-radius:999px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);">${esc(c.category || "MISC")}</span>
@@ -2129,7 +2276,9 @@
           <span class="mono" style="font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid var(--amber-bd);background:var(--amber-bg);color:var(--amber);">${c.points || 0} XP</span>
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${solved ? "var(--accent)" : "var(--faint)"};">${solved ? "\u2713 SOLVED" : "\u25cb OPEN"}</span>
         </div>
-        <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>`;
+    if (!solved && !isStarted(c.id)) return header + gateHtml(c.id, c.prompt) + `</div>`;
+    return header + `
         <p style="white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(c.prompt)}</p>
         ${hintMarkup(c.id, (c.points || 0), c.hint)}
         ${solved
@@ -2145,6 +2294,7 @@
 
   function bind() {
     // display name is owned by the class account now (sync.js chip + profile.html)
+    bindFlagStart();
 
     const howTo = document.getElementById("ctfHowTo");
     if (howTo) howTo.addEventListener("click", () => { if (window.CTF_WELCOME) window.CTF_WELCOME.open(); });
@@ -2152,7 +2302,7 @@
     const reset = document.getElementById("ctfReset");
     if (reset) reset.addEventListener("click", () => {
       if (confirm("Reset all your CTF progress on this device? This cannot be undone.")) {
-        state = { solved: {}, points: 0, retry: {}, earned: {}, mile: {}, boss: {}, bossWins: {}, streak: { last: null, count: 0, best: 0 }, bonus: 0, badges: {}, hints: {}, reviewPaid: {}, vocabXp: {}, endgameWon: 0 }; save(state); render();
+        state = { solved: {}, points: 0, retry: {}, earned: {}, mile: {}, boss: {}, bossWins: {}, streak: { last: null, count: 0, best: 0 }, bonus: 0, badges: {}, hints: {}, reviewPaid: {}, solvedAt: {}, moduleSeenAt: {}, vocabXp: {}, endgameWon: 0 }; save(state); render();
       }
     });
 
@@ -2374,6 +2524,7 @@
     if (tainted[key]) points = Math.max(1, Math.round(points / 3));
     const wasQueued = !state.solved[key] && (state.retry[key] || 0) > 0;
     state.solved[key] = true;
+    state.solvedAt[key] = Date.now();
     state.earned[key] = points;
     state.points = (state.points || 0) + points;
     state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: points, reason: chal.title || key });

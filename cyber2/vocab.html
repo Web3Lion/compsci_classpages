@@ -194,6 +194,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="card">
     <div class="label mono">// SELECT MODULE(S)</div>
     <div class="chips" id="chips"></div>
+    <div class="chips" id="focusRow" style="margin-top:10px;"></div>
     <div class="count mono" id="count"></div>
     <div class="pdfbar">
       <span class="mono" style="font-size:11px;color:var(--faint);letter-spacing:1px;">DOWNLOAD GLOSSARY (PDF)</span>
@@ -235,8 +236,9 @@ const $ = s => document.querySelector(s);
 const panel = $("#panel");
 let selected = new Set(Object.keys(MODULES).map(Number));
 let mode = "cards";
+let focusOnly = false;
 const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
-const pool = () => VOCAB.filter(v => selected.has(v.m));
+const pool = () => VOCAB.filter(v => selected.has(v.m) && (!focusOnly || v.tier==="focus"));
 /* modules a finished game drew its terms from — drives the practice-XP award */
 const modsOf = items => [...new Set((items||[]).map(v => v.m))];
 const xpBlock = (game, items, acc) => {
@@ -252,6 +254,13 @@ const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g,"");
 const gameAnswer = t => t.replace(/\(.*?\)/g,"").split("/")[0].trim();
 
 /* ---------- chips ---------- */
+function renderFocusRow(){
+  const hasFocus = VOCAB.some(v => selected.has(v.m) && v.tier==="focus");
+  const f = $("#focusRow");
+  if(!hasFocus){ f.innerHTML=""; return; }
+  f.innerHTML = `<div class="chip ${focusOnly?'on':''}" id="focusChip" style="${focusOnly?'':'color:var(--amber);border-color:var(--amber-bd);'}">\u2605 FOCUS TERMS ONLY</div>`;
+  $("#focusChip").onclick = () => { focusOnly = !focusOnly; renderFocusRow(); renderChips(); render(); };
+}
 function renderChips(){
   const c = $("#chips");
   const allOn = selected.size === Object.keys(MODULES).length;
@@ -261,7 +270,8 @@ function renderChips(){
   });
   html += `</div>`;
   c.innerHTML = html;
-  $("#count").textContent = `// ${pool().length} terms across ${selected.size} module${selected.size===1?'':'s'} selected`;
+  $("#count").textContent = `// ${pool().length} terms across ${selected.size} module${selected.size===1?'':'s'} selected` + (focusOnly ? " \u2014 focus only" : "");
+  renderFocusRow();
 }
 $("#chips").addEventListener("click", e => {
   const el = e.target.closest(".chip"); if(!el) return;
@@ -340,8 +350,9 @@ function renderCards(){
 }
 function showCard(){
   const v = fcDeck[fcIdx]; fcFlip=false; $("#fcCard").classList.remove("flip");
-  $("#fcMod").textContent = "MODULE "+String(v.m).padStart(2,"0");
-  $("#fcMod2").textContent = "MODULE "+String(v.m).padStart(2,"0");
+  const modTag = "MODULE "+String(v.m).padStart(2,"0") + (v.tier==="focus" ? "  \u2605 FOCUS" : "");
+  $("#fcMod").textContent = modTag;
+  $("#fcMod2").textContent = modTag;
   const showDef = fcDir==="def";
   const fEl=$("#fcTerm"), bEl=$("#fcDef");
   fEl.textContent = showDef ? v.d : v.t;

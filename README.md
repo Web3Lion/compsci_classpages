@@ -1,7 +1,8 @@
 # Cybersecurity & CS Classroom Site
 
-Static, no-build HTML site for three courses: AP Computer Science Principles (`apcsp/`),
-Cybersecurity 1 (`cyber1/`), AP Cybersecurity (`cyber2/`), plus a Web3/Blockchain elective (`web3/`).
+Static, no-build HTML site for four courses: AP Computer Science Principles (`apcsp/`),
+Cybersecurity 1 (`cyber1/`), AP Cybersecurity 2 (`cyber2/`), Cybersecurity 3 (`cyber3/`),
+plus a Web3/Blockchain elective (`web3/`).
 Root `index.html` is the course picker (homepage).
 
 ## Setup
@@ -21,11 +22,23 @@ isn't filled in.
 
 ## How it's organized
 
-- `index.html` — course picker homepage.
-- `apcsp/`, `cyber1/`, `cyber2/`, `web3/` — one folder per course, each with:
+- `index.html` — course picker homepage. Each course card has a real `<a target="_blank">`
+  pop-out button (top-right) so the card opens in a new tab even when this page is
+  embedded in a small iframe elsewhere.
+- `buttons/` — all single-button standalone pop-out pages, styled to match each
+  course's colors/gradient, meant to be embedded on their own (e.g. in an LMS page)
+  when the full course card grid doesn't fit:
+  - `open-cyber1.html`, `open-cyber2.html`, `open-cyber3.html`, `open-web3.html`,
+    `open-apcsp.html` — open the course itself.
+  - `docs-cyber1.html`, `docs-cyber2.html`, `docs-cyber3.html` — "Enter the Grid"
+    student-documents buttons linking to each course's Drive folder. AP CSP/Web3
+    versions pending their document links.
+  - `open-button.html` — generic configurable button (`?to=&label=&color=`).
+- `apcsp/`, `cyber1/`, `cyber2/`, `cyber3/`, `web3/` — one folder per course, each with:
   - `index.html` — course home (schedule, countdowns, quick links, resources)
   - `syllabus.html`, `vocab.html`, `vocab-data.js`, `news.html`, `profile.html`
-  - `ctf.html` — the course's Capture-the-Flag / challenge arena (cyber1 & cyber2 only)
+  - `ctf.html` — the course's Capture-the-Flag / challenge arena (cyber1, cyber2 &
+    cyber3 only — apcsp and web3 don't have one)
 - `simulators/` — standalone interactive teaching tools (one HTML file each), linked
   from the course pages' "Simulators" / "Class Links" cards. `simulators/index.html`
   is the simulators hub/directory.
@@ -33,7 +46,11 @@ isn't filled in.
   sheet IDs, exam/task countdown dates, Meet links, resource card links, CTF flags
   (see `CLAUDE.md` for the CTF authoring rules).
 - `ctf.js` — shared CTF engine (challenge rendering, grading, boss gauntlet, anti-AI
-  deterrents). Loaded only by `cyber1/ctf.html` and `cyber2/ctf.html`.
+  deterrents). Loaded only by `cyber1/ctf.html`, `cyber2/ctf.html`, and `cyber3/ctf.html`.
+- `teacher.html` — teacher-facing dashboard/reports (Supabase-backed): class summaries,
+  login/attendance report, flag analytics, module/flag locks, course-guide persona and
+  answer-key toggles, Ultimate Flags active/inactive toggle (cyber1 & cyber2), squads,
+  vocab lab, objectives, XP log, enrollment, integrity/cheat log, settings.
 - `answers.local.js` — teacher-only answer key for text-entry flags, uploaded via
   `answers.html`. **Gitignored — never commit it.**
 - `resources.js`, `objectives.js`, `standards.js`, `sync.js`, `auth.js`, `profile.js`,
@@ -41,8 +58,9 @@ isn't filled in.
   `gate-art.js`, `csv.js`, `cipher.js` — shared helper scripts used across course pages.
 - `styles.css` — shared base styles/tokens used site-wide.
 - `design-system/` — visual design system reference (tokens, components, guidelines).
-- `teacher.html` — teacher-facing dashboard/reports (Supabase-backed).
-- `supabase/` — SQL schema files for the optional backend.
+- `supabase/` — SQL schema files for the optional backend (run in the order noted in
+  `SUPABASE-SETUP.md`: schema, google-auth, teacher-reports, class-gates, answer-key,
+  attempt-log, class-groups, and the rest).
 - `uploads/` — reference materials (CED PDFs, pasted images) used while building content.
 
 ## Editing day-to-day content

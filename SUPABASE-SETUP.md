@@ -33,29 +33,46 @@ row-level security and only the four `ctf_*` functions are reachable.
    | # | File | Adds |
    |---|------|------|
    | 1 | `google-auth.sql` | Google sign-in, teacher identity |
-   | 2 | `class-gates.sql` | Module/flag locks, guide + answer-key switches |
-   | 3 | `answer-key.sql` | Sealed answer key |
-   | 4 | `teacher-reports.sql` | Roster, flag captures, attendance |
+   | 2 | `teacher-reports.sql` | Roster, flag captures, attendance |
+   | 3 | `class-gates.sql` | Module/flag locks, guide + answer-key + Ultimate Flags switches |
+   | 4 | `answer-key.sql` | Sealed answer key |
    | 5 | `attempt-log.sql` | Wrong-guess log, time-to-solve outliers |
-   | 6 | `class-groups.sql` | Teacher groups |
-   | 7 | `pioneer.sql` | First-in-class capture bonus |
-   | 8 | `vocab-log.sql` | Vocab time on task |
-   | 9 | `vocab-sessions.sql` | Per-run vocab audit trail |
-   | 10 | `roster-csv.sql` | CSV roster, move/remove students |
-   | 11 | `squads.sql` | Student-facing squads |
-   | 12 | `objectives.sql` | Objective mastery reporting |
-   | 13 | `teachers.sql` | Multiple teacher accounts |
-   | 14 | `multi-domain.sql` | Student sign-in from the second domain |
+   | 6 | `item-analysis.sql` | Per-flag attempt/abandonment analytics (needs attempt-log.sql) |
+   | 7 | `class-groups.sql` | Teacher groups |
+   | 8 | `squads.sql` | Student-facing squads (needs class-groups.sql) |
+   | 9 | `objectives.sql` | Objective mastery reporting (needs class-gates.sql + squads.sql) |
+   | 10 | `pioneer.sql` | First-in-class capture bonus |
+   | 11 | `vocab-log.sql` | Vocab time on task |
+   | 12 | `vocab-sessions.sql` | Per-run vocab audit trail |
+   | 13 | `roster-csv.sql` | CSV roster, move/remove students |
+   | 14 | `teachers.sql` | Multiple teacher accounts |
+   | 15 | `multi-domain.sql` | Student sign-in from the second domain |
+   | 16 | `allowed-emails.sql` | Extra allowed emails outside both domains (must be run AFTER multi-domain.sql, always) |
+   | 17 | `teacher-xp.sql` | Teacher-granted bonus XP |
+   | 18 | `hardmode-log.sql` | Arena mini-game run log |
+   | 19 | `hint-log.sql` | Hint-used tracking per flag |
+   | 20 | `target-warmup.sql` | Day-1 "Are You a Target?" warm-up |
+   | 21 | `signin-log.sql` | Logs rejected sign-ins (wrong domain), so you can see what a new student domain actually is |
 
-   **Order matters in three places.** `objectives.sql` must come after
-   `squads.sql`, and both `teachers.sql` and `multi-domain.sql` must come after
-   `google-auth.sql` — each pair redefines the same function, and the later one
-   wins. Re-running `google-auth.sql` on its own will silently lock out every
-   student on the second domain and every added teacher.
+   **Order matters in several places** (each is a case of two files redefining the
+   same function, where the one that runs LAST wins):
+   - `class-gates.sql` needs `teacher-reports.sql` already in place.
+   - `answer-key.sql`, `attempt-log.sql`, and `objectives.sql` all need `class-gates.sql`.
+   - `item-analysis.sql` needs `attempt-log.sql`.
+   - `squads.sql` needs `class-groups.sql`; `objectives.sql` must run after BOTH
+     `class-gates.sql` and `squads.sql`.
+   - `teachers.sql`, `multi-domain.sql`, `teacher-xp.sql`, `hardmode-log.sql`,
+     `hint-log.sql`, and `target-warmup.sql` all need `google-auth.sql` already run,
+     and must be **re-run** any time you re-run `google-auth.sql` or `schema.sql`
+     later — those two redefine shared functions and silently drop the later add-ons'
+     changes (lockable symptoms: added teachers lose dashboard access, second-domain
+     students get rejected, granted bonus XP vanishes on next sync).
+   - `allowed-emails.sql` must run after `multi-domain.sql`, always — re-running
+     `multi-domain.sql` later silently drops the allowlist.
 
 4. **Check your work at any time:** paste the contents of
    `supabase/check-installed.sql` → **Run**. It lists every add-on with
-   ✅/❌ and flags all three run-order problems. It only reads the catalog and
+   ✅/❌ and flags the run-order problems above. It only reads the catalog and
    changes nothing.
 
 ## 3. Turn it on in the site
@@ -71,9 +88,13 @@ window.SUPABASE_CONFIG = {
 Commit & push. The login gate now appears on every CTF page.
 
 ## 4. Create your classes
-Until the teacher page exists, add classes by hand in the SQL Editor. One row per
-class period; `course` must be one of `cyber1`, `cyber2`, `apcsp`, `web3`.
-Pick a **code** students will type (keep it short and unambiguous — avoid `O/0`, `I/1`):
+Use the **teacher page** (`teacher.html`, Google sign-in as the teacher email
+configured in `schoolDomains`/`google-auth.sql`) to create classes, generate
+codes, lock modules/flags, toggle the course guide, answer key, and Ultimate
+Flags, and set streak-freeze dates — no manual SQL needed for day-to-day use.
+
+If you ever need to add a class by hand instead, `course` must be one of
+`cyber1`, `cyber2`, `cyber3`, `apcsp`, `web3`:
 
 ```sql
 insert into classes (course, name, code) values
@@ -126,10 +147,5 @@ where class_id = '<class-uuid>' and lower(handle) = lower('<handle>');
 ---
 
 ## Next up (planned)
-- **Teacher page:** create/rename classes, generate codes, reset PINs, view rosters
-  & cheat logs, and set **streak-freeze** dates (holidays / no-class days) — the
-  `frozen_dates` column and the engine's `isSkipDay` hook are already in place.
-- **Google sign-in** restricted to the school's Workspace domains — `@southfayette.org`
-  for staff and `@lions.net` for students (the list lives in `supabase-config.js` as
-  `schoolDomains` and in `supabase/multi-domain.sql` as `_school_domains()`; both must
-  agree) — as a stronger identity option alongside anonymous handles.
+- **Student-changeable PIN** from their own profile page (currently a teacher-only reset via SQL or the teacher page).
+- **Broader Google Workspace domain coverage** beyond the two configured domains, via `allowed-emails.sql`, as new needs come up.

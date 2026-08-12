@@ -1,0 +1,542 @@
+UNIT 1: What is Cybersecurity
+This unit, which should take 3 weeks, introduces students to the field of cybersecurity. This unit
+focuses on laying the foundation for students' cybersecurity journey. The two critical elements
+are: first, learning and instilling the cyber mindsets, and second, a strong understanding of the
+field, what it is, and what it is not. The main outcome of this unit is that students should be
+excited about and have a strong foundation for the first year of cybersecurity.
+K-12 CYBERSECURITY STANDARDS
+Core Concept: Digital Citizenship (DC) and Cybersecurity Foundations
+Sub Concept: Cybersecurity Mindsets and Cybersecurity Landscape
+Topic(s): Threat Actors (THRT), Digital Footprint (FOOT), PII (PII)
+Grade Band:
+● 9-12.DC.THRT Analyze the motives of threat actors
+● 9-12.DC.FOOT Examine the implications of digital footprint
+● 9-12.DC.PII.1 Explain the importance of social identity and the implications of online activity regarding private data, long-term career impacts,
+and the permanence of digital data.
+● 9-12.DC.PPI.2 Explain the individual risks of a data breach to an organization housing personal data.
+WHAT IS SECURITY+
+The Security+ certification is widely recognized in the field of information security. It covers the fundamentals of security, including network security,
+compliance and operational security, threats and vulnerabilities, application, data and host security, access control and identity management, and
+cryptography. In each of the following units, you will find information about the Security+ certification and the main topics for that unit in this space.
+For Unit 1, a student must understand threat actors and types of attacks well. Here are the areas to concentrate:
+● 2.1 Threat Actors: Compare and contrast common threat actors and motivators.
+● 2.2 Attacks: Explain common threat vectors and attack surfaces
+Cybersecurity Learning Objectives
+1. Develop a foundational understanding of the cybersecurity field.
+2. Prepare for real-world experiences by completing PC/Trusted Sec
+Certification preparation activities.
+Recommended Resources:
+1. pnwcyber.com
+2. CyberSeek
+3. Kapersky Cyber Threat Map
+
+-- 1 of 15 --
+
+3. Explore historical cybersecurity incidents and the present global
+cyber threat landscape to understand the evolution of cybersecurity.
+4. Explore a variety of cybersecurity careers and identify three
+cybersecurity careers of personal interest to include in their
+portfolio.
+5. Identify the Cyber Mindsets and explain how they connect to
+cybersecurity competitions and their personal portfolio.
+6. Describe ethical considerations in real-world digital scenarios.
+7. Prepare for real-world experiences by completing PC/Trusted Sec
+Certification preparation activities.
+8. Define Capture the Flag (CTF) challenges and explain why they are
+important to cybersecurity education.
+4. Live Cyber Threat Map
+5. NETSCOUT Omnis Threat Map
+6. Cybersecurity Scenario EMATE
+Real-World Learning and PC10
+● Real World Learning
+o Unit Portfolio
+● PC10 - Relentless Curiosity
+o Cybersecurity is constantly evolving, and successful
+professionals must be constantly learning and finding
+solutions to new challenges. Industry partners regularly
+say that passion and curiosity are the key attributes that
+they look for in employees.
+Industry Experts
+● The industry expert best suited for Unit 1 is someone who can
+get the students excited about the course and program. They
+don’t need to have any specific cyber content expertise, but
+the ability to share engaging stories and energize students is
+a priority. The ability to discuss the importance of
+cybersecurity mindsets and soft skills is critical.
+INSTRUCTIONAL STRATEGIES GUIDE
+Use this instructional strategies guide to learn more about different instructional strategies used in Paradigm’s courses and how to best implement them.
+PARADIGM LEARNING PROCESS
+Paradigm uses the “Play, Learn, Perform” learning process. This process is designed to help
+students develop the skills and knowledge needed for a career in cybersecurity.
+Play
+Students begin new topics by diving
+right into hands-on application. This is
+a risk-free environment for students to
+experience new learning.
+Learn
+After students develop curiosity,
+real-world application context, and a
+conceptual framework, they will then
+engage in targeted learning.
+Perform
+The ability to perform and apply learning is critical.
+However, each student will and should be at different levels
+of performance depending on strengths, topics, and
+experience. Performance should focus on capturing
+evidence, reflection and developing growth goals.
+
+-- 2 of 15 --
+
+Extend
+Extend activities are optional for students. However, they are designed to provide opportunities to extend and personalize learning beyond the
+classroom. Extend activities help develop the cyber mindsets.
+UNIT 1 GUIDANCE
+This Paradigm Cyber Ventures: Resource Guide gives teachers a quick overview of all Paradigm Cyber Ventures resources and how
+they support the “Play, Learn, Perform” model. It explains when and how to use core lessons, CTFs, interactives, tabletop scenarios, and
+the Cyber Essentials certification so teachers can plan effectively and create meaningful cybersecurity learning experiences for students.
+Play (1 day)
+Jump right into a PCV “play” challenge. Do this to build understanding of the cyber mindsets (play, learn, perform and passion, curiosity, and
+performance). Teachers can expect students to experience “productive struggle” by jumping right in, and teachers will need to encourage students
+through this process.
+PCV Play Activity: Cybersecurity Scenario EMATE
+These Interactives help students learn difficult concepts and were first developed under the leadership of Mike Qaissaunee at the Brookdale Cyber
+Center and Dr. John Sands at CSSIA with funding from an NSF Grant. This first one puts students right in the midst of a cybersecurity scenario.
+Students will likely not know all terminology or concepts yet, and that’s okay! Encourage the productive struggle here.
+1. Direct students to this link for a myEMATES interactive
+2. Have students complete the following interactive:
+a. Cybersecurity Scenario
+3. Have students complete the following reflection questions. These can be written or verbally discussed with a partner:
+a. What was challenging about today’s interactive?
+b. What were the most important concepts you learned in today’s interactives?
+
+-- 3 of 15 --
+
+c. Where might you use these concepts in real life (school, work, online life)?
+d. If you had to teach someone else what you just learned, how would you explain it?
+Guidance: Cybersecurity is a field where practitioners are always learning and confronted with new challenges to solve. We recommend students
+jump right into challenges that they do not yet have the requisite background information to solve. We believe in setting the expectation that
+cybersecurity practitioners will often learn by doing.
+Learn
+Instructional
+Strategy: Student
+Unit Portfolio
+This Unit Portfolio is designed to transform students from passive consumers of information into active security analysts.
+Rather than simply completing worksheets to get a grade, students are tasked with curating a professional collection of
+evidence that demonstrates their true competency in cybersecurity concepts. This method allows students to move at a
+flexible pace while focusing on the quality and application of their learning.
+For each lesson, the “wrap-up exercise / assessment” will be the required portfolio artifact addition. Students will
+complete these and add them to their portfolio throughout the unit. They will submit them all together, along with an
+assessment reflection, at the end of the unit as the performance task. By the end of the unit, students will have a
+comprehensive body of work that showcases not just what they know, but what they can do.
+Emphasize that this is a small-scale practice activity for the larger portfolio students will be building throughout the
+course.
+1.1 What is
+Cybersecurity?
+(1-2 days)
+Learning Objective: Develop a foundational understanding of the cybersecurity field.
+Materials:
+● Mind Map Example
+● What is Cybersecurity
+● Onity Student Reading Guide
+● Unit 1 Vocabulary Sheet
+● Cybersecurity Snapshot Slide Deck
+Kick Start: Mind Map
+Have students consider the question: “What is cybersecurity, and what does it involve?” Have students create a “mind
+map” to demonstrate their thoughts, with the word “cybersecurity” in the middle and their different ideas branching
+off from that. Check HERE for an example of a mind map. Then create a class example on the board, with students
+contributing their ideas from their own personal mind map. Introduce cybersecurity:
+“Cybersecurity is the art of protecting the digital backbone of our entire society, from your
+
+-- 4 of 15 --
+
+personal texts to national power grids. This course isn't just about computers; it's about the
+critical skills needed to defend people and information in an increasingly dangerous digital
+world. You are stepping into a field that is vital, high-stakes, and incredibly rewarding.”
+Activity 1: What is Cybersecurity
+To introduce students to the field of cybersecurity, have them use this resource. With a partner, have students read the
+above article and fill out this Student Reading Guide.
+Activity 2: Cybersecurity Snapshot Jigsaw
+Divide students into five small groups to create a “Cybersecurity Snapshot” summarizing one key concept from the
+reading. Assign each group a different key concept:
+● The story of Onity
+● Why do we need cybersecurity?
+● Where can we find cybersecurity?
+● Types of Attacks
+● Defenses against hacking
+Each group creates a quick slide on this slide deck with the following. You will need to update the sharing settings on
+your document for students to be able to create their slide:
+● Summary
+● Visual
+● Real-world example
+● Discussion question
+Groups then lead a brief presentation, teaching their concept to the class. Be sure to check in with each group before
+presentations to ensure that their information is accurate and engaging. As students listen, they should fill out their
+Unit 1 Vocabulary Sheet.
+Note on Vocabulary Sheets: Each unit will have a vocabulary sheet for students to fill out as they go through the unit.
+There is a teacher answer guide with the sheet filled in at the bottom of each unit’s sheet.
+Wrap-Up Exercise/ Assessment (Portfolio Artifact): Reflection
+Students finish with a short individual reflection on what they learned. Have them respond to the following questions
+on a piece of paper or digital document:
+● What is one concept about cybersecurity that you understand better now than you did at the start of class?
+● Which vulnerability, attack type, or real-world example stood out to you the most, and why?
+● How did the Onity case study change or deepen your understanding of why cybersecurity is important?
+● Where do you see cybersecurity showing up in your own life or in the world around you? Give one example.
+Consider making this a completion grade to encourage honest reflection.
+1.2 Past, Present,
+and Future of
+Cyber
+Learning Objective: Explore historical cybersecurity incidents and the present global cyber threat landscape to
+
+-- 5 of 15 --
+
+(3 days) understand the evolution of cybersecurity.
+Materials:
+● Research tools
+● History of Cyber Threats and Cybersecurity Slides and Event Markers
+● History of Cybersecurity
+● Unit 1 Vocabulary Sheet
+● Suggested Threat Maps:
+o Kapersky Cyber Threat Map
+o Live Cyber Threat Map
+o NETSCOUT Omnis Threat Map
+● Canva or similar tool
+● Threat Report Notes
+● Sticky notes or Google slide deck
+● Optional: recommended resources (see below)
+Kick Start: Research Challenge
+Start the day with this research challenge:
+“Use your research tools available to you. Research ‘Creeper’ the first computer virus.”
+Follow up by asking students these questions:
+● What was the Creeper virus, and who created it?
+● In what year did Creeper appear, and what type of computers did it infect?
+● What message did the Creeper virus display when it infected a system?
+● Was Creeper harmful or destructive? Explain its purpose.
+● What program was created to remove Creeper, and why is it important in cyber history?
+Activity 1: History of Cyber Threats and Cybersecurity Timeline
+Use these slides to introduce students to the history of cyber threats and cybersecurity. Then divide students into small
+groups. Assign each group one of the following cyber history events.
+● Morris Worm
+● ILOVEYOU Worm
+● Stuxnet
+● Yahoo Breach
+● SolarWinds
+● Colonial Pipeline
+● CrowdStrike Outage
+They will be responsible for creating an event marker for a physical timeline in your room. Each event marker should be
+a piece of blank paper. In the middle should be the name of the event in large letters. Surrounding it should be
+information that helps others understand the event, like:
+
+-- 6 of 15 --
+
+● Dates
+● What happened
+● Who and what was impacted
+● The legacy of the event
+● Visuals
+● Quotes or other engaging content surrounding the event.
+Once all small groups have finished their event markers, have them physically arrange it in a timeline in the room. Once
+the timeline is complete, have each group share what they found about their event in chronological order. As they go,
+students should record their learning on their Unit 1 Vocabulary Sheet.
+Activity 2: Present Cyber Threats
+This activity will help students understand that cybersecurity is a global and highly active industry. Students will use
+research cyber threat maps and examine them to learn about what is happening in the field. Be aware that threat
+maps are not 100% accurate and are used as a way to visualize data to help others conceptualize the threat
+landscape. Each map has a specific visualization goal.
+Here are several threat maps you could direct students towards. Ensure that students have access to these before
+using.
+● Kapersky Cyber Threat Map
+● Live Cyber Threat Map
+● NETSCOUT Omnis Threat Map
+Using these threat maps, have the students do the following:
+● In groups of 2, describe what they are seeing
+○ Volume, types of attacks, locations, industries, etc.
+○ What new questions does this information evoke?
+○ What would this data be useful for?
+○ What new things did you learn, and what does this make you want to learn more about?
+Activity 3 (Portfolio Artifact): Cyber Threat Report
+Using Canva or a similar tool, have students create their own cyber threat report. This should be a one-pager
+describing either the general threat landscape or the landscape of a specific area (DDOS, RansomWare, Hacktivists,
+etc.) The goal is for students to produce a professional-looking one-pager that would be used in the industry to inform
+others (other parts of the company, sell a product, etc.). Have students fill out these Threat Report Notes as they go.
+Wrap-Up Exercise/ Assessment: Past, Present, Future of Cybersecurity
+Instructions:
+1. In groups of 3, students will complete this quick activity on a sticky note, whiteboard, or Google Slides:
+○ Past: One major historical attack and its impact (e.g., Stuxnet, SolarWinds)
+○ Present: One insight or stat they learned from the cyber threat maps or reports
+
+-- 7 of 15 --
+
+○ Future: One prediction or question they have about where cybersecurity is heading
+2. Each group posts their “Past, Present, Future” summary on the wall or in a shared slide deck.
+3. Gallery Walk: Groups rotate and read other entries.
+As they walk, they choose one “future” question or prediction that stands out to them.
+4. Class Discussion (5 min):
+○ What trends did you notice?
+○ What surprised you?
+○ What do you think students and professionals should prepare for next?
+1.3 Cyber Careers
+(2 days) 	Learning Objective: Explore a variety of cybersecurity careers and identify three cybersecurity careers of
+personal interest to include in their portfolio.
+Materials:
+● Cyber Career Playlist
+● Unit 1 Vocabulary Sheet
+● Digital Resources
+o Impact of Cybersecurity Reading
+o Introduction to Cybersecurity Video
+o Top 10 Cybersecurity Career Profiles
+o CyberSeek
+● Canva or similar tool
+Kick Start: Career Brainstorm
+Start the day with this question:
+“As of right now…what do you think you may want to do when you grow up? (It’s okay if you don’t know!) Consider
+what you may like in a job, what your strengths and passions are, and what you would be willing to work towards
+through education, certifications, or other career preparations.”
+Have students either record their personal thoughts on a piece of paper or share with a partner. This would be a great
+exercise to return to at the end of the course!
+Activity 1: Cyber Career Playlist
+Tell students that today, they will be exploring the cybersecurity industry. Using this Activity Sheet, students should
+begin exploring and mapping out the industry. They will be asked to explore different online resources and record their
+findings as they go. They should do this independently or with a partner. Students should record notes on their Unit 1
+Vocabulary Sheet.
+
+-- 8 of 15 --
+
+Activity 2 (Portfolio Artifact): Career Flyer
+Individually or in pairs, have students:
+● Using Canva or another similar program, students will create a flyer or infographic about a specific cyber career.
+This could be one they researched in Activity 1 or one that you provide. This flyer should be designed to teach
+others about the career and encourage them to pursue that career. It should include:
+○ Career fields, job data, local analysis and salaries
+○ Education, skills and certs needed
+○ Other relevant information
+Activity 3: Career Flyer Showcase
+After students create their career flyer, have them display their flyer either digitally or physically in a location where
+others will be able to easily view it (on the walls, on desks, on a class table, etc.). Have students walk around the room
+and examine each others’ flyers. As they go, students should determine the top 3 careers they are most interested in
+from both the flyer showcase and their research. They should record these on their Activity Sheet in the appropriate
+location.
+Wrap-Up Exercise/ Assessment: Cyber Career Playlist
+Use the activity sheet as a formative assessment for this lesson. This should be primarily an opportunity for students
+to reflect and share their thoughts with you, so consider making this a completion grade.
+1.4 Cybersecurity
+Mindsets, Skills,
+and Competitions
+(2 days)
+Learning Objective: Identify the Cyber Mindsets and explain how they connect to cybersecurity competitions
+and their personal portfolio.
+Materials:
+● Cyber Mindsets, Skills, & Competition Slides
+● Unit 1 Vocabulary Sheet
+● Cybersecurity Character Profile
+● PC10 Question Lens
+Kick Start: Mindsets Discussion Question
+Start the day with this question:
+“What kind of mindsets and skills do you think cybersecurity professionals need to be successful in the field?”
+Engage in a think-pair-share protocol:
+● Have students think to themselves for 30 seconds. Optionally, have them jot ideas down on a scrap piece of paper.
+● Then have students discuss with a nearby partner for 1-2 minutes.
+● Lastly, come back together as a class and debrief for 2-3 minutes. Have students share out their thoughts and
+encourage discussion.
+
+-- 9 of 15 --
+
+Activity 1: Cyber Mindsets, Skills, & Competition Slides
+Use these slides and the embedded activities to introduce students to the following:
+● Cyber Mindsets: These are mindsets that have been shown to be critical to professionals working in the field of
+cybersecurity.
+● PC10: This is a list of 10 professional skills needed to be successful in the field of cybersecurity. These will be
+highlighted and embedded throughout the course.
+● Cyber Competitions: Cyber competitions are a critical component to student learning and the development of
+mindsets and skills. Refer to this Competition Guide for more information on different cyber competitions your
+students could participate in this year.
+The documents linked above can be shared with students or simply used for teacher reference. As you go through the
+slides, have students record their learning on their Unit 1 Vocabulary Sheet.
+Activity 2: PC10 Question Lens
+This activity has students apply what they have learned about the PC10 Skills. Divide students into 6 small groups.
+Students will be assigned one of the PC10 skills to focus on in this activity. Present students with this scenario and ask
+each group to come up with three questions they should ask about the scenario based on their assigned skill. Have
+them record their ideas on a piece of paper. Then have students walk around and look at the other groups’ questions
+with the challenge of trying to add one new question to each group’s paper.
+PC10 Skills Highlighted:
+1. Relentless Curiosity
+2. Ethical Decision Making
+3. Precise Documentation
+4. Effective Communication
+5. Inclusive Collaboration
+6. Critical Analysis
+Activity 3: Introduction to Cyber Portfolio
+Introduce students to the Cyber Portfolio that they will be building and creating in later units. Using the Paradigm
+Cyber Portfolio (Instructor Guide), discuss with students:
+● What is a portfolio?
+○ A professional compilation of artifacts designed to demonstrate your skills, knowledge, growth, and
+accomplishments over time.
+● What goes in a portfolio?
+○ Artifacts that demonstrate the cyber mindsets: passion, curiosity, performance.
+● What portfolio will be used for?
+○ Cyber Showcase
+○ Internships
+○ Employment
+○ College
+● Consider showing them this very basic Sample Cyber Portfolio as you go.
+
+-- 10 of 15 --
+
+Students will create portfolios and identify artifacts in a later unit.
+Wrap-Up Exercise/ Assessment (Portfolio Artifact): Build Your Cybersecurity Character
+Have students use this Cybersecurity Character Profile for students to evaluate themselves on their current strengths
+and weaknesses when it comes to mindsets and skills. Students will be adjusting this character as they learn and grow
+throughout the course, so emphasize that it should be completed based on where they currently are in their cyber
+journey.
+Consider having students share these with you so that you can see their ongoing updates.
+1.5 Cyber Ethics
+(1 day) 	Learning Objective: Describe ethical considerations in real-world digital scenarios.
+Materials:
+● Ethical Scenario
+● Unit 1 Vocabulary Sheet
+● Ethics of Cybersecurity
+● Cyber Ethics Contract
+● pnwcyber.com
+Kick Start: Ethical Scenario
+Present students with this ethical scenario. Have them discuss the various options and how they would approach it.
+Introduce the concept of cyber ethics and its importance. Tell students that they will be looking at ethics throughout
+the course. Students should record notes on their Unit 1 Vocabulary Sheet.
+Activity 1: Cyber Ethics Play Games
+Ethics will be woven through all 12 units. Look for the icon to the left in each unit. Just like we start every unit with
+PLAY, we want to start the topic of Cyber Ethics with a PLAY activity. Below are a few different options to explore this
+topic of ethics. Let your students dig in, have some fun and share with you what they have learned about cyber ethics:
+● Use this site: pnwcyber.com and these games:
+○ Ethics Level 1 and 2
+○ Cybersecurity Ethics Scavenger Hunt
+Wrap-Up Exercise/ Assessment (Portfolio Artifact): Cyber Ethics Contract
+Have students read thoroughly and sign this “Cyber Ethics” Contract. This contract has students commit to behaving
+ethically throughout the course and using the skills they learn in class in appropriate ways. Once students have signed
+this contract, have them add it to their portfolio.
+1.6 PC/Trusted Sec
+Certification
+(2 days)
+Paradigm/TrustedSec Cyber Essentials Certification
+
+-- 11 of 15 --
+
+The Paradigm/TrustedSec Cyber Essentials Certification is designed for high school students who have completed
+their first cybersecurity course and are ready to demonstrate their foundational knowledge. This certification validates
+students’ understanding of key cybersecurity concepts, including network basics, cryptography, social engineering,
+Linux, computer number systems, and common vulnerabilities such as malware. In addition to technical skills, the
+certification emphasizes the PC10 — ten core skills essential for success in cybersecurity and beyond—such as ethical
+decision-making, curiosity, critical analysis, and precise documentation. Earning this certification gives students a
+strong start on their cybersecurity journey, offering recognition for their learning and preparing them for future
+opportunities in education, certifications, and careers. It serves as both a milestone and a springboard into the
+broader world of cybersecurity.
+Learning Objective: Prepare for real-world experiences by completing PC/Trusted Sec Certification preparation
+activities.
+Materials:
+● Paradigm Trusted Sec Certification Preparation
+● Access to Centra
+● Unit 1 Vocabulary Sheet
+Kick Start: Introduce the Paradigm Trusted Sec Certification
+Introduce students to the certification, emphasizing that it will serve to both demonstrate their learning in this course
+as well as providing recognition of their learning and achievements for their future. Explain to students that they will
+prepare for the certification at the end of each unit by completing activities related to the units’ topics and then
+attempting a 10-question prep quiz.
+Activity 1: Paradigm Trusted Sec Certification Preparation
+Click HERE to go the Unit 1 materials to help you prepare for the certification. Have students complete each of the
+activities to prepare for the Paradigm/Trusted Sec Cyber Essentials Certification.
+Activity 2: Certification Prep Questions
+Direct students to Centra and then the “Certifications” tab. Have students select the “Paradigm Cyber Essentials
+Certification” and attempt the prep questions for Unit 1. Encourage students to reflect on the experience with a
+partner, discussing what they did well on and what they struggled with.
+1.7 Paradigm
+Cyber CTFs
+(1 day)
+Overview: Paradigm Cyber Capture the Flag (CTF) challenges are hands-on puzzles that let you apply cybersecurity
+skills to discover hidden “flags” and solve real-world problems. They introduce students to the mindset of investigators
+and ethical hackers as they explore how systems can be attacked and defended. Teachers can also use the Paradigm
+Cyber Ventures: Capture the Flag (CTF) Guide for support, navigation help, strategies, and tips to get the most out of each
+challenge.
+Materials:
+
+-- 12 of 15 --
+
+● Paradigm Cyber CTFs Introduction Scavenger Hunt
+● Unit 1 Vocabulary Sheet
+● CTF Scavenger Hunt and Debrief Reflection Document
+Activity 1: Paradigm Cyber CTFs Introduction Scavenger Hunt
+Introduce students to Capture the Flags with this activity. Use these slides to introduce students to Capture the Flag
+challenges in Centra. These slides will help you walk through what they are, where to find them, how to use them, and
+some examples. As you go, students will be asked to complete a scavenger hunt in Centra to find relevant items
+related to CTFs. They will keep track of these on their CTF Scavenger Hunt and Debrief Reflection Document.
+Emphasize to students that CTFs are an important part of this course, and they will be a regular part of each unit.
+Thus, it is important for students to be familiar with them.
+Wrap Up Exercise/ Assessment (Portfolio Artifact): CTF Scavenger Hunt and Debrief Reflection
+Have students submit their CTF Scavenger Hunt and Debrief Reflection Document. Consider making this a completion
+grade to encourage open exploration and honest reflection for this initial exposure to CTFs.
+Perform (1 day)
+Performance Task:
+For the performance task for this unit, have students compile their unit tasks into a unit portfolio. This can be collected in a Google Folder or a physical
+one, depending on teacher preference. This should give them practice on compiling a portfolio, which they will do in this course. Have students include
+the following items from the unit:
+● What is Cybersecurity Reflection
+● Career Flyer
+● Build Your Cybersecurity Character
+● Cyber Threat Report
+● CTF Scavenger Hunt and Debrief Reflection
+● Assessment Reflection Questions (below)
+●	
+Teachers: Use this rubric to guide feedback and grading.
+Assessment Reflection Questions:
+● This unit followed a "Play, Learn, Perform" model. How did starting with a "Play" challenge (before you knew the definitions) change the way you
+approached the "Learn" lessons?
+● Why do you think "Ethics" is listed as a skill that needs practice, rather than just a rule you follow?
+● Describe a moment where you felt frustrated or stuck in this unit. Which mindset or skill did you use to get unstuck?
+
+-- 13 of 15 --
+
+Extend and Portfolio
+EXTEND
+THEN vs. NOW INFOGRAPHIC: To extend their learning, students can create a “Then vs. Now” Infographic on a historical attack of their
+choice. Use these directions:
+● Step 1: Choose Your "Vintage" Virus
+○ Pick one from the classroom timeline
+● Step 2: Choose Your "Modern" Rival
+○ Find a modern attack (2020–Present) that uses similar methods but for different reasons:
+● Step 3: Create the Infographic (Template)
+○ Students can use Canva or a physical poster. They must compare the two attacks across these four categories:
+■ Motive
+■ Vector
+■ Scope
+■ Defense
+PORTFOLIO
+Throughout all Paradigm courses, students will have an opportunity to start assembling information to create a professional portfolio. We suggest
+having the students create a Google folder with their last name & Cyber Portfolio (example: Smith Cyber Portfolio). In this folder, place three other
+folders: Introduction, Cybersecurity, and Capstone. One of the options to create this cyber portfolio is to use Google Sites. Keeping this information in
+the Google folder will make it easy at the end of the course to start developing their Google Site (portfolio). Students will then be able to add
+even further documentation as they proceed through the other courses (if applicable).
+Below is an example of some of the information that will be kept in their cyber portfolio with an emphasis on passion, curiosity and
+performance.
+Sample Paradigm Cyber Portfolio
+CATEGORY 	EVIDENCE, ARTIFACTS OR INFORMATION
+PASSION
+Strengths, Careers of Interest
+● Example: Interested in a career in Forensics or Red Teaming
+● Example: Strengths: Cryptology and OSINT
+CURIOSITY
+Areas of interest, evidence of pursuing
+curiosities and experiences that highlight
+pursuing interests
+● Example: Extension project on Bitcoin theft
+● Example: Attended a college weekend cyber workshop on malware
+● Example: Social engineering project
+
+-- 14 of 15 --
+
+PERFORMANCE
+Competitions
+Competitions 	Certifications, Badges, Credentials 	Projects
+● Example: NCL Scouting Report
+● Example: Paradigm CTF
+● Example: CyberStart
+Example: Paradigm / Trusted Sec Cyber
+Essentials Certification ● Unit 3 Performance task
+
+-- 15 of 15 --
+

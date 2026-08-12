@@ -209,4 +209,31 @@
     teaseFor: teaseFor, directionsFor: directionsFor,
     list: ORDER, ciphers: CIPHERS
   };
+
+  /* ---- ALIEN MASK ---------------------------------------------------------
+     A cosmetic "mission gate" shown on the CTF page before a student clicks
+     Begin: module names render in an alien glyph alphabet until they do.
+     Cracking it early costs nothing and unlocks nothing but bragging rights
+     — it's a fun ritual, not a security layer. Each course gets its OWN
+     alphabet (seeded from the course id) so periods can't just trade notes.
+     The teacher answer key uses the exact same function, so a preview there
+     always matches what students see. */
+  var ALIEN_GLYPHS = ["ᛝ","ᛟ","ᛞ","ᛗ","ᛚ","ᛃ","ᛇ","ᚼ","ᚦ","ᚨ","ᚱ","ᚲ","ᚷ","ᚹ","ᚻ","ᚾ","ᛁ","ᛈ","ᛉ","ᛊ","ᛏ","ᛒ","ᛖ","⟁","⟐","◈","⬡","⬢","⌬","⏣"];
+  function alienSeed(s) {
+    var h = 0; s = String(s || "");
+    for (var i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+    return Math.abs(h) || 1;
+  }
+  function alienKeyFor(course) {
+    var seed = alienSeed("alien-" + course), a = "abcdefghijklmnopqrstuvwxyz".split(""), g = ALIEN_GLYPHS.slice();
+    function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+    for (var i = g.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = g[i]; g[i] = g[j]; g[j] = t; }
+    var map = {}; a.forEach(function (ch, i) { map[ch] = g[i % g.length]; });
+    return map;
+  }
+  function alienEncode(course, text) {
+    var map = alienKeyFor(course);
+    return String(text || "").split("").map(function (c) { var lc = c.toLowerCase(); return map[lc] || c; }).join("");
+  }
+  window.CTF_ALIEN = { glyphs: ALIEN_GLYPHS, keyFor: alienKeyFor, encode: alienEncode };
 })();

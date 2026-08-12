@@ -223,6 +223,12 @@ async function rowHtml(c,locked,course){
            :'<span class="pill" style="background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok);">open</span>')+
     '<span class="mono" style="margin-left:auto;font-size:10px;color:var(--faint);">'+esc(c.id)+'</span></div>';
 
+  if(window.__akAlienPreview&&window.CTF_ALIEN){
+    var teaser=(c.levels&&c.levels[0]&&c.levels[0].prompt)||c.prompt||c.intro||c.title;
+    h+='<div class="mono alienPreview" style="font-size:11px;color:var(--accent2);letter-spacing:1px;margin-bottom:8px;opacity:.85;">'+
+      'BEFORE START: '+esc(window.CTF_ALIEN.encode(course,teaser))+'</div>';
+  }
+
   // decrypt directions when the class has this one locked
   if(locked&&CI){
     var d=CI.directionsFor(c.id);
@@ -305,7 +311,10 @@ async function renderKey(gates){
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+
       '<span class="pill" style="background:color-mix(in srgb,'+m.c+' 16%,transparent);color:'+m.c+';">'+esc(m.label)+'</span>'+
       '<span class="mono" style="font-size:11px;color:var(--dim);">'+chals.length+' challenges \u00b7 '+
-        chals.filter(isLocked).length+' locked \u00b7 guide '+(gates.persona_on?"awake":"asleep")+'</span></div>'+
+        chals.filter(isLocked).length+' locked \u00b7 guide '+(gates.persona_on?"awake":"asleep")+'</span>'+
+      '<label class="mono noprint" style="margin-left:auto;font-size:11px;color:var(--dim);display:flex;align-items:center;gap:6px;cursor:pointer;">'+
+        '<input type="checkbox" id="akAlienToggle" '+(window.__akAlienPreview?'checked':'')+' onchange="toggleAlienPreview(this.checked)"> Preview scrambled flag text</label>'+
+    '</div>'+
     '<div style="font-size:13.5px;color:var(--muted);line-height:1.6;margin-top:10px;">'+esc(v.line)+'</div>'+
     '<div class="mono noprint" style="font-size:11px;color:var(--faint);margin-top:10px;line-height:1.6;">'+
       'Locked challenges list the exact cipher and how to reverse it. Text-flag answers come from answers.js and are '+
@@ -378,6 +387,7 @@ async function verifyGuess(){
 }
 
 /* ---------- boot ---------- */
+function toggleAlienPreview(on){ window.__akAlienPreview=on; if(CUR) pickClass(CUR.id); }
 async function pickClass(id){
   CUR=CLASSES.filter(function(c){return c.id===id;})[0]; if(!CUR) return;
   try{ localStorage.setItem("ctf-ak-class",id); }catch(e){}
