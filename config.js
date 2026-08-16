@@ -771,578 +771,778 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "e0f6519553979b886476cc5cdb737cc9b2499d51c61c0d01c007ee8f313320be" }
     ] },
 
-  /* MODULE 4 — Computer Number Systems ────────────────────────────────────── */
-  { id: "c1-m3-convert", module: 4, title: "Convert the Number", category: "Number Systems",
+  /* MODULE 4 — Computers & Number Systems (Play → 4.1 Binary → 4.2 Computer Basics → 4.3 Ethics → 4.4 CTF/Cert & Perform, no flags) ── */
+  { id: "c1-cn-4.1-fundamentals", module: 4, title: "4.1 — Digital Communication & Binary Numbers", category: "Number Systems",
+    frameworks: null,
+    resource: { label: "Try the Binary Paradigm Cyber Interactive", url: "https://binary.paradigmcyberventures.com/home" },
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — How computers store information. Convert this binary number to decimal:\n\n1010\n\nSubmit as flag{number}.",
-        hint: "Place values from the left are 8, 4, 2, 1. Add the ones with a 1 above them.",
-        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
+        prompt: "Objective — Convert decimal, binary, and hexadecimal numbers. Computers rely on ___, a system of only ones and zeros, because their circuits can only detect two electrical states.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the number system built from just 0s and 1s.",
+        flagHash: "4beaab69bb248e2bdda63907d08ddea2345e3cf6d19b650af32ccbd33bac998f" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Binary, octal & hexadecimal. Convert this hexadecimal value to decimal:\n\n0x1F\n\nSubmit as flag{number}.",
-        hint: "In hex the leading 1 is worth 16 and F is worth 15. Add them.",
-        flagHash: "403d60bfd7b665ebdd5ccc776d1dc852289ccbb96c5bae5cf074f32e7a87751a" },
+        prompt: "Objective — Digital data. A group of 8 bits is called a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "One of these can represent a single letter in ASCII.",
+        flagHash: "dcaaadf1496012d33eb9367d8b34978faac4af47643196660e82b313e42b7650" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Binary encodes information. Decode this binary (8 bits per character) into text:\n\n01101000 01101001\n\nSubmit as flag{text}.",
-        hint: "Each 8-bit group is one ASCII character. 01101000 = 104 = 'h'.",
-        flagHash: "67916076f3a35700873e2946da257eb2e6e42ff7fdcfa963c0c1967c509f4225" }
+        prompt: "Objective — How computers communicate. Hardware that lets a device connect to a network by converting its data into signals is called a Network Interface ___. Give the one-word term.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the physical component that gets a device onto the network in the first place.",
+        flagHash: "0792768ff5942ac9b181343f026c21ae6293c7f51995a69e927afedf3748ec42" }
     ] },
 
-  { id: "c1-m3-base", module: 4, title: "Match the Base", category: "Number Systems", type: "match", points: 150,
-    intro: "Objective — Number systems. Match each prefix/example to its base. Tap the example, then tap the base.",
+  { id: "c1-cn-4.1-terms", module: 4, title: "4.1 ext — Match the Networking & Binary Term", category: "Number Systems", type: "match", points: 150,
+    intro: "Objective — How Do Computers Communicate? Match each description to the term it defines. Tap the description, then tap the term.",
     pairs: [
-      { left: "0b1010", right: "Binary (base 2)" },
-      { left: "0o17", right: "Octal (base 8)" },
-      { left: "42", right: "Decimal (base 10)" },
-      { left: "0x2A", right: "Hexadecimal (base 16)" }
+      { left: "Any device connected to a network, like a laptop or printer", right: "Node" },
+      { left: "Rules that govern how devices communicate over a network", right: "Networking Protocols" },
+      { left: "The smallest unit of digital data — a single 0 or 1", right: "Bit" },
+      { left: "Hardware that converts a computer's data into signals for the network", right: "Network Interface Card (NIC)" },
+      { left: "A number system based on ten digits, 0-9", right: "Decimal System" }
     ] },
 
-  { id: "c1-m3-bits", module: 4, title: "Order the Bit Values", category: "Number Systems", type: "order", points: 150,
-    intro: "Objective — How computers use binary. Order these 8-bit place values from smallest to largest.",
+  { id: "c1-cn-4.1-convert", module: 4, title: "4.1 ext — Convert Decimal to Binary", category: "Number Systems", type: "order", points: 150,
+    resource: { label: "Try the Binary Paradigm Cyber Interactive", url: "https://binary.paradigmcyberventures.com/home" },
+    intro: "Objective — Converting Decimal & Binary Numbers. Order the steps to convert a decimal number to binary using the place-value method, first to last.",
     steps: [
-      "1",
-      "2",
-      "4",
-      "8",
-      "16",
-      "32",
-      "64",
-      "128"
+      "List the binary place values from right to left: 1, 2, 4, 8, 16...",
+      "Find the largest place value that fits without going over the decimal number",
+      "Flip that place value ON and subtract it from the remaining total",
+      "Repeat with the next place value until the remainder reaches zero"
     ] },
 
-  { id: "c1-m3-b2d", module: 4, title: "Binary to Decimal", category: "Number Systems", type: "match", points: 150,
-    intro: "Objective — Binary to decimal. Match each 4-bit binary value to its decimal number. Tap the binary, then tap the number.",
-    pairs: [
-      { left: "0001", right: "1" },
-      { left: "0010", right: "2" },
-      { left: "0101", right: "5" },
-      { left: "1000", right: "8" },
-      { left: "1111", right: "15" }
-    ] },
-
-  { id: "c1-m3-vocab", module: 4, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["binary","hexadecimal","octal","bit","byte","decimal","ascii","base"],
-    hardMode: "speedmatch" },
-
-  { id: "c1-m3-hex", module: 4, title: "Hex to Decimal", category: "Number Systems", type: "match", points: 150,
-    intro: "Objective — Hexadecimal. Match each hex value to its decimal number. Tap the hex, then tap the number.",
-    pairs: [
-      { left: "0xA", right: "10" },
-      { left: "0xF", right: "15" },
-      { left: "0x10", right: "16" },
-      { left: "0xFF", right: "255" }
-    ] },
-
-  { id: "c1-m3-sizes", module: 4, title: "Order the Data Sizes", category: "Number Systems", type: "order", points: 150,
-    intro: "Objective — How computers store information. Order these data units from smallest to largest.",
-    steps: [
-      "Bit",
-      "Nibble",
-      "Byte",
-      "Kilobyte",
-      "Megabyte",
-      "Gigabyte"
-    ] },
-
-  { id: "c1-m3-units", module: 4, title: "Bits & Bytes", category: "Number Systems",
+  { id: "c1-cn-4.2-basics", module: 4, title: "4.2 — Computer Basics", category: "Computer Basics",
+    frameworks: null,
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — How computers store data. How many bits are in one byte?\n\nSubmit as flag{number}.",
-        hint: "Two to the third power — the number of bits in one byte.",
-        flagHash: "b4d955af2fe6d0058b4f20a8f4bfb87b4d280263eaf0ed9e082d857c9b2b9dcb" },
+        prompt: "Objective — Explain the basic functions and components of a computer system. The four main functions of a computer system are input, processing, output, and ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's how the computer saves information for long-term use.",
+        flagHash: "8f3d56c188b2b4d7371717e598793932b853da94a3a3d77bdfb72288c70f00f7" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Number systems. What is the largest decimal value a single byte (8 bits) can hold?\n\nSubmit as flag{number}.",
-        hint: "Eight bits give 256 possible values, but counting starts at 0.",
-        flagHash: "2704e8a84e4552cc0f7971e8da4d41cd3cfc18a64323a0ea33d7a02cd6c25c95" },
+        prompt: "Objective — Computer hardware. Temporary memory that stores data the CPU needs to access quickly, but loses everything if power is lost, is called ___.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Three letters — the computer's short-term memory.",
+        flagHash: "c89f6313c1c769feda62dc3eb9847866a20ff4feaac258e282a54a5395e60863" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Hexadecimal. How many bits does one hexadecimal digit represent?\n\nSubmit as flag{number}.",
-        hint: "One hex digit covers 16 values. How many bits make 16 combinations?",
-        flagHash: "7be5aec942dbdcfb4e21cd12dd137de80acf61b69c924a3500a50673253943c2" }
+        prompt: "Objective — Computer software. Low-level software permanently stored on hardware that initializes the computer and loads the operating system (like BIOS or UEFI) is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It runs before the operating system even loads.",
+        flagHash: "060cb50f15e6a7371f1945e586962405217cc17a3c014a5a098000d846cc1e4c" }
     ] },
+
+  { id: "c1-cn-4.2-components", module: 4, title: "4.2 ext — Match the Component to Its Job", category: "Computer Basics", type: "match", points: 150,
+    intro: "Objective — Computer Components Mastery Path. Match each job to the component that does it. Tap the job, then tap the component.",
+    pairs: [
+      { left: "Processes all instructions and performs calculations — the computer's \"brain\"", right: "CPU" },
+      { left: "Stores data long-term using flash memory with no moving parts", right: "SSD" },
+      { left: "Connects every hardware component so they can communicate", right: "Motherboard" },
+      { left: "Manages hardware and software resources between the user and the machine", right: "Operating System" },
+      { left: "Lets the OS communicate with a specific device like a printer", right: "Driver" }
+    ] },
+
+  { id: "c1-cn-4.2-boot", module: 4, title: "4.2 ext — Boot a Computer", category: "Computer Basics", type: "order", points: 150,
+    intro: "Objective — How hardware and software work together. Order what happens when a computer powers on, first to last.",
+    steps: [
+      "Firmware (BIOS/UEFI) initializes the hardware",
+      "The operating system loads into RAM",
+      "Drivers let the OS communicate with peripheral hardware",
+      "Application software runs on top of the OS for the user"
+    ] },
+
+  { id: "c1-cn-4.3-ethics", module: 4, title: "4.3 — Cyber Ethics", category: "Cyber Ethics",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Describe common ethical challenges in cybersecurity. Weighing strong security measures against convenience, privacy, and cost is the challenge of balancing security with other ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Security rarely wins by itself — it's traded off against other things people care about.",
+        flagHash: "16480158e59172ea34abcc46d20c472ff0a0b8b025818df30de9872767a269cf" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Threat and incident response. One especially difficult ethical decision organizations face during an incident is whether to pay or refuse a ___ demand.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Malware that locks up data and demands payment to release it.",
+        flagHash: "c3eab0cae2df20bf8a4b32c23cfe39e1d2e2f630a2c77d8b989431866e84712c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Security research and testing. Properly reporting a discovered security flaw to the organization instead of exploiting or publicizing it is called ___ disclosure.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of reckless — reporting it the careful, accountable way.",
+        flagHash: "36da9e60a2c12e7666e5db93657b6c8450128ed3af8d24c3b71dd93c79444b47" }
+    ] },
+
+  { id: "c1-cn-4.3-challenges", module: 4, title: "4.3 ext — Match the Ethical Challenge", category: "Cyber Ethics", type: "match", points: 150,
+    intro: "Objective — Common ethical challenges in cybersecurity. Match each scenario to the challenge it illustrates. Tap the scenario, then tap the challenge.",
+    pairs: [
+      { left: "Tracking employee internet activity to catch threats early", right: "Network Monitoring and User Privacy" },
+      { left: "Deciding whether and how to encrypt customer records", right: "Data Storage and Encryption" },
+      { left: "A smart home camera gets hacked because of weak default security", right: "IoT, Smart Grid, and Product Design" },
+      { left: "A company is blamed for failing to secure its customers' data", right: "Accountability for Cybersecurity" },
+      { left: "A researcher must decide how to report a vulnerability they found", right: "Security Research and Testing" }
+    ] },
+
+  { id: "c1-cn-vocab", module: 4, title: "4.1-4.3 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["binary","byte","bit","node","network interface card","cpu","ram","motherboard","firmware","operating system","driver","hard disk drive","solid-state drive"],
+    hardMode: "unscramble" },
 
   /* MODULE 9 — Cryptology ─────────────────────────────────────────────────── */
-  { id: "c1-m4-crypto", module: 9, title: "Decode & Define", category: "Cryptology",
+  { id: "c1-cr-9.1-core", module: 9, title: "9.1 — Intro to Cryptology", category: "Cryptology",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Basic cryptology concepts. Decode this ROT13 term:\n\nsynt{pvcure}\n\nApply ROT13 to reverse it.",
-        hint: "ROT13 shifts each letter 13 places.",
+        prompt: "Objective — Define cryptology and its branches. The umbrella term covering both the making and breaking of secret codes is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Cryptography + cryptanalysis, together.",
+        flagHash: "4ed6e0a1df55d164e682acf0b458f8d8cd28c67321ad84ca18478ed37e5d035a" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Distinguish cryptography from cryptanalysis. The practice of creating secret codes and encryption systems — protecting confidentiality and integrity — is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The making side, not the breaking side.",
+        flagHash: "bcd500404d5cac8800fa5f97b216329b5f5d64bf8e657cbf45aedcd6cad4012c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain the algorithm vs. the key. The Algorithm is the recipe (\"shift the letters\"). The specific variable used with it — like \"shift by 3\" — is called the ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The algorithm is the lock; this is the specific thing that fits it.",
+        flagHash: "d4a44801327f6bdbad722255e7dbad5b319afb83fb8b50d18b6b6ec7d33e6963" }
+    ] },
+
+  { id: "c1-cr-9.1-terms", module: 9, title: "9.1 ext — Match the Crypto Term", category: "Cryptology", type: "match", points: 150,
+    intro: "Objective — Explain cryptology terminology. Match each term to its definition. Tap the term, then tap its definition.",
+    pairs: [
+      { left: "Plaintext", right: "The original, readable message" },
+      { left: "Ciphertext", right: "The scrambled, unreadable version" },
+      { left: "Encryption", right: "Turning plaintext into ciphertext" },
+      { left: "Decryption", right: "Turning ciphertext back into plaintext" },
+      { left: "Algorithm", right: "The rule or recipe used to scramble the message" }
+    ] },
+
+  { id: "c1-cr-9.2-core", module: 9, title: "9.2 — VENONA & the Navajo Code Talkers", category: "Historical Ciphers",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explain the VENONA Project. A top-secret U.S. project that decrypted Soviet spy cables and helped uncover atomic spies like the Rosenbergs is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Declassified in 1995.",
+        flagHash: "1420d35835a57ac6af41058b765b3402519b8d98432a036c55ac201e0707c375" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain the VENONA breakthrough. VENONA's One-Time Pads should have been unbreakable, but a Soviet factory accidentally produced ___ key pages — reusing the \"one-time\" key more than once.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of unique.",
+        flagHash: "c908c86b89b0f0224892a33fe0973b55eec81205203c01b3e10590d94db8151b" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain the Navajo Code Talkers. U.S. Marines who used their unwritten native language to send secure tactical messages Japan never broke were the Navajo Code ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's in their name.",
+        flagHash: "4e2157dc84064b50d8c195f28c9b58a94de9e79991a1079e105e0792b543bd26" }
+    ] },
+
+  { id: "c1-cr-9.2-facts", module: 9, title: "9.2 ext — Match the Historical Cipher", category: "Historical Ciphers", type: "match", points: 150,
+    intro: "Objective — Describe historical cryptology programs. Match each program to its description. Tap the program, then tap its description.",
+    pairs: [
+      { left: "VENONA", right: "Decrypted Soviet spy cables during the Cold War" },
+      { left: "Navajo Code Talkers", right: "Used an unwritten language as a \"living code\" in WWII" },
+      { left: "One-Time Pad", right: "A truly random key, used only once, that is mathematically unbreakable" },
+      { left: "Caesar Cipher", right: "Used by Julius Caesar for private military correspondence" }
+    ] },
+
+  { id: "c1-cr-9.3-core", module: 9, title: "9.3 — Ciphers", category: "Ciphers",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Categorize ciphers. A cipher where each letter is replaced by exactly one other letter or symbol for the entire message — like the Caesar Cipher — is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "One alphabet, the whole way through.",
+        flagHash: "eb2a0ad6c51f1c751bba083d24de34744b9f09a1ecd6bf6bbfb458d4826026a6" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Categorize ciphers. A cipher that uses multiple substitution alphabets, so the same letter can encrypt differently each time — like the Vigenère Cipher — is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Poly means many.",
+        flagHash: "fce2dcd36e00cf9c443b37e2374c239b2ae0d5ccc2632f372bff092bd75db45f" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Categorize ciphers. A cipher that doesn't replace letters at all, but instead rearranges their order — like the Rail Fence Cipher — is called a ___ cipher.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The letters are all still there, just in a different position.",
+        flagHash: "8e7828762f3efb43e1dfb4a3771c5d70cf0855b0e0afbcf59110f7c76b267b7a" }
+    ] },
+
+  { id: "c1-cr-9.3-guess", module: 9, title: "9.3 ext — Guess the Cipher", category: "Ciphers", type: "match", points: 150,
+    intro: "Objective — Identify a cipher from its logic. Match each clue to the cipher it describes. Tap the clue, then tap the cipher.",
+    pairs: [
+      { left: "Every letter shifted the same fixed amount, every time", right: "Caesar Cipher" },
+      { left: "A shift of exactly 13 — encrypting twice restores the original", right: "ROT-13" },
+      { left: "Uses a formula E(x) = (ax + b) mod 26", right: "Affine Cipher" },
+      { left: "Letters rearranged in a zig-zag pattern, none replaced", right: "Rail Fence Cipher" },
+      { left: "A keyword changes the shift for every letter", right: "Vigenère Cipher" },
+      { left: "Rotating mechanical wheels create a new alphabet every keystroke", right: "Enigma Machine" }
+    ] },
+
+  { id: "c1-cr-9.3-category", module: 9, title: "9.3 ext — Sort by Category", category: "Ciphers", type: "match", points: 150,
+    intro: "Objective — Categorize each cipher. Sort each cipher into Monoalphabetic, Polyalphabetic, or Transposition. Tap the cipher, then tap its category.",
+    pairs: [
+      { left: "Caesar Cipher", right: "Monoalphabetic" },
+      { left: "Affine Cipher", right: "Monoalphabetic" },
+      { left: "Rail Fence Cipher", right: "Transposition" },
+      { left: "Vigenère Cipher", right: "Polyalphabetic" },
+      { left: "Enigma Machine", right: "Polyalphabetic" }
+    ] },
+
+  { id: "c1-cr-9.4-core", module: 9, title: "9.4 — Modern Cryptography", category: "Modern Cryptography",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explain symmetric encryption. An encryption method that uses the exact same key to both encrypt and decrypt data is called ___ encryption.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Fast, but risky to share the key.",
+        flagHash: "0b84a426da5ad73abfd7f5e4a73a667621b374d6b8d3349074058a7f1ba9c8ed" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain asymmetric encryption. An encryption method that uses a Public Key to lock data and a different Private Key to unlock it is called ___ encryption.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Two different keys, not one.",
+        flagHash: "fdb0d9f92ace8928ef9b642ec772d625e5f5921af3b1d8e13ce3aca6427b933c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain why asymmetric encryption was invented. The difficulty of sharing a secret key over the internet without it being stolen is called the ___ ___ problem. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Asymmetric encryption exists to solve this.",
+        flagHash: "d3d10bdb36a175d6da8bda188b851a73e73ee3eda495a84dc7520e1e21b081b3" }
+    ] },
+
+  { id: "c1-cr-9.4-modern", module: 9, title: "9.4 ext — Symmetric or Asymmetric?", category: "Modern Cryptography", type: "match", points: 150,
+    intro: "Objective — Sort modern encryption by type. Match each description to Symmetric or Asymmetric encryption. Tap the description, then tap the type.",
+    pairs: [
+      { left: "The same 16-character key both locks and unlocks the message (AES)", right: "Symmetric" },
+      { left: "Anyone can use your Public Key to send you a secure message", right: "Asymmetric" },
+      { left: "Only your Private Key can unlock what was encrypted with your Public Key", right: "Asymmetric" },
+      { left: "Very fast and great for large files, but risky to share the key", right: "Symmetric" }
+    ] },
+
+  { id: "c1-cr-9.5-core", module: 9, title: "9.5 — Cryptanalysis", category: "Cryptanalysis",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Define cryptanalysis. The art of breaking codes without having the key is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of cryptography.",
+        flagHash: "f2dae73ff6e9303f682c5eb9598bde222f5f7576adc000811b7e4f9ef875a4b3" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain frequency analysis. Counting how often a symbol appears in a ciphertext to guess which letter it represents is called ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "'E' and 'T' are the most common letters in English.",
+        flagHash: "850e302d75cedc85906208ef558eff009fe7f2f25d38c8d680963b87f02b06ee" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain cryptanalysis attacks. An attack where the cryptanalyst only has the scrambled message, with no clues about the original text, is called a ___-___ attack. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "The hardest kind of attack — no known plaintext to compare.",
+        flagHash: "a5e1fa9a268a2946ea64c486b842712e565f157b2767817b6bd69ea36b94d04c" }
+    ] },
+
+  { id: "c1-cr-9.5-history", module: 9, title: "9.5 ext — Cryptanalysis Through History", category: "Cryptanalysis", type: "match", points: 150,
+    intro: "Objective — Describe key figures and events in cryptanalysis. Match each to their contribution. Tap the item, then tap its contribution.",
+    pairs: [
+      { left: "Al-Kindi", right: "9th-century Arab scholar credited with inventing frequency analysis" },
+      { left: "Alan Turing", right: "Built The Bombe to crack the German Enigma machine" },
+      { left: "Zimmermann Telegram", right: "A decoded WWI message that helped draw the U.S. into the war" },
+      { left: "Quantum Cryptanalysis", right: "Uses quantum computers to potentially break current internet encryption" }
+    ] },
+
+  { id: "c1-cr-9.6-core", module: 9, title: "9.6 — Decode the Message", category: "Applied Cryptology",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Apply the Caesar Cipher. This message was encrypted with a Caesar shift of +3:\n\nFLSKHU\n\nShift each letter backward by 3 to decode it.\n\nSubmit as flag{word} (lowercase), the decoded word.",
+        hint: "F→C, L→I, S→P, K→H, H→E, U→R.",
         flagHash: "4d0a149ec4ee5f3815700964fe8b2dd598dbddc2b80c96e7877715c497ebe980" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Encryption vs encoding. Decode this Base64 term:\n\nZmxhZ3twbGFpbnRleHR9\n\nBase64 is encoding, not encryption.",
-        hint: "Base64 — the readable input to a cipher.",
-        flagHash: "7d53c4d8a96af6f9bdfca67ec0d1a2528270b3e3a7763eb0c322bbde753ce045" },
+        prompt: "Objective — Apply ROT-13. This message was encrypted with ROT-13:\n\nFRPERG\n\nApply ROT-13 again to decode it (it's its own inverse).\n\nSubmit as flag{word} (lowercase).",
+        hint: "13 + 13 = 26 — the full alphabet.",
+        flagHash: "ae2588b5b38fa6340b88b198b720b87e56c490502a1bbf4b39f65149ec1cc28c" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Monoalphabetic vs polyalphabetic. A cipher that uses MULTIPLE substitution alphabets (like Vigenère) is called a ___ cipher.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Poly means many — this cipher rotates through several alphabets instead of one.",
-        flagHash: "fce2dcd36e00cf9c443b37e2374c239b2ae0d5ccc2632f372bff092bd75db45f" }
+        prompt: "Objective — Apply the Vigenère Cipher. This message was encrypted with the Vigenère Cipher using keyword \"KEY\":\n\nMCZOV\n\nSubtract each keyword letter's shift (K=+10, E=+4, Y=+24) from the corresponding ciphertext letter to decode it.\n\nSubmit as flag{word} (lowercase).",
+        hint: "M-K, C-E, Z-Y, O-K, V-E.",
+        flagHash: "036aadbb1a21a23a058aa6103537e3f94f0952c12ac75b0b706bfa8057d27500" }
     ] },
 
-  { id: "c1-m4-terms", module: 9, title: "Match the Crypto Term", category: "Cryptology", type: "match", points: 150,
-    intro: "Objective — Basic cryptology terms. Match each term to its meaning. Tap a term, then tap its meaning.",
-    pairs: [
-      { left: "Plaintext", right: "The original readable message" },
-      { left: "Ciphertext", right: "The scrambled, encrypted message" },
-      { left: "Key", right: "The secret that locks/unlocks it" },
-      { left: "Cryptography", right: "The art of making ciphers" },
-      { left: "Cryptanalysis", right: "The art of breaking ciphers" }
-    ] },
-
-  { id: "c1-m4-encvs", module: 9, title: "Encoding vs Encryption", category: "Cryptology", type: "match", points: 150,
-    intro: "Objective — Encryption vs encoding. Sort each into the right bucket. Tap the item, then tap its category.",
-    pairs: [
-      { left: "Base64", right: "Encoding" },
-      { left: "ROT13", right: "Encoding" },
-      { left: "AES with a secret key", right: "Encryption" },
-      { left: "Hexadecimal", right: "Encoding" },
-      { left: "Caesar cipher with a key", right: "Encryption" }
-    ] },
-
-  { id: "c1-m4-encrypt", module: 9, title: "Encrypt a Message", category: "Cryptology", type: "order", points: 150,
-    intro: "Objective — Cryptography basics. Order the steps to encrypt and send a secret message.",
-    steps: [
-      "Start with the plaintext",
-      "Choose a cipher and a key",
-      "Apply the cipher to scramble it",
-      "Produce the ciphertext",
-      "Transmit it to the recipient"
-    ] },
-
-  { id: "c1-m4-vocab", module: 9, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["cipher","encrypt","decrypt","plaintext","ciphertext","key","caesar","substitution"],
+  { id: "c1-cr-vocab", module: 9, title: "9.1-9.6 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["cryptology","cryptography","cryptanalysis","plaintext","ciphertext","encryption","decryption","monoalphabetic","polyalphabetic","transposition","symmetric","asymmetric","frequency analysis","venona","caesar cipher"],
     hardMode: "cipher" },
 
-  { id: "c1-m4-ciphers", module: 9, title: "Match the Classic Cipher", category: "Cryptology", type: "match", points: 150,
-    intro: "Objective — Basic cryptology concepts. Match each cipher to its description. Tap the cipher, then tap its description.",
-    pairs: [
-      { left: "Caesar", right: "Shift every letter by a fixed amount" },
-      { left: "Vigenère", right: "Shift by a repeating keyword" },
-      { left: "Substitution", right: "Swap each letter for another" },
-      { left: "Transposition", right: "Rearrange the letter order" }
-    ] },
-
-  { id: "c1-m4-decrypt", module: 9, title: "Decrypt a Message", category: "Cryptology", type: "order", points: 150,
-    intro: "Objective — Cryptography basics. Order the steps to decrypt a received secret message.",
-    steps: [
-      "Receive the ciphertext",
-      "Identify the cipher used",
-      "Obtain the correct key",
-      "Reverse the cipher",
-      "Read the plaintext"
-    ] },
-
-  { id: "c1-m4-keys", module: 9, title: "Keys & Codes", category: "Cryptology",
+  /* MODULE 3 — Social Engineering (Play → 3.1 Dumpster Diving → 3.2–3.4 Learn → 3.6 Perform, no flags) ── */
+  { id: "c1-se-3.1-fundamentals", module: 3, title: "3.1 — Social Engineering Fundamentals", category: "Social Engineering",
+    frameworks: null,
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Cryptology basics. In a Caesar cipher, the number of positions each letter is shifted is called the ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "It unlocks the cipher.",
-        flagHash: "d4a44801327f6bdbad722255e7dbad5b319afb83fb8b50d18b6b6ec7d33e6963" },
+        prompt: "Objective — Define and explain the concept of social engineering. Digging through someone's trash to recover discarded documents, receipts, or passwords is called ___ ___. Give the two-word term.\n\nSubmit as flag{two words, lowercase}.",
+        hint: "It's named after the container you'd find the paper in.",
+        flagHash: "9d344523b5cd67a0c5743f739480e0d6275e892d594f6ed88497493e3b172965" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Cryptography. Encryption that uses ONE shared secret key for both encrypting and decrypting is called ___ encryption.\n\nSubmit as flag{word} (lowercase).",
-        hint: "One shared key both encrypts and decrypts. AES is the standard example.",
-        flagHash: "0b84a426da5ad73abfd7f5e4a73a667621b374d6b8d3349074058a7f1ba9c8ed" },
+        prompt: "Objective — The Dumpster Diving Simulation debrief. The activity closes by saying that in social engineering, the vulnerability isn't the software — it's the ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The closing script names what attackers really exploit — not a system, but a person.",
+        flagHash: "dcae4f40242fec3de70c594ed0d893313f9cf3ad392c8ff5a482755061a93762" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Cryptography. A fixed-length, one-way fingerprint of data (irreversible) is called a ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "MD5 and SHA produce these.",
-        flagHash: "deaed1f0d22fe5f2c4aa644d8fa1a50028d36f4e36358e9ea9545ec274adaa4e" }
+        prompt: "Objective — Why social engineering works. Beyond our trash, attackers exploit our trust, fear, and ___ to bypass even the strongest security systems. Give the word from the simulation's closing script.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The trait of wanting to be useful or accommodating to others — even strangers.",
+        flagHash: "6785dc174379b6ba141828e551daaf9f80b088fab1ed66115cac0777a22534fd" }
     ] },
 
-  /* MODULE 3 — Social Engineering ─────────────────────────────────────────── */
-  { id: "c1-m5-se", module: 3, title: "Name the Con", category: "Social Engineering",
+  { id: "c1-se-3.1-principles", module: 3, title: "3.1 ext — Match the Psychological Principle", category: "Social Engineering", type: "match", points: 150,
+    intro: "Objective — Social Engineering Grid: the Movie Scene activity. Match each moment to the psychological principle it exploits. Tap the moment, then tap the principle.",
+    pairs: [
+      { left: "A caller claims to have admin rights and demands your password", right: "Authority" },
+      { left: "\"Your account will be suspended in the next hour!\"", right: "Urgency" },
+      { left: "A stranger says they forgot their badge and asks you to hold the door", right: "Helpfulness" },
+      { left: "An email promises you've won $500 if you click now", right: "Greed" },
+      { left: "A message pretends to be from a childhood friend to lower your guard", right: "Trust" }
+    ] },
+
+  { id: "c1-se-3.1-hunt", module: 3, title: "3.1 ext — The Dumpster Dive", category: "Social Engineering", type: "order", points: 150,
+    intro: "Objective — The Dumpster Diving Simulation. Order how the social engineer works through the \"trash,\" first to last.",
+    steps: [
+      "Receive the target's discarded envelope of papers",
+      "Uncrumple and sift through each piece of debris",
+      "Cross-reference the details across items",
+      "Piece together the target's bank and password"
+    ] },
+
+  { id: "c1-se-3.2-types", module: 3, title: "3.2 — The Art of Deception", category: "Social Engineering",
+    frameworks: null,
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — How social engineering relates to cybersecurity. Fraudulent emails that trick users into revealing information or clicking malicious links.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Sounds like 'fishing'.",
-        flagHash: "01fbd5d51977823ec0902cc5fdd02dacc020930a12ed4fe0a328d5b4edd6c6c8" },
+        prompt: "Objective — Compare and contrast social engineering attacks. A security process that requires more than one method to verify identity, like a password plus an app code, is called Multi-Factor ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It adds an extra layer of security beyond just a password.",
+        flagHash: "0167e5432d777913fc23dc379d9f68c4f023af44904180c8c33935af6a833a09" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Social engineering attack types. Phishing carried out over a phone call or voicemail is called ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Phishing carried out over a phone call. The first letter changes to match the medium.",
-        flagHash: "4b6fd979675437b6fbc5ed7d7eb6b8baaedb0c81a21f24a3768f0f7364d939e0" },
+        prompt: "Objective — Attack types. Leaving an enticing item, like a USB drive labeled \"Confidential Payroll Data,\" to lure a victim into installing malware is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The attacker dangles something tempting, like bait on a hook.",
+        flagHash: "e0718a8d1765a87ae7c3cd8c3d77f32b1bf3af527aff9faf95957799719be438" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Avoiding social engineering scams. Inventing a believable fake scenario to manipulate a victim (e.g. pretending to be IT support) is called ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Inventing a believable backstory — “I'm from IT, I just need to verify your password” — so the target feels comfortable handing something over.",
-        flagHash: "d16c145e707f262577ae6ff50359b1c7ce4df00c280d2b692a78bb9a147f9be4" }
+        prompt: "Objective — Attack types. A fake pop-up warning that your PC is infected, designed to scare you into downloading rogue security software, is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It uses fear of a fake threat to get you to install real malware.",
+        flagHash: "181d3a646d0b40034309bc1802a0f7f200de5544fdd46f2d4272537e547bc11c" }
     ] },
 
-  { id: "c1-m5-attacks", module: 3, title: "Match the SE Attack", category: "Social Engineering", type: "match", points: 150,
-    intro: "Objective — How SE attacks exploit human nature. Match each attack to its description. Tap the attack, then tap the description.",
+  { id: "c1-se-3.2-attacks", module: 3, title: "3.2 ext — Match the Attack to the Definition", category: "Social Engineering", type: "match", points: 150,
+    intro: "Objective — Social Engineering: The Art of Deception slides. Match each attack to its definition. Tap the attack, then tap the definition.",
     pairs: [
-      { left: "Phishing", right: "Deceptive mass email" },
-      { left: "Vishing", right: "Scam phone call" },
-      { left: "Smishing", right: "Malicious text message" },
-      { left: "Tailgating", right: "Following someone through a locked door" },
-      { left: "Baiting", right: "Leaving an infected USB to be found" }
+      { left: "Deceptive emails tricking users into revealing sensitive information", right: "Phishing" },
+      { left: "A targeted attack aimed at one specific person or organization", right: "Spear Phishing" },
+      { left: "Conducted over a phone call", right: "Vishing" },
+      { left: "Phishing carried out through text messages", right: "Smishing" },
+      { left: "High-profile phishing aimed at executives or VIPs", right: "Whaling" },
+      { left: "Watching someone's screen or keyboard to steal information", right: "Shouldering" }
     ] },
 
-  { id: "c1-m5-redflags", module: 3, title: "Red Flag or Fine?", category: "Social Engineering", type: "match", points: 150,
-    intro: "Objective — Limits of visual inspection. Judge each email trait. Tap the trait, then tap the verdict.",
-    pairs: [
-      { left: "Urgent 'act now or lose access!'", right: "Red Flag" },
-      { left: "Sender domain paypa1.com", right: "Red Flag" },
-      { left: "Generic 'Dear Customer' greeting", right: "Red Flag" },
-      { left: "Expected receipt from a known vendor", right: "Fine" },
-      { left: "Mismatched link on hover", right: "Red Flag" }
-    ] },
-
-  { id: "c1-m5-anatomy", module: 3, title: "Anatomy of a Phishing Attack", category: "Social Engineering", type: "order", points: 150,
-    intro: "Objective — How phishing attacks work. Order the stages of a phishing campaign, first to last.",
+  { id: "c1-se-3.2-defense", module: 3, title: "3.2 ext — Build Your Defenses", category: "Social Engineering", type: "order", points: 150,
+    intro: "Objective — Strategies to Prevent Social Engineering. Order these prevention strategies as presented, first to last.",
     steps: [
-      "Research the target",
-      "Craft a convincing lure",
-      "Send the message",
-      "Victim clicks the link",
-      "Harvest credentials"
+      "Think before you click — verify links and senders",
+      "Be skeptical of anything too urgent or too good to be true",
+      "Use Multi-Factor Authentication",
+      "Report suspicious activity to IT/security"
     ] },
 
-  { id: "c1-m5-vocab", module: 3, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["phish","social engineer","pretext","bait","spoof","vishing","smishing","manipulat"],
+  { id: "c1-se-3.3-phishing", module: 3, title: "3.3 — Spotting \"Phishy\" Emails", category: "Social Engineering",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Spot \"phishy\" emails. A phishing email addressing you as \"Dear Customer\" instead of your name is an example of a ___ greeting.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's not personalized to you at all — it could be sent to anyone.",
+        flagHash: "85e6d00344c19283cebc59049e483ad27f0542a4d78587a1ea21e8471b9c6553" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Red flags. Phrases like \"urgent action required\" or \"your account will be deleted\" are examples of ___ or threatening language.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's trying to make you feel rushed, so you act before you think.",
+        flagHash: "76c00305819ef810abd25f2e8bf9a1d8c410c82ddb4e9726a6fd2b9c6c3eb0c2" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Reporting phishing. If you suspect an email is phishing, you should report it — but never ___ it to another user, since that risks phishing them too.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Passing the email along to someone else spreads the same risk to them.",
+        flagHash: "ff663b6c9ca2baff167121a3fb9a4c0e1fabbb3fdd3bd93c13f25a87582d20ae" }
+    ] },
+
+  { id: "c1-se-3.3-redflags", module: 3, title: "3.3 ext — Spot the Red Flag", category: "Social Engineering", type: "match", points: 150,
+    intro: "Objective — Phishing Slides: the seven red flags. Match each example to the red flag it demonstrates. Tap the example, then tap the red flag.",
+    pairs: [
+      { left: "\"Account suspended — urgent action required\"", right: "Urgent or Threatening Language" },
+      { left: "A sender address that doesn't match the real organization", right: "Suspicious Sender Information" },
+      { left: "\"Dear Customer\" instead of your name", right: "Generic Greetings" },
+      { left: "Obvious misspellings or awkward phrasing", right: "Misspellings or Grammatical Errors" },
+      { left: "A link that doesn't actually go where it claims", right: "Suspicious Links or Attachments" },
+      { left: "An offer to win a prize you never entered", right: "Too Good to Be True" }
+    ] },
+
+  { id: "c1-se-3.3-verify", module: 3, title: "3.3 ext — Think Before You Click", category: "Social Engineering", type: "order", points: 150,
+    intro: "Objective — Think Critically / Report Phishing. Order the steps for handling a suspicious email, first to last.",
+    steps: [
+      "Notice something feels off — urgency, a generic greeting, an odd request",
+      "Hover over any links to check where they actually lead, without clicking",
+      "Verify the sender's identity independently, not by replying",
+      "Report the message to a trusted adult, teacher, or IT department"
+    ] },
+
+  { id: "c1-se-3.4-detect", module: 3, title: "3.4 — Identifying & Preventing Attacks", category: "Social Engineering",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Identify fraudulent email addresses. A legitimate email domain must match the official ___ of the organization it claims to represent.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The domain should match what you'd type into a browser to reach that company's real online presence.",
+        flagHash: "0216906c30d7e45eb943cc88021c640953c9cf32b5a6b645c8530fab14fd58ae" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Masking techniques. Using look-alike letters, like an \"rn\" that looks like an \"m,\" to disguise a fake URL is called a ___ technique.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's about covering up a URL's true identity behind a convincing disguise.",
+        flagHash: "6262e86f2183056c9372aca0cddca4282a2ce30b58130d1d38f62bcc372868d6" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Safe verification methods. If you must use email to verify a suspicious message, you should compose a brand-new message rather than clicking ___, which keeps you in contact with the attacker.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the button in your inbox that responds directly to whoever sent the message.",
+        flagHash: "5e6b40584e06b02ebe80f6a34c8f63893a549fc274ee815d893d0793a6104c9e" }
+    ] },
+
+  { id: "c1-se-3.4-domains", module: 3, title: "3.4 ext — Domain Detective", category: "Social Engineering", type: "match", points: 150,
+    intro: "Objective — Identifying & Preventing Social Engineering Attacks Guide. Match each clue to the detection technique it demonstrates. Tap the clue, then tap the technique.",
+    pairs: [
+      { left: "Checking what comes right after the @ symbol", right: "The Domain Test" },
+      { left: "A display name saying \"CEO\" with nothing to back it up", right: "Name Discrepancy" },
+      { left: "\"Your connection is not private\" warning", right: "Connection Warning" },
+      { left: "A shortened link hiding its true destination", right: "URL Shortening" },
+      { left: "www.bank-secure-v8293.net", right: "Alphabet Soup" }
+    ] },
+
+  { id: "c1-se-3.4-safe", module: 3, title: "3.4 ext — Verify Before You Trust", category: "Social Engineering", type: "order", points: 150,
+    intro: "Objective — Safe Verification Methods. Order the steps for verifying a suspicious message, first to last.",
+    steps: [
+      "Don't open or preview the message until the sender is confirmed",
+      "Contact the sender directly using a known phone number",
+      "If email must be used, compose a brand-new message instead of replying",
+      "Only act once identity is confirmed through a trusted channel"
+    ] },
+
+  { id: "c1-se-vocab", module: 3, title: "3.1-3.4 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["social engineering","phishing","spear phishing","baiting","scareware","pretexting","vishing","smishing","whaling","shouldering","multi-factor authentication","dumpster diving"],
     hardMode: "blitz" },
 
-  { id: "c1-m5-defense", module: 3, title: "Match the Defense", category: "Social Engineering", type: "match", points: 150,
-    intro: "Objective — Avoiding social engineering. Match each attack to its best defense. Tap the attack, then tap the defense.",
-    pairs: [
-      { left: "Phishing email", right: "Verify sender & don't click" },
-      { left: "Tailgating", right: "Badge-in one person at a time" },
-      { left: "Vishing call", right: "Call back the official number" },
-      { left: "Baiting USB", right: "Never plug in unknown drives" },
-      { left: "Shoulder surfing", right: "Use a privacy screen" }
-    ] },
-
-  { id: "c1-m5-verify", module: 3, title: "Verify a Suspicious Email", category: "Social Engineering", type: "order", points: 150,
-    intro: "Objective — Limits of visual inspection. Order the steps to verify a suspicious email.",
-    steps: [
-      "Check the sender's real address",
-      "Hover links to see the true URL",
-      "Look for urgency & pressure",
-      "Don't click — contact the source directly",
-      "Report it to IT"
-    ] },
-
-  { id: "c1-m5-targets", module: 3, title: "Know the Lure", category: "Social Engineering",
+  /* MODULE 5 — OS Basics & Command Lines ────────────────────────────────── */
+  { id: "c1-os-5.1-core", module: 5, title: "5.1 — Intro to OS: Linux & Windows", category: "Operating Systems",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Social engineering. Phishing sent as a text message is called ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "SMS + phishing.",
-        flagHash: "b9bb8b204aa16be3161039645fddb546dc78ab8d571114a6a7806433784cbb82" },
+        prompt: "Objective — Define an OS. Software that manages a computer's hardware and provides services for other programs to run is called an ___.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Two words. It's the software layer between you and the hardware — Windows and Linux are both examples.",
+        flagHash: "02b17120470f7e68833df082bee5d002b8bb410f4e4010df3f2a710f83021da3" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Attack types. A phishing attack that targets a specific individual with personalized details is called ___ phishing.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Not a wide net — one carefully chosen person, researched first.",
-        flagHash: "701b15566fb67377f1e066a3ea32c396d8c751d8107786cf8309d84cea145aaa" },
+        prompt: "Objective — SysAdmin role. What is the shorthand job title for the person who maintains, configures, and secures an organization's computer systems?\n\nSubmit as flag{word} (lowercase).",
+        hint: "Short for \"System Administrator.\"",
+        flagHash: "f7a81a400126334de84256622e603e8f125cadb647076654a02f684202e26d63" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Attack types. Phishing that targets a high-profile executive (a 'big fish') is called ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Hunting the biggest fish.",
-        flagHash: "ba23888f3dc8b11a72c8c06e9caddbcb2c8e31d5e6247472539987b8c5e43bd1" }
+        prompt: "Objective — Linux vs Windows terms. Linux ships in community-built versions like Ubuntu and Kali, each called a ___. Windows ships in versions like Home, Pro, and Enterprise, each called an ___. Give the two words, Linux term first.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Linux term first, Windows term second — both mean \"a version of the OS.\"",
+        flagHash: "11b87045a159aad12a5cd7f62762c1e7c6cd360d1dc9e964bd8d4ee8c9624195" }
     ] },
 
-  /* MODULE 5 — OS Basics & Command Lines (Linux) ──────────────────────────── */
-  { id: "c1-m6-cli", module: 5, title: "The Command Line", category: "Linux",
+  { id: "c1-os-5.1-terms", module: 5, title: "5.1 ext — Linux or Windows Term?", category: "Operating Systems", type: "match", points: 150,
+    intro: "Objective — Compare Linux & Windows vocabulary. Match each term to the OS it belongs to. Tap the term, then tap the OS.",
+    pairs: [
+      { left: "Distribution", right: "Linux" },
+      { left: "Edition", right: "Windows" },
+      { left: "Terminal", right: "Linux" },
+      { left: "Command Prompt", right: "Windows" },
+      { left: "PowerShell", right: "Windows" },
+      { left: "Bash", right: "Linux" }
+    ] },
+
+  { id: "c1-os-5.2-core", module: 5, title: "5.2 — Virtualization & VMs", category: "Virtualization",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — GUI vs CLI. The text-based interface where you type commands instead of clicking is called the ___. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        prompt: "Objective — Virtualization. The physical computer that provides the hardware for a virtual machine to run on is called the ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "One word. The real machine underneath.",
+        flagHash: "20667e371ca2d3c6f8bccc2919dabdd85b98f2aff659cc283a46945b6aced897" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Virtualization. The virtual operating system running inside a virtual machine is called the ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "One word. The visiting OS, not the real machine underneath.",
+        flagHash: "c8e133734be4a27e7e029e8c4b325007c6bdc95c150aa2c42e1132aa145e09ea" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Virtualization. What is the name of the software layer that creates, runs, and manages virtual machines, sitting between the hardware and the virtual environments?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It \"hovers over\" every VM on the machine.",
+        flagHash: "1885b19762cdac8f29ad76f2762cc0ffb3b78bd6034d85413805f04de4e0fafc" }
+    ] },
+
+  { id: "c1-os-5.2-terms", module: 5, title: "5.2 ext — Virtualization Vocabulary", category: "Virtualization", type: "match", points: 150,
+    intro: "Objective — Explain virtualization. Match each term to its role. Tap the term, then tap its role.",
+    pairs: [
+      { left: "Host", right: "The physical machine providing the hardware" },
+      { left: "Guest", right: "The virtual machine running on top" },
+      { left: "Hypervisor", right: "Creates and manages virtual machines" },
+      { left: "Isolation", right: "Keeps a VM's problems from affecting the host" }
+    ] },
+
+  { id: "c1-os-5.3-core", module: 5, title: "5.3 — GUI and CLI", category: "GUI vs CLI",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — GUI vs CLI. The text-based interface where you type commands instead of clicking icons is called the ___. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
         hint: "Three letters. The opposite of a GUI — you type instead of click.",
         flagHash: "0396b5791be5a93a31be5a0b58aa3eb3d181ca907cd906378fdbb8f64f7fdb1c" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Basic Linux commands. Which command LISTS the files in the current directory?\n\nSubmit as flag{command} (lowercase).",
-        hint: "Short for \"list\" — two letters you type constantly to see what is in a folder.",
-        flagHash: "df5ef263e44d43b0f92f9a48c689d1068724a91df52e602ad3f129c2d4a01c5e" },
+        prompt: "Objective — GUI vs CLI. The visual world of windows, icons, and menus — the \"point and click\" method — is called the ___. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Pronounced \"gooey.\"",
+        flagHash: "6aa1f3a1056bb29ed73275772a6c4d494d2a0ee652ee00f00c4d921f7b0df6b6" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Basic Linux commands. Which command CHANGES your current directory?\n\nSubmit as flag{command} (lowercase).",
-        hint: "Two letters. It moves you from one folder into another.",
-        flagHash: "c0953f2e81ac4a2b9d1274810a2c213ec6dbf67c7681cbcd4add2337e2f1c5af" }
+        prompt: "Objective — GUI vs CLI. The reading compares a GUI to an automatic transmission. What kind of car transmission does it compare a CLI to — the one that \"takes practice\" and gives you full manual control? Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "The opposite of automatic — you work the gears yourself.",
+        flagHash: "563cd6de28b59dcfa2d1438681d44f57be66c4324de11776bbb21fa23fbec8c8" }
     ] },
 
-  { id: "c1-m6-cmds", module: 5, title: "Match the Linux Command", category: "Linux", type: "match", points: 150,
-    intro: "Objective — Basic Linux commands. Match each command to what it does. Tap the command, then tap its job.",
+  { id: "c1-os-5.3-guicli", module: 5, title: "5.3 ext — GUI or CLI?", category: "GUI vs CLI", type: "match", points: 150,
+    intro: "Objective — Compare GUI & CLI. Sort each trait from the reading. Tap the trait, then tap the interface.",
     pairs: [
-      { left: "ls", right: "List directory contents" },
-      { left: "cd", right: "Change directory" },
-      { left: "pwd", right: "Print working directory" },
-      { left: "cat", right: "Show a file's contents" },
-      { left: "mkdir", right: "Make a new directory" },
-      { left: "rm", right: "Remove a file" }
+      { left: "Point and click, visual and easy for beginners", right: "GUI" },
+      { left: "Type text commands, powerful for automation", right: "CLI" },
+      { left: "Resource heavy — loading graphics uses more RAM", right: "GUI" },
+      { left: "Low resources — displays only text", right: "CLI" },
+      { left: "Can script a task once and run it on 50 computers", right: "CLI" },
+      { left: "Harder to accidentally wipe your OS with one click", right: "GUI" }
     ] },
 
-  { id: "c1-m6-nav", module: 5, title: "Navigate the Filesystem", category: "Linux", type: "order", points: 150,
-    intro: "Objective — Use the CLI. Order the commands to find where you are, look around, enter a folder, and read a file.",
+  { id: "c1-os-5.3-findip", module: 5, title: "5.3 ext — Find Your IP Address (CLI)", category: "GUI vs CLI", type: "order", points: 150,
+    intro: "Objective — Use the CLI. From the CLI vs. GUI Exploration worksheet, order the steps to find your IP address at the command line.",
     steps: [
-      "pwd  (where am I?)",
-      "ls  (what's here?)",
-      "cd projects  (enter folder)",
-      "ls  (look inside)",
-      "cat notes.txt  (read file)"
+      "Open Command Prompt",
+      "Type: ipconfig",
+      "Press Enter",
+      "Read the IPv4 Address in the output"
     ] },
 
-  { id: "c1-m6-guicli", module: 5, title: "GUI or CLI?", category: "Linux", type: "match", points: 150,
-    intro: "Objective — GUI vs CLI. Sort each trait. Tap the trait, then tap the interface.",
-    pairs: [
-      { left: "Click icons and windows", right: "GUI" },
-      { left: "Type text commands", right: "CLI" },
-      { left: "Easy to automate with scripts", right: "CLI" },
-      { left: "Beginner-friendly and visual", right: "GUI" }
-    ] },
-
-  { id: "c1-m6-vocab", module: 5, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["linux","command","terminal","directory","file","shell","cli","gui"],
-    hardMode: "unscramble" },
-
-  { id: "c1-m6-paths", module: 5, title: "Match the Linux Path", category: "Linux", type: "match", points: 150,
-    intro: "Objective — The filesystem. Match each path to what it holds. Tap the path, then tap its contents.",
-    pairs: [
-      { left: "/home", right: "User home directories" },
-      { left: "/etc", right: "System config files" },
-      { left: "/bin", right: "Essential programs" },
-      { left: "/root", right: "The root user's home" },
-      { left: "/tmp", right: "Temporary files" }
-    ] },
-
-  { id: "c1-m6-pipe", module: 5, title: "Build a Pipeline", category: "Linux", type: "order", points: 150,
-    intro: "Objective — Use the CLI. Order these commands to list files, filter for '.txt', and count them.",
-    steps: [
-      "ls -l",
-      "| grep .txt",
-      "| wc -l"
-    ] },
-
-  { id: "c1-m6-fs", module: 5, title: "Filesystem Facts", category: "Linux",
+  { id: "c1-os-5.4-core", module: 5, title: "5.4 — Command Line: The Basics", category: "CLI Syntax",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — The filesystem. In Linux, the very top of the filesystem is represented by which single character?\n\nSubmit as flag{symbol}.",
-        hint: "A single character. It's also what separates every folder in a path.",
-        flagHash: "108e1e1ccc9312925c008fb235e0bf8581d62253440fa920b03f9c97045a8b8c" },
+        prompt: "Objective — CLI syntax. A command usually acts on a file, folder, or other item you name after it. What is the general term for that item?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's what the command is pointed at — like the filename after cat.",
+        flagHash: "eb2f05e83fbdf77c2b34b407b508ef717556b42ab9fc00bdd6e571c6d80b75a7" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — CLI navigation. Which shortcut always refers to the current user's home directory?\n\nSubmit as flag{symbol}.",
-        hint: "One character, top-left of the keyboard. Shorthand for your home folder.",
-        flagHash: "0734fe3a6e5f58378949e8f56859624e36498b92f3f5d946187c95bdc5b0b4c1" },
+        prompt: "Objective — CLI syntax. The optional modifiers you add to a command, usually starting with a dash — like -l in ls -l — are called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Also called \"options.\" This word names the whole category.",
+        flagHash: "463a1293599e0bde314a198aed8f42ac9f2b090f7abfcfff3ff551abbeb219d7" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Basic commands. Which command creates an empty file or updates its timestamp?\n\nSubmit as flag{command} (lowercase).",
-        hint: "Five letters. The name suggests contact without changing anything.",
-        flagHash: "5cb771e2ee27334891b49db43f8a90e958b00708b5baaef45808f1abb52396b6" }
+        prompt: "Objective — Reading documentation before you run a command. Which three-letter Linux command, short for \"manual,\" opens a program's built-in instructions?\n\nSubmit as flag{command} (lowercase).",
+        hint: "Three letters. Type it followed by any command name to see its full documentation.",
+        flagHash: "9015b8b06d2858c85fd9267c62f90cafd64423e3f25eacdfd79c6c3d53731754" }
     ] },
 
-  /* MODULE 5 cont'd — Linux System Administration ─────────────────────────── */
-  { id: "c1-m7-admin", module: 5, title: "Admin the System", category: "Linux Admin",
+  { id: "c1-os-5.4-predict", module: 5, title: "5.4 ext — Predict the Output", category: "CLI Syntax", type: "order", points: 150,
+    intro: "Objective — Navigate the CLI. Order the habit a careful sysadmin builds before running an unfamiliar command.",
+    steps: [
+      "Read the command before typing it",
+      "Check it for any flags or arguments",
+      "Predict what the output should be",
+      "Run the command",
+      "Compare the real output to your prediction"
+    ] },
+
+  { id: "c1-os-5.5-core", module: 5, title: "5.5 — File Systems", category: "File Systems",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Basic file system commands. Which command displays the contents of a text file to the screen?\n\nSubmit as flag{command} (lowercase).",
-        hint: "Three letters. It also joins files end to end — hence the name.",
-        flagHash: "323dc0f68df5cfef77bfe45a3c4e54ddfa2cef8d83722f604acf46c6f30d9131" },
+        prompt: "Objective — File system hierarchy. Every file system's directory tree starts at a single base. What is this starting point called?\n\nSubmit as flag{word} (lowercase).",
+        hint: "One word. Also the name of the Linux superuser account.",
+        flagHash: "96dcdd224931ff2ce1f635efc3eeca676f571120453d98ed4d2314a04df69942" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Networking & packet capture. Which command-line tool captures and inspects network packets on an interface?\n\nSubmit as flag{command} (lowercase).",
-        hint: "The classic command-line packet capture tool on Linux — Wireshark's terminal-only ancestor.",
-        flagHash: "5382f5ab29e9a406f1af3ec0dd2bb1bc70f8839f34608132798f4493a4e603c1" },
+        prompt: "Objective — File paths. In the path /Users/JSmith/Music/song.mp3, the suffix .mp3 after the dot tells the OS which program should open the file. What is this suffix called?\n\nSubmit as flag{word} (lowercase).",
+        hint: "One word — it \"extends\" the filename.",
+        flagHash: "66726be1a0c03f62dcd6c918098552dbcc630c4ae1dbff9074281c71588eaaa6" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — User & permission management. Which command changes a file's permissions (read/write/execute)?\n\nSubmit as flag{command} (lowercase).",
-        hint: "A 5-letter Linux command that edits read/write/execute permissions. Often used with numbers like 755.",
-        flagHash: "405f577adebd25f3aec09e0fbf6147489834388dca05a532a82b63b064e28a67" }
+        prompt: "Objective — Linux vs Windows file systems. Windows separates folders in a path with a backslash. Linux uses a different single character. What is it?\n\nSubmit as flag{symbol}.",
+        hint: "A single character. It's also Linux's name for the root of the whole filesystem.",
+        flagHash: "108e1e1ccc9312925c008fb235e0bf8581d62253440fa920b03f9c97045a8b8c" }
     ] },
 
-  { id: "c1-m7-tasks", module: 5, title: "Match the Admin Task", category: "Linux Admin", type: "match", points: 150,
-    intro: "Objective — User account & file management. Match each task to its command. Tap the task, then tap the command.",
+  { id: "c1-os-5.5-fsmatch", module: 5, title: "5.5 ext — Windows vs Linux Filesystem", category: "File Systems", type: "match", points: 150,
+    intro: "Objective — Compare file systems. Match each filesystem trait to the OS it belongs to. Tap the trait, then tap the OS.",
     pairs: [
-      { left: "Add a new user", right: "useradd" },
-      { left: "Change a file's permissions", right: "chmod" },
-      { left: "Change a file's owner", right: "chown" },
-      { left: "Edit a file in the terminal", right: "nano" },
-      { left: "Capture network traffic", right: "tcpdump" }
+      { left: "Backslash (\\\\) path separator", right: "Windows" },
+      { left: "Forward slash (/) path separator", right: "Linux" },
+      { left: "Drive letters (C:\\\\, D:\\\\)", right: "Windows" },
+      { left: "Case-insensitive (File.txt = file.txt)", right: "Windows" },
+      { left: "Case-sensitive (File.txt ≠ file.txt)", right: "Linux" }
     ] },
 
-  { id: "c1-m7-perms", module: 5, title: "Read the Permissions", category: "Linux Admin", type: "match", points: 150,
-    intro: "Objective — File permissions. Match each permission letter to what it allows. Tap the letter, then tap its meaning.",
+  { id: "c1-os-5.5-missingfile", module: 5, title: "5.5 ext — Investigate the Missing File", category: "File Systems", type: "order", points: 150,
+    intro: "Objective — Navigate & investigate file systems. From \"The Case of the Missing Report,\" order the investigative steps as the tech club team worked the case.",
+    steps: [
+      "Check recent file activity and who last accessed the folder",
+      "Check the Recycle Bin",
+      "Check for hidden files or changed file attributes",
+      "Review who has edit permissions on the folder",
+      "Check for a suspicious email that could explain the disappearance"
+    ] },
+
+  { id: "c1-os-5.5-pscmdlets", module: 5, title: "5.5 ext — PowerShell Cmdlet Match", category: "File Systems", type: "match", points: 150,
+    intro: "Objective — Navigate file systems for Windows. Match each PowerShell cmdlet to what it does. Tap the cmdlet, then tap its job.",
     pairs: [
-      { left: "r", right: "Read the file" },
-      { left: "w", right: "Write / modify the file" },
-      { left: "x", right: "Execute / run the file" },
-      { left: "rwx", right: "Full access" }
+      { left: "Get-Location", right: "Show your current directory (alias: pwd)" },
+      { left: "Get-ChildItem", right: "List directory contents (alias: dir)" },
+      { left: "New-Item", right: "Create a new file or folder" },
+      { left: "Set-Location", right: "Change directories (alias: cd)" },
+      { left: "Get-Content", right: "Show a file's contents (alias: cat)" },
+      { left: "Remove-Item", right: "Delete a file or folder" }
     ] },
 
-  { id: "c1-m7-user", module: 5, title: "Create & Secure a User", category: "Linux Admin", type: "order", points: 150,
-    intro: "Objective — User account management. Order the steps to add and secure a new Linux user.",
+  { id: "c1-os-5.6-core", module: 5, title: "5.6 — User Account Management", category: "Account Management",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — AuthN vs AuthZ. Proving who you are — typing a username and password to log in — is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "\"Authenti-\" + ...",
+        flagHash: "0167e5432d777913fc23dc379d9f68c4f023af44904180c8c33935af6a833a09" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — AuthN vs AuthZ. The system checking whether you're allowed to open a specific file, after you've already logged in, is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "\"Authori-\" + ...",
+        flagHash: "e0f6519553979b886476cc5cdb737cc9b2499d51c61c0d01c007ee8f313320be" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Account security. When an employee leaves, sysadmins usually LOCK the account instead of deleting it right away. Locking preserves the account as ___ for a later investigation.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The same word investigators use for anything that helps prove what happened.",
+        flagHash: "8531aa81101ffce89718956414a130f328321f19a06874a8109980c3e37f2640" }
+    ] },
+
+  { id: "c1-os-5.6-cmds", module: 5, title: "5.6 ext — Linux Account Commands", category: "Account Management", type: "match", points: 150,
+    intro: "Objective — Practice account management. Match each Linux command to what it does. Tap the command, then tap its job.",
+    pairs: [
+      { left: "useradd", right: "Create a new user account" },
+      { left: "passwd", right: "Set or change a user's password" },
+      { left: "passwd -S", right: "Check an account's status (locked/active)" },
+      { left: "userdel", right: "Delete a user account" },
+      { left: "groups", right: "List a user's group memberships" }
+    ] },
+
+  { id: "c1-os-5.6-onboard", module: 5, title: "5.6 ext — Onboard a New Linux User", category: "Account Management", type: "order", points: 150,
+    intro: "Objective — User account management. Order the steps to add and verify a new Linux user.",
     steps: [
       "useradd alice  (create the account)",
       "passwd alice  (set a password)",
       "usermod -aG staff alice  (add to a group)",
-      "chmod on their home dir  (set permissions)",
-      "id alice  (verify the account)"
+      "groups alice  (verify group membership)",
+      "id alice  (confirm the account is set up correctly)"
     ] },
 
-  { id: "c1-m7-vocab", module: 5, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["user","permission","group","chmod","root","sudo","tcpdump","packet"],
+  { id: "c1-os-5.6-groups", module: 5, title: "5.6 ext — Create a Linux Group and Add a User", category: "Account Management", type: "order", points: 150,
+    intro: "Objective — Practice basic user account management. Order the steps to create a group and add an existing user to it.",
+    steps: [
+      "groups demoUser  (check current groups)",
+      "sudo groupadd demoGroup  (create the group)",
+      "sudo groupmod -a -U demoUser demoGroup  (add the user to the group)",
+      "groups demoUser  (verify the new group appears)"
+    ] },
+
+  { id: "c1-os-5.7-core", module: 5, title: "5.7 — Process Management", category: "Process Management",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Process basics. Computers identify every running process not by name but by a number. Give the three-letter acronym for this number.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Three letters. \"Process ___.\"",
+        flagHash: "3c1d59bbc005f35b929258ebc0750f7cd645cb8f7600543ef314471de34a644c" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Process states. A process that has finished running but still lingers in the process list, because its exit status hasn't been read, is called a ___ process.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It sounds spooky — like the walking dead.",
+        flagHash: "dff03ac4e104d4384093933fb9295390c50e9379d90f1c21425c37c5650b208e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Process lifecycle. If a parent process crashes but the child process it started keeps running, that surviving child is now called an ___ process.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Same word used for a child who has lost their parents.",
+        flagHash: "94cd8925222ae27e9599c31056697cc9687fbb92b50bbd5f58247aa1be46c80f" }
+    ] },
+
+  { id: "c1-os-5.7-terms", module: 5, title: "5.7 ext — Process Management Vocabulary", category: "Process Management", type: "match", points: 150,
+    intro: "Objective — Research process management. Match each term to its definition. Tap the term, then tap its definition.",
+    pairs: [
+      { left: "Daemon", right: "A background process waiting to be used, like a web server" },
+      { left: "Memory leak", right: "A program that keeps taking RAM and never releases it" },
+      { left: "Fork", right: "A process creating a copy of itself to start a new one" },
+      { left: "Context switch", right: "The CPU pausing one process to run another" },
+      { left: "Scheduler", right: "The kernel component deciding which process runs next" }
+    ] },
+
+  { id: "c1-os-5.7-stopprocess", module: 5, title: "5.7 ext — Stop a Frozen Process the Right Way", category: "Process Management", type: "order", points: 150,
+    intro: "Objective — Execute process management commands. Order the safest way to shut down a frozen process.",
+    steps: [
+      "Run top to find the frozen process's PID",
+      "Send SIGTERM (signal 15) and ask it to close gracefully",
+      "Wait to see if it exits on its own",
+      "If it's still stuck, send SIGKILL (signal 9) to force it closed",
+      "Confirm the process is gone"
+    ] },
+
+  { id: "c1-os-5.9-core", module: 5, title: "5.9 — Cyber Ethics", category: "Cyber Ethics",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Professional ethics. A researcher who finds a security flaw is expected to privately notify the vendor and give them time to fix it before telling the public. What is this two-word practice called?\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "\"Responsible ___.\"",
+        flagHash: "2419f7d9a99121652bbdf7809a116de22dd82a727cfa97365a2a92b58a28f096" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Professional ethics. Testing a system only with the owner's explicit written permission is a core rule for ethical hackers. What single word describes access you've been given permission for?\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of \"unauthorized.\"",
+        flagHash: "81fd84a24b26617b4ce83b844867d2313c312d2bad80f76b68f40a3e6cf99953" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Professional ethics. A cybersecurity professional who looks through more client data than their job requires, out of curiosity, is violating the same access principle you learned in user account management: only give (and take) access you actually need. Name that principle.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "\"Least ___.\" Same term from 5.6.",
+        flagHash: "d83e6224bc301f25335532abb55ecbb617ec3ff9ceb738249e131fb38eb04be7" }
+    ] },
+
+  { id: "c1-os-5.9-ethics", module: 5, title: "5.9 ext — Ethical or Unethical?", category: "Cyber Ethics", type: "match", points: 150,
+    intro: "Objective — Describe cybersecurity ethics best practices. Sort each scenario. Tap the scenario, then tap the verdict.",
+    pairs: [
+      { left: "Reporting a bug privately to the vendor first", right: "Ethical" },
+      { left: "Publicly posting an exploit before the vendor can patch it", right: "Unethical" },
+      { left: "Only accessing systems you have written permission to test", right: "Ethical" },
+      { left: "Snooping through files outside the scope of your job", right: "Unethical" }
+    ] },
+
+  { id: "c1-os-vocab", module: 5, title: "5.1-5.9 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["operating system","hypervisor","virtual machine","gui","cli","root","extension","authentication","authorization","pid","zombie","least privilege"],
     hardMode: "speedmatch" },
 
-  { id: "c1-m7-numperm", module: 5, title: "Match the Permission Number", category: "Linux Admin", type: "match", points: 150,
-    intro: "Objective — File permissions. Match each chmod number to its access. Tap the number, then tap the access.",
-    pairs: [
-      { left: "7", right: "read + write + execute" },
-      { left: "6", right: "read + write" },
-      { left: "5", right: "read + execute" },
-      { left: "4", right: "read only" },
-      { left: "0", right: "no access" }
-    ] },
-
-  { id: "c1-m7-troubleshoot", module: 5, title: "Troubleshoot a Service", category: "Linux Admin", type: "order", points: 150,
-    intro: "Objective — System administration. Order the steps to troubleshoot a stopped service.",
-    steps: [
-      "systemctl status svc  (check state)",
-      "journalctl -u svc  (read logs)",
-      "Fix the config",
-      "systemctl restart svc",
-      "Verify it's running"
-    ] },
-
-  { id: "c1-m7-manage", module: 5, title: "System Control", category: "Linux Admin",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — System administration. Which command runs another command with superuser (root) privileges?\n\nSubmit as flag{command} (lowercase).",
-        hint: "'super user do'.",
-        flagHash: "85094f96a9f5ca2a33e107c0c9cf13203aecc8dfa7af28036ded3c0d7631b575" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — User management. Which file stores the list of user accounts on a Linux system? Give the full path.\n\nSubmit as flag{/path}.",
-        hint: "In /etc/, companion to shadow.",
-        flagHash: "748159bca73d8c555fe4b00c73f15f2362a347b919c610ccf98ee1fb3da5455a" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Process management. Which command shows currently running processes?\n\nSubmit as flag{command} (lowercase).",
-        hint: "Two letters. It answers \"what is running right now?\"",
-        flagHash: "be7595c0f12b250b68f6ab6b6ae30639f7cd896ab76ace462047f8fe34515c82" }
-    ] },
-
-  /* MODULE 5 cont'd — Windows System Administration ────────────────────────── */
-  { id: "c1-m8-win", module: 5, title: "Windows Admin", category: "Windows Admin",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Windows Command Prompt. What is the classic Windows command-line interpreter, launched by typing its three-letter name into Run?\n\nSubmit as flag{name} (lowercase).",
-        hint: "Three letters, typed into the Run box. Not PowerShell — the older one.",
-        flagHash: "d7f3235a254632fd6278ac69ccba6ae886fcc22b5ee41b72a1668f09a0337b8e" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Windows administration. What is Microsoft's more powerful scripting shell (successor to cmd) for automating admin tasks?\n\nSubmit as flag{word} (lowercase).",
-        hint: "'Power' + a word for a terminal.",
-        flagHash: "45e1b0cb5fcd3f50d7e90a9458b5dfdac49e4842414273f764a24f9c3d4e6efe" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Group management. What Windows directory service stores users, groups, and computers and is central to enterprise account management? Give the two words.\n\nSubmit as flag{two_words} with an underscore.",
-        hint: "Microsoft's centralized service for managing users, computers, and group policy across a Windows domain. Two words.",
-        flagHash: "7c1f5fb2f4a26b42975d51f91c2f9cbcffcf5e9b5903a0765210344a00632a8b" }
-    ] },
-
-  { id: "c1-m8-tools", module: 5, title: "Match the Windows Tool", category: "Windows Admin", type: "match", points: 150,
-    intro: "Objective — Introduction to Windows. Match each tool to its purpose. Tap the tool, then tap its purpose.",
-    pairs: [
-      { left: "Task Manager", right: "View & end running processes" },
-      { left: "Device Manager", right: "Manage hardware & drivers" },
-      { left: "Group Policy", right: "Enforce settings across users" },
-      { left: "PowerShell", right: "Automate admin tasks" },
-      { left: "Control Panel", right: "Adjust system settings" }
-    ] },
-
-  { id: "c1-m8-cmds", module: 5, title: "cmd Command Match", category: "Windows Admin", type: "match", points: 150,
-    intro: "Objective — Windows Command Prompt. Match each cmd command to what it does. Tap the command, then tap its job.",
-    pairs: [
-      { left: "dir", right: "List directory contents" },
-      { left: "cd", right: "Change directory" },
-      { left: "ipconfig", right: "Show network configuration" },
-      { left: "cls", right: "Clear the screen" },
-      { left: "tasklist", right: "List running processes" }
-    ] },
-
-  { id: "c1-m8-software", module: 5, title: "Install Software Safely", category: "Windows Admin", type: "order", points: 150,
-    intro: "Objective — Software management. Order the steps to safely install a program on Windows.",
-    steps: [
-      "Download from the official source",
-      "Verify the file / publisher",
-      "Run the installer",
-      "Configure the settings",
-      "Check for updates"
-    ] },
-
-  { id: "c1-m8-vocab", module: 5, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["windows","registry","powershell","group","process","administrator","policy","service"],
-    hardMode: "blitz" },
-
-  { id: "c1-m8-shortcuts", module: 5, title: "Match the Windows Shortcut", category: "Windows Admin", type: "match", points: 150,
-    intro: "Objective — Windows basics. Match each shortcut to what it opens. Tap the shortcut, then tap the result.",
-    pairs: [
-      { left: "Ctrl+Shift+Esc", right: "Task Manager" },
-      { left: "Win+R", right: "Run dialog" },
-      { left: "Win+E", right: "File Explorer" },
-      { left: "Win+L", right: "Lock the screen" }
-    ] },
-
-  { id: "c1-m8-account", module: 5, title: "Create a Windows User", category: "Windows Admin", type: "order", points: 150,
-    intro: "Objective — Group & account management. Order the steps to add and secure a Windows user.",
-    steps: [
-      "Open Settings > Accounts",
-      "Add a new user",
-      "Set a strong password",
-      "Assign the right group/role",
-      "Sign in to verify"
-    ] },
-
-  { id: "c1-m8-winfacts", module: 5, title: "Windows Know-How", category: "Windows Admin",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Windows basics. The hierarchical database that stores Windows settings and configuration is called the ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "reg____.",
-        flagHash: "98b5e4f1518d0e646cd58cddd3944c01ce130473468a0a0123fa53019390cdf4" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — File systems. What is the default modern file system used by Windows? Give the four-letter name.\n\nSubmit as flag{name} (lowercase).",
-        hint: "Four letters, ending in FS. Windows' modern replacement for FAT32.",
-        flagHash: "97d251c069ed02ef7e1cdb4b8998fbc671fc2c213e17c55d41fa639f4c789e9d" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Command line. Which cmd command shows a computer's IP configuration?\n\nSubmit as flag{command} (lowercase).",
-        hint: "The Windows command that prints your adapter's address details. On Linux you'd reach for `ip addr` instead.",
-        flagHash: "189afbe00a674e2d78c03c3812e6f5d6bd580ebc90f3057e1d2cb26b1699dadc" }
-    ] },
 
   /* MODULE 10 — Cyber Competitions (NCL) ───────────────────────────────────── */
-  { id: "c1-m9-ncl", module: 10, title: "Game On", category: "NCL",
+  /* MODULE 10 — Cyber Competitions ────────────────────────────────────────── */
+  { id: "c1-comp-10.1-core", module: 10, title: "10.1 — Intro to Cyber Competitions", category: "Competition Formats",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — NCL competition. What does 'NCL' stand for? Give the three words.\n\nSubmit as flag{three_words} with underscores.",
-        hint: "National ___ League.",
-        flagHash: "3212383c7d281b5dd34552bf45195dc477bb462bce8e62be085e003715bba5c9" },
+        prompt: "Objective — Explain competition formats. Individuals or teams solving independent puzzles across categories to find a hidden string of text and earn points describes a ___ ___ competition. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "It's what this whole game is called.",
+        flagHash: "a0584e2682ef33af58e7d967b75f22112067b7bb37ca07ed90f9cbb6228957d8" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Security+ application. Which vendor publishes the Security+ certification that NCL skills help prepare you for?\n\nSubmit as flag{vendor} (lowercase).",
-        hint: "The vendor-neutral certifying body behind A+, Network+, and Security+.",
-        flagHash: "aebe053e62f3f1071dacbf150bfa2d4bd56d9e34d10545da76658c9c6c956f9e" },
+        prompt: "Objective — Explain competition formats. A format where teams are given a network to secure against active attackers while keeping services running is called ___/Offense simulation.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of Offense.",
+        flagHash: "d5edb42995bdc2fd7fccb374f6ced4997a8dcec5bbcc0dc9a845a8cb7f076073" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — NCL domains. The NCL domain focused on gathering intel from public sources uses which five-letter acronym?\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "Open-Source Intelligence.",
-        flagHash: "3fc15149e5c1961d82e51cdad33971ac2a87aa79e609c6f425d47bbc05bbb365" }
+        prompt: "Objective — Adopt the competitor mindset. Cyber competitions emphasize learning and problem-solving; success is measured by growth in knowledge and confidence, not just ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "What shows up on the leaderboard, but isn't the real goal.",
+        flagHash: "d3c4d7310a08ef2546f615b4c94df36088bb6cda5dbb2cc9c905cd572989a9ab" }
     ] },
 
-  { id: "c1-m9-domains", module: 10, title: "Match the NCL Domain", category: "NCL", type: "match", points: 150,
-    intro: "Objective — NCL competition domains. Match each domain to its focus. Tap the domain, then tap its focus.",
+  { id: "c1-comp-10.1-mindset", module: 10, title: "10.1 ext — The Competitor Mindset", category: "Competition Formats", type: "match", points: 150,
+    intro: "Objective — Apply the cyber competitor mindset. Match each behavior to the mindset it shows. Tap the behavior, then tap the mindset.",
     pairs: [
-      { left: "OSINT", right: "Public-source intel gathering" },
-      { left: "Cryptography", right: "Breaking & making ciphers" },
-      { left: "Password Cracking", right: "Recovering hashed passwords" },
-      { left: "Web Exploitation", right: "Attacking web apps" },
-      { left: "Forensics", right: "Analyzing digital evidence" },
-      { left: "Scanning", right: "Mapping hosts & services" }
+      { left: "A team gets stuck and switches to a new tool or category instead of giving up", right: "Pivoting" },
+      { left: "A competitor takes detailed notes so a stuck teammate can catch up fast", right: "Documentation" },
+      { left: "A team double-checks a flag's format before submitting", right: "Accuracy" },
+      { left: "A player treats a wrong answer as a clue rather than a failure", right: "Growth Mindset" }
     ] },
 
-  { id: "c1-m9-tools", module: 10, title: "Match the NCL Tool", category: "NCL", type: "match", points: 150,
-    intro: "Objective — Applying skills. Match each tool to its use. Tap the tool, then tap its use.",
+  { id: "c1-comp-10.2-core", module: 10, title: "10.2 — Competition Vocabulary", category: "Competition Categories",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Distinguish cryptography from steganography. Hiding a secret message inside another file — like a hidden text file inside a photo — is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Crypto scrambles a message; this hides it instead.",
+        flagHash: "466487e2d33da7c711a154fb720b22c70c15c1870846481873ab77daf06a4704" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain OSINT terms. Taking one piece of information, like an email, and using it to find new information, like a social media profile, is called a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Basketball players do this too.",
+        flagHash: "8865a578b5e3a95e5aafb863e87537661b66fd2ceb8214e9edefc29dcc8199eb" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain forensics. The first few bytes of a file that reveal its true type even if the extension has been changed are called the file ___ (or Magic Bytes).\n\nSubmit as flag{word} (lowercase).",
+        hint: "Every PDF starts with the same one of these.",
+        flagHash: "c5c2fac00fec909ab997fc7eb149eba62cca0ff6f4d3a119f1d3c8ac42932ab9" }
+    ] },
+
+  { id: "c1-comp-10.2-categories", module: 10, title: "10.2 ext — Match the Competition Category", category: "Competition Categories", type: "match", points: 150,
+    intro: "Objective — Describe common competition categories. Match each category to what it covers. Tap the category, then tap its description.",
     pairs: [
-      { left: "Wireshark", right: "Inspect network traffic" },
-      { left: "Nmap", right: "Scan for open ports" },
-      { left: "John the Ripper", right: "Crack password hashes" },
-      { left: "CyberChef", right: "Decode & transform data" }
+      { left: "OSINT", right: "Gathering info from public sources like social media and maps" },
+      { left: "Cryptography", right: "Making and breaking codes and ciphers" },
+      { left: "Steganography", right: "Finding a message hidden inside another file" },
+      { left: "Log Analysis & Network Traffic", right: "Examining packet captures for suspicious activity" },
+      { left: "Web Application Exploitation", right: "Finding flaws like SQL Injection in websites" },
+      { left: "Forensics", right: "Recovering and examining digital evidence from files" },
+      { left: "Scanning & Enumeration", right: "Discovering open ports and running services" }
     ] },
 
-  { id: "c1-m9-plan", module: 10, title: "NCL Game Plan", category: "NCL", type: "order", points: 150,
-    intro: "Objective — Cyber mindset. Order how to approach an NCL challenge.",
-    steps: [
-      "Read the challenge carefully",
-      "Gather the right tools",
-      "Attempt a solution",
-      "Submit the flag",
-      "Review & learn from it"
+  { id: "c1-comp-10.2-terms", module: 10, title: "10.2 ext — Match the Term", category: "Competition Categories", type: "match", points: 150,
+    intro: "Objective — Apply competition vocabulary. Match each term to its definition. Tap the term, then tap its definition.",
+    pairs: [
+      { left: "Metadata", right: "Hidden data about data, like GPS coordinates in a photo" },
+      { left: "Google Dorking", right: "Using advanced search filters to find unindexed information" },
+      { left: "SQL Injection", right: "Tricking a database into revealing info through an entry field" },
+      { left: "PCAP", right: "A file format that records network traffic" },
+      { left: "Hashing", right: "Turning data into a unique digital fingerprint" }
     ] },
 
-  { id: "c1-m9-vocab", module: 10, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["osint","forensic","crack","scan","exploit","cipher","flag","reconnaissance"],
-    hardMode: "cipher" },
+  { id: "c1-comp-10.3-core", module: 10, title: "10.3 — Competition Tools", category: "Competition Tools",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Identify competition tools. The free web-based tool nicknamed the \"cyber Swiss Army knife,\" used to encode, decode, and transform data by chaining recipes, is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "You'll use it constantly for crypto challenges.",
+        flagHash: "8c1ed041d1c82dbb252a0dbb64671344e9ef31c93e1d7698e0f5460f8e38d43f" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Identify competition tools. The industry-standard command-line tool used to scan a network and discover which ports are open is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The go-to open-source network scanner.",
+        flagHash: "a8043f1361355b179941e0f023f504d372719d64213189f4f7efc136cc601a2b" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Identify competition tools. The command-line tool used to capture and analyze network traffic packets — seeing exactly what computers are \"saying\" to each other — is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The name is literally what it does to packets.",
+        flagHash: "5382f5ab29e9a406f1af3ec0dd2bb1bc70f8839f34608132798f4493a4e603c1" }
+    ] },
 
-  { id: "c1-m9-encodings", module: 10, title: "Recognize the Encoding", category: "NCL", type: "match", points: 150,
-    intro: "Objective — NCL cryptography domain. Match each sample to its encoding. Tap the sample, then tap what it is.",
+  { id: "c1-comp-10.3-decode", module: 10, title: "10.3 ext — Recognize the Encoding", category: "Competition Tools", type: "match", points: 150,
+    intro: "Objective — Apply competition tools. Match each sample to what it is. Tap the sample, then tap its encoding.",
     pairs: [
       { left: "SGVsbG8=", right: "Base64" },
       { left: "48656c6c6f", right: "Hexadecimal" },
@@ -1350,217 +1550,1126 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "01001000", right: "Binary" }
     ] },
 
-  { id: "c1-m9-forensics", module: 10, title: "NCL Forensics Steps", category: "NCL", type: "order", points: 150,
-    intro: "Objective — NCL forensics domain. Order the steps to analyze a suspicious file in a challenge.",
+  { id: "c1-comp-10.3-approach", module: 10, title: "10.3 ext — Run a CTF Challenge", category: "Competition Tools", type: "order", points: 150,
+    intro: "Objective — Apply a competition strategy. Order the steps of tackling a CTF challenge, first to last.",
     steps: [
-      "Download the evidence file",
-      "Identify the file type",
-      "Extract hidden/metadata",
-      "Analyze the contents",
-      "Recover the flag"
+      "Read the challenge carefully",
+      "Identify the category and the right tool for it",
+      "Attempt a solution",
+      "Verify the result before submitting",
+      "Submit the flag"
     ] },
 
-  { id: "c1-m9-nclfacts", module: 10, title: "Competition Ready", category: "NCL",
+  { id: "c1-comp-vocab", module: 10, title: "10.1-10.3 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["osint","pivot","metadata","steganography","cryptography","pcap","sql injection","forensics","file header","hashing","scanning","nmap","brute force","port"],
+    hardMode: "cipher" },
+
+  /* MODULE 6 — Network Basics ────────────────────────────────────────────── */
+  { id: "c1-net-6.1-core", module: 6, title: "6.1 — What is a Network", category: "Networking Basics",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — NCL. In a CTF, the secret string you submit to prove you solved a challenge is called a ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's what this whole game captures.",
-        flagHash: "c28e44c10684c0187228dda2f9f0e1ee13623b4468c5d684a5124332706f857e" },
+        prompt: "Objective — Define a network. A network is a connection plus a shared ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Files, hardware, and services are all examples of this.",
+        flagHash: "9422d7ad87579eeed1aaa8ecc2650bef1f8436813c3ce426eab236590cb63fa9" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — NCL scanning domain. Which tool scans a host to discover open ports and services?\n\nSubmit as flag{tool} (lowercase).",
-        hint: "The go-to open-source scanner for discovering live hosts, open ports, and running services.",
-        flagHash: "a8043f1361355b179941e0f023f504d372719d64213189f4f7efc136cc601a2b" },
+        prompt: "Objective — Scale of networks. A small, high-speed network confined to one home, classroom, or building — where you own the equipment — is called a ___. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "\"Local Area ___.\"",
+        flagHash: "64d7827b17d719c4aa93d512459a208bc7424f408a6086c23e20974a0393a5b2" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — NCL tools. Which web-based tool decodes, encodes, and transforms data (the 'cyber Swiss-army knife')?\n\nSubmit as flag{toolname} (lowercase).",
-        hint: "GCHQ's free browser tool for chaining encode/decode operations into a saved “recipe”. You'll use it constantly in NCL.",
-        flagHash: "8c1ed041d1c82dbb252a0dbb64671344e9ef31c93e1d7698e0f5460f8e38d43f" }
+        prompt: "Objective — Protocols. Computers only understand IP numbers, not names like google.com. The protocol that translates human-readable domain names into IP addresses — the \"phonebook of the internet\" — is called ___. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "\"Domain Name ___.\"",
+        flagHash: "91c62aef53d9904503cebc53ad67c728716b5728b5cab6ed9601caf62ef178da" }
     ] },
 
-  /* MODULE 6 — Network Basics ──────────────────────────────────────────────── */
-  { id: "c1-m10-net", module: 6, title: "Layers & Addresses", category: "Networking",
+  { id: "c1-net-6.1-lanwan", module: 6, title: "6.1 ext — LAN or WAN?", category: "Networking Basics", type: "match", points: 150,
+    intro: "Objective — Identify network scale. Sort each connection. Tap the connection, then tap LAN or WAN.",
+    pairs: [
+      { left: "Small area, one building, you own the equipment", right: "LAN" },
+      { left: "Large geographic area, connects multiple LANs together", right: "WAN" },
+      { left: "Printing to a printer down the hall", right: "LAN" },
+      { left: "Checking Gmail on your phone from a coffee shop", right: "WAN" }
+    ] },
+
+  { id: "c1-net-6.1-clientserver", module: 6, title: "6.1 ext — Client or Server?", category: "Networking Basics", type: "match", points: 150,
+    intro: "Objective — Identify network roles. Tap the example, then tap Client or Server.",
+    pairs: [
+      { left: "Your phone requesting a website", right: "Client" },
+      { left: "Google's computers serving up search results", right: "Server" },
+      { left: "Your laptop asking to load an email", right: "Client" },
+      { left: "Netflix's movie storage answering a stream request", right: "Server" }
+    ] },
+
+  { id: "c1-net-6.2-core", module: 6, title: "6.2 — Network Components", category: "Network Components",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — OSI model. How many layers are in the OSI model?\n\nSubmit as flag{number}.",
-        hint: "Physical up to Application.",
-        flagHash: "5583b3ce3b42644490f323edfc1da538d0c41d26ce150a65e700b3b6d11f651f" },
+        prompt: "Objective — Network components. The device that connects multiple devices within a single local network and directs traffic between them is called a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "One word. Every device on a LAN plugs into this.",
+        flagHash: "38c4f6a183505d28823e7a8bac4171f50464cd8cc5f7090ba89d37b827a1f95d" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Networking terminology. Which layer-3 protocol provides the addresses that route packets across the internet? Give the two-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "The layer-3 logical address that identifies a device on a network. Two letters.",
-        flagHash: "b7dd261872f3a6bd653e0add60842b13ba49f9e8743ebbb426002d17641c3da2" },
+        prompt: "Objective — Network components. The device that connects your local network to the internet, moving traffic between different networks, is called a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "One word. It's where the internet \"enters the house.\"",
+        flagHash: "31305d5bfa6940afa4bbe2becc9221fbaae0e6f451384f36bb6e8065ab52fd5d" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — OSI model layers. Which OSI layer (by name) is responsible for reliable end-to-end delivery, using TCP?\n\nSubmit as flag{word} (lowercase).",
-        hint: "OSI layer 4 — where TCP and UDP live, and where ports and reliable end-to-end delivery are handled.",
-        flagHash: "4d1477a3f1d2dcbf8954946fc70fa848cffe609deea649a1de7e99db056a2ccc" }
+        prompt: "Objective — Network components. The device that lets Wi-Fi devices join a wired network is called a ___. Give the three words.\n\nSubmit as flag{three_words} with underscores.",
+        hint: "Three words, all lowercase and underscored — the thing that broadcasts your Wi-Fi.",
+        flagHash: "13e994f24ca5b00f4088a0f9b3df82ce9927b2b0d1eb9e097739cce8aa593075" }
     ] },
 
-  { id: "c1-m10-osi", module: 6, title: "Order the OSI Model", category: "Networking", type: "order", points: 150,
-    intro: "Objective — The 7 OSI layers. Order the OSI layers from Layer 1 (bottom) to Layer 7 (top).",
-    steps: [
-      "Physical",
-      "Data Link",
-      "Network",
-      "Transport",
-      "Session",
-      "Presentation",
-      "Application"
-    ] },
-
-  { id: "c1-m10-devices", module: 6, title: "Match the Network Device", category: "Networking", type: "match", points: 150,
-    intro: "Objective — Network diagrams. Match each device to its role. Tap the device, then tap its role.",
+  { id: "c1-net-6.2-components", module: 6, title: "6.2 ext — Match the Component", category: "Network Components", type: "match", points: 150,
+    intro: "Objective — Identify network components. Match each component to its job. Tap the component, then tap its job.",
     pairs: [
-      { left: "Router", right: "Connects different networks" },
-      { left: "Switch", right: "Connects devices on a LAN" },
-      { left: "Firewall", right: "Filters traffic by rules" },
-      { left: "Access Point", right: "Provides Wi-Fi access" },
-      { left: "Hub", right: "Repeats traffic to all ports" }
+      { left: "Router", right: "Connects your network to the internet" },
+      { left: "Switch", right: "Connects multiple devices within one local network" },
+      { left: "Modem", right: "Converts your ISP's internet signal into a usable format" },
+      { left: "Wireless Access Point", right: "Lets Wi-Fi devices join a wired network" }
     ] },
 
-  { id: "c1-m10-layer", module: 6, title: "Match the OSI Layer", category: "Networking", type: "match", points: 150,
-    intro: "Objective — OSI model. Match each example to its OSI layer. Tap the example, then tap the layer.",
-    pairs: [
-      { left: "Ethernet cable & signals", right: "Physical" },
-      { left: "MAC addresses & switches", right: "Data Link" },
-      { left: "IP addresses & routing", right: "Network" },
-      { left: "TCP ports & reliability", right: "Transport" },
-      { left: "HTTP, DNS, email", right: "Application" }
-    ] },
-
-  { id: "c1-m10-vocab", module: 6, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["network","osi","protocol","router","switch","packet","ip address","firewall"],
-    hardMode: "wordsearch" },
-
-  { id: "c1-m10-ports", module: 6, title: "Match the Port to the Service", category: "Networking", type: "match", points: 150,
-    intro: "Objective — Networking terminology. Match each port to its service. Tap the port, then tap the service.",
-    pairs: [
-      { left: "80", right: "HTTP" },
-      { left: "443", right: "HTTPS" },
-      { left: "22", right: "SSH" },
-      { left: "53", right: "DNS" },
-      { left: "25", right: "SMTP" }
-    ] },
-
-  { id: "c1-m10-request", module: 6, title: "Follow a Web Request", category: "Networking", type: "order", points: 150,
-    intro: "Objective — How networks communicate. Order what happens when you visit a website.",
-    steps: [
-      "Type the URL",
-      "DNS resolves it to an IP",
-      "TCP connection opens",
-      "Server sends the page",
-      "Browser renders it"
-    ] },
-
-  { id: "c1-m10-netfacts", module: 6, title: "Network Numbers", category: "Networking",
+  { id: "c1-net-6.3-core", module: 6, title: "6.3 — Network Topologies & Diagrams", category: "Topologies",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Networking terms. A unique address burned into a network card, written like 00:1A:2B:3C:4D:5E, is called a ___ address.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "Three letters. Burned into the hardware — layer 2, not layer 3.",
+        prompt: "Objective — Network topologies. In the most common modern layout, every device has its own dedicated cable running back to a central switch. This is called a ___ topology.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Picture the shape it makes on paper — lines radiating out from one point.",
+        flagHash: "18d24f01160bf2f508d31bf1b8d5ccdccc4aa6303cbea4c5b9693e810a926e3f" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Network topologies. In this topology, every device shares one backbone cable — and if that cable breaks, the entire network fails. Name it.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Like a city bus route everyone rides together.",
+        flagHash: "71356a4d3698965c1f69360ecfb000a7a078f04a4672f092c2501317c1b08d42" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Network topologies. In this topology, every device connects directly to every other device — the most expensive to cable, but nearly impossible to fully break. Name it.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Think of a net of wires between every point.",
+        flagHash: "1fc0181abfd988506f088ae78817ee00f9da14cc8c320a5a9954d9e5faee33ff" }
+    ] },
+
+  { id: "c1-net-6.3-topology", module: 6, title: "6.3 ext — Topology Trait Match", category: "Topologies", type: "match", points: 150,
+    intro: "Objective — Describe how topologies function. Match each topology to what happens when a cable is cut. Tap the topology, then tap the outcome.",
+    pairs: [
+      { left: "Star", right: "Only that one device loses connection" },
+      { left: "Bus", right: "The entire network fails" },
+      { left: "Ring", right: "The circle breaks and data stops flowing" },
+      { left: "Mesh", right: "Data simply takes another path" }
+    ] },
+
+  { id: "c1-net-6.3-diagram", module: 6, title: "6.3 ext — Build the Network Hierarchy", category: "Topologies", type: "order", points: 150,
+    intro: "Objective — Diagram a network. Order how a professional network diagram is built, top to bottom.",
+    steps: [
+      "Draw a cloud at the top and label it \"The Internet\"",
+      "Draw the Router below it and connect it to the cloud",
+      "Draw the Switch below the Router and connect it",
+      "Draw the Workstations below the Switch and connect them"
+    ] },
+
+  { id: "c1-net-6.4-core", module: 6, title: "6.4 — Addressing", category: "Addressing",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Physical addressing. A permanent hardware address burned into a device's Network Interface Card at the factory is called a ___ address. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "\"Media Access Control.\"",
         flagHash: "0126f495eb054ee2114637e63cd1d82936b19e3a7f36843baa49cb47feeafd14" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Protocols. Which protocol translates a domain name like google.com into an IP address? Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "Three letters. Often called the internet's phone book.",
-        flagHash: "91c62aef53d9904503cebc53ad67c728716b5728b5cab6ed9601caf62ef178da" },
+        prompt: "Objective — Logical addressing. The address your device is assigned by whatever network it's currently connected to — and which changes when you switch networks — is a(n) ___ address. Give the two-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "\"Internet Protocol.\"",
+        flagHash: "b7dd261872f3a6bd653e0add60842b13ba49f9e8743ebbb426002d17641c3da2" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Addressing. What is the loopback IP address that always refers to your own machine?\n\nSubmit as flag{ip.address}.",
-        hint: "The loopback address every machine uses for itself — it ends in a single 1.",
-        flagHash: "03f990510f8d903f3584165553ec31f1c2ce25c7cacbd6c61249af8fceda402b" }
+        prompt: "Objective — DHCP vs Static. A web server needs to be found at the exact same address every time, so it's manually assigned a ___ IP instead of an automatic DHCP lease.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of \"dynamic.\"",
+        flagHash: "84a5a5254acc2e1a4e78ed97e519f36049939ee42eb008ca66b34ec9d1e75900" }
     ] },
 
-  /* MODULE 7 — Cyber Threats (Malware, Vulnerabilities, Exploits & Kill Chain) */
-  { id: "c1-m11-mal", module: 7, title: "Know the Threat", category: "Malware & Exploits",
+  { id: "c1-net-6.4-macip", module: 6, title: "6.4 ext — MAC or IP Address?", category: "Addressing", type: "match", points: 150,
+    intro: "Objective — Describe physical and logical addressing. Sort each trait. Tap the trait, then tap the address type.",
+    pairs: [
+      { left: "Permanent, burned into the hardware at the factory", right: "MAC Address" },
+      { left: "Temporary, assigned by whatever network you join", right: "IP Address" },
+      { left: "Used by a Switch to deliver traffic on the local network", right: "MAC Address" },
+      { left: "Used by a Router to move data across the internet", right: "IP Address" },
+      { left: "Like a Social Security Number", right: "MAC Address" },
+      { left: "Like a Mailing Address", right: "IP Address" }
+    ] },
+
+  { id: "c1-net-6.4-scavenger", module: 6, title: "6.4 ext — Find the Address (CLI)", category: "Addressing", type: "order", points: 150,
+    intro: "Objective — Use the CLI to find addresses. From the Address Scavenger Hunt, order the steps to find a workstation's IP and MAC address.",
+    steps: [
+      "Open the CLI tab on the workstation",
+      "Type ipconfig to find the IP address",
+      "Type ipconfig /all to find the MAC address",
+      "Compare the first three octets of each device's IP address"
+    ] },
+
+  { id: "c1-net-6.5-core", module: 6, title: "6.5 — Ports and Protocols", category: "Ports & Protocols",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Types of malware. Malware that encrypts your files and demands payment to unlock them.\n\nSubmit as flag{word} (lowercase).",
-        hint: "'ransom' + 'ware'.",
-        flagHash: "c3eab0cae2df20bf8a4b32c23cfe39e1d2e2f630a2c77d8b989431866e84712c" },
+        prompt: "Objective — Ports. A numerical identifier from 0 to 65,535 that keeps different types of network traffic organized on a computer is called a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Like a door into the computer.",
+        flagHash: "242ca48793bf9ad113e7f88f6890a0f47c48b75f36ad5270ac11fc029eb0b955" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Vulnerabilities vs exploits. A weakness in a system is a vulnerability; the code or technique that takes advantage of it is called an ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Seven letters. The code that takes advantage of a specific flaw.",
-        flagHash: "98821dc83bab62853f12d3050b49f6d6d6dfe4038e570c915ea2459e798ee88d" },
+        prompt: "Objective — Web traffic ports. Port 80 carries unencrypted web traffic in plain text. Which port number carries the encrypted, secure version (HTTPS)?\n\nSubmit as flag{number}.",
+        hint: "A three-digit number.",
+        flagHash: "6330530366f15794e228e1b06447209953daab864b4e3643be8b90a8b3dc4081" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Vulnerabilities. A flaw unknown to the vendor, with no patch available yet, is called a ___-day vulnerability.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Days since the vendor knew = 0.",
-        flagHash: "ac9874bc3b6204632610ff73ee5698c0388bce80ba1f493f91e309bbbe2a06ed" }
+        prompt: "Objective — Insecure protocols. Port 23 runs an old, unencrypted remote-login protocol where every command — and password — is sent in the open, like shouting through a megaphone. Name the protocol.\n\nSubmit as flag{word} (lowercase).",
+        hint: "An outdated ancestor of SSH.",
+        flagHash: "4a15386c6af353a2b5b2a8d25abd1f8ea8814e5b83794911b0835baa914b14a5" }
     ] },
 
-  { id: "c1-m11-killchain", module: 7, title: "Order the Cyber Kill Chain", category: "Malware & Exploits", type: "order", points: 150,
-    intro: "Objective — The Cyber Kill Chain. Order Lockheed Martin's 7 kill-chain stages, first to last.",
+  { id: "c1-net-6.5-portmatch", module: 6, title: "6.5 ext — Match the Port to the Protocol", category: "Ports & Protocols", type: "match", points: 150,
+    intro: "Objective — Identify basic ports and protocols. Match each port number to its protocol. Tap the port, then tap the protocol.",
+    pairs: [
+      { left: "Port 53", right: "DNS" },
+      { left: "Port 80", right: "HTTP" },
+      { left: "Port 443", right: "HTTPS" },
+      { left: "Port 22", right: "SSH" },
+      { left: "Port 21", right: "FTP" },
+      { left: "Port 23", right: "Telnet" }
+    ] },
+
+  { id: "c1-net-6.5-triage", module: 6, title: "6.5 ext — Triage Incoming Traffic", category: "Ports & Protocols", type: "order", points: 150,
+    intro: "Objective — Describe why ports and protocols matter. Order how a network admin evaluates an incoming connection.",
     steps: [
-      "Reconnaissance",
-      "Weaponization",
-      "Delivery",
-      "Exploitation",
-      "Installation",
-      "Command & Control",
-      "Actions on Objectives"
+      "Identify the port and protocol involved",
+      "Check whether that protocol encrypts its data",
+      "Decide whether the traffic is expected, suspicious, or a threat",
+      "Allow, flag, or block the traffic accordingly"
     ] },
 
-  { id: "c1-m11-types", module: 7, title: "Match the Malware", category: "Malware & Exploits", type: "match", points: 150,
-    intro: "Objective — Types of malware. Match each malware to its behavior. Tap the malware, then tap its behavior.",
-    pairs: [
-      { left: "Virus", right: "Attaches to files, needs a host" },
-      { left: "Worm", right: "Self-spreads across networks" },
-      { left: "Trojan", right: "Disguised as legit software" },
-      { left: "Ransomware", right: "Encrypts files for payment" },
-      { left: "Spyware", right: "Secretly monitors the user" },
-      { left: "Rootkit", right: "Hides deep to keep access" }
-    ] },
-
-  { id: "c1-m11-vex", module: 7, title: "Vulnerability vs Exploit", category: "Malware & Exploits", type: "match", points: 150,
-    intro: "Objective — Vulnerabilities and exploits. Sort each item. Tap the item, then tap the category.",
-    pairs: [
-      { left: "Unpatched software flaw", right: "Vulnerability" },
-      { left: "Weak default password", right: "Vulnerability" },
-      { left: "Code that triggers a buffer overflow", right: "Exploit" },
-      { left: "A phishing kit that steals logins", right: "Exploit" },
-      { left: "Misconfigured firewall rule", right: "Vulnerability" }
-    ] },
-
-  { id: "c1-m11-vocab", module: 7, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["malware","virus","worm","trojan","ransomware","exploit","vulnerabilit","payload","kill chain"],
-    hardMode: "rapid" },
-
-  { id: "c1-m11-defense", module: 7, title: "Match the Malware Defense", category: "Malware & Exploits", type: "match", points: 150,
-    intro: "Objective — Defending against malware. Match each defense to the threat it counters. Tap the defense, then tap the threat.",
-    pairs: [
-      { left: "Antivirus scan", right: "Known viruses" },
-      { left: "Regular backups", right: "Ransomware" },
-      { left: "Patching software", right: "Exploited vulnerabilities" },
-      { left: "Email filtering", right: "Phishing payloads" },
-      { left: "Least privilege", right: "Malware spread" }
-    ] },
-
-  { id: "c1-m11-response", module: 7, title: "Respond to an Infection", category: "Malware & Exploits", type: "order", points: 150,
-    intro: "Objective — Incident basics. Order the steps to respond to a malware infection.",
-    steps: [
-      "Disconnect the device from the network",
-      "Identify the malware",
-      "Remove/quarantine it",
-      "Restore from clean backup",
-      "Patch the entry point"
-    ] },
-
-  { id: "c1-m11-malfacts", module: 7, title: "Threat Intel", category: "Malware & Exploits",
+  { id: "c1-net-6.6-core", module: 6, title: "6.6 — OSI and TCP/IP Models", category: "OSI & TCP/IP",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Malware types. A network of compromised computers controlled by an attacker is called a ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "'robot' + 'network'.",
-        flagHash: "637347b57a1525df08c69264a7597e0404be95250746028e5f43bd7caa22ec5d" },
+        prompt: "Objective — OSI Model. How many layers does the OSI Model have?\n\nSubmit as flag{number}.",
+        hint: "A single digit.",
+        flagHash: "5583b3ce3b42644490f323edfc1da538d0c41d26ce150a65e700b3b6d11f651f" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Attacks. Flooding a server with traffic from many machines to knock it offline is a ___ attack. Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "Four letters. A flood from a botnet, not from one machine.",
+        prompt: "Objective — TCP/IP Model. How many layers does the real-world TCP/IP Model have?\n\nSubmit as flag{number}.",
+        hint: "A single digit, fewer than the OSI Model.",
+        flagHash: "7be5aec942dbdcfb4e21cd12dd137de80acf61b69c924a3500a50673253943c2" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Transport layer. In the Full Send demo, one transport protocol means \"ball up your message and throw it\" with no confirmation of delivery — prioritizing speed over reliability. Give its acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "The opposite of TCP.",
+        flagHash: "711a0e165678a3f2d508859c2a67b316b5a6fe1b8894c133943367cbac1d8f0b" }
+    ] },
+
+  { id: "c1-net-6.6-encapsulation", module: 6, title: "6.6 ext — Encapsulate a Packet", category: "OSI & TCP/IP", type: "order", points: 150,
+    intro: "Objective — Summarize the OSI Model. From the Full Send OSI Demo, order the layers as a message is encapsulated for sending, top to bottom.",
+    steps: [
+      "Layer 7 (Application) — write your secret message",
+      "Layer 6 (Presentation) — encrypt it",
+      "Layer 5 (Session) — assign a Session ID",
+      "Layer 4 (Transport) — choose TCP or UDP",
+      "Layer 3 (Network) — add the IP addresses",
+      "Layer 2 (Data Link) — add the MAC addresses",
+      "Layer 1 (Physical) — physically send the packet"
+    ] },
+
+  { id: "c1-net-6.6-layers", module: 6, title: "6.6 ext — OSI to TCP/IP", category: "OSI & TCP/IP", type: "match", points: 150,
+    intro: "Objective — Compare the OSI and TCP/IP Models. Match each OSI layer to its TCP/IP Model equivalent. Tap the OSI layer, then tap the TCP/IP layer.",
+    pairs: [
+      { left: "Application, Presentation, Session (OSI)", right: "Application Layer (TCP/IP)" },
+      { left: "Transport (OSI)", right: "Transport Layer (TCP/IP)" },
+      { left: "Network (OSI)", right: "Internet Layer (TCP/IP)" },
+      { left: "Data Link, Physical (OSI)", right: "Network Access Layer (TCP/IP)" }
+    ] },
+
+  { id: "c1-net-6.7-core", module: 6, title: "6.7 — Connectivity and Tools", category: "Networking Tools",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Networking tools. Which tool sends a basic ICMP \"Echo Request\" to confirm whether a device is online and reachable?\n\nSubmit as flag{word} (lowercase).",
+        hint: "The classic \"is this thing on?\" command.",
+        flagHash: "bbf01cf31391db9819acc059dfe115a90fa07c15bf4c9faaa6bf0eb5889d4d14" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Networking tools. Which tool maps every router \"hop\" along the path to a destination, so you can pinpoint exactly where a slowdown is happening? Give the Linux name.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Windows calls it tracert; Linux spells it out.",
+        flagHash: "1aa48cb28abe03a68bf992f01d5e86d93820d150af6e996df212069ce500258a" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Networking tools. Which tool displays all active TCP and UDP connections on a device, useful for spotting malware \"calling home\" to a suspicious IP?\n\nSubmit as flag{word} (lowercase).",
+        hint: "Short for \"network statistics.\"",
+        flagHash: "167f3544498d20cf6423b4a908cdd46cde67301a06737f58e3d1e24ef1fad59f" }
+    ] },
+
+  { id: "c1-net-6.7-tools", module: 6, title: "6.7 ext — Match the Networking Tool", category: "Networking Tools", type: "match", points: 150,
+    intro: "Objective — Use real-world networking tools. Match each scenario to the tool that solves it. Tap the scenario, then tap the tool.",
+    pairs: [
+      { left: "One site fails to load by name, but others work fine", right: "nslookup" },
+      { left: "You want to see if a server is online and reachable", right: "ping" },
+      { left: "You suspect malware is phoning home to a strange IP", right: "netstat" },
+      { left: "You need to confirm your own device's IP configuration", right: "ipconfig / ip addr" },
+      { left: "You want to see which hop is causing a slowdown", right: "tracert / traceroute" }
+    ] },
+
+  { id: "c1-net-vocab", module: 6, title: "6.1-6.7 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["network","lan","wan","router","switch","topology","mac address","ip address","port","protocol","osi model","dns"],
+    hardMode: "cipher" },
+
+
+  /* MODULE 7 — Cyber Threats ──────────────────────────────────────────────── */
+  { id: "c1-thr-7.1-core", module: 7, title: "7.1 — The Attack Surface", category: "Attack Surface",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Define the attack surface. The sum of all possible points where an attacker could get into, or extract data from, a system is called the ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "The bigger this is, the harder it is to defend.",
+        flagHash: "b64b2d3c7d412434b55d7bee89eb246a6ee96d7bd6bffa9c78abfb5cfe4303f0" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Types of attack surfaces. The attack surface made up of people — the \"weakest link,\" targeted through phishing and pretexting — is called the ___ attack surface.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Not digital, not physical — the third category.",
+        flagHash: "dcae4f40242fec3de70c594ed0d893313f9cf3ad392c8ff5a482755061a93762" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Reducing risk. Using multiple, independent layers of security so that if one layer fails, another still blocks the attacker, is called ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "\"Defense in ___.\"",
+        flagHash: "55871a80cf645173e8ad65a91b76bcb872139469fa86f577738c3177dbf99c71" }
+    ] },
+
+  { id: "c1-thr-7.1-surfaces", module: 7, title: "7.1 ext — Which Attack Surface?", category: "Attack Surface", type: "match", points: 150,
+    intro: "Objective — Explain the digital, physical, and human attack surface. Match each example to its category. Tap the example, then tap the category.",
+    pairs: [
+      { left: "Weak passwords, open ports, outdated software", right: "Digital Attack Surface" },
+      { left: "An old hard drive thrown out without being wiped", right: "Physical Attack Surface" },
+      { left: "An attacker pretexting as IT support on the phone", right: "Human Attack Surface" },
+      { left: "An unlocked server room", right: "Physical Attack Surface" },
+      { left: "A poorly secured public API", right: "Digital Attack Surface" }
+    ] },
+
+  { id: "c1-thr-7.2-core", module: 7, title: "7.2 — Cyber Kill Chain & Threat Actors", category: "Kill Chain",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Reconnaissance. Attackers gather public information about a target without ever touching their systems. Give the acronym for this kind of publicly-sourced intelligence gathering.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Open-Source Intelligence.",
+        flagHash: "3fc15149e5c1961d82e51cdad33971ac2a87aa79e609c6f425d47bbc05bbb365" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Kill chain phases. After gaining Initial Access, an attacker who quietly installs a backdoor so they can get back in later — even after a reboot — is establishing ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of a one-time smash-and-grab.",
+        flagHash: "06698f2ee70182aa918c4a15edb64456c6989f7d8d79b4b68dae17213d44e53a" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Kill chain phases. An attacker who has broken into one low-security system and is now hopping across the internal network toward a bigger target is performing ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Moving sideways through the network, not up in privilege.",
+        flagHash: "51b5d5b59088aaa5a8e5697244785c3c7d3126cc921be779f3c686906341c9d0" }
+    ] },
+
+  { id: "c1-thr-7.2-killchain", module: 7, title: "7.2 ext — Order the Kill Chain", category: "Kill Chain", type: "order", points: 150,
+    intro: "Objective — Describe the phases of a cyber attack. Order the six phases of the Paradigm attack model, first to last.",
+    steps: [
+      "Reconnaissance — gather public information about the target",
+      "Initial Access — find a way into the system",
+      "Persistence — make sure you can get back in later",
+      "Lateral Movement — hop across the network toward a bigger target",
+      "Action on Objectives — achieve the actual goal",
+      "Evade Detection — cover your tracks"
+    ] },
+
+  { id: "c1-thr-7.2-actors", module: 7, title: "7.2 ext — Match the Threat Actor", category: "Kill Chain", type: "match", points: 150,
+    intro: "Objective — Describe different types of threat actors. Match each motivation to the threat actor type. Tap the motivation, then tap the actor.",
+    pairs: [
+      { left: "Motivated by a cause, wants a loud public exit", right: "Hacktivist" },
+      { left: "Motivated by money, often runs ransomware operations", right: "Cybercriminal" },
+      { left: "Government-funded, plays the long game with major resources", right: "Nation-State Actor" },
+      { left: "A curious beginner using tools they don't fully understand", right: "Script Kiddie" }
+    ] },
+
+  { id: "c1-thr-7.3-core", module: 7, title: "7.3 — Vulnerabilities", category: "Vulnerabilities",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Vulnerabilities. A device that ships with a factory default password like admin or 0000 — one most people never change — has a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The settings are wrong, not the hardware itself.",
+        flagHash: "7f2c53dd653fef57fa34fd34085c0b138454ec7c8f6362061cef4915499cab20" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Vulnerabilities. Software that hasn't been updated with the latest security fix has a(n) ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "The opposite of \"patched.\"",
+        flagHash: "c57efcc589fbbadab45169faa9beba40927a9e6677bd5fb241d58bfb76f5f223" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Vulnerabilities. Stuxnet exploited flaws that were unknown to the software vendor, with no patch available yet. This kind of never-before-seen flaw is called a ___-___ vulnerability. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Named for how many days the vendor had to prepare a fix: none.",
+        flagHash: "e784b9659b16b9ded5d6074e2f24c3b8f43893e5d90f38442a70e0279e6bb1ae" }
+    ] },
+
+  { id: "c1-thr-7.3-vulns", module: 7, title: "7.3 ext — Name the Vulnerability", category: "Vulnerabilities", type: "match", points: 150,
+    intro: "Objective — Identify common vulnerabilities. Match each example to its vulnerability type. Tap the example, then tap the type.",
+    pairs: [
+      { left: "Default admin password never changed", right: "Misconfiguration" },
+      { left: "Software missing the latest security update", right: "Unpatched Software" },
+      { left: "An employee clicks a phishing link", right: "Human Error" },
+      { left: "A flaw no vendor has discovered or patched yet", right: "Zero-Day" },
+      { left: "An account with a weak, reused password", right: "Weak Authentication" }
+    ] },
+
+  { id: "c1-thr-7.3-passwords", module: 7, title: "7.3 ext — HR Password Sort", category: "Vulnerabilities", type: "match", points: 150,
+    intro: "Objective — Assess password vulnerabilities. Match each flagged password to its response protocol. Tap the password, then tap the response.",
+    pairs: [
+      { left: "password", right: "Recreate Immediately" },
+      { left: "Summer2024!", right: "Encourage Upgrade" },
+      { left: "Jessi_C_1998", right: "Send Warning Email" },
+      { left: "CorrectHorseBatteryStaple", right: "Safe – No Contact" }
+    ] },
+
+  { id: "c1-thr-7.4-core", module: 7, title: "7.4 — Malware & Ransomware", category: "Malware",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Anatomy of malware. The way malware gets into a device in the first place — a phishing email, an infected USB, a malicious website — is called the ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "How the germ traveled, in the virus analogy.",
+        flagHash: "bacde6921fb9f83bf74166bca7ffdb18bb54e8d798c535f0cfd5dc6734a749e1" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Anatomy of malware. The actual malicious code that runs once malware is inside a device — ransomware, spyware, a worm — is called the ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The germ itself, in the virus analogy.",
+        flagHash: "e05f79a1e02c718e5644ff8badc89b8d4e0e84201abb41755341ee280ba632e9" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Malware types. Malware that self-replicates and spreads across a network entirely on its own, with no user needing to click anything, is called a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It \"crawls\" from machine to machine.",
+        flagHash: "5e71e44abcc73b58779ed4dd1faf938177c1e855d874532e4235d2cdc5e62b74" }
+    ] },
+
+  { id: "c1-thr-7.4-malware", module: 7, title: "7.4 ext — Match the Malware Type", category: "Malware", type: "match", points: 150,
+    intro: "Objective — Explain types of malware and ransomware. Match each behavior to the malware type. Tap the behavior, then tap the type.",
+    pairs: [
+      { left: "Encrypts a user's files and demands payment for the decryption key", right: "Ransomware" },
+      { left: "Hides inside something desirable, like a game or free tool", right: "Trojan" },
+      { left: "Self-replicates across a network with no user action needed", right: "Worm" },
+      { left: "Stays hidden to monitor keystrokes and record audio or video", right: "Spyware" },
+      { left: "Hides deep in the OS to give admin control while staying invisible", right: "Rootkit" }
+    ] },
+
+  { id: "c1-thr-7.4-anatomy", module: 7, title: "7.4 ext — Diagnose the Malware", category: "Malware", type: "order", points: 150,
+    intro: "Objective — Analyze a malware incident. Order how a security analyst diagnoses a malware case, from the Malware Doctor case files.",
+    steps: [
+      "Identify the Vector — how did it get in?",
+      "Identify the Payload — what is the malicious code actually doing?",
+      "Identify the Indicators — what symptoms show up on the device?",
+      "Contain and respond to limit further damage"
+    ] },
+
+  { id: "c1-thr-7.5-core", module: 7, title: "7.5 — Cyber Attacks", category: "Cyber Attacks",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Password attacks. An automated trial-and-error method that tries every possible character combination until it finds the right password is called a ___ ___ attack. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Raw computing power, no cleverness.",
+        flagHash: "c33e81d0e981ecb0e9c2cb389ade4000ae71622397f0b2328886ae68d8c1f5ba" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Network attacks. Overwhelming a server with a flood of fake traffic from a botnet until it crashes is called a ___ attack. Give the four-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "\"Distributed Denial of Service.\"",
         flagHash: "da95c631b466fc86796850982341f91a7addba535a0bafdc9ea3589dbd4e2606" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Vulnerabilities. Malware hidden inside seemingly legitimate software is named after a famous Greek ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "The Greeks hid soldiers inside a gift to get past the walls of Troy — this malware type is named after that gift.",
-        flagHash: "b0a44b47a826666e0b5deefb3bb16a55daf57f048ae92e3aba9390b625c501b7" }
+        prompt: "Objective — Web attacks. Typing something like ' OR '1'='1 into a web form to manipulate a database and steal data is called ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Named for the database query language being abused.",
+        flagHash: "262ea38fc0c2f783adc1ac3eb909446a9b37fe798a124bb4df93724de18f73aa" }
     ] },
 
+  { id: "c1-thr-7.5-attacks", module: 7, title: "7.5 ext — Match the Attack", category: "Cyber Attacks", type: "match", points: 150,
+    intro: "Objective — Describe common types of cyber attacks. Match each scenario to the attack it represents. Tap the scenario, then tap the attack.",
+    pairs: [
+      { left: "An attacker secretly sits between you and your bank to intercept data", right: "Man-in-the-Middle" },
+      { left: "A poisoned USB drive left in a parking lot", right: "USB Drop" },
+      { left: "Following someone through a badge-locked door", right: "Tailgating" },
+      { left: "Watching someone type their PIN in public", right: "Shoulder Surfing" },
+      { left: "A program tries every word in a leaked password list", right: "Dictionary Attack" }
+    ] },
 
+  { id: "c1-thr-7.5-eviltwin", module: 7, title: "7.5 ext — Run the Evil Twin", category: "Cyber Attacks", type: "order", points: 150,
+    intro: "Objective — Describe a Wi-Fi based attack. Order the steps of an Evil Twin attack, first to last.",
+    steps: [
+      "Set up a rogue access point with a trustworthy-looking network name",
+      "Build a fake login splash page using the real company's branding",
+      "Wait for a victim to connect to the fake network",
+      "Harvest the credentials the victim enters",
+      "Use the stolen credentials for further access"
+    ] },
+
+  { id: "c1-thr-7.6-core", module: 7, title: "7.6 — Risks and Impacts", category: "Risk Assessment",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Risk assessment. Cybersecurity professionals calculate risk as Threat times Vulnerability times ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "How much damage it would cause.",
+        flagHash: "035cbccd7b32e1dcdab0cfb0c28cb235f43d516ffc15d8e2862e4d2fcceaa834" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Handling risk. Buying cyber insurance so someone else covers the cost of an attack, instead of fixing the underlying problem, is risk ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "You're handing the risk to another party.",
+        flagHash: "24e10592a2ee8b9ba1e675c906b5cc0d44c262a989fa599d88a28a6145a1c72e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Handling risk. Deciding a risk is small enough to just live with, instead of spending money to fix it, is called risk ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "You're choosing to take on the risk as-is.",
+        flagHash: "0755878322ea3c91d2d9f7293d6a228d8516457708844a9665ff2aa69cddf3f7" }
+    ] },
+
+  { id: "c1-thr-7.6-handling", module: 7, title: "7.6 ext — Handle the Risk", category: "Risk Assessment", type: "match", points: 150,
+    intro: "Objective — Evaluate ways to handle risk. Match each action to its risk-handling strategy. Tap the action, then tap the strategy.",
+    pairs: [
+      { left: "Installing a firewall to stop the attack from working", right: "Mitigation" },
+      { left: "Buying cyber insurance to cover potential losses", right: "Transfer" },
+      { left: "Shutting down a risky feature entirely so it can't be exploited", right: "Avoidance" },
+      { left: "Deciding a low-risk bug isn't worth fixing right now", right: "Acceptance" }
+    ] },
+
+  { id: "c1-thr-7.6-riskprocess", module: 7, title: "7.6 ext — Run a Risk Assessment", category: "Risk Assessment", type: "order", points: 150,
+    intro: "Objective — Evaluate risk and potential impacts. Order the steps of a basic risk assessment, first to last.",
+    steps: [
+      "Identify the vulnerability",
+      "Estimate how likely it is to be exploited",
+      "Estimate how much damage it would cause",
+      "Multiply likelihood by impact for a risk score",
+      "Decide how to handle the risk: mitigate, transfer, avoid, or accept"
+    ] },
+
+  { id: "c1-thr-7.7-core", module: 7, title: "7.7 — Cyber Ethics", category: "Cyber Ethics",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Living well ethically. Regularly thinking about the person you want to become, compared to who you are today, is called ___-___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Looking inward and examining yourself.",
+        flagHash: "e46e19c62bf94c76ad399b9e4873dba06cdfd4b65a357be556f1ac5487ef9a20" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Moral development. Looking to people whose honesty, courage, or compassion you admire, and letting their example pull your own standards upward, means seeking out moral ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "A model worth following.",
+        flagHash: "e8101a79ea936061b75a92abeedbc38fcb5eb3304037e6c026de475bd7687d71" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Ethics and empathy. Genuinely picturing how your choices affect someone you'll never meet — like a stranger harmed by a data breach — is called exercising moral ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Using your imagination for empathy.",
+        flagHash: "5e803459227b85dbe773356f1a0f68e129bb639492050c75ed33031b37ac3c12" }
+    ] },
+
+  { id: "c1-thr-7.7-habits", module: 7, title: "7.7 ext — Match the Moral Habit", category: "Cyber Ethics", type: "match", points: 150,
+    intro: "Objective — Describe best practices for living well. Match each habit to its description. Tap the habit, then tap its description.",
+    pairs: [
+      { left: "Self-Reflection", right: "Regularly examining who you are against who you want to become" },
+      { left: "Moral Exemplars", right: "Looking to people whose character you admire" },
+      { left: "Moral Imagination", right: "Picturing how your choices affect people you'll never meet" },
+      { left: "Moral Strength", right: "Doing the right thing even when it's the harder choice" },
+      { left: "Moral Community", right: "Surrounding yourself with people of good character" }
+    ] },
+
+  { id: "c1-thr-vocab", module: 7, title: "7.1-7.7 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["attack surface","reconnaissance","persistence","threat actor","vulnerability","zero-day","malware","ransomware","worm","ddos","phishing","risk"],
+    hardMode: "wordsearch" },
+
+  /* MODULE 8 — Intro to Security Controls ─────────────────────────────────── */
+  { id: "c1-sc-8.1-core", module: 8, title: "8.1 — CIA Triad & Security Controls", category: "CIA Triad",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Identify the components of the CIA Triad. The three-part model used in cybersecurity to identify what needs protection — Confidentiality, Integrity, and Availability — is called the ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "C-I-A, but not the agency.",
+        flagHash: "2bc31d9eb328e2bb0f8ed23711d134de8140ab7237a8ed30d3c125778ace479a" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain confidentiality, integrity, and availability. A student changes their own grade from a C to an A without permission — this is an attack on data ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Ensuring data hasn't been changed by unauthorized people.",
+        flagHash: "2f3d9851d23849572228eb2f2abb2c097a85090aaf63066e566d6584e366192e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Define a security control. Any safeguard or countermeasure used to avoid, detect, or minimize security risks is called a security ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "A padlock on a gate or a firewall on a computer.",
+        flagHash: "2c4177fc897f744aab05635897f88c934dd58927025256c6978c7b609676c0b6" }
+    ] },
+
+  { id: "c1-sc-8.1-cia", module: 8, title: "8.1 ext — Which Part of the Triad?", category: "CIA Triad", type: "match", points: 150,
+    intro: "Objective — Explain confidentiality, integrity, and availability. Match each detail to the part of the CIA Triad it breaks. Tap the detail, then tap the component.",
+    pairs: [
+      { left: "Hackers steal private payroll data and threaten to leak it", right: "Confidentiality" },
+      { left: "Hackers change the Admin passwords and system settings", right: "Integrity" },
+      { left: "Shipping schedules are locked; trucks can't move", right: "Availability" },
+      { left: "A hacker reads someone's private emails without permission", right: "Confidentiality" },
+      { left: "A company website is knocked offline by a flood of fake traffic", right: "Availability" }
+    ] },
+
+  { id: "c1-sc-8.2-core", module: 8, title: "8.2 — Types & Functions of Controls", category: "Control Types",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Categorize controls by Type. Safeguards built into computer hardware and software that use technology to control access to data are ___ (Logical) Controls.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Encryption, firewalls, and antivirus software.",
+        flagHash: "04af502ef2264ae39528f31b9c6d544db3e5e01067c0c57150e5fc1736e7b190" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Categorize controls by Type. Policies, procedures, and training that guide human behavior are ___ Controls.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The \"people\" side of security.",
+        flagHash: "1eac183884cdaf140d520da51b8a2ca11177992a88c80291de86a1316cf72643" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Categorize controls by Function. A control that acts before an attack to stop it from happening at all — like a locked door — is a ___ control.\n\nSubmit as flag{word} (lowercase).",
+        hint: "STOP IT, before it starts.",
+        flagHash: "2b060b470a4fc9eea6ee5e3cab5f4bfcb94b22e68084247bbb027df049b0a7fb" }
+    ] },
+
+  { id: "c1-sc-8.2-types", module: 8, title: "8.2 ext — Sort by Type", category: "Control Types", type: "match", points: 150,
+    intro: "Objective — Categorize security controls by Type. Match each control to Physical, Technical, or Managerial. Tap the control, then tap its Type.",
+    pairs: [
+      { left: "Firewall", right: "Technical" },
+      { left: "Locked Server Room", right: "Physical" },
+      { left: "Security Training", right: "Managerial" },
+      { left: "Biometric Access Control", right: "Physical" },
+      { left: "Security Policy Manual", right: "Managerial" },
+      { left: "Antivirus Software", right: "Technical" }
+    ] },
+
+  { id: "c1-sc-8.2-functions", module: 8, title: "8.2 ext — Sort by Function", category: "Control Types", type: "match", points: 150,
+    intro: "Objective — Categorize security controls by Function. Match each control to Preventative, Detective, or Corrective. Tap the control, then tap its Function.",
+    pairs: [
+      { left: "Security Camera", right: "Detective" },
+      { left: "Firewall", right: "Preventative" },
+      { left: "Incident Response Plan", right: "Corrective" },
+      { left: "Data Backups", right: "Corrective" },
+      { left: "Password Requirements", right: "Preventative" },
+      { left: "Security Audit", right: "Detective" }
+    ] },
+
+  { id: "c1-sc-8.3-core", module: 8, title: "8.3 — Managerial Controls", category: "Managerial Controls",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explain the Acceptable Use Policy (AUP). The set of rules that governs how an organization's network, software, and hardware may be used — acting like a contract between the user and the organization — is called an Acceptable Use ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "AUP stands for Acceptable Use ___.",
+        flagHash: "b24e9c7085019b602b12eb8aa6106bc0c4bead29ac0ec3b179849d6876897dd9" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain onboarding and offboarding. The high-risk process of deactivating a former employee's accounts and access as soon as they leave the organization is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of onboarding.",
+        flagHash: "09ac939fcaada54c5072317bb81822e3cbe33929f9cba717c30a7a178a53f65d" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain background checks. Investigating a candidate's criminal history, previous employment, and education before granting them network access is called a ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Done before day one on the job.",
+        flagHash: "c436cf2af9f59612cf8e2a65c738686b8797096a2271d46ef165523de43b4639" }
+    ] },
+
+  { id: "c1-sc-8.3-managerial", module: 8, title: "8.3 ext — Match the Managerial Control", category: "Managerial Controls", type: "match", points: 150,
+    intro: "Objective — Describe managerial controls. Match each situation to the managerial control it demonstrates. Tap the situation, then tap the control.",
+    pairs: [
+      { left: "A contract that defines what behaviors are prohibited on the network", right: "Acceptable Use Policy" },
+      { left: "Giving a new hire access only to what their job requires from day one", right: "Onboarding" },
+      { left: "Deactivating a former employee's accounts immediately after they leave", right: "Offboarding" },
+      { left: "Vetting a candidate's criminal and employment history before hiring", right: "Background Check" },
+      { left: "Teaching employees to recognize phishing and social engineering", right: "Staff Training" }
+    ] },
+
+  { id: "c1-sc-8.3-offboard", module: 8, title: "8.3 ext — Run the Offboarding Checklist", category: "Managerial Controls", type: "order", points: 150,
+    intro: "Objective — Describe the offboarding process. Order the steps of offboarding a departing employee, first to last.",
+    steps: [
+      "Collect physical badges and keys",
+      "Disable remote access to company accounts",
+      "Change any shared passwords",
+      "Conduct an exit interview reminding them of confidentiality obligations"
+    ] },
+
+  { id: "c1-sc-8.4-core", module: 8, title: "8.4 — Identity & Access Management", category: "IAM",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Distinguish authentication from authorization. The process of verifying you are who you say you are — answering \"Are you really who you say you are?\" — is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "A password, fingerprint, or face scan.",
+        flagHash: "0167e5432d777913fc23dc379d9f68c4f023af44904180c8c33935af6a833a09" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Distinguish authentication from authorization. Deciding what a logged-in user is allowed to see or change is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "A student can view their grades; only a teacher can change them.",
+        flagHash: "e0f6519553979b886476cc5cdb737cc9b2499d51c61c0d01c007ee8f313320be" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Apply the Principle of Least Privilege. Giving a user only the minimum level of access necessary to do their job — and nothing more — is the Principle of Least ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Abbreviated PoLP.",
+        flagHash: "53a940976e23d7a92c0f27e8b16a42c9e6923398a4b89bcb5f2accf16dd3a8ee" }
+    ] },
+
+  { id: "c1-sc-8.4-factors", module: 8, title: "8.4 ext — Sort the MFA Factor", category: "IAM", type: "match", points: 150,
+    intro: "Objective — Explain multi-factor authentication. Match each login method to its MFA factor category. Tap the method, then tap the category.",
+    pairs: [
+      { left: "A password or PIN", right: "Something You Know" },
+      { left: "A smartphone receiving a text code", right: "Something You Have" },
+      { left: "A physical security key", right: "Something You Have" },
+      { left: "A fingerprint or face scan", right: "Something You Are" }
+    ] },
+
+  { id: "c1-sc-8.4-authvsauth", module: 8, title: "8.4 ext — Authentication or Authorization?", category: "IAM", type: "match", points: 150,
+    intro: "Objective — Distinguish authentication from authorization. Match each scenario to Authentication or Authorization. Tap the scenario, then tap the category.",
+    pairs: [
+      { left: "Scanning your face to unlock your phone", right: "Authentication" },
+      { left: "Getting \"Access Denied\" opening a teacher's grade book", right: "Authorization" },
+      { left: "Entering a 6-digit PIN at an ATM", right: "Authentication" },
+      { left: "A streaming service checking you paid for Premium before 4K", right: "Authorization" },
+      { left: "A Discord Moderator having the power to kick members", right: "Authorization" },
+      { left: "Typing your passphrase into an app", right: "Authentication" }
+    ] },
+
+  { id: "c1-sc-8.5-core", module: 8, title: "8.5 — Physical Security Controls", category: "Physical Controls",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Categorize physical controls. Tangible items used to prevent or detect unauthorized access to physical areas — fences, locks, guards — are ___ Controls.\n\nSubmit as flag{word} (lowercase).",
+        hint: "You can touch these.",
+        flagHash: "01ff03ee2f46c863a8c98875aa09cc35fba385f10cce4d6dba13e2daa18b8afc" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain environmental controls. The system that controls temperature and humidity so servers don't overheat and crash is called ___. Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Heating, Ventilation, and Air Conditioning.",
+        flagHash: "5cc8a78205501af9d1547d6d216840247eca1abbc5e3c3614fa81b151199f43d" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain fire protection. An automated system that extinguishes a fire across an entire room using gas instead of water — so it doesn't ruin the electronics — is called a ___ ___. Two words.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "Named for what it does to the fire.",
+        flagHash: "5a9026709c5856c108163aa193ef7a10e8bd35d1e2d1e8b062f51488b4994dcd" }
+    ] },
+
+  { id: "c1-sc-8.5-zones", module: 8, title: "8.5 ext — Fix the Security Zone", category: "Physical Controls", type: "match", points: 150,
+    intro: "Objective — Recommend physical controls to address a problem. Match each escape-room problem to the control that fixes it. Tap the problem, then tap the control.",
+    pairs: [
+      { left: "Loose hardware could just be picked up and carried out", right: "Rack Locks" },
+      { left: "The fans stopped; servers are overheating", right: "HVAC / Overhead Cooling" },
+      { left: "No video record of who entered the hallway", right: "Cameras (CCTV)" },
+      { left: "Anyone can walk in without a badge check", right: "Key-Card Reader" },
+      { left: "A fire started and water sprinklers would ruin the equipment", right: "Suppression System" },
+      { left: "No human presence to stop an intruder in the parking lot", right: "Security Guard" }
+    ] },
+
+  { id: "c1-sc-8.5-layers", module: 8, title: "8.5 ext — Layer the Defense", category: "Physical Controls", type: "order", points: 150,
+    intro: "Objective — Apply defense-in-depth to a physical space. Order the layers of defense for a server room, outermost to innermost.",
+    steps: [
+      "Security guard patrolling the perimeter",
+      "CCTV camera watching the hallway",
+      "Key-card reader at the server room door",
+      "Motion sensor inside the room",
+      "Rack locks bolting the servers themselves"
+    ] },
+
+  { id: "c1-sc-vocab", module: 8, title: "8.1-8.5 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["cia triad","confidentiality","integrity","availability","security control","physical control","technical control","managerial control","preventative","detective","corrective","acceptable use policy","onboarding","offboarding","background check","authentication","authorization","least privilege","hvac","suppression system"],
+    hardMode: "rapid" },
+
+  /* MODULE 2 — Digital Footprint & Cyber Hygiene ──────────────────────────── */
+  { id: "c1-dfhy-2.1-footprint", module: 2, title: "2.1 — Digital Footprint & OSINT", category: "Digital Footprint",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explain the impacts of digital footprints and their permanence. OSINT stands for Open-Source ___. Give the two-word term.\n\nSubmit as flag{two words, lowercase}.",
+        hint: "It's the practice of gathering information from publicly available sources.",
+        flagHash: "5d573f575f8c2fa8a5c25ee02ffba7a8339f6f32343537981b16641293c3ac81" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Data Permanence. Even if you delete a post, screenshots and server backups can survive. There is no true 'delete' button on the internet — only a ___ button.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Deleting a post just makes it invisible to you, not gone from every server or screenshot.",
+        flagHash: "1f5bb9791a310e136d1564ee23d2a3cc32ea7ce6fa26cb8734ec18b4607ad79e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — The Dark Side of OSINT. Using OSINT techniques to find someone's private information (address, phone number) and publishing it online to encourage harassment is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It sounds like releasing hidden paperwork on someone.",
+        flagHash: "c9233488f759b5ffeedaf745bbf9f22a58842ec7a5123580a88a4c135db6f1f5" }
+    ] },
+
+  { id: "c1-dfhy-footprint-match", module: 2, title: "2.1 ext — Match the Footprint Concept", category: "Digital Footprint", type: "match", points: 150,
+    intro: "Objective — Digital Footprint & OSINT Slides. Match each example to the concept it demonstrates. Tap the example, then tap the concept.",
+    pairs: [
+      { left: "A website silently logs your IP address and location", right: "Passive Footprint" },
+      { left: "You post a photo and write a caption", right: "Active Footprint" },
+      { left: "A recruiter Googles your name before an interview", right: "OSINT" },
+      { left: "Someone posts your home address online to encourage harassment", right: "Doxxing" },
+      { left: "A group chat mocks a classmate using screenshots of their posts", right: "Cyberbullying" },
+      { left: "An old version of a website is viewable years later on the Wayback Machine", right: "Data Permanence" }
+    ] },
+
+  { id: "c1-dfhy-osint-order", module: 2, title: "2.1 ext — The OSINT Investigation", category: "Digital Footprint", type: "order", points: 150,
+    intro: "Objective — OSINT Investigator activity (the car-keys photo). Order how an OSINT investigator would work through a posted photo, first to last.",
+    steps: [
+      "Scan the photo for visible identifying details (signs, menus, key cuts)",
+      "Cross-reference time-of-day clues like shadows or lighting",
+      "Reverse image search or geolocate any background landmarks",
+      "Compile the findings into a profile of the target"
+    ] },
+
+  { id: "c1-dfhy-2.2-datastory", module: 2, title: "2.2 — Your Data Story", category: "Digital Footprint",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Evaluate your own digital presence. In the Harvard Memes Case Study, at least how many incoming students had their college acceptance rescinded after screenshots of an offensive group chat surfaced?\n\nSubmit as flag{number}.",
+        hint: "It's stated directly in the case study — a double-digit number.",
+        flagHash: "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Your Data Story Workshop. Of the three key audiences (Employer, ___, Culture), which one could use your posted birthday, pet's name, or address to steal your identity?\n\nSubmit as flag{word} (lowercase).",
+        hint: "The audience most interested in stealing, not judging or observing.",
+        flagHash: "e7d3685715939842749cc27b38d0ccb9706d4d14a5304ef9eee093780eab5df9" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — The Harvard Memes Case Study. Harvard's acceptance letters allow an offer to be withdrawn if a student's behavior brings into question their honesty, maturity, or ___ ___. Give the two-word phrase.\n\nSubmit as flag{two words, lowercase}.",
+        hint: "It's about the quality of someone's ethics and conduct, not their grades.",
+        flagHash: "224eb717468d0d14e4e1c64d7513416e3a523849efaa6a5d5c84860499fe6893" }
+    ] },
+
+  { id: "c1-dfhy-audience-match", module: 2, title: "2.2 ext — The Three Key Audiences", category: "Digital Footprint", type: "match", points: 150,
+    intro: "Objective — Your Data Story Choice Board. Match each finding in your data story to the audience it matters most to. Tap the finding, then tap the audience.",
+    pairs: [
+      { left: "Late-night posting pattern makes you look unreliable for a 9-to-5 role", right: "The Future Employer" },
+      { left: "A caption reveals your pet's name and hometown, both common security-question answers", right: "The Hacker" },
+      { left: "Your feed is 90% reposted memes with no original content of your own", right: "The Culture" }
+    ] },
+
+  { id: "c1-dfhy-2.3-hygiene", module: 2, title: "2.3 — Cyber Hygiene", category: "Cyber Hygiene",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Describe strategies to improve cyber hygiene. The 'Have I Been Pwned?' Kick Start lets you check whether your ___ has appeared in a known data breach.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the account identifier you type into the site — the same thing you'd use to sign up for most services.",
+        flagHash: "82244417f956ac7c599f191593f7e441a4fafa20a4158fd52e154f1dc4c8ed92" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Passwords & MFA station. To resist cracking, a strong password (or passphrase) should be at least how many characters long?\n\nSubmit as flag{number}.",
+        hint: "It's the minimum length given in the station reading — 16 is even better.",
+        flagHash: "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Geolocation station (the Strava Heatmap). Soldiers' jogging routes leaked secret base locations through their fitness apps. What is the general term for hidden data, like GPS coordinates, embedded inside a file?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's 'data about data' — the same kind of thing an EXIF viewer reads out of a photo.",
+        flagHash: "45447b7afbd5e544f7d0f1df0fccd26014d9850130abd3f020b89ff96b82079f" }
+    ] },
+
+  { id: "c1-dfhy-hygiene-match", module: 2, title: "2.3 ext — Match the Hygiene Station", category: "Cyber Hygiene", type: "match", points: 150,
+    intro: "Objective — Cyber Hygiene Stations. Match each scenario to the station/concept it belongs to. Tap the scenario, then tap the concept.",
+    pairs: [
+      { left: "A community grades an app's privacy policy from A to E", right: "Terms of Service" },
+      { left: "A passphrase like 'Purple-2Taco-Garage-Jump'", right: "Passwords & MFA" },
+      { left: "A soldier's running route reveals a secret base on a public heatmap", right: "Geolocation" },
+      { left: "A sticky note with a password sits on an unlocked desk", right: "Physical Security" },
+      { left: "Infinite scroll and red notification badges keep you opening an app", right: "Digital Wellness" }
+    ] },
+
+  { id: "c1-dfhy-password-order", module: 2, title: "2.3 ext — Build a Secure Login", category: "Cyber Hygiene", type: "order", points: 150,
+    intro: "Objective — Passwords & MFA station (the Passphrase Method). Order these steps to build a secure login, first to last.",
+    steps: [
+      "String together 4 random, unrelated words",
+      "Mix in a symbol and some capitalization",
+      "Avoid personal info like a pet's name or birthday",
+      "Turn on Multi-Factor Authentication as a second lock"
+    ] },
+
+  { id: "c1-dfhy-2.4-googlehack", module: 2, title: "2.4 — Cyber Ethics & Google Hacking", category: "Cyber Ethics",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Debate the ethics surrounding Google Hacking. Google Hacking is also known as Google ___ing. Give the one-word term.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's named after finding the digital 'doors' people forgot to close — sounds like poking around.",
+        flagHash: "753fdce9d6d0d8fe46237f996985f98a5bb4f62e396b6cf353eb9beb5698d170" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Is it Legal? Is it Ethical? Choice Board. An employee uses a Google Dork to access an exposed payroll file without authorization, purely to warn their boss it's public. Which two-word category does this fall into: Legal/Ethical, Legal/Unethical, Illegal/Ethical, or Illegal/Unethical?\n\nSubmit as flag{two words, lowercase, no slash}.",
+        hint: "Accessing the file without authorization breaks computer-misuse law, but the intent was to protect the company.",
+        flagHash: "fe582e131f7a146b1d32d3e12b5785b0b8c8905255e016caa32ae9b2324ddaee" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — The Dork Analogy (Kick Start). Google Dorking is the art of asking Google to show us a list of all the ___ ___ on the internet. Give the two-word phrase from the analogy.\n\nSubmit as flag{two words, lowercase}.",
+        hint: "It's about doors people forgot to close.",
+        flagHash: "d068bf647290b6da64039970b024aebe23537fb4f72acf357644978af7652879" }
+    ] },
+
+  { id: "c1-dfhy-legal-ethical-match", module: 2, title: "2.4 ext — Is it Legal? Is it Ethical?", category: "Cyber Ethics", type: "match", points: 150,
+    intro: "Objective — Is it Legal? Is it Ethical? Choice Board. Judge each scenario. Tap the scenario, then tap its category.",
+    pairs: [
+      { left: "A researcher finds a bug via a Google Dork and reports it through an official bug bounty program", right: "Legal / Ethical" },
+      { left: "A photographer legally flies a drone over a fence to photograph someone sunbathing in their own yard", right: "Legal / Unethical" },
+      { left: "An employee accesses an exposed payroll file without authorization just to warn their boss it's public", right: "Illegal / Ethical" },
+      { left: "A hacker uses Google Dorking to find and steal exposed credit card numbers for personal profit", right: "Illegal / Unethical" }
+    ] },
+
+  { id: "c1-dfhy-vocab", module: 2, title: "2.1-2.4 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["digital footprint","osint","doxxing","cyberbullying","data permanence","terms of service","geolocation","google hacking","passwords","mfa"],
+    hardMode: "wordsearch" },
+
+  /* MODULE 11 — Intro to Cyber Frameworks ─────────────────────────────────── */
+  { id: "c1-fw-review-11.1", module: 11, title: "11.1 Review — CIA Triad & AAA", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.1. The CIA Triad's three pillars are Confidentiality, Integrity, and ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's what keeps a system online and working.",
+        flagHash: "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.1. The AAA Framework's three A's are Authentication, Authorization, and ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the audit trail of what a user did.",
+        flagHash: "0e7332f9cc34e3aa219af4634ffbc171ca50b8dc4f55d4d198b879ca73a9ef3f" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.1. Which AAA step answers the question 'Who are you?'\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the first door — proving your identity.",
+        flagHash: "0167e5432d777913fc23dc379d9f68c4f023af44904180c8c33935af6a833a09" }
+    ] },
+
+  { id: "c1-fw-review-11.2", module: 11, title: "11.2 Review — The NIST Framework", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.2. How many core functions make up the NIST Framework?\n\nSubmit as flag{number}.",
+        hint: "Govern, Identify, Protect, Detect, Respond, Recover.",
+        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.2. Which NIST function comes right after Identify?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the 'digital wall' function.",
+        flagHash: "9c449b71b839d7f7b747c7ce87f292f96ad175cf74e3b358973a57c564c0ac92" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.2. Which NIST function is described as the organization's 'early warning system'?\n\nSubmit as flag{word} (lowercase).",
+        hint: "No defense is perfect, so this one watches 24/7.",
+        flagHash: "74893e279717214de1e577e4fcd850f6750a331512464c51b0656ae67c01aa6c" }
+    ] },
+
+  { id: "c1-fw-review-11.3", module: 11, title: "11.3 Review — MITRE ATT&CK", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.3. MITRE ATT&CK tracks the real-world behavior of an ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the attacker being profiled.",
+        flagHash: "6381c9b0232c25ffcd7943637d44691cbdf0c5a753c10f115d0dccea537e72e8" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.3. Sending a phishing email is an example of a MITRE ATT&CK ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the specific 'how.'",
+        flagHash: "3ee0987ca3406f893f0644df362d00f6c2e909c2f568d78f8df6ec8355936580" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.3. Gaining Initial Access is an example of a MITRE ATT&CK ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the high-level 'why.'",
+        flagHash: "b13c8cbf1e76d124c9decd9fb2518b07e3ce894a6d3d06aa521d512841f22f78" }
+    ] },
+
+  { id: "c1-fw-review-11.4", module: 11, title: "11.4 Review — CIS Controls", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.4. CIS stands for Center for Internet ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the same word as the S in CIA.",
+        flagHash: "7e0cb8da2168bb237dd1ff2e86bd486425ebd9b6d8f0414413fcab4310bac761" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.4. CIS Controls are organized into Implementation ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "IG1, IG2, and IG3 are three of these.",
+        flagHash: "64241e05caeaa84d86b23e604adb2b85a47e7a07c3e5b1160bc2e2881b131827" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.4. Which Implementation Group should every organization, regardless of size, start with?\n\nSubmit as flag{ig#} (lowercase, e.g. flag{ig1}).",
+        hint: "It's 'Essential Cyber Hygiene.'",
+        flagHash: "4d32d085c706f3a7178dc416a2f3aa2cec06efa092dd85534bf62f5a66d8e6e7" }
+    ] },
+
+  { id: "c1-fw-review-11.5", module: 11, title: "11.5 Review — Laws & Regulations", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.5. Which law protects patient health records? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "It's the 'Gold Standard' for confidentiality in healthcare.",
+        flagHash: "0a0207868f8831d7c3902657aed57e5ec290c8cb2bd5ed9c00e77a1ea2865288" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.5. Which law protects children's online privacy? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "It applies to apps and sites aimed at kids under 13.",
+        flagHash: "db4f371d8d129577096c3d2b3459cabf858535ffa1db807ad1b13de0ab5cd55e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.5. Which law criminalizes unauthorized access to a computer system? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "It's the primary US anti-hacking law, written in 1986.",
+        flagHash: "6587dc7959cf4e5f6204bed8552661ac571e79ba9eaa7b471cb49e5776256d7c" }
+    ] },
+
+  { id: "c1-fw-review-11.6", module: 11, title: "11.6 Review — Cyber Ethics & the Law", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.6. In the Curious Hacker scenario, was Alex's access to TechGenius Corp's server legally authorized?\n\nSubmit as flag{yes} or flag{no} (lowercase).",
+        hint: "Even without malice, breaking in without permission is still unauthorized.",
+        flagHash: "acb78677c2104df8a3d7f92ad8b101195f31a376838cb1d0da5a41c04301758f" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.6. Which law makes unauthorized computer access illegal even without theft or damage? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Same law from the Headline Hack activity.",
+        flagHash: "6587dc7959cf4e5f6204bed8552661ac571e79ba9eaa7b471cb49e5776256d7c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.6. Which hacker group carried out the 2021 Colonial Pipeline ransomware attack?\n\nSubmit as flag{word} (lowercase).",
+        hint: "Its name suggests the 'other side.'",
+        flagHash: "be13761b2dfaf6745d4ebf600600e375b21773412e6ed1377aef61460b491d16" }
+    ] },
+
+  { id: "c1-fw-11.1-core", module: 11, title: "11.1 — CIA Triad & AAA", category: "Frameworks",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Identify examples of the CIA triad. Bank Vault Scenario Kick Start. The vault's first requirement, 'Only the manager can open it,' maps to which CIA pillar?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's about keeping data accessible only to authorized people.",
+        flagHash: "c087a071e9e2f7c959cc4973c77b2c5feb17cead7dd031b00a94213f2664bfdc" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Identify examples of the CIA triad. Bank Vault Scenario Kick Start. The vault's second requirement, 'The door must never be stuck shut during business hours,' maps to which CIA pillar?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's about the vault being ready when the manager needs it.",
+        flagHash: "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Identify examples of the AAA framework. AAA Framework slides. Tracking and logging what a user did after they're inside a system, creating an audit trail for forensics and compliance, is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It answers the question 'What did you do?'",
+        flagHash: "0e7332f9cc34e3aa219af4634ffbc171ca50b8dc4f55d4d198b879ca73a9ef3f" }
+    ] },
+
+  { id: "c1-fw-11.1-pillar-match", module: 11, title: "11.1 ext — Which Pillar Broke?", category: "Frameworks", type: "match", points: 150,
+    intro: "Objective — Identify examples of the CIA triad. CIA & AAA Slides. Match each scenario to the CIA pillar it breaks. Tap the scenario, then tap the pillar.",
+    pairs: [
+      { left: "A hacker changes a student's grade from a D to an A", right: "Integrity" },
+      { left: "A power outage takes down a bank's website for 4 hours", right: "Availability" },
+      { left: "An employee accidentally emails the payroll list to the whole company", right: "Confidentiality" },
+      { left: "An IT admin secretly changes coworkers' salaries in the database", right: "Integrity" },
+      { left: "A DDoS attack floods a server with fake traffic until it crashes", right: "Availability" },
+      { left: "A hacker steals a database of unencrypted customer emails", right: "Confidentiality" }
+    ] },
+
+  { id: "c1-fw-11.1-aaa-match", module: 11, title: "11.1 ext — The Digital Doorman", category: "Frameworks", type: "match", points: 150,
+    intro: "Objective — Identify examples of the AAA framework. Digital Doorman & CIA/AAA Scenario. Match each example to its AAA component. Tap the example, then tap the component.",
+    pairs: [
+      { left: "Checking your ID at the door of a club", right: "Authentication" },
+      { left: "A VIP wristband that lets you into the lounge but not the DJ booth", right: "Authorization" },
+      { left: "The security camera recording your every move at the club", right: "Accounting" },
+      { left: "An engineer scans a fingerprint and enters a PIN to enter the server room", right: "Authentication" },
+      { left: "An engineer's account can view health reports but is blocked from customer credit card numbers", right: "Authorization" },
+      { left: "A report shows every file an engineer opened and every command they typed", right: "Accounting" }
+    ] },
+
+  { id: "c1-fw-11.2-core", module: 11, title: "11.2 — The NIST Framework", category: "Frameworks",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Describe each function in the NIST Framework. Zombie Apocalypse Kick Start. The item that helps you identify where the danger is coming from lines up with which NIST function?\n\nSubmit as flag{word} (lowercase).",
+        hint: "You can't protect what you don't first ___.",
+        flagHash: "d3375192afbb3d9311127a420fe4d87727cb8c51957695848358a1591400eb27" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Describe each function in the NIST Framework. Zombie Apocalypse Kick Start. The item that detects when zombies have arrived lines up with which NIST function?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's your early warning system.",
+        flagHash: "74893e279717214de1e577e4fcd850f6750a331512464c51b0656ae67c01aa6c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Describe each function in the NIST Framework and its importance. NIST Framework Playlist. The function often called the 'brain' of the framework — it sets policy and decides who is responsible for security before any tool is bought — is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Think 'Constitution of the company.'",
+        flagHash: "86a430ff6f6a5b768d352aba49ea7f4fd0a7bc0f39486f7d99dea51b141b678f" }
+    ] },
+
+  { id: "c1-fw-11.2-order", module: 11, title: "11.2 ext — Order the NIST Functions", category: "Frameworks", type: "order", points: 150,
+    intro: "Objective — Describe each function in the NIST Framework and its importance. Order the six NIST Framework functions as an organization would apply them, first to last.",
+    steps: [
+      "Govern",
+      "Identify",
+      "Protect",
+      "Detect",
+      "Respond",
+      "Recover"
+    ] },
+
+  { id: "c1-fw-11.2-lifesize-match", module: 11, title: "11.2 ext — NIST Life Size Sort", category: "Frameworks", type: "match", points: 150,
+    intro: "Objective — Describe each function in the NIST Framework. NIST Life Size Sort Cards. Match each real-world task to the NIST function it belongs to. Tap the task, then tap the function.",
+    pairs: [
+      { left: "Creating a policy that requires employees to change passwords every 90 days", right: "Govern" },
+      { left: "Creating a list of every authorized printer and scanner on the network", right: "Identify" },
+      { left: "Setting up a firewall to block traffic from unauthorized countries", right: "Protect" },
+      { left: "Monitoring system logs to see if anyone is trying to log in at 3:00 AM", right: "Detect" },
+      { left: "Disconnecting a laptop from Wi-Fi after it's flagged for having a virus", right: "Respond" },
+      { left: "Using a cloud backup to restore files deleted by a hacker", right: "Recover" }
+    ] },
+
+  { id: "c1-fw-11.3-core", module: 11, title: "11.3 — MITRE ATT&CK", category: "Frameworks",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explain the layout and use of the MITRE ATT&CK knowledge base. MITRE ATT&CK is a globally accessible, living encyclopedia of ___ behavior based on real-world observations.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the attacker being tracked.",
+        flagHash: "6381c9b0232c25ffcd7943637d44691cbdf0c5a753c10f115d0dccea537e72e8" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain the layout of the MITRE ATT&CK knowledge base. ID the TTP activity: a hacker sends a fake Netflix email to trick a teacher into giving up their login. The specific method used — the 'how' — is called a ___ in ATT&CK.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's one level more specific than a Tactic.",
+        flagHash: "3ee0987ca3406f893f0644df362d00f6c2e909c2f568d78f8df6ec8355936580" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain the layout of the MITRE ATT&CK knowledge base. In that same scenario, gaining a foothold by tricking the teacher is the attacker's high-level goal — the 'why.' This is called a ___ in ATT&CK.\n\nSubmit as flag{word} (lowercase).",
+        hint: "One Tactic can have dozens of Techniques underneath it.",
+        flagHash: "b13c8cbf1e76d124c9decd9fb2518b07e3ce894a6d3d06aa521d512841f22f78" }
+    ] },
+
+  { id: "c1-fw-11.3-match", module: 11, title: "11.3 ext — Match the ATT&CK Term", category: "Frameworks", type: "match", points: 150,
+    intro: "Objective — Explain the layout and use of the MITRE ATT&CK knowledge base. Match each term to its definition. Tap the term, then tap its definition.",
+    pairs: [
+      { left: "Any individual or group that performs malicious acts against a system", right: "Adversary" },
+      { left: "The high-level strategic goal of the attacker, like Initial Access", right: "Tactic" },
+      { left: "The specific method used to achieve a tactic, like spearphishing", right: "Technique" },
+      { left: "The exact tool or step-by-step sequence used in one specific attack", right: "Procedure" },
+      { left: "Using a computer's own legitimate tools, like PowerShell, to stay invisible to antivirus", right: "Living off the Land" },
+      { left: "Infecting a computer just because a user visited a hacked website, no download required", right: "Drive-by Compromise" }
+    ] },
+
+  { id: "c1-fw-11.3-attackpath-order", module: 11, title: "11.3 ext — Build the Attack Path", category: "Frameworks", type: "order", points: 150,
+    intro: "Objective — Explain the layout and use of the MITRE ATT&CK knowledge base. Attack Path with MITRE ATT&CK activity. Order the chain of an attack, first to last.",
+    steps: [
+      "Get in by exploiting the target's initial vulnerability",
+      "Set up a secret permanent account to stay in without repeating the break-in",
+      "Move from a low-level computer to one with higher-level permissions",
+      "Delete activity logs while working so alarms don't trigger",
+      "Achieve the final impact — steal data, encrypt files, or disrupt service"
+    ] },
+
+  { id: "c1-fw-11.4-core", module: 11, title: "11.4 — CIS Controls", category: "Frameworks",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Describe CIS controls and implementation groups. CIS Controls Annotated Reading. CIS Controls are built on a philosophy of studying how hackers actually break in and writing rules to stop those specific methods — a philosophy called 'Offense Informs ___.'\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the second half of the phrase.",
+        flagHash: "d5edb42995bdc2fd7fccb374f6ced4997a8dcec5bbcc0dc9a845a8cb7f076073" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Describe CIS controls and implementation groups. Bang for Your Buck activity, Round 5: the Board demands 'Resilience' and requires Control 11 (Data Recovery). Which CIA Triad pillar does Data Recovery mainly support?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's about getting systems back up and working.",
+        flagHash: "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Describe CIS controls and implementation groups. Bang for Your Buck debrief. Implementing just the first six 'Basic' CIS Controls stops roughly what percent of common cyberattacks?\n\nSubmit as flag{number}.",
+        hint: "It's stated directly in the debrief slide.",
+        flagHash: "c06f0a358e13663bb76b6b513e32d0e415049da9b249a01e602dea4570ed73b7" }
+    ] },
+
+  { id: "c1-fw-11.4-ig-match", module: 11, title: "11.4 ext — Match the Implementation Group", category: "Frameworks", type: "match", points: 150,
+    intro: "Objective — Describe CIS controls and implementation groups. Match each organization profile to its Implementation Group. Tap the profile, then tap the group.",
+    pairs: [
+      { left: "Every organization, regardless of size, needs these to stop general, non-targeted attacks", right: "IG1" },
+      { left: "A company handling sensitive client data across multiple departments", right: "IG2" },
+      { left: "A large enterprise, like a hospital network, targeted by sophisticated nation-state hackers", right: "IG3" }
+    ] },
+
+  { id: "c1-fw-11.4-buildup-order", module: 11, title: "11.4 ext — Order the Security Buildup", category: "Frameworks", type: "order", points: 150,
+    intro: "Objective — Describe CIS controls and implementation groups. Bang for Your Buck activity. Order these CIS Controls in the sequence SecureStart Inc. added them as their budget grew, first to last.",
+    steps: [
+      "Control 1 & 2 — Inventory hardware and software assets",
+      "Control 6 — Access Control Management",
+      "Control 8 — Audit Log Management",
+      "Control 11 — Data Recovery"
+    ] },
+
+  { id: "c1-fw-11.5-core", module: 11, title: "11.5 — Cyber Laws & Regulations", category: "Laws & Ethics",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explain common laws impacting cybersecurity. Laws & Regulations Stations. Unlike the other stations, PCI DSS isn't a government law at all — it's private regulations created by which industry? Give the two-word industry name.\n\nSubmit as flag{two_words} with an underscore, lowercase.",
+        hint: "Visa, Mastercard, and Amex all belong to it.",
+        flagHash: "9210a6a76447331af4b8fbef8ffc289f98c8f7fe7f3e6edb537e5c5d08430250" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain common laws impacting cybersecurity. Laws & Regulations Stations. The federal law that lets a company sue in federal court if a competitor or former employee steals its trade secrets through hacking is the Defend Trade Secrets Act. Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "It's abbreviated with 4 letters.",
+        flagHash: "c8e706b2e1cf78fbc47c63b769734528121a0a94560bdb5bd5255d810e964e8f" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain common laws impacting cybersecurity. Laws & Regulations Stations. Under COPPA, companies can't track a child's location, collect their screen name, or take their ___ without parental consent.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's an image of the child.",
+        flagHash: "5be8d8956a704f637ba174922c1eaf44df73315a1e584b8e39e415ff89927614" }
+    ] },
+
+  { id: "c1-fw-11.5-headline-match", module: 11, title: "11.5 ext — Headline Hack", category: "Laws & Ethics", type: "match", points: 150,
+    intro: "Objective — Explain common laws impacting cybersecurity and their implications. Headline Hack activity. Match each headline to the law it raises. Tap the headline, then tap the law.",
+    pairs: [
+      { left: "Engineer downloads secret sauce code to a USB drive before quitting to a competitor", right: "DTSA" },
+      { left: "Student finds a backdoor into a bank's website and downloads customer balance sheets", right: "CFAA" },
+      { left: "Coffee chain banned from taking credit cards after hackers steal 1 million card numbers from an unencrypted database", right: "PCI DSS" },
+      { left: "Hospital employee mistakenly emails 500 patient surgery schedules to a pizza shop", right: "HIPAA" },
+      { left: "A social media app is found tracking the GPS location of underage users to show them toy ads", right: "COPPA" }
+    ] },
+
+  { id: "c1-fw-11.5-match", module: 11, title: "11.5 ext — Match the Law", category: "Laws & Ethics", type: "match", points: 150,
+    intro: "Objective — Explain common laws impacting cybersecurity and their implications. Match each law to what it protects. Tap the law, then tap what it protects.",
+    pairs: [
+      { left: "HIPAA", right: "Patient health records" },
+      { left: "PCI DSS", right: "Credit card transaction data" },
+      { left: "DTSA", right: "A company's trade secrets" },
+      { left: "COPPA", right: "Children's online privacy" },
+      { left: "CFAA", right: "Unauthorized computer access" }
+    ] },
+
+  { id: "c1-fw-11.6-core", module: 11, title: "11.6 — Cyber Ethics & the Law", category: "Laws & Ethics",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explain the ethical considerations of cybersecurity actions. The Curious Hacker scenario. Alex broke into TechGenius Corp's portal out of curiosity, without stealing or damaging anything. The company's own audit called this more of an ___ than an attempt at financial gain or sabotage.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's about exploring, not attacking.",
+        flagHash: "19f5459d15741334bb5ed3bf396f49ab148453da587d77332fb6278f227aba36" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Understand the legal implications of ethical breaches. The Curious Hacker scenario. Even though Alex didn't steal any data, accessing TechGenius Corp's server without authorization is still a federal crime under which law? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "It's the same law from the Headline Hack activity that covers unauthorized access.",
+        flagHash: "6587dc7959cf4e5f6204bed8552661ac571e79ba9eaa7b471cb49e5776256d7c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Analyze notable cybersecurity incidents. Notable Cybersecurity Hacking Incidents. The 2021 ransomware attack that shut down the largest fuel pipeline in the US, carried out by the DarkSide hacker group, targeted which company? Give the two-word name.\n\nSubmit as flag{two_words} with an underscore, lowercase.",
+        hint: "It led to a federal emergency declaration and widespread fuel shortages.",
+        flagHash: "775368d33c2e1bd76d9801f77af9acfe000b77dee9506e3cb005c2a0ab008cee" }
+    ] },
+
+  { id: "c1-fw-11.6-courtroom-order", module: 11, title: "11.6 ext — Cyber Law Courtroom", category: "Laws & Ethics", type: "order", points: 150,
+    intro: "Objective — Understand the legal implications of ethical breaches. Cyber Law Courtroom activity. Order the trial procedure for the Curious Hacker case, first to last.",
+    steps: [
+      "Opening statements from prosecution and defense",
+      "Witness testimonies",
+      "Cross-examination",
+      "Closing arguments",
+      "Judge and jury deliberate a verdict"
+    ] },
+
+  { id: "c1-fw-11.6-incidents-match", module: 11, title: "11.6 ext — Match the Incident", category: "Laws & Ethics", type: "match", points: 150,
+    intro: "Objective — Analyze notable cybersecurity incidents. Notable Cybersecurity Hacking Incidents. Match each breach to what happened. Tap the breach, then tap the outcome.",
+    pairs: [
+      { left: "Yahoo (2013-2014)", right: "3 billion accounts exposed, the largest breach in history" },
+      { left: "Equifax (2017)", right: "Social security numbers of nearly 147 million consumers exposed" },
+      { left: "WannaCry (2017)", right: "A ransomware cryptoworm that encrypted 200,000+ computers across 150 countries" },
+      { left: "SolarWinds (2020)", right: "A supply-chain attack hidden inside a trusted software update" },
+      { left: "Colonial Pipeline (2021)", right: "Ransomware shut down the largest US fuel pipeline" }
+    ] },
+
+  { id: "c1-fw-vocab", module: 11, title: "11.1-11.6 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["confidentiality","integrity","availability","authentication","authorization","accounting","nist framework","govern","identify","protect","detect","respond","recover","adversary","mitre att&ck","tactics","techniques","procedures","cis controls","implementation groups","ig1","ig2","ig3","hipaa","pci dss","dtsa","coppa","cfaa"],
+    hardMode: "speedmatch" },
 
   ]
 };
 
 window.COURSE_CONFIG.cyber1.ctf.bossQuestions = [
+  { module: 11, topic: "M11", diff: "Medium", kind: "mc",
+    prompt: "A company suffers a ransomware attack that encrypts their file server, taking it offline for two days. Which CIA triad principle was violated?",
+    choices: ["Availability", "Confidentiality", "Integrity", "Accounting"], answer: "Availability" },
+  { module: 11, topic: "M11", diff: "Hard", kind: "mc",
+    prompt: "An analyst wants to see the exact step-by-step technique an adversary used for privilege escalation in a past breach. Which resource should they consult?",
+    choices: ["MITRE ATT&CK", "CIS Controls", "HIPAA", "COPPA"], answer: "MITRE ATT&CK" },
+  { module: 11, topic: "M11", diff: "Medium", kind: "mc",
+    prompt: "Like Alex in the Curious Hacker case, a student finds a bug in the school portal out of curiosity and pokes at it without permission, but reports no harm done. What is the most ethical next step?",
+    choices: ["Report it responsibly to the school's IT staff", "Keep exploring quietly since no harm was done", "Post the vulnerability publicly", "Share the access with friends"], answer: "Report it responsibly to the school's IT staff" },
   { module: 1, topic: "M1", diff: "Easy", kind: "mc",
     prompt: "Which is NOT part of the CIA triad?",
     choices: ["Authentication", "Confidentiality", "Integrity", "Availability"], answer: "Authentication" },
@@ -1573,24 +2682,48 @@ window.COURSE_CONFIG.cyber1.ctf.bossQuestions = [
   { module: 9, topic: "M4", diff: "Medium", kind: "mc",
     prompt: "Which of these is ENCODING, not encryption?",
     choices: ["Base64", "AES", "RSA", "A cipher with a secret key"], answer: "Base64" },
-  { module: 3, topic: "M5", diff: "Easy", kind: "mc",
+  { module: 3, topic: "M3", diff: "Easy", kind: "mc",
     prompt: "A text message trying to trick you into clicking a bad link is called:",
     choices: ["Smishing", "Vishing", "Tailgating", "Baiting"], answer: "Smishing" },
-  { module: 5, topic: "M6", diff: "Easy", kind: "mc",
-    prompt: "Which Linux command lists files in the current directory?",
-    choices: ["ls", "cd", "pwd", "rm"], answer: "ls" },
-  { module: 5, topic: "M7", diff: "Medium", kind: "text",
-    prompt: "Which Linux command changes a file's permissions? (one word)",
-    answer: "chmod" },
-  { module: 5, topic: "M8", diff: "Medium", kind: "mc",
-    prompt: "Microsoft's directory service for users, groups, and computers is:",
-    choices: ["Active Directory", "PowerShell", "Task Manager", "Registry"], answer: "Active Directory" },
-  { module: 6, topic: "M10", diff: "Hard", kind: "text",
-    prompt: "How many layers are in the OSI model? (number)",
-    answer: "7" },
-  { module: 7, topic: "M11", diff: "Medium", kind: "mc",
-    prompt: "Malware that self-replicates across a network with no user action is a:",
-    choices: ["Worm", "Virus", "Trojan", "Rootkit"], answer: "Worm" }
+  { module: 5, topic: "M5", diff: "Easy", kind: "mc",
+    prompt: "A new hire's laptop is stuck on a frozen program. What's the safe first command to find out what's using all the CPU?",
+    choices: ["top", "rm -rf /", "userdel", "mkdir"], answer: "top" },
+  { module: 5, topic: "M5", diff: "Medium", kind: "text",
+    prompt: "A student overwrites file.txt on Windows by saving File.txt in the same folder. What OS behavior caused this? (one word, hyphenated: case-_______)",
+    answer: "insensitive" },
+  { module: 5, topic: "M5", diff: "Hard", kind: "mc",
+    prompt: "You're hired as a junior SysAdmin. An employee is terminated today. What is the correct first action for their account?",
+    choices: ["Lock the account instead of deleting it", "Delete the account immediately", "Change the password and tell no one", "Leave the account active until next audit"], answer: "Lock the account instead of deleting it" },
+  { module: 6, topic: "M6", diff: "Easy", kind: "mc",
+    prompt: "A new library computer needs to be reachable at the same address every single day. What kind of IP addressing should it use?",
+    choices: ["Static", "DHCP", "MAC-based", "It doesn't matter"], answer: "Static" },
+  { module: 6, topic: "M6", diff: "Medium", kind: "text",
+    prompt: "You're a network admin. A login page is served over Port 80 instead of 443. What protocol is silently exposing user passwords? (one word)",
+    answer: "http" },
+  { module: 6, topic: "M6", diff: "Hard", kind: "mc",
+    prompt: "You can reach every website by IP address, but typing names like google.com fails everywhere. Which port/service is most likely down?",
+    choices: ["Port 53 (DNS)", "Port 443 (HTTPS)", "Port 22 (SSH)", "Port 21 (FTP)"], answer: "Port 53 (DNS)" },
+  { module: 7, topic: "M7", diff: "Easy", kind: "mc",
+    prompt: "An employee gets an email pretending to be IT, asking for their password. Which attack surface is being exploited?",
+    choices: ["Human", "Physical", "Digital", "Network"], answer: "Human" },
+  { module: 7, topic: "M7", diff: "Medium", kind: "text",
+    prompt: "You're a Threat Intelligence Analyst. Malware self-replicates across a network with no user clicking anything. What is it called? (one word)",
+    answer: "worm" },
+  { module: 7, topic: "M7", diff: "Hard", kind: "mc",
+    prompt: "A hotel CFO denies a security budget request, saying \"we have insurance to cover us if anything goes wrong.\" What is it called when someone takes on more risk because someone else pays for their mistakes?",
+    choices: ["Moral hazard", "Zero-day", "Least privilege", "Persistence"], answer: "Moral hazard" },
+  { module: 2, topic: "M2", diff: "Easy", kind: "mc",
+    prompt: "Which of these is a PASSIVE digital footprint (created without you directly acting)?",
+    choices: ["A website silently logging your IP address", "Posting a photo on Instagram", "Leaving a comment on a blog", "Sending an email"], answer: "A website silently logging your IP address" },
+  { module: 8, topic: "M8", diff: "Medium", kind: "mc",
+    prompt: "A hospital had antivirus, a locked server room, and yearly password training — but a caller pretending to be IT still talked an employee out of their password. Which control would have stopped this attack in the moment?",
+    choices: ["A second login code sent to the employee's phone (MFA)", "A stronger firewall rule", "A backup server", "Better key-card badges"], answer: "A second login code sent to the employee's phone (MFA)" },
+  { module: 9, topic: "M9", diff: "Hard", kind: "mc",
+    prompt: "You intercept a ciphertext where the same letter is encrypted to a different symbol nearly every time it appears, defeating frequency analysis. What kind of cipher is this most likely to be?",
+    choices: ["Polyalphabetic", "Monoalphabetic", "Transposition only", "Base64 encoding"], answer: "Polyalphabetic" },
+  { module: 10, topic: "M10", diff: "Medium", kind: "mc",
+    prompt: "During a mock CTF, your team is stuck on a Forensics challenge for 15 minutes with no progress. What does the competitor mindset suggest you do?",
+    choices: ["Pivot to a different category while a teammate keeps working the file", "Keep guessing random flags until one works", "Give up on the whole competition", "Wait silently for the teacher to give the answer"], answer: "Pivot to a different category while a teammate keeps working the file" }
 ];
 
 window.COURSE_CONFIG.cyber3.ctf = {
@@ -2045,13 +3178,13 @@ window.COURSE_CONFIG.cyber3.ctf.bossQuestions = [
 window.COURSE_CONFIG.cyber1.ctf.moduleFrameworks = {
   1:  { district: { name: "cyber.org K-12", bigIdeas: [3,4], standards: ["9-12.DC.THRT","9-12.DC.FOOT","9-12.DC.PII","9-12.DC.PPI.II","9-12.SEC.CIA","9-12.SEC.INFO"] }, ap: null },
   2:  { district: { name: "cyber.org K-12", bigIdeas: [], standards: ["9-12.DC.THRT","9-12.DC.ETH","9-12.DC.LAW","9-12.DC.AUP"] }, ap: null },
-  3:  { district: { name: "cyber.org K-12", bigIdeas: [2,3], standards: ["9-12.CS.OS","9-12.CS.HARD","9-12.CS.PROG"] }, ap: null },
-  4:  { district: { name: "cyber.org K-12", bigIdeas: [], standards: ["9-12.SEC.CRYP","9-12.DC.THRT"] }, ap: null },
-  5:  { district: { name: "cyber.org K-12", bigIdeas: [1], standards: ["9-12.SEC.PHYS","9-12.SEC.INFO","9-12.DC.CYBL","9-12.DC.FOOT"] }, ap: null },
-  6:  { district: { name: "cyber.org K-12", bigIdeas: [3], standards: ["9-12.CS.OS","9-12.CS.PROG"] }, ap: null },
-  7:  { district: { name: "cyber.org K-12", bigIdeas: [3], standards: ["9-12.CS.OS","9-12.SEC.ACC","9-12.SEC.AUTH","9-12.CS.COMM"] }, ap: null },
-  8:  { district: { name: "cyber.org K-12", bigIdeas: [3], standards: ["9-12.CS.OS","9-12.SEC.ACC","9-12.CS.SOFT"] }, ap: null },
-  9:  { district: { name: "cyber.org K-12", bigIdeas: [1,2,3,4,5,6], standards: ["9-12.SEC.ACC","9-12.SEC.AUTH","9-12.SEC.NET","9-12.SEC.INFO","9-12.SEC.CRYP"] }, ap: null },
+  3:  { district: { name: "cyber.org K-12", bigIdeas: [], standards: ["9-12.SEC.PHYS"] }, ap: null },
+  4:  { district: { name: "cyber.org K-12", bigIdeas: [], standards: ["9-12.CS.OS","9-12.CS.HARD"] }, ap: null },
+  5:  { district: { name: "cyber.org K-12", bigIdeas: [], standards: ["9-12.CS.OS"] }, ap: null },
+  6:  { district: { name: "cyber.org K-12", bigIdeas: [3], standards: ["9-12.CS.COMM","9-12.CS.COMP","9-12.CS.HARD"] }, ap: null },
+  7:  { district: { name: "cyber.org K-12", bigIdeas: [3], standards: ["9-12.SEC.INFO","9-12.SEC.NET","9-12.SEC.PHYS"] }, ap: null },
+  8:  { district: { name: "cyber.org K-12", bigIdeas: [3], standards: ["9-12.SEC.INFO","9-12.SEC.ACC","9-12.SEC.AUTH","9-12.SEC.PHYS"] }, ap: null },
+  9:  { district: { name: "cyber.org K-12", bigIdeas: [1,2], standards: ["9-12.SEC.CRYP","9-12.SEC.INFO"] }, ap: null },
   10: { district: { name: "cyber.org K-12", bigIdeas: [2], standards: ["9-12.CS.COMM","9-12.CS.COMP","9-12.CS.HARD","9-12.CS.PROT","9-12.SEC.COMP"] }, ap: null },
   11: { district: { name: "cyber.org K-12", bigIdeas: [1], standards: ["9-12.SEC.INFO","9-12.SEC.NET","9-12.DC.THRT"] }, ap: null },
   12: { district: { name: "cyber.org K-12", bigIdeas: [3], standards: ["9-12.SEC.DATA","9-12.CS.APPS","9-12.SEC.INFO"] }, ap: null },

@@ -43,7 +43,7 @@
   try { var _de = document.documentElement; _de.style.setProperty("--adv", ADVC); _de.style.setProperty("--adv2", ADVC2); _de.style.setProperty("--advglow", ADVGLOW); } catch(e){}
   function advize(x){ return String(x==null?"":x).replace(/nemesis/gi, ADV); }
   /* MENTOR MODE — set ctf.mentor:true (e.g. Byte Bounty/ADA, Proof of Work/ORACLE).
-     Same integrity deterrents (still logged, still 1/3 XP on paste/canary), but the
+     Same integrity deterrents (still logged, still -10 XP on paste/canary), but the
      character only ever encourages; focus loss becomes a neutral "connection lost"
      screen with NO penalty; copy is disabled with a neutral system message. */
   const MENTOR = !!(ctf.mentor || ctf.tone === "mentor");
@@ -78,6 +78,10 @@
       <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--warn);margin-bottom:8px;">SCRAMBLED — HIT START TO DECODE</div>
       <p class="mono flagTeaser" data-key="${esc(key)}" data-real="${esc(teaser)}" style="white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.65;color:var(--accent2);margin:0 0 16px;opacity:.85;">${esc(alienText(teaser))}</p>
       <button type="button" class="flagStart mono" data-key="${esc(key)}" style="font-size:13px;font-weight:700;padding:12px 22px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;min-height:44px;">▶ START</button>`;
+  }
+  function resourceLink(c) {
+    if (!c.resource) return "";
+    return `<a href="${esc(c.resource.url)}" target="_blank" rel="noopener" class="mono" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent);text-decoration:none;border:1px solid var(--border2);border-radius:8px;padding:7px 12px;margin-bottom:14px;">\u2197 ${esc(c.resource.label)}</a>`;
   }
   function bindFlagStart() {
     document.querySelectorAll(".flagStart").forEach(btn => btn.addEventListener("click", () => {
@@ -595,11 +599,16 @@
   const VOCAB_PTS = [75, 150, 200];         // hard = nominal target for the progress bar
   const VOCAB_DIFFS = ["Easy", "Medium", "Hard"];
   const RAPID_SECS = 240, RAPID_PER = 20;   // hard rapid-fire: 4 min, XP per correct term
-  // per-flag timing: full XP within FULL_SECS, decaying to FLOOR by MAX_SECS; each retry caps at RETRY_FACTOR of the last
-  const MAX_SECS = 300, FULL_SECS = 60, FLOOR = 0.75, RETRY_FACTOR = 0.95;
+  // per-flag timing: value decays 1 XP per hour elapsed since the flag's timer started,
+  // never dropping below XP_FLOOR_PCT of the base value; each retry caps at RETRY_FACTOR of the last
+  const XP_FLOOR_PCT = 0.6, DECAY_PER_HOUR = 1, RETRY_FACTOR = 0.95;
   let timers = {}, rapidTimer = null, tickTimer = null;
 
-  function tMult(sec) { if (sec <= FULL_SECS) return 1; if (sec >= MAX_SECS) return FLOOR; return 1 - (1 - FLOOR) * (sec - FULL_SECS) / (MAX_SECS - FULL_SECS); }
+  function decayedPoints(base, sec) {
+    const floor = Math.ceil(base * XP_FLOOR_PCT);
+    const decayed = base - (sec / 3600) * DECAY_PER_HOUR;
+    return Math.max(floor, Math.min(base, decayed));
+  }
   function capFor(key) { return Math.pow(RETRY_FACTOR, state.retry[key] || 0); }
 
   /* ---- RETRY COOLDOWN -----------------------------------------------------
@@ -639,7 +648,7 @@
      commit, the reveal is confirmed, and it stacks with the time and retry
      multipliers rather than replacing them. Looking things up elsewhere is
      still free — this only prices the answer we hand over. */
-  const HINT_COST = 0.10;
+  const HINT_COST = 0.10, TAINT_PENALTY = 10;
   function hintUsed(key) { return !!(state.hints || {})[key]; }
   function hintMult(key) { return hintUsed(key) ? (1 - HINT_COST) : 1; }
   function buyHint(key) {
@@ -654,7 +663,7 @@
   function startTimer(key) { if (key && !timers[key]) timers[key] = Date.now(); updateTimers(); }
   function award(chal, li, key, base) {
     const sec = timers[key] ? (Date.now() - timers[key]) / 1000 : 0;
-    const earned = Math.max(1, Math.round(base * tMult(sec) * capFor(key) * hintMult(key)));
+    const earned = Math.max(1, Math.round(decayedPoints(base, sec) * capFor(key) * hintMult(key)));
     onSolve(chal, li, key, earned);
   }
   function solveTimed(chal, li) {
@@ -688,17 +697,11 @@
       const sub = form ? form.querySelector('button[type="submit"]') : null;
       if (sub) { sub.disabled = !!cd; sub.style.opacity = cd ? ".45" : ""; sub.style.cursor = cd ? "not-allowed" : "pointer"; }
       if (cd) { el.innerHTML = `\u23f3 <span style="color:var(--adv2);font-weight:700;">${cd}s</span> lockout after a wrong answer \u00b7 still worth <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span> when it lifts${rtxt}${htxt}`; return; }
-      if (!timers[key]) { el.innerHTML = `\u23f1 ${FULL_SECS}s at full value once you begin \u00b7 up to <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span>${rtxt}${htxt}`; return; }
+      if (!timers[key]) { el.innerHTML = `\u23f1 full value once you begin \u00b7 up to <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span> \u00b7 decays 1 XP/hr, floor ${Math.round(XP_FLOOR_PCT*100)}%${rtxt}${htxt}`; return; }
       const sec = (Date.now() - timers[key]) / 1000;
-      const earn = Math.max(1, Math.round(base * tMult(sec) * cap * hm));
-      if (sec < FULL_SECS) {
-        const g = Math.ceil(FULL_SECS - sec);
-        el.innerHTML = `\u23f1 <span style="color:var(--accent);font-weight:700;">${g}s</span> of full value left \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now${rtxt}${htxt}`;
-        return;
-      }
-      const left = Math.max(0, MAX_SECS - sec), mm = Math.floor(left / 60), ss = Math.floor(left % 60);
-      const col = left > 60 ? "var(--amber)" : (left > 0 ? "var(--adv2)" : "var(--faint)");
-      el.innerHTML = `\u23f1 decaying \u00b7 <span style="color:${col};font-weight:700;">${mm}:${String(ss).padStart(2, "0")}</span> to floor \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now${rtxt}${htxt}`;
+      const earn = Math.max(1, Math.round(decayedPoints(base, sec) * cap * hm));
+      const hrs = sec / 3600;
+      el.innerHTML = `\u23f1 decaying \u00b7 <span style="color:var(--amber);font-weight:700;">${hrs < 0.1 ? "just started" : hrs.toFixed(1) + "h elapsed"}</span> \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now (floor ${Math.round(XP_FLOOR_PCT*100)}%)${rtxt}${htxt}`;
     });
   }
   function startTicks() { if (tickTimer) clearInterval(tickTimer); tickTimer = setInterval(updateTimers, 250); updateTimers(); }
@@ -1190,13 +1193,13 @@
   }
   function taintToast(kind) {
     const map = MENTOR ? {
-      paste: [GLYPH + " " + ADV + " // PASTE DETECTED", "let's keep this your own work \u00b7 this capture counts for 1/3 points"],
+      paste: [GLYPH + " " + ADV + " // PASTE DETECTED", "let's keep this your own work \u00b7 this capture is docked 10 XP"],
       focus: [GLYPH + " " + ADV + " // FOCUS", "welcome back \u00b7 pick up where you left off"],
       canary: [GLYPH + " " + ADV + " // HEADS UP", "that one was a decoy \u00b7 no points for it, but no harm \u2014 try the real answer"],
       copy: [GLYPH + " " + ADV + " // NOT RECOGNIZED", "that function is not recognized in the system."]
     } : {
-      paste: ["\u2620 NEMESIS // PASTE FLAGGED", "i caught that clipboard drop \u00b7 this capture falls to 1/3 XP"],
-      focus: ["\u2620 NEMESIS // FOCUS LOST", "you left the arena \u00b7 this capture falls to 1/3 XP"],
+      paste: ["\u2620 NEMESIS // PASTE FLAGGED", "i caught that clipboard drop \u00b7 this capture is docked 10 XP"],
+      focus: ["\u2620 NEMESIS // FOCUS LOST", "you left the arena \u00b7 this capture is docked 10 XP"],
       canary: ["\u2620 NEMESIS // HONEYPOT TRIPPED", "that flag was bait \u00b7 nice try, i see you"],
       copy: ["\u2620 NEMESIS // COPY BLOCKED", "an adversary holds this terminal. copy intercepted"]
     };
@@ -1410,6 +1413,7 @@
         <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;">&gt; ./ctf --start</div>
         <h1 class="mono" style="font-weight:800;font-size:34px;margin:0 0 8px;color:var(--bright);letter-spacing:-.5px;">${esc(ctf.title || "Capture The Flag")}</h1>
         <p style="color:var(--muted);font-size:15px;line-height:1.6;max-width:640px;margin:0;">${esc(ctf.intro || "")}</p>
+        <p class="mono" style="color:var(--faint);font-size:11.5px;line-height:1.6;max-width:640px;margin:12px 0 0;">XP: each flag starts at full value and decays 1 XP per hour it's open, never below ${Math.round(XP_FLOOR_PCT*100)}% of its worth \u00b7 pasting into an answer docks a flat 10 XP.</p>
       </div>`;
   }
 
@@ -1419,7 +1423,7 @@
     if (howShown()) return "";
     const guideLine = MENTOR
       ? `Hi, I'm <span style="color:var(--accent);font-weight:700;">${ADV}</span> — your guide. I'll cheer you on and offer hints along the way.`
-      : `<span style="color:var(--adv2);font-weight:700;">${ADV}</span> guards this system. Solve honestly — pasting or leaving the arena is logged and can cost you XP.`;
+      : `<span style="color:var(--adv2);font-weight:700;">${ADV}</span> guards this system. Solve honestly — pasting or leaving the arena is logged and docks a flat 10 XP.`;
     const step = (n, t, b) => `<div style="display:flex;gap:12px;align-items:flex-start;"><span class="mono" style="flex:none;width:26px;height:26px;border-radius:7px;background:var(--panel3);border:1px solid var(--border3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--accent);">${n}</span><div style="font-size:13px;line-height:1.55;color:var(--muted);"><span style="color:var(--bright);font-weight:700;">${t}</span> — ${b}</div></div>`;
     return `<div class="card" id="howCard" style="border:1px solid var(--border-hi);background:linear-gradient(135deg,var(--panel2),var(--bg) 70%);margin-bottom:20px;position:relative;">
       <button type="button" id="howClose" class="mono" aria-label="Dismiss" style="position:absolute;top:14px;right:14px;font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid var(--border3);background:var(--panel);color:var(--dim);cursor:pointer;">Got it ✕</button>
@@ -1428,7 +1432,7 @@
       <div style="display:flex;flex-direction:column;gap:12px;max-width:660px;">
         ${step(1, "Open a module", "tap a module to expand its challenges. Work through them in any order.")}
         ${step(2, "Capture flags", "text flags come in <b>Easy / Medium / Hard</b> tiers (50 / 100 / 150 XP). Interactive captures — match, order, spot — are worth XP too.")}
-        ${step(3, "Beat the clock", "you get <b>20 seconds at full XP</b> once you begin; after that the flag's value ticks down, so don't stall. A wrong answer locks the flag briefly — longer on Hard — so think before you submit. Revealing a hint costs 10% of the flag. Looking things up elsewhere is always fine — it never costs you points.")}
+        ${step(3, "Beat the clock", `each flag starts at full value the moment you open it, then loses <b>1 XP per hour</b> it stays open — down to a floor of <b>${Math.round(XP_FLOOR_PCT*100)}%</b> of its worth, never lower. A wrong answer locks the flag briefly — longer on Hard — so think before you submit. Revealing a hint costs 10% of the flag. Pasting text into an answer docks a flat <b>10 XP</b>. Looking things up elsewhere is always fine — it never costs you points.`)}
         ${personaOn()
           ? step(4, `Face ${ADV}`, `finish each module with its final challenge — three escalating rounds. Set a player handle below so your score is ready for the leaderboard.`)
           : step(4, "Set your handle", "pick a player handle below so your score is ready for the leaderboard.")}
@@ -1759,6 +1763,7 @@
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${solved ? "var(--accent)" : "var(--faint)"};">${solved ? "\u2713 SOLVED" : "\u25cb OPEN"}</span>
         </div>
         <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        ${resourceLink(c)}
         ${(!solved && !isStarted(c.id)) ? gateHtml(c.id, c.intro || "Match each scenario to the attack it describes.") + `</div>` : `
         <p style="font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(c.intro || "Match each scenario to the attack it describes.")}</p>
         ${solved
@@ -1795,6 +1800,7 @@
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${solved ? "var(--accent)" : "var(--faint)"};">${solved ? "\u2713 SOLVED" : "\u25cb OPEN"}</span>
         </div>
         <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        ${resourceLink(c)}
         ${(!solved && !isStarted(c.id)) ? gateHtml(c.id, c.intro || "Put the stages in the correct order using the arrows.") + `</div>` : `
         <p style="font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(c.intro || "Put the stages in the correct order using the arrows.")}</p>
         ${solved
@@ -1968,7 +1974,7 @@
     blitz: { label: "Definition Blitz", sub: "combo \u00b7 4:00", start: "START BLITZ",
       intro: "Definition blitz: pick the right term for each definition from four choices. Every 3 correct in a row raises your multiplier (up to \u00d74) \u2014 a wrong pick resets the streak. <strong style=\"color:var(--bright);\">4 minutes</strong>, base <strong style=\"color:var(--amber);\">15 XP</strong>." },
     wordsearch: { label: "Word Search", sub: "find \u00b7 no timer", start: "START WORD SEARCH",
-      intro: "Word search: the module's terms are hidden in the grid \u2014 across, down, diagonally, forwards or backwards. Click the first and last letter of each term. No timer \u2014 <strong style=\"color:var(--amber);\">25 XP</strong> per term found." }
+      intro: "Word search: each clue is a definition \u2014 find the term it describes hidden in the grid, across, down, diagonally, forwards or backwards. Click the first and last letter of the matching term. No timer \u2014 <strong style=\"color:var(--amber);\">25 XP</strong> per term found." }
   };
   function hardMeta(c) { return HARD_MODES[c.hardMode] || HARD_MODES.rapid; }
   let hardGame = null;      // label of the running mini-game, for the capture title
@@ -2201,7 +2207,7 @@
       <div style="display:flex;gap:16px;flex-wrap:wrap;">
         <div class="wsGrid" style="display:grid;grid-template-columns:repeat(${G},1fr);gap:2px;flex:1;min-width:260px;max-width:460px;"></div>
         <div style="flex:1;min-width:170px;">
-          <div class="mono" style="font-size:10px;letter-spacing:1px;color:var(--accent);margin-bottom:8px;">FIND THESE TERMS</div>
+          <div class="mono" style="font-size:10px;letter-spacing:1px;color:var(--accent);margin-bottom:8px;">FIND THE TERM FOR EACH DEFINITION</div>
           <div class="wsList" style="display:flex;flex-direction:column;gap:5px;"></div>
           <button type="button" class="wsDone mono" style="margin-top:14px;font-size:13px;font-weight:700;padding:11px 18px;border-radius:9px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;">FINISH &amp; BANK XP</button>
         </div>
@@ -2213,7 +2219,7 @@
     function lineCells(a, b) { const dr = Math.sign(b[0] - a[0]), dc = Math.sign(b[1] - a[1]), len = Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) + 1; if (a[0] + dr * (len - 1) !== b[0] || a[1] + dc * (len - 1) !== b[1]) return null; const cells = []; for (let i = 0; i < len; i++) cells.push([a[0] + dr * i, a[1] + dc * i]); return cells; }
     function draw() {
       $(".wsGrid").innerHTML = grid.map((row, r) => row.map((ch, c) => { const f = inFound(r, c), s = sel && sel[0] === r && sel[1] === c; return `<button type="button" class="wsCell" data-r="${r}" data-c="${c}" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border-radius:4px;cursor:pointer;border:1px solid ${s ? "var(--accent)" : "transparent"};background:${f ? "var(--accent)" : s ? "var(--panel3)" : "var(--panel)"};color:${f ? "var(--bg)" : "var(--bright)"};">${ch}</button>`; }).join("")).join("");
-      $(".wsList").innerHTML = placed.map(o => { const d = !!found[o.w]; return `<div class="mono" style="font-size:12px;padding:6px 9px;border-radius:7px;border:1px solid var(--border2);background:var(--bg);color:${d ? "var(--accent)" : "var(--dim)"};text-decoration:${d ? "line-through" : "none"};">${d ? "\u2713 " : ""}${esc(dispTerm(o.t))}</div>`; }).join("");
+      $(".wsList").innerHTML = placed.map(o => { const d = !!found[o.w]; return `<div class="mono" style="font-size:12px;padding:6px 9px;border-radius:7px;border:1px solid var(--border2);background:var(--bg);color:${d ? "var(--accent)" : "var(--dim)"};line-height:1.5;">${d ? "\u2713 <span style=\"text-decoration:line-through;\">" + esc(dispTerm(o.t)) + "</span>" : esc(o.d)}</div>`; }).join("");
       wrap.querySelectorAll(".wsCell").forEach(b => b.addEventListener("click", () => { if (done) return; const r = +b.getAttribute("data-r"), c = +b.getAttribute("data-c"), m = $(".wsMsg");
         if (!sel) { sel = [r, c]; draw(); return; }
         const cells = lineCells(sel, [r, c]); sel = null;
@@ -2249,7 +2255,8 @@
           <span class="mono" style="font-size:11px;letter-spacing:1px;padding:5px 10px;border-radius:999px;border:1px solid var(--border3);background:var(--bg);color:var(--accent);">${esc(c.category || "MISC")}</span>
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${all ? "var(--accent)" : "var(--faint)"};">${done}/${c.levels.length} flags</span>
         </div>
-        <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:12px;">${esc(c.title)}</div>
+        <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        ${resourceLink(c)}
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">${tabs}</div>`;
     if (!solvedThis && !isStarted(key)) return header + gateHtml(key, lv.prompt) + `</div>`;
     return header + `
@@ -2276,7 +2283,8 @@
           <span class="mono" style="font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid var(--amber-bd);background:var(--amber-bg);color:var(--amber);">${c.points || 0} XP</span>
           <span class="mono ctfState" style="margin-left:auto;font-size:12px;font-weight:700;color:${solved ? "var(--accent)" : "var(--faint)"};">${solved ? "\u2713 SOLVED" : "\u25cb OPEN"}</span>
         </div>
-        <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>`;
+        <div style="font-size:19px;font-weight:700;color:var(--bright);margin-bottom:8px;">${esc(c.title)}</div>
+        ${resourceLink(c)}`;
     if (!solved && !isStarted(c.id)) return header + gateHtml(c.id, c.prompt) + `</div>`;
     return header + `
         <p style="white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.65;color:var(--text);margin:0 0 14px;">${esc(c.prompt)}</p>
@@ -2521,7 +2529,7 @@
     const before = stats();
     const base = chal.type === "vocab" ? (VOCAB_PTS[li] || 0) : (usesLevels ? (chal.levels[li].points || 0) : (chal.points || 0));
     let points = (earnedOverride != null) ? earnedOverride : base;
-    if (tainted[key]) points = Math.max(1, Math.round(points / 3));
+    if (tainted[key]) points = Math.max(1, points - TAINT_PENALTY);
     const wasQueued = !state.solved[key] && (state.retry[key] || 0) > 0;
     state.solved[key] = true;
     state.solvedAt[key] = Date.now();
