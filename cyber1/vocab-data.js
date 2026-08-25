@@ -50,8 +50,6 @@ window.CY1_VOCAB = (function () {
   {m:1,t:"PC10 Skills",d:"A foundational framework outlining the top ten essential soft skills required for standard cyber competency."},
   {m:1,t:"Cyber Competitions",d:"Organized events where students and professionals compete to solve cybersecurity puzzles, defend simulated networks, or hack target infrastructure."},
   {m:1,t:"Cyber Ethics",d:"The code of moral behavior, responsibilities, and legal boundaries governing the use of computers, networks, and digital resources."},
-  {m:1,t:"Paradigm/Trusted Sec Cyber Essentials Certification",d:"A specialized training certification that validates foundational cybersecurity knowledge, practical skills, and ethical standards alignment."},
-  {m:1,t:"Capture the Flag Challenges (CTFs)",d:"Gamified cybersecurity competitions where participants find hidden flags by solving puzzles in cryptography, web exploitation, reverse engineering, and networking."},
 
   /* ---- UNIT 2: Digital Footprint & Cyber Hygiene ---- */
   {m:2,t:"Digital Footprint",d:"The collection of information that exists about a person online as a result of their activities, posts, accounts, searches, and interactions."},

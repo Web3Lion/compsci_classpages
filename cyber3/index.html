@@ -187,6 +187,18 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
         <div id="next"><div class="mono" style="padding: 16px; font-size: 13px; color: var(--dim);"><span class="spin"></span>loading…</div></div>
       </div>
 
+      <div class="card">
+        <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 16px;">// BELL SCHEDULE</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:4px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;margin-bottom:14px;">
+          <button type="button" data-b="0" class="bellSeg mono" style="padding:9px 4px;border:none;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.3px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">REGULAR</button>
+          <button type="button" data-b="1" class="bellSeg mono" style="padding:9px 4px;border:none;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.3px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">💪 FLEX</button>
+          <button type="button" data-b="2" class="bellSeg mono" style="padding:9px 4px;border:none;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.3px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">2-HR</button>
+          <button type="button" data-b="3" class="bellSeg mono" style="padding:9px 4px;border:none;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.3px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">EARLY</button>
+        </div>
+        <div id="bellBody" style="display:grid;grid-template-columns:1fr;gap:6px;"></div>
+        <p id="bellNote" class="mono" style="margin:14px 0 0;font-size:11px;color:var(--faint);line-height:1.5;"></p>
+      </div>
+
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 24px;">
@@ -218,17 +230,6 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     </div>
   </div>
 
-  <div class="card">
-    <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 16px;">// BELL SCHEDULE</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:4px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;margin-bottom:14px;max-width:640px;">
-      <button type="button" data-b="0" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">REGULAR</button>
-      <button type="button" data-b="1" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">💪 FLEX</button>
-      <button type="button" data-b="2" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">2-HR DELAY</button>
-      <button type="button" data-b="3" class="bellSeg mono" style="padding:9px 6px;border:none;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;background:transparent;color:var(--dim);transition:all .15s;">EARLY OUT</button>
-    </div>
-    <div id="bellBody" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
-    <p id="bellNote" class="mono" style="margin:14px 0 0;font-size:11px;color:var(--faint);line-height:1.5;"></p>
-  </div>
   <script>
   (function(){
     const SCHED=[
