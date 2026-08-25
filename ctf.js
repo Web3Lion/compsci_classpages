@@ -295,8 +295,8 @@
     const th = badgeThemes();
     const mk = (t, needs) => { needs = incNeeds(needs); return t.tiers.map((label, i) => ({ label: label, need: needs[i] })); };
     return [
-      { id:"flags",  glyph:"\u2691", name:th.flags.name,  value:s.solvedCount, tiers:mk(th.flags,  [5, 15, 30]) },
-      { id:"xp",     glyph:"\u25c6", name:th.xp.name,     value:s.pts,         tiers:mk(th.xp,     [300, 900, 1800]) },
+      { id:"flags",  glyph:"\u2691", name:th.flags.name,  value:s.solvedCount, tiers:mk(th.flags,  [Math.ceil(s.count*0.15), Math.ceil(s.count*0.45), s.count]) },
+      { id:"xp",     glyph:"\u25c6", name:th.xp.name,     value:s.pts,         tiers:mk(th.xp,     [Math.ceil(s.total*0.15), Math.ceil(s.total*0.45), s.total]) },
       { id:"streak", glyph:"\u25b2", name:th.streak.name, value:best,          tiers:mk(th.streak, [5, 15, 45]) },
       { id:"mods",   glyph:"\u25a3", name:th.mods.name,   value:modsCleared,   tiers:mk(th.mods,   [1, Math.ceil(N/2), N]) },
       { id:"vocab",  glyph:"\u2726", name:th.vocab.name,  value:vocabSolved,   tiers:mk(th.vocab,  [3, Math.ceil(Nv/2), Nv]) },
@@ -564,11 +564,14 @@
     state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: REVIEW_BOUNTY, reason: "Peer review bounty" });
     return REVIEW_BOUNTY;
   }
+  const VOCAB_PRACTICE_CAP_PER_MODULE = 120; // must match vocab-xp.js: 4 games x 30 XP cap
+  const BONUS_XP_CAP = 1000; // streak/pioneer/ultimate/review bonuses count toward rank, but only up to this much
   function stats() {
     const flags = (ctf.challenges || []).flatMap(flagsOf);
-    const total = flags.reduce((a, f) => a + f.points, 0);
+    const moduleCount = new Set((ctf.challenges || []).map(c => c.module).filter(m => m != null)).size;
+    const total = flags.reduce((a, f) => a + f.points, 0) + moduleCount * VOCAB_PRACTICE_CAP_PER_MODULE;
     const solvedCount = flags.filter(f => !!state.solved[f.key]).length;
-    const pts = (state.points || 0) + (state.bonus || 0) + vocabXpTotal();
+    const pts = (state.points || 0) + Math.min(state.bonus || 0, BONUS_XP_CAP) + vocabXpTotal();
     return { total, solvedCount, pts, count: flags.length, rank: rankFor(pts, total), next: nextRank(pts, total) };
   }
 
