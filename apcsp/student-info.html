@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Info — AP Computer Science Principles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0a14;--panel:#15111d;--panel2:#1a1524;--border:#332845;--border2:#241d33;--border3:#48395f;--border-hi:#6a5788;--text:#d8d2e6;--bright:#f5f2ff;--muted:#aca2c4;--dim:#867ba0;--faint:#5d5279;--accent:#a855f7;--accent2:#c98bff;}
+:root[data-theme="light"]{--bg:#f1eef7;--panel:#ffffff;--panel2:#f6f3fb;--border:#d7cfe4;--border2:#e4ddf0;--border3:#b8accf;--border-hi:#897ba8;--text:#2c2740;--bright:#140e26;--muted:#524a6a;--dim:#6f668c;--faint:#8d83a6;--accent:#8b2fd6;--accent2:#6f1fb0;}
+*{box-sizing:border-box;}
+body{margin:0;padding:40px 16px 80px;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);}
+a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:620px;margin:0 auto;}
+.badge{display:inline-block;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--accent);border:1px solid var(--border3);background:var(--panel2);border-radius:999px;padding:6px 14px;margin-bottom:16px;}
+h1{font-size:26px;margin:0 0 10px;color:var(--bright);letter-spacing:-.3px;}
+.lede{font-size:14.5px;line-height:1.7;color:var(--muted);margin:0 0 28px;}
+.card{border:1px solid var(--border3);border-radius:14px;background:var(--panel);padding:26px 24px;margin-bottom:18px;}
+label.field{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--dim);margin-bottom:8px;}
+input[type=text], textarea{width:100%;font-family:'Inter',sans-serif;font-size:14.5px;padding:12px 14px;border-radius:9px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);margin-bottom:16px;}
+textarea{resize:vertical;min-height:70px;line-height:1.5;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.q{margin-bottom:26px;}
+.q:last-child{margin-bottom:0;}
+.qtext{font-size:15px;font-weight:600;color:var(--bright);margin-bottom:12px;line-height:1.5;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--border2);border-radius:9px;background:var(--bg);cursor:pointer;font-size:14px;}
+.opt:hover{border-color:var(--border-hi);}
+.opt.sel{border-color:var(--accent);background:color-mix(in oklch, var(--accent) 10%, var(--bg));}
+.opt input{accent-color:var(--accent);}
+.ritem{margin-bottom:20px;}
+.ritem:last-child{margin-bottom:0;}
+.ritem .rlabel{font-size:13.5px;color:var(--text);margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;}
+.ritem .rval{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;color:var(--accent);min-width:28px;text-align:right;}
+.rslide{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:6px;background:linear-gradient(90deg, color-mix(in oklch, var(--accent) 55%, var(--bg)) 0%, var(--accent) 100%);cursor:pointer;outline:none;}
+.rslide::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--bright);border:3px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:pointer;}
+.rslide::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--bright);border:3px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:pointer;}
+.rends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);margin-top:6px;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.5px;padding:14px 22px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#160a02;cursor:pointer;width:100%;}
+.btn:hover{background:var(--accent2);border-color:var(--accent2);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.err{font-size:12.5px;color:var(--accent);margin-top:-8px;margin-bottom:14px;min-height:16px;}
+.hint{margin-top:14px;font-size:11.5px;color:var(--faint);line-height:1.6;text-align:center;}
+.done h1{margin-bottom:14px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel2);color:var(--dim);cursor:pointer;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div class="badge">DAY 0 · WARM-UP FLAG</div>
+  <h1>Student Info</h1>
+  <p class="lede">Before we open the course, tell me a bit about yourself. There's no wrong answer, no grade attached — but finishing this earns your first flag. <span id="flagNote"></span></p>
+  <div id="app"></div>
+</div>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'\u25d0 DARK':'\u25d1 LIGHT';}window.__toggleTheme=function(){var cur=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',cur);try{localStorage.setItem(K,cur);}catch(e){}lbl();};lbl();})();</script>
+<script src="../supabase-config.js"></script>
+<script src="../auth.js"></script>
+<script>
+var course = "apcsp";
+var LOCAL_KEY = "student-info-" + course;
+var SESS_KEY = "ctf-sess-" + course;
+var STATE_KEY = "ctf-" + course;
+var FLAG_KEY = "day0-studentinfo";
+var FLAG_XP = 150;
+var app = document.getElementById("app");
+
+function loadSess(){ try { return JSON.parse(localStorage.getItem(SESS_KEY)) || null; } catch(e){ return null; } }
+var sess = loadSess();
+
+function awardFlag(){
+  if (!sess) return false;
+  try {
+    var state = JSON.parse(localStorage.getItem(STATE_KEY) || "{}");
+    state.solved = state.solved || {}; state.earned = state.earned || {};
+    if (state.solved[FLAG_KEY]) return true;
+    state.solved[FLAG_KEY] = true; state.earned[FLAG_KEY] = FLAG_XP;
+    state.bonus = (state.bonus || 0) + FLAG_XP;
+    state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: FLAG_XP, reason: "Day 0 — Student Info" });
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    if (window.AUTH && typeof window.AUTH.rpc === "function") {
+      window.AUTH.rpc("ctf_flag_google", {
+        p_student: sess.studentId, p_key: FLAG_KEY, p_challenge: FLAG_KEY,
+        p_title: "Day 0 — Student Info", p_level: "Easy", p_points: FLAG_XP,
+        p_secs: -1, p_retries: 0, p_tainted: false, p_hint_used: false
+      }).catch(function(){});
+    }
+  } catch(e){}
+  return true;
+}
+
+var QUESTIONS = [
+  { id: "why_cs", text: "Why are you interested in AP Computer Science Principles?",
+    type: "text" },
+  { id: "hope_learn", text: "What do you hope to learn in this class?",
+    type: "text" },
+  { id: "coding_before", text: "Have you written code before this class?",
+    type: "choice", options: ["Yes, a lot", "A little (a class, a tutorial, a project)", "No, this is my first time"] },
+  { id: "know_you", text: "What would you like me to know about you?",
+    type: "text" },
+  { id: "unique", text: "Share one unique thing about you.",
+    type: "text" },
+  { id: "fav_teacher", text: "Who is your favorite teacher, and why?",
+    type: "text" },
+  { id: "talk_hour", text: "What's a game, show, or hobby you could talk about for an hour?",
+    type: "text" },
+  { id: "alone_group", text: "Do you prefer working alone or with a group, and why?",
+    type: "text" },
+  { id: "hidden_skill", text: "What's one thing you're genuinely good at that most people wouldn't guess?",
+    type: "text" },
+  { id: "learning_style", text: "What's your learning style — do you like hands-on, reading, discussion, video?",
+    type: "text" },
+  { id: "cs_outside", text: "Where do you see yourself using computer science outside this class?",
+    type: "text" },
+  { id: "learn_methods", text: "Rate your enjoyment of the following learning methods:",
+    type: "rating", scale: 5,
+    items: [
+      { id: "seat", label: "In a seat listening and writing down" },
+      { id: "pair_group", label: "Participating in pair/group collaboration" },
+      { id: "breakdown", label: "Breaking tasks down and sharing between multiple people or groups" },
+      { id: "teacher_led", label: "Teacher-led discussion and participation" }
+    ] },
+  { id: "confidence_tech", text: "How confident are you with computers/tech overall?",
+    type: "rating", scale: 5, items: [{ id: "v", label: "Confidence with tech" }] },
+  { id: "cs_knowledge", text: "How much do you already know about computer science?",
+    type: "rating", scale: 5, items: [{ id: "v", label: "Prior CS knowledge" }] },
+  { id: "speak_comfort", text: "How comfortable are you speaking up in class discussion?",
+    type: "rating", scale: 5, items: [{ id: "v", label: "Comfort speaking up" }] },
+  { id: "interests", text: "Rate your interest in each of these:",
+    type: "rating", scale: 5,
+    items: [
+      { id: "gaming", label: "Gaming" },
+      { id: "coding", label: "Coding / programming" },
+      { id: "data", label: "Data & analytics" },
+      { id: "design", label: "Creative / visual design" },
+      { id: "building", label: "Building / fixing things" }
+    ] },
+  { id: "challenge_style", text: "How do you like to be challenged?",
+    type: "rating", scale: 5, items: [{ id: "v", label: "1 = more structure \u00b7 5 = more independent work" }] },
+  { id: "screen_time", text: "How much of your day-to-day is spent online?",
+    type: "rating", scale: 5, items: [{ id: "v", label: "Screen time / online-ness" }] },
+  { id: "coding_experience", text: "Rate your coding experience.",
+    type: "rating", scale: 5, items: [{ id: "v", label: "Coding experience" }] }
+];
+
+var picks = {};
+
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+function flagNoteHtml(){
+  return sess ? '' : ' Log in through the <a href="ctf.html">Byte Bounty arena</a> first so this flag banks XP to your account.';
+}
+
+function render(){
+  var fn = document.getElementById("flagNote"); if (fn) fn.innerHTML = flagNoteHtml();
+  QUESTIONS.forEach(function(q){
+    if (q.type === "rating") {
+      picks[q.id] = picks[q.id] || {};
+      q.items.forEach(function(it){ if (!picks[q.id][it.id]) picks[q.id][it.id] = Math.ceil(q.scale / 2); });
+    }
+  });
+  var qHtml = QUESTIONS.map(function(q, qi){
+    if (q.type === "choice") {
+      var opts = q.options.map(function(o, oi){
+        var id = "opt_" + qi + "_" + oi;
+        var sel = picks[q.id] === o;
+        return '<label class="opt' + (sel ? ' sel' : '') + '" for="' + id + '">' +
+          '<input type="radio" name="q' + qi + '" id="' + id + '" value="' + oi + '"' + (sel ? ' checked' : '') + '>' +
+          '<span>' + esc(o) + '</span></label>';
+      }).join("");
+      return '<div class="q"><div class="qtext">' + esc(q.text) + '</div><div class="opts">' + opts + '</div></div>';
+    }
+    if (q.type === "rating") {
+      var ritems = q.items.map(function(it){
+        var cur = (picks[q.id] || {})[it.id] || Math.ceil(q.scale / 2);
+        var pct = ((cur - 1) / (q.scale - 1)) * 100;
+        return '<div class="ritem"><div class="rlabel"><span>' + esc(it.label) + '</span><span class="rval">' + cur + '</span></div>' +
+          '<input class="rslide" type="range" min="1" max="' + q.scale + '" step="1" value="' + cur + '" data-qid="' + q.id + '" data-item="' + it.id + '" style="background:linear-gradient(90deg, var(--accent) ' + pct + '%, var(--border2) ' + pct + '%);"></div>';
+      }).join("");
+      return '<div class="q"><div class="qtext">\ud83c\udf9b\ufe0f ' + esc(q.text) + '</div>' + ritems + (q.items.length > 1 || q.items[0].label.indexOf('=') < 0 ? '<div class="rends"><span>1 \u00b7 not for me</span><span>' + q.scale + ' \u00b7 love it</span></div>' : '') + '</div>';
+    }
+    return '<div class="q"><div class="qtext">' + esc(q.text) + '</div><textarea data-qid="' + q.id + '" placeholder="Type your answer...">' + esc(picks[q.id] || "") + '</textarea></div>';
+  }).join("");
+
+  app.innerHTML =
+    '<div class="card">' +
+      '<label class="field">YOUR NAME</label>' +
+      '<div class="row2">' +
+        '<input type="text" id="firstInput" placeholder="First name" value="' + esc(picks._first || "") + '">' +
+        '<input type="text" id="lastInput" placeholder="Last name" value="' + esc(picks._last || "") + '">' +
+      '</div>' +
+      '<label class="field">CLASS PERIOD</label>' +
+      '<input type="text" id="periodInput" placeholder="Class period" value="' + esc(picks._period || "") + '">' +
+    '</div>' +
+    '<div class="card">' + qHtml + '</div>' +
+    '<div class="err" id="errMsg"></div>' +
+    '<button class="btn" id="submitBtn">SUBMIT</button>' +
+    '<div class="hint">Your teacher reviews these before or during class — nothing here is scored.</div>';
+
+  var fn2 = document.getElementById("flagNote"); if (fn2) fn2.innerHTML = flagNoteHtml();
+  document.getElementById("firstInput").addEventListener("input", function(e){ picks._first = e.target.value; });
+  document.getElementById("lastInput").addEventListener("input", function(e){ picks._last = e.target.value; });
+  document.getElementById("periodInput").addEventListener("input", function(e){ picks._period = e.target.value; });
+  QUESTIONS.forEach(function(q, qi){
+    if (q.type === "choice") {
+      app.querySelectorAll('input[name="q' + qi + '"]').forEach(function(inp){
+        inp.addEventListener("change", function(){
+          picks[q.id] = q.options[+inp.value];
+          render();
+        });
+      });
+    } else if (q.type === "rating") {
+      app.querySelectorAll('.rslide[data-qid="' + q.id + '"]').forEach(function(sl){
+        sl.addEventListener("input", function(){
+          picks[q.id] = picks[q.id] || {};
+          picks[q.id][sl.getAttribute("data-item")] = +sl.value;
+          var pct = ((sl.value - 1) / (q.scale - 1)) * 100;
+          sl.style.background = 'linear-gradient(90deg, var(--accent) ' + pct + '%, var(--border2) ' + pct + '%)';
+          sl.closest(".ritem").querySelector(".rval").textContent = sl.value;
+        });
+      });
+    } else {
+      var ta = app.querySelector('textarea[data-qid="' + q.id + '"]');
+      ta.addEventListener("input", function(e){ picks[q.id] = e.target.value; });
+    }
+  });
+  document.getElementById("submitBtn").addEventListener("click", submit);
+}
+
+function submit(){
+  var errEl = document.getElementById("errMsg");
+  errEl.textContent = "";
+  var first = (picks._first || "").trim();
+  var last = (picks._last || "").trim();
+  var name = (first + " " + last).trim();
+  if (!first || !last) { errEl.textContent = "Enter your first and last name so your teacher knows whose answers these are."; return; }
+  var missing = QUESTIONS.some(function(q){
+    if (q.type === "rating") return !picks[q.id] || q.items.some(function(it){ return !picks[q.id][it.id]; });
+    return !picks[q.id] || !String(picks[q.id]).trim();
+  });
+  if (missing) { errEl.textContent = "Answer every question before submitting."; return; }
+
+  var answers = {};
+  QUESTIONS.forEach(function(q){ answers[q.id] = picks[q.id]; });
+  var record = { name: name, period: (picks._period || "").trim(), answers: answers, ts: Date.now() };
+
+  try {
+    var all = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+    all.push(record);
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(all));
+  } catch(e) {}
+
+  try {
+    if (window.CTF_AUTH && typeof window.CTF_AUTH.rpc === "function") {
+      window.CTF_AUTH.rpc("ctf_target_warmup_submit", {
+        p_course: course, p_name: name, p_period: record.period, p_answers: answers
+      }).catch(function(){});
+    }
+  } catch(e) {}
+
+  var flagged = awardFlag();
+  var flagLine = flagged
+    ? '<div class="xpBadge" style="display:inline-flex;align-items:center;gap:8px;font-family:\'JetBrains Mono\',monospace;font-weight:800;font-size:14px;letter-spacing:1px;color:#160a02;background:var(--accent);border-radius:999px;padding:9px 18px;margin:14px 0;">\u2691 DAY 0 FLAG CAPTURED · +' + FLAG_XP + ' XP (completion)</div>'
+    : '<p class="lede">Log in through the <a href="ctf.html">Byte Bounty arena</a>, then revisit this page to bank the +' + FLAG_XP + ' XP flag for Day 0.</p>';
+  app.innerHTML = '<div class="card done"><h1>Thanks, ' + esc(name) + '.</h1>' + flagLine +
+    '<p class="lede" style="margin-bottom:0;">Your answers are recorded. Looking forward to the semester ahead.</p></div>';
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* Shared vocab pool for apcsp — consumed by ctf.html (window.CTF_VOCAB).
    Mirror of the VOCAB array in apcsp/vocab.html. m = classroom module. */
 window.APCSP_VOCAB = { terms: [
