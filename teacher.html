@@ -2209,7 +2209,10 @@ function exportHruns(){
    without them typing a code. */
 var CSVTEXT="", CSVREPLACE=false;
 function parseCSV(text){
-  var lines=String(text||"").split(/\r?\n/).filter(function(l){return l.trim()!=="";});
+  // school records often paste as "a@x.com; b@x.com; ..." on one line \u2014
+  // semicolons never appear inside a valid email or a real CSV cell, so
+  // treat them as row breaks same as newlines.
+  var lines=String(text||"").replace(/;/g,"\n").split(/\r?\n/).filter(function(l){return l.trim()!=="";});
   if(!lines.length) return {rows:[],skipped:0};
   var cells=lines.map(function(l){
     // handles quoted fields containing commas
@@ -2326,7 +2329,7 @@ function enrollView(){
   var h='<div class="card" style="padding:18px;margin-bottom:22px;">'+
     '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">UPLOAD A ROSTER</div>'+
     '<div style="font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:14px;max-width:640px;">'+
-      'Paste or drop a CSV exported from your gradebook. Any column named <b>email</b> is used; otherwise the first email-looking cell in each row wins. '+
+      'Paste or drop a CSV exported from your gradebook, or just a list of emails \u2014 one per line, comma-separated, or semicolon-separated like <b>a@school.org; b@school.org</b>. Any column named <b>email</b> is used; otherwise the first email-looking cell in each row wins. '+
       'This does not create accounts \u2014 students still sign in with their own school Google account. It records who you expect, so you can see who hasn\u2019t shown up.</div>'+
     '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">'+
       '<input type="file" accept=".csv,text/csv,text/plain" onchange="csvFile(this)" '+
