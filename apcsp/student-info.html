@@ -74,6 +74,29 @@ var app = document.getElementById("app");
 function loadSess(){ try { return JSON.parse(localStorage.getItem(SESS_KEY)) || null; } catch(e){ return null; } }
 var sess = loadSess();
 
+/* If we don't have a local session, try to discover one automatically: if the
+   student already has a Google session (e.g. from ctf.html) we join/resume
+   using the same roster-matched flow as the CTF page, silently. If they have
+   no Google session yet, prompt sign-in now so this page's answers actually
+   reach the server instead of only saving to this browser. */
+(async function ensureSignedIn(){
+  if (sess || !window.CTF_AUTH || !CTF_AUTH.online) return;
+  try {
+    var u = await CTF_AUTH.user();
+    if (!u) { await CTF_AUTH.signIn(location.href); return; }
+    var mine = await CTF_AUTH.rpc("ctf_my_classes");
+    var here = (mine || []).filter(function(m){ return m.course === course; })[0];
+    if (!here) return; // not enrolled in this course yet — nothing more we can do here
+    var full = await CTF_AUTH.rpc("ctf_join_google", { p_code: here.code, p_handle: here.handle });
+    if (full && full.student_id) {
+      sess = { studentId: full.student_id, classId: full.class_id, course: full.course,
+               className: full.class_name, handle: full.handle };
+      localStorage.setItem(SESS_KEY, JSON.stringify(sess));
+      var fn = document.getElementById("flagNote"); if (fn) fn.innerHTML = flagNoteHtml();
+    }
+  } catch(e) {}
+})();
+
 function awardFlag(){
   if (!sess) return false;
   try {
@@ -159,6 +182,7 @@ function flagNoteHtml(){
 
 function render(){
   var fn = document.getElementById("flagNote"); if (fn) fn.innerHTML = flagNoteHtml();
+  var blankIds = window.__blankIds || [];
   QUESTIONS.forEach(function(q){
     if (q.type === "rating") {
       picks[q.id] = picks[q.id] || {};
@@ -166,6 +190,7 @@ function render(){
     }
   });
   var qHtml = QUESTIONS.map(function(q, qi){
+    var qWrap = function(inner, blank){ return '<div class="q" id="q' + qi + '"' + (blank ? ' style="outline:2px solid var(--accent);outline-offset:6px;border-radius:8px;"' : '') + '>' + inner + '</div>'; };
     if (q.type === "choice") {
       var opts = q.options.map(function(o, oi){
         var id = "opt_" + qi + "_" + oi;
@@ -174,7 +199,7 @@ function render(){
           '<input type="radio" name="q' + qi + '" id="' + id + '" value="' + oi + '"' + (sel ? ' checked' : '') + '>' +
           '<span>' + esc(o) + '</span></label>';
       }).join("");
-      return '<div class="q"><div class="qtext">' + esc(q.text) + '</div><div class="opts">' + opts + '</div></div>';
+      return qWrap('<div class="qtext">' + esc(q.text) + '</div><div class="opts">' + opts + '</div>', blankIds.indexOf(q.id) !== -1);
     }
     if (q.type === "rating") {
       var ritems = q.items.map(function(it){
@@ -183,9 +208,9 @@ function render(){
         return '<div class="ritem"><div class="rlabel"><span>' + esc(it.label) + '</span><span class="rval">' + cur + '</span></div>' +
           '<input class="rslide" type="range" min="1" max="' + q.scale + '" step="1" value="' + cur + '" data-qid="' + q.id + '" data-item="' + it.id + '" style="background:linear-gradient(90deg, var(--accent) ' + pct + '%, var(--border2) ' + pct + '%);"></div>';
       }).join("");
-      return '<div class="q"><div class="qtext">\ud83c\udf9b\ufe0f ' + esc(q.text) + '</div>' + ritems + (q.items.length > 1 || q.items[0].label.indexOf('=') < 0 ? '<div class="rends"><span>1 \u00b7 not for me</span><span>' + q.scale + ' \u00b7 love it</span></div>' : '') + '</div>';
+      return qWrap('<div class="qtext">\ud83c\udf9b\ufe0f ' + esc(q.text) + '</div>' + ritems + (q.items.length > 1 || q.items[0].label.indexOf('=') < 0 ? '<div class="rends"><span>1 \u00b7 not for me</span><span>' + q.scale + ' \u00b7 love it</span></div>' : ''), blankIds.indexOf(q.id) !== -1);
     }
-    return '<div class="q"><div class="qtext">' + esc(q.text) + '</div><textarea data-qid="' + q.id + '" placeholder="Type your answer...">' + esc(picks[q.id] || "") + '</textarea></div>';
+    return qWrap('<div class="qtext">' + esc(q.text) + '</div><textarea data-qid="' + q.id + '" placeholder="Type your answer...">' + esc(picks[q.id] || "") + '</textarea>', blankIds.indexOf(q.id) !== -1);
   }).join("");
 
   app.innerHTML =
@@ -236,15 +261,27 @@ function render(){
 function submit(){
   var errEl = document.getElementById("errMsg");
   errEl.textContent = "";
+  window.__blankIds = [];
   var first = (picks._first || "").trim();
   var last = (picks._last || "").trim();
   var name = (first + " " + last).trim();
   if (!first || !last) { errEl.textContent = "Enter your first and last name so your teacher knows whose answers these are."; return; }
-  var missing = QUESTIONS.some(function(q){
+  var blankQs = QUESTIONS.filter(function(q){
     if (q.type === "rating") return !picks[q.id] || q.items.some(function(it){ return !picks[q.id][it.id]; });
     return !picks[q.id] || !String(picks[q.id]).trim();
   });
-  if (missing) { errEl.textContent = "Answer every question before submitting."; return; }
+  if (blankQs.length) {
+    window.__blankIds = blankQs.map(function(q){ return q.id; });
+    var n = blankQs.length;
+    render();
+    var msg = n === 1 ? "One question is still blank — it's outlined below. Answer it before submitting." : n + " questions are still blank — they're outlined below. Answer them before submitting.";
+    var errEl2 = document.getElementById("errMsg");
+    if (errEl2) errEl2.textContent = msg;
+    var firstQi = QUESTIONS.indexOf(blankQs[0]);
+    var target = document.getElementById("q" + firstQi);
+    if (target) target.scrollIntoView({ block: "center" });
+    return;
+  }
 
   var answers = {};
   QUESTIONS.forEach(function(q){ answers[q.id] = picks[q.id]; });
