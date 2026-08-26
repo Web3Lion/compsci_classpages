@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 // Right-click guard for cyber2. Yes, this file is the flag.
 // Ultimate Flag 13 lives at 27ce4f80a9.html
 document.addEventListener('contextmenu', function(e){

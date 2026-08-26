@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================
    CYBER 2 VOCABULARY DATA — single source of truth.
    Loaded by vocab.html (the Vocabulary Lab) AND ctf.html (Capture the Flag).

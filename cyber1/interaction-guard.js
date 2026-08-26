@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 // Right-click guard for cyber1. Yes, this file is the flag.
 document.addEventListener('contextmenu', function(e){
   e.preventDefault();

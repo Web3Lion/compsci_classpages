@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
 <!-- SPECTER left something behind. Those who read the source may find ./fc004b2ae3.html -->
 <html lang="en">
 <head>
@@ -90,7 +91,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     </div>
   </div>
 
-<div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(135deg, var(--panel2) 0%, var(--bg) 65%); padding: 30px 32px; margin-top: 22px; position: relative; overflow: hidden;">
+<div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(135deg, var(--panel2) 0%, var(--bg) 65%); padding: 30px 32px; margin-top: 22px; position: relative; overflow: hidden; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;" onmouseenter="this.style.transform='translateY(-6px) scale(1.015)';this.style.boxShadow='0 20px 40px -18px var(--accent)';this.style.borderColor='var(--accent)';" onmouseleave="this.style.transform='';this.style.boxShadow='';this.style.borderColor='var(--border3)';">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(0,179,255,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
         <div style="position: relative; z-index: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 36px;" class="instrGrid">
           <div>
@@ -290,7 +291,25 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     function row(r){return '<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:baseline;padding:9px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:14px;font-weight:600;color:var(--bright);">'+r[0]+'</span>'+(r[2]?'<span class="mono" style="font-size:11px;color:var(--dim);">'+r[2]+'</span>':'')+'</div><span class="mono" style="font-size:13px;color:var(--accent);white-space:nowrap;">'+r[1]+'</span></div>';}
     function show(i){body.innerHTML=SCHED[i].rows.map(row).join('');note.textContent='// '+SCHED[i].note;segs.forEach(function(s,j){var on=j===i;s.style.background=on?'var(--accent)':'transparent';s.style.color=on?'var(--bg)':'var(--dim)';});}
     segs.forEach(function(s){s.onclick=function(){show(+s.dataset.b);};});
-    show(1);
+    /* SPECIAL_DAYS overrides the default schedule for specific dates — 2-hour
+       delays, early dismissals, exam days, etc. Add one entry per date as
+       "YYYY-MM-DD": scheduleIndex (0 Regular, 1 FLEX, 2 2-Hour Delay, 3 Early Dismissal). */
+    /* From the 2026-2027 board-approved district calendar. 2 = 2-Hour Delay,
+       3 = Early Dismissal. Half-day early-dismissal times not yet confirmed —
+       using the closest existing schedule (Early Dismissal) until provided. */
+    const SPECIAL_DAYS = {
+      "2026-09-14": 2, "2026-10-19": 2, "2026-11-09": 2, "2026-12-14": 2,
+      "2026-12-22": 3,
+      "2027-01-11": 2, "2027-02-08": 2, "2027-03-15": 2, "2027-04-19": 2, "2027-05-10": 2,
+      "2027-03-11": 3, "2027-06-09": 3,
+    };
+    function todayKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+    function defaultSchedule(){
+      const d=new Date(), key=todayKey(d);
+      if (SPECIAL_DAYS.hasOwnProperty(key)) return SPECIAL_DAYS[key];
+      return d.getDay()===3 ? 1 : 0; // Wednesday = FLEX, else Regular
+    }
+    show(defaultSchedule());
   })();
   </script>
 
