@@ -95,7 +95,28 @@ var sess = loadSess();
       var fn = document.getElementById("flagNote"); if (fn) fn.innerHTML = flagNoteHtml();
     }
   } catch(e) {}
+  resyncLocal();
 })();
+
+/* Any record saved locally but never confirmed synced (submitted while signed
+   out, or the RPC failed) gets pushed to the server now that we have a
+   session. Runs quietly — no UI, no blocking of the current form. */
+async function resyncLocal(){
+  if (!sess || !window.CTF_AUTH || typeof CTF_AUTH.rpc !== "function") return;
+  var all;
+  try { all = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); } catch(e) { return; }
+  var changed = false;
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].synced) continue;
+    try {
+      var r = await CTF_AUTH.rpc("ctf_target_warmup_submit", {
+        p_course: course, p_name: all[i].name, p_period: all[i].period || "", p_answers: all[i].answers
+      });
+      if (r && !r.error) { all[i].synced = true; changed = true; }
+    } catch(e) {}
+  }
+  if (changed) { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(all)); } catch(e) {} }
+}
 
 function awardFlag(){
   if (!sess) return false;
@@ -255,10 +276,14 @@ function render(){
       ta.addEventListener("input", function(e){ picks[q.id] = e.target.value; });
     }
   });
-  document.getElementById("submitBtn").addEventListener("click", submit);
+  document.getElementById("submitBtn").addEventListener("click", function(){
+    var btn = document.getElementById("submitBtn");
+    btn.disabled = true; var origText = btn.textContent; btn.textContent = "SUBMITTING…";
+    submit().finally(function(){ if (document.body.contains(btn)) { btn.disabled = false; btn.textContent = origText; } });
+  });
 }
 
-function submit(){
+async function submit(){
   var errEl = document.getElementById("errMsg");
   errEl.textContent = "";
   window.__blankIds = [];
@@ -287,25 +312,31 @@ function submit(){
   QUESTIONS.forEach(function(q){ answers[q.id] = picks[q.id]; });
   var record = { name: name, period: (picks._period || "").trim(), answers: answers, ts: Date.now() };
 
+  var synced = false;
+  try {
+    if (sess && window.CTF_AUTH && typeof window.CTF_AUTH.rpc === "function") {
+      var r = await window.CTF_AUTH.rpc("ctf_target_warmup_submit", {
+        p_course: course, p_name: name, p_period: record.period, p_answers: answers
+      });
+      synced = !!(r && !r.error);
+    }
+  } catch(e) {}
+  record.synced = synced;
+
   try {
     var all = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
     all.push(record);
     localStorage.setItem(LOCAL_KEY, JSON.stringify(all));
   } catch(e) {}
 
-  try {
-    if (window.CTF_AUTH && typeof window.CTF_AUTH.rpc === "function") {
-      window.CTF_AUTH.rpc("ctf_target_warmup_submit", {
-        p_course: course, p_name: name, p_period: record.period, p_answers: answers
-      }).catch(function(){});
-    }
-  } catch(e) {}
-
   var flagged = awardFlag();
   var flagLine = flagged
     ? '<div class="xpBadge" style="display:inline-flex;align-items:center;gap:8px;font-family:\'JetBrains Mono\',monospace;font-weight:800;font-size:14px;letter-spacing:1px;color:#160a02;background:var(--accent);border-radius:999px;padding:9px 18px;margin:14px 0;">\u2691 DAY 0 FLAG CAPTURED · +' + FLAG_XP + ' XP (completion)</div>'
     : '<p class="lede">Log in through the <a href="ctf.html">Byte Bounty arena</a>, then revisit this page to bank the +' + FLAG_XP + ' XP flag for Day 0.</p>';
-  app.innerHTML = '<div class="card done"><h1>Thanks, ' + esc(name) + '.</h1>' + flagLine +
+  var syncLine = synced
+    ? ''
+    : '<p class="lede" style="color:var(--accent);">\u26a0 Your answers are saved on this device but haven\'t reached your teacher yet — you\'re not signed in. Sign in through the <a href="ctf.html">Byte Bounty arena</a> on THIS device, then this page will resend them automatically next time you open it.</p>';
+  app.innerHTML = '<div class="card done"><h1>Thanks, ' + esc(name) + '.</h1>' + flagLine + syncLine +
     '<p class="lede" style="margin-bottom:0;">Your answers are recorded. Looking forward to the semester ahead.</p></div>';
 }
 
