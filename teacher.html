@@ -200,6 +200,8 @@
         <h1 style="font-size:22px;color:var(--bright);margin:2px 0 0;">Class Dashboard</h1>
       </div>
       <div style="margin-left:auto;display:flex;gap:8px;">
+        <button class="btn" onclick="openAnswerKey()" title="Opens the answer key for the selected class">🔑 Answer key</button>
+        <button class="btn" onclick="openWarmupReview()" title="Opens Day 0 warmup / student info responses for the selected class's course">📋 Day 0 responses</button>
         <button class="btn" onclick="loadClasses(true)">↻ Refresh</button>
         <button class="btn danger" onclick="signOut()">Sign out</button>
       </div>
@@ -443,6 +445,17 @@ function renderMain(){
 }
 function stat(n,k){ return '<div class="stat"><div class="n">'+n+'</div><div class="k">'+k+'</div></div>'; }
 function tabBtn(id,label){ return '<button class="tab '+(TAB===id?"on":"")+'" onclick="setTab(\''+id+'\')">'+label+'</button>'; }
+function openAnswerKey(){
+  var url = "answers.html" + (CUR ? "?class="+encodeURIComponent(CUR.id) : "");
+  window.open(url, "_blank");
+}
+function openWarmupReview(){
+  var course = CUR ? CUR.course : null;
+  if(!course){ alert("Select a class first so I know which course's Day 0 page to open."); return; }
+  var known = {cyber1:1, cyber2:1};
+  if(!known[course]){ alert("There's no Day 0 responses page for "+course+" yet."); return; }
+  window.open(course+"/target-warmup-review.html", "_blank");
+}
 function setTab(t){ TAB=t; renderMain(); }
 function copyCode(){ navigator.clipboard&&navigator.clipboard.writeText(CUR.code); }
 
