@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -3803,7 +3804,11 @@ async function createClass(){
   var u=null;
   try{ u=await AUTH.user(); }catch(e){}
   if(!u){ el("login").style.display="block"; return; }
-  if(!AUTH.isTeacher(u)){ AUTH.logReject&&AUTH.logReject("not_teacher"); return denied(AUTH.emailOf(u)); }
+  var whoami=null;
+  try{ whoami=await rpc("ctf_t_whoami"); }catch(e){}
+  var addedTeacher = whoami && !whoami.error && (whoami.teacher || whoami.owner || whoami.role);
+  if(!AUTH.isTeacher(u) && !addedTeacher){ AUTH.logReject&&AUTH.logReject("not_teacher"); return denied(AUTH.emailOf(u)); }
+  if(whoami && !whoami.error) ME=whoami;
   el("app").style.display="block";
   loadClasses();
 })();
