@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 // @ds-adherence-ignore -- omelette starter scaffold (raw elements/hex/px by design)
 // Copied omelette starter. Re-running copy_starter_component with this kind overwrites this file with the latest version (page content is unaffected).
 /* BEGIN USAGE */

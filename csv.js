@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    csv.js  —  turns any teacher table into a downloadable CSV.
 

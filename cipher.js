@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    cipher.js  —  the "locked flag" encryption suite.
 

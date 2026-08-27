@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    objectives.js  —  turns the "Objective — X." line already written into every
    flag prompt into something you can measure.

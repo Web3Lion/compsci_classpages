@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    practice-sync.js  —  upload vocabulary practice from the vocab page itself.
 

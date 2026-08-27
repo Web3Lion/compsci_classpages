@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================
    COURSE CONFIG — single source of truth for all four courses.
    Edit values HERE and every course page picks them up.
@@ -110,6 +111,7 @@ window.COURSE_CONFIG = {
         { name: "Khan Academy — AP CSP", desc: "Free lessons, practice & exam review", url: "https://www.khanacademy.org/computing/ap-computer-science-principles", icon: "book" }
       ]},
       { title: "AP TEST RESOURCES", items: [
+        { name: "Exam Reference Sheet", desc: "Official AP CSP pseudocode reference (PDF)", url: "https://apcentral.collegeboard.org/media/pdf/ap-computer-science-principles-exam-reference-sheet.pdf", icon: "exam" },
         { name: "Create Task Student Handout", desc: "Shared review resource", url: "https://drive.google.com/file/d/1ntd_J4U4nzdSr9qHcDXqTqfFeS71zZZ8/view?usp=sharing", icon: "exam" },
         { name: "AP Central — CSP", desc: "College Board course home", url: "https://apcentral.collegeboard.org/courses/ap-computer-science-principles", icon: "exam" },
         { name: "Albert.io", desc: "AP-aligned practice questions", url: "https://www.albert.io/", icon: "exam" }
@@ -173,8 +175,8 @@ window.COURSE_CONFIG = {
    ============================================================ */
 window.COURSE_CONFIG.cyber1.ctf = {
   title: "Capture The Flag",
-  intro: "Solve each challenge, capture the flag, and climb the ranks — grouped by module and mapped to each unit's learning objectives. Flags look like flag{...}. But beware: an adversary named SPECTER has taken this terminal. Your progress saves on this device.",
-  adversary: "SPECTER",
+  intro: "Solve each challenge, capture the flag, and climb the ranks — grouped by module and mapped to each unit's learning objectives. Flags look like flag{...}. But beware: an adversary named VECTOR has taken this terminal. Your progress saves on this device.",
+  adversary: "VECTOR",
   adversaryColor: "#ff4c00",
   adversaryColor2: "#ff7a3d",
   adversaryGlow: "#ff2e00",
@@ -2216,15 +2218,15 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Explain the impacts of digital footprints and their permanence. OSINT stands for Open-Source ___. Give the two-word term.\n\nSubmit as flag{two words, lowercase}.",
         hint: "It's the practice of gathering information from publicly available sources.",
-        flagHash: "5d573f575f8c2fa8a5c25ee02ffba7a8339f6f32343537981b16641293c3ac81" },
+        flagHash: "3ae82b05c1c42aad36350529ec2eec6c8255d6fb3a19795b6a8760212c68ac22" },
       { difficulty: "Medium", points: 100,
         prompt: "Objective — Data Permanence. Even if you delete a post, screenshots and server backups can survive. There is no true 'delete' button on the internet — only a ___ button.\n\nSubmit as flag{word} (lowercase).",
         hint: "Deleting a post just makes it invisible to you, not gone from every server or screenshot.",
-        flagHash: "1f5bb9791a310e136d1564ee23d2a3cc32ea7ce6fa26cb8734ec18b4607ad79e" },
+        flagHash: "cd882fed24f964f75869dd2ab79df9f20b66de89277fc684487c9a024afeaff6" },
       { difficulty: "Hard", points: 150,
         prompt: "Objective — The Dark Side of OSINT. Using OSINT techniques to find someone's private information (address, phone number) and publishing it online to encourage harassment is called ___.\n\nSubmit as flag{word} (lowercase).",
         hint: "It sounds like releasing hidden paperwork on someone.",
-        flagHash: "c9233488f759b5ffeedaf745bbf9f22a58842ec7a5123580a88a4c135db6f1f5" }
+        flagHash: "e80b131e04f4e8343de24ebd0633de423160d01f9be691538920af2386c476d8" }
     ] },
 
   { id: "c1-dfhy-footprint-match", module: 2, title: "2.1 ext — Match the Footprint Concept", category: "Digital Footprint", type: "match", points: 150,
@@ -2253,15 +2255,15 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Evaluate your own digital presence. In the Harvard Memes Case Study, at least how many incoming students had their college acceptance rescinded after screenshots of an offensive group chat surfaced?\n\nSubmit as flag{number}.",
         hint: "It's stated directly in the case study — a double-digit number.",
-        flagHash: "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5" },
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
       { difficulty: "Medium", points: 100,
         prompt: "Objective — Your Data Story Workshop. Of the three key audiences (Employer, ___, Culture), which one could use your posted birthday, pet's name, or address to steal your identity?\n\nSubmit as flag{word} (lowercase).",
         hint: "The audience most interested in stealing, not judging or observing.",
-        flagHash: "e7d3685715939842749cc27b38d0ccb9706d4d14a5304ef9eee093780eab5df9" },
+        flagHash: "5fa4afa72009911dd3ba66d477c21f60365d03188d841ad4fb404a4d27de010b" },
       { difficulty: "Hard", points: 150,
         prompt: "Objective — The Harvard Memes Case Study. Harvard's acceptance letters allow an offer to be withdrawn if a student's behavior brings into question their honesty, maturity, or ___ ___. Give the two-word phrase.\n\nSubmit as flag{two words, lowercase}.",
         hint: "It's about the quality of someone's ethics and conduct, not their grades.",
-        flagHash: "224eb717468d0d14e4e1c64d7513416e3a523849efaa6a5d5c84860499fe6893" }
+        flagHash: "e626a8f0b84889b4cacce79ab98c333d2bbfe0d8d4cda03ccfc1eb4f883fcd55" }
     ] },
 
   { id: "c1-dfhy-audience-match", module: 2, title: "2.2 ext — The Three Key Audiences", category: "Digital Footprint", type: "match", points: 150,
@@ -2278,15 +2280,15 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Describe strategies to improve cyber hygiene. The 'Have I Been Pwned?' Kick Start lets you check whether your ___ has appeared in a known data breach.\n\nSubmit as flag{word} (lowercase).",
         hint: "It's the account identifier you type into the site — the same thing you'd use to sign up for most services.",
-        flagHash: "82244417f956ac7c599f191593f7e441a4fafa20a4158fd52e154f1dc4c8ed92" },
+        flagHash: "98f0ca5fd808f5fedd8ace89819228ab81950e4ede208dff7f198eb777f0412a" },
       { difficulty: "Medium", points: 100,
         prompt: "Objective — Passwords & MFA station. To resist cracking, a strong password (or passphrase) should be at least how many characters long?\n\nSubmit as flag{number}.",
         hint: "It's the minimum length given in the station reading — 16 is even better.",
-        flagHash: "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918" },
+        flagHash: "bf54bcd49d2a45eeba9ec402813a4a00fdd7f070d59b6f8dbb9fa573ab0a19e1" },
       { difficulty: "Hard", points: 150,
         prompt: "Objective — Geolocation station (the Strava Heatmap). Soldiers' jogging routes leaked secret base locations through their fitness apps. What is the general term for hidden data, like GPS coordinates, embedded inside a file?\n\nSubmit as flag{word} (lowercase).",
         hint: "It's 'data about data' — the same kind of thing an EXIF viewer reads out of a photo.",
-        flagHash: "45447b7afbd5e544f7d0f1df0fccd26014d9850130abd3f020b89ff96b82079f" }
+        flagHash: "951adea39b54dd0ebb4028b560b787f549cddb92c4c371855307423c2a2db29f" }
     ] },
 
   { id: "c1-dfhy-hygiene-match", module: 2, title: "2.3 ext — Match the Hygiene Station", category: "Cyber Hygiene", type: "match", points: 150,
@@ -2314,15 +2316,15 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Debate the ethics surrounding Google Hacking. Google Hacking is also known as Google ___ing. Give the one-word term.\n\nSubmit as flag{word} (lowercase).",
         hint: "It's named after finding the digital 'doors' people forgot to close — sounds like poking around.",
-        flagHash: "753fdce9d6d0d8fe46237f996985f98a5bb4f62e396b6cf353eb9beb5698d170" },
+        flagHash: "affd8c0b529749e66610832c8a3efb8b76e1e52b89ba6b54ff2386aea6916c02" },
       { difficulty: "Medium", points: 100,
         prompt: "Objective — Is it Legal? Is it Ethical? Choice Board. An employee uses a Google Dork to access an exposed payroll file without authorization, purely to warn their boss it's public. Which two-word category does this fall into: Legal/Ethical, Legal/Unethical, Illegal/Ethical, or Illegal/Unethical?\n\nSubmit as flag{two words, lowercase, no slash}.",
         hint: "Accessing the file without authorization breaks computer-misuse law, but the intent was to protect the company.",
-        flagHash: "fe582e131f7a146b1d32d3e12b5785b0b8c8905255e016caa32ae9b2324ddaee" },
+        flagHash: "a76f32847b5cd6c79770a52a23305567aa69cf5d1da542cdb8af71f1a5319696" },
       { difficulty: "Hard", points: 150,
         prompt: "Objective — The Dork Analogy (Kick Start). Google Dorking is the art of asking Google to show us a list of all the ___ ___ on the internet. Give the two-word phrase from the analogy.\n\nSubmit as flag{two words, lowercase}.",
         hint: "It's about doors people forgot to close.",
-        flagHash: "d068bf647290b6da64039970b024aebe23537fb4f72acf357644978af7652879" }
+        flagHash: "d56d0bc43fed1df37d4ad2f77e6fbb01352b03c07f762b3068db846bc0be5875" }
     ] },
 
   { id: "c1-dfhy-legal-ethical-match", module: 2, title: "2.4 ext — Is it Legal? Is it Ethical?", category: "Cyber Ethics", type: "match", points: 150,
@@ -3257,15 +3259,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
       { difficulty: "Easy", points: 50,
         prompt: "Extension of 1.3 (The Where: Attack Surfaces) — Real-world places where an attacker could physically reach a device or piece of infrastructure — an unlocked computer, an open network port, a lost phone — make up the ___ attack surface.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "Not digital, not human — this one you could literally touch or walk into.",
-        flagHash: "4b60d190e95e576933967e0a1bb4255ebdf98bd6a990e631b23a91902d6a11a0" },
+        flagHash: "01ff03ee2f46c863a8c98875aa09cc35fba385f10cce4d6dba13e2daa18b8afc" },
       { difficulty: "Medium", points: 100,
         prompt: "Extension of 1.3 — An attacker who badges into a building behind someone and walks straight into an unlocked data closet full of switches and cabling has just reached a two-word physical attack surface: the ___ ___.\n\nSubmit as flag{two_words} with an underscore.",
         hint: "Where servers and network equipment physically live.",
-        flagHash: "7ffbb9278671711e1c00534f532c14b5f21e6f5d15607de25bb87663c3187659" },
+        flagHash: "eabce5b2217e3eeeaae55ae60ee530a70c4519059d47437ab002b6b1d3e4a03a" },
       { difficulty: "Hard", points: 150,
         prompt: "Extension of 1.3 — Attack Surface Impact. Every open port, careless click, or unlocked door is one more entry point. Reducing the total number of entry points across all three surfaces — digital, human, and physical — is the whole point of shrinking your attack ___.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "The same word this whole lesson has been building toward.",
-        flagHash: "763cdc62a869262b6ff432a40eae29a00bb96f96f7a3320845abc8cd144d12e2" }
+        flagHash: "3c9552d0cb96cd033f80e05aa98ef7a90ab2bc3410936248d49204636e1c7b68" }
     ] },
 
   { id: "m1-1.4-stations", module: 1, title: "1.4 — Cyber Attack Stations", category: "Cyber Attacks",
@@ -3319,12 +3321,12 @@ window.COURSE_CONFIG.cyber2.ctf = {
         hint: "Base64 — try CyberChef or 'base64 -d'.",
         flagHash: "01fbd5d51977823ec0902cc5fdd02dacc020930a12ed4fe0a328d5b4edd6c6c8" },
       { difficulty: "Medium", points: 100,
-        prompt: "Extension of 1.4 — The targeted version, aimed at a specific person or role. Decode it (ROT13):\n\nsynt{fcrne_cuvfuvat}",
-        hint: "ROT13 shifts each letter 13 places; apply it again to reverse.",
+        prompt: "Extension of 1.4 — The targeted version, aimed at a specific person or role. Decode its name (Base64):\n\nZmxhZ3tzcGVhcl9waGlzaGluZ30=",
+        hint: "Base64 — try CyberChef or 'base64 -d'.",
         flagHash: "cee534b38030771eb0db5302eaaa1a27c26fef6459bfab3958474ffac94a3bb7" },
       { difficulty: "Hard", points: 150,
-        prompt: "Extension of 1.4 — The version that targets a company's executives — the 'big fish'. Decode it (binary, 8 bits per character):\n\n01100110 01101100 01100001 01100111 01111011 01110111 01101000 01100001 01101100 01101001 01101110 01100111 01111101",
-        hint: "Each 8-bit group is one ASCII character. 01100110 = 102 = 'f'.",
+        prompt: "Extension of 1.4 — The version that targets a company's executives — the 'big fish'. Decode its name (Base64):\n\nZmxhZ3t3aGFsaW5nfQ==",
+        hint: "Base64 — try CyberChef or 'base64 -d'.",
         flagHash: "ba23888f3dc8b11a72c8c06e9caddbcb2c8e31d5e6247472539987b8c5e43bd1" }
     ] },
 
@@ -3366,15 +3368,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
       { difficulty: "Easy", points: 50,
         prompt: "Extension of 1.5 (The How: Protecting from Attacks) — Locking your devices, using a screen lock, and securing equipment so it can't be picked up and used is called being ___ secure.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "Importance: prevents stolen devices and unauthorized access. Not digitally secure — ___ secure.",
-        flagHash: "7a455fe1ffe5bb7577cece4510819fd376f9437eb1924500d71ed6ddc14d83f1" },
+        flagHash: "8d7578091a9fe4e9910aeb58b01a2b9b8cc9e7aa096e6071477947c6bd308ed9" },
       { difficulty: "Medium", points: 100,
         prompt: "Extension of 1.5 — Installing patches as soon as they're released closes known holes before an attacker can use them. This habit is simply called keeping your software ___.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "Importance: fixes vulnerabilities attackers could exploit. The opposite of outdated.",
-        flagHash: "27eb5e51506c911f6fc4bb345c0d9db6f60415fceab7c18e1e9b862637415777" },
+        flagHash: "5aee6e7b2ad39c6b1eee94a0b204c8cd87a7016105a94f643b713f058a676f3f" },
       { difficulty: "Hard", points: 150,
         prompt: "Extension of 1.5 — Avoiding oversharing personal details online or with strangers, so an attacker has less material to build a believable pretext from, means you share information ___.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "Importance: reduces social engineering risk. Do it thoughtfully, not carelessly.",
-        flagHash: "28d8747931a8ff5ddf76c7bf206208418aad6889010e3e4770864ad6a1df7600" }
+        flagHash: "71a805da62663aefd0290ad6dc6941da0d57cbeaff18c6a594d8473a89b33e5b" }
     ] },
 
   { id: "m2-2.2-phish", module: 2, title: "2.2 — Phish or Legit?", category: "Threats", type: "phish", points: 150,
@@ -3540,15 +3542,15 @@ window.COURSE_CONFIG.cyber2.ctf = {
       { difficulty: "Easy", points: 50,
         prompt: "Scenario Review — A new attacker only downloads pre-made hacking tools from forums without understanding how they work. This is the classic profile of a ___-skilled adversary.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "The opposite of 'high.'",
-        flagHash: "6c1ff09db3a73dc4a854f695d20d174a848d55f2d743bab2ee1f8fc75be454f3" },
+        flagHash: "b17a1cf1311cd73c0d542ab8354229231e1beb1265dc28d46e410c970ef5f196" },
       { difficulty: "Medium", points: 100,
         prompt: "Scenario Review — A company's laptops, employee habits, and an unlocked server room door are all potential entry points for attackers. Collectively, these entry points make up the company's attack ___.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "The word right after 'attack' in this unit's biggest vocabulary term.",
-        flagHash: "763cdc62a869262b6ff432a40eae29a00bb96f96f7a3320845abc8cd144d12e2" },
+        flagHash: "3c9552d0cb96cd033f80e05aa98ef7a90ab2bc3410936248d49204636e1c7b68" },
       { difficulty: "Hard", points: 150,
         prompt: "Scenario Review — To keep your traffic hidden from eavesdroppers on public Wi-Fi, security experts recommend encrypting it through a ___ ___ ___.\n\nSubmit as flag{three_words} with underscores between words.",
         hint: "The acronym for it is VPN.",
-        flagHash: "71ab22cc652ba0c6e58fa3dee95ab8ab130cfc75002def50ef707d84a8265f41" }
+        flagHash: "7273cfc8cccda5e908a2b1f853d4c09d06c7976b25856ed52dc894d19fb72d07" }
     ] },
 
   /* MODULE 2 — Organizational Security ────────────────────────────────────── */
@@ -5574,16 +5576,16 @@ window.COURSE_CONFIG.cyber2.ctf = {
 { id: "m10-b64", module: 13, title: "13.5 ext — Keep Going", category: "Professional Networking",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Mindset. Decode the mindset of every great cyber professional:\n\nZmxhZ3tuZXZlcl9zdG9wX2xlYXJuaW5nfQ==",
-        hint: "Base64 — decode it with CyberChef, or run atob(\"...\") in the browser console.",
+        prompt: "Objective — Mindset. This ROT13-encoded phrase captures the mindset of every great cyber professional:\n\nsynt{arire_fgbc_yrneavat}",
+        hint: "ROT13 — shift each letter back 13 places.",
         flagHash: "10b22c3c3be40d829b83bda0e7739afbd365ea5d17f6be8d0e51fa5b39768e4b" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Mindset. Decode this Base64 trait of a lifelong learner:\n\nZmxhZ3tzdGF5X2N1cmlvdXN9",
-        hint: "Decode the Base64. Two words — the mindset that keeps a security career moving.",
+        prompt: "Objective — Mindset. This ROT13-encoded trait belongs to a lifelong learner:\n\nsynt{fgnl_phevbhf}",
+        hint: "ROT13 — two words, the mindset that keeps a security career moving.",
         flagHash: "28374844d073d0561320f03f3f9754381131ed67274c0ca6b5b6c03821907fcc" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Career. Decode this Base64 career advice:\n\nZmxhZ3tidWlsZF95b3VyX25ldHdvcmt9",
-        hint: "Decode the Base64. Three words — the career advice that relationships matter as much as certifications.",
+        prompt: "Objective — Career. This ROT13-encoded career advice is worth remembering:\n\nsynt{ohvyq_lbhe_argjbex}",
+        hint: "ROT13 — three words, relationships matter as much as certifications.",
         flagHash: "e38b3ad0c1d7cf2035b32ef2c8b74c9e3c238ea0f8cb7e48515d9191501439e8" }
     ] },
 
@@ -5600,16 +5602,16 @@ window.COURSE_CONFIG.cyber2.ctf = {
 { id: "m9-b64", module: 13, title: "13.6 ext — Portfolio Motto", category: "Portfolio Building",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Portfolio. Decode the golden rule of a good portfolio:\n\nZmxhZ3tzaG93X3lvdXJfd29ya30=",
-        hint: "Base64 — decode it with CyberChef, or run atob(\"...\") in the browser console.",
+        prompt: "Objective — Portfolio. This ROT13-encoded phrase is the golden rule of a good portfolio:\n\nsynt{fubj_lbhe_jbex}",
+        hint: "ROT13 — shift each letter back 13 places.",
         flagHash: "a3f907250ab95ea8bb377ee09f88dc17b2a76b0e7aa3b1e383130cba13fe062a" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Portfolio. Decode this Base64 habit of strong professionals:\n\nZmxhZ3tkb2N1bWVudF9ldmVyeXRoaW5nfQ==",
-        hint: "Base64 — decode it with CyberChef, or run atob(\"...\") in the browser console.",
+        prompt: "Objective — Portfolio. This ROT13-encoded phrase is a habit of strong professionals:\n\nsynt{qbphzrag_rirelguvat}",
+        hint: "ROT13 — shift each letter back 13 places.",
         flagHash: "de0c86873c030d43b80598cd0c4b76fbab571c0f7cccdeee092e6fdc4b570091" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Portfolio. Decode this Base64 quality-assurance practice:\n\nZmxhZ3twZWVyX3Jldmlld30=",
-        hint: "Decode the Base64. Two words: having someone at your own level check your work before it ships.",
+        prompt: "Objective — Portfolio. This ROT13-encoded phrase names a quality-assurance practice:\n\nsynt{crre_erivrj}",
+        hint: "ROT13 — two words: having someone at your own level check your work before it ships.",
         flagHash: "7e03112e1528664a9edb8ec90882ee67cd9b2bb4ff2854f4d8529f3ebc2909c5" }
     ] },
 

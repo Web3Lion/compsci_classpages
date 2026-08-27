@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    profile.js  —  student profile page: XP record, full badge case (locked
    badges greyed, earned badges in color), name change (filtered), and the

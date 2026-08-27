@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================
    CAPTURE THE FLAG — shared engine for every course.
    ONE file. All four courses use identical logic (like the
@@ -621,7 +622,7 @@
      Interactive captures (match / order / spot) are exempt — retrying those
      IS the learning. Persisted, so reloading the page can't skip the wait,
      and the flag's own clock is pushed out so the lockout never burns XP. */
-  const COOL_BASE = { Easy: 8, Medium: 15, Hard: 25 }, COOL_STEP = 5, COOL_MAX = 45;
+  const COOL_BASE = { Easy: 5, Medium: 5, Hard: 5 }, COOL_STEP = 0, COOL_MAX = 5;
   function diffOf(chal, li) {
     li = li || 0;
     if (chal.type === "vocab") return VOCAB_DIFFS[li] || "Medium";
@@ -1192,7 +1193,7 @@
     var en = document.getElementById("nvEn"); en.onchange = function(){ document.getElementById("nvEnL").textContent = en.checked ? "on" : "off"; vSet(nvCfg()); };
     document.getElementById("nvTest").onclick = function(){ nvSpeak(pick(NEM_SAMPLES)); };
     document.getElementById("nvSave").onclick = function(){ ov.remove(); };
-    document.getElementById("nvReset").onclick = function(){ var d={enabled:true,pitch:0.35,rate:0.9,volume:0.85,voice:""}; vSet(d); document.getElementById("nvEn").checked=true; document.getElementById("nvEnL").textContent="on"; document.getElementById("nvVoice").value=""; document.getElementById("nvPitch").value=0.35; document.getElementById("nvPitchV").textContent="0.35"; document.getElementById("nvRate").value=0.9; document.getElementById("nvRateV").textContent="0.90"; document.getElementById("nvVol").value=0.85; document.getElementById("nvVolV").textContent="0.85"; nemesisToast("☠ NEMESIS // VOICE RESET", "restored to my original voice.", "var(--adv2)"); nvSpeak(pick(NEM_SAMPLES)); };
+    document.getElementById("nvReset").onclick = function(){ var d={enabled:true,pitch:1.15,rate:0.9,volume:0.40,voice:"Google UK English Female"}; vSet(d); document.getElementById("nvEn").checked=true; document.getElementById("nvEnL").textContent="on"; document.getElementById("nvVoice").value=""; document.getElementById("nvPitch").value=0.35; document.getElementById("nvPitchV").textContent="0.35"; document.getElementById("nvRate").value=0.9; document.getElementById("nvRateV").textContent="0.90"; document.getElementById("nvVol").value=0.85; document.getElementById("nvVolV").textContent="0.85"; nemesisToast("☠ NEMESIS // VOICE RESET", "restored to my original voice.", "var(--adv2)"); nvSpeak(pick(NEM_SAMPLES)); };
   }
   function taintToast(kind) {
     const map = MENTOR ? {
@@ -1515,6 +1516,11 @@
       readyBody: "Twelve questions from across the course \u2014 one run, no hints. ADA is watching the build log and rooting for you.",
       startBtn: "RUN FINAL BUILD", wonTitle: "Build succeeded. All tests green.",
       wonBody: "Every module compiled, every concept in place. ADA says you're a programmer now. Course complete." },
+    VECTOR: { lockedTitle: "VECTOR hasn't finished mapping this network.",
+      readyTitle: "Every route leads to one last node.",
+      readyBody: "Twelve questions drawn from the entire course. One run, no hints. Close every path and VECTOR has nowhere left to route through.",
+      startBtn: "CLOSE THE ROUTE", wonTitle: "Network sealed.",
+      wonBody: "You traced every path VECTOR could take and shut them all down. Course complete." },
     ORACLE: { lockedTitle: "The chain isn't long enough yet.",
       readyTitle: "One last block to sign.",
       readyBody: "Twelve questions from the entire ledger \u2014 one run, no hints. Sign it and ORACLE writes you into the genesis record.",
@@ -1678,9 +1684,6 @@
         <div class="mono" style="font-size:11px;color:var(--faint);letter-spacing:.5px;margin-bottom:10px;">${esc(line)}</div>
         <div class="mono ctfCryptoText" style="user-select:text;white-space:pre-wrap;word-break:break-all;font-size:12.5px;line-height:1.75;
           color:var(--adv2,#8fb6d9);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:13px 15px;margin-bottom:12px;">${esc(enc)}</div>
-        <div class="mono" style="font-size:11px;color:var(--dim);line-height:1.6;">
-          ⓘ ${esc(tease)} <span style="color:var(--faint);">· crack it early if you like — submissions open when this unlocks.</span>
-        </div>
       </div>`;
   }
 
@@ -2638,17 +2641,22 @@
     return any;
   }
   function blockCopy(e) { e.preventDefault(); taintActive(); taintToast("copy"); }
-  document.addEventListener("copy", blockCopy);
-  document.addEventListener("cut", blockCopy);
-  document.addEventListener("contextmenu", e => { e.preventDefault(); taintToast("copy"); });
-  (function () {
-    const st = document.createElement("style");
-    st.textContent = "#ctfRoot,#ctfRoot *{-webkit-user-select:none;-moz-user-select:none;user-select:none}#ctfRoot input,#ctfRoot textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text}";
-    document.head.appendChild(st);
-  })();
-  document.addEventListener("visibilitychange", onVis);
-  window.addEventListener("blur", function(){ nemesisTakeover(); });
-  window.__NEMESIS_FULL = true;
+  // Anti-copy, tab-switch detection, and the terminal-seizure takeover are
+  // CTF-arena-only deterrents. Other pages that load ctf.js (profile.html)
+  // set CTF_NO_ADVERSARY and must not inherit any of this.
+  if (!window.CTF_NO_ADVERSARY) {
+    document.addEventListener("copy", blockCopy);
+    document.addEventListener("cut", blockCopy);
+    document.addEventListener("contextmenu", e => { e.preventDefault(); taintToast("copy"); });
+    (function () {
+      const st = document.createElement("style");
+      st.textContent = "#ctfRoot,#ctfRoot *{-webkit-user-select:none;-moz-user-select:none;user-select:none}#ctfRoot input,#ctfRoot textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text}";
+      document.head.appendChild(st);
+    })();
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("blur", function(){ nemesisTakeover(); });
+    window.__NEMESIS_FULL = true;
+  }
 
   /* ============================================================
      BEAT NEMESIS — adaptive boss battle.

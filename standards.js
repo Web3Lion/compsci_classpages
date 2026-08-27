@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    standards.js  —  maps course modules to academic standards, so every flag a
    student captures rolls up to a standard as well as an objective.

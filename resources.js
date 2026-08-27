@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* Renders the home-page resource cards from COURSE_CONFIG.resourceCards.
    Loaded after config.js. Each page calls:
      renderResourceCards(CFG.resourceCards);

@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    profile-link.js  —  drops a "My Profile" entry into the Quick Links list,
    but only for a student who is actually signed in to THAT course.

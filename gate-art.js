@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    gate-art.js  —  in-character theatre for the sign-in gate.
 
@@ -67,6 +68,21 @@
       grantedSub: "You're defined. Let's go make something.",
       lockTitle: "PROCESS EXITED",
       lockSub: "Progress saved. See you at the next build."
+    },
+    VECTOR: {
+      kind: "adversary", art: "alert",
+      status: "UNKNOWN ENTRY POINT",
+      btn: "AUTHENTICATE PATH",
+      lines: [
+        "Every unverified connection is a path in. You haven't been mapped yet.",
+        "Still unmapped. I catalog every route eventually.",
+        "An open door is just an attack surface waiting for a name."
+      ],
+      wrongDomain: "Wrong network entirely. That route doesn't lead here.",
+      grantedTitle: "PATH VERIFIED",
+      grantedSub: "You're a known route now. Move carefully.",
+      lockTitle: "ROUTE CLOSED",
+      lockSub: "Connection terminated. I'll remember this path."
     },
     ORACLE: {
       kind: "mentor", art: "block",

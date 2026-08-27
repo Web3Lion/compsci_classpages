@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* ============================================================================
    name-filter.js  —  shared school-appropriateness filter + per-course naming
    terms. Loaded by sync.js (identity gate), profile.js (rename), and the

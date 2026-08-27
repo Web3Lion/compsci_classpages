@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* PERSONA GATE — the course guide starts asleep. A class opens as a plain,
    quiet site; the character only appears once the teacher flips the switch on
    the Locks & Guide tab. Landing pages have no session and can't call
