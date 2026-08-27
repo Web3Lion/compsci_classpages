@@ -830,8 +830,10 @@
   }
   var VKEY = "ctf-nemesis-voice";
   var nemVoices = [], nemMoodEl = null, nemBooted = false;
+  var VOICE_DEFAULTS_BY_GUIDE = { SPECTER: { pitch: 0.50, rate: 0.9, volume: 0.40, voice: "Google UK English Male" } };
+  function defaultVoice(){ return Object.assign({ enabled: true, pitch: 1.15, rate: 0.9, volume: 0.40, voice: "Google UK English Female" }, VOICE_DEFAULTS_BY_GUIDE[String(ADV).toUpperCase()] || {}); }
   function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
-  function vGet(){ try{ return Object.assign({enabled:true,pitch:1.15,rate:0.9,volume:0.40,voice:"Google UK English Female"}, JSON.parse(localStorage.getItem(VKEY)||"{}")); }catch(e){ return {enabled:true,pitch:1.20,rate:0.9,volume:0.40,voice:"Google UK English Female"}; } }
+  function vGet(){ try{ return Object.assign(defaultVoice(), JSON.parse(localStorage.getItem(VKEY)||"{}")); }catch(e){ return {enabled:true,pitch:1.20,rate:0.9,volume:0.40,voice:"Google UK English Female"}; } }
   function vSet(o){ try{ localStorage.setItem(VKEY, JSON.stringify(o)); }catch(e){} }
   function loadVoices(){ try{ nemVoices = (window.speechSynthesis ? speechSynthesis.getVoices() : []) || []; }catch(e){ nemVoices = []; } }
   function nemesisSpeak(text){
@@ -1193,7 +1195,7 @@
     var en = document.getElementById("nvEn"); en.onchange = function(){ document.getElementById("nvEnL").textContent = en.checked ? "on" : "off"; vSet(nvCfg()); };
     document.getElementById("nvTest").onclick = function(){ nvSpeak(pick(NEM_SAMPLES)); };
     document.getElementById("nvSave").onclick = function(){ ov.remove(); };
-    document.getElementById("nvReset").onclick = function(){ var d={enabled:true,pitch:1.15,rate:0.9,volume:0.40,voice:"Google UK English Female"}; vSet(d); document.getElementById("nvEn").checked=true; document.getElementById("nvEnL").textContent="on"; document.getElementById("nvVoice").value=""; document.getElementById("nvPitch").value=0.35; document.getElementById("nvPitchV").textContent="0.35"; document.getElementById("nvRate").value=0.9; document.getElementById("nvRateV").textContent="0.90"; document.getElementById("nvVol").value=0.85; document.getElementById("nvVolV").textContent="0.85"; nemesisToast("☠ NEMESIS // VOICE RESET", "restored to my original voice.", "var(--adv2)"); nvSpeak(pick(NEM_SAMPLES)); };
+    document.getElementById("nvReset").onclick = function(){ var d=defaultVoice(); vSet(d); document.getElementById("nvEn").checked=true; document.getElementById("nvEnL").textContent="on"; document.getElementById("nvVoice").value=""; document.getElementById("nvPitch").value=0.35; document.getElementById("nvPitchV").textContent="0.35"; document.getElementById("nvRate").value=0.9; document.getElementById("nvRateV").textContent="0.90"; document.getElementById("nvVol").value=0.85; document.getElementById("nvVolV").textContent="0.85"; nemesisToast("☠ NEMESIS // VOICE RESET", "restored to my original voice.", "var(--adv2)"); nvSpeak(pick(NEM_SAMPLES)); };
   }
   function taintToast(kind) {
     const map = MENTOR ? {
