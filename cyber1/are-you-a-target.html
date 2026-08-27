@@ -202,11 +202,36 @@ var QUESTIONS = [
 ];
 
 var picks = {};
+var pendingIdx = -1;
 
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 
 function flagNoteHtml(){
   return sess ? '' : ' Log in through the <a href="ctf.html">CTF arena</a> first so this flag banks XP to your account.';
+}
+
+function loadLocalAll(){ try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); } catch(e) { return []; } }
+
+function renderSubmitted(record){
+  app.innerHTML = '<div class="card done" style="opacity:.55;filter:grayscale(.5);">' +
+    '<h1>Already submitted</h1>' +
+    '<p class="lede">You already completed Day 0 — Are You a Target?' + (record && record.name ? ' as <strong>' + esc(record.name) + '</strong>' : '') + '. There\u2019s nothing more to do here.</p>' +
+    '<p class="lede" style="margin-bottom:0;">Need to change an answer? Tell your teacher.</p>' +
+  '</div>';
+}
+
+function init(){
+  var all = loadLocalAll();
+  if (!all.length) { render(); return; }
+  var last = all[all.length - 1];
+  if (last.synced) { renderSubmitted(last); return; }
+  pendingIdx = all.length - 1;
+  var parts = (last.name || "").split(" ");
+  picks._first = parts.shift() || "";
+  picks._last = parts.join(" ");
+  picks._period = last.period || "";
+  Object.keys(last.answers || {}).forEach(function(k){ picks[k] = last.answers[k]; });
+  render();
 }
 
 function render(){
@@ -332,8 +357,8 @@ async function submit(){
   record.synced = synced;
 
   try {
-    var all = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-    all.push(record);
+    var all = loadLocalAll();
+    if (pendingIdx >= 0 && all[pendingIdx]) { all[pendingIdx] = record; } else { all.push(record); pendingIdx = all.length - 1; }
     localStorage.setItem(LOCAL_KEY, JSON.stringify(all));
   } catch(e) {}
 
@@ -348,7 +373,7 @@ async function submit(){
     '<p class="lede" style="margin-bottom:0;">Your answers are recorded. Hang onto that gut feeling — over the next few weeks we\'ll see how close it was.</p></div>';
 }
 
-render();
+init();
 </script>
 </body>
 </html>
