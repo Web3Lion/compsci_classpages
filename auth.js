@@ -19,6 +19,12 @@
     .map(function (d) { return String(d).toLowerCase().replace(/^@/, ""); });
   var DOMAIN = DOMAINS[0];
   var EXTRA_EMAILS = (CFG.allowedExternalEmails || []).map(function (e) { return String(e).toLowerCase(); });
+  var EXTRA_KEY = "ctf-extra-emails-cache";
+  try {
+    JSON.parse(localStorage.getItem(EXTRA_KEY) || "[]").forEach(function (e) {
+      if (EXTRA_EMAILS.indexOf(e) === -1) EXTRA_EMAILS.push(e);
+    });
+  } catch (e) {}
   var TEACHER = (CFG.teacherEmail || "rnreasey@southfayette.org").toLowerCase();
   var ONLINE = !!(CFG.url && CFG.anonKey);
 
@@ -42,6 +48,21 @@
     return _clientP;
   }
 
+  /* Merge in the DB-backed allowlist (added via teacher.html Settings) —
+     the static config array alone misses anything an owner adds there.
+     Cached to localStorage so isSchool() works immediately on next load,
+     before this fetch resolves. */
+  (async function loadExtraEmails() {
+    if (!ONLINE) return;
+    try {
+      var db = await client();
+      var r = await db.rpc("ctf_allowed_emails_public", {});
+      var list = (r && r.data && Array.isArray(r.data)) ? r.data.map(function (e) { return String(e).toLowerCase(); }) : [];
+      list.forEach(function (e) { if (EXTRA_EMAILS.indexOf(e) === -1) EXTRA_EMAILS.push(e); });
+      try { localStorage.setItem(EXTRA_KEY, JSON.stringify(list)); } catch (e) {}
+    } catch (e) {}
+  })();
+
   /* current signed-in user, or null */
   async function user() {
     try {
@@ -56,15 +77,17 @@
   function isStaffDomain(u) { return domainOf(u) === DOMAIN; }
   function isTeacher(u) { return emailOf(u) === TEACHER; }
 
-  /* Google OAuth. `hd` restricts the account chooser to a single domain, so it
-     is only sent when the school HAS one domain and there's no external
-     allowlist — passing it with two, or with an allowed outside email
-     configured, would hide the very accounts that need to sign in. Real
-     enforcement is server-side (_is_school() in the SQL) plus the check below. */
+  /* Google OAuth. We used to restrict the account chooser to a single domain
+     via `hd` when no external emails were configured — but that decision is
+     made synchronously at sign-in time, before the DB-backed extra-emails
+     list (loaded async above) has necessarily arrived, especially right
+     after a fresh page load. That race could hide the very external account
+     that had just been allow-listed. Real enforcement is server-side
+     (_is_school() in the SQL) plus the requireSchool() check below, so the
+     account chooser is left unrestricted. */
   async function signIn(redirectTo) {
     var db = await client();
     var q = { prompt: "select_account" };
-    if (DOMAINS.length === 1 && EXTRA_EMAILS.length === 0) q.hd = DOMAIN;
     return db.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -104,6 +127,18 @@
   async function requireSchool() {
     var u = await user();
     if (!u) return null;
+    if (!isSchool(u)) {
+      /* The DB-backed extra-emails list may not have finished loading yet on
+         a fresh page load — give it one chance to arrive before rejecting,
+         so a newly-allowed external account isn't bounced by a stale cache. */
+      try {
+        var db = await client();
+        var r = await db.rpc("ctf_allowed_emails_public", {});
+        var list = (r && r.data && Array.isArray(r.data)) ? r.data.map(function (e) { return String(e).toLowerCase(); }) : [];
+        list.forEach(function (e) { if (EXTRA_EMAILS.indexOf(e) === -1) EXTRA_EMAILS.push(e); });
+        try { localStorage.setItem(EXTRA_KEY, JSON.stringify(list)); } catch (e) {}
+      } catch (e) {}
+    }
     if (!isSchool(u)) {
       await logReject("wrong_domain");
       await signOut();
