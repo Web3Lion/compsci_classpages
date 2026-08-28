@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Day Countdowns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Neuton:wght@400;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1712;--panel:#141d17;--panel2:#182219;--border:#26362b;--border2:#1d2b21;
+  --text:#cfd9d1;--bright:#f2f7f3;--muted:#9fb0a3;--dim:#77897c;--faint:#526056;
+  --accent:#2bb96b;--accent2:#7de3a6;--gold:#e8b93a;
+}
+:root[data-theme="light"]{
+  --bg:#f4f8f5;--panel:#ffffff;--panel2:#eef4ef;--border:#d3e0d6;--border2:#e2ebe4;
+  --text:#2c3730;--bright:#12291a;--muted:#4c5c50;--dim:#6a796d;--faint:#8a988d;
+  --accent:#008539;--accent2:#00652b;--gold:#8a6b0f;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Lato',sans-serif;color:var(--text);transition:background-color .25s ease,color .25s ease;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+h1,h2,.heading{font-family:'Neuton',serif;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:.5px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+.wrap{max-width:1000px;margin:0 auto;padding:60px 20px 60px;}
+h1{font-weight:700;font-size:38px;color:var(--bright);margin:0 0 8px;}
+h1 .accent{color:var(--accent);}
+.sub{color:var(--muted);font-size:15px;margin:0 0 24px;max-width:620px;line-height:1.5;}
+.toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:34px;}
+.toggle{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.toggle button{font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:.3px;padding:9px 16px;border:0;background:var(--panel);color:var(--dim);cursor:pointer;white-space:nowrap;}
+.toggle button.active{background:var(--accent);color:#fff;}
+.section-label{font-family:'Neuton',serif;font-size:20px;color:var(--bright);margin:38px 0 14px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;}
+.card{border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;background:var(--panel);padding:22px 20px;display:flex;flex-direction:column;gap:10px;}
+.card.exam{border-left-color:var(--gold);}
+.label{font-weight:700;font-size:13px;letter-spacing:.3px;color:var(--dim);text-transform:uppercase;}
+.big{font-family:'Neuton',serif;font-weight:700;font-size:46px;color:var(--accent);line-height:1;}
+.card.exam .big{color:var(--gold);}
+.unit{font-size:13px;color:var(--dim);margin-top:-4px;}
+.target{font-size:13px;color:var(--muted);border-top:1px solid var(--border2);padding-top:10px;margin-top:2px;}
+.stat-row{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--dim);white-space:nowrap;}
+.stat-row b{color:var(--text);font-weight:700;}
+.embed-btn{font-family:'Lato',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.3px;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:var(--panel2);color:var(--dim);cursor:pointer;width:100%;margin-top:2px;white-space:nowrap;}
+.embed-btn:hover{color:var(--accent);border-color:var(--accent);}
+.embed-btn.copied{color:var(--accent);border-color:var(--accent);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap" id="mainWrap">
+  <h1>School Day <span class="accent">Countdowns</span></h1>
+  <p class="sub">Days remaining to each grading period and to the start of AP Exams — from the 2026–2027 board-approved district calendar. Click "Embed" on any card for a Canvas-ready snippet.</p>
+  <div class="toggle-row">
+    <div class="toggle" id="modeToggle">
+      <button data-mode="school" class="active">School Days</button>
+      <button data-mode="total">Total Days</button>
+    </div>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--dim);cursor:pointer;margin-left:8px;">
+      <input type="checkbox" id="embedToggle" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
+      Enable Canvas embed option
+    </label>
+  </div>
+  <div class="section-label">Grading Periods &amp; AP Exams</div>
+  <div class="grid" id="cards"></div>
+  <div class="section-label">Upcoming Breaks</div>
+  <div class="grid" id="breakCards"></div>
+</div>
+<div class="wrap" id="embedWrap" style="display:none;"></div>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+
+<script>
+/* From the 2026-2027 South Fayette board-approved district calendar (board approved 1-27-26). */
+var NO_SCHOOL = [
+  "2026-09-07","2026-10-12","2026-10-30",
+  "2026-11-23","2026-11-24","2026-11-25","2026-11-26","2026-11-27","2026-11-30",
+  "2026-12-23","2026-12-24","2026-12-25","2026-12-28","2026-12-29","2026-12-30","2026-12-31",
+  "2027-01-01","2027-01-18","2027-02-15",
+  "2027-03-24","2027-03-25","2027-03-26","2027-03-29","2027-03-30",
+  "2027-05-31"
+];
+var DELAY_DAYS = ["2026-09-14","2026-10-19","2026-11-09","2026-12-14","2027-01-11","2027-02-08","2027-03-15","2027-04-19","2027-05-10"];
+var HALF_DAYS = ["2026-12-22","2027-03-11","2027-06-09"];
+
+var TARGETS = [
+  { id: "q1", label: "End of Quarter 1", date: "2026-10-29", interim: "2026-09-30" },
+  { id: "q2", label: "End of Quarter 2", date: "2027-01-15", interim: "2026-12-03" },
+  { id: "q3", label: "End of Quarter 3", date: "2027-03-23", interim: "2027-02-19" },
+  { id: "q4", label: "End of Quarter 4 (Last Day)", date: "2027-06-09", interim: "2027-04-27" },
+  { id: "ap", label: "AP Exams Begin", date: "2027-03-01", exam: true, note: "First Monday in March" }
+];
+var BREAKS = [
+  { id: "thanksgiving", label: "Thanksgiving Break", start: "2026-11-26", end: "2026-11-30", resumes: "2026-12-01" },
+  { id: "winter", label: "Winter Break", start: "2026-12-23", end: "2027-01-01", resumes: "2027-01-04" },
+  { id: "spring", label: "Spring Break", start: "2027-03-24", end: "2027-03-30", resumes: "2027-03-31" },
+  { id: "summer", label: "Summer Break", start: "2027-06-10", end: null, resumes: null, note: "Last day for students: June 9" }
+];
+
+function toDate(s){ var p = s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+function calDaysBetween(a, b){ return Math.round((b - a) / 86400000) + 1; }
+function fmt(d){ return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}); }
+
+function countSchoolDays(from, to){
+  var days = 0, delays = 0, halves = 0;
+  var d = new Date(from); d.setHours(0,0,0,0);
+  var end = new Date(to); end.setHours(0,0,0,0);
+  while (d <= end) {
+    var dow = d.getDay();
+    var key = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    if (dow !== 0 && dow !== 6 && NO_SCHOOL.indexOf(key) === -1) {
+      days++;
+      if (DELAY_DAYS.indexOf(key) !== -1) delays++;
+      if (HALF_DAYS.indexOf(key) !== -1) halves++;
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return { days: days, delays: delays, halves: halves };
+}
+
+var today = new Date(); today.setHours(0,0,0,0);
+var params = new URLSearchParams(location.search);
+var mode = params.get('mode') === 'total' ? 'total' : 'school';
+var embedsEnabled = false;
+
+function embedBtnHtml(id){
+  return '<button class="embed-btn" onclick="copyEmbed(\''+id+'\',this)">📋 Embed for Canvas</button>';
+}
+function copyEmbed(id, btn){
+  var url = location.origin + location.pathname + '?card=' + id + '&mode=' + mode;
+  var snippet = '<iframe src="'+url+'" style="width:100%;max-width:300px;height:300px;border:0;" title="School day countdown"></iframe>';
+  navigator.clipboard.writeText(snippet).then(function(){
+    btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+    setTimeout(function(){ btn.textContent = '📋 Embed for Canvas'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+function targetCardHtml(t, embed){
+  var target = toDate(t.date);
+  if (target < today) {
+    return '<div class="card'+(t.exam?' exam':'')+'"><div class="label">'+t.label+'</div><div class="big">✓</div><div class="unit">already passed</div></div>';
+  }
+  var r = countSchoolDays(today, target);
+  var totalDays = calDaysBetween(today, target);
+  var big = mode === 'total' ? totalDays : r.days;
+  var unit = mode === 'total' ? 'total day'+(totalDays===1?'':'s')+' remaining' : 'school day'+(r.days===1?'':'s')+' remaining';
+  return '<div class="card'+(t.exam?' exam':'')+'">' +
+    '<div class="label">'+t.label+'</div>' +
+    '<div class="big">'+big+'</div>' +
+    '<div class="unit">'+unit+(t.note?' · '+t.note:'')+'</div>' +
+    '<div class="stat-row"><span>2-hr delays</span><b>'+r.delays+'</b></div>' +
+    '<div class="stat-row"><span>Half days</span><b>'+r.halves+'</b></div>' +
+    (t.interim ? '<div class="target">Interim: '+fmt(toDate(t.interim))+'</div>' : '') +
+    '<div class="target">Target: '+fmt(target)+'</div>' +
+    (embed || !embedsEnabled ? '' : embedBtnHtml(t.id)) +
+  '</div>';
+}
+function breakCardHtml(b, embed){
+  var start = toDate(b.start);
+  if (start < today) {
+    return '<div class="card"><div class="label">'+b.label+'</div><div class="big">✓</div><div class="unit">already happened</div></div>';
+  }
+  var r = countSchoolDays(today, new Date(start.getTime() - 86400000));
+  var totalDays = calDaysBetween(today, start) - 1;
+  var big = mode === 'total' ? Math.max(totalDays,0) : r.days;
+  var unit = mode === 'total' ? 'total day'+(totalDays===1?'':'s')+' until it starts' : 'school day'+(r.days===1?'':'s')+' until it starts';
+  var lenTxt = b.end ? (calDaysBetween(start, toDate(b.end))+' calendar days off') : (b.note || '');
+  return '<div class="card">' +
+    '<div class="label">'+b.label+'</div>' +
+    '<div class="big">'+big+'</div>' +
+    '<div class="unit">'+unit+'</div>' +
+    '<div class="target">'+lenTxt+'</div>' +
+    (b.resumes ? '<div class="target">Resumes: '+fmt(toDate(b.resumes))+'</div>' : '') +
+    (embed || !embedsEnabled ? '' : embedBtnHtml(b.id)) +
+  '</div>';
+}
+
+function renderAll(){
+  document.getElementById("cards").innerHTML = TARGETS.map(function(t){ return targetCardHtml(t, false); }).join('');
+  document.getElementById("breakCards").innerHTML = BREAKS.map(function(b){ return breakCardHtml(b, false); }).join('');
+}
+
+var cardId = params.get('card');
+if (cardId) {
+  document.getElementById('mainWrap').style.display = 'none';
+  var ew = document.getElementById('embedWrap');
+  ew.style.display = 'block';
+  var t = TARGETS.filter(function(x){ return x.id === cardId; })[0];
+  var b = BREAKS.filter(function(x){ return x.id === cardId; })[0];
+  ew.innerHTML = '<div style="max-width:300px;">' + (t ? targetCardHtml(t, true) : b ? breakCardHtml(b, true) : '<div class="label">Unknown card id</div>') + '</div>';
+} else {
+  document.querySelectorAll('#modeToggle button').forEach(function(btn){
+    btn.onclick = function(){
+      mode = btn.dataset.mode;
+      document.querySelectorAll('#modeToggle button').forEach(function(x){ x.classList.toggle('active', x===btn); });
+      renderAll();
+    };
+  });
+  document.getElementById('embedToggle').onchange = function(e){ embedsEnabled = e.target.checked; renderAll(); };
+  renderAll();
+}
+</script>
+</body>
+</html>
