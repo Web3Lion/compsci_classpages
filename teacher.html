@@ -268,7 +268,7 @@ var CFG = window.SUPABASE_CONFIG || {};
 var COURSES = {
   cyber1:{label:"Cyber 1",  c:"var(--cyber1)"},
   cyber2:{label:"Cyber 2",  c:"var(--cyber2)"},
-  apcsp: {label:"Byte Bounty · AP CSP", c:"var(--apcsp)"},
+  apcsp: {label:"AP CSP", c:"var(--apcsp)"},
   web3:  {label:"Web 3.0",  c:"var(--web3)"}
 };
 function courseMeta(c){ return COURSES[c] || {label:c,c:"var(--dim)"}; }
@@ -452,9 +452,10 @@ function openAnswerKey(){
 function openWarmupReview(){
   var course = CUR ? CUR.course : null;
   if(!course){ alert("Select a class first so I know which course's Day 0 page to open."); return; }
-  var known = {cyber1:1, cyber2:1};
+  var known = {cyber1:1, cyber2:1, apcsp:1};
+  var pages = {cyber1:"target-warmup-review.html", cyber2:"target-warmup-review.html", apcsp:"student-info-review.html"};
   if(!known[course]){ alert("There's no Day 0 responses page for "+course+" yet."); return; }
-  window.open(course+"/target-warmup-review.html", "_blank");
+  window.open(course+"/"+pages[course], "_blank");
 }
 function setTab(t){ TAB=t; renderMain(); }
 function copyCode(){ navigator.clipboard&&navigator.clipboard.writeText(CUR.code); }
