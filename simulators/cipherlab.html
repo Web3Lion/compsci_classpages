@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -44,15 +45,29 @@ input[type=range]{flex:1;accent-color:var(--accent);}
 .modeBtn{padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
 .modeBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--bright);}
 .outBox{border-radius:10px;border:1px solid var(--border3);background:var(--panel2);padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ok);min-height:40px;word-break:break-word;line-height:1.6;letter-spacing:.5px;}
-.alphaTrack{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px;}
-.aCell{width:28px;height:28px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);position:relative;}
-.aCell .shifted{position:absolute;top:-26px;font-size:10px;color:var(--accent2);}
+.alphaTrack{margin-top:20px;overflow-x:auto;padding-bottom:4px;}
+.aRow{display:flex;gap:6px;}
+.aRow+.aRow{margin-top:6px;}
+.aCell{width:28px;height:28px;flex:0 0 28px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);}
+.aRow.shiftedRow .aCell{background:var(--panel3);border-color:var(--border3);color:var(--accent2);font-weight:700;}
 .hint{font-size:12.5px;color:var(--faint);margin-top:6px;line-height:1.5;}
 .keyDemo{display:flex;flex-wrap:wrap;gap:4px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:13px;}
 .keyDemo .col{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);min-width:34px;}
 .keyDemo .plain{color:var(--muted);}
 .keyDemo .key{color:var(--warn);}
 .keyDemo .cip{color:var(--ok);font-weight:700;}
+.keyDemo .col{cursor:pointer;}
+.keyDemo .col:hover{border-color:var(--border-hi);background:var(--panel3);}
+.keyDemo .col.activeCol{border-color:var(--accent);background:var(--panel3);}
+.vigAnimWrap{margin-top:18px;border-top:1px solid var(--border2);padding-top:16px;}
+.vigAnimLabel{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);margin-bottom:10px;}
+.vigAnimLabel b{color:var(--bright);}
+.vigTrack{position:relative;display:flex;gap:6px;overflow-x:auto;padding-bottom:34px;}
+.vigCell{width:28px;height:28px;flex:0 0 28px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);}
+.vigCell.srcCell{border-color:var(--accent2);color:var(--bright);}
+.vigCell.dstCell{border-color:var(--ok);color:var(--ok);font-weight:700;}
+.vigToken{position:absolute;top:0;width:28px;height:28px;border-radius:6px;background:var(--accent);color:#04121e;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:13px;box-shadow:0 0 12px var(--accent);transition:left 1s cubic-bezier(.4,0,.2,1);z-index:2;}
+.vigArc{position:absolute;top:32px;left:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);white-space:nowrap;transition:left 1s cubic-bezier(.4,0,.2,1),opacity .3s;opacity:0;}
 .practice{margin-top:26px;border-top:1px solid var(--border2);padding-top:20px;}
 .practiceRow{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--border2);border-radius:10px;background:var(--panel2);margin-bottom:12px;}
 .practiceRow .q{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--bright);}
@@ -109,12 +124,17 @@ input[type=range]{flex:1;accent-color:var(--accent);}
     <div id="vigControls" class="row" style="display:none;">
       <label>KEYWORD</label>
       <input type="text" id="keyInput" value="KEY" oninput="render()">
+      <div class="keyDemo" id="keyShiftMap" style="margin-top:2px;"></div>
       <div class="modeBtns">
         <div class="modeBtn active" id="encBtnV" onclick="setMode('encode')">ENCODE</div>
         <div class="modeBtn" id="decBtnV" onclick="setMode('decode')">DECODE</div>
       </div>
       <div class="hint">The keyword repeats under the message. Each letter's shift amount comes from the matching key letter's position in the alphabet (A=0, B=1…).</div>
       <div class="keyDemo" id="keyDemo"></div>
+      <div class="vigAnimWrap" id="vigAnimWrap" style="display:none;">
+        <div class="vigAnimLabel" id="vigAnimLabel"></div>
+        <div class="vigTrack" id="vigTrack"></div>
+      </div>
     </div>
 
     <div class="row">
@@ -126,11 +146,23 @@ input[type=range]{flex:1;accent-color:var(--accent);}
   </div>
 
   <div class="practice">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
       <span class="mono" style="font-size:12px;letter-spacing:1px;color:var(--faint);">PRACTICE — DECODE THESE</span>
-      <button class="newSetBtn" onclick="newPractice()">↻ NEW SET</button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="text" id="practiceName" placeholder="Your name (optional)" class="mono" style="border-radius:8px;border:1px solid var(--border2);background:var(--panel2);color:var(--bright);font-size:12.5px;padding:7px 10px;width:170px;">
+        <button class="newSetBtn" onclick="newPractice()">↻ NEW SET</button>
+      </div>
     </div>
     <div id="practiceList"></div>
+  </div>
+</div>
+
+<div id="summaryOverlay" style="display:none;position:fixed;inset:0;background:rgba(5,9,16,.6);z-index:9998;align-items:center;justify-content:center;">
+  <div class="panel" style="max-width:360px;width:90%;text-align:center;">
+    <div class="mono" style="font-size:12px;letter-spacing:1px;color:var(--faint);margin-bottom:10px;">PRACTICE SUMMARY</div>
+    <div id="summaryName" style="font-size:18px;color:var(--bright);font-weight:700;margin-bottom:6px;"></div>
+    <div id="summaryScore" class="mono" style="font-size:28px;color:var(--accent2);font-weight:800;margin-bottom:14px;"></div>
+    <button class="checkBtn" onclick="document.getElementById('summaryOverlay').style.display='none'">CLOSE</button>
   </div>
 </div>
 <script>
@@ -194,30 +226,82 @@ function render(){
   } else {
     var key = document.getElementById('keyInput').value || 'KEY';
     out = vigenereTransform(plain, key, mode==='decode');
+    renderKeyShiftMap(key);
     renderKeyDemo(plain, key);
     document.getElementById('alphaTrack').innerHTML='';
   }
   document.getElementById('outBox').textContent = out || '—';
 }
 
-function renderAlphaTrack(shift){
-  var el = document.getElementById('alphaTrack');
-  el.innerHTML = A.split('').map(function(c,i){
-    var s = A[((i+shift)%26+26)%26];
-    return '<div class="aCell"><span class="shifted">'+s+'</span>'+c+'</div>';
+function renderKeyShiftMap(key){
+  var clean = key.replace(/[^A-Za-z]/g,'').toUpperCase() || 'A';
+  var el = document.getElementById('keyShiftMap');
+  el.innerHTML = clean.split('').map(function(k){
+    var shift = A.indexOf(k);
+    return '<div class="col"><span class="key">'+k+'</span><span class="cip">'+shift+'</span></div>';
   }).join('');
 }
+
+function renderAlphaTrack(shift){
+  var el = document.getElementById('alphaTrack');
+  var plainRow = A.split('').map(function(c){ return '<div class="aCell">'+c+'</div>'; }).join('');
+  var shiftedRow = A.split('').map(function(c,i){ return '<div class="aCell">'+A[((i+shift)%26+26)%26]+'</div>'; }).join('');
+  el.innerHTML = '<div class="aRow">'+plainRow+'</div><div class="aRow shiftedRow">'+shiftedRow+'</div>';
+}
+var vigLetters = [];
 function renderKeyDemo(plain, key){
   key = key.replace(/[^A-Za-z]/g,'').toUpperCase() || 'A';
   var el = document.getElementById('keyDemo');
   var letters = plain.replace(/[^A-Za-z]/g,'').split('').slice(0,16);
   var ki=0;
-  el.innerHTML = letters.map(function(c){
+  vigLetters = [];
+  el.innerHTML = letters.map(function(c, idx){
     var k = key[ki % key.length]; ki++;
     var shift = A.indexOf(k);
     var cip = caesarShiftChar(c, mode==='decode' ? -shift : shift);
-    return '<div class="col"><span class="plain">'+c+'</span><span class="key">'+k+'</span><span class="cip">'+cip+'</span></div>';
+    vigLetters.push({c:c, k:k, shift:shift, cip:cip});
+    return '<div class="col" onclick="animateVigLetter('+idx+')"><span class="plain">'+c+'</span><span class="key">'+k+'</span><span class="cip">'+cip+'</span></div>';
   }).join('') + (letters.length < plain.replace(/[^A-Za-z]/g,'').length ? '<div class="col" style="color:var(--faint);">…</div>' : '');
+  document.getElementById('vigAnimWrap').style.display='none';
+}
+function animateVigLetter(idx){
+  var item = vigLetters[idx];
+  if(!item) return;
+  document.querySelectorAll('#keyDemo .col').forEach(function(el,i){ el.classList.toggle('activeCol', i===idx); });
+  var wrap = document.getElementById('vigAnimWrap');
+  wrap.style.display = 'block';
+  var dir = mode==='decode' ? '−' : '+';
+  document.getElementById('vigAnimLabel').innerHTML =
+    'Key letter <b>'+item.k+'</b> is the '+item.shift+'th letter of the alphabet (A=0) → shift '+dir+item.shift+'. '+
+    '<b>'+item.c+'</b> slides '+item.shift+' places '+(mode==='decode'?'back':'forward')+' to become <b>'+item.cip+'</b>.';
+
+  var track = document.getElementById('vigTrack');
+  var srcI = A.indexOf(item.c), dstI = A.indexOf(item.cip);
+  track.innerHTML = A.split('').map(function(c,i){
+    var cls = i===srcI ? 'srcCell' : (i===dstI ? 'dstCell' : '');
+    return '<div class="vigCell '+cls+'" data-i="'+i+'">'+c+'</div>';
+  }).join('') + '<div class="vigToken" id="vigToken">'+item.c+'</div>' + '<div class="vigArc" id="vigArc"></div>';
+
+  var cellW = 34;
+  var token = document.getElementById('vigToken');
+  var arc = document.getElementById('vigArc');
+  token.style.transition = 'none';
+  token.style.left = (srcI*cellW)+'px';
+  arc.style.transition = 'none';
+  arc.style.left = (srcI*cellW)+'px';
+  arc.style.opacity = '0';
+  arc.textContent = '';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      token.style.transition = 'left 1s cubic-bezier(.4,0,.2,1)';
+      token.style.left = (dstI*cellW)+'px';
+      arc.style.transition = 'left 1s cubic-bezier(.4,0,.2,1), opacity .3s';
+      arc.style.left = (Math.min(srcI,dstI)*cellW)+'px';
+      arc.style.opacity = '1';
+      arc.textContent = (dir+item.shift);
+      setTimeout(function(){ token.textContent = item.cip; }, 900);
+    });
+  });
 }
 
 document.getElementById('plainInput').addEventListener('input', render);
@@ -253,8 +337,17 @@ function checkPractice(idx){
   var p = practiceSet[idx];
   var ans = document.getElementById('pAns'+idx).value.trim().toUpperCase();
   var fb = document.getElementById('pFb'+idx);
-  if(ans === p.word){ fb.textContent='✓ Correct — it decodes to "'+p.word+'"'; fb.className='pFeedback ok'; }
-  else { fb.textContent='✗ Not quite. It decodes to "'+p.word+'"'; fb.className='pFeedback bad'; }
+  p.checked = true;
+  if(ans === p.word){ p.correct = true; fb.textContent='✓ Correct — it decodes to "'+p.word+'"'; fb.className='pFeedback ok'; }
+  else { p.correct = false; fb.textContent='✗ Not quite. It decodes to "'+p.word+'"'; fb.className='pFeedback bad'; }
+  if(practiceSet.every(function(x){return x.checked;})) showSummary();
+}
+function showSummary(){
+  var name = document.getElementById('practiceName').value.trim();
+  var correct = practiceSet.filter(function(x){return x.correct;}).length;
+  document.getElementById('summaryName').textContent = name ? name : 'Nice work';
+  document.getElementById('summaryScore').textContent = correct + ' / ' + practiceSet.length + ' correct';
+  document.getElementById('summaryOverlay').style.display = 'flex';
 }
 
 setCipher('caesar');
