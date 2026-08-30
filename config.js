@@ -175,8 +175,8 @@ window.COURSE_CONFIG = {
    ============================================================ */
 window.COURSE_CONFIG.cyber1.ctf = {
   title: "Capture The Flag",
-  intro: "Solve each challenge, capture the flag, and climb the ranks — grouped by module and mapped to each unit's learning objectives. Flags look like flag{...}. But beware: an adversary named VECTOR has taken this terminal. Your progress saves on this device.",
-  adversary: "VECTOR",
+  intro: "Solve each challenge, capture the flag, and climb the ranks — grouped by module and mapped to each unit's learning objectives. Flags look like flag{...}. But beware: an adversary named SPECTER has taken this terminal. Your progress saves on this device.",
+  adversary: "SPECTER",
   adversaryColor: "#ff4c00",
   adversaryColor2: "#ff7a3d",
   adversaryGlow: "#ff2e00",
@@ -5849,7 +5849,7 @@ window.COURSE_CONFIG.apcsp.ctf = {
   challenges: [
 
   /* MODULE 1 — Computational Thinking ─────────────────────────────────────── */
-  { id: "ap-m1a", module: 1, title: "Algorithms & Efficiency", category: "Computational Thinking",
+  { id: "ap-m1a", module: 1, title: "1a — Algorithms & Efficiency", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Algorithms. A finite set of step-by-step instructions that accomplishes a task is called an ___.\n\nSubmit as flag{word} (lowercase).",
@@ -5865,23 +5865,7 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "0ba600dc91096cc6250d73b1bf62d9f522f43506563f3361bc5bc6c701f1e290" }
     ] },
 
-  { id: "ap-m1-robotrun", module: 1, title: "Trace the Robot", category: "Computational Thinking",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Algorithm tracing & iteration. A robot runs this pseudocode:\nn \u2190 1\nREPEAT 3 TIMES {\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n  n \u2190 n + 1\n}\nHow many total MOVE_FORWARD steps execute?\n\nSubmit as flag{number}.",
-        hint: "REPEAT n TIMES reads n once, right when it starts. Trace n across all 3 outer loops: 1, then 2, then 3. Try the ROBOT RUN simulator's first practice problem.",
-        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Order of operations in loops. Same robot, but the increment moved:\nn \u2190 1\nREPEAT 3 TIMES {\n  n \u2190 n + 1\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n}\nHow many total MOVE_FORWARD steps execute now?\n\nSubmit as flag{number}.",
-        hint: "n is incremented BEFORE the inner loop reads it this time, so the inner loop never runs at n=1. Try selecting the option in ROBOT RUN that increments before moving.",
-        flagHash: "1203df1573ea0f4077ca6a65df1e0113dc69fa1e267be5bf0c2ff757be0cda12" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — When a loop's iteration count is 'locked in'. Same robot, but n now changes DURING the inner loop:\nn \u2190 1\nREPEAT 3 TIMES {\n  REPEAT n TIMES {\n    MOVE_FORWARD\n    n \u2190 n + 1\n  }\n  ROTATE_LEFT\n}\nHow many total MOVE_FORWARD steps execute?\n\nSubmit as flag{number}.",
-        hint: "REPEAT n TIMES only reads n once, when that specific loop starts — changing n inside doesn't change how many times THAT loop was already set to run. Track how many times each of the 3 inner loops actually repeats: 1, then 2, then 4.",
-        flagHash: "5583b3ce3b42644490f323edfc1da538d0c41d26ce150a65e700b3b6d11f651f" }
-    ] },
-
-  { id: "ap-m1b", module: 1, title: "Abstraction & Parallelism", category: "Computational Thinking",
+  { id: "ap-m1b", module: 1, title: "2a — Abstraction & Parallelism", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Abstraction. Reducing complexity by focusing on the main idea and hiding unnecessary detail is called ___.\n\nSubmit as flag{word} (lowercase).",
@@ -5897,7 +5881,7 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "2c77634d0c4787906adf64b39d0098f7c3b19d5f6f6551ccbf3aef25c3342c89" }
     ] },
 
-  { id: "ap-m1-ptypes", module: 1, title: "Sort the Problem Type", category: "Computational Thinking", type: "match", points: 150,
+  { id: "ap-m1-ptypes", module: 1, title: "2b — Sort the Problem Type", category: "Computational Thinking", type: "match", points: 150,
     intro: "Objective — Problems & algorithms. Match each description to the kind of problem it is. Tap a description, then tap the type.",
     pairs: [
       { left: "Is there a path from A to B? (yes/no)", right: "Decision Problem" },
@@ -5906,7 +5890,163 @@ window.COURSE_CONFIG.apcsp.ctf = {
       { left: "Gives a 'good enough' answer", right: "Heuristic" }
     ] },
 
-  { id: "ap-m1-effic", module: 1, title: "Efficiency: Slowest-Growing First", category: "Computational Thinking", type: "order", points: 150,
+  { id: "ap-m1-robotrun", module: 1, title: "3a — Trace the Robot", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Algorithm tracing & iteration. A robot runs this pseudocode:\nn \u2190 1\nREPEAT 3 TIMES {\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n  n \u2190 n + 1\n}\nHow many total MOVE_FORWARD steps execute?\n\nSubmit as flag{number}.",
+        hint: "REPEAT n TIMES reads n once, right when it starts. Trace n across all 3 outer loops: 1, then 2, then 3. Try the ROBOT RUN simulator's first practice problem.",
+        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Order of operations in loops. Same robot, but the increment moved:\nn \u2190 1\nREPEAT 3 TIMES {\n  n \u2190 n + 1\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n}\nHow many total MOVE_FORWARD steps execute now?\n\nSubmit as flag{number}.",
+        hint: "n is incremented BEFORE the inner loop reads it this time, so the inner loop never runs at n=1. Try selecting the option in ROBOT RUN that increments before moving.",
+        flagHash: "1203df1573ea0f4077ca6a65df1e0113dc69fa1e267be5bf0c2ff757be0cda12" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — When a loop's iteration count is 'locked in'. Same robot, but n now changes DURING the inner loop:\nn \u2190 1\nREPEAT 3 TIMES {\n  REPEAT n TIMES {\n    MOVE_FORWARD\n    n \u2190 n + 1\n  }\n  ROTATE_LEFT\n}\nHow many total MOVE_FORWARD steps execute?\n\nSubmit as flag{number}.",
+        hint: "REPEAT n TIMES only reads n once, when that specific loop starts — changing n inside doesn't change how many times THAT loop was already set to run. Track how many times each of the 3 inner loops actually repeats: 1, then 2, then 4.",
+        flagHash: "5583b3ce3b42644490f323edfc1da538d0c41d26ce150a65e700b3b6d11f651f" }
+    ] },
+
+  { id: "ap-m1-flowchart", module: 1, title: "4a — Flowcharts", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Flowcharts. In flowchart notation, the diamond shape represents a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The shape that shows a yes/no branch.",
+        flagHash: "b0ac1845855ef736acd0924c90a580386cfe7f733bb0dbcc17cb9c82e3efe64a" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Flowcharts. In flowchart notation, a parallelogram represents an ___ ___ operation.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "Checking the temperature or a device's battery charge is this kind of step — different from a process step.",
+        flagHash: "e277ff0fb66d76cafe5c60bf6bb6e7585a98eaab4b7851b4fb09bd65639b5c21" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing flowchart loops. A flowchart loop keeps repeating while a counter x, starting at x=1, is less than 4: it prints x, then increments x by 1, then re-checks the condition. How many numbers get printed before the loop stops?\n\nSubmit as flag{number}.",
+        hint: "Trace it: x=1 (print, prints 1) → x=2 (print) → x=3 (print) → x=4 fails the condition, loop stops.",
+        flagHash: "07c67cc36d721525a477be5d2cfa6c3fa981190a537178a02b64849fd972fcc6" }
+    ] },
+
+  { id: "ap-m1-caesar", module: 1, title: "6a — The Caesar Cipher", category: "Encryption",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Encryption basics. In cryptography, the original, unencrypted message is called the ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of ciphertext.",
+        flagHash: "7d53c4d8a96af6f9bdfca67ec0d1a2528270b3e3a7763eb0c322bbde753ce045" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Caesar cipher. Julius Caesar's original cipher used a left shift of 3. Using that same shift, plaintext letter D becomes which ciphertext letter?\n\nSubmit as flag{letter} (lowercase).",
+        hint: "Shift D back 3 letters: D, C, B, A.",
+        flagHash: "67d0ac6cf6c7503248375a3f38c253c58651a1c79e097e340b01bd863546cf63" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Applying a Caesar shift. Using a Caesar cipher that shifts each letter FORWARD 5 positions in the alphabet, encrypt the plaintext CAB, letter by letter.\n\nSubmit as flag{ciphertext} (lowercase).",
+        hint: "C→H, A→F, B→G (count forward 5 letters from each).",
+        flagHash: "b5eace82a0aaec8d4789a5d2981a834ccbd8e1a6264a9ef5a7d1b4513a912dbb" }
+    ] },
+
+  { id: "ap-m1-keys", module: 1, title: "7a — Encryption Keys", category: "Encryption",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Keys. In cryptography, the piece of information that controls how data is encrypted or decrypted is called a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "You need one to lock or unlock the message.",
+        flagHash: "d4a44801327f6bdbad722255e7dbad5b319afb83fb8b50d18b6b6ec7d33e6963" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Symmetric encryption. An encryption scheme where the SAME key both encrypts and decrypts is called ___ encryption.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Both sides share one identical key.",
+        flagHash: "0b84a426da5ad73abfd7f5e4a73a667621b374d6b8d3349074058a7f1ba9c8ed" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Asymmetric encryption. An encryption scheme that uses a public key to encrypt and a different, mathematically linked private key to decrypt is called ___ encryption.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Two different, mathematically related keys — one public, one private.",
+        flagHash: "fdb0d9f92ace8928ef9b642ec772d625e5f5921af3b1d8e13ce3aca6427b933c" }
+    ] },
+
+  { id: "ap-m1-vigenere", module: 1, title: "9a — Vigenère vs. Caesar", category: "Encryption",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Vigenère cipher. Unlike the Caesar cipher's single fixed shift, the Vigenère cipher uses a repeating ___ to pick a different shift for each letter.\n\nSubmit as flag{word} (lowercase).",
+        hint: "A word or phrase repeated over the message to vary the shift.",
+        flagHash: "5b800b07688d1854b70ae9dd7592187f1b17151c44f32500e5433bdaa70ba6a9" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Weakness of monoalphabetic ciphers. A cipher that uses the same shift for every letter, like Caesar's, is vulnerable to ___ ___ analysis, because the pattern of letter frequencies in the plaintext is preserved in the ciphertext.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "E, T, A, and O appear more often than other letters in English — that pattern survives a single fixed shift.",
+        flagHash: "c9c54bb8db34a3562063f2c785bd406939cf7b7a62f3a5df336cd9efd9d04ab2" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Applying a Vigenère shift. Encrypt plaintext AB with a Vigenère cipher using the keyword KEY (K shifts by 10, E shifts by 4). Give the two-letter ciphertext.\n\nSubmit as flag{ciphertext} (lowercase).",
+        hint: "A (0) + 10 = K. B (1) + 4 = F.",
+        flagHash: "205c9b7a95ae2b5dbdd8dc152c1117f17c9bbf9e6f6aff433c1bb56dbbc2b3fb" }
+    ] },
+
+  { id: "ap-m1-ciphertypes", module: 1, title: "9b — Match the Cipher Concept", category: "Encryption", type: "match", points: 150,
+    intro: "Objective — Encryption. Match each term to what it does. Tap a term, then tap its description.",
+    pairs: [
+      { left: "Caesar cipher", right: "Single fixed shift for every letter" },
+      { left: "Vigen\u00e8re cipher", right: "Repeating keyword, different shift per letter" },
+      { left: "Symmetric encryption", right: "Same key encrypts and decrypts" },
+      { left: "Asymmetric encryption", right: "Public key encrypts, private key decrypts" }
+    ] },
+
+  { id: "ap-m1-ciphergauntlet", module: 1, title: "9c — Cipher Gauntlet", category: "Encryption",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Applying a Caesar shift. This message was encrypted with a Caesar cipher, key = 10 (each plaintext letter shifted FORWARD 10 places):\n\nKZMCZ VODC QY!\n\nShift each letter BACK 10 places to decode it.\n\nSubmit as flag{words_with_underscores} (lowercase, no punctuation).",
+        hint: "K→A, Z→P, M→C, C→S, Z→P. Same shift for every letter.",
+        flagHash: "e4ae80d3ce0c61e6b255208530ae9de9ba35f74ce52828f96581a6e912eb1d5c" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Applying a Vigenère shift. This message was encrypted with a Vigenère cipher, keyword = LION (L=11, I=8, O=14, N=13):\n\nVMZYJ OFRPV OAO EVVEM\n\nThe keyword repeats under the message, letter by letter (spaces don't consume a key letter). Shift each ciphertext letter BACK by its matching key letter's value to decode it.\n\nSubmit as flag{words_with_underscores} (lowercase, no punctuation).",
+        hint: "First 4 letters: V-L, M-I, Z-O, Y-N. V(21)−L(11)=10→K... keep going with the repeating keyword.",
+        flagHash: "173b7c6bb10cb7a912cd8ec1403d6b32e71a6e0941c0ffb98a204b123705df69" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Monoalphabetic substitution. Unlike Caesar or Vigenère, this cipher assigns every letter of the alphabet its OWN random replacement (no single shift amount). Use this key to decode the message:\n\nA=E B=Z C=Q D=V E=R F=K G=S H=W I=N J=H K=P L=I M=B N=C O=F P=O Q=Y R=X S=U T=J U=T V=D W=G X=L Y=A Z=M\n\nCiphertext: EVE NU GEJQWNCS\n\nSubmit as flag{words_with_underscores} (lowercase, no punctuation).",
+        hint: "Find each ciphertext letter on the RIGHT side of the key, then read off the plaintext letter on the left. E→A, V→D, E→A spells the first word.",
+        flagHash: "425b606de0667f60a24a4904097016dde0de0089a2bec5d800a5eb6dd44cc28e" }
+    ] },
+
+  { id: "ap-m1-langs", module: 1, title: "12e — Artificial Languages & Levels", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Programming languages. A language with precise, unambiguous, well-defined syntax created for a specific purpose — unlike a natural human language — is called an ___ ___.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "Programming languages are one example of this broader category.",
+        flagHash: "a3c30ca9269dfbd065676069325a7bebd545ba528cedab898c8cfe8f244a8620" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — High-level vs. low-level languages. A language that closely resembles human language and hides hardware details, like Python, is a ___-level language.\n\nSubmit as flag{word} (lowercase).",
+        hint: "More abstraction from the hardware = this level.",
+        flagHash: "1b10dc5ff97b64d726a4a086a9f1d6cf6f13b48c33d8c20ac2765d2cd0254891" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Choosing a language level. A developer writing a device driver needs direct control over specific memory addresses and CPU registers. Should they choose a high-level or a low-level language? Answer with just the level.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Direct hardware control needs less abstraction, not more.",
+        flagHash: "b17a1cf1311cd73c0d542ab8354229231e1beb1265dc28d46e410c970ef5f196" }
+    ] },
+
+  { id: "ap-m1-langlevel", module: 1, title: "13e — Match the Language Level", category: "Computational Thinking", type: "match", points: 150,
+    intro: "Objective — Programming languages. Match each example to its level. Tap the example, then tap its level.",
+    pairs: [
+      { left: "Python", right: "High-level language" },
+      { left: "Assembly", right: "Low-level language" },
+      { left: "Binary machine code", right: "Lowest-level representation" },
+      { left: "Plain English instructions", right: "Natural language (ambiguous)" }
+    ] },
+
+  { id: "ap-m1-devprocess", module: 1, title: "14a — Order the Development Process", category: "Computational Thinking", type: "order", points: 150,
+    intro: "Objective — Program development. Order the steps of the program development process, first to last.",
+    steps: [
+      "Plan the algorithm in pseudocode",
+      "Translate the pseudocode into code",
+      "Run the program",
+      "Test it with sample inputs",
+      "Debug any errors found"
+    ] },
+
+  { id: "ap-m1-pseudocode", module: 1, title: "15e — Pseudocode & Development", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Pseudocode. Writing out an algorithm in structured, informal language before translating it into real code is called writing ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Not real code — a structured plain-language draft of the algorithm.",
+        flagHash: "1c132b3e3768364850dd681ab981772467c0ab076091b672f6276d197fc40a3c" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Program development process. In the program development process, checking a program's output against expected results to catch errors is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Comes right before (and drives) debugging.",
+        flagHash: "7977ee862953702625e5aaab1c729724560a044ddd673ebb2a42f8ab32c79d04" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing pseudocode. Trace this pseudocode:\ntotal \u2190 0\ni \u2190 1\nREPEAT UNTIL (i > 4) {\n  total \u2190 total + i\n  i \u2190 i + 1\n}\nWhat is the value of total when the loop ends?\n\nSubmit as flag{number}.",
+        hint: "The loop adds i to total for i = 1, 2, 3, 4, then stops once i > 4.",
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" }
+    ] },
+
+  { id: "ap-m1-effic", module: 1, title: "16a — Efficiency: Slowest-Growing First", category: "Computational Thinking", type: "order", points: 150,
     intro: "Objective — Algorithmic efficiency. Order these growth rates from the MOST efficient (slowest-growing) to the LEAST efficient (fastest-growing).",
     steps: [
       "Constant",
@@ -5917,7 +6057,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
       "Factorial"
     ] },
 
-  { id: "ap-m1-models", module: 1, title: "Match the Computing Model", category: "Computational Thinking", type: "match", points: 150,
+  { id: "ap-m1-bias", module: 1, title: "17e — Moore's Law & Algorithmic Bias", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Moore's Law. The observation that the number of transistors on a computer chip roughly doubles every two years is called ___ ___.\n\nSubmit as flag{two words, no apostrophe} (lowercase).",
+        hint: "Named for an Intel co-founder.",
+        flagHash: "9d854f7377537f779e084d4073f6ff128ae6172613901649fa250a904b394fe9" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Algorithmic bias. When an algorithm systematically produces unfair outcomes for a group of people, often due to skewed training data, this is called algorithmic ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The unfairness has a name — one word.",
+        flagHash: "d548a37b58af739ba6fa6d7620f140c30aabbc21b4bd9ca6ecc4542c74f7ba0b" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Mitigating algorithmic bias. A hiring algorithm trained mostly on resumes from one demographic starts ranking similarly qualified candidates from OTHER demographics lower. Reviewing training data and model outputs for this kind of unfair pattern before deployment is called algorithmic ___ ___.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "You're checking the model for bias — what's that checking process called? Two words, first word is 'bias'.",
+        flagHash: "d72c481dcdcd5c457ee3fc31bf52c52a00963220208f89eb679a7b3880643bee" }
+    ] },
+
+  { id: "ap-m1-models", module: 1, title: "21e — Match the Computing Model", category: "Computational Thinking", type: "match", points: 150,
     intro: "Objective — Parallel & distributed computing. Match each model to what it does. Tap a model, then tap its description.",
     pairs: [
       { left: "Sequential", right: "Runs one command at a time, in order" },
@@ -5926,7 +6082,7 @@ window.COURSE_CONFIG.apcsp.ctf = {
     ] },
 
   { id: "ap-m1-vocab", module: 1, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["algorithm","abstraction","sequenc","selection","iteration","efficiency","heuristic","binary search","parallel"],
+    bias: ["algorithm","abstraction","sequenc","selection","iteration","efficiency","heuristic","binary search","parallel","cipher","plaintext","ciphertext","key","pseudocode","bias","flowchart"],
     hardMode: "rapid" },
 
   /* MODULE 2 — Python Programming ─────────────────────────────────────────── */
