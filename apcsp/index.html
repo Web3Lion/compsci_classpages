@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0c0a14;--panel:#15111d;--panel2:#1a1524;--panel3:#20182e;--border:#332845;--border2:#241d33;--border3:#48395f;--border-hi:#6a5788;--amber-bd:#1f6b62;--amber-bg:#0c2321;--text:#d8d2e6;--bright:#f5f2ff;--muted:#aca2c4;--dim:#867ba0;--faint:#5d5279;--fainter:#3f374f;--accent:#a855f7;--accent2:#c98bff;--amber:#2dd4bf;--lime-bd:#5a7a1f;--lime-bg:#1a2308;--lime:#a3e635;--via:rgba(168,85,247,.10);--trace:rgba(168,85,247,.035);}
-:root[data-theme="light"]{--bg:#f1eef7;--panel:#ffffff;--panel2:#f6f3fb;--panel3:#f1ecf8;--border:#d7cfe4;--border2:#e4ddf0;--border3:#b8accf;--border-hi:#897ba8;--amber-bd:#7ecbc2;--amber-bg:#e6f7f5;--text:#2c2740;--bright:#140e26;--muted:#524a6a;--dim:#6f668c;--faint:#8d83a6;--fainter:#aaa3c0;--accent:#8b2fd6;--accent2:#6f1fb0;--amber:#0f8f80;--lime-bd:#8fae4a;--lime-bg:#f0f7dc;--lime:#5a7a1f;--via:rgba(139,47,214,.16);--trace:rgba(139,47,214,.05);}
+:root{--bg:#0c0a14;--panel:#15111d;--panel2:#1a1524;--panel3:#20182e;--border:#332845;--border2:#241d33;--border3:#48395f;--border-hi:#6a5788;--amber-bd:#1f6b62;--amber-bg:#0c2321;--text:#d8d2e6;--bright:#f5f2ff;--muted:#aca2c4;--dim:#867ba0;--faint:#5d5279;--fainter:#3f374f;--accent:#a855f7;--accent2:#c98bff;--amber:#2dd4bf;--lime-bd:#5a7a1f;--lime-bg:#1a2308;--lime:#a3e635;--via:rgba(168,85,247,.10);--trace:rgba(168,85,247,.035);--warmup-c:#fbbf24;--warmup-bg:#2b230a;--warmup-bd:#7a5f16;}
+:root[data-theme="light"]{--bg:#f1eef7;--panel:#ffffff;--panel2:#f6f3fb;--panel3:#f1ecf8;--border:#d7cfe4;--border2:#e4ddf0;--border3:#b8accf;--border-hi:#897ba8;--amber-bd:#7ecbc2;--amber-bg:#e6f7f5;--text:#2c2740;--bright:#140e26;--muted:#524a6a;--dim:#6f668c;--faint:#8d83a6;--fainter:#aaa3c0;--accent:#8b2fd6;--accent2:#6f1fb0;--amber:#0f8f80;--lime-bd:#8fae4a;--lime-bg:#f0f7dc;--lime:#5a7a1f;--via:rgba(139,47,214,.16);--trace:rgba(139,47,214,.05);--warmup-c:#a8710a;--warmup-bg:#fdf2dc;--warmup-bd:#e0b968;}
 body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
 .themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
 .themebtn:hover{border-color:var(--accent);}
@@ -344,6 +344,7 @@ function rowsHtml(rows){
     <div style="display:flex;flex-direction:column;gap:8px;">
       <span style="font-size:15px;color:var(--bright);line-height:1.35;font-weight:600;">${esc(r.topic)}</span>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
+        ${badge('WARM-UP',r.warmup,'var(--warmup-c)','var(--warmup-bg)','var(--warmup-bd)')}
         ${badge('PRACTICE',r.practice,'var(--lime)','color-mix(in oklch, var(--lime) 12%, var(--bg))','color-mix(in oklch, var(--lime) 35%, var(--border2))')}
         ${badge('PROJECT',r.project,'var(--amber)','color-mix(in oklch, var(--amber) 14%, var(--bg))','color-mix(in oklch, var(--amber) 40%, var(--border2))')}
       </div>
@@ -360,15 +361,16 @@ async function load(){
     let hi=clean.findIndex(r=>r.some(c=>/weekday/i.test(c))); if(hi<0)hi=0;
     const header=clean[hi].map(c=>(c||'').trim().toLowerCase());
     const find=k=>header.findIndex(c=>c.includes(k));
-    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=find('topic'),cPractice=find('practice'),cProject=find('project');
+    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=find('topic'),cWarmup=find('warm'),cPractice=find('practice'),cProject=find('project');
     const wd=/^(mon|tue|wed|thu|fri|sat|sun)/i;
     const m=r=>{
       const topic=(cTopic>-1?(r[cTopic]||''):'').replace(/\n+/g,' · ').trim();
+      const warmup=(cWarmup>-1?(r[cWarmup]||''):'').replace(/\n+/g,' · ').trim();
       const practice=(cPractice>-1?(r[cPractice]||''):'').replace(/\n+/g,' · ').trim();
       const project=(cProject>-1?(r[cProject]||''):'').replace(/\n+/g,' · ').trim();
-      return {day:(r[cDay]||'').trim().slice(0,3),date:cDate>-1?fmt(r[cDate]):'',topic:topic||'—',practice:practice||'—',project:project||'—'};
+      return {day:(r[cDay]||'').trim().slice(0,3),date:cDate>-1?fmt(r[cDate]):'',topic:topic||'—',warmup:warmup||'—',practice:practice||'—',project:project||'—'};
     };
-    const keep=r=>r.topic!=='—'||r.practice!=='—'||r.project!=='—';
+    const keep=r=>r.topic!=='—'||r.warmup!=='—'||r.practice!=='—'||r.project!=='—';
     const after=clean.slice(hi+1).filter(r=>wd.test((r[cDay]||'').trim()));
     // split by calendar week relative to today (Monday start).
     // On weekends, roll forward to the upcoming school week.
