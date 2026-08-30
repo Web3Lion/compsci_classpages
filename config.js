@@ -5995,6 +5995,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "425b606de0667f60a24a4904097016dde0de0089a2bec5d800a5eb6dd44cc28e" }
     ] },
 
+  { id: "ap-m1-y2k", module: 1, title: "9d — Y2K: The Copyright Mystery", category: "Encryption",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explaining historical context for computing risk. Research the Y2K bug (also called the millennium bug). What does the 'Y2K' abbreviation stand for?\n\nSubmit as flag{words_with_underscores}, lowercase.",
+        hint: "'K' is a common shorthand for 'thousand' — Y2K = Year ___.",
+        flagHash: "0bb11fa06abbbebc9aa3b8fe8c037227a7c297ccee710245cb0a12fc1cfe5446" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explaining historical context for computing risk. Keep researching Y2K: to save memory, early programmers stored calendar years using only how many digits (e.g., '99' instead of '1999')?\n\nSubmit as flag{answer} — the number, spelled out, lowercase.",
+        hint: "It's a small number — think '99' has this many digits.",
+        flagHash: "f9695fece5948d5115a8ede70bab46ff2274bb8e85778679dc5cdc50e14f6c9d" },
+      { difficulty: "Hard", points: 150,
+        img: "../assets/y2k-comic.png",
+        prompt: "Objective — Applying research to a real artifact. This comic strip's copyright reads 1900, even though it was clearly made decades later. Using the Y2K bug, the comic was actually made in which of these years: 1999, 2000, 2001, or 2002?\n\nSubmit as flag{answer} — the number.",
+        hint: "The comic's copyright already shows you the wrong answer the bug would produce.",
+        flagHash: "7de51dcd2977bd072b055fdf1fa1722c65e909bf848f6dc1b5095f397dc9a95d" }
+    ] },
+
   { id: "ap-m1-langs", module: 1, title: "12e — Artificial Languages & Levels", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
