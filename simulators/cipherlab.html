@@ -44,7 +44,7 @@ input[type=range]{flex:1;accent-color:var(--accent);}
 .modeBtns{display:flex;gap:8px;}
 .modeBtn{padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
 .modeBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--bright);}
-.outBox{border-radius:10px;border:1px solid var(--border3);background:var(--panel2);padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ok);min-height:40px;word-break:break-word;line-height:1.6;letter-spacing:.5px;}
+.outBox{white-space:pre-wrap;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ok);min-height:40px;word-break:break-word;line-height:1.6;letter-spacing:.5px;}
 .alphaTrack{margin-top:20px;overflow-x:auto;padding-bottom:4px;}
 .aRow{display:flex;gap:6px;}
 .aRow+.aRow{margin-top:6px;}
@@ -53,7 +53,7 @@ input[type=range]{flex:1;accent-color:var(--accent);}
 .hint{font-size:12.5px;color:var(--faint);margin-top:6px;line-height:1.5;}
 .keyDemo{display:flex;flex-wrap:wrap;gap:4px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:13px;}
 .keyDemo .col{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);min-width:34px;}
-.keyDemo .plain{color:var(--muted);}
+.keyDemo .plain{color:var(--muted);font-weight:700;}
 .keyDemo .key{color:var(--warn);}
 .keyDemo .cip{color:var(--ok);font-weight:700;}
 .keyDemo .col{cursor:pointer;}
@@ -68,6 +68,9 @@ input[type=range]{flex:1;accent-color:var(--accent);}
 .vigCell.dstCell{border-color:var(--ok);color:var(--ok);font-weight:700;}
 .vigToken{position:absolute;top:0;width:28px;height:28px;border-radius:6px;background:var(--accent);color:#04121e;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:13px;box-shadow:0 0 12px var(--accent);transition:left 1s cubic-bezier(.4,0,.2,1);z-index:2;}
 .vigArc{position:absolute;top:32px;left:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);white-space:nowrap;transition:left 1s cubic-bezier(.4,0,.2,1),opacity .3s;opacity:0;}
+.modalCard .aCell,.modalCard .vigCell,.modalCard .vigToken{width:17px;height:17px;flex:0 0 17px;font-size:9px;}
+.modalCard .aRow,.modalCard .vigTrack{gap:2px;}
+.modalCard .vigArc{font-size:9px;}
 .practice{margin-top:26px;border-top:1px solid var(--border2);padding-top:20px;}
 .practiceRow{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--border2);border-radius:10px;background:var(--panel2);margin-bottom:12px;}
 .practiceRow .q{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--bright);}
@@ -81,6 +84,11 @@ input[type=range]{flex:1;accent-color:var(--accent);}
 .pFeedback.bad{color:var(--bad);}
 .newSetBtn{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);background:none;border:1px solid var(--border2);border-radius:8px;padding:7px 12px;cursor:pointer;}
 .newSetBtn:hover{color:var(--dim);border-color:var(--border3);}
+.infoBtn{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:.3px;color:#04121e;background:var(--accent);border:none;border-radius:999px;padding:11px 20px;cursor:pointer;margin-top:12px;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 14px rgba(0,179,255,.4);align-self:flex-start;}
+.infoBtn:hover{background:var(--accent2);transform:translateY(-1px);}
+.infoBtn:active{transform:translateY(0);}
+.modalOverlay{display:none;position:fixed;inset:0;background:rgba(5,9,16,.6);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.modalCard{max-width:560px;width:100%;max-height:86vh;overflow-y:auto;}
 </style>
 </head>
 <body>
@@ -119,6 +127,7 @@ input[type=range]{flex:1;accent-color:var(--accent);}
         <div class="modeBtn" id="decBtn" onclick="setMode('decode')">DECODE</div>
       </div>
       <div class="hint">Each letter slides forward (encode) or back (decode) through the alphabet by the shift amount. Shift 3: A→D, B→E, C→F…</div>
+      <button class="infoBtn" onclick="openInfo('Caesar')">ⓘ HOW CAESAR CIPHERS WORK</button>
     </div>
 
     <div id="vigControls" class="row" style="display:none;">
@@ -135,6 +144,7 @@ input[type=range]{flex:1;accent-color:var(--accent);}
         <div class="vigAnimLabel" id="vigAnimLabel"></div>
         <div class="vigTrack" id="vigTrack"></div>
       </div>
+      <button class="infoBtn" onclick="openInfo('Vigenere')">ⓘ HOW VIGENÈRE CIPHERS WORK</button>
     </div>
 
     <div class="row">
@@ -163,6 +173,48 @@ input[type=range]{flex:1;accent-color:var(--accent);}
     <div id="summaryName" style="font-size:18px;color:var(--bright);font-weight:700;margin-bottom:6px;"></div>
     <div id="summaryScore" class="mono" style="font-size:28px;color:var(--accent2);font-weight:800;margin-bottom:14px;"></div>
     <button class="checkBtn" onclick="document.getElementById('summaryOverlay').style.display='none'">CLOSE</button>
+  </div>
+</div>
+
+<div id="infoModalCaesar" class="modalOverlay">
+  <div class="panel modalCard">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;">
+      <div class="mono" style="font-size:12px;letter-spacing:1px;color:var(--faint);">CAESAR CIPHER</div>
+      <button class="checkBtn" onclick="closeInfo('Caesar')">CLOSE</button>
+    </div>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin:0;">A Caesar cipher shifts every letter of a message forward through the alphabet by the same fixed number of places — the "key". To decode, shift backward by that same amount. It's named for Julius Caesar, who reportedly used a shift of 3 to protect military messages.</p>
+    <div style="margin-top:18px;">
+      <label class="mono" style="font-size:11.5px;letter-spacing:.5px;color:var(--faint);">TRY IT — SHIFT "HELLO"</label>
+      <div class="sliderRow" style="margin-top:8px;">
+        <input type="range" id="infoCaesarSlider" min="0" max="25" value="3" oninput="renderInfoCaesar()">
+        <div class="shiftVal" id="infoCaesarShiftVal">3</div>
+      </div>
+      <div class="outBox" id="infoCaesarOut" style="margin-top:10px;"></div>
+      <div class="alphaTrack" id="infoCaesarTrack" style="margin-top:14px;"></div>
+      <div class="vigAnimWrap" id="infoCaesarAnimWrap" style="display:none;">
+        <div class="vigAnimLabel" id="infoCaesarAnimLabel"></div>
+        <div class="vigTrack" id="infoCaesarSlideTrack"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="infoModalVigenere" class="modalOverlay">
+  <div class="panel modalCard">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;">
+      <div class="mono" style="font-size:12px;letter-spacing:1px;color:var(--faint);">VIGENÈRE CIPHER</div>
+      <button class="checkBtn" onclick="closeInfo('Vigenere')">CLOSE</button>
+    </div>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin:0;">A Vigenère cipher uses a repeating keyword instead of one fixed shift. Each letter of the keyword picks a different shift amount (A=0, B=1…Z=25), so the same plaintext letter can encrypt differently depending on where it falls under the keyword.</p>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin:12px 0 0;">With keyword <b style="color:var(--bright);">DOG</b>: D is the 3rd letter after A (shift <b style="color:var(--accent2);">3</b>), O is the 14th (shift <b style="color:var(--accent2);">14</b>), G is the 6th (shift <b style="color:var(--accent2);">6</b>). Those three shifts — 3, 14, 6 — then repeat for every letter of the message.</p>
+    <div style="margin-top:18px;">
+      <label class="mono" style="font-size:11.5px;letter-spacing:.5px;color:var(--faint);">TRY IT — <b style="color:var(--bright);">LEARNING</b> WITH KEYWORD <b style="color:var(--bright);">DOG</b> — CLICK A LETTER</label>
+      <div class="keyDemo" id="infoVigDemo" style="margin-top:8px;"></div>
+      <div class="vigAnimWrap" id="infoVigAnimWrap" style="display:none;">
+        <div class="vigAnimLabel" id="infoVigAnimLabel"></div>
+        <div class="vigTrack" id="infoVigTrack"></div>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -268,29 +320,36 @@ function animateVigLetter(idx){
   var item = vigLetters[idx];
   if(!item) return;
   document.querySelectorAll('#keyDemo .col').forEach(function(el,i){ el.classList.toggle('activeCol', i===idx); });
-  var wrap = document.getElementById('vigAnimWrap');
+  runVigAnim(item, mode==='decode', 'vigTrack', 'vigAnimLabel', 'vigAnimWrap');
+}
+function runVigAnim(item, decode, trackId, labelId, wrapId, cellStep){
+  var wrap = document.getElementById(wrapId);
   wrap.style.display = 'block';
-  var dir = mode==='decode' ? '−' : '+';
-  document.getElementById('vigAnimLabel').innerHTML =
+  var dir = decode ? '−' : '+';
+  document.getElementById(labelId).innerHTML =
     'Key letter <b>'+item.k+'</b> is the '+item.shift+'th letter of the alphabet (A=0) → shift '+dir+item.shift+'. '+
-    '<b>'+item.c+'</b> slides '+item.shift+' places '+(mode==='decode'?'back':'forward')+' to become <b>'+item.cip+'</b>.';
-
-  var track = document.getElementById('vigTrack');
-  var srcI = A.indexOf(item.c), dstI = A.indexOf(item.cip);
+    '<b style="color:var(--bright);">'+item.c+'</b> slides '+item.shift+' places '+(decode?'back':'forward')+' to become <b style="color:var(--ok);">'+item.cip+'</b>.';
+  buildSlideTrack(trackId, item.c, item.cip, dir+item.shift, cellStep);
+}
+function buildSlideTrack(trackId, srcChar, dstChar, shiftDisplay, cellStep){
+  cellStep = cellStep || 34;
+  var track = document.getElementById(trackId);
+  var srcI = A.indexOf(srcChar), dstI = A.indexOf(dstChar);
   track.innerHTML = A.split('').map(function(c,i){
     var cls = i===srcI ? 'srcCell' : (i===dstI ? 'dstCell' : '');
     return '<div class="vigCell '+cls+'" data-i="'+i+'">'+c+'</div>';
-  }).join('') + '<div class="vigToken" id="vigToken">'+item.c+'</div>' + '<div class="vigArc" id="vigArc"></div>';
+  }).join('') + '<div class="vigToken" id="'+trackId+'Token">'+srcChar+'</div>' + '<div class="vigArc" id="'+trackId+'Arc"></div>';
 
-  var cellW = 34;
-  var token = document.getElementById('vigToken');
-  var arc = document.getElementById('vigArc');
+  var cellW = cellStep;
+  var token = document.getElementById(trackId+'Token');
+  var arc = document.getElementById(trackId+'Arc');
   token.style.transition = 'none';
   token.style.left = (srcI*cellW)+'px';
   arc.style.transition = 'none';
   arc.style.left = (srcI*cellW)+'px';
   arc.style.opacity = '0';
   arc.textContent = '';
+  track.scrollLeft = Math.max(0, srcI*cellW - track.clientWidth/2);
   requestAnimationFrame(function(){
     requestAnimationFrame(function(){
       token.style.transition = 'left 1s cubic-bezier(.4,0,.2,1)';
@@ -298,10 +357,64 @@ function animateVigLetter(idx){
       arc.style.transition = 'left 1s cubic-bezier(.4,0,.2,1), opacity .3s';
       arc.style.left = (Math.min(srcI,dstI)*cellW)+'px';
       arc.style.opacity = '1';
-      arc.textContent = (dir+item.shift);
-      setTimeout(function(){ token.textContent = item.cip; }, 900);
+      arc.textContent = shiftDisplay;
+      var targetScroll = Math.max(0, Math.min(srcI,dstI)*cellW - track.clientWidth/2 + Math.abs(dstI-srcI)*cellW/2);
+      track.scrollTo({left: targetScroll, behavior:'smooth'});
+      setTimeout(function(){ token.textContent = dstChar; }, 900);
     });
   });
+}
+
+/* ---- info popups ---- */
+function openInfo(which){
+  document.getElementById('infoModal'+which).style.display = 'flex';
+  if(which==='Caesar') renderInfoCaesar();
+  else renderInfoVigDemo();
+}
+function closeInfo(which){
+  document.getElementById('infoModal'+which).style.display = 'none';
+}
+function renderInfoCaesar(){
+  var shift = parseInt(document.getElementById('infoCaesarSlider').value,10);
+  document.getElementById('infoCaesarShiftVal').textContent = shift;
+  var word = 'HELLO';
+  var cip = caesarTransform(word, shift, false);
+  document.getElementById('infoCaesarOut').innerHTML = word.split('').map(function(c,i){
+    return '<span class="col" style="display:inline-flex;padding:4px 8px;margin-right:3px;cursor:pointer;border-radius:6px;" onclick="animateInfoCaesarLetter('+i+')"><b>'+c+'</b></span>';
+  }).join('') + ' → <b style="color:var(--ok);">'+cip+'</b> <span class="mono" style="font-size:11px;color:var(--faint);">(click a letter above)</span>';
+  var plainRow = A.split('').map(function(c){ return '<div class="aCell">'+c+'</div>'; }).join('');
+  var shiftedRow = A.split('').map(function(c,i){ return '<div class="aCell">'+A[((i+shift)%26+26)%26]+'</div>'; }).join('');
+  document.getElementById('infoCaesarTrack').innerHTML = '<div class="aRow">'+plainRow+'</div><div class="aRow shiftedRow">'+shiftedRow+'</div>';
+  document.getElementById('infoCaesarAnimWrap').style.display = 'none';
+}
+function animateInfoCaesarLetter(idx){
+  var shift = parseInt(document.getElementById('infoCaesarSlider').value,10);
+  var word = 'HELLO';
+  var c = word[idx], cip = caesarShiftChar(c, shift);
+  document.getElementById('infoCaesarAnimWrap').style.display = 'block';
+  document.getElementById('infoCaesarAnimLabel').innerHTML =
+    '<b style="color:var(--bright);">'+c+'</b> slides '+shift+' places forward to become <b style="color:var(--ok);">'+cip+'</b>.';
+  buildSlideTrack('infoCaesarSlideTrack', c, cip, '+'+shift, 19);
+}
+var infoVigLetters = [];
+function renderInfoVigDemo(){
+  var word = 'LEARNING', key = 'DOG';
+  var ki=0;
+  infoVigLetters = [];
+  document.getElementById('infoVigDemo').innerHTML = word.split('').map(function(c, idx){
+    var k = key[ki % key.length]; ki++;
+    var shift = A.indexOf(k);
+    var cip = caesarShiftChar(c, shift);
+    infoVigLetters.push({c:c, k:k, shift:shift, cip:cip});
+    return '<div class="col" onclick="animateInfoVigLetter('+idx+')"><span class="plain">'+c+'</span><span class="key">'+k+'</span><span class="cip">'+cip+'</span></div>';
+  }).join('');
+  document.getElementById('infoVigAnimWrap').style.display = 'none';
+}
+function animateInfoVigLetter(idx){
+  var item = infoVigLetters[idx];
+  if(!item) return;
+  document.querySelectorAll('#infoVigDemo .col').forEach(function(el,i){ el.classList.toggle('activeCol', i===idx); });
+  runVigAnim(item, false, 'infoVigTrack', 'infoVigAnimLabel', 'infoVigAnimWrap', 19);
 }
 
 document.getElementById('plainInput').addEventListener('input', render);
