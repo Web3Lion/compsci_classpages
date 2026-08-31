@@ -5849,48 +5849,47 @@ window.COURSE_CONFIG.apcsp.ctf = {
   challenges: [
 
   /* MODULE 1 — Computational Thinking ─────────────────────────────────────── */
-  { id: "ap-m1a", module: 1, title: "1a — Algorithms & Efficiency", category: "Computational Thinking",
+  { id: "ap-m1a", module: 1, title: "1a — What Is an Algorithm?", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Algorithms. A finite set of step-by-step instructions that accomplishes a task is called an ___.\n\nSubmit as flag{word} (lowercase).",
         hint: "A recipe is one.",
         flagHash: "e165ad962d510917b1dbd9c289ce95aac0de155864b0095001ef193be7f912cd" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Algorithms. A search that starts in the middle of a sorted list and removes half the data each step is called ___ ___.\n\nSubmit as flag{two words} (lowercase).",
-        hint: "It halves a SORTED list each step.",
-        flagHash: "8df4578b0ae5d8875b5f269168532fc1cdeac556f0f41bdc0e43ce090975c3cd" },
+        prompt: "Objective — Precision in algorithms. Steps that could be read or followed more than one way, so different people end up doing different things, contain ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of clear and precise.",
+        flagHash: "66e719a549846cb06341bc7cc13a494b82ba97a8b8a1552e489b743b1109d531" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Algorithmic efficiency. An approach that gives a 'good enough' solution when a perfect one is impractical or impossible is a ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "A 'good enough' shortcut.",
-        flagHash: "0ba600dc91096cc6250d73b1bf62d9f522f43506563f3361bc5bc6c701f1e290" }
+        prompt: "Objective — Framing problems. In computer science, saying you're going to 'solve a problem' doesn't mean something is wrong — a problem can simply be a ___ that needs to be completed.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Any task you need to complete counts.",
+        flagHash: "cc32acf6294069782c11181a1cf7e39f5d4fb0bb58fb6c5d31e543324e325e49" }
     ] },
 
-  { id: "ap-m1b", module: 1, title: "2a — Abstraction & Parallelism", category: "Computational Thinking",
+  { id: "ap-m1b", module: 1, title: "2a — Decomposition & Abstraction", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Abstraction. Reducing complexity by focusing on the main idea and hiding unnecessary detail is called ___.\n\nSubmit as flag{word} (lowercase).",
         hint: "Hiding detail.",
         flagHash: "5f46d98c4b621039b59b05e84990cc59fe9e4718c08603506addf49eb8fba318" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Parallel & distributed computing. A model in which a program is broken into pieces, some of which run at the same time, is ___ ___.\n\nSubmit as flag{two words} (lowercase).",
-        hint: "Pieces run at the same time.",
-        flagHash: "5ffb708e8d184373d0be826cd0a330a6d3a2f22eee933bd58c58312b46212dc0" },
+        prompt: "Objective — Breaking down big problems. Splitting a big, overwhelming problem into smaller, more manageable problems is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Big problem → smaller pieces.",
+        flagHash: "e9f8cf8d0fecfef89a4c7133b1ff4860a8c16c12d37b7f0e4054a4d72a298349" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Parallel computing. The time to complete a task sequentially divided by the time to complete it in parallel is the ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "Sequential time ÷ parallel time.",
-        flagHash: "2c77634d0c4787906adf64b39d0098f7c3b19d5f6f6551ccbf3aef25c3342c89" }
+        prompt: "Objective — Generalizing solutions. A solution built to work for any similar problem, not just one specific case, is called a ___ solution.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Works for every paragraph, not just one.",
+        flagHash: "36dd532646747112dacb85c15592bda2315e9b728ee0e973a74c3f3574449372" }
     ] },
 
-  { id: "ap-m1-ptypes", module: 1, title: "2b — Sort the Problem Type", category: "Computational Thinking", type: "match", points: 150,
-    intro: "Objective — Problems & algorithms. Match each description to the kind of problem it is. Tap a description, then tap the type.",
+  { id: "ap-m1-ptypes", module: 1, title: "3a — Sequencing, Selection & Iteration", category: "Computational Thinking", type: "match", points: 150,
+    intro: "Objective — Control structures. Match each pattern to what it does. Tap a term, then tap its description.",
     pairs: [
-      { left: "Is there a path from A to B? (yes/no)", right: "Decision Problem" },
-      { left: "Find the SHORTEST path from A to B", right: "Optimization Problem" },
-      { left: "No algorithm can always solve it", right: "Undecidable Problem" },
-      { left: "Gives a 'good enough' answer", right: "Heuristic" }
+      { left: "Sequencing", right: "Running steps one after another, in order" },
+      { left: "Selection", right: "Choosing a path with if/else" },
+      { left: "Iteration", right: "Repeating a set of steps" }
     ] },
 
-  { id: "ap-m1-robotrun", module: 1, title: "3a — Trace the Robot", category: "Computational Thinking",
+  { id: "ap-m1-robotrun", module: 1, title: "3b — Trace the Robot", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Algorithm tracing & iteration. A robot runs this pseudocode:\nn \u2190 1\nREPEAT 3 TIMES {\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n  n \u2190 n + 1\n}\nHow many total MOVE_FORWARD steps execute?\n\nSubmit as flag{number}.",
@@ -5922,6 +5921,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "07c67cc36d721525a477be5d2cfa6c3fa981190a537178a02b64849fd972fcc6" }
     ] },
 
+  { id: "ap-m1-reading", module: 1, title: "5a — Algorithms Reading", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Writing clear algorithms. A step written as a command with a verb telling exactly what to do (like 'put on the left shoe') is an ___ statement.\n\nSubmit as flag{word} (lowercase).",
+        hint: "A command, not a description.",
+        flagHash: "edef266ce29abd4c827c492a24922fe76ad1d61079d4f5ba965260d1da289242" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Writing clear algorithms. Extra detail that removes confusion — like specifying the LEFT shoe instead of just 'a shoe' — is a descriptive ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Descriptive ___ — the word right after 'descriptive' in the reading.",
+        flagHash: "3ca6ab972c88284c8dc4c231a60ccdeb405b65fd2556ecdaae672b1469bba189" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Algorithm formats. Whether written as a flowchart, pseudocode, math notation, or code, every format must express an algorithm understandably and ___ — so it can only be interpreted one way.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of ambiguously.",
+        flagHash: "f5b3c33b8d47abf0f56cab2490046ff50f064621d8d133d707e1331c7d6f781b" }
+    ] },
+
   { id: "ap-m1-caesar", module: 1, title: "6a — The Caesar Cipher", category: "Encryption",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -5936,6 +5951,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
         prompt: "Objective — Applying a Caesar shift. Using a Caesar cipher that shifts each letter FORWARD 5 positions in the alphabet, encrypt the plaintext CAB, letter by letter.\n\nSubmit as flag{ciphertext} (lowercase).",
         hint: "C→H, A→F, B→G (count forward 5 letters from each).",
         flagHash: "b5eace82a0aaec8d4789a5d2981a834ccbd8e1a6264a9ef5a7d1b4513a912dbb" }
+    ] },
+
+  { id: "ap-m1-y2k", module: 1, title: "6b (ext) — Y2K: The Copyright Mystery", category: "Encryption",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explaining historical context for computing risk. Research the Y2K bug (also called the millennium bug). What does the 'Y2K' abbreviation stand for?\n\nSubmit as flag{words_with_underscores}, lowercase.",
+        hint: "'K' is a common shorthand for 'thousand' — Y2K = Year ___.",
+        flagHash: "0bb11fa06abbbebc9aa3b8fe8c037227a7c297ccee710245cb0a12fc1cfe5446" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explaining historical context for computing risk. Keep researching Y2K: to save memory, early programmers stored calendar years using only how many digits (e.g., '99' instead of '1999')?\n\nSubmit as flag{answer} — the number, spelled out, lowercase.",
+        hint: "It's a small number — think '99' has this many digits.",
+        flagHash: "f9695fece5948d5115a8ede70bab46ff2274bb8e85778679dc5cdc50e14f6c9d" },
+      { difficulty: "Hard", points: 150,
+        img: "../assets/y2k-comic.png",
+        prompt: "Objective — Applying research to a real artifact. This comic strip's copyright reads 1900, even though it was clearly made decades later. Using the Y2K bug, the comic was actually made in which of these years: 1999, 2000, 2001, or 2002?\n\nSubmit as flag{answer} — the number.",
+        hint: "The comic's copyright already shows you the wrong answer the bug would produce.",
+        flagHash: "7de51dcd2977bd072b055fdf1fa1722c65e909bf848f6dc1b5095f397dc9a95d" }
     ] },
 
   { id: "ap-m1-keys", module: 1, title: "7a — Encryption Keys", category: "Encryption",
@@ -5979,7 +6011,7 @@ window.COURSE_CONFIG.apcsp.ctf = {
       { left: "Asymmetric encryption", right: "Public key encrypts, private key decrypts" }
     ] },
 
-  { id: "ap-m1-ciphergauntlet", module: 1, title: "9c — Cipher Gauntlet", category: "Encryption",
+  { id: "ap-m1-ciphergauntlet", module: 1, title: "9d (ext) — Cipher Gauntlet", category: "Encryption",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Applying a Caesar shift. This message was encrypted with a Caesar cipher, key = 10 (each plaintext letter shifted FORWARD 10 places):\n\nKZMCZ VODC QY!\n\nShift each letter BACK 10 places to decode it.\n\nSubmit as flag{words_with_underscores} (lowercase, no punctuation).",
@@ -5995,40 +6027,71 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "425b606de0667f60a24a4904097016dde0de0089a2bec5d800a5eb6dd44cc28e" }
     ] },
 
-  { id: "ap-m1-y2k", module: 1, title: "9d — Y2K: The Copyright Mystery", category: "Encryption",
+  { id: "ap-m1-cia", module: 1, title: "10a — The CIA Triad", category: "Foundations",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Explaining historical context for computing risk. Research the Y2K bug (also called the millennium bug). What does the 'Y2K' abbreviation stand for?\n\nSubmit as flag{words_with_underscores}, lowercase.",
-        hint: "'K' is a common shorthand for 'thousand' — Y2K = Year ___.",
-        flagHash: "0bb11fa06abbbebc9aa3b8fe8c037227a7c297ccee710245cb0a12fc1cfe5446" },
+        prompt: "Objective — CIA Triad. Limiting access to sensitive information strictly to authorized users and systems is ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The 'C' in CIA.",
+        flagHash: "c087a071e9e2f7c959cc4973c77b2c5feb17cead7dd031b00a94213f2664bfdc" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Explaining historical context for computing risk. Keep researching Y2K: to save memory, early programmers stored calendar years using only how many digits (e.g., '99' instead of '1999')?\n\nSubmit as flag{answer} — the number, spelled out, lowercase.",
-        hint: "It's a small number — think '99' has this many digits.",
-        flagHash: "f9695fece5948d5115a8ede70bab46ff2274bb8e85778679dc5cdc50e14f6c9d" },
+        prompt: "Objective — CIA Triad. The certainty that information remains accurate, complete, and untampered with by unauthorized parties is ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The 'I' in CIA.",
+        flagHash: "2f3d9851d23849572228eb2f2abb2c097a85090aaf63066e566d6584e366192e" },
       { difficulty: "Hard", points: 150,
-        img: "../assets/y2k-comic.png",
-        prompt: "Objective — Applying research to a real artifact. This comic strip's copyright reads 1900, even though it was clearly made decades later. Using the Y2K bug, the comic was actually made in which of these years: 1999, 2000, 2001, or 2002?\n\nSubmit as flag{answer} — the number.",
-        hint: "The comic's copyright already shows you the wrong answer the bug would produce.",
-        flagHash: "7de51dcd2977bd072b055fdf1fa1722c65e909bf848f6dc1b5095f397dc9a95d" }
+        prompt: "Objective — CIA Triad. The reliability of timely access to systems, services, and information whenever authorized users need them is ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The 'A' in CIA.",
+        flagHash: "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" }
     ] },
 
-  { id: "ap-m1-langs", module: 1, title: "12e — Artificial Languages & Levels", category: "Computational Thinking",
+  { id: "ap-m1-ambiguity", module: 1, title: "11a — Clarity vs. Ambiguity", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Ambiguity. A sentence or instruction that can be read more than one way, so different people interpret it differently, is ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "'She saw the man on the hill with a telescope' — who has the telescope?",
+        flagHash: "d9cc9cf9f916682419ef11e300bde60d2a17a0912790f4ee6ff3d407658ba120" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Sources of ambiguity. In 'She saw the man on the hill with a telescope,' the confusion comes from a ___ ___ ('with a telescope') that could attach to more than one noun.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "Starts with a preposition like 'with' or 'on'.",
+        flagHash: "f4df7418e7dc3f14f28fa65940b9188d8f06a258a557746bc12fed90843f39aa" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Multiple interpretations. Computer scientists say an ambiguous sentence has multiple ___ ___ — the different ways it can be broken down grammatically.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "Tree-shaped diagrams grammarians use to show sentence structure.",
+        flagHash: "819a265e3f15b7f5eccad800d380af71a89a77f76e9d1f2d13aa0dcc6500e85b" }
+    ] },
+
+  { id: "ap-m1-langs", module: 1, title: "12a — Artificial vs. Natural Languages", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Programming languages. A language with precise, unambiguous, well-defined syntax created for a specific purpose — unlike a natural human language — is called an ___ ___.\n\nSubmit as flag{two words} (lowercase).",
         hint: "Programming languages are one example of this broader category.",
         flagHash: "a3c30ca9269dfbd065676069325a7bebd545ba528cedab898c8cfe8f244a8620" },
       { difficulty: "Medium", points: 100,
+        prompt: "Objective — Visual languages. A language like Scratch, where you drag and drop blocks instead of typing exact syntax, is a ___ programming language.\n\nSubmit as flag{word} (lowercase).",
+        hint: "You see and drag the blocks — no typing required.",
+        flagHash: "7848f5ad8afcd94c3ea2e8f9d373944c6615dbc6b1495419af4e093700560dda" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Syntax. The exact spelling, punctuation, and capitalization rules a language demands, with nothing left to interpretation, is its ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Get this wrong and the computer won't do what you want, even if a human would understand you fine.",
+        flagHash: "82daa66db8bd907a6af12adbdd7da63582cb8fb3aa363722e6962f1cae0b5c17" }
+    ] },
+
+  { id: "ap-m1-langlevel2", module: 1, title: "13a — High-Level vs. Low-Level", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
         prompt: "Objective — High-level vs. low-level languages. A language that closely resembles human language and hides hardware details, like Python, is a ___-level language.\n\nSubmit as flag{word} (lowercase).",
         hint: "More abstraction from the hardware = this level.",
         flagHash: "1b10dc5ff97b64d726a4a086a9f1d6cf6f13b48c33d8c20ac2765d2cd0254891" },
-      { difficulty: "Hard", points: 150,
+      { difficulty: "Medium", points: 100,
         prompt: "Objective — Choosing a language level. A developer writing a device driver needs direct control over specific memory addresses and CPU registers. Should they choose a high-level or a low-level language? Answer with just the level.\n\nSubmit as flag{word} (lowercase).",
         hint: "Direct hardware control needs less abstraction, not more.",
-        flagHash: "b17a1cf1311cd73c0d542ab8354229231e1beb1265dc28d46e410c970ef5f196" }
+        flagHash: "b17a1cf1311cd73c0d542ab8354229231e1beb1265dc28d46e410c970ef5f196" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Compilation. The process that translates high-level abstract instructions into the low-level machine code a processor actually requires is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Turns your Python/Java into ones and zeros the chip can run.",
+        flagHash: "77984b3c7c29c838d0f8b571b90bd7f35ffda66df9bff1cd94440133f1b9cdaf" }
     ] },
 
-  { id: "ap-m1-langlevel", module: 1, title: "13e — Match the Language Level", category: "Computational Thinking", type: "match", points: 150,
+  { id: "ap-m1-langlevel", module: 1, title: "13b — Match the Language Level", category: "Computational Thinking", type: "match", points: 150,
     intro: "Objective — Programming languages. Match each example to its level. Tap the example, then tap its level.",
     pairs: [
       { left: "Python", right: "High-level language" },
@@ -6047,7 +6110,7 @@ window.COURSE_CONFIG.apcsp.ctf = {
       "Debug any errors found"
     ] },
 
-  { id: "ap-m1-pseudocode", module: 1, title: "15e — Pseudocode & Development", category: "Computational Thinking",
+  { id: "ap-m1-pseudocode", module: 1, title: "15a — Pseudocode & Development", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Pseudocode. Writing out an algorithm in structured, informal language before translating it into real code is called writing ___.\n\nSubmit as flag{word} (lowercase).",
@@ -6074,23 +6137,32 @@ window.COURSE_CONFIG.apcsp.ctf = {
       "Factorial"
     ] },
 
-  { id: "ap-m1-bias", module: 1, title: "17e — Moore's Law & Algorithmic Bias", category: "Computational Thinking",
+  { id: "ap-m1-effic2", module: 1, title: "16b — Algorithms & Efficiency", category: "Computational Thinking",
     levels: [
       { difficulty: "Easy", points: 50,
-        prompt: "Objective — Moore's Law. The observation that the number of transistors on a computer chip roughly doubles every two years is called ___ ___.\n\nSubmit as flag{two words, no apostrophe} (lowercase).",
-        hint: "Named for an Intel co-founder.",
-        flagHash: "9d854f7377537f779e084d4073f6ff128ae6172613901649fa250a904b394fe9" },
+        prompt: "Objective — Algorithmic efficiency. The measure of how much time and/or memory an algorithm uses to run is called its ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Faster and leaner = more of this.",
+        flagHash: "e4ef8500a77c2559aa4e177849b3372d69f34025962670e709c03ce6971a9034" },
       { difficulty: "Medium", points: 100,
-        prompt: "Objective — Algorithmic bias. When an algorithm systematically produces unfair outcomes for a group of people, often due to skewed training data, this is called algorithmic ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "The unfairness has a name — one word.",
-        flagHash: "d548a37b58af739ba6fa6d7620f140c30aabbc21b4bd9ca6ecc4542c74f7ba0b" },
+        prompt: "Objective — Algorithms. A search that starts in the middle of a sorted list and removes half the data each step is called ___ ___.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "It halves a SORTED list each step.",
+        flagHash: "8df4578b0ae5d8875b5f269168532fc1cdeac556f0f41bdc0e43ce090975c3cd" },
       { difficulty: "Hard", points: 150,
-        prompt: "Objective — Mitigating algorithmic bias. A hiring algorithm trained mostly on resumes from one demographic starts ranking similarly qualified candidates from OTHER demographics lower. Reviewing training data and model outputs for this kind of unfair pattern before deployment is called algorithmic ___ ___.\n\nSubmit as flag{two words} (lowercase).",
-        hint: "You're checking the model for bias — what's that checking process called? Two words, first word is 'bias'.",
-        flagHash: "d72c481dcdcd5c457ee3fc31bf52c52a00963220208f89eb679a7b3880643bee" }
+        prompt: "Objective — Scalability. The capacity for a system or algorithm to keep performing well as the size of the problem grows much larger is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Does it still work well at a much bigger size?",
+        flagHash: "afe0dfc6ece90b4e834b1aa7b2543855fcc7558a60b40bb9a1f3c0200a74397d" }
     ] },
 
-  { id: "ap-m1-models", module: 1, title: "21e — Match the Computing Model", category: "Computational Thinking", type: "match", points: 150,
+  { id: "ap-m1-ptypes2", module: 1, title: "16c — Sort the Problem Type", category: "Computational Thinking", type: "match", points: 150,
+    intro: "Objective — Problems & algorithms. Match each description to the kind of problem it is. Tap a description, then tap the type.",
+    pairs: [
+      { left: "Is there a path from A to B? (yes/no)", right: "Decision Problem" },
+      { left: "Find the SHORTEST path from A to B", right: "Optimization Problem" },
+      { left: "No algorithm can always solve it", right: "Undecidable Problem" },
+      { left: "Can be solved algorithmically for every input", right: "Decidable Problem" }
+    ] },
+
+  { id: "ap-m1-models", module: 1, title: "16d (ext) — Match the Computing Model", category: "Computational Thinking", type: "match", points: 150,
     intro: "Objective — Parallel & distributed computing. Match each model to what it does. Tap a model, then tap its description.",
     pairs: [
       { left: "Sequential", right: "Runs one command at a time, in order" },
@@ -6098,8 +6170,88 @@ window.COURSE_CONFIG.apcsp.ctf = {
       { left: "Distributed", right: "Runs across multiple devices" }
     ] },
 
+  { id: "ap-m1-speedup", module: 1, title: "16e (ext) — Parallel Computing & Speedup", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Parallel & distributed computing. A model in which a program is broken into pieces, some of which run at the same time, is ___ ___.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "Pieces run at the same time.",
+        flagHash: "5ffb708e8d184373d0be826cd0a330a6d3a2f22eee933bd58c58312b46212dc0" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Parallel computing. The time to complete a task sequentially divided by the time to complete it in parallel is the ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Sequential time ÷ parallel time.",
+        flagHash: "2c77634d0c4787906adf64b39d0098f7c3b19d5f6f6551ccbf3aef25c3342c89" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Calculating speedup. A task takes 60 seconds to run sequentially and 15 seconds when run in parallel. What is the speedup, as a plain number?\n\nSubmit as flag{number}.",
+        hint: "Speedup = sequential time ÷ parallel time.",
+        flagHash: "7be5aec942dbdcfb4e21cd12dd137de80acf61b69c924a3500a50673253943c2" }
+    ] },
+
+  { id: "ap-m1-moore", module: 1, title: "17a — Moore's Law", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Moore's Law. The observation that the number of transistors on a computer chip roughly doubles on a regular schedule is called ___ ___.\n\nSubmit as flag{two words, no apostrophe} (lowercase).",
+        hint: "Named for an Intel co-founder.",
+        flagHash: "9d854f7377537f779e084d4073f6ff128ae6172613901649fa250a904b394fe9" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Moore's Law. Moore's Law is usually stated as chip density doubling roughly every how many months?\n\nSubmit as flag{number}.",
+        hint: "A year and a half.",
+        flagHash: "d75230f35c9367fa9d75c8a3f0cb5ddb1f98b64fc72ca72d22722fcdbd4848bb" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Applying Moore's Law. Using the ~18-month doubling rate, computer hardware from 10 years ago was roughly how many times slower than today's?\n\nSubmit as flag{number}.",
+        hint: "10 years is about 6.67 doublings — round to the nearest clean power-of-two-ish estimate given in the reading.",
+        flagHash: "d676b048201cf2a4cedb82b50b9440a4f4e4983d51ca38269dc9cffffce0abd4" }
+    ] },
+
+  { id: "ap-m1-heuristics", module: 1, title: "18a — Heuristics", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Heuristics. An approach that gives a 'good enough' solution when a perfect one is impractical or impossible is a ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "A problem solver's 'rule of thumb'.",
+        flagHash: "0ba600dc91096cc6250d73b1bf62d9f522f43506563f3361bc5bc6c701f1e290" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Heuristics vs. exact solutions. A solution guaranteed to be the best possible answer (not just good enough) is called ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of a heuristic's guarantee.",
+        flagHash: "d4c96982e5d2fa48c8416361cfd3ae256435fe7e12e40f93738bcd8004893bbd" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Why use heuristics. A GPS app often suggests a good route instantly instead of checking every possible route to guarantee the shortest one, because a heuristic trades a guarantee of the best answer for ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "What do you gain by not checking every possibility?",
+        flagHash: "001e067c96ecae2e1ad8b78b6197af744bfafad91793f37cbb1cd0001e46286d" }
+    ] },
+
+  { id: "ap-m1-bias", module: 1, title: "19a — Algorithmic Bias", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Algorithmic bias. When an algorithm systematically produces unfair outcomes for a group of people, often due to skewed training data, this is called algorithmic ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The unfairness has a name — one word.",
+        flagHash: "d548a37b58af739ba6fa6d7620f140c30aabbc21b4bd9ca6ecc4542c74f7ba0b" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Causes of algorithmic bias. Training data that leaves out certain genders, races, or socioeconomic groups lacks ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "Not everyone is represented.",
+        flagHash: "831d78777419cbaf8638b10e6b0b1f1c50a9aac3641c731e3abc956814c92ab2" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Real-world example. Automated loan software that discriminates against applicants based on their neighborhood is known as ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "An old, unethical banking practice with the same name.",
+        flagHash: "6beb134ca4cf5ecf5047f8b06d7523656012c4b5e0d777649365db2d956c4bc3" }
+    ] },
+
+  { id: "ap-m1-antibias", module: 1, title: "20a — Reducing Algorithmic Bias", category: "Computational Thinking",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Inclusion coding. Designing code from the start to explicitly check for bias during development and deployment is called inclusion coding, or ___ for short.\n\nSubmit as flag{word} (lowercase).",
+        hint: "A shortened, one-word version of 'inclusion coding'.",
+        flagHash: "ff099a7d419c133351b3875bfbf0ce2c9b939a03cf451f4cf8dcb5f12a779542" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Inclusive data. Using training data that fairly represents every group, instead of favoring one, is called an ___ data set.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The opposite of leaving groups out.",
+        flagHash: "a44eb3e0a7f4076881bf4fca30e06303a86b61ac8fcd701d30cf10fdfc4638db" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Mitigating algorithmic bias. Reviewing training data and model outputs for unfair patterns before deployment is called algorithmic ___ ___.\n\nSubmit as flag{two words} (lowercase).",
+        hint: "You're checking the model for bias — two words, first word is 'bias'.",
+        flagHash: "d72c481dcdcd5c457ee3fc31bf52c52a00963220208f89eb679a7b3880643bee" }
+    ] },
+
   { id: "ap-m1-vocab", module: 1, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["algorithm","abstraction","sequenc","selection","iteration","efficiency","heuristic","binary search","parallel","cipher","plaintext","ciphertext","key","pseudocode","bias","flowchart"],
+    bias: ["algorithm","abstraction","decomposition","generalized","sequenc","selection","iteration","efficiency","scalability","heuristic","binary search","decidable","confidentiality","integrity","availability","ambiguity","syntax","compilation","cipher","plaintext","ciphertext","key","pseudocode","bias","incoding","flowchart"],
     hardMode: "rapid" },
 
   /* MODULE 2 — Python Programming ─────────────────────────────────────────── */
