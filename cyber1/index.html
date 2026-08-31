@@ -12,8 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
-:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;}
-:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--border-hi:#8fabc7;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--fainter:#a6b3c2;--accent:#0a74d6;--accent2:#075aa8;--amber:#9a7d16;}
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--warmup-c:#fbbf24;--warmup-bg:#2b230a;--warmup-bd:#7a5f16;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--border-hi:#8fabc7;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--fainter:#a6b3c2;--accent:#0a74d6;--accent2:#075aa8;--amber:#9a7d16;--warmup-c:#a8710a;--warmup-bg:#fdf2dc;--warmup-bd:#e0b968;}
 body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
 .themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
 .themebtn:hover{border-color:var(--accent);}
@@ -342,7 +342,7 @@ function rowsHtml(rows){
   let html='<div style="display:flex;flex-direction:column;gap:12px;">';
   rows.forEach(r=>{ html+=`<div class="row">
     <div style="display:flex;flex-direction:column;gap:2px;"><span class="mono" style="font-size:13px;font-weight:700;color:var(--accent);">${esc(r.day)}</span><span class="mono" style="font-size:11px;color:var(--faint);">${esc(r.date)}</span></div>
-    <div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:15px;color:var(--bright);line-height:1.35;">${esc(r.topic)}</span>${r.sub?`<span style="font-size:12px;color:var(--dim);line-height:1.4;">${esc(r.sub)}</span>`:''}</div>
+    <div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:15px;color:var(--bright);line-height:1.35;">${esc(r.topic)}</span>${r.sub?`<span style="font-size:12px;color:var(--dim);line-height:1.4;">${esc(r.sub)}</span>`:''}${r.warmup?`<span class="mono" style="display:inline-block;margin-top:4px;font-size:11px;padding:3px 9px;border-radius:999px;color:var(--warmup-c);background:var(--warmup-bg);border:1px solid var(--warmup-bd);width:fit-content;">WARM-UP: ${esc(r.warmup)}</span>`:''}</div>
     <span class="mono" style="font-size:12px;line-height:1.4;text-align:right;color:${r.hot?'var(--amber)':'var(--dim)'};">${esc(r.hw)}</span></div>`; });
   html+='</div>'; return html;
 }
@@ -357,14 +357,15 @@ async function load(){
     const header=clean[hi].map(c=>(c||'').trim().toLowerCase());
     const find=k=>header.findIndex(c=>c.includes(k));
     const findAny=arr=>{for(const k of arr){const i=header.findIndex(c=>c.includes(k));if(i>-1)return i;}return -1;};
-    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=findAny(['topic','textbook section','learning','lesson']),cHw=find('homework');
+    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=findAny(['topic','textbook section','learning','lesson']),cHw=find('homework'),cWarmup=find('warm');
     const wd=/^(mon|tue|wed|thu|fri|sat|sun)/i;
     const m=r=>{
       const lines=(cTopic>-1?(r[cTopic]||''):'').split(/\n+/).map(t=>t.trim()).filter(Boolean);
       const hw=(cHw>-1?(r[cHw]||''):'').replace(/\n+/g,' · ').trim();
-      return {day:(r[cDay]||'').trim().slice(0,3),date:cDate>-1?fmt(r[cDate]):'',topic:lines[0]||'—',sub:lines.slice(1).join(' · '),hw:hw||'—',hot:!!hw};
+      const warmup=(cWarmup>-1?(r[cWarmup]||''):'').replace(/\n+/g,' · ').trim();
+      return {day:(r[cDay]||'').trim().slice(0,3),date:cDate>-1?fmt(r[cDate]):'',topic:lines[0]||'—',sub:lines.slice(1).join(' · '),hw:hw||'—',hot:!!hw,warmup:warmup||''};
     };
-    const keep=r=>r.topic!=='—'||r.hw!=='—';
+    const keep=r=>r.topic!=='—'||r.hw!=='—'||r.warmup;
     const after=clean.slice(hi+1).filter(r=>wd.test((r[cDay]||'').trim()));
     // split by calendar week relative to today (Monday start).
     // On weekends, roll forward to the upcoming school week.
