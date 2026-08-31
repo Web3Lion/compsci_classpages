@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -39,12 +40,10 @@ a:hover{color:var(--accent2);}
 .chip{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:32px;}
 .chip:hover{border-color:var(--border-hi);color:var(--accent2);}
 .colTitle{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.3px;color:var(--faint);margin:20px 0 10px;}
-.rigRow{display:flex;flex-direction:column;gap:8px;}
-.rigOpt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);cursor:pointer;min-height:44px;}
-.rigOpt.sel{border-color:var(--accent);background:var(--panel3);}
-.rigOpt input{accent-color:var(--accent);width:16px;height:16px;flex:none;}
-.rigOpt .t{font-size:13.5px;color:var(--bright);font-weight:600;}
-.rigOpt .d{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;}
+.attackDefs{display:flex;flex-direction:column;gap:8px;}
+.attackDef{padding:11px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);}
+.attackDef .t{font-size:13.5px;color:var(--bright);font-weight:600;}
+.attackDef .d{font-size:11.5px;color:var(--faint);font-family:'JetBrains Mono',monospace;margin-top:2px;}
 /* ---------- results ---------- */
 #empty{color:var(--faint);font-size:13.5px;text-align:center;padding:20px 0;}
 #results{display:none;}
@@ -54,8 +53,8 @@ a:hover{color:var(--accent2);}
 .bigTime .cat{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;margin-top:6px;padding:4px 12px;border-radius:999px;display:inline-block;}
 .statsRow{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
 .statsRow b{color:var(--bright);font-size:15px;display:block;}
-.statBox{cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid transparent;position:relative;}
-.statBox:hover{border-color:var(--border-hi);background:var(--panel3);}
+.statBox{cursor:pointer;padding:9px 12px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);position:relative;min-height:44px;}
+.statBox:hover{border-color:var(--accent);background:var(--panel3);}
 .statBox .qmark{font-size:10px;color:var(--accent);margin-left:3px;}
 .popOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;}
 .popOverlay.on{display:flex;}
@@ -97,8 +96,6 @@ a:hover{color:var(--accent2);}
     <div class="hint">Nothing is sent anywhere — this all runs locally, right here.</div>
     <div class="chipRow" id="chips"></div>
 
-    <div class="colTitle">ATTACK SCENARIO</div>
-    <div class="rigRow" id="rigRow"></div>
   </div>
 
   <div class="card">
@@ -130,26 +127,17 @@ var RIGS = [
   { id:"bcrypt", name:"Leaked database, slow hash (bcrypt)", rate:20000, desc:"Hashes designed to be slow to check \u2014 ~20,000 guesses/sec on a cracking rig" },
   { id:"md5", name:"Leaked database, fast hash (MD5, GPU rig)", rate:50000000000, desc:"A weak, fast hash cracked with GPUs \u2014 ~50 billion guesses/sec" }
 ];
-var selectedRig = "bcrypt";
-
 function renderChips(){
   document.getElementById('chips').innerHTML = CHIPS.map(function(c){
     return '<button class="chip" onclick="tryChip(\''+c.pw.replace(/'/g,"\\'")+'\')">'+c.label+'</button>';
   }).join('');
 }
-function renderRigs(){
-  document.getElementById('rigRow').innerHTML = RIGS.map(function(r){
-    return '<label class="rigOpt '+(r.id===selectedRig?'sel':'')+'"><input type="radio" name="rig" '+(r.id===selectedRig?'checked':'')+' onchange="selectRig(\''+r.id+'\')">'+
-      '<span><span class="t">'+r.name+'</span><br><span class="d">'+r.desc+'</span></span></label>';
-  }).join('');
-}
-function selectRig(id){ selectedRig=id; renderRigs(); analyze(); }
 function tryChip(pw){ var el=document.getElementById('pwInput'); el.value=pw; el.type='text'; document.getElementById('eyeBtn').textContent='🙈'; analyze(); }
 function toggleEye(){
   var el=document.getElementById('pwInput'), btn=document.getElementById('eyeBtn');
   if(el.type==='password'){ el.type='text'; btn.textContent='🙈'; } else { el.type='password'; btn.textContent='👁'; }
 }
-renderChips(); renderRigs();
+renderChips();
 document.getElementById('pwInput').addEventListener('input', analyze);
 
 function fmtTime(seconds){
@@ -182,7 +170,7 @@ function analyze(){
   var keyspace=Math.pow(charset,length);
   var isCommon=COMMON.indexOf(pw.toLowerCase())!==-1;
 
-  var rig=RIGS.find(function(r){return r.id===selectedRig;});
+  var rig=RIGS.find(function(r){return r.id==="bcrypt";});
   var seconds = isCommon ? (COMMON.indexOf(pw.toLowerCase())+1)/rig.rate : crackSeconds(keyspace, rig.rate);
   var timeStr = fmtTime(seconds);
   var cat, color;
@@ -196,7 +184,6 @@ function analyze(){
   if(isCommon){
     html+='<div class="dictBanner">⚠ This is one of the most common passwords ever leaked. Attackers try dictionary lists like this <i>before</i> brute force \u2014 length and symbols don\u2019t help if the whole password is already on the list.</div>';
   }
-  html+='<div class="bigTime"><div class="val" style="color:'+color+'">'+timeStr+'</div><div class="cat" style="background:color-mix(in srgb,'+color+' 16%,transparent);color:'+color+'">'+cat+'</div></div>';
   html+='<div class="statsRow"><span class="statBox" onclick="showPop(\'length\','+length+','+charset+')"><b>'+length+'</b>characters<span class="qmark">\u24d8</span></span><span class="statBox" onclick="showPop(\'charset\','+length+','+charset+')"><b>'+charset+'</b>possible characters<span class="qmark">\u24d8</span></span><span class="statBox" onclick="showPop(\'entropy\','+length+','+charset+')"><b>'+entropyBits+'</b>bits of entropy<span class="qmark">\u24d8</span></span></div>';
 
   html+='<div class="colTitle">SAME PASSWORD, DIFFERENT SYSTEMS — TIME TO CRACK</div>';
@@ -220,6 +207,7 @@ function analyze(){
   html+='</div></div>';
   html+='<div class="chartLabels">'+RIGS.map(function(r){ return '<div class="chartLabelCol">'+r.name+'</div>'; }).join('')+'</div>';
   html+='</div>';
+  html+='<div class="colTitle">WHAT EACH ATTACK MEANS</div><div class="attackDefs">'+RIGS.map(function(r){ return '<div class="attackDef"><span class="t">'+r.name+'</span><br><span class="d">'+r.desc+'</span></div>'; }).join('')+'</div>';
   html+='<div class="note">Crack time assumes an attacker checks on average half the possible combinations before finding a match. The gap between rows above is the real lesson: how a password is <i>stored</i> (a slow hash like bcrypt vs. a fast one like MD5) changes crack time by orders of magnitude \u2014 which is why you can\u2019t control that part, only your password.</div>';
 
   resEl.innerHTML=html;
