@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Build — Write &amp; Run Your Own Path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#a855f7;--accent2:#c98bff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#7c3fc0;--accent2:#6a2fb0;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.btn,.slot,.row{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:960px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
+.card + .card{margin-top:16px;}
+.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 18px;}
+.stepLabel{font-size:11.5px;letter-spacing:.06em;color:var(--faint);margin:0 0 8px;}
+.modeRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.modeBtn{font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 15px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:40px;}
+.modeBtn:hover{border-color:var(--border-hi);}
+.modeBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--accent2);}
+.layout{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;}
+.gridSide{flex:0 0 auto;}
+.gridStage{display:flex;justify-content:center;padding:6px 0;}
+.grid{display:grid;background:#04070c;border:1px solid var(--border3);border-radius:10px;padding:6px;position:relative;}
+.cell{width:38px;height:38px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;}
+.cell:hover{border-color:var(--border-hi);}
+.cell.trail{background:color-mix(in srgb,var(--accent) 16%,transparent);}
+.cell.goal{background:color-mix(in srgb,var(--warn) 16%,transparent);border-color:color-mix(in srgb,var(--warn) 50%,transparent);}
+.goalFlag{font-size:16px;}
+.robot{position:absolute;width:38px;height:38px;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform .34s cubic-bezier(.4,0,.2,1),left .34s cubic-bezier(.4,0,.2,1),top .34s cubic-bezier(.4,0,.2,1);}
+.robot .tri{font-size:20px;color:var(--accent2);text-shadow:0 0 10px rgba(200,139,255,.6);}
+.legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);margin-top:10px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.legDot{width:10px;height:10px;border-radius:3px;display:inline-block;}
+.progSide{flex:1 1 260px;min-width:240px;}
+.palette{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.palBtn{font-family:'JetBrains Mono',monospace;font-size:12.5px;padding:12px 10px;border-radius:9px;border:1px solid var(--border3);background:var(--bg);color:var(--accent2);cursor:pointer;font-weight:700;min-height:44px;}
+.palBtn:hover{background:var(--panel3);}
+.palBtn:disabled{opacity:.4;cursor:default;}
+.summaryBox{border:1px solid var(--border2);border-radius:10px;background:var(--bg);padding:12px 14px;min-height:160px;max-height:320px;overflow-y:auto;}
+.summaryEmpty{color:var(--fainter);font-size:12.5px;font-family:'JetBrains Mono',monospace;padding:6px 2px;}
+.progLine{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text);}
+.progLine.current{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent2);}
+.progLine .ix{color:var(--faint);margin-right:8px;}
+.progLine .rm{background:none;border:none;color:var(--fainter);cursor:pointer;font-size:14px;padding:2px 6px;}
+.progLine .rm:hover{color:var(--bad);}
+.controls{display:flex;gap:10px;justify-content:flex-start;flex-wrap:wrap;margin-top:14px;}
+.ctrlBtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 18px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent2);cursor:pointer;min-height:44px;}
+.ctrlBtn:hover{background:var(--panel3);}
+.ctrlBtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#1c0a30;font-weight:700;border:none;}
+.ctrlBtn.primary:hover{filter:brightness(1.08);}
+.ctrlBtn:disabled{opacity:.4;cursor:default;filter:none;}
+.resultBanner{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.6;display:none;}
+.resultBanner.show{display:block;}
+.resultBanner.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);}
+.resultBanner.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);}
+.resultBanner.info{background:color-mix(in srgb,var(--accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);color:var(--accent2);}
+.note{margin-top:16px;font-size:12.5px;color:var(--faint);line-height:1.6;}
+.note b{color:var(--dim);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>ROBOT BUILD</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="back mono">write your own pseudocode · check your work</span>
+      <a class="back mono" href="index.html">&larr; simulators</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="lead">Set up the robot's start square and facing direction, then build a program from the command palette. Click <b>RUN</b> to watch it execute exactly what you wrote — a good way to check a path you worked out on paper before you trust it.</p>
+    <div class="stepLabel mono">1. CLICK A SQUARE TO PLACE THE ROBOT (click again to rotate it)</div>
+    <div class="modeRow">
+      <button class="modeBtn active" id="modeStartBtn" onclick="setClickMode('start')">📍 SET START</button>
+      <button class="modeBtn" id="modeGoalBtn" onclick="setClickMode('goal')">🚩 SET GOAL (optional)</button>
+    </div>
+
+    <div class="layout">
+      <div class="gridSide">
+        <div class="gridStage"><div class="grid" id="grid"></div></div>
+        <div class="legend mono">
+          <span><span class="legDot" style="background:color-mix(in srgb,var(--accent) 40%,transparent);"></span>path</span>
+          <span><span class="legDot" style="background:color-mix(in srgb,var(--warn) 40%,transparent);"></span>goal</span>
+        </div>
+      </div>
+
+      <div class="progSide">
+        <div class="stepLabel mono">2. BUILD THE PROGRAM</div>
+        <div class="palette">
+          <button class="palBtn" onclick="addCmd('move')">MOVE_FORWARD( )</button>
+          <button class="palBtn" onclick="addCmd('left')">ROTATE_LEFT( )</button>
+          <button class="palBtn" onclick="addCmd('right')">ROTATE_RIGHT( )</button>
+          <button class="palBtn" onclick="undoCmd()">↶ UNDO LAST</button>
+        </div>
+        <div class="stepLabel mono">3. YOUR PROGRAM</div>
+        <div class="summaryBox mono" id="summaryBox"></div>
+        <div class="controls">
+          <button class="ctrlBtn primary" id="runBtn" onclick="runProgram()" disabled>▶ RUN</button>
+          <button class="ctrlBtn" onclick="clearProgram()">⟲ CLEAR PROGRAM</button>
+          <button class="ctrlBtn" onclick="clearAll()">✕ RESET GRID</button>
+        </div>
+        <div class="resultBanner" id="resultBanner"></div>
+      </div>
+    </div>
+    <p class="note"><b>Tip:</b> if there's no goal set, RUN just shows you the path your code actually takes. Set a goal flag to have it tell you whether your code lands on it.</p>
+  </div>
+
+  <div class="card" style="border-color:var(--accent);">
+    <div class="stepLabel mono" style="color:var(--accent2);">NEXT STEPS</div>
+    <p class="lead" style="margin-bottom:14px;">Want worked practice problems with multiple-choice pseudocode options instead? <b>Robot Run</b> gives you a scenario, four code options, and lets you check which one actually reaches the goal — plus a 5-question quiz mode.</p>
+    <a class="ctrlBtn primary" href="robotrun.html" style="display:inline-block;text-decoration:none;">TRY ROBOT RUN →</a>
+  </div>
+</div>
+
+<script>
+var GRID_W=8, GRID_H=8, CELL=38;
+var DIRV=[[0,-1],[1,0],[0,1],[-1,0]]; // up, right, down, left
+var DIRCH=['▲','▶','▼','◀'];
+var clickMode='start';
+var start=null; // {x,y,dir}
+var goal=null; // {x,y}
+var program=[]; // array of 'move'|'left'|'right'
+var running=false;
+
+function buildGrid(){
+  var g=document.getElementById('grid');
+  g.style.gridTemplateColumns='repeat('+GRID_W+', '+CELL+'px)';
+  g.style.gridTemplateRows='repeat('+GRID_H+', '+CELL+'px)';
+  g.innerHTML='';
+  for(var y=0;y<GRID_H;y++){
+    for(var x=0;x<GRID_W;x++){
+      var c=document.createElement('div');
+      c.className='cell'; c.dataset.x=x; c.dataset.y=y;
+      c.onclick=(function(cx,cy){ return function(){ cellClick(cx,cy); }; })(x,y);
+      g.appendChild(c);
+    }
+  }
+  renderState();
+}
+function setClickMode(m){
+  clickMode=m;
+  document.getElementById('modeStartBtn').classList.toggle('active', m==='start');
+  document.getElementById('modeGoalBtn').classList.toggle('active', m==='goal');
+}
+function cellClick(x,y){
+  if(running) return;
+  if(clickMode==='start'){
+    if(start && start.x===x && start.y===y){ start.dir=(start.dir+1)%4; }
+    else { start={x:x,y:y,dir:0}; }
+  } else {
+    if(goal && goal.x===x && goal.y===y){ goal=null; }
+    else { goal={x:x,y:y}; }
+  }
+  renderState();
+  updateRunButton();
+}
+function cellEl(x,y){ return document.querySelector('.cell[data-x="'+x+'"][data-y="'+y+'"]'); }
+function renderState(highlightSteps){
+  document.querySelectorAll('.cell').forEach(function(c){ c.classList.remove('goal','trail'); c.innerHTML=''; });
+  document.querySelectorAll('.robot').forEach(function(r){ r.remove(); });
+  if(goal){ var gc=cellEl(goal.x,goal.y); if(gc){ gc.classList.add('goal'); gc.innerHTML='<span class="goalFlag">🚩</span>'; } }
+  if(highlightSteps){
+    highlightSteps.forEach(function(s){ var c=cellEl(s.x,s.y); if(c && !(goal&&s.x===goal.x&&s.y===goal.y)) c.classList.add('trail'); });
+  }
+  if(start){
+    var r=document.createElement('div');
+    r.className='robot'; r.id='robotEl';
+    r.style.left=(start.x*(CELL+0))+'px'; r.style.top=(start.y*(CELL+0))+'px';
+    r.style.transform='rotate('+(start.dir*90)+'deg)';
+    r.innerHTML='<span class="tri">▲</span>';
+    document.getElementById('grid').appendChild(r);
+    positionRobot(start.x,start.y,start.dir);
+  }
+}
+function positionRobot(x,y,dir){
+  var r=document.getElementById('robotEl'); if(!r) return;
+  r.style.left=(6+x*CELL)+'px'; r.style.top=(6+y*CELL)+'px';
+  r.style.transform='rotate('+(dir*90)+'deg)';
+}
+function addCmd(cmd){ if(running) return; program.push(cmd); renderProgram(); updateRunButton(); }
+function undoCmd(){ if(running) return; program.pop(); renderProgram(); updateRunButton(); }
+function clearProgram(){ if(running) return; program=[]; renderProgram(); updateRunButton(); }
+function clearAll(){ if(running) return; start=null; goal=null; program=[]; document.getElementById('resultBanner').classList.remove('show','ok','bad','info'); renderProgram(); renderState(); updateRunButton(); }
+var CMD_LABEL={move:'MOVE_FORWARD( )', left:'ROTATE_LEFT( )', right:'ROTATE_RIGHT( )'};
+function renderProgram(){
+  var box=document.getElementById('summaryBox');
+  if(!program.length){ box.innerHTML='<div class="summaryEmpty">No commands yet — use the palette above.</div>'; return; }
+  box.innerHTML=program.map(function(cmd,i){
+    return '<div class="progLine" id="pline'+i+'"><span><span class="ix">'+(i+1)+'</span>'+CMD_LABEL[cmd]+'</span>'+
+      (running?'':'<button class="rm" onclick="removeCmd('+i+')">✕</button>')+'</div>';
+  }).join('');
+}
+function removeCmd(i){ if(running) return; program.splice(i,1); renderProgram(); updateRunButton(); }
+function updateRunButton(){ document.getElementById('runBtn').disabled = running || !start || !program.length; }
+
+function runProgram(){
+  if(!start || !program.length || running) return;
+  running=true; updateRunButton();
+  document.getElementById('resultBanner').classList.remove('show','ok','bad','info');
+  renderProgram();
+  var state={x:start.x,y:start.y,dir:start.dir};
+  var steps=[{x:state.x,y:state.y,dir:state.dir}];
+  var crashed=false, crashAt=-1;
+  for(var i=0;i<program.length;i++){
+    var cmd=program[i];
+    if(cmd==='left'){ state.dir=(state.dir+3)%4; }
+    else if(cmd==='right'){ state.dir=(state.dir+1)%4; }
+    else if(cmd==='move'){
+      var d=DIRV[state.dir], nx=state.x+d[0], ny=state.y+d[1];
+      if(nx<0||nx>=GRID_W||ny<0||ny>=GRID_H){ crashed=true; crashAt=i; break; }
+      state.x=nx; state.y=ny;
+    }
+    steps.push({x:state.x,y:state.y,dir:state.dir});
+  }
+  renderState();
+  var idx=0;
+  (function tick(){
+    var s=steps[idx];
+    positionRobot(s.x,s.y,s.dir);
+    var c=cellEl(s.x,s.y); if(c && !(goal&&s.x===goal.x&&s.y===goal.y)) c.classList.add('trail');
+    document.querySelectorAll('.progLine').forEach(function(el){ el.classList.remove('current'); });
+    var lineIdx = idx>0?idx-1:0;
+    var pl=document.getElementById('pline'+lineIdx); if(pl) pl.classList.add('current');
+    idx++;
+    if(idx<steps.length){ setTimeout(tick,420); }
+    else { setTimeout(function(){ finishRun(crashed, state); }, 420); }
+  })();
+}
+function finishRun(crashed, finalState){
+  running=false; updateRunButton(); renderProgram();
+  document.querySelectorAll('.progLine').forEach(function(el){ el.classList.remove('current'); });
+  var rb=document.getElementById('resultBanner');
+  rb.classList.remove('ok','bad','info'); rb.classList.add('show');
+  if(crashed){
+    rb.classList.add('bad');
+    rb.textContent='✗ This program drives the robot off the edge of the grid.';
+    return;
+  }
+  if(!goal){
+    rb.classList.add('info');
+    rb.textContent='Program finished at ('+finalState.x+', '+finalState.y+'), facing '+['up','right','down','left'][finalState.dir]+'. Set a goal flag to check against a target.';
+    return;
+  }
+  if(finalState.x===goal.x && finalState.y===goal.y){
+    rb.classList.add('ok');
+    rb.textContent='✓ Landed on the goal square.';
+  } else {
+    rb.classList.add('bad');
+    rb.textContent='✗ Ended at ('+finalState.x+', '+finalState.y+') instead of the goal at ('+goal.x+', '+goal.y+').';
+  }
+}
+
+buildGrid();
+renderProgram();
+</script>
+</body>
+</html>
