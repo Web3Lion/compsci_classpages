@@ -34,6 +34,7 @@ a:hover{color:var(--accent2);}
 .probBtn{font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 15px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:40px;}
 .probBtn:hover{border-color:var(--border-hi);}
 .probBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--accent2);}
+.stepLabel{font-size:11.5px;letter-spacing:.06em;color:var(--faint);margin:0 0 8px;}
 /* ---------- grid ---------- */
 .gridStage{display:flex;justify-content:center;padding:16px 0;}
 .grid{display:grid;background:#04070c;border:1px solid var(--border3);border-radius:10px;padding:6px;position:relative;}
@@ -103,8 +104,11 @@ a:hover{color:var(--accent2);}
   </div>
 
   <div class="card">
-    <p class="lead">The robot (triangle) needs to follow the arrow path to the goal square. Four pseudocode options are given — pick the one that actually does it, then run it and watch. Each option is real, runnable code: what you see is exactly what it does. Practice questions are below — pick a problem tab any time to try one.</p>
+    <p class="lead">The robot (triangle) needs to land on the goal square (the flag). Four pseudocode options are given — pick the one that actually gets it there, then run it and watch. Each option is real, runnable code: what you see is exactly what it does. Only the final square matters — facing direction doesn't count.</p>
+    <div class="stepLabel mono">1. PICK THE SCENARIO</div>
     <div class="probRow" id="probRow"></div>
+    <div class="stepLabel mono" style="margin-top:14px;">2. PICK THE MODE</div>
+    <div class="probRow" id="modeRow"></div>
   </div>
 
   <div style="display:flex;justify-content:flex-end;margin:16px 0;">
@@ -129,7 +133,7 @@ a:hover{color:var(--accent2);}
       <button class="ctrlBtn" id="newProbBtn" onclick="randomProblem()">🔀 NEW PROBLEM</button>
     </div>
     <div class="gradeBanner mono" id="gradeBanner"></div>
-    <div class="note">Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you're told; the grid shows you exactly what each option does. <b>REPEAT n TIMES</b> reads the value of <b>n</b> once, right when that loop starts — changing n partway through a loop doesn't change how many times that loop was already set to repeat.</div>
+    <div class="note" id="modeNote">Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you're told; the grid shows you exactly what each option does.</div>
 
     <div class="layerToggleRow">
       <button class="layerToggle" id="layerBtn" onclick="toggleLayers()">▾ SHOW ABSTRACTION LAYERS</button>
@@ -143,6 +147,10 @@ a:hover{color:var(--accent2);}
     </div>
     <div class="note" id="stackNote" style="display:none;"><b>Abstraction</b> is why one line of pseudocode is usable at all — you never think about pixels or schedulers when you write MOVE_FORWARD. Run the program above with layers shown and watch each layer light up in sequence on every move.</div>
   </div>
+</div>
+
+<div class="modalOverlay" id="scoreModal">
+  <div class="modalCard" id="scoreModalCard" style="max-width:440px;"></div>
 </div>
 
 <div class="modalOverlay" id="nameModal">
@@ -211,6 +219,30 @@ function buildPrograms(turn, times){
     incInside:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'repeatVar',body:[{t:'move'},{t:'inc'}]},t]}]
   };
 }
+/* Loop-free equivalent: same staircase pattern, written as plain MOVE_FORWARD/
+   ROTATE lines with no REPEAT and no variable, plus straight-line ordering
+   mistakes instead of loop-variable-timing mistakes. */
+function moveN(n){ var out=[]; for(var i=0;i<n;i++) out.push({t:'move'}); return out; }
+function lastLeafType(ast){
+  if(!ast || !ast.length) return null;
+  var node=ast[ast.length-1];
+  if(node.t==='repeatFixed' || node.t==='repeatVar') return lastLeafType(node.body);
+  return node.t;
+}
+function ensureEndsInMove(ast){ return lastLeafType(ast)==='move' ? ast : ast.concat([{t:'move'}]); }
+function buildProgramsFlat(turn, times){
+  var t={t:turn};
+  var correct=[], turnFirst=[], reversed=[], noFinalTurn=[];
+  for(var i=1;i<=times;i++){
+    correct=correct.concat(moveN(i),[t]);
+    turnFirst=turnFirst.concat([t],moveN(i));
+  }
+  for(var j=times;j>=1;j--){ reversed=reversed.concat(moveN(j),[t]); }
+  for(var k=1;k<=times;k++){ noFinalTurn=noFinalTurn.concat(moveN(k), k<times?[t]:[]); }
+  var shortLast=[];
+  for(var m=1;m<=times;m++){ shortLast=shortLast.concat(moveN(m===times?Math.max(1,m-1):m),[t]); }
+  return { correct:correct, turnFirst:turnFirst, reversed:reversed, shortLast:shortLast };
+}
 
 /* ---------- practice problem bank ---------- */
 var PROBLEMS=[
@@ -222,7 +254,7 @@ var PROBLEMS=[
   { title:"Quick Turn", grid:{w:9,h:9}, start:{x:4,y:6,dir:0}, turn:'right', times:3 }
 ];
 
-var currentIdx=0, currentProbs=null, currentTarget=null, selectedKey=null, CELL=38;
+var currentIdx=0, currentProbs=null, currentTarget=null, selectedKey=null, CELL=38, codeMode='flat';
 var layersOn=false;
 function toggleLayers(){
   layersOn=!layersOn;
@@ -247,6 +279,16 @@ function renderProbTabs(){
   document.getElementById('probRow').innerHTML = PROBLEMS.map(function(p,i){
     return '<button class="probBtn'+(i===currentIdx?' active':'')+'" onclick="loadProblem('+i+')">'+p.title+'</button>';
   }).join('');
+  document.getElementById('modeRow').innerHTML =
+    '<button class="probBtn'+(codeMode==='flat'?' active':'')+'" onclick="setCodeMode(\'flat\')">\u{1F4CB} STEP-BY-STEP (NO LOOPS)</button>'+
+    '<button class="probBtn'+(codeMode==='loop'?' active':'')+'" onclick="setCodeMode(\'loop\')">\u{1F501} REPEAT( ) LOOP VERSION</button>';
+}
+function setCodeMode(m){
+  if(m===codeMode) return; codeMode=m;
+  document.getElementById('modeNote').innerHTML = codeMode==='loop'
+    ? 'Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you\'re told; the grid shows you exactly what each option does. <b>REPEAT n TIMES</b> reads the value of <b>n</b> once, right when that loop starts — changing n partway through a loop doesn\'t change how many times that loop was already set to repeat.'
+    : 'Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you\'re told; the grid shows you exactly what each option does.';
+  loadProblem(currentIdx);
 }
 function randomProblem(){ loadProblem(Math.floor(Math.random()*PROBLEMS.length)); }
 
@@ -254,17 +296,29 @@ function loadProblem(idx){
   currentIdx=idx;
   renderProbTabs();
   var p=PROBLEMS[idx];
-  var progs=buildPrograms(p.turn, p.times);
-  currentTarget=runAST(progs.correct, p.start, p.grid);
   currentProbs=p;
-
-  // shuffle option order fresh each load
-  var entries=[
-    {key:'correct',ast:progs.correct},
-    {key:'incBefore',ast:progs.incBefore},
-    {key:'turnBefore',ast:progs.turnBefore},
-    {key:'incInside',ast:progs.incInside}
-  ];
+  var entries;
+  if(codeMode==='loop'){
+    var progs=buildPrograms(p.turn, p.times);
+    Object.keys(progs).forEach(function(k){ progs[k]=ensureEndsInMove(progs[k]); });
+    currentTarget=runAST(progs.correct, p.start, p.grid);
+    entries=[
+      {key:'correct',ast:progs.correct},
+      {key:'incBefore',ast:progs.incBefore},
+      {key:'turnBefore',ast:progs.turnBefore},
+      {key:'incInside',ast:progs.incInside}
+    ];
+  } else {
+    var flat=buildProgramsFlat(p.turn, p.times);
+    Object.keys(flat).forEach(function(k){ flat[k]=ensureEndsInMove(flat[k]); });
+    currentTarget=runAST(flat.correct, p.start, p.grid);
+    entries=[
+      {key:'correct',ast:flat.correct},
+      {key:'turnFirst',ast:flat.turnFirst},
+      {key:'reversed',ast:flat.reversed},
+      {key:'shortLast',ast:flat.shortLast}
+    ];
+  }
   for(var i=entries.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=entries[i]; entries[i]=entries[j]; entries[j]=tmp; }
   currentOptions=entries;
   selectedKey=null;
@@ -365,31 +419,23 @@ function finishRun(result){
     registerQuizAnswer(false);
     return;
   }
-  var tCells=uniqueCells(currentTarget.steps), aCells=uniqueCells(result.steps);
-  var tFinal=result.steps[result.steps.length-1];
-  var same = tCells.length===aCells.length && tCells.every(function(c,i){ return c.x===aCells[i].x && c.y===aCells[i].y; })
-             && tFinal.dir===currentTarget.steps[currentTarget.steps.length-1].dir;
-  if(same){
+  var goalCell=uniqueCells(currentTarget.steps).slice(-1)[0];
+  var aCells=uniqueCells(result.steps);
+  var lastA=aCells[aCells.length-1];
+  if(lastA.x===goalCell.x && lastA.y===goalCell.y){
     wasCorrect=true;
     gb.classList.add('ok');
-    gb.textContent='✓ Correct — this code follows the exact path to the goal, facing the right direction.';
+    gb.textContent='✓ Correct — this code lands the robot on the goal square.';
   } else {
     gb.classList.add('bad');
-    var idx=0; while(idx<Math.min(tCells.length,aCells.length) && tCells[idx].x===aCells[idx].x && tCells[idx].y===aCells[idx].y) idx++;
-    var lastA=aCells[aCells.length-1];
-    if(idx>=Math.min(tCells.length,aCells.length) && tCells.length!==aCells.length){
-      gb.textContent='✗ Not quite — this path matches the target the whole way, but '+(aCells.length>tCells.length?'keeps going past the goal.':'stops short of the goal.')+' Ends at ('+lastA.x+','+lastA.y+').';
-    } else {
-      var tc=tCells[idx];
-      gb.textContent='✗ Not quite — this path matches the target for the first '+idx+' cell'+(idx===1?'':'s')+', then goes to ('+aCells[idx].x+','+aCells[idx].y+') instead of ('+tc.x+','+tc.y+'). Ends at ('+lastA.x+','+lastA.y+') instead of the goal.';
-    }
+    gb.textContent='✗ Not quite — this code ends at ('+lastA.x+','+lastA.y+') instead of the goal at ('+goalCell.x+','+goalCell.y+').';
   }
   registerQuizAnswer(wasCorrect);
 }
 
 /* ---------- quiz mode ---------- */
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-var quizMode=false, quizName='', quizQueue=[], quizStep=0, quizScore=0, quizLog=[], quizLocked=false;
+var quizMode=false, quizName='', quizQueue=[], quizStep=0, quizScore=0, quizLog=[], quizLocked=false, quizModeUsed='flat';
 
 function openNameModal(){
   document.getElementById('quizNameInput').value='';
@@ -403,12 +449,14 @@ function beginQuiz(){
   if(!name){ document.getElementById('quizNameInput').focus(); return; }
   quizName=name;
   closeNameModal();
+  quizModeUsed=codeMode;
   var order=PROBLEMS.map(function(_,i){ return i; });
   for(var i=order.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=order[i]; order[i]=order[j]; order[j]=tmp; }
   quizQueue=order.slice(0,5);
   quizStep=0; quizScore=0; quizLog=[]; quizMode=true;
   document.getElementById('quizStartBtn').style.display='none';
   document.getElementById('probRow').style.display='none';
+  document.getElementById('modeRow').style.display='none';
   document.getElementById('newProbBtn').style.display='none';
   document.getElementById('resetBtn').style.display='none';
   document.getElementById('quizBar').style.display='flex';
@@ -432,36 +480,34 @@ function registerQuizAnswer(wasCorrect){
   updateQuizBar();
   document.getElementById('runBtn').style.display='none';
   document.getElementById('nextBtn').style.display='inline-block';
-  document.getElementById('nextBtn').textContent = quizStep<4 ? 'NEXT QUESTION →' : 'FINISH & PRINT RESULTS →';
+  document.getElementById('nextBtn').textContent = quizStep<4 ? 'NEXT QUESTION →' : 'FINISH & SEE SCORE →';
 }
 function quizNext(){
   if(quizStep<4){ quizStep++; loadQuizQuestion(); }
-  else { finishQuizAndPrint(); }
+  else { showScoreModal(); }
 }
-function finishQuizAndPrint(){
-  var w=window.open('','_blank','width=480,height=680');
+function showScoreModal(){
   var rows=quizLog.map(function(r,i){
-    return '<tr><td>'+(i+1)+'</td><td>'+esc(r.title)+'</td><td style="color:'+(r.correct?'#178a52':'#c22a48')+';font-weight:700;">'+(r.correct?'CORRECT':'INCORRECT')+'</td></tr>';
+    return '<tr><td style="padding:7px 8px;border-bottom:1px solid var(--border2);color:var(--muted);">'+(i+1)+'</td>'+
+      '<td style="padding:7px 8px;border-bottom:1px solid var(--border2);color:var(--text);">'+esc(r.title)+'</td>'+
+      '<td style="padding:7px 8px;border-bottom:1px solid var(--border2);font-weight:700;color:'+(r.correct?'#2ecc71':'#ff5566')+';">'+(r.correct?'CORRECT':'INCORRECT')+'</td></tr>';
   }).join('');
-  var html = '<!DOCTYPE html><html><head><title>Robot Run Quiz Result</title><meta charset="UTF-8">'+
-    '<style>body{font-family:Arial,sans-serif;padding:32px;color:#111;}h1{font-size:20px;margin:0 0 4px;}'+
-    '.sub{color:#555;font-size:13px;margin-bottom:20px;}.score{font-size:46px;font-weight:800;margin:14px 0;}'+
-    'table{width:100%;border-collapse:collapse;font-size:13px;}td,th{border-bottom:1px solid #ddd;padding:8px 6px;text-align:left;}'+
-    '.foot{margin-top:24px;font-size:11px;color:#888;}</style></head><body>'+
-    '<h1>Robot Run — Quiz Result</h1>'+
-    '<div class="sub">Student: <b>'+esc(quizName)+'</b> &middot; '+esc(new Date().toLocaleString())+'</div>'+
-    '<div class="score">'+quizScore+' / 5</div>'+
-    '<table><tr><th>#</th><th>Problem</th><th>Result</th></tr>'+rows+'</table>'+
-    '<div class="foot">Robot Run — algorithm tracing simulator</div>'+
-    '<script>window.onload=function(){window.print();};<\/script>'+
-    '</body></html>';
-  w.document.write(html); w.document.close();
+  var card = document.getElementById('scoreModalCard');
+  card.innerHTML =
+    '<h3 style="margin:0 0 2px;">Robot Run — Quiz Result</h3>'+
+    '<p style="margin:0 0 14px;color:var(--muted);font-size:13px;">'+esc(quizName)+' &middot; '+esc(new Date().toLocaleDateString())+' &middot; Mode: '+(quizModeUsed==='loop'?'REPEAT( ) loop version':'Step-by-step (no loops)')+'</p>'+
+    '<div style="font-size:52px;font-weight:800;color:var(--bright);margin:6px 0 16px;">'+quizScore+' / 5</div>'+
+    '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px;"><tr><th style="text-align:left;padding:7px 8px;color:var(--muted);border-bottom:1px solid var(--border2);">#</th><th style="text-align:left;padding:7px 8px;color:var(--muted);border-bottom:1px solid var(--border2);">Problem</th><th style="text-align:left;padding:7px 8px;color:var(--muted);border-bottom:1px solid var(--border2);">Result</th></tr>'+rows+'</table>'+
+    '<div style="display:flex;justify-content:flex-end;"><button class="ctrlBtn primary" onclick="closeScoreModal()">Done</button></div>';
+  document.getElementById('scoreModal').style.display='flex';
   resetQuizUI();
 }
+function closeScoreModal(){ document.getElementById('scoreModal').style.display='none'; }
 function resetQuizUI(){
   quizMode=false; quizLocked=false;
   document.getElementById('quizStartBtn').style.display='inline-block';
   document.getElementById('probRow').style.display='flex';
+  document.getElementById('modeRow').style.display='flex';
   document.getElementById('newProbBtn').style.display='inline-block';
   document.getElementById('resetBtn').style.display='inline-block';
   document.getElementById('quizBar').style.display='none';
