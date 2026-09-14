@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Name That Error — Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#0072b8;--accent2:#005c94;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;--codebg:#050810;}
+:root[data-theme="light"] .codeBox{background:#e9eef7;color:#1c2c44;border-color:var(--border3);}
+body,.panel,.choice,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;padding-right:110px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.legItem{flex:1;min-width:150px;padding:12px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--panel);font-size:12px;line-height:1.5;color:var(--dim);}
+.legItem b{display:block;font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:3px;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;}
+.progressRow{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.progressBar{flex:1;height:8px;border-radius:99px;background:var(--panel2);overflow:hidden;}
+.progressBar>div{height:100%;background:var(--accent);width:0;transition:width .3s ease;}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);margin-bottom:10px;}
+.codeBox{background:var(--codebg,#050810);border:1px solid var(--border2);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.85;overflow-x:auto;white-space:pre;color:var(--text);margin-bottom:6px;}
+.stem{font-size:14.5px;line-height:1.6;color:var(--bright);margin:14px 0 18px;}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.choice{padding:15px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;text-align:center;}
+.choice:hover{border-color:var(--border-hi);background:var(--panel3);}
+.choice.correctPick{border-color:var(--ok);background:rgba(79,214,138,.14);}
+.choice.wrongPick{border-color:var(--bad);background:rgba(255,92,122,.14);}
+.choice:disabled{cursor:default;}
+.feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.65;}
+.feedback.correct{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);}
+.feedback.wrong{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);}
+.feedback b{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.controls{display:flex;justify-content:flex-end;margin-top:18px;}
+.btn{padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn:disabled{opacity:.4;cursor:default;}
+.resultsWrap{text-align:center;}
+.bigScore{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:800;color:var(--bright);margin:6px 0;}
+.reviewRow{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:var(--panel2);border:1px solid var(--border2);margin-bottom:10px;text-align:left;}
+.reviewRow .mark{font-size:16px;flex:none;width:20px;}
+.startScreen{text-align:center;padding:36px 10px;}
+.startScreen p{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;}
+.nameInput{width:100%;max-width:320px;padding:13px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'Inter',sans-serif;font-size:15px;margin-bottom:18px;text-align:center;}
+.nameInput:focus{outline:none;border-color:var(--accent);}
+.resultName{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);margin-bottom:2px;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>NAME THAT ERROR</h1></div>
+    <a class="backLink mono" href="index.html">&larr; practice</a>
+  </div>
+  <p class="lead">AP Computer Science Principles &middot; 10 random questions, graded. Classify each situation as a <b>syntax</b>, <b>runtime</b>, <b>logic</b>, or <b>overflow</b> error.</p>
+
+  <div class="legend">
+    <div class="legItem"><b style="color:var(--accent2);">SYNTAX</b>Breaks the language's rules. Usually won't even compile/run.</div>
+    <div class="legItem"><b style="color:var(--accent2);">RUNTIME</b>Compiles and starts fine, but crashes during execution.</div>
+    <div class="legItem"><b style="color:var(--accent2);">LOGIC</b>Runs and finishes, but produces the wrong result.</div>
+    <div class="legItem"><b style="color:var(--accent2);">OVERFLOW</b>A number falls outside the range the program can represent.</div>
+  </div>
+
+  <div class="panel" id="quizPanel"></div>
+</div>
+<script>
+var BANK = [
+  // ---- SYNTAX ----
+  {type:'syntax', stem:"A student writes a procedure to greet a user.", code:["PROCEDURE greet(name)","  DISPLAY(\"Hello, \" + name","END PROCEDURE"], explain:"The DISPLAY(...) call is missing its closing parenthesis. The interpreter can't even parse the statement — caught before the program runs."},
+  {type:'syntax', stem:"A student writes a conditional to check if a number is positive.", code:["IF x > 0","  DISPLAY(\"Positive\")","ELSE","  DISPLAY(\"Not positive\")"], explain:"There is no END IF to close the block. A missing block terminator is a structural, syntax-level mistake — nothing has executed yet."},
+  {type:'syntax', stem:"A student builds a list of five test scores.", code:["scores = [85, 92, 78 100, 95]","DISPLAY(scores)"], explain:"There's a missing comma between 78 and 100. The list literal itself isn't valid, so this fails before any code runs — a syntax error."},
+  {type:'syntax', stem:"A student writes a loop meant to count from 1 to 10.", code:["FOR i FROM 1 TO 10","  DISPLAY(i","END FOR"], explain:"DISPLAY(i is an incomplete expression — the closing parenthesis is missing. The program can't be parsed, let alone run."},
+  {type:'syntax', stem:"A student translates 'if a equals b' into this course's pseudocode.", code:["IF a == b","  DISPLAY(\"Equal\")","END IF"], explain:"This pseudocode dialect uses a single = for comparison, not ==. Using the wrong operator for the language you're writing in is a syntax error, not a logic mistake — the statement itself isn't valid."},
+  {type:'syntax', stem:"A student defines a procedure with two parameters but only opens one parenthesis.", code:["PROCEDURE addNums(a, b","  RETURN a + b","END PROCEDURE"], explain:"The parameter list's closing parenthesis is missing. The procedure header itself can't be parsed — a syntax error."},
+  {type:'syntax', stem:"A student writes a REPEAT UNTIL loop but forgets the keyword UNTIL.", code:["REPEAT","  count = count + 1","  DISPLAY(count)","(count > 5)"], explain:"Without the UNTIL keyword, this isn't a recognizable loop construct in the language — the statement is malformed and won't parse."},
+  // ---- RUNTIME ----
+  {type:'runtime', stem:"A student writes code to display the first element of a list that turns out to be empty at run time.", code:["list = []","DISPLAY(list[0])"], explain:"The syntax and general logic are fine — this crashes only because, when this line actually executes, there is no index 0 in an empty list. That's a runtime error."},
+  {type:'runtime', stem:"A student computes a class average, and on one run the roster has zero students.", code:["total = 450","students = 0","average = total / students","DISPLAY(average)"], explain:"Division is valid syntax and often correct logic — it just crashes the moment this line executes with students equal to 0. A runtime error (division by zero)."},
+  {type:'runtime', stem:"A student reads user input and immediately doubles it, and a user types 'hello' instead of a number.", code:["input = GET_INPUT()","doubled = input * 2","DISPLAY(doubled)"], explain:"The program compiles and starts running fine. It only fails once this line executes with non-numeric input — a runtime error triggered by the actual data."},
+  {type:'runtime', stem:"A student accesses the 5th item of a list that only has 3 items.", code:["list = [10, 20, 30]","DISPLAY(list[4])"], explain:"Index 4 doesn't exist in a 3-item list. The code is well-formed; it fails only once execution reaches this line — a runtime error (index out of bounds)."},
+  {type:'runtime', stem:"A student calls a procedure that is only defined inside a branch that isn't guaranteed to run before the call.", code:["IF rareCondition","  DEFINE computeSpecial()","result = computeSpecial()"], explain:"The call is syntactically valid. The program only crashes if execution reaches this line without rareCondition having been true earlier — a runtime error."},
+  {type:'runtime', stem:"A student's program opens a file that a user may have deleted before running it.", code:["file = OPEN(\"scores.txt\")","data = READ(file)"], explain:"OPEN(...) is syntactically fine, and the logic is reasonable — the crash depends entirely on whether the file exists at the moment the program actually runs. A runtime error."},
+  // ---- LOGIC ----
+  {type:'logic', stem:"A student writes a loop meant to sum every number in a list, and the program finishes and prints a number — just the wrong one.", code:["total = 0","FOR EACH num IN list","  total = num","END FOR","DISPLAY(total)"], explain:"total = num overwrites instead of accumulating, so the program ends up holding only the last number. It runs without crashing and gives a confidently wrong answer — a logic error."},
+  {type:'logic', stem:"A student writes code to label a number 'Even' or 'Odd', and it runs every time but the labels come out backwards.", code:["IF n MOD 2 = 1","  DISPLAY(\"Even\")","ELSE","  DISPLAY(\"Odd\")"], explain:"n MOD 2 = 1 means n is odd, so this should print 'Odd' — the branches are swapped. The program never crashes; it just consistently gives the wrong label. A logic error."},
+  {type:'logic', stem:"A student writes a password check meant to require at least 8 characters, and an 8-character password is rejected.", code:["IF LENGTH(password) > 8","  DISPLAY(\"Valid\")","ELSE","  DISPLAY(\"Too short\")"], explain:"'At least 8' should accept exactly 8, but > 8 requires 9 or more. The program runs correctly every time — it just enforces the wrong rule. A logic error."},
+  {type:'logic', stem:"A student writes code meant to print the number of even values in a list once, after checking them all.", code:["count = 0","FOR EACH num IN list","  IF num MOD 2 = 0","    count = count + 1","    DISPLAY(count)"], explain:"DISPLAY(count) sits inside the loop, so it prints a running total on every pass instead of the final count once. Nothing crashes — the output is just structured wrong. A logic error."},
+  {type:'logic', stem:"A student writes code meant to swap the values of x and y, and afterward both variables hold the same value.", code:["x = 5","y = 10","x = y","y = x","DISPLAY(x, y)"], explain:"By the time y = x runs, x has already been overwritten with y's value, so y just becomes a copy of itself. The program finishes and prints wrong values — a logic error (a temp variable is needed)."},
+  {type:'logic', stem:"A student writes a search meant to stop as soon as it finds a target value, and it keeps scanning the whole list instead.", code:["found = false","FOR EACH item IN list","  IF item == target","    found = true","DISPLAY(found)"], explain:"There's no BREAK (or equivalent) once found is set to true, so the loop keeps running past the match. The result can still end up correct, but the program does unnecessary — and in other cases wrong — work. A logic error."},
+  // ---- OVERFLOW ----
+  {type:'overflow', stem:"A sensor stores temperature as an 8-bit unsigned integer (max value 255), and a heat spike pushes the true reading to 260.", code:["temperature = 260  // stored in 8 bits, max 255"], explain:"The value 260 cannot be represented in 8 bits at all — it exceeds the largest number that format can hold. That's an overflow error, not a logic mistake in the code."},
+  {type:'overflow', stem:"A counter is declared to hold values from 0 to 65,535 (16 bits), and after enough increments it wraps back around to 0 instead of continuing to 65,536.", code:["counter = 65535","counter = counter + 1","DISPLAY(counter)  // shows 0, not 65536"], explain:"65,536 is outside the range a 16-bit value can store, so the hardware wraps it back to 0. The addition logic is correct — the representation simply ran out of room. An overflow error."},
+  {type:'overflow', stem:"A game score is stored in a format that can only hold values up to 32,767, and a player's score of 32,800 displays as a large negative number instead.", code:["score = 32760","score = score + 100","DISPLAY(score)  // shows a negative number"], explain:"32,860 exceeds the maximum value the format can represent, so it wraps into the negative range. The addition is logically correct — the number just doesn't fit. An overflow error."},
+  {type:'overflow', stem:"A student's program multiplies two large numbers, and the fixed number of bits used to store the result can't hold the true product.", code:["a = 3000000000","b = 2","product = a * b  // true value exceeds the storage size"], explain:"The math itself (a * b) is written correctly — the problem is that the true product needs more bits than the variable's format provides. That mismatch between value size and storage size is an overflow error."},
+  {type:'overflow', stem:"A step counter app uses a small fixed-size integer, and after 10,000 steps in one day the total resets to a small or negative number.", code:["steps = 9999","steps = steps + 1","DISPLAY(steps)  // resets instead of showing 10000"], explain:"The increment logic (steps = steps + 1) is correct. The reset happens because 10,000 exceeds the range the chosen storage size can represent — an overflow error."}
+];
+var TYPES = [
+  {key:'syntax', label:'SYNTAX'},
+  {key:'runtime', label:'RUNTIME'},
+  {key:'logic', label:'LOGIC'},
+  {key:'overflow', label:'OVERFLOW'}
+];
+var Q = [], idx = 0, answers = [], studentName = "", mode = "quiz";
+
+function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function escHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+
+function renderStart(){
+  var savedName = '';
+  try{ savedName = localStorage.getItem('practice-student-name') || ''; }catch(e){}
+  document.getElementById('quizPanel').innerHTML = '<div class="startScreen"><div class="meta">BEFORE YOU START</div><p>Type your name so it shows on your results &mdash; handy for a screenshot. Name is optional for Open Practice.</p><input type="text" id="studentNameInput" class="nameInput" placeholder="Your name" value="'+escHtml(savedName)+'" onkeydown="if(event.key===\'Enter\')beginQuiz();"><div class="controls" style="justify-content:center;gap:10px;"><button class="btn" onclick="beginPractice()">OPEN PRACTICE</button><button class="btn" onclick="beginQuiz()" style="border-color:var(--accent);color:var(--accent2);">BEGIN QUIZ &rarr;</button></div></div>';
+  var inp = document.getElementById('studentNameInput');
+  inp.focus(); inp.select();
+}
+function beginQuiz(){
+  var v = document.getElementById('studentNameInput').value.trim();
+  studentName = v;
+  try{ localStorage.setItem('practice-student-name', v); }catch(e){}
+  mode = 'quiz';
+  startQuiz();
+}
+function beginPractice(){
+  var v = document.getElementById('studentNameInput').value.trim();
+  studentName = v;
+  try{ if(v) localStorage.setItem('practice-student-name', v); }catch(e){}
+  mode = 'practice';
+  startQuiz();
+}
+function endPractice(){ renderStart(); }
+
+function startQuiz(){
+  Q = mode === 'practice' ? shuffleArr(BANK) : shuffleArr(BANK).slice(0, 10);
+  idx = 0; answers = [];
+  renderQuestion();
+}
+
+function renderQuestion(){
+  var p = Q[idx];
+  var choicesOrder = shuffleArr(TYPES);
+  var html = (mode==='practice' ? '<div class="progressRow"><span class="mono" style="color:var(--accent2);">OPEN PRACTICE</span><span>Question <b style="color:var(--bright);">'+(idx+1)+'</b></span><button class="btn" style="padding:6px 12px;font-size:11px;margin-left:auto;" onclick="endPractice()">END &rarr;</button></div>' : '<div class="progressRow"><span>QUESTION <b style="color:var(--bright);">'+(idx+1)+'</b>/10</span><div class="progressBar"><div style="width:'+(idx/10*100)+'%;"></div></div></div>')
+    + '<div class="meta">SCENARIO '+(idx+1)+'</div>'
+    + '<div class="stem">'+escHtml(p.stem)+'</div>'
+    + '<div class="codeBox">'+p.code.map(escHtml).join('\n')+'</div>'
+    + '<div class="choices" id="choicesBox">' + choicesOrder.map(function(t){
+        return '<button class="choice" onclick="pick(\''+t.key+'\')">'+t.label+'</button>';
+      }).join('') + '</div>'
+    + '<div id="fbSlot"></div>'
+    + '<div class="controls"><button class="btn" id="nextBtn" disabled onclick="nextQuestion()">'+(idx===9?'SEE RESULTS':'NEXT')+' &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML = html;
+}
+
+function pick(key){
+  var p = Q[idx];
+  if(answers[idx]) return;
+  var correct = key === p.type;
+  answers[idx] = {pick:key, correct:correct};
+  var btns = document.querySelectorAll('#choicesBox .choice');
+  btns.forEach(function(b){
+    b.disabled = true;
+    var lbl = b.textContent.trim().toLowerCase();
+    if(lbl === p.type) b.classList.add('correctPick');
+    else if(lbl === key && !correct) b.classList.add('wrongPick');
+  });
+  var cls = correct ? 'correct' : 'wrong';
+  var headline = correct ? 'Correct — ' + p.type.toUpperCase() + ' error.' : 'Not quite — this is a ' + p.type.toUpperCase() + ' error.';
+  document.getElementById('fbSlot').innerHTML = '<div class="feedback '+cls+'"><b>'+headline+'</b>'+escHtml(p.explain)+'</div>';
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion(){
+  if(mode === 'practice'){
+    idx++;
+    if(idx >= Q.length){ Q = shuffleArr(BANK); idx = 0; }
+    renderQuestion();
+    return;
+  }
+  if(idx < 9){ idx++; renderQuestion(); }
+  else { renderResults(); }
+}
+
+function renderResults(){
+  var correctCount = answers.filter(function(a){return a.correct;}).length;
+  var msg = correctCount>=9?"AP-ready.":correctCount>=7?"Solid — a little more review.":correctCount>=5?"Getting there — review the categories above.":"Revisit the four error types, then try again.";
+  var html = '<div class="resultsWrap">'+(studentName?'<div class="resultName">'+escHtml(studentName)+'</div>':'')+'<div class="meta">RESULTS</div><div class="bigScore">'+correctCount+' / 10</div>'
+    + '<div class="mono" style="font-size:14px;color:var(--dim);margin-bottom:24px;">'+msg+'</div></div>'
+    + Q.map(function(p,i){
+        var a = answers[i];
+        return '<div class="reviewRow"><span class="mark">'+(a.correct?'\u2705':'\u274c')+'</span><div><div style="font-size:13px;color:var(--bright);margin-bottom:4px;">'+escHtml(p.stem)+'</div>'
+          + '<div class="mono" style="font-size:11.5px;color:var(--faint);">Correct answer: <b style="color:var(--accent2);">'+p.type.toUpperCase()+'</b>'+(a.correct?'':' &middot; you picked '+a.pick.toUpperCase())+'</div></div></div>';
+      }).join('')
+    + '<div class="controls"><button class="btn" onclick="startQuiz()">&#8635; TRY 10 NEW QUESTIONS</button></div>';
+  document.getElementById('quizPanel').innerHTML = html;
+}
+
+renderStart();
+</script>
+</body>
+</html>

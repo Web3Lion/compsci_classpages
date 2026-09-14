@@ -64,6 +64,12 @@ button{font-family:inherit;cursor:pointer;}
 .exitBtn{background:none;border:1px solid var(--border2);color:var(--faint);border-radius:8px;padding:6px 12px;font-size:12px;}
 .exitBtn:hover{border-color:var(--accent);color:var(--accent);}
 
+#modeRow{display:flex;align-items:center;gap:14px;margin-bottom:clamp(12px,1.8vw,20px);}
+#modeToggle{display:inline-flex;background:var(--panel);border:1px solid var(--border2);border-radius:999px;padding:4px;gap:4px;}
+.modeBtn{font-family:'JetBrains Mono',monospace;font-size:clamp(11px,1.1vw,13px);letter-spacing:1px;color:var(--faint);background:none;border:none;border-radius:999px;padding:8px 18px;transition:background .15s,color .15s;}
+.modeBtn.active{background:var(--accent);color:#06121e;font-weight:700;}
+#weekSub{font-family:'JetBrains Mono',monospace;font-size:clamp(10px,1vw,12px);color:var(--faint);}
+
 #podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(10px,1.4vw,20px);align-items:end;margin-bottom:clamp(16px,2.2vw,28px);}
 .pod{border-radius:16px;padding:clamp(14px,1.8vw,26px) clamp(10px,1.4vw,20px);text-align:center;position:relative;border:1px solid var(--border);background:linear-gradient(160deg, var(--panel2), var(--panel));animation:popIn .5s ease both;}
 .pod .medal{font-size:clamp(22px,2.6vw,34px);margin-bottom:6px;}
@@ -120,13 +126,13 @@ button{font-family:inherit;cursor:pointer;}
   <div id="gate" class="gateWrap" style="display:none;">
     <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--faint);margin-bottom:10px;">LIVE LEADERBOARD</div>
     <h1 style="font-size:24px;color:var(--bright);margin:0 0 8px;">Sign in to open the board</h1>
-    <p style="color:var(--dim);font-size:13px;margin:0 0 22px;">Same account as the teacher dashboard.</p>
+    <p style="color:var(--dim);font-size:13px;margin:0 0 22px;">Sign in with your school Google account.</p>
     <button class="btnG" id="loginBtn" onclick="doLogin()">
       <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.7-2 5-4.4 6.6v5.5h7.1c4.1-3.8 6.6-9.4 6.6-16.3z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.5c-2 1.4-4.6 2.2-7.4 2.2-5.7 0-10.5-3.8-12.2-9.1H4.5v5.7C8 41.6 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.3c-.5-1.4-.8-2.9-.8-4.3s.3-2.9.8-4.3v-5.7H4.5C3.2 16.8 2.5 20.3 2.5 24s.7 7.2 2 10.1z"/><path fill="#EA4335" d="M24 10.7c3.2 0 6 1.1 8.3 3.2l6.3-6.3C34.9 4.2 29.9 2 24 2 15.4 2 8 6.4 4.5 13.9l7.3 5.7c1.7-5.3 6.5-9.1 12.2-8.9z"/></svg>
       Sign in with Google
     </button>
     <div id="loginErr" class="mono" style="color:#ff6b6b;font-size:12px;margin-top:12px;min-height:16px;"></div>
-    <div id="notTeacher" style="display:none;color:var(--dim);font-size:13px;margin-top:16px;">Signed in, but this account isn't the teacher account.</div>
+    <div id="notTeacher" style="display:none;color:var(--dim);font-size:13px;margin-top:16px;">Signed in, but you're not in a class yet — join one on the arena page first.</div>
   </div>
 
   <div id="pickWrap" class="gateWrap" style="display:none;max-width:560px;">
@@ -144,8 +150,16 @@ button{font-family:inherit;cursor:pointer;}
       <div id="hudRight">
         <div id="clock">--:--</div>
         <div id="liveRow"><span id="liveDot"></span> LIVE · updates every 60s</div>
-        <button class="exitBtn" onclick="toPicker()">← switch class</button>
+        <button class="exitBtn" id="switchBtn" onclick="toPicker()">← switch class</button>
       </div>
+    </div>
+
+    <div id="modeRow">
+      <div id="modeToggle">
+        <button class="modeBtn" id="modeOverallBtn" onclick="setMode('overall')">OVERALL</button>
+        <button class="modeBtn" id="modeWeeklyBtn" onclick="setMode('weekly')">THIS WEEK</button>
+      </div>
+      <span id="weekSub"></span>
     </div>
 
     <div id="podium"></div>
@@ -334,6 +348,28 @@ var qs = new URLSearchParams(location.search);
 var courseParam = qs.get("course");
 var CLASSES = [], CUR = null, PREV = {}, PREV_POS = {};
 var timer = null;
+var BOARD_MODE = localStorage.getItem("board-mode") || "overall";
+
+function paintMode(){
+  el("modeOverallBtn").classList.toggle("active", BOARD_MODE === "overall");
+  el("modeWeeklyBtn").classList.toggle("active", BOARD_MODE === "weekly");
+  if (BOARD_MODE === "weekly"){
+    var now = new Date();
+    var nextSunday = new Date(now);
+    nextSunday.setHours(0,0,0,0);
+    nextSunday.setDate(now.getDate() + ((7 - now.getDay()) % 7 || 7));
+    el("weekSub").textContent = "resets Sunday at midnight · " + nextSunday.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  } else {
+    el("weekSub").textContent = "";
+  }
+}
+function setMode(m){
+  if (BOARD_MODE === m) return;
+  BOARD_MODE = m; localStorage.setItem("board-mode", m);
+  paintMode();
+  PREV = {}; PREV_POS = {};
+  loadBoard();
+}
 
 function applyTheme(course){
   var t = THEMES[course] || THEMES.cyber1;
@@ -391,7 +427,9 @@ function selectClass(id){
   el("tagLine").textContent = "// " + t.tag;
   el("className").textContent = CUR.name;
   el("courseName").textContent = t.label + " · LEADERBOARD";
+  el("switchBtn").style.display = (IS_STUDENT && CLASSES.length < 2) ? "none" : "";
   PREV = {};
+  paintMode();
   loadBoard();
   clearInterval(timer);
   timer = setInterval(loadBoard, 60000);
@@ -403,10 +441,14 @@ function tickClock(){
 }
 
 var MEDALS = ["🥇","🥈","🥉"];
+var IS_STUDENT = false;
 async function loadBoard(){
   if (!CUR) return;
   var data = [];
-  try{ data = await rpc("ctf_t_leaderboard", { p_class: CUR.id }) || []; }
+  var fn = BOARD_MODE === "weekly"
+    ? (IS_STUDENT ? "ctf_leaderboard_full_google_weekly" : "ctf_t_leaderboard_weekly")
+    : (IS_STUDENT ? "ctf_leaderboard_full_google" : "ctf_t_leaderboard");
+  try{ data = await rpc(fn, { p_class: CUR.id }) || []; }
   catch(e){ return; }
   if (data.error) return;
   renderBoard(data);
@@ -419,6 +461,9 @@ function renderBoard(data){
     el("podium").style.display = "none";
     el("listWrap").style.display = "none";
     el("empty").style.display = "block";
+    el("empty").textContent = BOARD_MODE === "weekly"
+      ? "No captures this week yet — first flag takes the top spot."
+      : "No captures on the board yet — first flag takes the top spot.";
     return;
   }
   el("empty").style.display = "none";
@@ -497,12 +542,25 @@ function renderBoard(data){
   var whoami = null;
   try{ whoami = await rpc("ctf_t_whoami"); }catch(e){}
   var isT = whoami && !whoami.error && (whoami.teacher || whoami.owner || whoami.role);
-  if (!isT){ showGate(true); return; }
-  try{ CLASSES = await rpc("ctf_t_classes") || []; }catch(e){ CLASSES = []; }
-  applyTheme(courseParam || "cyber1");
-  var lastId = localStorage.getItem("board-last-class-" + (courseParam || "any"));
-  var last = lastId && CLASSES.filter(function(c){ return c.id === lastId; })[0];
-  if (last){ selectClass(last.id); }
+  if (isT){
+    try{ CLASSES = await rpc("ctf_t_classes") || []; }catch(e){ CLASSES = []; }
+    applyTheme(courseParam || "cyber1");
+    var lastId = localStorage.getItem("board-last-class-" + (courseParam || "any"));
+    var last = lastId && CLASSES.filter(function(c){ return c.id === lastId; })[0];
+    if (last){ selectClass(last.id); }
+    else { el("pickWrap").style.display = "block"; renderPicker(); }
+    return;
+  }
+  // not a teacher — load this student's own class/classes instead
+  IS_STUDENT = true;
+  var mine = [];
+  try{ mine = await rpc("ctf_my_classes") || []; }catch(e){}
+  if (!mine || mine.error || !mine.length){ showGate(true); return; }
+  CLASSES = mine.map(function(m){ return { id: m.class_id, course: m.course, name: m.class_name, student_count: 0 }; });
+  if (courseParam) CLASSES = CLASSES.filter(function(c){ return c.course === courseParam; });
+  if (!CLASSES.length){ showGate(true); return; }
+  applyTheme((courseParam || CLASSES[0].course));
+  if (CLASSES.length === 1){ selectClass(CLASSES[0].id); }
   else { el("pickWrap").style.display = "block"; renderPicker(); }
 })();
 </script>

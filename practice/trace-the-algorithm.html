@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trace the Algorithm — Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#0072b8;--accent2:#005c94;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;--codebg:#050810;}
+:root[data-theme="light"] .codeBox{background:#e9eef7;color:#1c2c44;border-color:var(--border3);}
+body,.panel,.choice,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;padding-right:110px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;}
+.progressRow{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.progressBar{flex:1;height:8px;border-radius:99px;background:var(--panel2);overflow:hidden;}
+.progressBar>div{height:100%;background:var(--accent);width:0;transition:width .3s ease;}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);margin-bottom:10px;}
+.codeBox{background:var(--codebg,#050810);border:1px solid var(--border2);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.85;overflow-x:auto;white-space:pre;color:var(--text);margin-bottom:6px;}
+.stem{font-size:14.5px;line-height:1.6;color:var(--bright);margin:14px 0 18px;}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.choice{padding:15px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;text-align:center;}
+.choice:hover{border-color:var(--border-hi);background:var(--panel3);}
+.choice.correctPick{border-color:var(--ok);background:rgba(79,214,138,.14);}
+.choice.wrongPick{border-color:var(--bad);background:rgba(255,92,122,.14);}
+.choice:disabled{cursor:default;}
+.feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.65;}
+.feedback.correct{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);}
+.feedback.wrong{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);}
+.feedback b{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.controls{display:flex;justify-content:flex-end;margin-top:18px;}
+.btn{padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn:disabled{opacity:.4;cursor:default;}
+.resultsWrap{text-align:center;}
+.bigScore{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:800;color:var(--bright);margin:6px 0;}
+.reviewRow{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:var(--panel2);border:1px solid var(--border2);margin-bottom:10px;text-align:left;}
+.reviewRow .mark{font-size:16px;flex:none;width:20px;}
+.startScreen{text-align:center;padding:36px 10px;}
+.startScreen p{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;}
+.nameInput{width:100%;max-width:320px;padding:13px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'Inter',sans-serif;font-size:15px;margin-bottom:18px;text-align:center;}
+.nameInput:focus{outline:none;border-color:var(--accent);}
+.resultName{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);margin-bottom:2px;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>TRACE THE ALGORITHM</h1></div>
+    <a class="backLink mono" href="index.html">&larr; practice</a>
+  </div>
+  <p class="lead">AP Computer Science Principles &middot; 10 random questions, graded. Trace each pseudocode block step by step and predict exactly what it displays.</p>
+
+  <div class="panel" id="quizPanel"></div>
+</div>
+<script>
+var BANK = [
+  {code:["a = 3","b = 5","c = a + b * 2","DISPLAY(c)"], choices:["13","16","11","8"], answer:"13", explain:"Multiplication happens before addition: b * 2 = 10, then a + 10 = 13."},
+  {code:["total = 0","FOR i FROM 1 TO 4","  total = total + i","END FOR","DISPLAY(total)"], choices:["10","4","6","1"], answer:"10", explain:"total accumulates 1+2+3+4 = 10."},
+  {code:["x = 10","IF x > 5","  x = x - 3","ELSE","  x = x + 3","END IF","DISPLAY(x)"], choices:["7","13","10","3"], answer:"7", explain:"x is 10, which is greater than 5, so the IF branch runs: 10 - 3 = 7."},
+  {code:["count = 0","FOR i FROM 1 TO 6","  IF i MOD 2 = 0","    count = count + 1","  END IF","END FOR","DISPLAY(count)"], choices:["3","6","4","2"], answer:"3", explain:"i is even for 2, 4, and 6 — three passes increment count, giving 3."},
+  {code:["n = 1","REPEAT UNTIL n > 8","  n = n * 2","END REPEAT","DISPLAY(n)"], choices:["16","8","4","32"], answer:"16", explain:"n doubles each pass: 1, 2, 4, 8, 16. Once n = 16, n > 8 is true, so the loop stops and 16 is displayed."},
+  {code:["word = \"CODE\"","result = \"\"","FOR EACH ch IN word","  result = ch + result","END FOR","DISPLAY(result)"], choices:["EDOC","CODE","EOCD","DOCE"], answer:"EDOC", explain:"Each character is placed in front of the growing result, reversing the string: C, OC, DOC, EDOC."},
+  {code:["scores = [70, 85, 90]","total = 0","FOR EACH s IN scores","  total = total + s","END FOR","DISPLAY(total / 3)"], choices:["81.666...","85","245","90"], answer:"81.666...", explain:"70 + 85 + 90 = 245, and 245 / 3 is approximately 81.67 — the average."},
+  {code:["a = 5","b = 2","IF a > 3 AND b > 3","  DISPLAY(\"Yes\")","ELSE","  DISPLAY(\"No\")","END IF"], choices:["No","Yes","Error","Nothing displays"], answer:"No", explain:"AND requires both conditions true. a > 3 is true, but b > 3 is false, so the ELSE branch runs: 'No'."},
+  {code:["total = 100","FOR i FROM 1 TO 3","  total = total / 2","END FOR","DISPLAY(total)"], choices:["12.5","50","25","6.25"], answer:"12.5", explain:"total halves three times: 100 → 50 → 25 → 12.5."},
+  {code:["n = 4","result = 1","REPEAT UNTIL n = 0","  result = result * n","  n = n - 1","END REPEAT","DISPLAY(result)"], choices:["24","10","4","1"], answer:"24", explain:"This computes 4 factorial: result = 4 * 3 * 2 * 1 = 24."},
+  {code:["list = [3, 7, 2, 9, 4]","biggest = list[0]","FOR EACH item IN list","  IF item > biggest","    biggest = item","  END IF","END FOR","DISPLAY(biggest)"], choices:["9","7","4","3"], answer:"9", explain:"biggest tracks the largest value seen so far; 9 is the largest value in the list."},
+  {code:["x = 2","y = 3","x = y","y = x","DISPLAY(x, y)"], choices:["3 3","2 3","3 2","2 2"], answer:"3 3", explain:"x = y makes x equal to 3. Then y = x copies that same 3 back into y, so both end up 3 — the swap fails without a temp variable."},
+  {code:["total = 0","FOR i FROM 1 TO 5","  IF i = 3","    CONTINUE","  END IF","  total = total + i","END FOR","DISPLAY(total)"], choices:["12","15","9","3"], answer:"12", explain:"CONTINUE skips adding i only when i = 3, so total = 1+2+4+5 = 12."},
+  {code:["a = 8","b = 3","DISPLAY(a MOD b)"], choices:["2","3","1","8"], answer:"2", explain:"MOD gives the remainder after division: 8 divided by 3 is 2 remainder 2."},
+  {code:["count = 10","WHILE count > 0","  count = count - 3","END WHILE","DISPLAY(count)"], choices:["-2","0","1","10"], answer:"-2", explain:"count goes 10, 7, 4, 1, -2 — once it drops to -2 the condition count > 0 becomes false and the loop stops there."},
+  {code:["outer = 0","FOR i FROM 1 TO 2","  FOR j FROM 1 TO 3","    outer = outer + 1","  END FOR","END FOR","DISPLAY(outer)"], choices:["6","5","2","3"], answer:"6", explain:"The inner loop runs 3 times for each of the 2 outer passes: 2 * 3 = 6 total increments."},
+  {code:["temp = 98","IF temp < 97","  DISPLAY(\"Low\")","ELSE IF temp <= 99","  DISPLAY(\"Normal\")","ELSE","  DISPLAY(\"High\")","END IF"], choices:["Normal","Low","High","Error"], answer:"Normal", explain:"98 is not less than 97, so the first branch is skipped. 98 <= 99 is true, so 'Normal' displays."},
+  {code:["nums = [1, 2, 3, 4]","result = []","FOR EACH n IN nums","  IF n MOD 2 = 0","    APPEND(result, n * n)","  END IF","END FOR","DISPLAY(result)"], choices:["[4, 16]","[1, 4, 9, 16]","[2, 4]","[4, 6]"], answer:"[4, 16]", explain:"Only even numbers (2 and 4) pass the check, and each is squared before being appended: 2*2=4, 4*4=16."},
+  {code:["a = 1","b = 1","FOR i FROM 1 TO 4","  c = a + b","  a = b","  b = c","END FOR","DISPLAY(b)"], choices:["8","5","13","3"], answer:"8", explain:"This traces the Fibonacci sequence: 1,1,2,3,5,8 — after 4 iterations b holds 8."},
+  {code:["found = false","target = 5","list = [2, 5, 8]","FOR EACH item IN list","  IF item = target","    found = true","  END IF","END FOR","DISPLAY(found)"], choices:["true","false","5","Error"], answer:"true", explain:"5 appears in the list, so found is set to true during that pass and stays true."},
+  {code:["x = 5","y = x > 3","DISPLAY(y)"], choices:["true","5","false","3"], answer:"true", explain:"x > 3 evaluates the comparison 5 > 3, which is true — that Boolean value is what's stored in y and displayed."},
+  {code:["total = 0","i = 1","WHILE i <= 10","  IF i MOD 3 = 0","    total = total + i","  END IF","  i = i + 1","END WHILE","DISPLAY(total)"], choices:["18","10","9","30"], answer:"18", explain:"Multiples of 3 from 1 to 10 are 3, 6, 9. Their sum is 18."},
+  {code:["s = \"hello\"","DISPLAY(LENGTH(s) * 2)"], choices:["10","5","25","hellohello"], answer:"10", explain:"LENGTH(\"hello\") is 5, and 5 * 2 = 10."},
+  {code:["a = 4","b = 6","IF a > b","  bigger = a","ELSE","  bigger = b","END IF","DISPLAY(bigger)"], choices:["6","4","10","Error"], answer:"6", explain:"a > b is false (4 is not greater than 6), so the ELSE branch runs and bigger is set to b, which is 6."},
+  {code:["n = 0","FOR i FROM 1 TO 5","  n = n + i","  IF n > 6","    BREAK","  END IF","END FOR","DISPLAY(n)"], choices:["10","6","15","4"], answer:"10", explain:"n accumulates 1, 3, 6, 10 — once n exceeds 6 (at 10), BREAK exits the loop immediately, leaving n at 10."},
+  {code:["price = 20","discount = 0.25","final = price - (price * discount)","DISPLAY(final)"], choices:["15","5","25","4"], answer:"15", explain:"price * discount = 5, and 20 - 5 = 15."}
+];
+var Q = [], idx = 0, answers = [], studentName = "", mode = "quiz";
+
+function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function escHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+
+function renderStart(){
+  var savedName = '';
+  try{ savedName = localStorage.getItem('practice-student-name') || ''; }catch(e){}
+  document.getElementById('quizPanel').innerHTML = '<div class="startScreen"><div class="meta">BEFORE YOU START</div><p>Type your name so it shows on your results &mdash; handy for a screenshot. Name is optional for Open Practice.</p><input type="text" id="studentNameInput" class="nameInput" placeholder="Your name" value="'+escHtml(savedName)+'" onkeydown="if(event.key===\'Enter\')beginQuiz();"><div class="controls" style="justify-content:center;gap:10px;"><button class="btn" onclick="beginPractice()">OPEN PRACTICE</button><button class="btn" onclick="beginQuiz()" style="border-color:var(--accent);color:var(--accent2);">BEGIN QUIZ &rarr;</button></div></div>';
+  var inp = document.getElementById('studentNameInput');
+  inp.focus(); inp.select();
+}
+function beginQuiz(){
+  var v = document.getElementById('studentNameInput').value.trim();
+  studentName = v;
+  try{ localStorage.setItem('practice-student-name', v); }catch(e){}
+  mode = 'quiz';
+  startQuiz();
+}
+function beginPractice(){
+  var v = document.getElementById('studentNameInput').value.trim();
+  studentName = v;
+  try{ if(v) localStorage.setItem('practice-student-name', v); }catch(e){}
+  mode = 'practice';
+  startQuiz();
+}
+function endPractice(){ renderStart(); }
+
+function startQuiz(){
+  Q = mode === 'practice' ? shuffleArr(BANK) : shuffleArr(BANK).slice(0, 10);
+  idx = 0; answers = [];
+  renderQuestion();
+}
+
+function renderQuestion(){
+  var p = Q[idx];
+  var choicesOrder = shuffleArr(p.choices);
+  var html = (mode==='practice' ? '<div class="progressRow"><span class="mono" style="color:var(--accent2);">OPEN PRACTICE</span><span>Question <b style="color:var(--bright);">'+(idx+1)+'</b></span><button class="btn" style="padding:6px 12px;font-size:11px;margin-left:auto;" onclick="endPractice()">END &rarr;</button></div>' : '<div class="progressRow"><span>QUESTION <b style="color:var(--bright);">'+(idx+1)+'</b>/10</span><div class="progressBar"><div style="width:'+(idx/10*100)+'%;"></div></div></div>')
+    + '<div class="meta">TRACE THE OUTPUT</div>'
+    + '<div class="codeBox">'+p.code.map(escHtml).join('\n')+'</div>'
+    + '<div class="stem">What does this display?</div>'
+    + '<div class="choices" id="choicesBox">' + choicesOrder.map(function(c){
+        return '<button class="choice" onclick="pick('+JSON.stringify(c).replace(/"/g,'&quot;')+')">'+escHtml(c)+'</button>';
+      }).join('') + '</div>'
+    + '<div id="fbSlot"></div>'
+    + '<div class="controls"><button class="btn" id="nextBtn" disabled onclick="nextQuestion()">'+(idx===9?'SEE RESULTS':'NEXT')+' &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML = html;
+}
+
+function pick(val){
+  var p = Q[idx];
+  if(answers[idx]) return;
+  var correct = val === p.answer;
+  answers[idx] = {pick:val, correct:correct};
+  var btns = document.querySelectorAll('#choicesBox .choice');
+  btns.forEach(function(b){
+    b.disabled = true;
+    var lbl = b.textContent.trim();
+    if(lbl === p.answer) b.classList.add('correctPick');
+    else if(lbl === val && !correct) b.classList.add('wrongPick');
+  });
+  var fb = '<div class="feedback '+(correct?'correct':'wrong')+'"><b>'+(correct?'CORRECT':'NOT QUITE — correct answer: '+escHtml(p.answer))+'</b>'+escHtml(p.explain)+'</div>';
+  document.getElementById('fbSlot').innerHTML = fb;
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion(){
+  if(mode === 'practice'){
+    idx++;
+    if(idx >= Q.length){ Q = shuffleArr(BANK); idx = 0; }
+    renderQuestion();
+    return;
+  }
+  if(idx === 9){ showResults(); return; }
+  idx++;
+  renderQuestion();
+}
+
+function showResults(){
+  var correctCount = answers.filter(function(a){return a.correct;}).length;
+  var pct = Math.round(correctCount/10*100);
+  var color = pct >= 80 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--bad)';
+  var html = '<div class="resultsWrap">'+(studentName?'<div class="resultName">'+escHtml(studentName)+'</div>':'')+'<div class="meta">RESULTS</div><div class="bigScore" style="color:'+color+';">'+correctCount+'/10</div><div class="mono" style="color:var(--dim);font-size:13px;margin-bottom:24px;">'+pct+'% correct</div></div>';
+  html += Q.map(function(p, i){
+    var a = answers[i];
+    return '<div class="reviewRow"><span class="mark">'+(a.correct?'✅':'❌')+'</span><div><div class="mono" style="font-size:11.5px;color:var(--faint);margin-bottom:4px;">QUESTION '+(i+1)+' &middot; your answer: '+escHtml(a.pick)+(a.correct?'':' &middot; correct: '+escHtml(p.answer))+'</div><div style="font-size:13.5px;color:var(--muted);line-height:1.5;">'+escHtml(p.explain)+'</div></div></div>';
+  }).join('');
+  html += '<div class="controls" style="justify-content:center;margin-top:22px;"><button class="btn" onclick="startQuiz()">TRY AGAIN &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML = html;
+}
+
+renderStart();
+</script>
+</body>
+</html>

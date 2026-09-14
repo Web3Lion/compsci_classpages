@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List &amp; Loop Tracer — Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#0072b8;--accent2:#005c94;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;--codebg:#050810;}
+:root[data-theme="light"] .codeBox{background:#e9eef7;color:#1c2c44;border-color:var(--border3);}
+body,.panel,.choice,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;padding-right:110px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;}
+.progressRow{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.progressBar{flex:1;height:8px;border-radius:99px;background:var(--panel2);overflow:hidden;}
+.progressBar>div{height:100%;background:var(--accent);width:0;transition:width .3s ease;}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);margin-bottom:10px;}
+.codeBox{background:var(--codebg,#050810);border:1px solid var(--border2);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.85;overflow-x:auto;white-space:pre;color:var(--text);margin-bottom:6px;}
+.stem{font-size:14.5px;line-height:1.6;color:var(--bright);margin:14px 0 18px;}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.choice{padding:15px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;text-align:center;}
+.choice:hover{border-color:var(--border-hi);background:var(--panel3);}
+.choice.correctPick{border-color:var(--ok);background:rgba(79,214,138,.14);}
+.choice.wrongPick{border-color:var(--bad);background:rgba(255,92,122,.14);}
+.choice:disabled{cursor:default;}
+.feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.65;}
+.feedback.correct{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);}
+.feedback.wrong{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);}
+.feedback b{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.controls{display:flex;justify-content:flex-end;margin-top:18px;}
+.btn{padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn:disabled{opacity:.4;cursor:default;}
+.resultsWrap{text-align:center;}
+.bigScore{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:800;color:var(--bright);margin:6px 0;}
+.reviewRow{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:var(--panel2);border:1px solid var(--border2);margin-bottom:10px;text-align:left;}
+.reviewRow .mark{font-size:16px;flex:none;width:20px;}
+.startScreen{text-align:center;padding:36px 10px;}
+.startScreen p{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;}
+.nameInput{width:100%;max-width:320px;padding:13px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'Inter',sans-serif;font-size:15px;margin-bottom:18px;text-align:center;}
+.nameInput:focus{outline:none;border-color:var(--accent);}
+.resultName{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);margin-bottom:2px;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>LIST &amp; LOOP TRACER</h1></div>
+    <a class="backLink mono" href="index.html">&larr; practice</a>
+  </div>
+  <p class="lead">AP Computer Science Principles &middot; 10 random questions, graded. Trace index values and list traversals step by step.</p>
+
+  <div class="panel" id="quizPanel"></div>
+</div>
+<script>
+var BANK = [
+  {code:["list = [10, 20, 30, 40]","DISPLAY(list[2])"], choices:["30","20","40","Error"], answer:"30", explain:"Indexing starts at 0, so index 2 is the third element: 30."},
+  {code:["list = [\"a\", \"b\", \"c\"]","DISPLAY(list[0])"], choices:["a","b","c","Error"], answer:"a", explain:"Index 0 is always the first element of the list."},
+  {code:["list = [5, 10, 15]","DISPLAY(LENGTH(list))"], choices:["3","2","15","Error"], answer:"3", explain:"LENGTH returns the number of elements in the list — there are 3."},
+  {code:["list = [5, 10, 15]","DISPLAY(list[LENGTH(list) - 1])"], choices:["15","5","3","Error"], answer:"15", explain:"LENGTH(list) - 1 is the index of the last element in any list: here, 3 - 1 = 2, and list[2] is 15."},
+  {code:["list = [1, 2, 3]","APPEND(list, 4)","DISPLAY(list)"], choices:["[1, 2, 3, 4]","[4, 1, 2, 3]","[1, 2, 3]","[4]"], answer:"[1, 2, 3, 4]", explain:"APPEND adds the new value to the end of the list."},
+  {code:["list = [1, 2, 3]","REMOVE(list, 0)","DISPLAY(list)"], choices:["[2, 3]","[1, 2]","[1, 3]","[]"], answer:"[2, 3]", explain:"REMOVE(list, 0) removes the item at index 0 — the value 1 — leaving [2, 3]."},
+  {code:["list = [4, 8, 12]","list[1] = 100","DISPLAY(list)"], choices:["[4, 100, 12]","[100, 8, 12]","[4, 8, 100]","[4, 8, 12, 100]"], answer:"[4, 100, 12]", explain:"Assigning to list[1] replaces the element at index 1 (the value 8) with 100."},
+  {code:["total = 0","list = [3, 6, 9]","FOR EACH n IN list","  total = total + n","END FOR","DISPLAY(total)"], choices:["18","9","3","27"], answer:"18", explain:"3 + 6 + 9 = 18."},
+  {code:["list = [2, 4, 6, 8]","count = 0","FOR EACH n IN list","  IF n > 4","    count = count + 1","  END IF","END FOR","DISPLAY(count)"], choices:["2","1","3","4"], answer:"2", explain:"Only 6 and 8 are greater than 4, so count ends at 2."},
+  {code:["list = [10, 20, 30]","FOR i FROM 0 TO LENGTH(list) - 1","  DISPLAY(list[i])","END FOR"], choices:["10 20 30","20 30","10 20","Error"], answer:"10 20 30", explain:"i runs from 0 to 2 (LENGTH - 1), visiting every valid index and displaying all three values in order."},
+  {code:["list = [\"x\", \"y\", \"z\"]","FOR i FROM LENGTH(list) - 1 TO 0","  DISPLAY(list[i])","END FOR"], choices:["z y x","x y z","Error","z"], answer:"z y x", explain:"Counting the index down from the last (2) to the first (0) visits the list back to front: z, y, x."},
+  {code:["list = [1, 1, 2, 3, 5]","result = []","FOR EACH n IN list","  IF n MOD 2 = 0","    APPEND(result, n)","  END IF","END FOR","DISPLAY(result)"], choices:["[2]","[1, 1]","[1, 1, 3, 5]","[]"], answer:"[2]", explain:"Only 2 is even among the list's values, so it's the only one appended to result."},
+  {code:["list = [7, 14, 21]","total = 0","index = 0","WHILE index < LENGTH(list)","  total = total + list[index]","  index = index + 1","END WHILE","DISPLAY(total)"], choices:["42","21","14","0"], answer:"42", explain:"7 + 14 + 21 = 42, summed by walking the index from 0 up to LENGTH(list) - 1."},
+  {code:["list = [3, 1, 4, 1, 5]","match = 0","FOR EACH n IN list","  IF n = 1","    match = match + 1","  END IF","END FOR","DISPLAY(match)"], choices:["2","1","3","5"], answer:"2", explain:"The value 1 appears twice in the list, so match ends at 2."},
+  {code:["a = [1, 2, 3]","b = a","APPEND(b, 4)","DISPLAY(a)"], choices:["[1, 2, 3, 4]","[1, 2, 3]","[4]","Error"], answer:"[1, 2, 3, 4]", explain:"b = a makes b refer to the SAME list as a, not a copy — changing b through APPEND also changes what a displays."},
+  {code:["grid = [[1, 2], [3, 4]]","DISPLAY(grid[1][0])"], choices:["3","2","1","4"], answer:"3", explain:"grid[1] is the second inner list [3, 4], and index 0 of that is 3."},
+  {code:["list = [8, 3, 9, 2]","smallest = list[0]","FOR EACH n IN list","  IF n < smallest","    smallest = n","  END IF","END FOR","DISPLAY(smallest)"], choices:["2","3","8","9"], answer:"2", explain:"smallest tracks the lowest value seen; 2 is the lowest value in the list."},
+  {code:["list = [1, 2, 3, 4, 5]","evens = []","odds = []","FOR EACH n IN list","  IF n MOD 2 = 0","    APPEND(evens, n)","  ELSE","    APPEND(odds, n)","  END IF","END FOR","DISPLAY(LENGTH(odds))"], choices:["3","2","5","1"], answer:"3", explain:"1, 3, and 5 are odd — three values land in the odds list."},
+  {code:["list = [\"cat\", \"dog\", \"fish\"]","DISPLAY(list[1] + list[0])"], choices:["dogcat","catdog","fishcat","dogfish"], answer:"dogcat", explain:"list[1] is 'dog' and list[0] is 'cat'; concatenating in that order gives 'dogcat'."},
+  {code:["list = [4, 4, 4]","list[0] = list[0] + 1","DISPLAY(list)"], choices:["[5, 4, 4]","[4, 4, 4]","[5, 5, 5]","[4, 5, 4]"], answer:"[5, 4, 4]", explain:"Only index 0 is reassigned to 4 + 1 = 5; the other elements are untouched."},
+  {code:["list = []","FOR i FROM 1 TO 3","  APPEND(list, i * i)","END FOR","DISPLAY(list)"], choices:["[1, 4, 9]","[1, 2, 3]","[1, 2, 4]","[]"], answer:"[1, 4, 9]", explain:"Each pass appends i squared: 1*1=1, 2*2=4, 3*3=9."},
+  {code:["list = [6, 12, 18, 24]","target = 18","found = -1","FOR i FROM 0 TO LENGTH(list) - 1","  IF list[i] = target","    found = i","  END IF","END FOR","DISPLAY(found)"], choices:["2","18","3","-1"], answer:"2", explain:"18 is stored at index 2 in the list, so found ends up holding 2."}
+];
+var Q = [], idx = 0, answers = [], studentName = "", mode = "quiz";
+
+function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function escHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+
+function renderStart(){
+  var savedName = '';
+  try{ savedName = localStorage.getItem('practice-student-name') || ''; }catch(e){}
+  document.getElementById('quizPanel').innerHTML = '<div class="startScreen"><div class="meta">BEFORE YOU START</div><p>Type your name so it shows on your results &mdash; handy for a screenshot. Name is optional for Open Practice.</p><input type="text" id="studentNameInput" class="nameInput" placeholder="Your name" value="'+escHtml(savedName)+'" onkeydown="if(event.key===\'Enter\')beginQuiz();"><div class="controls" style="justify-content:center;gap:10px;"><button class="btn" onclick="beginPractice()">OPEN PRACTICE</button><button class="btn" onclick="beginQuiz()" style="border-color:var(--accent);color:var(--accent2);">BEGIN QUIZ &rarr;</button></div></div>';
+  var inp = document.getElementById('studentNameInput');
+  inp.focus(); inp.select();
+}
+function beginQuiz(){
+  var v = document.getElementById('studentNameInput').value.trim();
+  studentName = v;
+  try{ localStorage.setItem('practice-student-name', v); }catch(e){}
+  mode = 'quiz';
+  startQuiz();
+}
+function beginPractice(){
+  var v = document.getElementById('studentNameInput').value.trim();
+  studentName = v;
+  try{ if(v) localStorage.setItem('practice-student-name', v); }catch(e){}
+  mode = 'practice';
+  startQuiz();
+}
+function endPractice(){ renderStart(); }
+
+function startQuiz(){
+  Q = mode === 'practice' ? shuffleArr(BANK) : shuffleArr(BANK).slice(0, 10);
+  idx = 0; answers = [];
+  renderQuestion();
+}
+
+function renderQuestion(){
+  var p = Q[idx];
+  var choicesOrder = shuffleArr(p.choices);
+  var html = (mode==='practice' ? '<div class="progressRow"><span class="mono" style="color:var(--accent2);">OPEN PRACTICE</span><span>Question <b style="color:var(--bright);">'+(idx+1)+'</b></span><button class="btn" style="padding:6px 12px;font-size:11px;margin-left:auto;" onclick="endPractice()">END &rarr;</button></div>' : '<div class="progressRow"><span>QUESTION <b style="color:var(--bright);">'+(idx+1)+'</b>/10</span><div class="progressBar"><div style="width:'+(idx/10*100)+'%;"></div></div></div>')
+    + '<div class="meta">TRACE THE OUTPUT</div>'
+    + '<div class="codeBox">'+p.code.map(escHtml).join('\n')+'</div>'
+    + '<div class="stem">What does this display?</div>'
+    + '<div class="choices" id="choicesBox">' + choicesOrder.map(function(c){
+        return '<button class="choice" onclick="pick('+JSON.stringify(c).replace(/"/g,'&quot;')+')">'+escHtml(c)+'</button>';
+      }).join('') + '</div>'
+    + '<div id="fbSlot"></div>'
+    + '<div class="controls"><button class="btn" id="nextBtn" disabled onclick="nextQuestion()">'+(idx===9?'SEE RESULTS':'NEXT')+' &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML = html;
+}
+
+function pick(val){
+  var p = Q[idx];
+  if(answers[idx]) return;
+  var correct = val === p.answer;
+  answers[idx] = {pick:val, correct:correct};
+  var btns = document.querySelectorAll('#choicesBox .choice');
+  btns.forEach(function(b){
+    b.disabled = true;
+    var lbl = b.textContent.trim();
+    if(lbl === p.answer) b.classList.add('correctPick');
+    else if(lbl === val && !correct) b.classList.add('wrongPick');
+  });
+  var fb = '<div class="feedback '+(correct?'correct':'wrong')+'"><b>'+(correct?'CORRECT':'NOT QUITE — correct answer: '+escHtml(p.answer))+'</b>'+escHtml(p.explain)+'</div>';
+  document.getElementById('fbSlot').innerHTML = fb;
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion(){
+  if(mode === 'practice'){
+    idx++;
+    if(idx >= Q.length){ Q = shuffleArr(BANK); idx = 0; }
+    renderQuestion();
+    return;
+  }
+  if(idx === 9){ showResults(); return; }
+  idx++;
+  renderQuestion();
+}
+
+function showResults(){
+  var correctCount = answers.filter(function(a){return a.correct;}).length;
+  var pct = Math.round(correctCount/10*100);
+  var color = pct >= 80 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--bad)';
+  var html = '<div class="resultsWrap">'+(studentName?'<div class="resultName">'+escHtml(studentName)+'</div>':'')+'<div class="meta">RESULTS</div><div class="bigScore" style="color:'+color+';">'+correctCount+'/10</div><div class="mono" style="color:var(--dim);font-size:13px;margin-bottom:24px;">'+pct+'% correct</div></div>';
+  html += Q.map(function(p, i){
+    var a = answers[i];
+    return '<div class="reviewRow"><span class="mark">'+(a.correct?'✅':'❌')+'</span><div><div class="mono" style="font-size:11.5px;color:var(--faint);margin-bottom:4px;">QUESTION '+(i+1)+' &middot; your answer: '+escHtml(a.pick)+(a.correct?'':' &middot; correct: '+escHtml(p.answer))+'</div><div style="font-size:13.5px;color:var(--muted);line-height:1.5;">'+escHtml(p.explain)+'</div></div></div>';
+  }).join('');
+  html += '<div class="controls" style="justify-content:center;margin-top:22px;"><button class="btn" onclick="startQuiz()">TRY AGAIN &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML = html;
+}
+
+renderStart();
+</script>
+</body>
+</html>
