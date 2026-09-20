@@ -35,6 +35,14 @@ language sql stable security definer set search_path = public as $$
      );
 $$;
 
+-- ---- public check: is this exact email in the allowlist? (client-side gate
+--      needs this before any teacher-scoped RPC would succeed) -------------
+create or replace function ctf_allowed_emails_public()
+returns json language sql security definer set search_path = public as $$
+  select coalesce((select json_agg(email) from allowed_emails), '[]'::json);
+$$;
+grant execute on function ctf_allowed_emails_public() to anon, authenticated;
+
 -- ---- list (any teacher can view; only an owner can add/remove below) -------
 create or replace function ctf_t_allowed_emails()
 returns json language plpgsql security definer set search_path = public as $$

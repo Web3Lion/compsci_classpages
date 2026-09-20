@@ -221,6 +221,30 @@ begin
   ) t), '[]'::json);
 end $$;
 
+-- Full-board leaderboard for signed-in students, same shape as the teacher's
+-- classroom-display board (ctf_t_leaderboard) but self-serve: any student can
+-- open it for a class they belong to, no teacher check. Real handles + XP for
+-- the whole class are visible to that class's own students by design.
+create or replace function ctf_leaderboard_full_google(p_class uuid)
+returns json language plpgsql security definer set search_path = public as $$
+begin
+  if not exists (select 1 from students where class_id = p_class and auth_user_id = auth.uid())
+    then return json_build_object('error','not_yours'); end if;
+  return coalesce((select json_agg(row_to_json(t) order by t.pos) from (
+    select row_number() over (order by (coalesce(pr.points,0)+coalesce(pr.bonus,0)) desc,
+                                       pr.updated_at asc) as pos,
+           st.handle,
+           (coalesce(pr.points,0)+coalesce(pr.bonus,0)) as xp,
+           coalesce(pr.solved_count,0) as solved_count,
+           coalesce(pr.total_count,0) as total_count,
+           coalesce((pr.streak->>'count')::int, 0) as streak_count,
+           coalesce(array_length(array(select jsonb_object_keys(pr.badges)), 1), 0) as badge_count
+    from students st join progress pr on pr.student_id = st.id
+    where st.class_id = p_class and (coalesce(pr.points,0)+coalesce(pr.bonus,0)) > 0
+    order by (coalesce(pr.points,0)+coalesce(pr.bonus,0)) desc, pr.updated_at asc
+  ) t), '[]'::json);
+end $$;
+
 -- ============================================================================
 --  TEACHER RPCs  (email-gated — no shared passcode)
 -- ============================================================================
@@ -344,6 +368,7 @@ begin
     'ctf_cheat_google(uuid,text,text)',
     'ctf_rename_google(uuid,text)',
     'ctf_leaderboard_google(uuid)',
+    'ctf_leaderboard_full_google(uuid)',
     'ctf_t_classes()',
     'ctf_t_create_class(text,text,text)',
     'ctf_t_delete_class(uuid)',
