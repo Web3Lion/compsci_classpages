@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* PROOF OF WORK page intros (Web 3.0) — blockchain-themed transitions,
    the counterpart to the cyber hacker-glitch. Self-contained, no deps.
    A random variant plays once per page load on the CTF arena AND the formal

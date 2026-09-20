@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robert Morris University Grade Scale — CHS Dual Enrollment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--rmu:#d13a52;--rmu-bd:#5a1f2a;--rmu-bg:rgba(166,25,46,.08);}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fabc7;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--rmu:#a6192e;--rmu-bd:#e3b8bf;--rmu-bg:rgba(166,25,46,.06);}
+body,table{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--rmu);cursor:pointer;}
+.themebtn:hover{border-color:var(--rmu);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;font-size:16px;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--rmu);text-decoration:none;}
+a:hover{text-decoration:underline;}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--rmu);box-shadow:0 0 10px var(--rmu);}
+.brand h1{font-size:20px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:14px;color:var(--faint);font-weight:600;}
+.lead{color:var(--muted);line-height:1.65;font-size:16px;margin:16px 0 22px;}
+.warnBox{border:1px solid var(--rmu-bd);background:var(--rmu-bg);border-radius:12px;padding:16px 18px;font-size:14.5px;line-height:1.6;color:var(--muted);margin-bottom:26px;}
+.warnBox b{color:var(--bright);}
+table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.5px;color:var(--dim);padding:10px 14px;border-bottom:1px solid var(--border3);}
+td{padding:11px 14px;border-bottom:1px solid var(--border2);font-size:15px;}
+td.grade{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--bright);}
+tr:hover td{background:var(--panel2);}
+.foot{font-size:13px;color:var(--faint);margin-top:22px;line-height:1.6;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>ROBERT MORRIS UNIVERSITY GRADE SCALE</h1></div>
+    <a class="backLink mono" href="index.html">&larr; back</a>
+  </div>
+  <p class="lead">This course can earn transcripted RMU college credit through RMU's College in High School program, graded on RMU's college grade scale, shown below.</p>
+  <div class="warnBox">&#9888; <b>This is not the same as South Fayette's grading scale.</b> Your grade in this course, as reported on your RMU transcript, is calculated using the scale below — not the district's high school scale.</div>
+  <table>
+    <tr><th>Grade</th><th>Range</th></tr>
+    <tr><td class="grade">A</td><td>93&ndash;100%</td></tr>
+    <tr><td class="grade">A-</td><td>90&ndash;92%</td></tr>
+    <tr><td class="grade">B+</td><td>86&ndash;89%</td></tr>
+    <tr><td class="grade">B</td><td>83&ndash;85%</td></tr>
+    <tr><td class="grade">B-</td><td>80&ndash;82%</td></tr>
+    <tr><td class="grade">C+</td><td>77&ndash;79%</td></tr>
+    <tr><td class="grade">C</td><td>70&ndash;76%</td></tr>
+    <tr><td class="grade">D</td><td>60&ndash;69%</td></tr>
+    <tr><td class="grade">F</td><td>&lt; 60%</td></tr>
+  </table>
+  <div class="foot">Questions about how this affects your transcript or GPA? Ask your teacher or reach out to RMU's CHS office through the <a href="https://www.rmu.edu/about/rmu-in-hs/students-parents-faq" target="_blank" rel="noopener">Students &amp; Parents FAQ</a>.</div>
+</div>
+</body>
+</html>

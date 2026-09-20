@@ -1,3 +1,4 @@
+// © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* Shared vocab pool for web3 — consumed by ctf.html (window.CTF_VOCAB).
    Mirror of the VOCAB array in web3/vocab.html. m = classroom module. */
 window.WEB3_VOCAB = { terms: [
