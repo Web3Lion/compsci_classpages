@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route &amp; Protocol — Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#0072b8;--accent2:#005c94;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;--codebg:#050810;}
+:root[data-theme="light"] .codeBox{background:#e9eef7;color:#1c2c44;border-color:var(--border3);}
+body,.panel,.choice,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;padding-right:110px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.legItem{flex:1;min-width:150px;padding:12px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--panel);font-size:12px;line-height:1.5;color:var(--dim);}
+.legItem b{display:block;font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:3px;}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;}
+.progressRow{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+.progressBar{flex:1;height:8px;border-radius:99px;background:var(--panel2);overflow:hidden;}
+.progressBar>div{height:100%;background:var(--accent);width:0;transition:width .3s ease;}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);margin-bottom:10px;}
+.codeBox{background:var(--codebg,#050810);border:1px solid var(--border2);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.85;overflow-x:auto;white-space:pre;color:var(--text);margin-bottom:6px;}
+.stem{font-size:14.5px;line-height:1.6;color:var(--bright);margin:14px 0 18px;}
+.choices{display:grid;grid-template-columns:1fr;gap:10px;}
+.choice{padding:14px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;cursor:pointer;text-align:left;white-space:pre-wrap;}
+.choice:hover{border-color:var(--border-hi);background:var(--panel3);}
+.choice.correctPick{border-color:var(--ok);background:rgba(79,214,138,.14);}
+.choice.wrongPick{border-color:var(--bad);background:rgba(255,92,122,.14);}
+.choice:disabled{cursor:default;}
+.feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.65;}
+.feedback.correct{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);}
+.feedback.wrong{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);}
+.feedback b{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.controls{display:flex;justify-content:flex-end;margin-top:18px;}
+.btn{padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn:disabled{opacity:.4;cursor:default;}
+.resultsWrap{text-align:center;}
+.bigScore{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:800;color:var(--bright);margin:6px 0;}
+.reviewRow{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:var(--panel2);border:1px solid var(--border2);margin-bottom:10px;text-align:left;}
+.reviewRow .mark{font-size:16px;flex:none;width:20px;}
+.startScreen{text-align:center;padding:36px 10px;}
+.startScreen p{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.6;}
+.nameInput{width:100%;max-width:320px;padding:13px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'Inter',sans-serif;font-size:15px;margin-bottom:18px;text-align:center;}
+.nameInput:focus{outline:none;border-color:var(--accent);}
+.resultName{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);margin-bottom:2px;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>ROUTE &AMP; PROTOCOL</h1></div>
+    <a class="backLink mono" href="index.html">&larr; practice</a>
+  </div>
+  <p class="lead">AP Computer Science Principles &middot; 10 random questions, graded. Packets, protocols, fault tolerance, bandwidth, and latency.</p>
+
+  <div class="panel" id="quizPanel"></div>
+</div>
+<script>
+var BANK = [{"stem":"What is a protocol, in networking terms?","choices":["An agreed-upon set of rules for how devices communicate","A physical cable connecting two computers","A type of computer virus","A brand of router"],"answer":"An agreed-upon set of rules for how devices communicate","explain":"A protocol is a shared standard that lets different devices understand and respond to each other correctly."},{"stem":"What does IP stand for in the context of the Internet?","choices":["Internet Protocol","Internal Processor","Information Packet","Interface Program"],"answer":"Internet Protocol","explain":"IP (Internet Protocol) governs how data is addressed and routed across the Internet."},{"stem":"What is the purpose of breaking a message into packets before sending it?","choices":["Packets can take different routes and be reassembled, making transmission efficient and fault-tolerant","It makes the message impossible to intercept","It's required to compress the message","It guarantees the message will never be lost"],"answer":"Packets can take different routes and be reassembled, making transmission efficient and fault-tolerant","explain":"Packet switching lets pieces of a message travel independently and be reassembled, improving efficiency and resilience."},{"stem":"What does DNS do?","choices":["Translates human-readable domain names into IP addresses","Encrypts all internet traffic","Compresses website images","Blocks unwanted advertisements"],"answer":"Translates human-readable domain names into IP addresses","explain":"DNS (Domain Name System) looks up the numeric IP address behind a domain name like example.com."},{"stem":"What makes the Internet 'fault tolerant'?","choices":["Multiple possible paths exist between two points, so traffic can reroute around failures","Every device is physically connected to every other device","No device on the Internet can ever fail","All data always travels the same fixed path"],"answer":"Multiple possible paths exist between two points, so traffic can reroute around failures","explain":"Redundant paths let data reroute if part of the network goes down, rather than failing completely."},{"stem":"What is bandwidth?","choices":["The maximum amount of data that can be transferred over a connection in a given time","The physical length of a network cable","The number of devices connected to a router","The security level of a network"],"answer":"The maximum amount of data that can be transferred over a connection in a given time","explain":"Bandwidth measures data-transfer capacity, often in bits per second."},{"stem":"What is latency?","choices":["The delay between sending and receiving data","The total amount of data sent","The number of packets lost","The brand of network hardware"],"answer":"The delay between sending and receiving data","explain":"Latency is the time delay for data to travel from sender to receiver."},{"stem":"HTTP is a protocol primarily used for:","choices":["Requesting and transferring web pages between browsers and servers","Sending encrypted emails only","Assigning IP addresses to devices","Compressing video files"],"answer":"Requesting and transferring web pages between browsers and servers","explain":"HTTP defines how web browsers and servers request and deliver web content."},{"stem":"Why is having a scalable, redundant system important for something like the Internet?","choices":["It can grow to support more users and traffic, and keep working if parts fail","It makes the network completely immune to all traffic issues","It removes the need for protocols entirely","It ensures the network never needs upgrades"],"answer":"It can grow to support more users and traffic, and keep working if parts fail","explain":"Scalability and redundancy let the Internet handle growth and partial failures without collapsing."},{"stem":"Which best describes what a router does?","choices":["Directs packets toward their destination across interconnected networks","Stores all websites' content permanently","Converts binary data to text","Only connects devices within a single home"],"answer":"Directs packets toward their destination across interconnected networks","explain":"Routers forward packets between networks toward their destination."},{"stem":"Why does the Internet rely on a common set of protocols instead of each device using custom rules?","choices":["Shared, open protocols let vastly different devices and networks interoperate reliably","Custom protocols would be faster for everyone","A single company controls all Internet traffic","It's a legal requirement enforced by one government"],"answer":"Shared, open protocols let vastly different devices and networks interoperate reliably","explain":"Common protocols are what let devices from different manufacturers and networks communicate at all."},{"stem":"What's a real consequence of high latency for a user?","choices":["Noticeable lag or delay, e.g. in a video call or online game","Files get permanently corrupted","The connection automatically becomes encrypted","Bandwidth automatically increases"],"answer":"Noticeable lag or delay, e.g. in a video call or online game","explain":"High latency shows up as a perceptible delay in real-time applications like calls or games."},{"stem":"If one path between two routers goes down, what typically happens to the data?","choices":["It's rerouted through an alternate available path","All Internet traffic stops permanently","It is deleted and never sent","It automatically switches to a private network"],"answer":"It's rerouted through an alternate available path","explain":"Fault tolerance lets data find another route rather than being lost when one path fails."},{"stem":"What does it mean for a system to be 'scalable'?","choices":["It can handle growth in users, traffic, or data without a fundamental redesign","It always uses the same fixed amount of resources no matter what","It only works for a small, fixed number of users","It shrinks automatically over time"],"answer":"It can handle growth in users, traffic, or data without a fundamental redesign","explain":"A scalable system keeps working well as demand grows, without needing to be rebuilt from scratch."},{"stem":"Why might streaming 4K video use far more bandwidth than sending a text message?","choices":["Video contains far more data per second than text, requiring a much higher transfer rate","Text messages always use more bandwidth than video","Bandwidth doesn't depend on the type of data being sent","4K video is a form of encryption"],"answer":"Video contains far more data per second than text, requiring a much higher transfer rate","explain":"Video carries vastly more information per second than a short text message, demanding more bandwidth."}];
+var Q = [], idx = 0, answers = [], studentName = "", mode = "quiz";
+
+function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function escHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function renderStart(){
+  var savedName = '';
+  try{ savedName = localStorage.getItem('practice-student-name') || ''; }catch(e){}
+  document.getElementById('quizPanel').innerHTML = '<div class="startScreen"><div class="meta">BEFORE YOU START</div><p>Type your name so it shows on your results &mdash; handy for a screenshot. Name is optional for Open Practice.</p><input type="text" id="studentNameInput" class="nameInput" placeholder="Your name" value="'+escHtml(savedName)+'" onkeydown="if(event.key===\'Enter\')beginQuiz();"><div class="controls" style="justify-content:center;gap:10px;"><button class="btn" onclick="beginPractice()">OPEN PRACTICE</button><button class="btn" onclick="beginQuiz()" style="border-color:var(--accent);color:var(--accent2);">BEGIN QUIZ &rarr;</button></div></div>';
+  var inp = document.getElementById('studentNameInput');
+  inp.focus(); inp.select();
+}
+function beginQuiz(){
+  var v = document.getElementById('studentNameInput').value.trim();
+  studentName = v;
+  try{ localStorage.setItem('practice-student-name', v); }catch(e){}
+  mode = 'quiz';
+  startQuiz();
+}
+function beginPractice(){
+  var v = document.getElementById('studentNameInput').value.trim();
+  studentName = v;
+  try{ if(v) localStorage.setItem('practice-student-name', v); }catch(e){}
+  mode = 'practice';
+  startQuiz();
+}
+function endPractice(){ renderStart(); }
+
+function startQuiz(){
+  Q = mode === 'practice' ? shuffleArr(BANK) : shuffleArr(BANK).slice(0, 10);
+  idx = 0; answers = [];
+  renderQuestion();
+}
+
+function renderQuestion(){
+  var p = Q[idx];
+  var choicesOrder = shuffleArr(p.choices);
+  var codeHtml = p.code ? '<div class="codeBox">'+p.code.map(escHtml).join('\n')+'</div>' : '';
+  var html = (mode==='practice' ? '<div class="progressRow"><span class="mono" style="color:var(--accent2);">OPEN PRACTICE</span><span>Question <b style="color:var(--bright);">'+(idx+1)+'</b></span><button class="btn" style="padding:6px 12px;font-size:11px;margin-left:auto;" onclick="endPractice()">END &rarr;</button></div>' : '<div class="progressRow"><span>QUESTION <b style="color:var(--bright);">'+(idx+1)+'</b>/10</span><div class="progressBar"><div style="width:'+(idx/10*100)+'%;"></div></div></div>')
+    + '<div class="meta">QUESTION '+(idx+1)+'</div>'
+    + codeHtml
+    + '<div class="stem">'+escHtml(p.stem)+'</div>'
+    + '<div class="choices" id="choicesBox">' + choicesOrder.map(function(c){
+        return '<button class="choice" onclick="pick('+JSON.stringify(c).replace(/"/g,'&quot;')+')">'+escHtml(c)+'</button>';
+      }).join('') + '</div>'
+    + '<div id="fbSlot"></div>'
+    + '<div class="controls"><button class="btn" id="nextBtn" disabled onclick="nextQuestion()">'+(idx===9?'SEE RESULTS':'NEXT')+' &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML = html;
+}
+
+function pick(val){
+  var p = Q[idx];
+  if(answers[idx]) return;
+  var correct = val === p.answer;
+  answers[idx] = {pick:val, correct:correct};
+  var btns = document.querySelectorAll('#choicesBox .choice');
+  btns.forEach(function(b){
+    b.disabled = true;
+    var lbl = b.textContent.trim();
+    if(lbl === p.answer) b.classList.add('correctPick');
+    else if(lbl === val && !correct) b.classList.add('wrongPick');
+  });
+  var fb = '<div class="feedback '+(correct?'correct':'wrong')+'"><b>'+(correct?'CORRECT':'NOT QUITE — correct answer: '+escHtml(p.answer))+'</b>'+escHtml(p.explain)+'</div>';
+  document.getElementById('fbSlot').innerHTML = fb;
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion(){
+  if(mode === 'practice'){
+    idx++;
+    if(idx >= Q.length){ Q = shuffleArr(BANK); idx = 0; }
+    renderQuestion();
+    return;
+  }
+  if(idx === 9){ showResults(); return; }
+  idx++;
+  renderQuestion();
+}
+
+function showResults(){
+  var correctCount = answers.filter(function(a){return a.correct;}).length;
+  var pct = Math.round(correctCount/10*100);
+  var color = pct >= 80 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--bad)';
+  var html = '<div class="resultsWrap">'+(studentName?'<div class="resultName">'+escHtml(studentName)+'</div>':'')+'<div class="meta">RESULTS</div><div class="bigScore" style="color:'+color+';">'+correctCount+'/10</div><div class="mono" style="color:var(--dim);font-size:13px;margin-bottom:24px;">'+pct+'% correct</div></div>';
+  html += Q.map(function(p, i){
+    var a = answers[i];
+    return '<div class="reviewRow"><span class="mark">'+(a.correct?'✅':'❌')+'</span><div><div class="mono" style="font-size:11.5px;color:var(--faint);margin-bottom:4px;">QUESTION '+(i+1)+' &middot; your answer: '+escHtml(a.pick)+(a.correct?'':' &middot; correct: '+escHtml(p.answer))+'</div><div style="font-size:13.5px;color:var(--muted);line-height:1.5;">'+escHtml(p.explain)+'</div></div></div>';
+  }).join('');
+  html += '<div class="controls" style="justify-content:center;margin-top:22px;"><button class="btn" onclick="startQuiz()">TRY AGAIN &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML = html;
+}
+
+renderStart();
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Guide — Practice Module Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#0072b8;--accent2:#005c94;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;font-size:16px;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:22px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:14px;color:var(--faint);font-weight:600;}
+.lead{color:var(--muted);line-height:1.65;font-size:16px;margin:16px 0 22px;max-width:74ch;}
+.note{border:1px solid var(--border2);background:var(--panel2);border-radius:12px;padding:16px 18px;font-size:14px;line-height:1.6;color:var(--muted);margin-bottom:28px;}
+.note b{color:var(--bright);}
+table{width:100%;border-collapse:collapse;margin-bottom:34px;}
+th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.5px;color:var(--dim);padding:10px 12px;border-bottom:1px solid var(--border3);}
+td{padding:12px 12px;border-bottom:1px solid var(--border2);font-size:14px;vertical-align:top;}
+tr:hover td{background:var(--panel2);}
+td.big b{color:var(--accent2);}
+td a{font-weight:700;}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 8px;border-radius:6px;background:var(--panel3);border:1px solid var(--border3);color:var(--dim);white-space:nowrap;}
+.sectionLbl{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1.5px;color:var(--dim);margin:0 0 12px;font-weight:700;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>TEACHER GUIDE — MODULE MAP</h1></div>
+    <a class="backLink mono" href="index.html">&larr; practice</a>
+  </div>
+  <p class="lead">Which practice quiz to assign for which unit, and when. This maps to the College Board's standard AP CSP Big Ideas / Units, since that's the structure every AP CSP course shares — swap in your own lesson numbers where they differ.</p>
+
+  <div class="note">Each quiz draws <b>10 random questions</b> from a bank of 12&ndash;26 items, so repeat assignments don't repeat questions. <b>Begin Quiz</b> is timed/graded (10 questions, one shot, results screen with the student's name for a screenshot). <b>Open Practice</b> is untimed and ungraded, cycling through the whole bank &mdash; good for review before a test, not for a grade.</div>
+
+  <div class="sectionLbl">MODULE MAP</div>
+  <table>
+    <tr><th>Unit / Big Idea</th><th>Topic</th><th>Practice quiz</th><th>Suggested use</th></tr>
+    <tr><td class="big"><b>Unit 1</b><br>Creative Development</td><td>Abstraction &amp; decomposition; collaboration</td><td><a href="abstraction-and-decomposition.html">Abstraction &amp; Decomposition</a></td><td><span class="tag">before Create Task planning</span></td></tr>
+    <tr><td class="big"><b>Unit 2</b><br>Data</td><td>Binary, hex, bits &amp; digital representation</td><td><a href="data-representation.html">Convert &amp; Represent</a></td><td><span class="tag">after data representation lesson</span></td></tr>
+    <tr><td class="big"><b>Unit 2</b><br>Data</td><td>Lossy vs. lossless compression</td><td><a href="compression-lab.html">Squeeze It</a></td><td><span class="tag">after compression lesson</span></td></tr>
+    <tr><td class="big"><b>Unit 2</b><br>Data</td><td>Data &amp; bias, IP, digital divide, crowdsourcing</td><td><a href="impact-of-computing.html">Impact of Computing</a></td><td><span class="tag">after ethics/bias discussion</span></td></tr>
+    <tr><td class="big"><b>Unit 3</b><br>Algorithms &amp; Programming</td><td>Classifying program errors</td><td><a href="name-that-error.html">Name That Error</a></td><td><span class="tag">early, once errors are introduced</span></td></tr>
+    <tr><td class="big"><b>Unit 3</b><br>Algorithms &amp; Programming</td><td>Tracing pseudocode output</td><td><a href="trace-the-algorithm.html">Trace the Algorithm</a></td><td><span class="tag">ongoing formative check</span></td></tr>
+    <tr><td class="big"><b>Unit 3</b><br>Algorithms &amp; Programming</td><td>Debugging buggy code</td><td><a href="fix-the-bug.html">Fix the Bug</a></td><td><span class="tag">after debugging lesson</span></td></tr>
+    <tr><td class="big"><b>Unit 3</b><br>Algorithms &amp; Programming</td><td>Lists &amp; loop traversal, indices</td><td><a href="list-loop-tracer.html">List &amp; Loop Tracer</a></td><td><span class="tag">after lists/loops unit</span></td></tr>
+    <tr><td class="big"><b>Unit 3</b><br>Algorithms &amp; Programming</td><td>Sequencing steps of a process</td><td><a href="build-the-program.html">Build the Program</a></td><td><span class="tag">early algorithmic thinking</span></td></tr>
+    <tr><td class="big"><b>Unit 3</b><br>Algorithms &amp; Programming</td><td>Boolean logic, AND/OR/NOT</td><td><a href="boolean-logic.html">True or False Logic</a></td><td><span class="tag">after conditionals lesson</span></td></tr>
+    <tr><td class="big"><b>Unit 3</b><br>Algorithms &amp; Programming</td><td>Algorithm efficiency, brute force, heuristics</td><td><a href="efficiency-check.html">Efficiency Check</a></td><td><span class="tag">later, before unit test</span></td></tr>
+    <tr><td class="big"><b>Unit 3</b><br>Algorithms &amp; Programming</td><td>Encryption by hand — Caesar &amp; Vigen&egrave;re</td><td><a href="cipher-lab-practice.html">Cipher Lab: Practice</a></td><td><span class="tag">after cryptography lesson</span></td></tr>
+    <tr><td class="big"><b>Unit 4</b><br>Computer Systems &amp; Networks</td><td>Packets, protocols, fault tolerance, latency</td><td><a href="route-and-protocol.html">Route &amp; Protocol</a></td><td><span class="tag">after networks lesson</span></td></tr>
+  </table>
+
+  <div class="sectionLbl">HOW TO ASSIGN</div>
+  <div class="note" style="margin-bottom:0;">
+    Link students directly to a quiz, or send them to the <a href="index.html">Practice hub</a> and let them pick. There's no login and no server-side grade record &mdash; students self-report by screenshotting the results screen (their name is shown), so this is built for low-stakes formative practice, not a gradebook-integrated assessment. For higher-stakes checks, use the <a href="../apcsp/ctf.html">CTF</a> system instead, which does track XP per student.
+  </div>
+</div>
+</body>
+</html>
