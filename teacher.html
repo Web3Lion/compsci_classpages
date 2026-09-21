@@ -203,6 +203,8 @@
         <button class="btn" onclick="openAnswerKey()" title="Opens the answer key for the selected class">🔑 Answer key</button>
         <button class="btn" onclick="openWarmupReview()" title="Opens Day 0 warmup / student info responses for the selected class's course">📋 Day 0 responses</button>
         <button class="btn" onclick="openPracticeGuide()" title="Opens the AP CSP practice quiz \u2192 module map, for assigning practice by unit">📘 Practice guide</button>
+        <button class="btn" onclick="snapshotWeek()" title="Freezes last week's top 3 into the Hall of Fame for the selected class">🏆 Snapshot week</button>
+        <button class="btn" onclick="window.open('../reward-spinner.html','_blank')" title="Opens the class reward spinner">🎡 Reward spinner</button>
         <button class="btn" onclick="loadClasses(true)">↻ Refresh</button>
         <button class="btn danger" onclick="signOut()">Sign out</button>
       </div>
@@ -726,6 +728,14 @@ function bulkMods(lock){
   Object.keys(courseModules()).forEach(function(m){ GATE.mods[Number(m)]=!!lock; });
   if(lock===false) GATE.flags={};
   GATE_DIRTY=true; renderMain();
+}
+async function snapshotWeek(){
+  if(!CUR){ alert("Select a class first."); return; }
+  try{
+    var r = await rpc("ctf_t_snapshot_week", {p_class: CUR.id});
+    if(r && r.error){ alert("Failed: " + r.error); return; }
+    alert("Saved top " + (r.saved||0) + " for week of " + (r.week_start||"last week") + ".");
+  }catch(e){ alert("Failed \u2014 run supabase/weekly-winners.sql"); }
 }
 async function saveGates(){
   var b=el("gateSave"); if(b){ b.disabled=true; b.textContent="Saving\u2026"; }
