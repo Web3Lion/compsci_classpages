@@ -105,7 +105,7 @@ window.COURSE_CONFIG = {
       { title: "RESOURCES", items: [
         { name: "Code.org",     desc: "CS Principles curriculum & labs",             url: "https://studio.code.org",   icon: "code" },
         { name: "Codecademy",   desc: "Interactive coding courses & practice",       url: "https://www.codecademy.com", icon: "code" },
-        { name: "AP Classroom", desc: "College Board \u00b7 videos & progress checks", url: "https://myap.collegeboard.org", icon: "classroom" }
+        { name: "W3Schools Python Tutorial", desc: "Python syntax & reference",      url: "https://www.w3schools.com/python/", icon: "code" }
       ]},
       { title: "CONTENT RESOURCES", items: [
         { name: "Khan Academy — AP CSP", desc: "Free lessons, practice & exam review", url: "https://www.khanacademy.org/computing/ap-computer-science-principles", icon: "book" }

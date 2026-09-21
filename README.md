@@ -42,6 +42,15 @@ isn't filled in.
 - `simulators/` — standalone interactive teaching tools (one HTML file each), linked
   from the course pages' "Simulators" / "Class Links" cards. `simulators/index.html`
   is the simulators hub/directory.
+- `practice/` — ungraded/graded practice quizzes (no login required), linked from
+  `practice/index.html`. Each quiz has Open Practice (untimed, endless) and Begin
+  Quiz (graded, timed, 10-15 random no-repeat questions) modes. `teacher-guide.html`
+  maps every quiz to AP CSP Units/Big Ideas.
+- `leaderboard.html` — live classroom-display leaderboard (Supabase-backed). Requires
+  the same Google sign-in + class-join flow as `ctf.html`; shows an error state if
+  the signed-in account hasn't joined a class for that course yet.
+- `apcsp/carlow-grade-scale.html`, `cyber1/rmu-grade-scale.html` — dual-credit partner
+  grade-scale reference pages, flagged as differing from South Fayette's own scale.
 - `config.js` — **single source of truth** for editable per-course settings: schedule
   sheet IDs, exam/task countdown dates, Meet links, resource card links, CTF flags
   (see `CLAUDE.md` for the CTF authoring rules).
@@ -60,7 +69,11 @@ isn't filled in.
 - `design-system/` — visual design system reference (tokens, components, guidelines).
 - `supabase/` — SQL schema files for the optional backend (run in the order noted in
   `SUPABASE-SETUP.md`: schema, google-auth, teacher-reports, class-gates, answer-key,
-  attempt-log, class-groups, and the rest).
+  attempt-log, class-groups, and the rest). **Re-run order matters**: `multi-domain.sql`
+  and `teachers.sql` must be re-run after any re-run of `google-auth.sql` (it resets
+  `_is_school()`/`_is_teacher()`), and `allowed-emails.sql` must be re-run after any
+  re-run of `multi-domain.sql` (it resets the external-email allowlist). Use
+  `check-installed.sql` to see which files need a re-run.
 - `uploads/` — reference materials (CED PDFs, pasted images) used while building content.
 
 ## Editing day-to-day content

@@ -202,6 +202,7 @@
       <div style="margin-left:auto;display:flex;gap:8px;">
         <button class="btn" onclick="openAnswerKey()" title="Opens the answer key for the selected class">🔑 Answer key</button>
         <button class="btn" onclick="openWarmupReview()" title="Opens Day 0 warmup / student info responses for the selected class's course">📋 Day 0 responses</button>
+        <button class="btn" onclick="openPracticeGuide()" title="Opens the AP CSP practice quiz \u2192 module map, for assigning practice by unit">📘 Practice guide</button>
         <button class="btn" onclick="loadClasses(true)">↻ Refresh</button>
         <button class="btn danger" onclick="signOut()">Sign out</button>
       </div>
@@ -456,6 +457,11 @@ function openWarmupReview(){
   var pages = {cyber1:"target-warmup-review.html", cyber2:"target-warmup-review.html", apcsp:"student-info-review.html"};
   if(!known[course]){ alert("There's no Day 0 responses page for "+course+" yet."); return; }
   window.open(course+"/"+pages[course], "_blank");
+}
+function openPracticeGuide(){
+  if(!CUR){ alert("Select a class first."); return; }
+  if(CUR.course !== "apcsp"){ alert("The practice module map is for AP CSP only."); return; }
+  window.open("practice/teacher-guide.html", "_blank");
 }
 function setTab(t){ TAB=t; renderMain(); }
 function copyCode(){ navigator.clipboard&&navigator.clipboard.writeText(CUR.code); }
