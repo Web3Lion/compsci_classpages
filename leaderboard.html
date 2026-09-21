@@ -87,9 +87,9 @@ button{font-family:inherit;cursor:pointer;}
 .pod .rank{font-family:'JetBrains Mono',monospace;font-size:clamp(11px,1.1vw,13px);letter-spacing:2px;color:var(--faint);}
 .pod .handle{font-weight:800;color:var(--bright);font-size:clamp(16px,2vw,26px);margin:6px 0 4px;word-break:break-word;}
 .pod .xp{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(18px,2.4vw,30px);}
-#pod1{order:2;transform:scale(1.08);z-index:2;box-shadow:0 0 40px -10px color-mix(in oklab, var(--gold) 60%, transparent);border-color:var(--gold);}
-#pod2{order:1;}
-#pod3{order:3;}
+#pod1{order:2;transform:scale(1.08);z-index:2;box-shadow:0 0 40px -10px color-mix(in oklab, var(--gold) 60%, transparent);border-color:var(--gold);padding-top:clamp(22px,3vw,40px);padding-bottom:clamp(22px,3vw,40px);}
+#pod2{order:1;padding-top:clamp(12px,1.6vw,22px);padding-bottom:clamp(12px,1.6vw,22px);align-self:end;}
+#pod3{order:3;padding-top:clamp(8px,1.1vw,14px);padding-bottom:clamp(8px,1.1vw,14px);align-self:end;}
 #pod2,#pod3{opacity:.94;}
 
 #listWrap{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;}
@@ -135,6 +135,9 @@ button{font-family:inherit;cursor:pointer;}
       <button class="fxThemeBtn" data-theme="matrix-glyph" onclick="FX.setTheme('matrix-glyph')">Matrix — Alien Glyphs</button>
       <button class="fxThemeBtn" data-theme="matrix-solid" onclick="FX.setTheme('matrix-solid')">Matrix — Solid Color</button>
       <button class="fxThemeBtn" data-theme="aurora" onclick="FX.setTheme('aurora')">Data Aurora</button>
+      <button class="fxThemeBtn" data-theme="bubbles" onclick="FX.setTheme('bubbles')">Bubbles</button>
+      <button class="fxThemeBtn" data-theme="ripple" onclick="FX.setTheme('ripple')">Cyberpunk Ripple</button>
+      <button class="fxThemeBtn" data-theme="static" onclick="FX.setTheme('static')">Static Gradient</button>
     </div>
     <div>
       <span class="fxLbl">Color</span>
@@ -216,7 +219,7 @@ var FX = (function(){
     canvas.width = w * dpr; canvas.height = h * dpr;
     canvas.style.width = w + "px"; canvas.style.height = h + "px";
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    buildCircuit(); buildCols();
+    buildCircuit(); buildCols(); buildBubbles(); buildRipple();
   }
   function buildCircuit(){
     nodes = [];
@@ -321,12 +324,72 @@ var FX = (function(){
     }
     ctx.globalCompositeOperation = "source-over";
   }
+  var bubbles = [];
+  function buildBubbles(){
+    bubbles = [];
+    var count = Math.max(14, Math.floor((w*h)/55000));
+    for (var i=0;i<count;i++) bubbles.push(spawnBubble());
+  }
+  function spawnBubble(){
+    var r = 8 + Math.random()*34;
+    return {x:Math.random()*w, y:h + r + Math.random()*h*0.6, r:r, rMax:r, speed:0.25+Math.random()*0.7,
+      drift:(Math.random()-0.5)*0.4, hueOff:Math.random()*60-30, pop:0, popping:false};
+  }
+  function drawBubbles(){
+    ctx.fillStyle = "rgba(8,10,18,0.14)"; ctx.fillRect(0,0,w,h);
+    bubbles.forEach(function(b, i){
+      if (b.popping){
+        b.pop += 0.09;
+        var pr = b.r * (1 + b.pop*1.8);
+        ctx.beginPath(); ctx.arc(b.x, b.y, pr, 0, Math.PI*2);
+        ctx.strokeStyle = "hsla("+(hue+b.hueOff)+",95%,70%,"+Math.max(0,0.6-b.pop*0.6)+")";
+        ctx.lineWidth = 2; ctx.stroke();
+        if (b.pop >= 1) bubbles[i] = spawnBubble();
+        return;
+      }
+      b.y -= b.speed; b.x += Math.sin(b.y*0.01)*b.drift;
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+      var grad = ctx.createRadialGradient(b.x-b.r*0.3, b.y-b.r*0.3, b.r*0.1, b.x, b.y, b.r);
+      grad.addColorStop(0, "hsla("+(hue+b.hueOff)+",90%,75%,0.28)");
+      grad.addColorStop(1, "hsla("+(hue+b.hueOff)+",90%,55%,0.05)");
+      ctx.fillStyle = grad; ctx.fill();
+      ctx.strokeStyle = "hsla("+(hue+b.hueOff)+",90%,80%,0.35)"; ctx.lineWidth = 1; ctx.stroke();
+      if (b.y < -b.r || Math.random() < 0.0015) b.popping = true;
+    });
+  }
+  var rippleWaves = [];
+  function buildRipple(){ rippleWaves = []; }
+  function drawRipple(){
+    ctx.fillStyle = "rgba(6,8,16,0.16)"; ctx.fillRect(0,0,w,h);
+    if (Math.random() < 0.03) rippleWaves.push({x:Math.random()*w, y:Math.random()*h, r:0, hueOff:Math.random()*80-40});
+    rippleWaves.forEach(function(rp, i){
+      rp.r += 2.4;
+      var alpha = Math.max(0, 0.5 - rp.r/500);
+      if (alpha <= 0){ rippleWaves.splice(i,1); return; }
+      ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI*2);
+      ctx.strokeStyle = "hsla("+(hue+rp.hueOff)+",95%,65%,"+alpha+")";
+      ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.r*0.72, 0, Math.PI*2);
+      ctx.strokeStyle = "hsla("+(hue+rp.hueOff+40)+",95%,65%,"+(alpha*0.6)+")";
+      ctx.lineWidth = 1; ctx.stroke();
+    });
+  }
+  function drawStatic(){
+    var grad = ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0, "hsla("+hue+",70%,14%,1)");
+    grad.addColorStop(0.5, "hsla("+(hue+40)+",60%,10%,1)");
+    grad.addColorStop(1, "hsla("+(hue+80)+",70%,12%,1)");
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+  }
   function loop(){
     if (theme==="circuit") drawCircuit();
     else if (theme==="matrix-code") drawMatrix(glyphSet, false);
     else if (theme==="matrix-glyph") drawMatrix(alienSet, false);
     else if (theme==="matrix-solid") drawMatrix(glyphSet, true);
     else if (theme==="aurora") drawAurora();
+    else if (theme==="bubbles") drawBubbles();
+    else if (theme==="ripple") drawRipple();
+    else if (theme==="static") { raf = null; return drawStatic(); }
     raf = requestAnimationFrame(loop);
   }
   function paintActive(){
