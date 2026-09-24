@@ -53,6 +53,67 @@
           esc(sess.handle) + ' \u00b7 XP, badges, leaderboard</span>' +
       '</span>';
     list.insertBefore(a, first);
+    checkRewards(course, sess, a);
+  }
+
+  /* New-reward notice: teacher/spinner items the student hasn't looked at yet.
+     "Seen" is set by profile.js when the Items card is clicked. */
+  function unseen(items, course) {
+    var seen = +localStorage.getItem("ctf-items-seen-" + course) || 0;
+    return (items || []).filter(function (it) {
+      return !it.shared && !it.used_at && (it.source === "teacher" || it.source === "spinner") &&
+        new Date(it.created_at).getTime() > seen;
+    });
+  }
+  function token() {
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (/^sb-.*-auth-token$/.test(k)) { var v = JSON.parse(localStorage.getItem(k)); return v && (v.access_token || (v.currentSession && v.currentSession.access_token)); }
+      }
+    } catch (e) {}
+    return null;
+  }
+  function checkRewards(course, sess, link) {
+    var cached; try { cached = JSON.parse(localStorage.getItem("ctf-items-" + course)); } catch (e) {}
+    if (cached) show(unseen(cached, course), link);
+    var C = window.SUPABASE_CONFIG || {}, t = token();
+    if (!C.url || !C.anonKey || !t || !sess.studentId) return;
+    fetch(C.url + "/rest/v1/rpc/ctf_my_items", {
+      method: "POST",
+      headers: { apikey: C.anonKey, Authorization: "Bearer " + t, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_student: sess.studentId })
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !Array.isArray(d.items)) return;
+      try { localStorage.setItem("ctf-items-" + course, JSON.stringify(d.items)); } catch (e) {}
+      show(unseen(d.items, course), link);
+    }).catch(function () {});
+  }
+  function show(list, link) {
+    var old = document.getElementById("rwNotice");
+    if (!list.length) { if (old) old.remove(); link.style.animation = ""; return; }
+    if (!document.getElementById("rwCss")) {
+      var st = document.createElement("style"); st.id = "rwCss";
+      st.textContent = "@keyframes rwGlow{0%,100%{box-shadow:0 0 0 0 color-mix(in oklch,var(--accent) 0%,transparent)}50%{box-shadow:0 0 28px 3px color-mix(in oklch,var(--accent) 70%,transparent)}}";
+      document.head.appendChild(st);
+    }
+    link.style.animation = "rwGlow 1.8s ease-in-out infinite";
+    var n = list.length, names = list.slice(0, 3).map(function (it) { return esc(it.label || it.kind); }).join(", ") + (n > 3 ? " +" + (n - 3) + " more" : "");
+    var card = old || document.createElement("a");
+    card.id = "rwNotice"; card.className = "card"; card.href = "profile.html#pfItems";
+    card.setAttribute("style", "display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit;border-color:var(--accent);animation:rwGlow 1.8s ease-in-out infinite;");
+    card.innerHTML =
+      '<span style="flex:none;font-size:26px;line-height:1;color:var(--accent);">\u2726</span>' +
+      '<span style="min-width:0;flex:1;">' +
+        '<span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--accent);">// NEW REWARD' + (n > 1 ? "S" : "") + '</span>' +
+        '<span style="display:block;font-size:16px;font-weight:700;color:var(--bright);margin-top:4px;">Your teacher sent you ' + (n > 1 ? n + " items" : "an item") + '</span>' +
+        '<span style="display:block;font-size:13px;color:var(--muted);margin-top:3px;">' + names + '</span>' +
+      '</span>' +
+      '<span class="mono" style="flex:none;font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent);padding:8px 12px;border-radius:999px;">CHECK YOUR PROFILE \u2192</span>';
+    if (!old) {
+      var firstCard = document.querySelector(".card");
+      if (firstCard && firstCard.parentNode) firstCard.parentNode.insertBefore(card, firstCard);
+    }
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);

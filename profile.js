@@ -454,6 +454,42 @@
       });
       if (expired) renderItems();
     }, 1000);
+    markNew(box);
+  }
+  /* Glow the Items card while it holds teacher/spinner items the student hasn't
+     looked at; clicking the card marks them seen (clears the main-page notice too). */
+  var SEEN_KEY = "ctf-items-seen-" + course, _jumped = false;
+  function markNew(box) {
+    var seen = +localStorage.getItem(SEEN_KEY) || 0;
+    var fresh = ITEMS.filter(function (it) {
+      return !it.shared && !it.used_at && (it.source === "teacher" || it.source === "spinner") && new Date(it.created_at).getTime() > seen;
+    });
+    var card = box.firstElementChild || box;
+    if (!fresh.length) { card.style.animation = ""; return; }
+    if (!document.getElementById("pfNewCss")) {
+      var st = document.createElement("style"); st.id = "pfNewCss";
+      st.textContent = "@keyframes pfNewGlow{0%,100%{box-shadow:0 0 0 0 color-mix(in oklch,var(--accent) 0%,transparent)}50%{box-shadow:0 0 30px 4px color-mix(in oklch,var(--accent) 70%,transparent)}}";
+      document.head.appendChild(st);
+    }
+    card.style.animation = "pfNewGlow 1.8s ease-in-out infinite";
+    card.style.borderColor = "var(--accent)";
+    if (!box.querySelector("#pfNewTag")) {
+      var tag = document.createElement("div"); tag.id = "pfNewTag"; tag.className = "mono";
+      tag.style.cssText = "font-size:12px;font-weight:700;letter-spacing:1px;color:var(--accent);margin-bottom:10px;";
+      tag.textContent = "\u2726 NEW FROM YOUR TEACHER: " + fresh.length + " ITEM" + (fresh.length > 1 ? "S" : "") + " (click to dismiss)";
+      card.insertBefore(tag, card.firstChild);
+    }
+    box.onclick = function () {
+      var max = Math.max.apply(null, ITEMS.map(function (it) { return new Date(it.created_at).getTime() || 0; }));
+      try { localStorage.setItem(SEEN_KEY, String(Math.max(max, Date.now()))); } catch (e) {}
+      card.style.animation = ""; card.style.borderColor = "";
+      var t = box.querySelector("#pfNewTag"); if (t) t.remove();
+      box.onclick = null;
+    };
+    if (!_jumped && location.hash === "#pfItems") {
+      _jumped = true;
+      window.scrollTo({ top: box.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+    }
   }
   function _reward(k) { var it = ITEMS.filter(function (x) { return x.kind === k; })[0]; return it ? it.label : k; }
   function cacheItems() { try { localStorage.setItem("ctf-items-" + course, JSON.stringify(ITEMS)); } catch (e) {} }
