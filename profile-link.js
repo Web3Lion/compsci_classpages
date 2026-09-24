@@ -89,27 +89,40 @@
       show(unseen(d.items, course), link);
     }).catch(function () {});
   }
+  /* Notice glow = the inverse of the page's accent color (recomputed on theme toggle). */
+  function setInverse() {
+    var r = document.documentElement, probe = document.createElement("span");
+    probe.style.color = "var(--accent)"; probe.style.display = "none"; document.body.appendChild(probe);
+    var m = getComputedStyle(probe).color.match(/\d+(\.\d+)?/g); probe.remove();
+    if (!m) return;
+    var inv = "rgb(" + (255 - +m[0]) + "," + (255 - +m[1]) + "," + (255 - +m[2]) + ")";
+    r.style.setProperty("--rw", inv);
+    r.style.setProperty("--rw-bg", "color-mix(in oklch, " + inv + " 12%, var(--panel))");
+  }
   function show(list, link) {
     var old = document.getElementById("rwNotice");
-    if (!list.length) { if (old) old.remove(); link.style.animation = ""; return; }
+    if (!list.length) { if (old) old.remove(); link.style.animation = ""; link.style.borderColor = "var(--accent)"; return; }
     if (!document.getElementById("rwCss")) {
       var st = document.createElement("style"); st.id = "rwCss";
-      st.textContent = "@keyframes rwGlow{0%,100%{box-shadow:0 0 0 0 color-mix(in oklch,var(--accent) 0%,transparent)}50%{box-shadow:0 0 28px 3px color-mix(in oklch,var(--accent) 70%,transparent)}}";
+      st.textContent = "@keyframes rwGlow{0%,100%{box-shadow:0 0 0 0 color-mix(in oklch,var(--rw) 0%,transparent)}50%{box-shadow:0 0 30px 5px color-mix(in oklch,var(--rw) 80%,transparent)}}";
       document.head.appendChild(st);
+      setInverse();
+      new MutationObserver(setInverse).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     }
     link.style.animation = "rwGlow 1.8s ease-in-out infinite";
+    link.style.borderColor = "var(--rw)";
     var n = list.length, names = list.slice(0, 3).map(function (it) { return esc(it.label || it.kind); }).join(", ") + (n > 3 ? " +" + (n - 3) + " more" : "");
     var card = old || document.createElement("a");
     card.id = "rwNotice"; card.className = "card"; card.href = "profile.html#pfItems";
-    card.setAttribute("style", "display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit;border-color:var(--accent);animation:rwGlow 1.8s ease-in-out infinite;");
+    card.setAttribute("style", "display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit;border-color:var(--rw);background:var(--rw-bg);animation:rwGlow 1.8s ease-in-out infinite;");
     card.innerHTML =
-      '<span style="flex:none;font-size:26px;line-height:1;color:var(--accent);">\u2726</span>' +
+      '<span style="flex:none;font-size:26px;line-height:1;color:var(--rw);">\u2726</span>' +
       '<span style="min-width:0;flex:1;">' +
-        '<span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--accent);">// NEW REWARD' + (n > 1 ? "S" : "") + '</span>' +
+        '<span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--bright);">// NEW REWARD' + (n > 1 ? "S" : "") + '</span>' +
         '<span style="display:block;font-size:16px;font-weight:700;color:var(--bright);margin-top:4px;">Your teacher sent you ' + (n > 1 ? n + " items" : "an item") + '</span>' +
         '<span style="display:block;font-size:13px;color:var(--muted);margin-top:3px;">' + names + '</span>' +
       '</span>' +
-      '<span class="mono" style="flex:none;font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent);padding:8px 12px;border-radius:999px;">CHECK YOUR PROFILE \u2192</span>';
+      '<span class="mono" style="flex:none;font-size:12px;font-weight:700;color:var(--bright);border:1px solid var(--rw);padding:8px 12px;border-radius:999px;">CHECK YOUR PROFILE \u2192</span>';
     if (!old) {
       var firstCard = document.querySelector(".card");
       if (firstCard && firstCard.parentNode) firstCard.parentNode.insertBefore(card, firstCard);

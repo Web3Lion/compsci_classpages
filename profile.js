@@ -468,14 +468,21 @@
     if (!fresh.length) { card.style.animation = ""; return; }
     if (!document.getElementById("pfNewCss")) {
       var st = document.createElement("style"); st.id = "pfNewCss";
-      st.textContent = "@keyframes pfNewGlow{0%,100%{box-shadow:0 0 0 0 color-mix(in oklch,var(--accent) 0%,transparent)}50%{box-shadow:0 0 30px 4px color-mix(in oklch,var(--accent) 70%,transparent)}}";
+      st.textContent = "@keyframes pfNewGlow{0%,100%{box-shadow:0 0 0 0 color-mix(in oklch,var(--rw) 0%,transparent)}50%{box-shadow:0 0 30px 5px color-mix(in oklch,var(--rw) 80%,transparent)}}";
       document.head.appendChild(st);
+      var setInv = function () {
+        var p = document.createElement("span"); p.style.color = "var(--accent)"; p.style.display = "none"; document.body.appendChild(p);
+        var m = getComputedStyle(p).color.match(/\d+(\.\d+)?/g); p.remove(); if (!m) return;
+        document.documentElement.style.setProperty("--rw", "rgb(" + (255 - +m[0]) + "," + (255 - +m[1]) + "," + (255 - +m[2]) + ")");
+      };
+      setInv();
+      new MutationObserver(setInv).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     }
     card.style.animation = "pfNewGlow 1.8s ease-in-out infinite";
-    card.style.borderColor = "var(--accent)";
+    card.style.borderColor = "var(--rw)";
     if (!box.querySelector("#pfNewTag")) {
       var tag = document.createElement("div"); tag.id = "pfNewTag"; tag.className = "mono";
-      tag.style.cssText = "font-size:12px;font-weight:700;letter-spacing:1px;color:var(--accent);margin-bottom:10px;";
+      tag.style.cssText = "font-size:12px;font-weight:700;letter-spacing:1px;color:var(--bright);margin-bottom:10px;";
       tag.textContent = "\u2726 NEW FROM YOUR TEACHER: " + fresh.length + " ITEM" + (fresh.length > 1 ? "S" : "") + " (click to dismiss)";
       card.insertBefore(tag, card.firstChild);
     }
