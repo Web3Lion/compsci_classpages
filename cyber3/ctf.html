@@ -105,6 +105,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 <body>
 <!-- flag{read_the_source_luke} -->
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<a href="../leaderboard.html?course=cyber3" target="_blank" rel="noopener" class="themebtn" style="right:64px;text-decoration:none;display:inline-flex;align-items:center;">🏆 BOARD</a>
 <div class="wrap" style="padding-top:20px;">
   <div id="ctfRoot"></div>
   <div style="max-width:720px;margin:24px auto 0;padding:22px 20px;border:2px solid var(--accent,#ff4c00);border-radius:14px;background:var(--panel3,#161a20);text-align:center;">
@@ -120,17 +121,17 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     <button onclick="location.href='honeypot.html?trap=extension'" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:9px 14px;border-radius:7px;border:none;background:#3ecf8e;color:#06140a;cursor:pointer;">Install</button>
   </div>
 </div>
-<script src="../config.js"></script>
-<script src="vocab-data.js"></script>
+<script src="../config.js?v=20260924"></script>
+<script src="vocab-data.js?v=20260924"></script>
 <script>window.CTF_COURSE="cyber3";window.CTF_VOCAB=(window.CY3_VOCAB||{}).terms||[];</script>
-<script src="../cipher.js"></script>
-<script src="../ctf.js"></script>
-<script src="../name-filter.js"></script>
-<script src="../supabase-config.js"></script>
-<script src="../auth.js"></script>
-<script src="../gate-art.js"></script>
-<script src="../sync.js"></script>
-<script src="../welcome.js"></script>
+<script src="../cipher.js?v=20260924"></script>
+<script src="../ctf.js?v=20260924"></script>
+<script src="../name-filter.js?v=20260924"></script>
+<script src="../supabase-config.js?v=20260924"></script>
+<script src="../auth.js?v=20260924"></script>
+<script src="../gate-art.js?v=20260924"></script>
+<script src="../sync.js?v=20260924"></script>
+<script src="../welcome.js?v=20260924"></script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 <style>@keyframes ctfShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   /* --- touch targets: phones and Chromebook touchscreens ---
