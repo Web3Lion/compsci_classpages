@@ -273,197 +273,6 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Back up your important data"
     ] },
 
-  { id: "c1-m1-1.2-history", module: 1, title: "1.2 — History of Cyber Threats", category: "Cyber History",
-    frameworks: null,
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Explore historical cybersecurity incidents. Kick Start: research 'Creeper.' The very first computer virus, created in the early 1970s, was called ___.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "It displayed the message \"I'm the creeper, catch me if you can!\"",
-        flagHash: "42c31e9a61ca27e5a2faec9514cb8887d099410a279b8dd59501426b7ed156af" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — History of Cyber Threats Timeline. The 2010 malware that famously sabotaged Iranian nuclear centrifuges by targeting industrial control systems is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "One of the timeline's assigned events — a nation-state-grade cyberweapon.",
-        flagHash: "b68b08479d8d1b9d986b55c15310c3a71ef65dc4d46e0017977fda67ae8f448e" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Present Cyber Threats / History Timeline. The 2021 ransomware attack that shut down a major U.S. fuel pipeline for several days, causing gas shortages, targeted the ___ Pipeline.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "One of the timeline's assigned events — named after the pipeline company itself.",
-        flagHash: "6b7f6ac8b3ac02c940eff66e366e88dd0f487abe33faa83aa2a1cabecf6e5707" }
-    ] },
-
-  { id: "c1-m1-actors", module: 1, title: "1.2 ext — Spot the Threat Actor", category: "Threat Landscape", type: "match", points: 150,
-    intro: "Extension of 1.2 (who was behind history's biggest attacks) — match each description to the threat actor. Tap a description, then tap the actor.",
-    pairs: [
-      { left: "Breaks in for a political or social cause", right: "Hacktivist" },
-      { left: "Beginner using others' ready-made tools", right: "Script Kiddie" },
-      { left: "Trusted employee who misuses access", right: "Insider Threat" },
-      { left: "Well-funded, government-backed group", right: "Nation-State" },
-      { left: "Attacks purely for financial gain", right: "Cybercriminal" }
-    ] },
-
-  { id: "c1-m1-1.3-careers", module: 1, title: "1.3 — Cyber Careers", category: "Careers",
-    frameworks: null,
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Explore a variety of cybersecurity careers. The most common 'first job' team in the industry, which monitors an organization's systems around the clock for threats. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "Security Operations Center.",
-        flagHash: "4225c6abc26069ccbfd4646075ff0579d4d8f8d4a31b1f235f5001fa91e89138" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Cyber Career Playlist. A widely-used site for researching cybersecurity career data, salaries, and required skills is called Cyber___.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "It's listed as a recommended digital resource for this lesson.",
-        flagHash: "8d743a86b8d18e9763b1d4d81553c2bafb4ffa0701369cc95bc8ffbaf8d700f2" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Identify three cybersecurity careers of personal interest. The compilation of career research, flyers, and self-reflection artifacts built throughout this course is called a career ___.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "Artists and photographers keep one of these too.",
-        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" }
-    ] },
-
-  { id: "c1-m1-careers-match", module: 1, title: "1.3 ext — Match the Career", category: "Careers", type: "match", points: 150,
-    intro: "Objective — Cyber Career Playlist. Match each cybersecurity career to what it actually does day to day. Tap a description, then tap the career.",
-    pairs: [
-      { left: "Monitors networks and investigates suspicious activity as a first responder to alerts.", right: "SOC Analyst" },
-      { left: "Legally attempts to break into systems to find vulnerabilities before attackers do.", right: "Penetration Tester" },
-      { left: "Recovers deleted files and preserves evidence after a cyber incident.", right: "Digital Forensics Investigator" },
-      { left: "Configures firewalls and hardens systems to build organizational defenses.", right: "Security Engineer" },
-      { left: "Helps organizations follow laws, regulations, and security frameworks.", right: "GRC Analyst" },
-      { left: "Leads a security team, sets strategy, and communicates with executives.", right: "Cybersecurity Manager" }
-    ],
-    hardMode: "speedmatch" },
-
-  { id: "c1-m1-1.4-mindsets", module: 1, title: "1.4 — Cyber Mindsets & Competitions", category: "Mindsets & Competitions",
-    frameworks: null,
-    levels: [
-      { difficulty: "Easy", points: 100,
-        prompt: "Objective — Identify the Cyber Mindsets. The list of 10 professional skills cybersecurity employers look for is abbreviated ___ (a letters+number combo, no space).\n\nSubmit as flag{answer} (lowercase, no space).",
-        hint: "Two letters, then the number ten.",
-        flagHash: "4e47ed44760085460f72e409a08e30c455d03027bb5c4689f466557966aebdc7" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Explain how the mindsets connect to cybersecurity competitions. The national, team-based cybersecurity competition this course prepares students for. Give its three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "National Cyber ___.",
-        flagHash: "5908bc07412f19991426f90bdf778501ff5b94ad2ba2e81a1588cfb964eced0c" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — PC10 Question Lens. The PC10 skill describing cybersecurity as a field requiring constant learning because it never stops evolving is called relentless ___.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "It's what drives professionals to keep learning in a field that never stands still.",
-        flagHash: "f50736e89d3dadfc9d167498932e04e33c452a20ddec06d82181967413f6bb83" }
-    ] },
-
-  { id: "c1-m1-pc10-match", module: 1, title: "1.4 ext — Match the PC10 Skill", category: "Mindsets & Competitions", type: "match", points: 150,
-    intro: "Objective — PC10 Question Lens. Match each classroom moment to the PC10 skill it demonstrates. Tap a moment, then tap the skill.",
-    pairs: [
-      { left: "Re-reading a hint three times and trying a new approach instead of giving up.", right: "Relentless Curiosity" },
-      { left: "Pausing before reporting a bug you found to make sure you disclose it responsibly.", right: "Ethical Decision Making" },
-      { left: "Writing down exactly which steps you tried during a lab, in order, so others can repeat it.", right: "Precise Documentation" },
-      { left: "Explaining a technical vulnerability so a non-technical teacher understands it.", right: "Effective Communication" },
-      { left: "Making sure every teammate's idea gets heard during a group CTF.", right: "Inclusive Collaboration" },
-      { left: "Questioning whether a threat map is showing the full picture before drawing conclusions.", right: "Critical Analysis" }
-    ],
-    hardMode: "blitz" },
-
-  { id: "c1-m1-1.5-ethics", module: 1, title: "1.5 — Cyber Ethics Kickoff", category: "Ethics",
-    frameworks: null,
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Describe ethical considerations in real-world digital scenarios. Kick Start: this lesson introduces the branch of philosophy concerned with right and wrong conduct, applied to cybersecurity. Give the two-word term.\n\nSubmit as flag{answer} — one lowercase word (just the discipline itself, not the word \"cyber\").",
-        hint: "The root of the word \"ethical.\"",
-        flagHash: "4f5aa4b3844ca967570aec04e2c900315a6b22b40fe710de60b27d22ccdc8fc4" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Cyber Ethics Play Games. This lesson's PLAY activity uses ethics games and a scavenger hunt hosted on a specific site. Give its name (no .com).\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "It's named for a U.S. region — Pacific North West.",
-        flagHash: "3150e0415e73eeef591f1cf19a1ffb82ab76e9efb38dbbc4b605729026c61d7e" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Wrap-Up: Cyber Ethics Contract. The document students read and sign at the end of this lesson, committing to behave ethically throughout the course, is called the Cyber Ethics ___.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "A legal-sounding word for a signed agreement.",
-        flagHash: "86f0e6b100c80f230ec8664619cdc3e89df1184a63364eec30b41d2b22977275" }
-    ] },
-
-  { id: "c1-m1-ethics-judge", module: 1, title: "1.5 ext — Ethical or Unethical?", category: "Ethics", type: "match", points: 150,
-    intro: "Objective — Cyber Ethics scenario. Judge each scenario. Tap the scenario, then tap the verdict.",
-    pairs: [
-      { left: "A student finds a bug in the school's grading portal and reports it to IT.", right: "Ethical" },
-      { left: "A student finds a bug in the school's grading portal and uses it to change their own grade.", right: "Unethical" },
-      { left: "A researcher scans a company's public website for known vulnerabilities with written permission.", right: "Ethical" },
-      { left: "A researcher breaks into a company's server without permission 'just to see what's there.'", right: "Unethical" }
-    ],
-    hardMode: "speedmatch" },
-
-  { id: "c1-m1-1.6-cert", module: 1, title: "1.6 — PC/Trusted Sec Certification", category: "Certification",
-    frameworks: null,
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Prepare for the Paradigm/TrustedSec certification. The industry-recognized credential earned by demonstrating foundational cybersecurity knowledge is called the Cyber ___ Certification.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "It certifies the basics — the fundamentals of the field.",
-        flagHash: "f33204aa42b1d4f9e0667501c6041938ab5200dcb62e91520d0091e682576430" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Certification Prep Questions. After completing prep activities, students attempt a prep quiz with this many questions. Give the number.\n\nSubmit as flag{number}.",
-        hint: "It's mentioned directly in the lesson's Activity 2.",
-        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — Certification value. Earning this certification serves as both a milestone and a ___ into the broader cybersecurity field.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "Something that launches you forward into what's next.",
-        flagHash: "ee78221233c80800ce4a1bd4bb41dd8c3fbe249bc455c35002ed86c7b0d3da67" }
-    ] },
-
-  { id: "c1-m1-cert-match", module: 1, title: "1.6 ext — Match the Cert Skill Area", category: "Certification", type: "match", points: 150,
-    intro: "Objective — Paradigm/TrustedSec Cyber Essentials Certification. Match each example to the skill area it belongs to. Tap the example, then tap the area.",
-    pairs: [
-      { left: "Converting a message into ciphertext so only the intended reader can understand it.", right: "Cryptography" },
-      { left: "Tricking someone into revealing their password by pretending to be IT support.", right: "Social Engineering" },
-      { left: "Using cd, ls, and chmod to navigate and manage files at the command line.", right: "Linux" },
-      { left: "Converting the number 1010 from binary into its decimal value.", right: "Number Systems" },
-      { left: "Software that secretly encrypts a victim's files and demands payment.", right: "Malware" },
-      { left: "Configuring a router so devices on a network can talk to each other securely.", right: "Network Basics" }
-    ],
-    hardMode: "blitz" },
-
-  { id: "c1-m1-1.7-ctf", module: 1, title: "1.7 — Intro to Paradigm Cyber CTFs", category: "Capture the Flag",
-    frameworks: null,
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Objective — Define Capture the Flag (CTF) challenges. The hands-on puzzle-solving challenges used throughout this course, where you find hidden strings to earn points. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "You're doing one right now.",
-        flagHash: "88c2db7bb864afa527b23b21878c59971448174a79bd875a0024639047fa8122" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Objective — Paradigm Cyber CTFs Introduction Scavenger Hunt. Students complete a ___ ___ in Centra to find items related to CTFs.\n\nSubmit as flag{two_words} with an underscore.",
-        hint: "It's literally the name of the lesson's main activity.",
-        flagHash: "3a8b39c0bfdc44e095804996b11f43257802b31c3d56548545660138fe03f590" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Objective — CTF Overview. CTFs introduce students to the mindset of investigators and ethical ___.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "Someone who breaks into systems, but with permission and good intent.",
-        flagHash: "728ba6afbd09db59edb2a2fd3e4d20fcf4829aef0573c4a9804cd49bb3e394c6" }
-    ] },
-
-  { id: "c1-m1-ctf-terms", module: 1, title: "1.7 ext — Match the CTF Term", category: "Capture the Flag", type: "match", points: 150,
-    intro: "Objective — CTF Introduction Scavenger Hunt. Match each idea to the CTF term it describes. Tap the idea, then tap the term.",
-    pairs: [
-      { left: "The hidden string you're searching for in a challenge, usually wrapped like flag{...}.", right: "Flag" },
-      { left: "A challenge category that tests skills like decoding ciphers and breaking encryption.", right: "Cryptography" },
-      { left: "A challenge category that involves finding and exploiting bugs in a website.", right: "Web Exploitation" },
-      { left: "A small nudge you can reveal if you're stuck, usually for a point cost.", right: "Hint" },
-      { left: "A puzzle category where you dig through files or memory for evidence of an attack.", right: "Forensics" }
-    ],
-    hardMode: "speedmatch" },
-
-  { id: "c1-m1-vocab", module: 1, title: "1.7 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
-    bias: ["cybersecurity","confidential","integrity","availability","threat","risk","hacker","asset"],
-    hardMode: "rapid" },
-
-  { id: "c1-m1-perform", module: 1, title: "Perform — Unit Portfolio", category: "Performance Task",
-    frameworks: null,
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Performance Task — compile unit tasks into a unit portfolio. The end-of-unit task where you compile your reflection, flyer, character profile, and threat report together is called a unit ___.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "The same word used for the career compilation in lesson 1.3.",
-        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Performance Task — this unit followed a three-stage learning model. Name the middle stage: Play, ___, Perform.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "It comes after the hands-on Play stage and before you demonstrate mastery.",
-        flagHash: "09ef290e34fc9225fd7ae9d6e01b11105a8249ac08376af4cf4e6e9df58b9a88" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Assessment Reflection Questions — describing a moment you felt frustrated or stuck, and which mindset helped you get unstuck, is a ___ question.\n\nSubmit as flag{answer} — one lowercase word.",
-        hint: "Looking back at your own experience to draw a lesson from it.",
-        flagHash: "0ca2e3b7594bd8fea1650855e98d60523b13d2c2880c3c10b657b47b811d96c3" }
-    ] },
-
-  /* MODULE 1 — Daily Warm-Ups (bell-ringers, review of the previous day) ─── */
   { id: "c1-m1-daily-1.1-1", module: 1, title: "1.1-1 — Daily Warm-Up", category: "Daily Warm-Up",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -494,6 +303,33 @@ window.COURSE_CONFIG.cyber1.ctf = {
         prompt: "Warm-Up — cybersecurity protects far more than computers. Yesterday's kickoff mentioned it also protects national power ___.\n\nSubmit as flag{answer} — one lowercase word.",
         hint: "Think about what would happen if the electric utility got hacked.",
         flagHash: "91a02c561404220cfff0efdc5f5b26b3ed33f412ab74b6804d6a07e937a66282" }
+    ] },
+
+  { id: "c1-m1-1.2-history", module: 1, title: "1.2 — History of Cyber Threats", category: "Cyber History",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explore historical cybersecurity incidents. Kick Start: research 'Creeper.' The very first computer virus, created in the early 1970s, was called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It displayed the message \"I'm the creeper, catch me if you can!\"",
+        flagHash: "42c31e9a61ca27e5a2faec9514cb8887d099410a279b8dd59501426b7ed156af" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — History of Cyber Threats Timeline. The 2010 malware that famously sabotaged Iranian nuclear centrifuges by targeting industrial control systems is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "One of the timeline's assigned events — a nation-state-grade cyberweapon.",
+        flagHash: "b68b08479d8d1b9d986b55c15310c3a71ef65dc4d46e0017977fda67ae8f448e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Present Cyber Threats / History Timeline. The 2021 ransomware attack that shut down a major U.S. fuel pipeline for several days, causing gas shortages, targeted the ___ Pipeline.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "One of the timeline's assigned events — named after the pipeline company itself.",
+        flagHash: "6b7f6ac8b3ac02c940eff66e366e88dd0f487abe33faa83aa2a1cabecf6e5707" }
+    ] },
+
+  { id: "c1-m1-actors", module: 1, title: "1.2 ext — Spot the Threat Actor", category: "Threat Landscape", type: "match", points: 150,
+    intro: "Extension of 1.2 (who was behind history's biggest attacks) — match each description to the threat actor. Tap a description, then tap the actor.",
+    pairs: [
+      { left: "Breaks in for a political or social cause", right: "Hacktivist" },
+      { left: "Beginner using others' ready-made tools", right: "Script Kiddie" },
+      { left: "Trusted employee who misuses access", right: "Insider Threat" },
+      { left: "Well-funded, government-backed group", right: "Nation-State" },
+      { left: "Attacks purely for financial gain", right: "Cybercriminal" }
     ] },
 
   { id: "c1-m1-daily-1.2-1", module: 1, title: "1.2-1 — Daily Warm-Up", category: "Daily Warm-Up",
@@ -544,6 +380,35 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "da95c631b466fc86796850982341f91a7addba535a0bafdc9ea3589dbd4e2606" }
     ] },
 
+  { id: "c1-m1-1.3-careers", module: 1, title: "1.3 — Cyber Careers", category: "Careers",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explore a variety of cybersecurity careers. The most common 'first job' team in the industry, which monitors an organization's systems around the clock for threats. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Security Operations Center.",
+        flagHash: "4225c6abc26069ccbfd4646075ff0579d4d8f8d4a31b1f235f5001fa91e89138" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Cyber Career Playlist. A widely-used site for researching cybersecurity career data, salaries, and required skills is called Cyber___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's listed as a recommended digital resource for this lesson.",
+        flagHash: "8d743a86b8d18e9763b1d4d81553c2bafb4ffa0701369cc95bc8ffbaf8d700f2" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Identify three cybersecurity careers of personal interest. The compilation of career research, flyers, and self-reflection artifacts built throughout this course is called a career ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Artists and photographers keep one of these too.",
+        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" }
+    ] },
+
+  { id: "c1-m1-careers-match", module: 1, title: "1.3 ext — Match the Career", category: "Careers", type: "match", points: 150,
+    intro: "Objective — Cyber Career Playlist. Match each cybersecurity career to what it actually does day to day. Tap a description, then tap the career.",
+    pairs: [
+      { left: "Monitors networks and investigates suspicious activity as a first responder to alerts.", right: "SOC Analyst" },
+      { left: "Legally attempts to break into systems to find vulnerabilities before attackers do.", right: "Penetration Tester" },
+      { left: "Recovers deleted files and preserves evidence after a cyber incident.", right: "Digital Forensics Investigator" },
+      { left: "Configures firewalls and hardens systems to build organizational defenses.", right: "Security Engineer" },
+      { left: "Helps organizations follow laws, regulations, and security frameworks.", right: "GRC Analyst" },
+      { left: "Leads a security team, sets strategy, and communicates with executives.", right: "Cybersecurity Manager" }
+    ],
+    hardMode: "speedmatch" },
+
   { id: "c1-m1-daily-1.3-1", module: 1, title: "1.3-1 — Daily Warm-Up", category: "Daily Warm-Up",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -575,6 +440,35 @@ window.COURSE_CONFIG.cyber1.ctf = {
         hint: "The center's initials come first in this job title.",
         flagHash: "a010a6e3a40c575ec49c772215d1729a3d0a04424b9ad0475f778682e9e02a89" }
     ] },
+
+  { id: "c1-m1-1.4-mindsets", module: 1, title: "1.4 — Cyber Mindsets & Competitions", category: "Mindsets & Competitions",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 100,
+        prompt: "Objective — Identify the Cyber Mindsets. The list of 10 professional skills cybersecurity employers look for is abbreviated ___ (a letters+number combo, no space).\n\nSubmit as flag{answer} (lowercase, no space).",
+        hint: "Two letters, then the number ten.",
+        flagHash: "4e47ed44760085460f72e409a08e30c455d03027bb5c4689f466557966aebdc7" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain how the mindsets connect to cybersecurity competitions. The national, team-based cybersecurity competition this course prepares students for. Give its three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "National Cyber ___.",
+        flagHash: "5908bc07412f19991426f90bdf778501ff5b94ad2ba2e81a1588cfb964eced0c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — PC10 Question Lens. The PC10 skill describing cybersecurity as a field requiring constant learning because it never stops evolving is called relentless ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's what drives professionals to keep learning in a field that never stands still.",
+        flagHash: "f50736e89d3dadfc9d167498932e04e33c452a20ddec06d82181967413f6bb83" }
+    ] },
+
+  { id: "c1-m1-pc10-match", module: 1, title: "1.4 ext — Match the PC10 Skill", category: "Mindsets & Competitions", type: "match", points: 150,
+    intro: "Objective — PC10 Question Lens. Match each classroom moment to the PC10 skill it demonstrates. Tap a moment, then tap the skill.",
+    pairs: [
+      { left: "Re-reading a hint three times and trying a new approach instead of giving up.", right: "Relentless Curiosity" },
+      { left: "Pausing before reporting a bug you found to make sure you disclose it responsibly.", right: "Ethical Decision Making" },
+      { left: "Writing down exactly which steps you tried during a lab, in order, so others can repeat it.", right: "Precise Documentation" },
+      { left: "Explaining a technical vulnerability so a non-technical teacher understands it.", right: "Effective Communication" },
+      { left: "Making sure every teammate's idea gets heard during a group CTF.", right: "Inclusive Collaboration" },
+      { left: "Questioning whether a threat map is showing the full picture before drawing conclusions.", right: "Critical Analysis" }
+    ],
+    hardMode: "blitz" },
 
   { id: "c1-m1-daily-1.4-1", module: 1, title: "1.4-1 — Daily Warm-Up", category: "Daily Warm-Up",
     levels: [
@@ -608,6 +502,33 @@ window.COURSE_CONFIG.cyber1.ctf = {
         flagHash: "5908bc07412f19991426f90bdf778501ff5b94ad2ba2e81a1588cfb964eced0c" }
     ] },
 
+  { id: "c1-m1-1.5-ethics", module: 1, title: "1.5 — Cyber Ethics Kickoff", category: "Ethics",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Describe ethical considerations in real-world digital scenarios. Kick Start: this lesson introduces the branch of philosophy concerned with right and wrong conduct, applied to cybersecurity. Give the two-word term.\n\nSubmit as flag{answer} — one lowercase word (just the discipline itself, not the word \"cyber\").",
+        hint: "The root of the word \"ethical.\"",
+        flagHash: "4f5aa4b3844ca967570aec04e2c900315a6b22b40fe710de60b27d22ccdc8fc4" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Cyber Ethics Play Games. This lesson's PLAY activity uses ethics games and a scavenger hunt hosted on a specific site. Give its name (no .com).\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's named for a U.S. region — Pacific North West.",
+        flagHash: "3150e0415e73eeef591f1cf19a1ffb82ab76e9efb38dbbc4b605729026c61d7e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Wrap-Up: Cyber Ethics Contract. The document students read and sign at the end of this lesson, committing to behave ethically throughout the course, is called the Cyber Ethics ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "A legal-sounding word for a signed agreement.",
+        flagHash: "86f0e6b100c80f230ec8664619cdc3e89df1184a63364eec30b41d2b22977275" }
+    ] },
+
+  { id: "c1-m1-ethics-judge", module: 1, title: "1.5 ext — Ethical or Unethical?", category: "Ethics", type: "match", points: 150,
+    intro: "Objective — Cyber Ethics scenario. Judge each scenario. Tap the scenario, then tap the verdict.",
+    pairs: [
+      { left: "A student finds a bug in the school's grading portal and reports it to IT.", right: "Ethical" },
+      { left: "A student finds a bug in the school's grading portal and uses it to change their own grade.", right: "Unethical" },
+      { left: "A researcher scans a company's public website for known vulnerabilities with written permission.", right: "Ethical" },
+      { left: "A researcher breaks into a company's server without permission 'just to see what's there.'", right: "Unethical" }
+    ],
+    hardMode: "speedmatch" },
+
   { id: "c1-m1-daily-1.5-1", module: 1, title: "1.5-1 — Daily Warm-Up", category: "Daily Warm-Up",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -623,6 +544,35 @@ window.COURSE_CONFIG.cyber1.ctf = {
         hint: "It's right there in the name of the skill list.",
         flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" }
     ] },
+
+  { id: "c1-m1-1.6-cert", module: 1, title: "1.6 — PC/Trusted Sec Certification", category: "Certification",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Prepare for the Paradigm/TrustedSec certification. The industry-recognized credential earned by demonstrating foundational cybersecurity knowledge is called the Cyber ___ Certification.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It certifies the basics — the fundamentals of the field.",
+        flagHash: "f33204aa42b1d4f9e0667501c6041938ab5200dcb62e91520d0091e682576430" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Certification Prep Questions. After completing prep activities, students attempt a prep quiz with this many questions. Give the number.\n\nSubmit as flag{number}.",
+        hint: "It's mentioned directly in the lesson's Activity 2.",
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Certification value. Earning this certification serves as both a milestone and a ___ into the broader cybersecurity field.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Something that launches you forward into what's next.",
+        flagHash: "ee78221233c80800ce4a1bd4bb41dd8c3fbe249bc455c35002ed86c7b0d3da67" }
+    ] },
+
+  { id: "c1-m1-cert-match", module: 1, title: "1.6 ext — Match the Cert Skill Area", category: "Certification", type: "match", points: 150,
+    intro: "Objective — Paradigm/TrustedSec Cyber Essentials Certification. Match each example to the skill area it belongs to. Tap the example, then tap the area.",
+    pairs: [
+      { left: "Converting a message into ciphertext so only the intended reader can understand it.", right: "Cryptography" },
+      { left: "Tricking someone into revealing their password by pretending to be IT support.", right: "Social Engineering" },
+      { left: "Using cd, ls, and chmod to navigate and manage files at the command line.", right: "Linux" },
+      { left: "Converting the number 1010 from binary into its decimal value.", right: "Number Systems" },
+      { left: "Software that secretly encrypts a victim's files and demands payment.", right: "Malware" },
+      { left: "Configuring a router so devices on a network can talk to each other securely.", right: "Network Basics" }
+    ],
+    hardMode: "blitz" },
 
   { id: "c1-m1-daily-1.6-1", module: 1, title: "1.6-1 — Daily Warm-Up", category: "Daily Warm-Up",
     levels: [
@@ -655,6 +605,38 @@ window.COURSE_CONFIG.cyber1.ctf = {
         hint: "Same number as the PC10 skill list.",
         flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" }
     ] },
+
+  { id: "c1-m1-1.7-ctf", module: 1, title: "1.7 — Intro to Paradigm Cyber CTFs", category: "Capture the Flag",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Define Capture the Flag (CTF) challenges. The hands-on puzzle-solving challenges used throughout this course, where you find hidden strings to earn points. Give the three-letter acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "You're doing one right now.",
+        flagHash: "88c2db7bb864afa527b23b21878c59971448174a79bd875a0024639047fa8122" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Paradigm Cyber CTFs Introduction Scavenger Hunt. Students complete a ___ ___ in Centra to find items related to CTFs.\n\nSubmit as flag{two_words} with an underscore.",
+        hint: "It's literally the name of the lesson's main activity.",
+        flagHash: "3a8b39c0bfdc44e095804996b11f43257802b31c3d56548545660138fe03f590" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — CTF Overview. CTFs introduce students to the mindset of investigators and ethical ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Someone who breaks into systems, but with permission and good intent.",
+        flagHash: "728ba6afbd09db59edb2a2fd3e4d20fcf4829aef0573c4a9804cd49bb3e394c6" }
+    ] },
+
+  { id: "c1-m1-ctf-terms", module: 1, title: "1.7 ext — Match the CTF Term", category: "Capture the Flag", type: "match", points: 150,
+    intro: "Objective — CTF Introduction Scavenger Hunt. Match each idea to the CTF term it describes. Tap the idea, then tap the term.",
+    pairs: [
+      { left: "The hidden string you're searching for in a challenge, usually wrapped like flag{...}.", right: "Flag" },
+      { left: "A challenge category that tests skills like decoding ciphers and breaking encryption.", right: "Cryptography" },
+      { left: "A challenge category that involves finding and exploiting bugs in a website.", right: "Web Exploitation" },
+      { left: "A small nudge you can reveal if you're stuck, usually for a point cost.", right: "Hint" },
+      { left: "A puzzle category where you dig through files or memory for evidence of an attack.", right: "Forensics" }
+    ],
+    hardMode: "speedmatch" },
+
+  { id: "c1-m1-vocab", module: 1, title: "1.7 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",
+    bias: ["cybersecurity","confidential","integrity","availability","threat","risk","hacker","asset"],
+    hardMode: "rapid" },
 
   { id: "c1-m1-daily-1.7-1", module: 1, title: "1.7-1 — Daily Warm-Up", category: "Daily Warm-Up",
     levels: [
@@ -771,6 +753,23 @@ window.COURSE_CONFIG.cyber1.ctf = {
         prompt: "Objective — Responsible citizenship. Getting documented permission before testing a system is called obtaining ___.\n\nSubmit as flag{word} (lowercase).",
         hint: "You get someone's ___ to proceed.",
         flagHash: "e0f6519553979b886476cc5cdb737cc9b2499d51c61c0d01c007ee8f313320be" }
+    ] },
+
+  { id: "c1-m1-perform", module: 1, title: "Perform — Unit Portfolio", category: "Performance Task",
+    frameworks: null,
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Performance Task — compile unit tasks into a unit portfolio. The end-of-unit task where you compile your reflection, flyer, character profile, and threat report together is called a unit ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "The same word used for the career compilation in lesson 1.3.",
+        flagHash: "686f545978332d6128539653c2d3cb9c9ef9e8bf42da4aff2689116de7105503" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Performance Task — this unit followed a three-stage learning model. Name the middle stage: Play, ___, Perform.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It comes after the hands-on Play stage and before you demonstrate mastery.",
+        flagHash: "09ef290e34fc9225fd7ae9d6e01b11105a8249ac08376af4cf4e6e9df58b9a88" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Assessment Reflection Questions — describing a moment you felt frustrated or stuck, and which mindset helped you get unstuck, is a ___ question.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Looking back at your own experience to draw a lesson from it.",
+        flagHash: "0ca2e3b7594bd8fea1650855e98d60523b13d2c2880c3c10b657b47b811d96c3" }
     ] },
 
   /* MODULE 4 — Computers & Number Systems (Play → 4.1 Binary → 4.2 Computer Basics → 4.3 Ethics → 4.4 CTF/Cert & Perform, no flags) ── */
@@ -2341,102 +2340,6 @@ window.COURSE_CONFIG.cyber1.ctf = {
     hardMode: "wordsearch" },
 
   /* MODULE 11 — Intro to Cyber Frameworks ─────────────────────────────────── */
-  { id: "c1-fw-review-11.1", module: 11, title: "11.1 Review — CIA Triad & AAA", category: "Review",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Quick Review — 11.1. The CIA Triad's three pillars are Confidentiality, Integrity, and ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's what keeps a system online and working.",
-        flagHash: "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Quick Review — 11.1. The AAA Framework's three A's are Authentication, Authorization, and ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's the audit trail of what a user did.",
-        flagHash: "0e7332f9cc34e3aa219af4634ffbc171ca50b8dc4f55d4d198b879ca73a9ef3f" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Quick Review — 11.1. Which AAA step answers the question 'Who are you?'\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's the first door — proving your identity.",
-        flagHash: "0167e5432d777913fc23dc379d9f68c4f023af44904180c8c33935af6a833a09" }
-    ] },
-
-  { id: "c1-fw-review-11.2", module: 11, title: "11.2 Review — The NIST Framework", category: "Review",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Quick Review — 11.2. How many core functions make up the NIST Framework?\n\nSubmit as flag{number}.",
-        hint: "Govern, Identify, Protect, Detect, Respond, Recover.",
-        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Quick Review — 11.2. Which NIST function comes right after Identify?\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's the 'digital wall' function.",
-        flagHash: "9c449b71b839d7f7b747c7ce87f292f96ad175cf74e3b358973a57c564c0ac92" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Quick Review — 11.2. Which NIST function is described as the organization's 'early warning system'?\n\nSubmit as flag{word} (lowercase).",
-        hint: "No defense is perfect, so this one watches 24/7.",
-        flagHash: "74893e279717214de1e577e4fcd850f6750a331512464c51b0656ae67c01aa6c" }
-    ] },
-
-  { id: "c1-fw-review-11.3", module: 11, title: "11.3 Review — MITRE ATT&CK", category: "Review",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Quick Review — 11.3. MITRE ATT&CK tracks the real-world behavior of an ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's the attacker being profiled.",
-        flagHash: "6381c9b0232c25ffcd7943637d44691cbdf0c5a753c10f115d0dccea537e72e8" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Quick Review — 11.3. Sending a phishing email is an example of a MITRE ATT&CK ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's the specific 'how.'",
-        flagHash: "3ee0987ca3406f893f0644df362d00f6c2e909c2f568d78f8df6ec8355936580" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Quick Review — 11.3. Gaining Initial Access is an example of a MITRE ATT&CK ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's the high-level 'why.'",
-        flagHash: "b13c8cbf1e76d124c9decd9fb2518b07e3ce894a6d3d06aa521d512841f22f78" }
-    ] },
-
-  { id: "c1-fw-review-11.4", module: 11, title: "11.4 Review — CIS Controls", category: "Review",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Quick Review — 11.4. CIS stands for Center for Internet ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "It's the same word as the S in CIA.",
-        flagHash: "7e0cb8da2168bb237dd1ff2e86bd486425ebd9b6d8f0414413fcab4310bac761" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Quick Review — 11.4. CIS Controls are organized into Implementation ___.\n\nSubmit as flag{word} (lowercase).",
-        hint: "IG1, IG2, and IG3 are three of these.",
-        flagHash: "64241e05caeaa84d86b23e604adb2b85a47e7a07c3e5b1160bc2e2881b131827" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Quick Review — 11.4. Which Implementation Group should every organization, regardless of size, start with?\n\nSubmit as flag{ig#} (lowercase, e.g. flag{ig1}).",
-        hint: "It's 'Essential Cyber Hygiene.'",
-        flagHash: "4d32d085c706f3a7178dc416a2f3aa2cec06efa092dd85534bf62f5a66d8e6e7" }
-    ] },
-
-  { id: "c1-fw-review-11.5", module: 11, title: "11.5 Review — Laws & Regulations", category: "Review",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Quick Review — 11.5. Which law protects patient health records? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "It's the 'Gold Standard' for confidentiality in healthcare.",
-        flagHash: "0a0207868f8831d7c3902657aed57e5ec290c8cb2bd5ed9c00e77a1ea2865288" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Quick Review — 11.5. Which law protects children's online privacy? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "It applies to apps and sites aimed at kids under 13.",
-        flagHash: "db4f371d8d129577096c3d2b3459cabf858535ffa1db807ad1b13de0ab5cd55e" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Quick Review — 11.5. Which law criminalizes unauthorized access to a computer system? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "It's the primary US anti-hacking law, written in 1986.",
-        flagHash: "6587dc7959cf4e5f6204bed8552661ac571e79ba9eaa7b471cb49e5776256d7c" }
-    ] },
-
-  { id: "c1-fw-review-11.6", module: 11, title: "11.6 Review — Cyber Ethics & the Law", category: "Review",
-    levels: [
-      { difficulty: "Easy", points: 50,
-        prompt: "Quick Review — 11.6. In the Curious Hacker scenario, was Alex's access to TechGenius Corp's server legally authorized?\n\nSubmit as flag{yes} or flag{no} (lowercase).",
-        hint: "Even without malice, breaking in without permission is still unauthorized.",
-        flagHash: "acb78677c2104df8a3d7f92ad8b101195f31a376838cb1d0da5a41c04301758f" },
-      { difficulty: "Medium", points: 100,
-        prompt: "Quick Review — 11.6. Which law makes unauthorized computer access illegal even without theft or damage? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
-        hint: "Same law from the Headline Hack activity.",
-        flagHash: "6587dc7959cf4e5f6204bed8552661ac571e79ba9eaa7b471cb49e5776256d7c" },
-      { difficulty: "Hard", points: 150,
-        prompt: "Quick Review — 11.6. Which hacker group carried out the 2021 Colonial Pipeline ransomware attack?\n\nSubmit as flag{word} (lowercase).",
-        hint: "Its name suggests the 'other side.'",
-        flagHash: "be13761b2dfaf6745d4ebf600600e375b21773412e6ed1377aef61460b491d16" }
-    ] },
-
   { id: "c1-fw-11.1-core", module: 11, title: "11.1 — CIA Triad & AAA", category: "Frameworks",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -2473,6 +2376,22 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "An engineer scans a fingerprint and enters a PIN to enter the server room", right: "Authentication" },
       { left: "An engineer's account can view health reports but is blocked from customer credit card numbers", right: "Authorization" },
       { left: "A report shows every file an engineer opened and every command they typed", right: "Accounting" }
+    ] },
+
+  { id: "c1-fw-review-11.1", module: 11, title: "11.1 Review — CIA Triad & AAA", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.1. The CIA Triad's three pillars are Confidentiality, Integrity, and ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's what keeps a system online and working.",
+        flagHash: "ffea4cb5ee4b39c442a6b26ab927c4daa0b5f3e642a03509fe9c1179ef5b501d" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.1. The AAA Framework's three A's are Authentication, Authorization, and ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the audit trail of what a user did.",
+        flagHash: "0e7332f9cc34e3aa219af4634ffbc171ca50b8dc4f55d4d198b879ca73a9ef3f" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.1. Which AAA step answers the question 'Who are you?'\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the first door — proving your identity.",
+        flagHash: "0167e5432d777913fc23dc379d9f68c4f023af44904180c8c33935af6a833a09" }
     ] },
 
   { id: "c1-fw-11.2-core", module: 11, title: "11.2 — The NIST Framework", category: "Frameworks",
@@ -2513,6 +2432,22 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "Using a cloud backup to restore files deleted by a hacker", right: "Recover" }
     ] },
 
+  { id: "c1-fw-review-11.2", module: 11, title: "11.2 Review — The NIST Framework", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.2. How many core functions make up the NIST Framework?\n\nSubmit as flag{number}.",
+        hint: "Govern, Identify, Protect, Detect, Respond, Recover.",
+        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.2. Which NIST function comes right after Identify?\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the 'digital wall' function.",
+        flagHash: "9c449b71b839d7f7b747c7ce87f292f96ad175cf74e3b358973a57c564c0ac92" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.2. Which NIST function is described as the organization's 'early warning system'?\n\nSubmit as flag{word} (lowercase).",
+        hint: "No defense is perfect, so this one watches 24/7.",
+        flagHash: "74893e279717214de1e577e4fcd850f6750a331512464c51b0656ae67c01aa6c" }
+    ] },
+
   { id: "c1-fw-11.3-core", module: 11, title: "11.3 — MITRE ATT&CK", category: "Frameworks",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -2550,6 +2485,22 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Achieve the final impact — steal data, encrypt files, or disrupt service"
     ] },
 
+  { id: "c1-fw-review-11.3", module: 11, title: "11.3 Review — MITRE ATT&CK", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.3. MITRE ATT&CK tracks the real-world behavior of an ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the attacker being profiled.",
+        flagHash: "6381c9b0232c25ffcd7943637d44691cbdf0c5a753c10f115d0dccea537e72e8" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.3. Sending a phishing email is an example of a MITRE ATT&CK ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the specific 'how.'",
+        flagHash: "3ee0987ca3406f893f0644df362d00f6c2e909c2f568d78f8df6ec8355936580" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.3. Gaining Initial Access is an example of a MITRE ATT&CK ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the high-level 'why.'",
+        flagHash: "b13c8cbf1e76d124c9decd9fb2518b07e3ce894a6d3d06aa521d512841f22f78" }
+    ] },
+
   { id: "c1-fw-11.4-core", module: 11, title: "11.4 — CIS Controls", category: "Frameworks",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -2581,6 +2532,22 @@ window.COURSE_CONFIG.cyber1.ctf = {
       "Control 6 — Access Control Management",
       "Control 8 — Audit Log Management",
       "Control 11 — Data Recovery"
+    ] },
+
+  { id: "c1-fw-review-11.4", module: 11, title: "11.4 Review — CIS Controls", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.4. CIS stands for Center for Internet ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "It's the same word as the S in CIA.",
+        flagHash: "7e0cb8da2168bb237dd1ff2e86bd486425ebd9b6d8f0414413fcab4310bac761" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.4. CIS Controls are organized into Implementation ___.\n\nSubmit as flag{word} (lowercase).",
+        hint: "IG1, IG2, and IG3 are three of these.",
+        flagHash: "64241e05caeaa84d86b23e604adb2b85a47e7a07c3e5b1160bc2e2881b131827" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.4. Which Implementation Group should every organization, regardless of size, start with?\n\nSubmit as flag{ig#} (lowercase, e.g. flag{ig1}).",
+        hint: "It's 'Essential Cyber Hygiene.'",
+        flagHash: "4d32d085c706f3a7178dc416a2f3aa2cec06efa092dd85534bf62f5a66d8e6e7" }
     ] },
 
   { id: "c1-fw-11.5-core", module: 11, title: "11.5 — Cyber Laws & Regulations", category: "Laws & Ethics",
@@ -2619,6 +2586,22 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "CFAA", right: "Unauthorized computer access" }
     ] },
 
+  { id: "c1-fw-review-11.5", module: 11, title: "11.5 Review — Laws & Regulations", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.5. Which law protects patient health records? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "It's the 'Gold Standard' for confidentiality in healthcare.",
+        flagHash: "0a0207868f8831d7c3902657aed57e5ec290c8cb2bd5ed9c00e77a1ea2865288" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.5. Which law protects children's online privacy? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "It applies to apps and sites aimed at kids under 13.",
+        flagHash: "db4f371d8d129577096c3d2b3459cabf858535ffa1db807ad1b13de0ab5cd55e" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.5. Which law criminalizes unauthorized access to a computer system? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "It's the primary US anti-hacking law, written in 1986.",
+        flagHash: "6587dc7959cf4e5f6204bed8552661ac571e79ba9eaa7b471cb49e5776256d7c" }
+    ] },
+
   { id: "c1-fw-11.6-core", module: 11, title: "11.6 — Cyber Ethics & the Law", category: "Laws & Ethics",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -2653,6 +2636,22 @@ window.COURSE_CONFIG.cyber1.ctf = {
       { left: "WannaCry (2017)", right: "A ransomware cryptoworm that encrypted 200,000+ computers across 150 countries" },
       { left: "SolarWinds (2020)", right: "A supply-chain attack hidden inside a trusted software update" },
       { left: "Colonial Pipeline (2021)", right: "Ransomware shut down the largest US fuel pipeline" }
+    ] },
+
+  { id: "c1-fw-review-11.6", module: 11, title: "11.6 Review — Cyber Ethics & the Law", category: "Review",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Quick Review — 11.6. In the Curious Hacker scenario, was Alex's access to TechGenius Corp's server legally authorized?\n\nSubmit as flag{yes} or flag{no} (lowercase).",
+        hint: "Even without malice, breaking in without permission is still unauthorized.",
+        flagHash: "acb78677c2104df8a3d7f92ad8b101195f31a376838cb1d0da5a41c04301758f" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Quick Review — 11.6. Which law makes unauthorized computer access illegal even without theft or damage? Give the acronym.\n\nSubmit as flag{acronym} (lowercase).",
+        hint: "Same law from the Headline Hack activity.",
+        flagHash: "6587dc7959cf4e5f6204bed8552661ac571e79ba9eaa7b471cb49e5776256d7c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Quick Review — 11.6. Which hacker group carried out the 2021 Colonial Pipeline ransomware attack?\n\nSubmit as flag{word} (lowercase).",
+        hint: "Its name suggests the 'other side.'",
+        flagHash: "be13761b2dfaf6745d4ebf600600e375b21773412e6ed1377aef61460b491d16" }
     ] },
 
   { id: "c1-fw-vocab", module: 11, title: "11.1-11.6 ext — Vocabulary Recall", category: "Vocabulary", type: "vocab",

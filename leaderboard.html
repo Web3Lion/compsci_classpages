@@ -78,6 +78,7 @@ button{font-family:inherit;cursor:pointer;}
 .fameP2{border-color:#cfd8e3;}
 .fameP3{border-color:#c98a4b;}
 .fameMedal{font-size:clamp(22px,3vw,30px);}
+.fameRank{font-size:clamp(10px,1vw,12px);letter-spacing:2px;color:var(--faint);margin-top:2px;}
 .fameHandle{font-weight:700;color:var(--bright);font-size:clamp(14px,1.4vw,17px);margin-top:4px;}
 .fameXp{color:var(--accent2);font-size:clamp(12px,1.2vw,14px);margin-top:4px;}
 
@@ -202,10 +203,10 @@ button{font-family:inherit;cursor:pointer;}
   <div id="myRankChip"></div>
 </div>
 
-<script src="config.js"></script>
-<script src="cipher.js"></script>
-<script src="supabase-config.js"></script>
-<script src="auth.js"></script>
+<script src="config.js?v=20260924"></script>
+<script src="cipher.js?v=20260924"></script>
+<script src="supabase-config.js?v=20260924"></script>
+<script src="auth.js?v=20260924"></script>
 <script>
 var FX = (function(){
   var canvas, ctx, raf = null, w = 0, h = 0, dpr = 1;
@@ -615,6 +616,7 @@ async function loadFame(){
       '<div class="fameWeekLabel mono">Week of ' + d.toLocaleDateString(undefined,{month:"short",day:"numeric"}) + '</div>' +
       '<div class="fameRow">' + rows.map(function(r){
         return '<div class="fameCard fameP' + r.pos + '"><div class="fameMedal">' + FAME_MEDALS[r.pos-1] + '</div>' +
+          '<div class="fameRank mono">' + ["1st","2nd","3rd"][r.pos-1] + '</div>' +
           '<div class="fameHandle">' + esc(r.handle) + '</div>' +
           '<div class="fameXp mono">' + r.xp + ' XP</div></div>';
       }).join('') + '</div>' +

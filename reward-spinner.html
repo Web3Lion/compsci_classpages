@@ -58,9 +58,20 @@ h1{font-weight:800;font-size:26px;margin:6px 0 4px;color:var(--bright);letter-sp
 .confetti{position:absolute;top:-20px;width:9px;height:14px;opacity:.9;animation:confettiFall linear forwards;}
 @keyframes confettiFall{to{transform:translateY(105vh) rotate(540deg);opacity:.3;}}
 .back{display:inline-block;margin-top:40px;font-size:13px;color:var(--dim);}
+#award h2{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
+#award select{width:100%;padding:9px 10px;border-radius:9px;border:1px solid var(--border3);background:var(--panel);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:8px;}
+#sendBtn{font-weight:700;font-size:13px;letter-spacing:1px;padding:10px 0;width:100%;border-radius:999px;border:1px solid #00f0ff;background:transparent;color:var(--bright);cursor:pointer;}
+#sendBtn:disabled{opacity:.55;cursor:not-allowed;}
+#sendMsg{font-size:12px;margin-top:8px;color:var(--dim);}
+body[data-lock] #rightCol, body[data-lock] #history, body[data-lock] .lead{display:none;}
+body[data-lock] #stage{filter:grayscale(1);opacity:.45;pointer-events:none;}
+body[data-lock] #spotlight{opacity:.25;}
+#lockMsg{display:none;margin-top:26px;font-size:15px;font-weight:700;letter-spacing:1px;color:var(--muted);}
+body[data-lock] #lockMsg{display:block;}
+body[data-lock] .back{display:none;}
 </style>
 </head>
-<body>
+<body data-lock="1">
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div id="spotlight"><div class="glow"></div><div class="glow2"></div><div class="glow3"></div></div>
 <div id="confettiWrap"></div>
@@ -87,10 +98,19 @@ h1{font-weight:800;font-size:26px;margin:6px 0 4px;color:var(--bright);letter-sp
       <div class="card">
         <div class="rl mono">You won</div>
         <div class="rv" id="resultText">—</div>
+        <div id="sendRow" style="display:none;margin-top:14px;">
+          <button id="sendBtn" class="mono" onclick="sendPrize()">SEND TO PROFILE</button>
+          <div id="sendMsg" class="mono"></div>
+        </div>
       </div>
+    </div>
+    <div id="award">
+      <h2 class="mono">Spin for</h2>
+      <div id="awardBody" class="mono" style="font-size:12px;color:var(--faint);line-height:1.6;">Checking teacher sign-in…</div>
     </div>
   </div>
   </div>
+  <div id="lockMsg" class="mono">The teacher is not available for spinning.</div>
 
   <div id="history">
     <h2 class="mono">Recent spins</h2>
@@ -106,13 +126,16 @@ h1{font-weight:800;font-size:26px;margin:6px 0 4px;color:var(--bright);letter-sp
 // Each reward is split into multiple slices scattered around the wheel for a busier,
 // more colorful spin — probability per reward is unchanged (its weight, summed).
 var REWARDS = [
-  {label:"Sticker Sheet",                          lines:["Sticker","Sheet"],   weight:25, slices:4},
-  {label:"Teacher Reward",                         lines:["Teacher","Reward"],  weight:20, slices:3},
-  {label:"Nightly Homework Pass",                  lines:["Homework","Pass"],   weight:17, slices:3},
-  {label:"1-Day Homework/Project Extension",       lines:["1-Day","Extension"], weight:15, slices:2},
-  {label:"+1 Bonus Point (Graded Assignment)",     lines:["+1 Bonus","Point"],  weight:10, slices:2},
-  {label:"1% Unit Test/Quiz Bonus",                lines:["1% Test","Bonus"],   weight:8,  slices:2},
-  {label:"2% Unit Test/Quiz Bonus",                lines:["2% Test","Bonus"],   weight:5,  slices:1}
+  {label:"Sticker Sheet",                          lines:["Sticker","Sheet"],   weight:11, slices:3, kind:"voucher"},
+  {label:"Teacher Reward",                         lines:["Teacher","Reward"],  weight:10, slices:3, kind:"voucher"},
+  {label:"Streak Freeze (1 Week)",                 lines:["Streak","Freeze"],  weight:15, slices:2, kind:"freeze"},
+  {label:"Nightly Homework Pass",                  lines:["Homework","Pass"],   weight:9, slices:2, kind:"voucher"},
+  {label:"2x XP for 24 Hours",                     lines:["2x XP","24 Hours"], weight:15, slices:2, kind:"xp2x"},
+  {label:"1-Day Homework/Project Extension",       lines:["1-Day","Extension"], weight:7, slices:2, kind:"voucher"},
+  {label:"+500 Bonus XP",                          lines:["+500","XP"],        weight:15,  slices:2, kind:"xp500"},
+  {label:"+1 Bonus Point (Graded Assignment)",     lines:["+1 Bonus","Point"],  weight:10,  slices:2, kind:"voucher"},
+  {label:"1% Unit Test/Quiz Bonus",                lines:["1% Test","Bonus"],   weight:6,  slices:1, kind:"voucher"},
+  {label:"2% Unit Test/Quiz Bonus",                lines:["2% Test","Bonus"],   weight:2,  slices:1, kind:"voucher"}
 ];
 var NEON = ["#ff00c8","#00f0ff","#b026ff","#fff500","#39ff14","#ff4d6d","#05d9e8","#ff8a00","#d100d1","#7dff6e","#ff2079","#00ffa2","#8f00ff","#ffd400","#00b3ff","#ff5ec4"];
 var TOTAL_WEIGHT = REWARDS.reduce(function(s,r){return s+r.weight;},0);
@@ -213,17 +236,18 @@ function renderOdds(){
   var sorted = REWARDS.slice().sort(function(a,b){ return b.weight - a.weight; });
   list.innerHTML = sorted.map(function(r){
     var color = segs.filter(function(s){ return s.label===r.label; })[0].color;
-    var pct = (r.weight/TOTAL_WEIGHT*100);
+    var pct = Math.round(r.weight/TOTAL_WEIGHT*1000)/10;
     return '<li><span class="sw" style="background:'+color+';"></span><span class="mono" style="font-weight:800;color:var(--bright);width:16px;">' + r.num + '</span>' + r.label + '<span class="pct">' + (pct%1===0?pct:pct.toFixed(1)) + '%</span></li>';
   }).join('');
 }
 function showResult(reward){
   document.getElementById('resultText').textContent = reward.label;
   document.getElementById('result').classList.add('show');
-  fireConfetti(reward.label === '2% Unit Test/Quiz Bonus');
+  fireConfetti(reward.label === '2% Unit Test/Quiz Bonus' || reward.kind === 'xp500');
+  if (window.__awardReady) window.__awardReady(reward);
 }
 function spin(){
-  if (spinning) return;
+  if (spinning || document.body.hasAttribute('data-lock')) return;
   spinning = true;
   document.getElementById('spinBtn').disabled = true;
   document.getElementById('result').classList.remove('show');
@@ -244,7 +268,64 @@ function spin(){
   }, 4700);
 }
 </script>
-<script src="supabase-config.js"></script>
-<script src="nemesis-intro.js"></script>
+<script src="supabase-config.js?v=20260924"></script>
+<script src="auth.js?v=20260924"></script>
+<script>
+/* Optional: pick a class + student before spinning and the prize can be sent
+   straight to that student's profile inventory (reward-items.sql). Works only
+   for the signed-in teacher; otherwise the spinner is purely a class display. */
+(function(){
+  var AUTH = window.CTF_AUTH, CLASSES = [], ROSTER = [], last = null;
+  var body = document.getElementById('awardBody');
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function note(t){ body.innerHTML = t; }
+  function pick(){ var s = document.getElementById('aStudent'); return s && s.value ? ROSTER.filter(function(r){return r.id===s.value;})[0] : null; }
+  function syncBtn(){
+    var row = document.getElementById('sendRow'), who = pick();
+    if (!last || !who){ row.style.display = 'none'; return; }
+    row.style.display = 'block';
+    var b = document.getElementById('sendBtn'); b.disabled = false; b.textContent = 'SEND TO ' + who.handle.toUpperCase();
+    document.getElementById('sendMsg').textContent = last.kind === 'voucher' ? 'Lands in their profile to redeem with you.' : 'Lands in their profile, ready to use.';
+  }
+  async function loadRoster(id){
+    ROSTER = []; var s = document.getElementById('aStudent');
+    s.innerHTML = '<option value="">Loading\u2026</option>';
+    try { ROSTER = await AUTH.rpc('ctf_t_roster',{p_class:id}) || []; } catch(e){}
+    ROSTER.sort(function(a,b){ return String(a.handle).localeCompare(String(b.handle)); });
+    s.innerHTML = '<option value="">Whole class (display only)</option>' + ROSTER.map(function(r){ return '<option value="'+esc(r.id)+'">'+esc(r.handle)+'</option>'; }).join('');
+    syncBtn();
+  }
+  async function boot(){
+    if (!AUTH || !AUTH.online){ note('Connect the class backend to send prizes to student profiles.'); return; }
+    try { CLASSES = await AUTH.rpc('ctf_t_classes') || []; }
+    catch(e){ note('Sign in on the <a href="teacher.html" style="color:var(--accent)">teacher dashboard</a> to send prizes to student profiles.'); return; }
+    document.body.removeAttribute('data-lock');
+    if (!CLASSES.length){ note('No classes yet.'); return; }
+    body.innerHTML = '<select id="aClass">' + CLASSES.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>'; }).join('') + '</select>' +
+      '<select id="aStudent"></select>' +
+      '<div style="font-size:11px;color:var(--faint);line-height:1.5;">Pick a student and the prize goes straight to their profile when the wheel stops.</div>';
+    var c = document.getElementById('aClass');
+    try { var k = localStorage.getItem('spinner-class'); if (k && CLASSES.some(function(x){return x.id===k;})) c.value = k; } catch(e){}
+    c.onchange = function(){ try { localStorage.setItem('spinner-class', c.value); } catch(e){} loadRoster(c.value); };
+    document.getElementById('aStudent').onchange = syncBtn;
+    loadRoster(c.value);
+  }
+  window.__awardReady = function(r){ last = r; syncBtn(); if (pick()) window.sendPrize(); };
+  window.sendPrize = async function(){
+    var who = pick(); if (!last || !who) return;
+    var b = document.getElementById('sendBtn'), m = document.getElementById('sendMsg');
+    b.disabled = true; b.textContent = 'SENDING\u2026';
+    try {
+      await AUTH.rpc('ctf_t_send_items',{ p_students:[who.id], p_kind:last.kind, p_label: last.kind === 'voucher' ? last.label : null, p_note:null, p_source:'spinner' });
+      b.textContent = '\u2713 SENT TO ' + who.handle.toUpperCase(); m.textContent = 'Check the item log on the Send Rewards tab.'; last = null;
+    } catch(e){
+      b.disabled = false; b.textContent = 'TRY AGAIN';
+      m.textContent = /send_items|function/.test((e&&e.message)||'') ? 'Run supabase/reward-items.sql first.' : 'Couldn\u2019t send: ' + ((e&&e.message)||e);
+    }
+  };
+  boot();
+})();
+</script>
+<script src="nemesis-intro.js?v=20260924"></script>
 </body>
 </html>

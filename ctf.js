@@ -165,7 +165,50 @@
   // FUTURE (teacher page): also skip teacher-declared no-class/holiday dates here,
   // so a streak freeze bridges the gap exactly like a weekend does.
   function isSkipDay(n){ const d = dowOf(n); return d === 0 || d === 6; }
-  function prevSchoolDay(n){ let x = n - 1; while (isSkipDay(x)) x--; return x; }
+  /* REWARD ITEMS (reward-items.sql). sync.js / profile.js cache the student's
+     items in localStorage; the engine only reads them. A used Streak Freeze
+     bridges its days like a weekend; an active 2x XP doubles every capture. */
+  function rewardItems(){ try { return JSON.parse(localStorage.getItem("ctf-items-" + course)) || []; } catch(e){ return []; } }
+  function localDay(ts){ const d = new Date(ts); return dayNum(d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()); }
+  function activeUntil(kind){ const now = Date.now(); let u = 0;
+    rewardItems().forEach(it => { if (it.kind !== kind || !it.starts_at || !it.expires_at) return;
+      const s = Date.parse(it.starts_at), e = Date.parse(it.expires_at); if (s <= now && e > now) u = Math.max(u, e); });
+    return u; }
+  function xpMult(){ let m = activeUntil("xp2x") ? 2 : 1; if (activeUntil("squad")) m *= 1.5; return m; }
+  // Charges: used on the profile = armed; spent here, oldest first.
+  function armedItems(kind){ const sp = (state && state.itemSpent) || {};
+    return rewardItems().filter(it => it.kind === kind && it.used_at && !it.consumed_at && !it.expires_at && !it.shared && !sp[it.id])
+      .sort((a, b) => Date.parse(a.used_at) - Date.parse(b.used_at)); }
+  function consumeItem(kind){
+    const it = armedItems(kind)[0]; if (!it) return false;
+    state.itemSpent = state.itemSpent || {}; state.itemSpent[it.id] = Date.now(); save(state);
+    if (typeof window.CTF_CONSUME_ITEM === "function") { try { window.CTF_CONSUME_ITEM(it.id); } catch (e) {} }
+    return true;
+  }
+  // Item toasts show whether or not the NEMESIS persona is switched on.
+  function itemToast(title, body){
+    let host = document.getElementById("itemToasts");
+    if (!host) { host = document.createElement("div"); host.id = "itemToasts";
+      host.style.cssText = "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:14000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;";
+      document.body.appendChild(host); }
+    const t = document.createElement("div");
+    t.style.cssText = "font-family:'JetBrains Mono',monospace;background:var(--panel,#0b1220);border:1px solid var(--amber,#f5c542);color:var(--bright,#eaf2fb);border-radius:12px;padding:10px 16px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.45);max-width:90vw;transition:opacity .3s,transform .3s;";
+    t.innerHTML = '<b style="color:var(--amber,#f5c542);letter-spacing:1px;">' + title + '</b> <span style="opacity:.85">' + body + '</span>';
+    host.appendChild(t);
+    setTimeout(() => { t.style.opacity = "0"; t.style.transform = "translateY(8px)"; }, 3600);
+    setTimeout(() => t.remove(), 4000);
+  }
+  function rollLoot(key){
+    if (typeof window.CTF_LOOT !== "function") return;
+    Promise.resolve(window.CTF_LOOT({ key: key })).then(r => {
+      if (!r || !r.item) return;
+      try { const list = rewardItems(); list.unshift(r.item); localStorage.setItem("ctf-items-" + course, JSON.stringify(list)); } catch (e) {}
+      setTimeout(() => itemToast("\u2726 LOOT DROP", r.item.label + " \u2014 open your profile to use it."), 900);
+    }).catch(() => {});
+  }
+  function isFrozenDay(n){ return rewardItems().some(it => it.kind === "freeze" && it.starts_at && it.expires_at &&
+    n >= localDay(Date.parse(it.starts_at)) && n <= localDay(Date.parse(it.expires_at))); }
+  function prevSchoolDay(n, frozen){ let x = n - 1; while (isSkipDay(x) || (frozen && isFrozenDay(x))) x--; return x; }
   function checkDailyLogin(){
     const st = Object.assign({ last:null, count:0, best:0 }, state.streak || {});
     const today = todayKey();
@@ -174,8 +217,12 @@
     // Weekend (or future frozen day): neutral. Don't award, don't reset, don't record.
     if (isSkipDay(todN)) { state.streak = st; save(state); return null; }
     const lastN = st.last ? dayNum(st.last) : null;
-    const cont = lastN != null && lastN === prevSchoolDay(todN); // Fri -> Mon counts as consecutive
-    st.count = cont ? (st.count||0) + 1 : 1;
+    // Fri -> Mon counts as consecutive; so does any gap a used Streak Freeze covers
+    const cont = lastN != null && lastN >= prevSchoolDay(todN, true);
+    const prevCount = st.count || 0;
+    st.count = cont ? prevCount + 1 : 1;
+    // remember what broke, in case this device learns about a freeze a moment later
+    if (!cont && prevCount > 0 && st.last) st.broke = { count: prevCount, last: st.last, day: today }; else delete st.broke;
     st.last = today;
     st.best = Math.max(st.best||0, st.count);
     const bonus = streakBonusFor(st.count);
@@ -497,6 +544,25 @@
     try { return badgeDefs().map(d => Object.assign({}, d, { tier: tierOf(d) })); } catch (e) { return []; }
   };
   window.CTF.tierColor = tierColor;
+  window.CTF.xpMult = xpMult;
+  // sync.js calls this after fetching items: a freeze used on another device may
+  // mean the streak that reset at boot should have survived.
+  window.CTF.itemsChanged = function () {
+    try {
+      state = load();
+      const st = state.streak || {}, b = st.broke;
+      if (b && b.day === todayKey() && dayNum(b.last) >= prevSchoolDay(dayNum(b.day), true)) {
+        const was = st.count || 1;
+        st.count = b.count + 1; st.best = Math.max(st.best || 0, st.count); delete st.broke;
+        const diff = streakBonusFor(st.count) - streakBonusFor(was);
+        if (diff > 0) { state.bonus = (state.bonus || 0) + diff; state.xpLog = state.xpLog || [];
+          state.xpLog.push({ ts: Date.now(), delta: diff, reason: "Streak Freeze kept your streak \u00b7 day " + st.count }); }
+        state.streak = st; save(state);
+        setTimeout(function(){ nemesisToast("\u2744 STREAK SAVED", "Streak Freeze covered the gap \u00b7 day " + st.count, "var(--amber)"); }, 400);
+      }
+      render();
+    } catch (e) {}
+  };
 
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const norm = s => String(s == null ? "" : s).trim().toLowerCase();
@@ -641,6 +707,7 @@
   function startCool(chal, li, key) {
     const s = coolSecs(chal, li, key);
     if (!s) return 0;
+    if (consumeItem("cooldown")) { itemToast("\u00bb COOLDOWN SKIP", "lockout skipped \u2014 try again now."); return 0; }
     state.cool = state.cool || {};
     state.cool[key] = Date.now() + s * 1000;
     return s;
@@ -654,7 +721,7 @@
      still free — this only prices the answer we hand over. */
   const HINT_COST = 0.10, TAINT_PENALTY = 10;
   function hintUsed(key) { return !!(state.hints || {})[key]; }
-  function hintMult(key) { return hintUsed(key) ? (1 - HINT_COST) : 1; }
+  function hintMult(key) { return (hintUsed(key) && !(state.hintFree || {})[key]) ? (1 - HINT_COST) : 1; }
   function buyHint(key) {
     state.hints = state.hints || {};
     if (state.hints[key]) return true;
@@ -666,8 +733,11 @@
   function keyOf(chal, li) { li = li || 0; const uses = chal.type === "vocab" || !!(chal.levels && chal.type !== "phish"); return uses ? chal.id + "#" + li : chal.id; }
   function startTimer(key) { if (key && !timers[key]) timers[key] = Date.now(); updateTimers(); }
   function award(chal, li, key, base) {
-    const sec = timers[key] ? (Date.now() - timers[key]) / 1000 : 0;
-    const earned = Math.max(1, Math.round(decayedPoints(base, sec) * capFor(key) * hintMult(key)));
+    let sec = timers[key] ? (Date.now() - timers[key]) / 1000 : 0;
+    if (activeUntil("timefreeze")) sec = 0;
+    let cap = capFor(key);
+    if (cap < 1 && consumeItem("retry")) { cap = 1; itemToast("\u21ba RETRY WIPE", "retry cap cleared \u2014 full XP on this one."); }
+    const earned = Math.max(1, Math.round(decayedPoints(base, sec) * cap * hintMult(key)));
     onSolve(chal, li, key, earned);
   }
   function solveTimed(chal, li) {
@@ -695,7 +765,7 @@
       if (el.offsetParent === null) return;
       const key = el.getAttribute("data-key"), base = +el.getAttribute("data-base");
       const cap = capFor(key), rtxt = (state.retry[key] || 0) ? ` \u00b7 retry cap \u2212${Math.round((1 - cap) * 100)}%` : "";
-      const hm = hintMult(key), htxt = hintUsed(key) ? ` \u00b7 hint \u2212${Math.round(HINT_COST * 100)}%` : "";
+      const hm = hintMult(key), htxt = hintMult(key) < 1 ? ` \u00b7 hint \u2212${Math.round(HINT_COST * 100)}%` : "";
       const cd = coolLeft(key);
       const form = el.parentNode ? el.parentNode.querySelector(".ctfForm") : null;
       const sub = form ? form.querySelector('button[type="submit"]') : null;
@@ -2377,8 +2447,10 @@
     document.querySelectorAll(".ctfHintBuy").forEach(b => b.addEventListener("click", () => {
       const key = b.getAttribute("data-key");
       const label = b.textContent.trim();
-      if (!confirm("Reveal this hint?\n\n" + label.replace(/^\u24d8\s*/, "") + "\n\nThis is permanent for this flag.")) return;
+      const free = armedItems("hint").length > 0;
+      if (!confirm((free ? "Use a Free Hint? This reveal costs no XP.\n\n" : "Reveal this hint?\n\n") + label.replace(/^\u24d8\s*/, "") + "\n\nThis is permanent for this flag.")) return;
       buyHint(key);
+      if (free && consumeItem("hint")) { state.hintFree = state.hintFree || {}; state.hintFree[key] = Date.now(); save(state); itemToast("? FREE HINT", "no XP cost on this reveal."); }
       render();
     }));
     document.querySelectorAll(".ctfHint").forEach(h => h.addEventListener("click", () => {
@@ -2539,12 +2611,16 @@
     const base = chal.type === "vocab" ? (VOCAB_PTS[li] || 0) : (usesLevels ? (chal.levels[li].points || 0) : (chal.points || 0));
     let points = (earnedOverride != null) ? earnedOverride : base;
     if (tainted[key]) points = Math.max(1, points - TAINT_PENALTY);
+    const mult = xpMult();
+    if (mult > 1) points = Math.round(points * mult);
+    const lucky = !tainted[key] && consumeItem("lucky");
+    if (lucky) { points = points * 3; setTimeout(() => itemToast("3\u00d7 LUCKY CAPTURE", "+" + points + " XP on that flag."), 300); }
     const wasQueued = !state.solved[key] && (state.retry[key] || 0) > 0;
     state.solved[key] = true;
     state.solvedAt[key] = Date.now();
     state.earned[key] = points;
     state.points = (state.points || 0) + points;
-    state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: points, reason: chal.title || key });
+    state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: points, reason: (chal.title || key) + (mult > 1 ? " \u00b7 " + mult + "\u00d7 XP" : "") + (lucky ? " \u00b7 Lucky 3\u00d7" : "") });
     const bounty = wasQueued ? payReviewBounty(key) : 0;
     if (bounty) setTimeout(() => nemesisToast(GLYPH + " " + ADV,
       MENTOR ? "you came back and got it \u2014 +" + bounty + " XP comeback bonus."
@@ -2553,7 +2629,7 @@
     const s = stats();
     nemesisProgress(before, s);
     reportAttempt(chal, li, key, true, null);
-    if (!tainted[key]) claimPioneer(chal, key);
+    if (!tainted[key]) { claimPioneer(chal, key); rollLoot(key); }
     if (typeof window.CTF_REPORT === "function") {
       try {
         const secs = timers[key] ? Math.round((Date.now() - timers[key]) / 1000) : null;
@@ -2586,9 +2662,11 @@
     try {
       Promise.resolve(window.CTF_PIONEER({ key: key, title: chal.title })).then(r => {
         if (!r || !r.pioneer) return;
-        const amt = r.bonus || PIONEER_XP;
+        const boost = consumeItem("pioneer");
+        const amt = (r.bonus || PIONEER_XP) * (boost ? 2 : 1);
         state.bonus = (state.bonus || 0) + amt;
-        state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: amt, reason: "First to solve — Pioneer bonus" });
+        state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: amt, reason: "First to solve — Pioneer bonus" + (boost ? " \u00b7 boosted 2\u00d7" : "") });
+        if (boost) itemToast("P\u00d72 PIONEER BOOST", "first to solve \u2014 +" + amt + " XP.");
         save(state);
         render();
         nemesisToast(GLYPH + " " + ADV + " // PIONEER",
@@ -2730,6 +2808,12 @@
     boss = { nemHP: endgame ? 140 : 100, hp: 100, round: 0, streak: 0, best: 0, dmgDealt: 0, correct: 0,
              phase: 1, weak: {}, reviewQ: [], pool: vocab, cfgBank: cfg, scope: scopeModule,
              endgame: endgame, timer: null, locked: false };
+    if (consumeItem("extralife")) boss.hp = 125;
+    boss.maxHp = boss.hp;
+    boss.shield = consumeItem("shield");
+    boss.overclock = consumeItem("overclock") ? 5 : 0;
+    const boosts = [boss.hp > 100 ? "Extra Life (125 integrity)" : "", boss.shield ? "Firewall Shield" : "", boss.overclock ? "Overclock (2\u00d7 damage, 5 rounds)" : ""].filter(Boolean);
+    if (boosts.length) setTimeout(() => itemToast("ITEMS ACTIVE", boosts.join(" \u00b7 ")), 600);
     var w = document.createElement("div"); w.id = "bossWrap";
     w.style.cssText = "position:fixed;inset:0;z-index:13600;overflow:hidden;background:" + (MENTOR ? "#0a0f14" : "#050000") + ";font-family:'JetBrains Mono',ui-monospace,monospace;color:" + (MENTOR ? "#cfe3f2" : "#ffd9e2") + ";";
     w.innerHTML =
@@ -2764,7 +2848,7 @@
   function bossUpdateBars() {
     var w = document.getElementById("bossWrap"); if (!w) return;
     w.querySelector(".bNem").style.width = Math.max(0, boss.nemHP) + "%";
-    w.querySelector(".bHp").style.width = Math.max(0, boss.hp) + "%";
+    w.querySelector(".bHp").style.width = Math.max(0, boss.hp / (boss.maxHp || 100) * 100) + "%";
     w.querySelector(".bPhase").textContent = "PHASE " + boss.phase;
     w.querySelector(".bCombo").textContent = boss.streak >= 3 ? ("\u25b6 \u00d7" + bossComboMult().toFixed(1) + " combo") : "";
   }
@@ -2804,8 +2888,9 @@
     var w = document.getElementById("bossWrap"); if (!w) return;
     var msg = w.querySelector(".bMsg"), q = boss.cur;
     var ok = !timeout && guess != null && bossCorrect(q, guess);
+    var oc = boss.overclock > 0; if (oc) boss.overclock--;
     if (ok) {
-      var dmg = Math.round((DMG[q.diff] || 12) * bossComboMult());
+      var dmg = Math.round((DMG[q.diff] || 12) * bossComboMult() * (oc ? 2 : 1));
       boss.nemHP -= dmg; boss.dmgDealt += dmg; boss.streak++; boss.correct++;
       boss.weak[q.topic] = Math.max(1, (boss.weak[q.topic] || 1) - 1);
       if (btn) { btn.style.borderColor = "#39ff88"; btn.style.background = "#08240f"; }
@@ -2813,7 +2898,9 @@
       nemesisSpeak(pick(MENTOR ? ["nice work \u2014 keep it going!", "yes! you've got this.", "great answer.", "correct \u2014 you're on a roll.", "perfect. keep it up."] : ["well done \u2014 you are pushing me back.", "sharp. i felt that one.", "impressive work, human.", "correct. you are better than i thought.", "strong move. keep it up."]));
       nemesisGlitch();
     } else {
-      var hit = HIT[boss.phase]; boss.hp -= hit; boss.nemHP = Math.min(100, boss.nemHP + 5); boss.streak = 0;
+      var hit = boss.shield ? 0 : HIT[boss.phase];
+      if (boss.shield) { boss.shield = false; itemToast("\u25c8 FIREWALL SHIELD", "blocked that hit \u2014 no damage taken."); }
+      boss.hp -= hit; boss.nemHP = Math.min(100, boss.nemHP + 5); boss.streak = 0;
       boss.weak[q.topic] = (boss.weak[q.topic] || 1) + 3;
       boss.reviewQ.push({ q: q, due: boss.round + 3 });
       msg.style.color = "#ff8f8f"; msg.textContent = (timeout ? "\u23f1 too slow \u2014 " : "\u2717 ") + "answer: " + esc(dispTerm(String(q.answer))) + (MENTOR ? "  \u00b7 keep going" : "  \u00b7 \u2212" + hit + " integrity");

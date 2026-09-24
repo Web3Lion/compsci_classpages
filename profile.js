@@ -316,6 +316,250 @@
     };
   }
 
+  /* ---- reward items (reward-items.sql) ------------------------------------ */
+  var G = { timed: "var(--amber)", help: "var(--accent)", boss: "var(--adv2,#ff6b6b)", mult: "var(--amber)", surprise: "var(--accent2)" };
+  var ITEM_META = {
+    xp2x:       { tag: "2\u00d7",   col: G.timed,    type: "timed",  done: "ACTIVATED", desc: "Every flag you capture pays double XP for 24 hours." },
+    freeze:     { tag: "\u2744",    col: "var(--accent2)", type: "timed", done: "ACTIVATED", desc: "For 7 days, missed school days won't break your login streak." },
+    timefreeze: { tag: "\u275a\u275a", col: G.help,  type: "timed",  done: "ACTIVATED", desc: "For 10 minutes, every flag pays full XP with no time decay." },
+    squad:      { tag: "1.5\u00d7", col: G.mult,     type: "timed",  done: "ACTIVATED", desc: "Everyone in your squad earns 1.5\u00d7 XP for 1 hour. No squad? It boosts just you." },
+    hint:       { tag: "?",         col: G.help,     type: "charge", done: "ARMED", desc: "Your next hint reveal on the CTF page costs no XP." },
+    retry:      { tag: "\u21ba",    col: G.help,     type: "charge", done: "ARMED", desc: "Your next capture on a flag you missed pays full XP, ignoring the retry cap." },
+    cooldown:   { tag: "\u00bb",    col: G.help,     type: "charge", done: "ARMED", desc: "Your next wrong-answer lockout is skipped so you can try again right away." },
+    shield:     { tag: "\u25c8",    col: G.boss,     type: "charge", done: "ARMED", desc: "In your next boss fight, the first wrong answer does no damage." },
+    overclock:  { tag: "OC",        col: G.boss,     type: "charge", done: "ARMED", desc: "In your next boss fight, your first 5 answers deal double damage." },
+    extralife:  { tag: "+HP",       col: G.boss,     type: "charge", done: "ARMED", desc: "Start your next boss fight with 125 integrity instead of 100." },
+    lucky:      { tag: "3\u00d7",   col: G.mult,     type: "charge", done: "ARMED", desc: "Your next flag capture pays 3\u00d7 XP." },
+    pioneer:    { tag: "P\u00d72",  col: G.mult,     type: "charge", done: "ARMED", desc: "Your next first-to-solve Pioneer bonus is doubled." },
+    xp500:      { tag: "+500",      col: "var(--accent)", type: "instant", done: "CLAIMED", desc: "Adds 500 XP to your score the moment you claim it." },
+    mystery:    { tag: "???",       col: G.surprise, type: "instant", done: "OPENED", desc: "Opens into a random in-game item. Never a classroom prize." },
+    voucher:    { tag: "\u2605",    col: "var(--bright)", type: "instant", done: "REDEEMED", desc: "A classroom prize. Show it to your teacher, then mark it redeemed." }
+  };
+  function meta(k) { return ITEM_META[k] || ITEM_META.voucher; }
+  function verb(k) { var t = meta(k).type; return k === "voucher" ? "Redeem" : k === "mystery" ? "Open" : k === "xp500" ? "Claim" : t === "charge" ? "Arm" : "Activate"; }
+  var ITEMS = [], itemTick = null;
+  function itemsCard() { return '<div id="pfItems"></div>'; }
+  function fmtLeft(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(s / 86400); s -= d * 86400;
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+    return (d ? d + "d " : "") + pad(h) + ":" + pad(m) + ":" + pad(x);
+  }
+  function fmtEnd(t) { return new Date(t).toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" }); }
+  function activeRun(kind) {
+    var now = Date.now(), end = 0, start = Infinity, from = null;
+    ITEMS.forEach(function (it) {
+      if (it.kind !== kind || !it.expires_at) return;
+      var e = Date.parse(it.expires_at); if (e <= now) return;
+      end = Math.max(end, e); start = Math.min(start, Date.parse(it.starts_at));
+      if (it.shared) from = it.from_handle;
+    });
+    return end && start <= now ? { end: end, from: from } : null;
+  }
+  function spent() { var st = API.getState ? API.getState() : {}; return (st && st.itemSpent) || {}; }
+  function itemCss() {
+    if (document.getElementById("pfItemCss")) return;
+    var st = document.createElement("style"); st.id = "pfItemCss";
+    st.textContent = "@keyframes pfPop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}" +
+      "@keyframes pfShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(5deg)}}" +
+      "@keyframes pfGlow{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 34px 4px currentColor}}";
+    document.head.appendChild(st);
+  }
+  function tagBox(k, size) {
+    var mt = meta(k); size = size || 40;
+    return '<span class="mono" style="flex:none;min-width:' + size + 'px;height:' + size + 'px;padding:0 6px;border-radius:' + Math.round(size / 4) + 'px;display:flex;align-items:center;justify-content:center;' +
+      'font-weight:800;font-size:' + Math.round(size * 0.34) + 'px;color:' + mt.col + ';border:1px solid ' + mt.col + ';">' + mt.tag + '</span>';
+  }
+  function renderItems() {
+    var box = el("pfItems"); if (!box) return;
+    itemCss();
+    var sp = spent();
+    var mine = ITEMS.filter(function (it) { return !it.shared; });
+    var unused = mine.filter(function (it) { return !it.used_at; });
+    var armed = {};
+    mine.forEach(function (it) { if (it.used_at && !it.consumed_at && !it.expires_at && meta(it.kind).type === "charge" && !sp[it.id]) armed[it.kind] = (armed[it.kind] || 0) + 1; });
+    var used = mine.filter(function (it) { return it.used_at; }).slice(0, 8);
+    var act = [["xp2x", "2\u00d7 XP ACTIVE"], ["squad", "SQUAD SURGE ACTIVE"], ["timefreeze", "TIME FREEZE ACTIVE"], ["freeze", "STREAK FROZEN"]]
+      .map(function (a) { var r = activeRun(a[0]); return r ? { kind: a[0], title: a[1], end: r.end, from: r.from } : null; })
+      .filter(Boolean);
+
+    var h = '<div class="card" style="padding:22px;margin-top:20px;">' +
+      '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px;">' +
+        '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">ITEMS</span>' +
+        '<span class="mono" style="font-size:11px;color:var(--dim);">' + unused.length + ' ready to use</span>' +
+      '</div>';
+
+    if (act.length) {
+      h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:16px;">' +
+        act.map(function (a) {
+          var mt = meta(a.kind);
+          return '<div style="padding:16px 18px;border:1px solid ' + mt.col + ';border-radius:12px;background:var(--panel2);">' +
+            '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:' + mt.col + ';font-weight:700;">' + a.title + '</div>' +
+            '<div class="mono" data-until="' + a.end + '" style="font-size:30px;font-weight:800;color:var(--bright);margin:6px 0 4px;letter-spacing:-.5px;">' + fmtLeft(a.end - Date.now()) + '</div>' +
+            '<div style="font-size:12px;color:var(--dim);line-height:1.5;">' + esc(mt.desc) + (a.from ? ' Started by ' + esc(a.from) + '.' : '') + ' Ends ' + esc(fmtEnd(a.end)) + '.</div>' +
+          '</div>';
+        }).join("") + '</div>';
+    }
+
+    var ak = Object.keys(armed);
+    if (ak.length) {
+      h += '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin:4px 0 8px;">ARMED \u00b7 TRIGGERS AUTOMATICALLY ON THE CTF PAGE</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">' + ak.map(function (k) {
+          var mt = meta(k);
+          return '<span title="' + esc(mt.desc) + '" style="display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border:1px solid ' + mt.col + ';border-radius:99px;font-size:12px;color:var(--text);">' +
+            tagBox(k, 26) + esc(_reward(k)) + (armed[k] > 1 ? ' <b class="mono" style="color:' + mt.col + ';">\u00d7' + armed[k] + '</b>' : '') + '</span>';
+        }).join("") + '</div>';
+    }
+
+    if (!unused.length && !act.length && !ak.length) {
+      h += '<div class="mono" style="font-size:12px;color:var(--faint);line-height:1.6;">No items yet. Rewards from your teacher, the class spinner, and loot drops show up here.</div>';
+    } else if (unused.length) {
+      h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;">' +
+        unused.map(function (it) {
+          var mt = meta(it.kind);
+          var src = it.source === "spinner" ? "Spinner prize" : it.source === "loot" ? "Loot drop" : it.source === "mystery" ? "Mystery Box" : "From your teacher";
+          return '<div style="display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--border2);border-radius:12px;background:var(--panel2);">' +
+            '<div style="display:flex;align-items:center;gap:10px;">' + tagBox(it.kind) +
+              '<div style="min-width:0;"><div style="font-size:13px;font-weight:700;color:var(--bright);">' + esc(it.label) + '</div>' +
+                '<div class="mono" style="font-size:10px;color:var(--faint);margin-top:2px;">' + src + ' \u00b7 ' +
+                  esc(new Date(it.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })) + '</div></div>' +
+            '</div>' +
+            '<div style="font-size:12px;color:var(--dim);line-height:1.5;">' + esc(mt.desc) + '</div>' +
+            (it.note && it.source === "teacher" ? '<div style="font-size:12px;color:var(--text);line-height:1.5;">\u201c' + esc(it.note) + '\u201d</div>' : '') +
+            '<button class="mono pfUse" data-id="' + esc(it.id) + '" style="margin-top:auto;padding:8px 0;border-radius:8px;border:1px solid ' + mt.col + ';' +
+              'background:transparent;color:' + mt.col + ';font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer;">' + verb(it.kind).toUpperCase() + '</button>' +
+          '</div>';
+        }).join("") + '</div>';
+    }
+
+    if (used.length) {
+      h += '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin:18px 0 6px;">HISTORY</div>' +
+        used.map(function (it) {
+          var st = meta(it.kind).type === "charge" ? ((it.consumed_at || sp[it.id]) ? "spent" : "armed") : meta(it.kind).done.toLowerCase();
+          return '<div style="display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border2);font-size:12px;">' +
+            '<span style="color:var(--dim);">' + esc(it.label) + ' <span class="mono" style="color:var(--faint);">\u00b7 ' + st + '</span></span>' +
+            '<span class="mono" style="color:var(--faint);">' + esc(new Date(it.used_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })) + '</span></div>';
+        }).join("");
+    }
+    h += '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:14px;line-height:1.6;">\u2726 Loot drops: every flag you capture has a 3% chance to drop a random in-game item here.</div>';
+    box.innerHTML = h + '</div>';
+
+    box.querySelectorAll(".pfUse").forEach(function (b) { b.onclick = function () { openUse(b.getAttribute("data-id")); }; });
+    clearInterval(itemTick);
+    if (act.length) itemTick = setInterval(function () {
+      var expired = false;
+      box.querySelectorAll("[data-until]").forEach(function (n) {
+        var left = +n.getAttribute("data-until") - Date.now();
+        if (left <= 0) expired = true; else n.textContent = fmtLeft(left);
+      });
+      if (expired) renderItems();
+    }, 1000);
+  }
+  function _reward(k) { var it = ITEMS.filter(function (x) { return x.kind === k; })[0]; return it ? it.label : k; }
+  function cacheItems() { try { localStorage.setItem("ctf-items-" + course, JSON.stringify(ITEMS)); } catch (e) {} }
+  async function loadItems() {
+    var s = sess();
+    if (!ONLINE || !s) return;
+    try {
+      var d = await AUTH.rpc("ctf_my_items", { p_student: s.studentId });
+      ITEMS = (d && d.items) || []; cacheItems(); renderItems();
+    } catch (e) { /* reward-items.sql not run yet: keep the card hidden */ }
+  }
+
+  /* Use flow: open -> hold the button to commit -> confirmation (or reveal). */
+  function openUse(id) {
+    var it = ITEMS.filter(function (x) { return x.id === id; })[0]; if (!it) return;
+    itemCss();
+    var mt = meta(it.kind);
+    var run = mt.type === "timed" && activeRun(it.kind);
+    var ov = document.createElement("div"); ov.id = "pfUseOv";
+    ov.style.cssText = "position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.66);display:flex;align-items:center;justify-content:center;padding:20px;";
+    var close = function () { ov.remove(); };
+    ov.onclick = function (e) { if (e.target === ov) close(); };
+    ov.innerHTML = '<div class="card" style="max-width:420px;width:100%;padding:26px;text-align:center;animation:pfPop .25s ease;">' +
+      '<div id="pfUseBody">' +
+        '<div style="display:flex;justify-content:center;margin-bottom:14px;">' + tagBox(it.kind, 72) + '</div>' +
+        '<div style="font-size:20px;font-weight:800;color:var(--bright);">' + esc(it.label) + '</div>' +
+        '<div style="font-size:13px;color:var(--dim);line-height:1.6;margin:8px 0 6px;">' + esc(mt.desc) + '</div>' +
+        (run ? '<div class="mono" style="font-size:11px;color:' + mt.col + ';margin-bottom:6px;">One is already running. This adds its time after it ends.</div>' : '') +
+        (mt.type === "charge" ? '<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:6px;">Once armed, it triggers by itself on the CTF page.</div>' : '') +
+        '<button id="pfHold" class="mono" style="position:relative;overflow:hidden;width:100%;margin-top:14px;padding:16px 0;border-radius:12px;border:1px solid ' + mt.col + ';' +
+          'background:transparent;color:var(--bright);font-weight:800;font-size:14px;letter-spacing:1.5px;cursor:pointer;user-select:none;touch-action:none;">' +
+          '<span id="pfFill" style="position:absolute;left:0;top:0;bottom:0;width:0;background:' + mt.col + ';opacity:.28;"></span>' +
+          '<span style="position:relative;">HOLD TO ' + verb(it.kind).toUpperCase() + '</span></button>' +
+        '<div id="pfUseErr" class="mono" style="font-size:12px;color:var(--adv2,#ff6b6b);min-height:16px;margin-top:10px;"></div>' +
+        '<button id="pfCancelUse" class="mono" style="margin-top:4px;background:none;border:none;color:var(--faint);font-size:12px;cursor:pointer;">cancel</button>' +
+      '</div></div>';
+    document.body.appendChild(ov);
+    el("pfCancelUse").onclick = close;
+
+    var btn = el("pfHold"), fill = el("pfFill"), t0 = 0, raf = null, fired = false, HOLD = 900;
+    function step() {
+      var p = Math.min(1, (Date.now() - t0) / HOLD);
+      fill.style.width = (p * 100) + "%";
+      if (p >= 1) { fired = true; commit(); return; }
+      raf = requestAnimationFrame(step);
+    }
+    function start(e) { if (fired) return; e.preventDefault(); t0 = Date.now(); raf = requestAnimationFrame(step); }
+    function stop() { if (fired) return; cancelAnimationFrame(raf); fill.style.transition = "width .2s"; fill.style.width = "0"; setTimeout(function () { fill.style.transition = ""; }, 200); }
+    btn.addEventListener("pointerdown", start);
+    ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { btn.addEventListener(ev, stop); });
+    btn.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && !t0) start(e); });
+    btn.addEventListener("keyup", function (e) { if (e.key === "Enter" || e.key === " ") { stop(); t0 = 0; } });
+
+    async function commit() {
+      btn.disabled = true; btn.lastChild.textContent = "WORKING\u2026";
+      var s = sess();
+      try {
+        var r = await AUTH.rpc("ctf_use_item", { p_student: s.studentId, p_item: id });
+        ITEMS = ITEMS.map(function (x) { return x.id === id ? Object.assign({}, x, r.item) : x; });
+        if (r.reveal) ITEMS.unshift(r.reveal);
+        cacheItems();
+        if (it.kind === "xp500") {
+          var st = API.getState ? API.getState() : null;
+          if (st) {
+            st.bonus = Math.max((st.bonus || 0) + 500, r.bonus || 0);
+            st.xpLog = st.xpLog || []; st.xpLog.push({ ts: Date.now(), delta: 500, reason: "Reward item: +500 Bonus XP" });
+            try { localStorage.setItem(API.stateKey, JSON.stringify(st)); } catch (e) {}
+          }
+        }
+        if (it.kind === "mystery" && r.reveal) reveal(r.reveal); else confirmDone(r.item);
+      } catch (e) {
+        fired = false; btn.disabled = false; btn.lastChild.textContent = "HOLD TO " + verb(it.kind).toUpperCase(); fill.style.width = "0";
+        el("pfUseErr").textContent = "Couldn't use that item: " + ((e && e.message) || "try again");
+      }
+    }
+    function doneBtn() {
+      return '<button id="pfDone" class="mono" style="width:100%;margin-top:18px;padding:12px 0;border-radius:10px;border:none;background:var(--accent);color:#04121e;font-weight:800;font-size:13px;letter-spacing:1px;cursor:pointer;">DONE</button>';
+    }
+    function confirmDone(item) {
+      var line = mt.type === "timed" ? "Running until " + fmtEnd(Date.parse(item.expires_at)) + "."
+        : mt.type === "charge" ? "Ready. It triggers by itself on the CTF page."
+        : it.kind === "xp500" ? "+500 XP added to your score."
+        : "Marked redeemed. Show your teacher.";
+      el("pfUseBody").innerHTML =
+        '<div style="width:72px;height:72px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid ' + mt.col + ';color:' + mt.col + ';font-size:34px;font-weight:800;animation:pfPop .35s ease,pfGlow 1.4s ease 1;">\u2713</div>' +
+        '<div class="mono" style="font-size:12px;letter-spacing:2px;color:' + mt.col + ';font-weight:700;">' + mt.done + '</div>' +
+        '<div style="font-size:20px;font-weight:800;color:var(--bright);margin-top:6px;">' + esc(it.label) + '</div>' +
+        '<div style="font-size:13px;color:var(--dim);line-height:1.6;margin-top:8px;">' + esc(line) + '</div>' + doneBtn();
+      el("pfDone").onclick = function () { close(); boot(); };
+    }
+    function reveal(nu) {
+      var nm = meta(nu.kind);
+      el("pfUseBody").innerHTML = '<div id="pfBox" style="display:flex;justify-content:center;margin:10px 0 16px;animation:pfShake .5s ease 2;">' + tagBox("mystery", 84) + '</div>' +
+        '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--faint);">OPENING\u2026</div>';
+      setTimeout(function () {
+        el("pfUseBody").innerHTML =
+          '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--accent2);font-weight:700;">YOU GOT</div>' +
+          '<div style="display:flex;justify-content:center;margin:14px 0;animation:pfPop .4s ease;color:' + nm.col + ';"><span style="border-radius:20px;animation:pfGlow 1.4s ease 1;">' + tagBox(nu.kind, 84) + '</span></div>' +
+          '<div style="font-size:20px;font-weight:800;color:var(--bright);">' + esc(nu.label) + '</div>' +
+          '<div style="font-size:13px;color:var(--dim);line-height:1.6;margin-top:8px;">' + esc(nm.desc) + '</div>' +
+          '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:8px;">It\u2019s in your items, ready to use.</div>' + doneBtn();
+        el("pfDone").onclick = function () { close(); boot(); };
+      }, 1100);
+    }
+  }
+
   /* ---- boot -------------------------------------------------------------- */
   function css() {
     if (document.getElementById("pfCss")) return;
@@ -337,8 +581,10 @@
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start;">' +
         identityCard() + xpCard() +
       '</div>' +
-      badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
+      itemsCard() + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
     wireIdentity();
+    if (ITEMS.length) renderItems();
+    loadItems();
     loadObjectives();
     loadLb();
   }

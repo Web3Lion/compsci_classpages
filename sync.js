@@ -58,7 +58,9 @@
     a = a || {}; b = b || {};
     var last = (String(a.last || "") >= String(b.last || "")) ? a.last : b.last;
     var newer = (String(a.last || "") >= String(b.last || "")) ? a : b;
-    return { last: last || null, count: newer.count || 0, best: Math.max(a.best || 0, b.best || 0) };
+    var out = { last: last || null, count: newer.count || 0, best: Math.max(a.best || 0, b.best || 0) };
+    if (newer.broke) out.broke = newer.broke;
+    return out;
   }
   function mergeState(local, server) {
     server = server || {};
@@ -207,6 +209,14 @@
     }).catch(function () { return null; });
   };
 
+  window.CTF_CONSUME_ITEM = function (id) {
+    var sess = loadSess(); if (!sess || !id) return;
+    AUTH.rpc("ctf_consume_item", { p_student: sess.studentId, p_item: id }).catch(function () {});
+  };
+  window.CTF_LOOT = function (p) {
+    var sess = loadSess(); if (!sess || !p || !p.key) return Promise.resolve(null);
+    return AUTH.rpc("ctf_loot_roll", { p_student: sess.studentId, p_key: p.key }).catch(function () { return null; });
+  };
   window.CTF_REPORT = function (p) {
     scheduleSync();
     if (!p || !p.challengeId) return;
@@ -235,6 +245,16 @@
       try { localStorage.setItem(SQKEY, JSON.stringify(d)); } catch (e) {}
     }
     if (API.rerender) API.rerender();
+  }
+  /* Reward items (reward-items.sql): cached so the engine can apply 2x XP and
+     Streak Freeze without a network call on every capture. */
+  function loadItems() {
+    var sess = loadSess(); if (!sess) return;
+    AUTH.rpc("ctf_my_items", { p_student: sess.studentId }).then(function (d) {
+      if (!d || !Array.isArray(d.items)) return;
+      try { localStorage.setItem("ctf-items-" + course, JSON.stringify(d.items)); } catch (e) {}
+      if (API.itemsChanged) API.itemsChanged();
+    }).catch(function () {});
   }
   function loadSquads() {
     var sess = loadSess(); if (!sess) return;
@@ -426,6 +446,7 @@
       flushVocab();
       loadGates();
       loadSquads();
+      loadItems();
     }
     // only celebrate an interactive sign-in, never a silent background resume
     if (celebrate && art()) art().granted(course, reveal); else reveal();
@@ -436,7 +457,7 @@
     applyCachedGates();          // last known persona state, so a returning student keeps their guide
     // Already bound on this device? Show the arena immediately, verify quietly.
     var sess = loadSess();
-    if (sess) { decorate(); scheduleSync(); touchDay(); flushVocab(); loadGates(); loadSquads(); }
+    if (sess) { decorate(); scheduleSync(); touchDay(); flushVocab(); loadGates(); loadSquads(); loadItems(); }
 
     var u;
     try { u = await AUTH.requireSchool(); }
