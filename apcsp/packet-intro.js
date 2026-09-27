@@ -4,6 +4,7 @@
    A random variant plays once per page load on the CTF arena AND the formal
    course pages (index / vocab / syllabus / news). Guide: ADA. */
 (function () {
+  if (window.SITE_REDUCED_MOTION && window.SITE_REDUCED_MOTION()) return;   // A11Y: reduce motion skips the intro
   /* The animation is course flavour and always plays. The guide's NAME is the
      only part that waits for the teacher's switch — until then the readout is
      labelled neutrally, so students meet the character for the first time in
