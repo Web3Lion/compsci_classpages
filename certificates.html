@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=2.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="omelette-owns-print" content="1">
+<title>Certificates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#6a84a0;--accent:#00b3ff;--amber:#ffcf5c;--ink:#0e1622;--cacc:#0a74d6;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5a6c80;--faint:#6f8196;--accent:#0a74d6;--amber:#8a6a00;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+a{color:var(--accent);} a:hover{color:var(--bright);}
+.mono{font-family:'JetBrains Mono',monospace;}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.wrap{max-width:1400px;margin:0 auto;padding:22px clamp(14px,2.5vw,32px) 60px;display:grid;grid-template-columns:minmax(280px,380px) minmax(0,1fr);gap:24px;align-items:start;}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);}}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.lbl{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin:16px 0 8px;}
+.lbl:first-child{margin-top:0;}
+select,input[type=text],input[type=date]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;min-height:44px;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;letter-spacing:.5px;padding:12px 18px;min-height:46px;border-radius:10px;border:1px solid var(--border3);background:transparent;color:var(--bright);cursor:pointer;}
+.btn.pri{border-color:var(--amber);background:var(--amber);color:#1a1200;}
+.who{max-height:320px;overflow:auto;border:1px solid var(--border2);border-radius:10px;}
+.who label{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border2);font-size:13px;min-height:44px;}
+.who label:last-child{border-bottom:none;}
+.who input[type=text]{min-height:34px;padding:6px 8px;font-size:12px;}
+#sheets{display:flex;flex-direction:column;gap:22px;align-items:center;}
+.cert{width:11in;height:8.5in;background:#fff;color:var(--ink);position:relative;box-shadow:0 20px 60px -24px rgba(0,0,0,.6);transform-origin:top center;flex:none;overflow:hidden;}
+.cert .frame{position:absolute;inset:.42in;border:3px solid var(--cacc);border-radius:6px;}
+.cert .frame2{position:absolute;inset:.56in;border:1px solid color-mix(in oklab,var(--cacc) 45%,#fff);border-radius:4px;}
+.cert .grid{position:absolute;inset:0;background-image:linear-gradient(color-mix(in oklab,var(--cacc) 7%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in oklab,var(--cacc) 7%,transparent) 1px,transparent 1px);background-size:.25in .25in;opacity:.6;}
+.cert .in{position:absolute;inset:.9in 1.1in;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.cert .kick{font-family:'JetBrains Mono',monospace;font-size:12pt;letter-spacing:4px;color:var(--cacc);text-transform:uppercase;font-weight:700;}
+.cert h2{font-size:38pt;font-weight:800;letter-spacing:-.5px;margin:.22in 0 .06in;color:var(--ink);}
+.cert .sub{font-size:13pt;color:#48566a;}
+.cert .name{font-size:44pt;font-weight:800;color:var(--cacc);margin:.2in 0 .1in;line-height:1.05;max-width:100%;overflow-wrap:anywhere;}
+.cert .why{font-size:16pt;color:#26313f;line-height:1.45;max-width:7.6in;text-wrap:pretty;}
+.cert .foot{margin-top:auto;display:grid;grid-template-columns:1fr auto 1fr;gap:.4in;width:100%;align-items:end;}
+.cert .sig{border-top:1.5px solid #26313f;padding-top:6px;font-size:11pt;color:#48566a;}
+.cert .sig b{display:block;color:var(--ink);font-size:13pt;margin-bottom:2px;}
+.cert .seal{width:1.15in;height:1.15in;border-radius:50%;border:3px solid var(--cacc);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:10pt;color:var(--cacc);letter-spacing:1px;text-align:center;line-height:1.2;}
+.cert .brand{position:absolute;bottom:.64in;left:0;right:0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:8.5pt;color:#6f8196;letter-spacing:1px;}
+@media print{
+  @page{size:letter landscape;margin:0;}
+  html,body{background:#fff !important;}
+  .noprint,.themebtn{display:none !important;}
+  .wrap{display:block;padding:0;max-width:none;}
+  #sheets{gap:0;}
+  .cert{box-shadow:none;transform:none !important;margin:0 !important;break-after:page;page-break-after:always;}
+  .cert:last-child{break-after:auto;page-break-after:auto;}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div class="noprint">
+    <a class="mono" href="teacher.html" style="font-size:12px;color:var(--dim);text-decoration:none;display:inline-block;padding:10px 0;">&larr; Teacher dashboard</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;">&gt; ./certificates</div>
+    <h1 class="mono" style="font-size:26px;font-weight:800;color:var(--bright);margin:6px 0 14px;">Certificates</h1>
+    <div id="gate" class="panel mono" style="font-size:13px;color:var(--dim);">Checking teacher sign-in…</div>
+    <div id="form" class="panel" style="display:none;">
+      <label class="lbl" for="cls">Class</label><select id="cls"></select>
+      <label class="lbl" for="kind">Certificate</label>
+      <select id="kind">
+        <option value="module">Module complete</option>
+        <option value="weekly">Weekly top 3 (Hall of Fame)</option>
+        <option value="course">Course complete</option>
+        <option value="duel">Duel champion</option>
+        <option value="custom">Custom</option>
+      </select>
+      <div id="modBox"><label class="lbl" for="mod">Module</label><select id="mod"></select></div>
+      <div id="weekBox" style="display:none;"><label class="lbl" for="week">Week</label><select id="week"></select></div>
+      <div id="customBox" style="display:none;">
+        <label class="lbl" for="cTitle">Title</label><input type="text" id="cTitle" value="Certificate of Achievement">
+        <label class="lbl" for="cWhy">Reason</label><input type="text" id="cWhy" placeholder="for outstanding work on the incident response lab">
+      </div>
+      <label class="lbl" for="sig">Signed by</label><input type="text" id="sig" placeholder="Teacher name">
+      <label class="lbl" for="date">Date</label><input type="date" id="date">
+      <label class="lbl">Recipients <span id="whoHint" style="text-transform:none;letter-spacing:0;color:var(--dim);"></span></label>
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+        <button type="button" class="btn" id="allBtn" style="padding:8px 12px;min-height:38px;font-size:11px;">SELECT ALL</button>
+        <button type="button" class="btn" id="noneBtn" style="padding:8px 12px;min-height:38px;font-size:11px;">CLEAR</button>
+        <button type="button" class="btn" id="suggestBtn" style="padding:8px 12px;min-height:38px;font-size:11px;">SUGGEST</button>
+      </div>
+      <div class="who" id="who"></div>
+      <div class="mono" style="font-size:11px;color:var(--faint);line-height:1.6;margin-top:8px;">Names default to the roster's full name when one is on file, otherwise the student's handle. Edit any name before printing.</div>
+      <div style="display:flex;gap:10px;margin-top:16px;align-items:center;flex-wrap:wrap;">
+        <button type="button" class="btn pri" id="printBtn">PRINT / SAVE PDF</button>
+        <span class="mono" id="count" style="font-size:12px;color:var(--dim);"></span>
+      </div>
+    </div>
+  </div>
+  <div id="sheets" aria-label="Certificate preview"></div>
+</div>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script src="config.js?v=2.0.0"></script>
+<script src="supabase-config.js?v=2.0.0"></script>
+<script src="auth.js?v=2.0.0"></script>
+<script>
+(function(){
+  var AUTH = window.CTF_AUTH;
+  var COURSE = {
+    cyber1:{ label:"Cybersecurity 1", acc:"#0a74d6" }, cyber2:{ label:"AP Cybersecurity 2", acc:"#137a3c" },
+    cyber3:{ label:"Cybersecurity 3", acc:"#8a6a00" }, apcsp:{ label:"AP Computer Science Principles", acc:"#6a2fd0" },
+    web3:{ label:"Intro to Web 3.0", acc:"#b35c00" }
+  };
+  var CLASSES = [], CUR = null, ROSTER = [], NAMES = {}, WINNERS = [], SEL = {}, NAME_EDIT = {};
+  function el(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  function ord(n){ return ["1st","2nd","3rd"][n-1] || n + "th"; }
+  el("date").value = new Date().toISOString().slice(0,10);
+  try{ el("sig").value = localStorage.getItem("cert-sig") || ""; }catch(e){}
+  el("sig").oninput = function(){ try{ localStorage.setItem("cert-sig", el("sig").value); }catch(e){} paint(); };
+
+  function cfg(){ return ((window.COURSE_CONFIG||{})[CUR.course]||{}); }
+  function nameFor(id){ if (NAME_EDIT[id] != null) return NAME_EDIT[id]; var r = ROSTER.filter(function(x){ return x.id === id; })[0]; return NAMES[id] || (r ? r.handle : ""); }
+  function kind(){ return el("kind").value; }
+  function syncKindUI(){
+    var k = kind();
+    el("modBox").style.display = k === "module" ? "" : "none";
+    el("weekBox").style.display = k === "weekly" ? "" : "none";
+    el("customBox").style.display = k === "custom" ? "" : "none";
+    el("whoHint").textContent = k === "weekly" ? "\u00b7 top 3 picked from the Hall of Fame" : k === "course" ? "\u00b7 Suggest = every flag captured" : "";
+  }
+  el("kind").onchange = function(){ syncKindUI(); if (kind() === "weekly") suggest(); paint(); };
+  el("mod").onchange = paint; el("date").onchange = paint; el("cTitle").oninput = paint; el("cWhy").oninput = paint;
+  el("week").onchange = function(){ suggest(); paint(); };
+  el("cls").onchange = function(){ pick(el("cls").value); };
+  el("allBtn").onclick = function(){ ROSTER.forEach(function(r){ SEL[r.id] = true; }); renderWho(); paint(); };
+  el("noneBtn").onclick = function(){ SEL = {}; renderWho(); paint(); };
+  el("suggestBtn").onclick = function(){ suggest(); };
+  el("printBtn").onclick = function(){ if (!Object.keys(SEL).filter(function(k){ return SEL[k]; }).length){ alert("Pick at least one recipient."); return; } window.print(); };
+
+  function suggest(){
+    var k = kind(); SEL = {};
+    if (k === "weekly"){
+      var wk = el("week").value, byH = {}; ROSTER.forEach(function(r){ byH[String(r.handle).toLowerCase()] = r.id; });
+      WINNERS.filter(function(w){ return w.week_start === wk; }).forEach(function(w){ var id = byH[String(w.handle).toLowerCase()]; if (id) SEL[id] = w.pos; });
+    } else if (k === "course"){
+      ROSTER.forEach(function(r){ if (r.total_count && r.solved_count >= r.total_count) SEL[r.id] = true; });
+    }
+    renderWho(); paint();
+  }
+  async function pick(id){
+    CUR = CLASSES.filter(function(c){ return c.id === id; })[0]; if (!CUR) return;
+    SEL = {}; NAME_EDIT = {}; NAMES = {}; ROSTER = []; WINNERS = [];
+    document.documentElement.style.setProperty("--cacc", (COURSE[CUR.course] || COURSE.cyber1).acc);
+    try{ ROSTER = await AUTH.rpc("ctf_t_roster",{p_class:id}) || []; }catch(e){}
+    ROSTER.sort(function(a,b){ return String(a.handle).localeCompare(String(b.handle)); });
+    try{ var ex = await AUTH.rpc("ctf_t_roster_expected",{p_class:id}) || []; (Array.isArray(ex)?ex:[]).forEach(function(r){ if (r.student_id && r.full_name) NAMES[r.student_id] = r.full_name; }); }catch(e){}
+    try{ WINNERS = await AUTH.rpc("ctf_t_weekly_winners",{p_class:id}) || []; }catch(e){}
+    if (!Array.isArray(WINNERS)) WINNERS = [];
+    var mods = ((cfg().ctf||{}).modules)||[];
+    el("mod").innerHTML = mods.map(function(n,i){ return '<option value="'+(i+1)+'">Module '+(i+1)+' \u2014 '+esc(n)+'</option>'; }).join("") || '<option value="1">Module 1</option>';
+    var weeks = []; WINNERS.forEach(function(w){ if (weeks.indexOf(w.week_start) === -1) weeks.push(w.week_start); });
+    weeks.sort().reverse();
+    el("week").innerHTML = weeks.map(function(w){ return '<option value="'+esc(w)+'">Week of '+new Date(w+"T00:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})+'</option>'; }).join("") || '<option value="">No weeks recorded yet</option>';
+    renderWho(); if (kind() === "weekly") suggest(); else paint();
+  }
+  function renderWho(){
+    el("who").innerHTML = ROSTER.length ? ROSTER.map(function(r){
+      return '<label><input type="checkbox" class="wk" data-id="'+esc(r.id)+'"'+(SEL[r.id]?' checked':'')+' aria-label="Include '+esc(r.handle)+'">' +
+        '<span style="display:flex;flex-direction:column;gap:4px;min-width:0;"><span class="mono" style="font-size:11px;color:var(--dim);">'+esc(r.handle)+(typeof SEL[r.id]==="number"?' \u00b7 '+ord(SEL[r.id]):'')+'</span>' +
+        '<input type="text" class="nm" data-id="'+esc(r.id)+'" value="'+esc(nameFor(r.id))+'" aria-label="Name printed for '+esc(r.handle)+'"></span></label>';
+    }).join("") : '<div class="mono" style="padding:12px;font-size:12px;color:var(--faint);">No students in this class.</div>';
+    el("who").querySelectorAll(".wk").forEach(function(c){ c.onchange = function(){ var id = c.getAttribute("data-id"); if (c.checked) SEL[id] = SEL[id] || true; else delete SEL[id]; paint(); }; });
+    el("who").querySelectorAll(".nm").forEach(function(i){ i.oninput = function(){ NAME_EDIT[i.getAttribute("data-id")] = i.value; paint(); }; });
+  }
+  function certCopy(id){
+    var k = kind(), c = cfg(), ctf = c.ctf || {}, mods = ctf.modules || [];
+    var courseLbl = (COURSE[CUR.course]||{}).label || CUR.course;
+    if (k === "module"){ var m = +el("mod").value; return { title:"Module Complete", why:"for capturing every flag in Module " + m + (mods[m-1] ? " \u2014 " + mods[m-1] : "") + " of " + courseLbl + ".", seal:"MODULE<br>" + m }; }
+    if (k === "weekly"){ var p = typeof SEL[id] === "number" ? SEL[id] : null, wk = el("week").value;
+      return { title: p ? ord(p) + " Place" : "Hall of Fame", why:"on the " + courseLbl + " leaderboard" + (wk ? " for the week of " + new Date(wk+"T00:00:00").toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"}) : "") + ".", seal: p ? ord(p).toUpperCase() + "<br>PLACE" : "HALL OF<br>FAME" }; }
+    if (k === "course") return { title:"Course Complete", why:"for capturing every flag in " + (ctf.title || "the " + courseLbl + " arena") + " and completing " + courseLbl + ".", seal:"COURSE<br>COMPLETE" };
+    if (k === "duel") return { title:"Duel Champion", why:"for winning the head-to-head duel bracket in " + courseLbl + ".", seal:"DUEL<br>CHAMP" };
+    return { title: el("cTitle").value || "Certificate of Achievement", why: el("cWhy").value || "", seal:"AWARD" };
+  }
+  function paint(){
+    if (!CUR) return;
+    var ids = ROSTER.filter(function(r){ return SEL[r.id]; }).map(function(r){ return r.id; });
+    el("count").textContent = ids.length + " certificate" + (ids.length === 1 ? "" : "s");
+    var d = el("date").value ? new Date(el("date").value + "T00:00:00").toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"}) : "";
+    var sig = el("sig").value, ctf = cfg().ctf || {};
+    var courseLbl = (COURSE[CUR.course]||{}).label || CUR.course;
+    var list = ids.length ? ids : [null];
+    el("sheets").innerHTML = list.map(function(id){
+      var cp = certCopy(id), nm = id ? nameFor(id) : "Student Name";
+      return '<div class="cert"' + (id ? '' : ' style="opacity:.55;"') + '><div class="grid"></div><div class="frame"></div><div class="frame2"></div><div class="in">' +
+        '<div class="kick">South Fayette \u00b7 ' + esc(courseLbl) + '</div>' +
+        '<h2>' + esc(cp.title) + '</h2>' +
+        '<div class="sub">This certifies that</div>' +
+        '<div class="name">' + esc(nm) + '</div>' +
+        '<div class="why">' + esc(cp.why) + '</div>' +
+        '<div class="foot"><div class="sig"><b>' + esc(sig || "\u00a0") + '</b>Instructor</div><div class="seal">' + cp.seal + '</div><div class="sig"><b>' + esc(d || "\u00a0") + '</b>Date</div></div>' +
+        '</div><div class="brand">' + esc(ctf.title || "Capture the Flag") + '</div></div>';
+    }).join("");
+    fit();
+  }
+  function fit(){
+    var host = el("sheets"), w = host.clientWidth, s = Math.min(1, w / (11 * 96));
+    host.querySelectorAll(".cert").forEach(function(c){ c.style.transform = "scale(" + s + ")"; c.style.marginBottom = (-(1 - s) * 8.5 * 96) + "px"; });
+  }
+  window.addEventListener("resize", fit);
+
+  (async function(){
+    if (!AUTH || !AUTH.online){ el("gate").textContent = "Connect the class backend (supabase-config.js) to print certificates."; return; }
+    try{ CLASSES = await AUTH.rpc("ctf_t_classes") || []; }catch(e){ CLASSES = null; }
+    if (!Array.isArray(CLASSES)){ el("gate").innerHTML = 'Sign in on the <a href="teacher.html">teacher dashboard</a> first.'; return; }
+    if (!CLASSES.length){ el("gate").textContent = "No classes yet."; return; }
+    el("gate").style.display = "none"; el("form").style.display = "block";
+    el("cls").innerHTML = CLASSES.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>'; }).join("");
+    var q = new URLSearchParams(location.search).get("class");
+    var id = (q && CLASSES.some(function(c){ return c.id === q; })) ? q : CLASSES[0].id;
+    el("cls").value = id; syncKindUI(); pick(id);
+  })();
+})();
+</script>
+</body>
+</html>

@@ -124,6 +124,11 @@
       if (before !== after && API.rerender) API.rerender();
       // the guide may have just been switched on for this class
       if (window.CTF_PERSONA === true && API.personaWake) API.personaWake();
+      // scheduled unlock pending (scheduled-unlocks.sql): re-read the gates right when it opens
+      if (g && g.next_unlock) {
+        var wait = Date.parse(g.next_unlock) - Date.now() + 3000;
+        if (wait > 0 && wait < 12 * 3600 * 1000) { clearTimeout(loadGates._t); loadGates._t = setTimeout(loadGates, wait); }
+      }
     }).catch(function () {});
   }
 
@@ -483,6 +488,22 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
+
+  /* Class Pulse heartbeat (class-pulse.sql): which flag is open, misses, combo.
+     Only while the tab is visible, so a forgotten background tab reads as away. */
+  function pulsePing() {
+    var sess = loadSess(); if (!sess || document.hidden) return;
+    var af = (API.activeFlag && API.activeFlag()) || null, cb = (API.combo && API.combo()) || { mult: 1 };
+    AUTH.rpc("ctf_presence_ping", { p_student: sess.studentId, p_page: "arena",
+      p_flag: af ? af.key : null, p_title: af ? af.title : null, p_misses: af ? af.misses : 0, p_combo: cb.mult || 1 })
+      .catch(function () {});
+  }
+  setTimeout(pulsePing, 4000);
+  setInterval(pulsePing, 30000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) pulsePing(); });
+  document.addEventListener("click", function (e) {
+    if (e.target && e.target.closest && e.target.closest(".chalName,.flagStart")) setTimeout(pulsePing, 400);
+  }, true);
   // the engine re-renders the stats card on every solve; re-apply the chip
   document.addEventListener("click", function () { setTimeout(decorate, 60); }, true);
 })();

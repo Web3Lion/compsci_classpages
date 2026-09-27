@@ -175,6 +175,45 @@
       const s = Date.parse(it.starts_at), e = Date.parse(it.expires_at); if (s <= now && e > now) u = Math.max(u, e); });
     return u; }
   function xpMult(){ let m = activeUntil("xp2x") ? 2 : 1; if (activeUntil("squad")) m *= 1.5; return m; }
+  /* COMBO — consecutive captures without a wrong answer. The 2nd capture in a
+     row pays 1.1x, rising 0.1 per capture to a 1.5x cap. One miss resets it. */
+  const COMBO_MAX = 5;
+  function comboCount(){ return (state && state.combo && state.combo.n) || 0; }
+  function comboMult(n){ n = n == null ? comboCount() : n; return Math.round((1 + 0.1 * Math.min(n, COMBO_MAX)) * 10) / 10; }
+  function comboBreak(){
+    if (!comboCount()) return;
+    const was = comboMult();
+    state.combo = { n: 0, broke: Date.now() }; save(state);
+    if (was > 1) setTimeout(() => itemToast("COMBO BROKEN", "\u00d7" + was.toFixed(1) + " lost \u2014 build it back up."), 200);
+  }
+  function isSaved(id){ return !!((state && state.bookmarks) || {})[id]; }
+  function toggleSaved(id){ state.bookmarks = state.bookmarks || {}; if (state.bookmarks[id]) delete state.bookmarks[id]; else state.bookmarks[id] = Date.now(); save(state); }
+  /* Active-boost pill (arena only): a live countdown for every running timed item. */
+  (function boostPill(){
+    if (/profile\.html/.test(location.pathname)) return;
+    const LAB = { xp2x:"\u26a1 2x XP", freeze:"\u2744 Streak Freeze", squad:"\u2726 Squad Surge" };
+    function left(ms){ let s = Math.max(0, Math.floor(ms/1000)); const d = Math.floor(s/86400); s -= d*86400; const h = Math.floor(s/3600); s -= h*3600; const m = Math.floor(s/60); s -= m*60;
+      return d ? d+"d "+h+"h" : h ? h+"h "+m+"m" : m+"m "+String(s).padStart(2,"0")+"s"; }
+    function tick(){
+      const now = Date.now(), runs = {};
+      rewardItems().forEach(it => { if (!it.starts_at || !it.expires_at) return;
+        const s = Date.parse(it.starts_at), e = Date.parse(it.expires_at);
+        if (s <= now && e > now) runs[it.kind] = Math.max(runs[it.kind] || 0, e); });
+      let box = document.getElementById("ctfBoosts");
+      const kinds = Object.keys(runs);
+      if (!kinds.length){ if (box) box.remove(); return; }
+      if (!box){
+        if (!document.body) return;
+        box = document.createElement("a"); box.id = "ctfBoosts"; box.href = "profile.html#pfItems"; box.title = "Active boosts \u2014 open your profile";
+        box.style.cssText = "position:fixed;left:14px;bottom:14px;z-index:9000;display:flex;flex-direction:column;gap:6px;text-decoration:none;";
+        document.body.appendChild(box);
+      }
+      box.innerHTML = kinds.map(k => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;letter-spacing:.5px;padding:8px 14px;border-radius:999px;background:var(--panel,#111);color:var(--bright,#fff);border:1px solid var(--accent,#0ff);box-shadow:0 0 18px -4px var(--accent,#0ff);white-space:nowrap;">' +
+        (LAB[k] || k) + ' \u00b7 ' + left(runs[k] - now) + '</span>').join("");
+    }
+    setInterval(tick, 1000);
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tick); else setTimeout(tick, 0);
+  })();
   // Charges: used on the profile = armed; spent here, oldest first.
   function armedItems(kind){ const sp = (state && state.itemSpent) || {};
     return rewardItems().filter(it => it.kind === kind && it.used_at && !it.consumed_at && !it.expires_at && !it.shared && !sp[it.id])
@@ -545,6 +584,12 @@
   };
   window.CTF.tierColor = tierColor;
   window.CTF.xpMult = xpMult;
+  window.CTF.combo = function () { return { n: comboCount(), mult: comboMult() }; };
+  window.CTF.activeFlag = function () {
+    try { const k = activeFlagKey(); if (!k) return null;
+      const c = (ctf.challenges || []).filter(x => x.id === String(k).split("#")[0])[0];
+      return { key: k, title: c ? c.title : k, misses: state.retry[k] || 0 }; } catch (e) { return null; }
+  };
   // sync.js calls this after fetching items: a freeze used on another device may
   // mean the streak that reset at boot should have survived.
   window.CTF.itemsChanged = function () {
@@ -751,6 +796,7 @@
     const key = keyOf(chal, li);
     reportAttempt(chal, li, key, false, txt);
     state.retry[key] = (state.retry[key] || 0) + 1;
+    comboBreak();
     const cd = startCool(chal, li, key);
     // push the clock past the lockout so waiting it out costs no XP
     timers[key] = Date.now() + cd * 1000;
@@ -766,19 +812,36 @@
       const key = el.getAttribute("data-key"), base = +el.getAttribute("data-base");
       const cap = capFor(key), rtxt = (state.retry[key] || 0) ? ` \u00b7 retry cap \u2212${Math.round((1 - cap) * 100)}%` : "";
       const hm = hintMult(key), htxt = hintMult(key) < 1 ? ` \u00b7 hint \u2212${Math.round(HINT_COST * 100)}%` : "";
+      const ctxt = comboMult() > 1 ? ` \u00b7 <span style="color:var(--amber);">combo \u00d7${comboMult().toFixed(1)}</span>` : "";
       const cd = coolLeft(key);
       const form = el.parentNode ? el.parentNode.querySelector(".ctfForm") : null;
       const sub = form ? form.querySelector('button[type="submit"]') : null;
       if (sub) { sub.disabled = !!cd; sub.style.opacity = cd ? ".45" : ""; sub.style.cursor = cd ? "not-allowed" : "pointer"; }
-      if (cd) { el.innerHTML = `\u23f3 <span style="color:var(--adv2);font-weight:700;">${cd}s</span> lockout after a wrong answer \u00b7 still worth <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span> when it lifts${rtxt}${htxt}`; return; }
-      if (!timers[key]) { el.innerHTML = `\u23f1 full value once you begin \u00b7 up to <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span> \u00b7 decays 1 XP/hr, floor ${Math.round(XP_FLOOR_PCT*100)}%${rtxt}${htxt}`; return; }
+      if (cd) { el.innerHTML = `\u23f3 <span style="color:var(--adv2);font-weight:700;">${cd}s</span> lockout after a wrong answer \u00b7 still worth <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span> when it lifts${rtxt}${htxt}${ctxt}`; return; }
+      if (!timers[key]) { el.innerHTML = `\u23f1 full value once you begin \u00b7 up to <span style="color:var(--amber);font-weight:700;">${Math.max(1, Math.round(base * cap * hm))} XP</span> \u00b7 decays 1 XP/hr, floor ${Math.round(XP_FLOOR_PCT*100)}%${rtxt}${htxt}${ctxt}`; return; }
       const sec = (Date.now() - timers[key]) / 1000;
       const earn = Math.max(1, Math.round(decayedPoints(base, sec) * cap * hm));
       const hrs = sec / 3600;
-      el.innerHTML = `\u23f1 decaying \u00b7 <span style="color:var(--amber);font-weight:700;">${hrs < 0.1 ? "just started" : hrs.toFixed(1) + "h elapsed"}</span> \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now (floor ${Math.round(XP_FLOOR_PCT*100)}%)${rtxt}${htxt}`;
+      el.innerHTML = `\u23f1 decaying \u00b7 <span style="color:var(--amber);font-weight:700;">${hrs < 0.1 ? "just started" : hrs.toFixed(1) + "h elapsed"}</span> \u00b7 worth <span style="color:var(--amber);font-weight:700;">${earn} XP</span> now (floor ${Math.round(XP_FLOOR_PCT*100)}%)${rtxt}${htxt}${ctxt}`;
     });
   }
-  function startTicks() { if (tickTimer) clearInterval(tickTimer); tickTimer = setInterval(updateTimers, 250); updateTimers(); }
+  function valueNow(key, base) {
+    const sec = (timers[key] && !activeUntil("timefreeze")) ? Math.max(0, (Date.now() - timers[key]) / 1000) : 0;
+    return Math.max(1, Math.round(decayedPoints(base, sec) * capFor(key) * hintMult(key)));
+  }
+  function hintPreviewTxt(key, base) {
+    if (armedItems("hint").length) return `<span style="color:var(--accent);font-weight:700;">Free Hint armed</span> \u00b7 this reveal costs 0 XP`;
+    const now = valueNow(key, base), after = Math.max(1, Math.round(now * (1 - HINT_COST)));
+    return `cost preview \u00b7 worth <b style="color:var(--amber);">${now} XP</b> now \u2192 <b style="color:var(--amber);">${after} XP</b> after the hint <span style="color:var(--adv2);">(\u2212${now - after} XP)</span>`;
+  }
+  function updateHintPreviews() {
+    document.querySelectorAll(".ctfHintPreview").forEach(el => {
+      if (el.offsetParent === null) return;
+      const t = hintPreviewTxt(el.getAttribute("data-key"), +el.getAttribute("data-base"));
+      if (el._t !== t) { el.innerHTML = t; el._t = t; }
+    });
+  }
+  function startTicks() { if (tickTimer) clearInterval(tickTimer); tickTimer = setInterval(function(){ updateTimers(); updateHintPreviews(); }, 250); updateTimers(); }
   function normAlpha(s) { return String(s == null ? "" : s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function acceptedAnswers(term) {
     const out = [normAlpha(term.replace(/\(.*?\)/g, "").split("/")[0])];
@@ -1371,7 +1434,8 @@
     const open = openChals.has(c.id);
     const pts = fl.reduce((a, f) => a + f.points, 0);
     return `<div style="border-top:1px solid var(--border2);">
-      <button type="button" class="chalName" data-id="${esc(c.id)}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:15px 2px;background:none;border:none;cursor:pointer;color:inherit;">
+      <div style="display:flex;align-items:center;gap:2px;">
+      <button type="button" class="chalName" data-id="${esc(c.id)}" aria-expanded="${open}" style="flex:1;min-width:0;text-align:left;display:flex;align-items:center;gap:12px;padding:15px 2px;background:none;border:none;cursor:pointer;color:inherit;">
         <span style="flex:none;width:16px;color:${all ? "var(--accent)" : "var(--faint)"};">${all ? "\u2713" : "\u25cb"}</span>
         <span style="flex:1;min-width:0;font-size:15px;font-weight:600;color:var(--bright);">${esc(c.title)}</span>
         ${fl.length > 1 ? `<span class="mono" style="flex:none;font-size:11px;color:${all ? "var(--accent)" : "var(--dim)"};">${done}/${fl.length}</span>` : ""}
@@ -1379,6 +1443,9 @@
         <span class="mono" style="flex:none;font-size:11px;color:var(--amber);">${pts} XP</span>
         <span class="chalChev mono" style="flex:none;font-size:16px;color:var(--faint);transition:transform .2s;transform:rotate(${open ? 90 : 0}deg);">\u203a</span>
       </button>
+      <button type="button" class="chalStar" data-id="${esc(c.id)}" aria-pressed="${isSaved(c.id)}" aria-label="${isSaved(c.id) ? "Remove bookmark" : "Bookmark"}: ${esc(c.title)}" title="${isSaved(c.id) ? "Saved \u2014 tap to remove" : "Save for later"}"
+        style="flex:none;width:44px;height:44px;border:none;background:none;cursor:pointer;font-size:19px;line-height:1;color:${isSaved(c.id) ? "var(--amber)" : "var(--faint)"};">${isSaved(c.id) ? "\u2605" : "\u2606"}</button>
+      </div>
       <div class="chalDetail" data-id="${esc(c.id)}" style="display:${open ? "block" : "none"};padding:2px 0 16px;">${open ? challengeCard(c) : ""}</div>
     </div>`;
   }
@@ -1432,13 +1499,28 @@
       </div>
     </div>`;
   }
+  let savedOnly = false;
+  function savedBar(chals) {
+    const n = chals.filter(c => isSaved(c.id)).length;
+    const tab = (on, v, label) => `<button type="button" class="savedTab mono" data-v="${v}" aria-pressed="${on}"
+      style="font-size:12px;font-weight:700;letter-spacing:.5px;padding:10px 16px;min-height:44px;border-radius:999px;cursor:pointer;
+      border:1px solid ${on ? "var(--accent)" : "var(--border2)"};background:${on ? "var(--accent)" : "transparent"};color:${on ? "var(--bg)" : "var(--dim)"};">${label}</button>`;
+    return `<div role="group" aria-label="Filter flags" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      ${tab(!savedOnly, 0, "ALL FLAGS")}${tab(savedOnly, 1, "\u2605 SAVED (" + n + ")")}</div>`;
+  }
   function buildList(chals) {
     const hasMods = chals.some(c => c.module != null);
     if (!hasMods) return chals.map(challengeCard).join("");
+    if (savedOnly) {
+      const list = chals.filter(c => isSaved(c.id));
+      return savedBar(chals) + (list.length
+        ? `<div class="card" style="padding:0 22px 10px;">${list.map(chalRow).join("")}</div>`
+        : `<div class="card" style="text-align:center;color:var(--dim);font-size:13px;padding:32px 20px;">No saved flags yet. Tap \u2606 next to any flag to save it for later.</div>`);
+    }
     const names = ctf.modules || [];
     const byMod = {};
     chals.forEach(c => { const m = c.module || 0; (byMod[m] = byMod[m] || []).push(c); });
-    return Object.keys(byMod).sort((a, b) => a - b).map(m => moduleBlock(+m, names, byMod[m])).join("");
+    return savedBar(chals) + Object.keys(byMod).sort((a, b) => a - b).map(m => moduleBlock(+m, names, byMod[m])).join("");
   }
 
   function ensureGlowStyle() {
@@ -1695,6 +1777,23 @@
     </div>`;
   }
 
+  function comboMeter() {
+    const n = comboCount(), m = comboMult(), lit = Math.min(n, COMBO_MAX);
+    const segs = Array.from({ length: COMBO_MAX }, (_, i) => `<span style="flex:1;height:8px;border-radius:3px;background:${i < lit ? "var(--amber)" : "var(--bg)"};border:1px solid ${i < lit ? "var(--amber)" : "var(--border2)"};"></span>`).join("");
+    const steps = [1.1, 1.2, 1.3, 1.4, 1.5].map((v, i) => `<span style="flex:1;text-align:center;color:${i < lit ? "var(--amber)" : "var(--faint)"};">${v.toFixed(1)}</span>`).join("");
+    const tip = n >= COMBO_MAX ? "maxed \u00b7 every capture pays \u00d71.5 until a miss"
+      : n ? "next capture pays \u00d7" + m.toFixed(1) + " \u00b7 a wrong answer resets it"
+      : "capture flags in a row without a miss to build \u00d71.1 \u2192 \u00d71.5";
+    return `<div class="ctfCombo" role="status" aria-label="Combo multiplier ${m.toFixed(1)} times. ${tip}" style="margin-top:16px;padding:12px 14px;border:1px solid ${m > 1 ? "var(--amber-bd)" : "var(--border2)"};border-radius:10px;background:${m > 1 ? "var(--amber-bg)" : "transparent"};display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">COMBO</span>
+        <span class="mono" style="font-size:20px;font-weight:800;color:${m > 1 ? "var(--amber)" : "var(--dim)"};min-width:56px;">\u00d7${m.toFixed(1)}</span>
+        <span style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:150px;max-width:280px;">
+          <span style="display:flex;gap:4px;">${segs}</span>
+          <span class="mono" style="display:flex;gap:4px;font-size:9px;">${steps}</span>
+        </span>
+        <span class="mono" style="font-size:11px;color:var(--dim);flex-basis:220px;flex-grow:1;">${tip}</span>
+      </div>`;
+  }
   function statsCard(s, pct) {
     const nextTxt = s.next
       ? `${s.next.t - s.pts} XP to <span style="color:var(--accent);">${esc(s.next.n)}</span>`
@@ -1722,6 +1821,7 @@
         </div>
         <div class="mono" style="margin-top:8px;font-size:11px;color:var(--dim);">${nextTxt}</div>
         <div class="mono" style="margin-top:4px;font-size:11px;color:var(--dim);">\u25b2 ${sc}-day login streak${st.best ? " \u00b7 best " + st.best : ""} \u00b7 log in ${nextDayTxt} for +${nextBonus} XP${sc >= 10 ? " (max)" : ""}</div>
+        ${comboMeter()}
         <div id="ctfIdentity" style="margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
           <span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--faint);">PLAYING AS</span>
           <span style="font-weight:700;color:var(--bright);">${handle ? esc(handle) : '<span style="color:var(--faint);font-weight:500;">not signed in</span>'}</span>
@@ -2030,9 +2130,10 @@
         ${body}</div>`;
     }
     return `<div style="margin-bottom:14px;">
-      <button type="button" class="ctfHintBuy mono" data-key="${esc(key)}"
+      <button type="button" class="ctfHintBuy mono" data-key="${esc(key)}" data-base="${base}"
         style="font-size:12px;font-weight:700;color:var(--amber);background:none;border:1px dashed var(--border3);border-radius:8px;padding:8px 14px;min-height:44px;cursor:pointer;">
-        \u24d8 reveal hint \u00b7 costs ${cost} XP (\u2212${Math.round(HINT_COST * 100)}%)</button>
+        \u24d8 reveal hint \u00b7 \u2212${Math.round(HINT_COST * 100)}% of this flag</button>
+      <div class="ctfHintPreview mono" data-key="${esc(key)}" data-base="${base}" aria-live="polite" style="margin-top:6px;font-size:11px;color:var(--faint);line-height:1.6;">${hintPreviewTxt(key, base)}</div>
       <div class="mono" style="margin-top:6px;font-size:11px;color:var(--faint);">Looking things up on your own is always free.</div>
     </div>`;
   }
@@ -2422,6 +2523,8 @@
     }));
     document.querySelectorAll(".bossEnter").forEach(b => b.addEventListener("click", () => openBoss(+b.getAttribute("data-m"))));
     bossMiniRainStart();
+    document.querySelectorAll(".chalStar").forEach(b => b.addEventListener("click", () => { toggleSaved(b.getAttribute("data-id")); render(); }));
+    document.querySelectorAll(".savedTab").forEach(b => b.addEventListener("click", () => { savedOnly = b.getAttribute("data-v") === "1"; render(); }));
     document.querySelectorAll(".chalName").forEach(b => b.addEventListener("click", () => {
       const id = b.getAttribute("data-id");
       const det = document.querySelector('.chalDetail[data-id="' + id + '"]');
@@ -2430,6 +2533,7 @@
       if (willOpen) openChals.add(id); else openChals.delete(id);
       if (willOpen && det && !det.innerHTML.trim()) { render(); return; }     // lazy fill
       if (det) det.style.display = willOpen ? "block" : "none";
+      b.setAttribute("aria-expanded", String(willOpen));
       if (chev) chev.style.transform = "rotate(" + (willOpen ? 90 : 0) + "deg)";
     }));
     const revT = document.getElementById("revToggle");
@@ -2445,10 +2549,11 @@
     const eg = document.getElementById("egStart");
     if (eg) eg.addEventListener("click", () => openBoss(null, { endgame: true }));
     document.querySelectorAll(".ctfHintBuy").forEach(b => b.addEventListener("click", () => {
-      const key = b.getAttribute("data-key");
-      const label = b.textContent.trim();
+      const key = b.getAttribute("data-key"), base = +b.getAttribute("data-base") || 0;
       const free = armedItems("hint").length > 0;
-      if (!confirm((free ? "Use a Free Hint? This reveal costs no XP.\n\n" : "Reveal this hint?\n\n") + label.replace(/^\u24d8\s*/, "") + "\n\nThis is permanent for this flag.")) return;
+      const now = valueNow(key, base), after = Math.max(1, Math.round(now * (1 - HINT_COST)));
+      if (!confirm(free ? "Use a Free Hint? This reveal costs no XP.\n\nThis is permanent for this flag."
+        : "Reveal this hint?\n\nThis flag is worth " + now + " XP right now. After the hint it will be worth " + after + " XP (\u2212" + (now - after) + ").\n\nThis is permanent for this flag.")) return;
       buyHint(key);
       if (free && consumeItem("hint")) { state.hintFree = state.hintFree || {}; state.hintFree[key] = Date.now(); save(state); itemToast("? FREE HINT", "no XP cost on this reveal."); }
       render();
@@ -2613,6 +2718,9 @@
     if (tainted[key]) points = Math.max(1, points - TAINT_PENALTY);
     const mult = xpMult();
     if (mult > 1) points = Math.round(points * mult);
+    const cm = tainted[key] ? 1 : comboMult();
+    if (cm > 1) points = Math.round(points * cm);
+    state.combo = { n: tainted[key] ? 0 : Math.min(comboCount() + 1, 99) };
     const lucky = !tainted[key] && consumeItem("lucky");
     if (lucky) { points = points * 3; setTimeout(() => itemToast("3\u00d7 LUCKY CAPTURE", "+" + points + " XP on that flag."), 300); }
     const wasQueued = !state.solved[key] && (state.retry[key] || 0) > 0;
@@ -2620,7 +2728,7 @@
     state.solvedAt[key] = Date.now();
     state.earned[key] = points;
     state.points = (state.points || 0) + points;
-    state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: points, reason: (chal.title || key) + (mult > 1 ? " \u00b7 " + mult + "\u00d7 XP" : "") + (lucky ? " \u00b7 Lucky 3\u00d7" : "") });
+    state.xpLog = state.xpLog || []; state.xpLog.push({ ts: Date.now(), delta: points, reason: (chal.title || key) + (mult > 1 ? " \u00b7 " + mult + "\u00d7 XP" : "") + (cm > 1 ? " \u00b7 combo \u00d7" + cm.toFixed(1) : "") + (lucky ? " \u00b7 Lucky 3\u00d7" : "") });
     const bounty = wasQueued ? payReviewBounty(key) : 0;
     if (bounty) setTimeout(() => nemesisToast(GLYPH + " " + ADV,
       MENTOR ? "you came back and got it \u2014 +" + bounty + " XP comeback bonus."
@@ -2647,7 +2755,7 @@
       } catch (e) {}
     }
     render();
-    flash(points);
+    flash(points, cm);
     try { const nb = checkBadgeUnlocks(); if (nb.length) setTimeout(function(){ announceBadges(nb); }, 700); } catch (e) {}
   }
 
@@ -2677,10 +2785,11 @@
     } catch (e) {}
   }
 
-  function flash(pts) {
+  function flash(pts, cm) {
     const d = document.createElement("div");
     d.className = "mono";
-    d.textContent = "\u2713 FLAG CAPTURED  +" + pts + " XP";
+    d.setAttribute("role", "status");
+    d.textContent = "\u2713 FLAG CAPTURED  +" + pts + " XP" + (cm > 1 ? "  \u00b7  COMBO \u00d7" + cm.toFixed(1) : "");
     d.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.7);z-index:12000;font-size:22px;font-weight:800;color:var(--bg);background:var(--accent);padding:16px 28px;border-radius:14px;box-shadow:0 20px 60px -12px var(--accent);opacity:0;transition:transform .25s ease,opacity .25s ease;pointer-events:none;";
     document.body.appendChild(d);
     requestAnimationFrame(() => { d.style.opacity = "1"; d.style.transform = "translate(-50%,-50%) scale(1)"; });
@@ -2936,6 +3045,7 @@
   function bossMiniRainStart() {
     var canvases = Array.prototype.slice.call(document.querySelectorAll(".bossMiniRain")).filter(function (c) { return c.offsetParent !== null; });
     if (bossMiniTimer) { clearInterval(bossMiniTimer); bossMiniTimer = null; }
+    if (window.SITE_REDUCED_MOTION && window.SITE_REDUCED_MOTION()) return;
     if (!canvases.length) return;
     var fs = 14, states = [];
     canvases.forEach(function (cv) {

@@ -53,6 +53,15 @@ row-level security and only the four `ctf_*` functions are reachable.
    | 19 | `hint-log.sql` | Hint-used tracking per flag |
    | 20 | `target-warmup.sql` | Day-1 "Are You a Target?" warm-up |
    | 21 | `signin-log.sql` | Logs rejected sign-ins (wrong domain), so you can see what a new student domain actually is |
+   | 22 | `board-leaderboard.sql` | Full-class classroom leaderboard (`leaderboard.html`) |
+   | 23 | `board-leaderboard-weekly.sql` | "This Week" leaderboard mode |
+   | 24 | `weekly-winners.sql` | Hall of Fame weekly top 3 |
+   | 25 | `weekly-snapshot-auto.sql` | Monday auto-snapshot (with `.github/workflows/weekly-snapshot.yml`) |
+   | 26 | `reward-items.sql` | Reward items, spinner prizes, loot drops (needs teacher-xp.sql) |
+   | 27 | `coins-cosmetics.sql` | **v2.0** Coins + Coin Shop cosmetics (needs teacher-xp.sql) |
+   | 28 | `class-pulse.sql` | **v2.0** Live Class Pulse dashboard (needs attempt-log.sql) |
+   | 29 | `duels.sql` | **v2.0** Head-to-head duels (needs teacher-xp.sql) |
+   | 30 | `scheduled-unlocks.sql` | **v2.0** Scheduled module/flag unlocks — must be the LAST file that defines the gate functions |
 
    **Order matters in several places** (each is a case of two files redefining the
    same function, where the one that runs LAST wins):
@@ -69,6 +78,10 @@ row-level security and only the four `ctf_*` functions are reachable.
      students get rejected, granted bonus XP vanishes on next sync).
    - `allowed-emails.sql` must run after `multi-domain.sql`, always — re-running
      `multi-domain.sql` later silently drops the allowlist.
+   - `scheduled-unlocks.sql` redefines `ctf_gates`, `ctf_t_gates` and `ctf_t_classes`
+     as a superset of `class-gates.sql`, `squads.sql` and `objectives.sql`. Re-run it
+     after re-running any of those (or `google-auth.sql`), or scheduled unlocks stop
+     applying.
 
 4. **Check your work at any time:** paste the contents of
    `supabase/check-installed.sql` → **Run**. It lists every add-on with

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=2.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duel Arena — Classroom Display</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--p1:#39d0ff;--p2:#ff5fd2;--ok:#3ddc84;--bad:#ff5a6e;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#6f8196;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--p1:#0a6fa8;--p2:#b0187f;--ok:#137a3c;--bad:#b3203a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+a{color:var(--accent);} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+button{font-family:inherit;}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.wrap{max-width:1500px;margin:0 auto;padding:22px clamp(16px,3vw,40px) 60px;}
+.kick{font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;}
+h1{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(24px,3vw,34px);margin:6px 0 4px;color:var(--bright);letter-spacing:-.5px;}
+.lead{color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 22px;max-width:760px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin:0 0 8px;display:block;}
+select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:14px;}
+.seg{display:flex;gap:6px;flex-wrap:wrap;}
+.seg button{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;padding:10px 14px;min-height:44px;border-radius:10px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;}
+.seg button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--bg);}
+.btn{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800;letter-spacing:1px;padding:14px 22px;min-height:48px;border-radius:12px;border:1px solid var(--border3);background:transparent;color:var(--bright);cursor:pointer;}
+.btn.pri{border-color:var(--amber);background:var(--amber);color:#1a1200;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px;}
+#stage{display:none;}
+.vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:clamp(12px,3vw,40px);margin:8px 0 26px;}
+.pl{padding:18px 22px;border-radius:16px;border:2px solid var(--border3);background:var(--panel);min-width:0;}
+.pl .nm{font-weight:800;font-size:clamp(24px,3.4vw,46px);line-height:1.1;word-break:break-word;}
+.pl .st{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.2vw,15px);margin-top:10px;min-height:20px;color:var(--dim);}
+.pips{display:flex;gap:8px;margin-top:12px;}
+.pips i{width:clamp(16px,1.6vw,22px);height:clamp(16px,1.6vw,22px);border-radius:50%;border:3px solid currentColor;display:block;}
+.pips i.on{background:currentColor;}
+.q{font-size:clamp(22px,2.8vw,40px);font-weight:700;color:var(--bright);line-height:1.35;margin:0 0 22px;text-wrap:pretty;}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;}
+.opt{display:flex;align-items:center;gap:16px;padding:18px 22px;border-radius:14px;border:2px solid var(--border3);background:var(--panel);font-size:clamp(17px,1.8vw,26px);font-weight:600;color:var(--bright);min-width:0;}
+.opt .k{flex:none;width:44px;height:44px;border-radius:10px;border:2px solid var(--border3);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;}
+.opt.ans{border-color:var(--ok);background:color-mix(in oklab,var(--ok) 16%,var(--panel));}
+.ctrl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:26px;}
+.bracket{display:flex;gap:18px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px;}
+.bcol{display:flex;flex-direction:column;justify-content:space-around;gap:10px;min-width:180px;}
+.bm{border:1px solid var(--border3);border-radius:10px;background:var(--panel);font-size:13px;overflow:hidden;}
+.bm.cur{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber);}
+.bm div{padding:7px 10px;display:flex;justify-content:space-between;gap:8px;}
+.bm div + div{border-top:1px solid var(--border2);}
+.bm .w{color:var(--bright);font-weight:800;}
+.bm .l{color:var(--faint);text-decoration:line-through;}
+#winner{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:color-mix(in oklab,var(--bg) 88%,transparent);backdrop-filter:blur(6px);text-align:center;padding:20px;}
+#winner .big{font-size:clamp(40px,7vw,96px);font-weight:800;color:var(--amber);line-height:1.05;word-break:break-word;}
+.confetti{position:fixed;top:-12px;width:9px;height:14px;z-index:9500;pointer-events:none;animation:fall linear forwards;}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);}}
+@keyframes lockPop{0%{transform:scale(.9);}60%{transform:scale(1.06);}100%{transform:scale(1);}}
+@media (prefers-reduced-motion:reduce){.confetti{display:none;}*{animation-duration:.001ms !important;transition-duration:.001ms !important;}}
+:root[data-motion="reduce"] .confetti{display:none;}
+.hint{font-size:12px;color:var(--faint);line-height:1.6;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <a class="mono" href="teacher.html" style="font-size:12px;color:var(--dim);text-decoration:none;display:inline-block;padding:10px 0;">&larr; Teacher dashboard</a>
+  <div class="kick mono">&gt; ./duel-arena</div>
+  <h1>Duel Arena</h1>
+  <p class="lead" id="lead">Two students race head-to-head on the front screen. They answer on their own devices: an answer pad pops up on their CTF or profile page. First correct answer takes the round.</p>
+
+  <div id="gate" class="panel mono" style="font-size:13px;color:var(--dim);">Checking teacher sign-in…</div>
+
+  <div id="setup" style="display:none;">
+    <div class="grid2">
+      <div class="panel">
+        <label class="lbl" for="cls">Class</label>
+        <select id="cls"></select>
+        <div style="height:16px;"></div>
+        <span class="lbl">Mode</span>
+        <div class="seg" id="modeSeg" role="group" aria-label="Mode">
+          <button type="button" data-v="quick" aria-pressed="true">QUICK DUEL</button>
+          <button type="button" data-v="bracket" aria-pressed="false">BRACKET</button>
+        </div>
+        <div id="quickBox" style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div><label class="lbl" for="p1" style="color:var(--p1);">Player 1</label><select id="p1"></select></div>
+          <div><label class="lbl" for="p2" style="color:var(--p2);">Player 2</label><select id="p2"></select></div>
+          <button type="button" class="btn" id="rndBtn" style="grid-column:1/-1;">&#127922; RANDOM PAIR</button>
+        </div>
+        <div id="bracketBox" style="margin-top:16px;display:none;">
+          <span class="lbl">Bracket size</span>
+          <div class="seg" id="sizeSeg" role="group" aria-label="Bracket size">
+            <button type="button" data-v="4" aria-pressed="true">4 PLAYERS</button>
+            <button type="button" data-v="8" aria-pressed="false">8 PLAYERS</button>
+          </div>
+          <div style="height:14px;"></div>
+          <span class="lbl">Seeding</span>
+          <div class="seg" id="seedSeg" role="group" aria-label="Seeding">
+            <button type="button" data-v="top" aria-pressed="true">TOP OF LEADERBOARD</button>
+            <button type="button" data-v="random" aria-pressed="false">RANDOM</button>
+            <button type="button" data-v="pick" aria-pressed="false">HAND-PICK</button>
+          </div>
+          <div id="pickList" style="display:none;margin-top:12px;max-height:240px;overflow:auto;border:1px solid var(--border2);border-radius:10px;padding:8px;"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <span class="lbl">Match length</span>
+        <div class="seg" id="boSeg" role="group" aria-label="Best of">
+          <button type="button" data-v="3" aria-pressed="true">BEST OF 3</button>
+          <button type="button" data-v="5" aria-pressed="false">BEST OF 5</button>
+          <button type="button" data-v="7" aria-pressed="false">BEST OF 7</button>
+        </div>
+        <div style="height:16px;"></div>
+        <span class="lbl">XP pot for the winner</span>
+        <div class="seg" id="potSeg" role="group" aria-label="XP pot">
+          <button type="button" data-v="0" aria-pressed="false">NONE</button>
+          <button type="button" data-v="25" aria-pressed="false">25 XP</button>
+          <button type="button" data-v="50" aria-pressed="true">50 XP</button>
+          <button type="button" data-v="100" aria-pressed="false">100 XP</button>
+        </div>
+        <div style="height:16px;"></div>
+        <label class="lbl" for="qMod">Questions from</label>
+        <select id="qMod"></select>
+        <div style="height:12px;"></div>
+        <div class="seg" id="srcSeg" role="group" aria-label="Question type">
+          <button type="button" data-v="mix" aria-pressed="true">MIX</button>
+          <button type="button" data-v="mc" aria-pressed="false">SCENARIOS</button>
+          <button type="button" data-v="vocab" aria-pressed="false">VOCAB</button>
+        </div>
+        <div class="hint mono" id="poolNote" style="margin-top:10px;"></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:20px;flex-wrap:wrap;">
+          <button type="button" class="btn pri" id="goBtn">START DUEL</button>
+          <label class="mono" style="font-size:12px;color:var(--dim);display:flex;align-items:center;gap:8px;min-height:44px;"><input type="checkbox" id="autoNext" checked> auto next question</label>
+          <label class="mono" style="font-size:12px;color:var(--dim);display:flex;align-items:center;gap:8px;min-height:44px;"><input type="checkbox" id="sndOn" checked> sound</label>
+        </div>
+        <div class="mono" id="setupMsg" role="status" aria-live="polite" style="font-size:12px;color:var(--bad);margin-top:10px;min-height:16px;"></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:18px;">
+      <span class="lbl">Recent results</span>
+      <div id="history" class="mono" style="font-size:13px;color:var(--dim);">—</div>
+    </div>
+  </div>
+
+  <div id="stage">
+    <div id="bracketView" class="bracket"></div>
+    <div class="mono" id="matchLabel" style="font-size:13px;letter-spacing:2px;color:var(--amber);text-transform:uppercase;"></div>
+    <div class="vs">
+      <div class="pl" id="pl1" style="border-color:var(--p1);"><div class="nm" id="n1" style="color:var(--p1);"></div><div class="pips" id="s1" style="color:var(--p1);"></div><div class="st" id="st1" aria-live="polite"></div></div>
+      <div class="mono" style="font-size:clamp(18px,2vw,28px);font-weight:800;color:var(--faint);">VS</div>
+      <div class="pl" id="pl2" style="border-color:var(--p2);text-align:right;"><div class="nm" id="n2" style="color:var(--p2);"></div><div class="pips" id="s2" style="color:var(--p2);justify-content:flex-end;"></div><div class="st" id="st2" aria-live="polite"></div></div>
+    </div>
+    <div class="panel" style="padding:clamp(18px,2.4vw,34px);">
+      <div class="mono" style="display:flex;gap:14px;align-items:center;margin-bottom:14px;font-size:13px;color:var(--dim);">
+        <span id="roundNo">ROUND —</span><span id="clock" style="margin-left:auto;">0.0s</span>
+      </div>
+      <div class="q" id="qText">Get ready…</div>
+      <div class="opts" id="qOpts"></div>
+      <div class="mono" id="roundMsg" role="status" aria-live="polite" style="margin-top:18px;font-size:clamp(14px,1.4vw,18px);color:var(--amber);min-height:22px;"></div>
+    </div>
+    <div class="ctrl">
+      <button type="button" class="btn pri" id="nextBtn">NEXT QUESTION</button>
+      <button type="button" class="btn" id="closeBtn">SKIP ROUND</button>
+      <button type="button" class="btn" id="endBtn">END MATCH</button>
+      <button type="button" class="btn" id="backBtn" style="margin-left:auto;">&larr; SETUP</button>
+    </div>
+    <p class="hint mono" style="margin-top:14px;">Players: open your course's CTF page (or profile). The answer pad opens by itself. Keys 1–4 work too.</p>
+  </div>
+</div>
+<div id="winner" role="dialog" aria-modal="true" aria-labelledby="winName">
+  <div>
+    <div class="mono" id="winKick" style="font-size:14px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:12px;">Winner</div>
+    <div class="big" id="winName"></div>
+    <div id="winSub" style="font-size:clamp(16px,1.8vw,22px);color:var(--muted);margin-top:14px;"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:28px;flex-wrap:wrap;">
+      <button type="button" class="btn pri" id="winNext">CONTINUE</button>
+    </div>
+  </div>
+</div>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script src="config.js?v=2.0.0"></script>
+<script src="supabase-config.js?v=2.0.0"></script>
+<script src="auth.js?v=2.0.0"></script>
+<script src="cosmetics.js?v=2.0.0"></script>
+<script>
+(function(){
+  var AUTH = window.CTF_AUTH;
+  var VOCAB_GLOBAL = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
+  var ACCENT = { cyber1:["#00b3ff","#0a74d6"], cyber2:["#39ff88","#137a3c"], cyber3:["#d4af37","#8a6a00"], apcsp:["#a855f7","#7a2fd0"], web3:["#f7931a","#a85a00"] };
+  var CLASSES = [], CUR = null, ROSTER = [], BOARD = [], COS = {};
+  var OPT = { mode:"quick", size:4, seed:"top", bo:3, pot:50, src:"mix" };
+  var POOL = [], USED = {}, DUEL = null, ST = null, pollT = null, ending = false, nextT = null, lastSig = "", BR = null;
+  function el(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  function shuffle(a){ a = a.slice(); for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function norm(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9]/g,""); }
+  function reduced(){ return document.documentElement.getAttribute("data-motion")==="reduce" || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
+
+  /* ---- sound ---- */
+  var AC = null;
+  function tone(f, d, type, v, delay){
+    if (!el("sndOn").checked) return;
+    try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if (AC.state==="suspended") AC.resume();
+      var t = AC.currentTime + (delay||0), o = AC.createOscillator(), g = AC.createGain();
+      o.type = type||"sine"; o.frequency.setValueAtTime(f,t);
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v||0.1,t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+      o.connect(g).connect(AC.destination); o.start(t); o.stop(t+d+0.02);
+    }catch(e){}
+  }
+  function sLock(){ tone(880,0.12,"square",0.05); }
+  function sWrong(){ tone(220,0.25,"sawtooth",0.06); }
+  function sRound(){ [659,988].forEach(function(f,i){ tone(f,0.2,"triangle",0.1,i*0.1); }); }
+  function sMatch(){ [523,659,784,1047,1319].forEach(function(f,i){ tone(f,0.3,"triangle",0.12,i*0.1); }); }
+
+  /* ---- setup controls ---- */
+  function seg(id, key, cb){
+    el(id).querySelectorAll("button").forEach(function(b){
+      b.onclick = function(){
+        el(id).querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b ? "true" : "false"); });
+        var v = b.getAttribute("data-v"); OPT[key] = isNaN(+v) ? v : +v; if (cb) cb();
+      };
+    });
+  }
+  seg("modeSeg","mode",function(){ el("quickBox").style.display = OPT.mode==="quick"?"grid":"none"; el("bracketBox").style.display = OPT.mode==="bracket"?"block":"none"; el("goBtn").textContent = OPT.mode==="quick"?"START DUEL":"START BRACKET"; });
+  seg("sizeSeg","size"); seg("boSeg","bo"); seg("potSeg","pot");
+  seg("seedSeg","seed",function(){ el("pickList").style.display = OPT.seed==="pick"?"block":"none"; });
+  seg("srcSeg","src",buildPool);
+
+  function theme(course){ var a = ACCENT[course] || ACCENT.cyber1, lt = document.documentElement.getAttribute("data-theme")==="light";
+    document.documentElement.style.setProperty("--accent", lt ? a[1] : a[0]); }
+
+  /* ---- question pool: scenario MC from bossQuestions + vocab definition->term ---- */
+  function loadVocab(course){
+    return new Promise(function(res){
+      var g = VOCAB_GLOBAL[course]; if (window[g]) return res();
+      var s = document.createElement("script"); s.src = course + "/vocab-data.js?v=20260926";
+      s.onload = function(){ res(); }; s.onerror = function(){ res(); }; document.head.appendChild(s);
+    });
+  }
+  function modulesFor(course){
+    var cfg = ((window.COURSE_CONFIG||{})[course]||{}).ctf || {};
+    return cfg.modules || [];
+  }
+  function buildPool(){
+    if (!CUR) return;
+    var course = CUR.course, mod = el("qMod").value, cfg = ((window.COURSE_CONFIG||{})[course]||{}).ctf || {};
+    var out = [];
+    if (OPT.src !== "vocab"){
+      (cfg.bossQuestions||[]).forEach(function(q){
+        if (q.kind !== "mc" || !q.choices || !q.answer) return;
+        if (mod !== "all" && String(q.module) !== mod) return;
+        var seen = {}, opts = [];
+        q.choices.forEach(function(c){ var k = norm(c); if (k && !seen[k]){ seen[k]=1; opts.push(String(c)); } });
+        if (opts.indexOf(q.answer) === -1 || opts.length < 2) return;
+        out.push({ id:"mc:"+q.prompt.slice(0,60), question:q.prompt, options:opts, answer:q.answer });
+      });
+    }
+    if (OPT.src !== "mc"){
+      var terms = ((window[VOCAB_GLOBAL[course]]||{}).terms)||[], seenT = {}, list = [];
+      terms.forEach(function(v){ var k = norm(v.t); if (k && v.d && !seenT[k]){ seenT[k]=1; list.push(v); } });
+      list.forEach(function(v){
+        if (mod !== "all" && String(v.m) !== mod) return;
+        var same = list.filter(function(x){ return x !== v && x.m === v.m; }), other = list.filter(function(x){ return x !== v; });
+        var dist = shuffle(same.length >= 3 ? same : other).slice(0,3).map(function(x){ return x.t; });
+        if (dist.length < 3) return;
+        out.push({ id:"v:"+v.t, question:"Which term matches: \u201c" + v.d + "\u201d", options:[v.t].concat(dist), answer:v.t });
+      });
+    }
+    POOL = out;
+    el("poolNote").textContent = out.length + " question" + (out.length===1?"":"s") + " available" + (out.length ? "" : " \u2014 pick another module or type");
+  }
+  function drawQ(){
+    var fresh = POOL.filter(function(q){ return !USED[q.id]; });
+    if (!fresh.length){ USED = {}; fresh = POOL.slice(); }
+    var q = fresh[Math.floor(Math.random()*fresh.length)]; if (!q) return null;
+    USED[q.id] = 1;
+    return { question:q.question, options:shuffle(q.options), answer:q.answer };
+  }
+
+  /* ---- class + roster ---- */
+  async function selectClass(id){
+    CUR = CLASSES.filter(function(c){ return c.id === id; })[0]; if (!CUR) return;
+    try{ localStorage.setItem("duel-class", id); }catch(e){}
+    theme(CUR.course);
+    el("setupMsg").textContent = "";
+    ROSTER = []; BOARD = [];
+    try{ ROSTER = await AUTH.rpc("ctf_t_roster",{p_class:id}) || []; }catch(e){}
+    try{ BOARD = await AUTH.rpc("ctf_t_leaderboard",{p_class:id}) || []; }catch(e){}
+    if (window.CTF_COSMETICS){ COS = await window.CTF_COSMETICS.forClass(id); window.CTF_COSMETICS.css(); }
+    ROSTER.sort(function(a,b){ return String(a.handle).localeCompare(String(b.handle)); });
+    var opts = ROSTER.map(function(r){ return '<option value="'+esc(r.id)+'">'+esc(r.handle)+'</option>'; }).join("");
+    el("p1").innerHTML = opts; el("p2").innerHTML = opts; if (ROSTER[1]) el("p2").value = ROSTER[1].id;
+    el("pickList").innerHTML = ROSTER.map(function(r){ return '<label style="display:flex;align-items:center;gap:10px;padding:8px;min-height:40px;font-size:14px;"><input type="checkbox" class="pk" value="'+esc(r.id)+'"> '+esc(r.handle)+'</label>'; }).join("");
+    var mods = modulesFor(CUR.course);
+    el("qMod").innerHTML = '<option value="all">All modules</option>' + mods.map(function(n,i){ return '<option value="'+(i+1)+'">Module '+(i+1)+' \u2014 '+esc(n)+'</option>'; }).join("");
+    await loadVocab(CUR.course);
+    buildPool(); loadHistory();
+  }
+  el("qMod").onchange = buildPool;
+  el("cls").onchange = function(){ selectClass(el("cls").value); };
+  el("rndBtn").onclick = function(){
+    if (ROSTER.length < 2) return;
+    var p = shuffle(ROSTER); el("p1").value = p[0].id; el("p2").value = p[1].id;
+  };
+  function handleOf(id){ var r = ROSTER.filter(function(x){ return x.id === id; })[0]; return r ? r.handle : "?"; }
+  function nameHtml(id){
+    var h = handleOf(id), eq = COS[String(h).toLowerCase()];
+    return esc(h) + (eq && window.CTF_COSMETICS ? window.CTF_COSMETICS.titleHtml(eq, 13) : "");
+  }
+  async function loadHistory(){
+    try{
+      var h = await AUTH.rpc("ctf_t_duel_history",{p_class:CUR.id});
+      el("history").innerHTML = (Array.isArray(h) && h.length) ? h.map(function(d){
+        return '<div style="padding:6px 0;border-bottom:1px solid var(--border2);display:flex;gap:10px;flex-wrap:wrap;"><b style="color:var(--bright);">'+esc(d.winner_handle||"draw")+'</b> beat '+esc(d.winner_handle===d.p1_handle?d.p2_handle:d.p1_handle)+' \u00b7 '+d.p1_score+'\u2013'+d.p2_score+(d.label?' \u00b7 '+esc(d.label):'')+'<span style="margin-left:auto;color:var(--faint);">'+new Date(d.ended_at).toLocaleString(undefined,{weekday:"short",hour:"numeric",minute:"2-digit"})+'</span></div>';
+      }).join("") : "No duels yet.";
+    }catch(e){ el("history").textContent = "Run supabase/duels.sql to enable duels."; }
+  }
+
+  /* ---- bracket ---- */
+  var SEED = { 4:[[0,3],[1,2]], 8:[[0,7],[3,4],[1,6],[2,5]] };
+  function seedPlayers(){
+    var n = OPT.size, ids;
+    if (OPT.seed === "pick"){ ids = [].slice.call(document.querySelectorAll(".pk:checked")).map(function(c){ return c.value; }); }
+    else if (OPT.seed === "random"){ ids = shuffle(ROSTER).map(function(r){ return r.id; }); }
+    else {
+      var byH = {}; ROSTER.forEach(function(r){ byH[String(r.handle).toLowerCase()] = r.id; });
+      ids = BOARD.map(function(b){ return byH[String(b.handle).toLowerCase()]; }).filter(Boolean);
+      ROSTER.forEach(function(r){ if (ids.indexOf(r.id) === -1) ids.push(r.id); });
+    }
+    return ids.slice(0, n);
+  }
+  function newBracket(ids){
+    var n = OPT.size, r0 = SEED[n].map(function(p){ return { a: ids[p[0]] || null, b: ids[p[1]] || null, w: null }; });
+    var rounds = [r0]; for (var len = r0.length/2; len >= 1; len /= 2) rounds.push(Array.from({length:len}, function(){ return { a:null, b:null, w:null }; }));
+    BR = { rounds: rounds, r: 0, m: -1 };
+    rounds[0].forEach(function(m, i){ if (m.a && !m.b) advance(0, i, m.a); else if (m.b && !m.a) advance(0, i, m.b); });
+  }
+  function advance(r, i, w){
+    BR.rounds[r][i].w = w;
+    if (r + 1 < BR.rounds.length){ var nx = BR.rounds[r+1][Math.floor(i/2)]; if (i % 2 === 0) nx.a = w; else nx.b = w; }
+  }
+  function nextMatch(){
+    // a slot whose feeder match was empty on both sides is a bye
+    for (var rr = 1; rr < BR.rounds.length; rr++) BR.rounds[rr].forEach(function(m, i){
+      if (m.w) return;
+      var fa = BR.rounds[rr-1][i*2], fb = BR.rounds[rr-1][i*2+1];
+      var deadA = !fa.a && !fa.b, deadB = !fb.a && !fb.b;
+      if (m.a && !m.b && deadB) advance(rr, i, m.a);
+      else if (m.b && !m.a && deadA) advance(rr, i, m.b);
+    });
+    for (var r = 0; r < BR.rounds.length; r++) for (var i = 0; i < BR.rounds[r].length; i++){
+      var m = BR.rounds[r][i]; if (!m.w && m.a && m.b) return { r:r, i:i };
+    }
+    return null;
+  }
+  function roundName(r){ var left = BR.rounds.length - r; return left === 1 ? "Final" : left === 2 ? "Semifinal" : "Quarterfinal"; }
+  function paintBracket(){
+    var v = el("bracketView"); if (!BR){ v.innerHTML = ""; v.style.display = "none"; return; }
+    v.style.display = "flex";
+    v.innerHTML = BR.rounds.map(function(col, r){
+      return '<div class="bcol"><div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);text-transform:uppercase;">'+roundName(r)+'</div>' + col.map(function(m, i){
+        var cur = BR.r === r && BR.m === i;
+        function row(id){ if (!id) return '<div style="color:var(--faint);">\u2014</div>'; var cls = m.w ? (m.w === id ? "w" : "l") : ""; return '<div class="'+cls+'"><span>'+esc(handleOf(id))+'</span>'+(m.w===id?'<span>\u2713</span>':'')+'</div>'; }
+        return '<div class="bm'+(cur?' cur':'')+'">'+row(m.a)+row(m.b)+'</div>';
+      }).join("") + '</div>';
+    }).join("");
+  }
+
+  /* ---- match flow ---- */
+  el("goBtn").onclick = async function(){
+    el("setupMsg").textContent = "";
+    if (!POOL.length){ el("setupMsg").textContent = "No questions for that module/type."; return; }
+    if (OPT.mode === "quick"){
+      BR = null;
+      if (el("p1").value === el("p2").value){ el("setupMsg").textContent = "Pick two different players."; return; }
+      startMatch(el("p1").value, el("p2").value, null);
+    } else {
+      var ids = seedPlayers();
+      if (ids.length < 2){ el("setupMsg").textContent = "Need at least 2 players for a bracket."; return; }
+      newBracket(ids); playNextBracket();
+    }
+  };
+  function playNextBracket(){
+    var nx = nextMatch();
+    if (!nx){
+      var champ = BR.rounds[BR.rounds.length-1][0].w;
+      paintBracket(); showWinner(champ, "Bracket champion", "Takes the whole bracket.", true); BR = null; return;
+    }
+    BR.r = nx.r; BR.m = nx.i;
+    var m = BR.rounds[nx.r][nx.i];
+    var label = roundName(nx.r) + (BR.rounds[nx.r].length > 1 ? " " + (nx.i + 1) : "");
+    startMatch(m.a, m.b, label);
+  }
+  async function startMatch(a, b, label){
+    try{
+      var r = await AUTH.rpc("ctf_t_duel_start",{ p_class:CUR.id, p_p1:a, p_p2:b, p_best_of:OPT.bo, p_pot:OPT.pot, p_label:label });
+      if (!r || r.error){ el("setupMsg").textContent = "Couldn\u2019t start: " + ((r&&r.error)||"error"); return; }
+      DUEL = r.id; ST = null; ending = false; lastSig = "";
+      el("setup").style.display = "none"; el("stage").style.display = "block"; el("lead").style.display = "none";
+      el("matchLabel").textContent = (label ? label + " \u00b7 " : "") + "Best of " + OPT.bo + (OPT.pot ? " \u00b7 " + OPT.pot + " XP pot" : "");
+      paintBracket();
+      el("qText").textContent = "Players: open your CTF page \u2014 first question in 3\u2026";
+      el("qOpts").innerHTML = ""; el("roundMsg").textContent = "";
+      poll();
+      setTimeout(nextQuestion, 3000);
+    }catch(e){ el("setupMsg").textContent = /duel_start|function/.test(String(e&&e.message)) ? "Run supabase/duels.sql first." : "Couldn\u2019t start: " + (e&&e.message||e); }
+  }
+  async function nextQuestion(){
+    clearTimeout(nextT);
+    if (!DUEL || ending || (ST && ST.winner)) return;
+    var q = drawQ(); if (!q) return;
+    el("nextBtn").disabled = true;
+    try{ await AUTH.rpc("ctf_t_duel_round",{ p_duel:DUEL, p_question:q.question, p_options:q.options, p_answer:q.answer }); }catch(e){}
+    el("nextBtn").disabled = false;
+    poll();
+  }
+  el("nextBtn").onclick = nextQuestion;
+  el("closeBtn").onclick = async function(){ if (!DUEL) return; try{ await AUTH.rpc("ctf_t_duel_close_round",{p_duel:DUEL}); }catch(e){} poll(); };
+  el("endBtn").onclick = function(){ if (DUEL && confirm("End this match now? The player ahead wins" + (OPT.pot ? " the pot" : "") + ".")) finish(); };
+  el("backBtn").onclick = async function(){
+    if (DUEL && !ending && ST && ST.status === "live" && !confirm("Leave this match? It will be cancelled.")) return;
+    if (DUEL && ST && ST.status === "live") { try{ await AUTH.rpc("ctf_t_duel_cancel",{p_duel:DUEL}); }catch(e){} }
+    stop(); BR = null; el("stage").style.display = "none"; el("setup").style.display = "block"; el("lead").style.display = ""; loadHistory();
+  };
+  function stop(){ DUEL = null; clearTimeout(pollT); clearTimeout(nextT); }
+  async function finish(){
+    if (ending) return; ending = true; clearTimeout(nextT);
+    var r = null; try{ r = await AUTH.rpc("ctf_t_duel_end",{ p_duel:DUEL, p_award:true }); }catch(e){}
+    var w = r && r.winner;
+    stop();
+    if (BR && w){ advance(BR.r, BR.m, w); paintBracket(); showWinner(w, BR.rounds.length - 1 === BR.r ? "Bracket champion" : "Advances", OPT.pot ? "+" + OPT.pot + " XP" : "", BR.rounds.length - 1 === BR.r); if (BR.rounds.length - 1 === BR.r) BR = null; }
+    else if (w) showWinner(w, "Winner", OPT.pot ? "+" + OPT.pot + " XP" : "", true);
+    else showWinner(null, "Draw", "No winner this time.", false);
+  }
+  function showWinner(id, kick, sub, big){
+    el("winKick").textContent = kick; el("winName").innerHTML = id ? nameHtml(id) : "\u2014"; el("winSub").textContent = sub || "";
+    el("winner").style.display = "flex"; el("winNext").focus();
+    sMatch(); if (big) confetti();
+  }
+  el("winNext").onclick = function(){
+    el("winner").style.display = "none";
+    if (BR && nextMatch()) playNextBracket();
+    else if (BR) playNextBracket();
+    else { el("stage").style.display = "none"; el("setup").style.display = "block"; el("lead").style.display = ""; loadHistory(); }
+  };
+  function confetti(){
+    if (reduced()) return;
+    var cols = ["#39d0ff","#ff5fd2","#ffcf5c","#3ddc84","#b98bff"];
+    for (var i = 0; i < 110; i++){ var c = document.createElement("div"); c.className = "confetti";
+      c.style.left = Math.random()*100 + "vw"; c.style.background = cols[i % cols.length];
+      c.style.animationDuration = (2.2 + Math.random()*1.6) + "s"; c.style.animationDelay = (Math.random()*0.5) + "s";
+      document.body.appendChild(c); setTimeout(function(x){ return function(){ x.remove(); }; }(c), 4500); }
+  }
+
+  /* ---- live state ---- */
+  var prevAns = {}, prevRound = null, clockT = null;
+  async function poll(){
+    clearTimeout(pollT); if (!DUEL) return;
+    try{ var s = await AUTH.rpc("ctf_t_duel_state",{p_duel:DUEL}); if (s && !s.error) paint(s); }catch(e){}
+    if (DUEL) pollT = setTimeout(poll, 700);
+  }
+  function pips(n, need){ var h = ""; for (var i = 0; i < need; i++) h += '<i class="'+(i<n?"on":"")+'"></i>'; return h; }
+  function paint(s){
+    var prev = ST; ST = s;
+    el("n1").innerHTML = nameHtml(s.p1); el("n2").innerHTML = nameHtml(s.p2);
+    el("s1").innerHTML = pips(s.p1_score, s.need); el("s2").innerHTML = pips(s.p2_score, s.need);
+    var r = s.round;
+    if (!r){ el("st1").textContent = el("st2").textContent = "waiting"; return; }
+    var sig = r.id;
+    if (sig !== prevRound){ prevRound = sig; prevAns = {}; startClock(r); }
+    el("roundNo").textContent = "ROUND " + r.n;
+    el("qText").textContent = r.question;
+    el("qOpts").innerHTML = (r.options||[]).map(function(o, i){
+      var ans = r.closed_at && o === r.answer;
+      return '<div class="opt'+(ans?' ans':'')+'"><span class="k">'+(i+1)+'</span><span style="min-width:0;">'+esc(o)+(ans?' \u2713':'')+'</span></div>';
+    }).join("");
+    var a = {}; (r.answers||[]).forEach(function(x){ a[x.student_id] = x; });
+    [["1", s.p1], ["2", s.p2]].forEach(function(p){
+      var x = a[p[1]], box = el("st" + p[0]), card = el("pl" + p[0]);
+      if (!x){ box.textContent = r.closed_at ? "no answer" : "thinking\u2026"; card.style.opacity = r.closed_at ? ".7" : "1"; return; }
+      box.innerHTML = x.correct ? '<span style="color:var(--ok);font-weight:800;">\u2713 CORRECT \u00b7 ' + (x.ms/1000).toFixed(1) + 's</span>' : '<span style="color:var(--bad);font-weight:800;">\u2717 LOCKED OUT</span>';
+      if (!prevAns[p[1]]){ prevAns[p[1]] = 1; card.style.animation = "none"; void card.offsetWidth; card.style.animation = "lockPop .35s"; x.correct ? sLock() : sWrong(); }
+    });
+    if (r.closed_at){
+      stopClock();
+      var wh = r.winner ? handleOf(r.winner) : null;
+      el("roundMsg").textContent = wh ? wh + " takes round " + r.n + "!" : "Nobody got round " + r.n + ". Answer: " + r.answer;
+      if (!prev || !prev.round || prev.round.id !== r.id || !prev.round.closed_at){ if (wh) sRound(); if (el("autoNext").checked && !s.winner) nextT = setTimeout(nextQuestion, 4000); }
+    } else el("roundMsg").textContent = "First correct answer takes the round";
+    el("nextBtn").textContent = r.closed_at ? "NEXT QUESTION" : "NEW QUESTION";
+    if (s.winner && !ending) setTimeout(finish, 1600);
+  }
+  function startClock(r){
+    stopClock(); var t0 = Date.now();
+    clockT = setInterval(function(){ el("clock").textContent = ((Date.now()-t0)/1000).toFixed(1) + "s"; }, 100);
+  }
+  function stopClock(){ clearInterval(clockT); }
+
+  /* ---- boot ---- */
+  (async function(){
+    if (!AUTH || !AUTH.online){ el("gate").textContent = "Connect the class backend (supabase-config.js) to run duels."; return; }
+    try{ CLASSES = await AUTH.rpc("ctf_t_classes") || []; }catch(e){ CLASSES = null; }
+    if (!Array.isArray(CLASSES)){ el("gate").innerHTML = 'Sign in on the <a href="teacher.html">teacher dashboard</a> to run duels.'; return; }
+    if (!CLASSES.length){ el("gate").textContent = "No classes yet."; return; }
+    el("gate").style.display = "none"; el("setup").style.display = "block";
+    el("cls").innerHTML = CLASSES.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>'; }).join("");
+    var q = new URLSearchParams(location.search).get("class"), k = null; try{ k = localStorage.getItem("duel-class"); }catch(e){}
+    var pick = [q, k].filter(function(x){ return x && CLASSES.some(function(c){ return c.id === x; }); })[0] || CLASSES[0].id;
+    el("cls").value = pick; selectClass(pick);
+  })();
+})();
+</script>
+</body>
+</html>

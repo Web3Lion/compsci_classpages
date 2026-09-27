@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="site.js?v=2.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Live Leaderboard — Classroom Display</title>
@@ -94,7 +95,11 @@ button{font-family:inherit;cursor:pointer;}
 #pod2,#pod3{opacity:.94;}
 
 #listWrap{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;}
-.row{display:grid;grid-template-columns:44px 1fr auto auto auto auto;align-items:center;gap:clamp(10px,1.4vw,18px);background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:clamp(9px,1.1vw,14px) clamp(12px,1.6vw,20px);animation:riseIn .35s ease both;}
+.mv{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(11px,1.1vw,13px);white-space:nowrap;text-align:center;}
+.mv.up{color:#3ddc84;}.mv.down{color:#ff5a6e;}.mv.same{color:var(--border2);}.mv.new{color:var(--accent2);letter-spacing:1px;font-size:clamp(9px,.9vw,11px);}
+:root[data-theme="light"] .mv.up{color:#137a3c;}:root[data-theme="light"] .mv.down{color:#b3203a;}
+.pod .mv{display:inline-block;margin-left:8px;}
+.row{display:grid;grid-template-columns:44px 40px 1fr auto auto auto auto;align-items:center;gap:clamp(10px,1.4vw,18px);background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:clamp(9px,1.1vw,14px) clamp(12px,1.6vw,20px);animation:riseIn .35s ease both;}
 .row .rk{font-family:'JetBrains Mono',monospace;color:var(--faint);font-size:clamp(13px,1.3vw,16px);text-align:center;}
 .row .hd{font-weight:700;color:var(--text);font-size:clamp(14px,1.6vw,19px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .row .streak{font-family:'JetBrains Mono',monospace;font-size:clamp(11px,1.1vw,13px);color:var(--amber,#ffcf5c);white-space:nowrap;}
@@ -203,10 +208,11 @@ button{font-family:inherit;cursor:pointer;}
   <div id="myRankChip"></div>
 </div>
 
-<script src="config.js?v=20260924"></script>
-<script src="cipher.js?v=20260924"></script>
-<script src="supabase-config.js?v=20260924"></script>
-<script src="auth.js?v=20260924"></script>
+<script src="config.js?v=2.0.0"></script>
+<script src="cipher.js?v=2.0.0"></script>
+<script src="supabase-config.js?v=2.0.0"></script>
+<script src="auth.js?v=2.0.0"></script>
+<script src="cosmetics.js?v=2.0.0"></script>
 <script>
 var FX = (function(){
   var canvas, ctx, raf = null, w = 0, h = 0, dpr = 1;
@@ -490,9 +496,20 @@ function setMode(m){
   if (BOARD_MODE === m) return;
   BOARD_MODE = m; localStorage.setItem("board-mode", m);
   paintMode();
-  PREV = {}; PREV_POS = {};
+  PREV = {}; PREV_POS = {}; PREV_SOLVED = {}; PREV_LEADER = null;
+  el("podium").innerHTML = ""; el("listWrap").innerHTML = ""; el("fameWrap").innerHTML = "";
+  el("podium").style.display = "none"; el("listWrap").style.display = "none"; el("fameWrap").style.display = "none";
+  el("empty").style.display = "block"; el("empty").textContent = "Loading…";
+  el("myRankChip").style.display = "none";
   loadBoard();
+  clearInterval(timer); timer = setInterval(loadBoard, 60000);
 }
+var LOAD_SEQ = 0;
+var COS = {}, COS_AT = 0, COS_CLASS = null;
+function cosOf(h){ return COS[String(h||"").toLowerCase()] || null; }
+function cosName(eq){ return (eq && window.CTF_COSMETICS) ? window.CTF_COSMETICS.nameStyle(eq) : ""; }
+function cosTitle(eq, sz){ return (eq && window.CTF_COSMETICS) ? window.CTF_COSMETICS.titleHtml(eq, sz) : ""; }
+function cosFrame(eq){ var c = (eq && window.CTF_COSMETICS) ? window.CTF_COSMETICS.frameClass(eq) : ""; return c ? " " + c : ""; }
 
 function applyTheme(course){
   var t = THEMES[course] || THEMES.cyber1;
@@ -577,14 +594,20 @@ document.addEventListener("fullscreenchange", function(){
 async function loadBoard(){
   if (!CUR) return;
   if (BOARD_MODE === "fame") return loadFame();
+  var seq = ++LOAD_SEQ, mode = BOARD_MODE;
   el("fameWrap").style.display = "none";
   var data = [];
-  var fn = BOARD_MODE === "weekly"
+  var fn = mode === "weekly"
     ? (IS_STUDENT ? "ctf_leaderboard_full_google_weekly" : "ctf_t_leaderboard_weekly")
     : (IS_STUDENT ? "ctf_leaderboard_full_google" : "ctf_t_leaderboard");
   try{ data = await rpc(fn, { p_class: CUR.id }) || []; }
-  catch(e){ return; }
-  if (data.error) return;
+  catch(e){ data = { error: String(e && e.message || e) }; }
+  if (window.CTF_COSMETICS && (!COS_AT || Date.now() - COS_AT > 120000 || COS_CLASS !== CUR.id)){
+    COS_AT = Date.now(); COS_CLASS = CUR.id;
+    try{ COS = await window.CTF_COSMETICS.forClass(CUR.id); window.CTF_COSMETICS.css(); }catch(e){}
+  }
+  if (seq !== LOAD_SEQ || mode !== BOARD_MODE) return; // stale response from a previous mode
+  if (data.error){ console.warn("[leaderboard]", fn, data.error); el("empty").style.display = "block"; el("empty").textContent = "Couldn't load the board (" + data.error + ")."; return; }
   renderBoard(data);
 }
 
@@ -592,10 +615,12 @@ var FAME_MEDALS = ["\ud83e\udd47","\ud83e\udd48","\ud83e\udd49"];
 async function loadFame(){
   el("podium").style.display = "none";
   el("listWrap").style.display = "none";
+  var seq = ++LOAD_SEQ;
   var data = [];
   var fn = IS_STUDENT ? "ctf_weekly_winners_google" : "ctf_t_weekly_winners";
   try{ data = await rpc(fn, { p_class: CUR.id }) || []; }
-  catch(e){ return; }
+  catch(e){ data = []; }
+  if (seq !== LOAD_SEQ || BOARD_MODE !== "fame") return;
   el("fCount").textContent = "hall of fame";
   el("fUpdated").textContent = "updated " + new Date().toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit",second:"2-digit"});
   if (!data || data.error || !data.length){
@@ -622,6 +647,18 @@ async function loadFame(){
       }).join('') + '</div>' +
     '</div>';
   }).join('');
+}
+
+/* Rank movement: compare against the first board seen today (per class + mode). */
+function rankBase(data){
+  var key = 'board-base-' + CUR.id + '-' + BOARD_MODE, today = new Date().toDateString(), b = null;
+  try{ b = JSON.parse(localStorage.getItem(key) || 'null'); }catch(e){}
+  if (!b || b.day !== today || !b.pos){
+    b = { day: today, pos: {} };
+    data.forEach(function(p){ b.pos[p.handle] = p.pos; });
+    try{ localStorage.setItem(key, JSON.stringify(b)); }catch(e){}
+  }
+  return b.pos;
 }
 
 function renderBoard(data){
@@ -665,15 +702,25 @@ function renderBoard(data){
   });
 
   var myHandle = IS_STUDENT ? MY_HANDLES[CUR.id] : null;
+  var BASE = rankBase(data);
+  function moveHtml(p){
+    var b = BASE[p.handle];
+    if (b == null) return '<span class="mv new" title="New on the board today">NEW</span>';
+    var d = b - p.pos;
+    if (d > 0) return '<span class="mv up" title="Up ' + d + ' since this morning">\u25B2' + d + '</span>';
+    if (d < 0) return '<span class="mv down" title="Down ' + (-d) + ' since this morning">\u25BC' + (-d) + '</span>';
+    return '<span class="mv same" title="No change today">\u2013</span>';
+  }
 
   var top3 = data.slice(0,3), rest = data.slice(3);
   var maxXp = data[0].xp || 1;
 
   el("podium").innerHTML = top3.map(function(p, i){
-    return '<div class="pod' + (p.handle===myHandle?' isMe':'') + '" id="pod' + (i+1) + '" data-handle="' + esc(p.handle) + '" data-pos="' + p.pos + '">' +
+    var eq = cosOf(p.handle);
+    return '<div class="pod' + (p.handle===myHandle?' isMe':'') + cosFrame(eq) + '" id="pod' + (i+1) + '" data-handle="' + esc(p.handle) + '" data-pos="' + p.pos + '">' +
       '<div class="medal">' + MEDALS[i] + '</div>' +
-      '<div class="rank">RANK ' + p.pos + '</div>' +
-      '<div class="handle">' + esc(p.handle) + (p.handle===myHandle?' · YOU':'') + '</div>' +
+      '<div class="rank">RANK ' + p.pos + moveHtml(p) + '</div>' +
+      '<div class="handle"><span style="' + cosName(eq) + '">' + esc(p.handle) + '</span>' + (p.handle===myHandle?' · YOU':'') + cosTitle(eq, 12) + '</div>' +
       '<div class="xp" style="color:var(--accent);">' + p.xp + ' XP</div>' +
       (p.total_count ? '<div class="solved">' + p.solved_count + '/' + p.total_count + ' flags</div>' : '') +
       (p.streak_count > 1 ? '<div class="streak" style="margin-top:6px;">🔥 ' + p.streak_count + ' day streak</div>' : '') +
@@ -685,9 +732,10 @@ function renderBoard(data){
   el("listWrap").innerHTML = rest.map(function(p){
     var pct = Math.max(4, Math.round((p.xp / maxXp) * 100));
     var isUp = PREV[p.handle] != null && p.xp > PREV[p.handle];
-    return '<div class="row' + (isUp ? ' rowUp' : '') + (p.handle===myHandle?' isMe':'') + '" data-handle="' + esc(p.handle) + '" data-pos="' + p.pos + '">' +
-      '<div class="rk">#' + p.pos + '</div>' +
-      '<div class="hd">' + esc(p.handle) + (p.handle===myHandle?' · YOU':'') + '</div>' +
+    var eq = cosOf(p.handle);
+    return '<div class="row' + (isUp ? ' rowUp' : '') + (p.handle===myHandle?' isMe':'') + cosFrame(eq) + '" data-handle="' + esc(p.handle) + '" data-pos="' + p.pos + '">' +
+      '<div class="rk">#' + p.pos + '</div>' + moveHtml(p) +
+      '<div class="hd"><span style="' + cosName(eq) + '">' + esc(p.handle) + '</span>' + (p.handle===myHandle?' · YOU':'') + cosTitle(eq, 10) + '</div>' +
       '<div class="solved">' + (p.total_count ? p.solved_count + '/' + p.total_count : '—') + '</div>' +
       '<div class="streak' + (p.streak_count > 1 ? '' : ' empty') + '">' + (p.streak_count > 1 ? '🔥 ' + p.streak_count : '—') + '</div>' +
       '<div class="badges' + (p.badge_count ? '' : ' empty') + '">' + (p.badge_count ? '🎖 ' + p.badge_count : '—') + '</div>' +

@@ -624,8 +624,9 @@
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start;">' +
         identityCard() + xpCard() +
       '</div>' +
-      itemsCard() + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
+      itemsCard() + '<div id="pfShop"></div>' + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
     wireIdentity();
+    if (window.CTF_COSMETICS) window.CTF_COSMETICS.mountShop(el("pfShop"));
     if (ITEMS.length) renderItems();
     loadItems();
     loadObjectives();

@@ -59,7 +59,25 @@ from (
                         where table_schema='public' and table_name='xp_grants'))),
     (13,'hardmode-log.sql',   'Arena mini-game run log (Decrypt, Rapid Fire, Speed Match…)',
         (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='hardmode_runs')))
+                        where table_schema='public' and table_name='hardmode_runs'))),
+    (14,'reward-items.sql',   'Reward items, spinner prizes, loot drops',
+        (select exists (select 1 from information_schema.tables
+                        where table_schema='public' and table_name='reward_items'))),
+    (15,'weekly-winners.sql', 'Hall of Fame weekly top 3',
+        (select exists (select 1 from information_schema.routines
+                        where routine_schema='public' and routine_name='ctf_t_weekly_winners'))),
+    (16,'coins-cosmetics.sql','v2.0 · Coins + Coin Shop cosmetics',
+        (select exists (select 1 from information_schema.tables
+                        where table_schema='public' and table_name='cosmetic_owned'))),
+    (17,'class-pulse.sql',    'v2.0 · Live Class Pulse dashboard',
+        (select exists (select 1 from information_schema.tables
+                        where table_schema='public' and table_name='presence'))),
+    (18,'duels.sql',          'v2.0 · Head-to-head duels',
+        (select exists (select 1 from information_schema.tables
+                        where table_schema='public' and table_name='duels'))),
+    (19,'scheduled-unlocks.sql','v2.0 · Scheduled unlocks (run LAST of the gate files)',
+        (select exists (select 1 from information_schema.tables
+                        where table_schema='public' and table_name='unlock_schedule')))
   ) as c(step, file, feature, present)
 
   union all
@@ -142,6 +160,25 @@ from (
       else '⚠ RE-RUN teacher-xp.sql — google-auth.sql reverted ctf_sync_google, granted XP will be lost on sync'
     end,
     2, 4
+
+  union all
+
+  -- ---- guard 5: scheduled-unlocks.sql must be the last to define ctf_gates ---
+  -- class-gates.sql, squads.sql and objectives.sql all redefine ctf_gates. If any
+  -- of them runs after scheduled-unlocks.sql, due unlocks never apply.
+  select '—', 'run order', 'scheduled-unlocks.sql must run after the gate files',
+    case
+      when not exists (select 1 from information_schema.tables
+                       where table_schema='public' and table_name='unlock_schedule')
+        then 'scheduled-unlocks.sql not run yet — nothing to check'
+      when (select pg_get_functiondef(p.oid) from pg_proc p
+            join pg_namespace n on n.oid = p.pronamespace
+            where n.nspname='public' and p.proname='ctf_gates' limit 1)
+           like '%_apply_unlocks%'
+        then '✅ fine — ctf_gates applies scheduled unlocks'
+      else '⚠ RE-RUN scheduled-unlocks.sql — a later file overwrote ctf_gates'
+    end,
+    2, 5
 
 ) as r
 order by r.grp, r.ord;

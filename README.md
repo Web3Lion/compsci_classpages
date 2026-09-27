@@ -1,8 +1,10 @@
 # Cybersecurity & CS Classroom Site
 
-Static, no-build HTML site for four courses: AP Computer Science Principles (`apcsp/`),
+**Version 2.0.0** — see `CHANGELOG.md`.
+
+Static, no-build HTML site for five courses: AP Computer Science Principles (`apcsp/`),
 Cybersecurity 1 (`cyber1/`), AP Cybersecurity 2 (`cyber2/`), Cybersecurity 3 (`cyber3/`),
-plus a Web3/Blockchain elective (`web3/`).
+and a Web3/Blockchain elective (`web3/`).
 Root `index.html` is the course picker (homepage).
 
 ## Setup
@@ -37,8 +39,10 @@ isn't filled in.
 - `apcsp/`, `cyber1/`, `cyber2/`, `cyber3/`, `web3/` — one folder per course, each with:
   - `index.html` — course home (schedule, countdowns, quick links, resources)
   - `syllabus.html`, `vocab.html`, `vocab-data.js`, `news.html`, `profile.html`
-  - `ctf.html` — the course's Capture-the-Flag / challenge arena (cyber1, cyber2 &
-    cyber3 only — apcsp and web3 don't have one)
+  - `ctf.html` — the course's Capture-the-Flag / challenge arena. All five courses
+    have one, themed per course ("Bug Bounty" in AP CSP, "Block Hunter" in Web3).
+  - `apcsp/packet-intro.js`, `web3/consensus-intro.js` — page-transition intros for
+    the non-cyber courses (cyber pages use `nemesis-intro.js`).
 - `simulators/` — standalone interactive teaching tools (one HTML file each), linked
   from the course pages' "Simulators" / "Class Links" cards. `simulators/index.html`
   is the simulators hub/directory.
@@ -46,25 +50,47 @@ isn't filled in.
   `practice/index.html`. Each quiz has Open Practice (untimed, endless) and Begin
   Quiz (graded, timed, 10-15 random no-repeat questions) modes. `teacher-guide.html`
   maps every quiz to AP CSP Units/Big Ideas.
-- `leaderboard.html` — live classroom-display leaderboard (Supabase-backed). Requires
-  the same Google sign-in + class-join flow as `ctf.html`; shows an error state if
-  the signed-in account hasn't joined a class for that course yet.
+- `leaderboard.html` — live classroom-display leaderboard (Supabase-backed). Teachers
+  pick a class; students see their own class with their row highlighted and a sticky
+  rank chip. Three modes: **Overall**, **This Week**, and **Hall of Fame** (past weekly
+  top 3). Rank movement arrows (▲/▼/NEW) compare against the first board seen that
+  day on that device. Fullscreen button for projectors; auto-refreshes every 60s.
+- `reward-spinner.html` — teacher-only prize wheel (students see a locked view).
+  Pick a class + student and the prize is sent to their profile when the wheel stops.
+  **EDIT ODDS** lets the teacher reweight or remove prizes (saved per device); sound
+  effects can be toggled off.
+- `duel.html` — head-to-head duel projector page (quick duel or 4/8-player
+  bracket). Students answer on their own device via `duel-client.js`.
+- `pulse.html` — live Class Pulse dashboard: who's active, which flag they're on,
+  who needs help, capture feed.
+- `certificates.html` — printable certificates (module / weekly top 3 / course /
+  duel champion / custom), one landscape page per student.
+- `answers.html` — teacher page for uploading `answers.local.js`.
+- `countdown.html` — standalone countdown display.
 - `apcsp/carlow-grade-scale.html`, `cyber1/rmu-grade-scale.html` — dual-credit partner
   grade-scale reference pages, flagged as differing from South Fayette's own scale.
 - `config.js` — **single source of truth** for editable per-course settings: schedule
   sheet IDs, exam/task countdown dates, Meet links, resource card links, CTF flags
   (see `CLAUDE.md` for the CTF authoring rules).
-- `ctf.js` — shared CTF engine (challenge rendering, grading, boss gauntlet, anti-AI
-  deterrents). Loaded only by `cyber1/ctf.html`, `cyber2/ctf.html`, and `cyber3/ctf.html`.
+- `ctf.js` — shared CTF engine (challenge rendering, grading, boss gauntlet, badges,
+  ranks, streaks, reward items, loot drops, anti-AI deterrents). Loaded by every
+  course's `ctf.html` and `profile.html`.
 - `teacher.html` — teacher-facing dashboard/reports (Supabase-backed): class summaries,
   login/attendance report, flag analytics, module/flag locks, course-guide persona and
   answer-key toggles, Ultimate Flags active/inactive toggle (cyber1 & cyber2), squads,
-  vocab lab, objectives, XP log, enrollment, integrity/cheat log, settings.
+  vocab lab, objectives, XP log, enrollment, integrity/cheat log, send rewards (to one
+  student or a whole class) with an item log, settings.
 - `answers.local.js` — teacher-only answer key for text-entry flags, uploaded via
   `answers.html`. **Gitignored — never commit it.**
 - `resources.js`, `objectives.js`, `standards.js`, `sync.js`, `auth.js`, `profile.js`,
-  `vocab-log.js`, `vocab-xp.js`, `welcome.js`, `nemesis-intro.js`, `name-filter.js`,
-  `gate-art.js`, `csv.js`, `cipher.js` — shared helper scripts used across course pages.
+  `profile-link.js`, `practice-sync.js`, `vocab-log.js`, `vocab-xp.js`, `welcome.js`,
+  `nemesis-intro.js`, `name-filter.js`, `gate-art.js`, `csv.js`, `cipher.js`,
+  `cosmetics.js` (Coin Shop + leaderboard cosmetics), `duel-client.js` (student duel
+  pad) — shared helper scripts used across course pages.
+- `site.js` — loaded in `<head>` on every page: `SITE_VERSION`, the A11Y panel
+  (reduce motion, high contrast), skip link, focus styles.
+  Script tags carry the release number as a cache tag (`?v=2.0.0`) — when you bump
+  `SITE_VERSION`, bump the tag on every page too.
 - `styles.css` — shared base styles/tokens used site-wide.
 - `design-system/` — visual design system reference (tokens, components, guidelines).
 - `supabase/` — SQL schema files for the optional backend (run in the order noted in
@@ -74,7 +100,44 @@ isn't filled in.
   `_is_school()`/`_is_teacher()`), and `allowed-emails.sql` must be re-run after any
   re-run of `multi-domain.sql` (it resets the external-email allowlist). Use
   `check-installed.sql` to see which files need a re-run.
+- `.github/workflows/weekly-snapshot.yml` — GitHub Action that saves each class's
+  weekly top 3 to the Hall of Fame every Monday (replaces pg_cron, which the Supabase
+  free tier lacks). Needs repo secrets `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`, plus
+  `supabase/weekly-snapshot-auto.sql` installed.
 - `uploads/` — reference materials (CED PDFs, pasted images) used while building content.
+
+## Rewards & items
+
+Students earn or receive items that appear in their profile inventory. Timed items
+are activated with a hold-to-confirm button and show a live countdown on the profile
+and in the arena (bottom-left pill). New arrivals show a glowing notification.
+
+- **Game items:** 2x XP (24h), Streak Freeze, +500 XP bonus
+- **Boss boosts:** Firewall Shield, Overclock, Extra Life
+- **Flag help:** Free Hint, Retry Wipe, Cooldown Skip, Time Freeze
+- **XP multipliers:** Lucky Capture, Pioneer Boost, Squad Surge
+- **Surprise drops:** Mystery Box, Loot Drop (3% chance per capture)
+- **Vouchers** (homework pass, extension, bonus points): redeemed in person with the teacher
+
+Sources: the reward spinner, the teacher dashboard's Send Rewards tab, and loot drops.
+Backend: `supabase/reward-items.sql`.
+
+## Arena mechanics (v2.0)
+
+- **Combo meter:** consecutive captures with no wrong answer pay ×1.1, ×1.2, ×1.3,
+  ×1.4, then ×1.5 max. One miss resets it.
+- **Bookmarks:** ☆ on any flag, then filter to ★ Saved.
+- **Hint cost preview:** the flag's value now vs. after the hint, before you reveal it.
+- **Coins:** 1 coin per 250 XP (plus teacher bonus coins), spent in the profile
+  Coin Shop on titles, name colors and frames. Never affects XP or rank.
+
+## Site-wide conventions
+
+- **Light/dark theme toggle** on every page, shared through `localStorage['course-theme']`.
+  New pages must include it from the start (see `CLAUDE.md`).
+- **Accessibility preferences** (`course-motion`, `course-contrast`) are shared the
+  same way. New pages get them by loading `site.js` in `<head>`; JS-driven
+  animations should check `window.SITE_REDUCED_MOTION()`.
 
 ## Editing day-to-day content
 
