@@ -4,8 +4,9 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=2.0.0"></script>
+<script src="../site.js?v=4.0.0"></script>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cybersecurity 1 — Course Home</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,7 +72,14 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   }
   @media(max-width:760px){
     .instrGrid{grid-template-columns:1fr !important;}
+    #tripCard{grid-template-columns:1fr !important;padding:18px !important;}
+    .tripClocks{justify-content:flex-start !important;}
+    .tripClocks{flex-wrap:wrap;} .tripClocks > div{flex:1 1 140px;min-width:0 !important;}
   }
+@media(max-width:1060px){#tripCard{grid-template-columns:1fr !important;} .tripClocks{justify-content:flex-start !important;}}
+#tripCard{text-decoration:none;transition:transform .08s ease,border-color .15s ease,box-shadow .15s ease;}
+#tripCard:hover{border-color:var(--amber);box-shadow:0 6px 18px -12px var(--amber);color:var(--text);}
+#tripCard:active{transform:translateY(2px) scale(.992);}
 </style>
 </head>
 <body>
@@ -91,6 +99,43 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
       </div>
     </div>
   </div>
+
+  <a id="tripCard" href="../sru-summit.html?from=cyber1" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;margin-top:22px;padding:24px 28px;border:1px solid var(--amber-bd);border-radius:14px;background:linear-gradient(135deg,var(--amber-bg) 0%,var(--bg) 70%);color:var(--text);">
+    <div style="min-width:0;">
+      <div class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--amber);margin-bottom:10px;">// ANNOUNCEMENT · FIELD TRIP</div>
+      <div class="mono" style="font-weight:800;font-size:clamp(20px,2.6vw,26px);line-height:1.2;color:var(--bright);margin-bottom:8px;">Cyberspace K-12 Summit</div>
+      <div style="font-size:15px;line-height:1.55;color:var(--muted);text-wrap:pretty;">At Slippery Rock University on NOV 5th, 2026. Bus leaves 7:30 and returns 1:30. Field Trip form must be completed.</div>
+      <div class="mono" style="margin-top:12px;font-size:13px;color:var(--accent);">Details, schedule &amp; forms &rarr;</div>
+    </div>
+    <div class="tripClocks" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+      <div style="display:flex;flex-direction:column;gap:4px;padding:12px 16px;border-radius:10px;border:1px solid var(--amber-bd);background:var(--bg);min-width:150px;">
+        <span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--amber);">SLIP DUE · OCT 9</span>
+        <span class="mono" id="tripSlip" style="font-weight:800;font-size:20px;color:var(--bright);font-variant-numeric:tabular-nums;">—</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;padding:12px 16px;border-radius:10px;border:1px solid var(--accent);background:var(--bg);min-width:150px;">
+        <span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--accent);">INTAKE DUE · OCT 12</span>
+        <span class="mono" id="tripIntake" style="font-weight:800;font-size:20px;color:var(--bright);font-variant-numeric:tabular-nums;">—</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;padding:12px 16px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);min-width:150px;">
+        <span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">SUMMIT · NOV 5</span>
+        <span class="mono" id="tripEvent" style="font-weight:800;font-size:20px;color:var(--bright);font-variant-numeric:tabular-nums;">—</span>
+      </div>
+    </div>
+  </a>
+  <script>
+  (function(){
+    var SLIP = new Date(2026, 9, 9, 23, 59, 59), INTAKE = new Date(2026, 9, 12, 23, 59, 59), EVENT = new Date(2026, 10, 5, 7, 30, 0), END = new Date(2026, 10, 5, 23, 59, 59);
+    var card = document.getElementById('tripCard');
+    if (Date.now() > END){ card.style.display = 'none'; return; }
+    function fmt(ms){ var s = Math.floor(ms/1000), d = Math.floor(s/86400), h = Math.floor(s%86400/3600), m = Math.floor(s%3600/60), p = function(n){ return (n<10?'0':'')+n; };
+      return d > 0 ? d + 'd ' + p(h) + 'h ' + p(m) + 'm' : p(h) + 'h ' + p(m) + 'm ' + p(s%60) + 's'; }
+    function tick(){ var now = Date.now();
+      document.getElementById('tripSlip').textContent = now < SLIP ? fmt(SLIP - now) : 'Closed';
+      document.getElementById('tripIntake').textContent = now < INTAKE ? fmt(INTAKE - now) : 'Closed';
+      document.getElementById('tripEvent').textContent = now < EVENT ? fmt(EVENT - now) : 'Today'; }
+    tick(); setInterval(tick, 1000);
+  })();
+  </script>
 
 <div style="border: 1px solid var(--border3); border-radius: 14px; background: linear-gradient(135deg, var(--panel2) 0%, var(--bg) 65%); padding: 30px 32px; margin-top: 22px; position: relative; overflow: hidden; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;" onmouseenter="this.style.transform='translateY(-6px) scale(1.015)';this.style.boxShadow='0 20px 40px -18px var(--accent)';this.style.borderColor='var(--accent)';" onmouseleave="this.style.transform='';this.style.boxShadow='';this.style.borderColor='var(--border3)';">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(0,179,255,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
@@ -318,7 +363,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="mono" style="margin-top: 28px; text-align: center; font-size: 12px; color: var(--fainter);">&gt; end_of_transmission // stay curious, stay safe_</div>
 </div>
 
-<script src="../config.js?v=2.0.0"></script>
+<script src="../config.js?v=4.0.0"></script>
 <script src="../resources.js"></script>
 <script>
 const CFG = (window.COURSE_CONFIG && window.COURSE_CONFIG.cyber1) || {};
@@ -604,10 +649,10 @@ load(); setInterval(load, 5*60*1000);
 })();
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="vocab-data.js?v=2.0.0"></script>
-<script src="../supabase-config.js?v=2.0.0"></script>
-<script src="../nemesis-intro.js?v=2.0.0"></script>
-<script src="../profile-link.js?v=2.0.0"></script>
+<script src="vocab-data.js?v=4.0.0"></script>
+<script src="../supabase-config.js?v=4.0.0"></script>
+<script src="../nemesis-intro.js?v=4.0.0"></script>
+<script src="../profile-link.js?v=4.0.0"></script>
 <script>
 (function(){
   console.log('%cDev note: run unlockFlag() in this console to skip ahead.', 'color:#888;font-style:italic;');

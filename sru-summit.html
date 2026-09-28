@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}try{var f=new URLSearchParams(location.search).get('from');if(f==='cyber2')document.documentElement.setAttribute('data-course','cyber2');}catch(e){}})();</script>
+<script src="site.js?v=4.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Trip — Cyberspace K-12 Summit at Slippery Rock University</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Light = ivory program paper. Dark = ink-blue library at night. School colour follows the course (navy for Cyber 1, forest for AP Cyber 2). */
+:root{--paper:#1a1d24;--paper2:#20242d;--ink:#efe8d8;--ink2:#d6cdb8;--muted:#b4ab97;--rule:#4a4639;--rule2:#34322b;--school:#9fb8dc;--schoolBg:#1d2a3d;--gold:#d9b664;--goldBg:#2d2616;--seal:#3a3527;}
+:root[data-course="cyber2"]{--school:#8fcaa6;--schoolBg:#17301f;}
+:root[data-theme="light"]{--paper:#f7f2e7;--paper2:#fffcf5;--ink:#1c1a17;--ink2:#35312b;--muted:#5d564b;--rule:#b9ab8e;--rule2:#dcd2bd;--school:#1f3a5f;--schoolBg:#e6ebf2;--gold:#7d5d12;--goldBg:#f6ecd2;--seal:#e9dfc9;}
+:root[data-theme="light"][data-course="cyber2"]{--school:#1d4d34;--schoolBg:#e3eee6;}
+/* Site-standard tokens (read by site.js: A11Y button/panel, skip link, focus ring) mapped onto this palette */
+:root{--bg:var(--paper);--panel:var(--paper2);--panel2:var(--paper2);--text:var(--ink);--bright:var(--ink);--dim:var(--muted);--faint:var(--muted);--border:var(--rule);--border2:var(--rule2);--border3:var(--rule);--accent:var(--school);--accent2:var(--gold);--amber:var(--gold);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Libre Caslon Text',Georgia,serif;-webkit-font-smoothing:antialiased;}
+a{color:var(--school);} a:hover{color:var(--gold);}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
+.sans{font-family:'Libre Franklin',system-ui,sans-serif;}
+.sc{font-family:'Libre Franklin',system-ui,sans-serif;font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'Libre Franklin',sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;padding:8px 14px;border-radius:2px;border:1px solid var(--rule);background:var(--paper2);color:var(--school);cursor:pointer;}
+.themebtn:hover{border-color:var(--school);}
+.wrap{max-width:900px;margin:0 auto;padding:0 28px 72px;}
+.double{border:0;border-top:3px double var(--rule);margin:0;}
+.hair{border:0;border-top:1px solid var(--rule2);margin:0;}
+.btn{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;padding:18px 22px;min-height:64px;text-decoration:none;border-radius:2px;transition:transform .08s ease,box-shadow .15s ease;}
+.btn:active{transform:translateY(2px);}
+.btn .num{font-family:'Libre Caslon Text',serif;font-style:italic;font-size:22px;}
+.btn .lbl{font-family:'Libre Caslon Text',serif;font-size:19px;color:var(--ink);}
+.btn .due{font-family:'Libre Franklin',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;}
+.btn.gold{border:2px solid var(--gold);background:var(--goldBg);}
+.btn.gold .num,.btn.gold .due{color:var(--gold);}
+.btn.gold:hover{box-shadow:0 10px 24px -14px var(--gold);color:inherit;}
+.btn.school{border:2px solid var(--school);background:var(--schoolBg);}
+.btn.school .num,.btn.school .due{color:var(--school);}
+.btn.school:hover{box-shadow:0 10px 24px -14px var(--school);color:inherit;}
+.notice{padding:20px 22px;border-top:3px solid var(--rule);background:var(--paper2);display:flex;flex-direction:column;gap:6px;min-width:0;}
+.notice .v{font-family:'Libre Caslon Text',serif;font-size:clamp(26px,3.6vw,34px);line-height:1.1;color:var(--ink);font-variant-numeric:tabular-nums lining-nums;}
+.notice .d{font-style:italic;color:var(--muted);font-size:15px;}
+.prog{display:grid;grid-template-columns:180px minmax(0,1fr);gap:28px;padding:26px 0;border-top:1px solid var(--rule2);}
+.prog:first-of-type{border-top:none;}
+.prog .t{font-family:'Libre Franklin',sans-serif;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--school);padding-top:5px;font-variant-numeric:tabular-nums;}
+.prog h3{margin:0 0 8px;font-weight:400;font-size:22px;line-height:1.3;color:var(--ink);}
+.prog p{margin:0;font-size:16px;line-height:1.7;color:var(--ink2);text-wrap:pretty;}
+.prog ul{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;}
+.prog li{font-style:italic;font-size:16px;color:var(--ink2);padding-left:22px;position:relative;}
+.prog li::before{content:"§";position:absolute;left:0;font-style:normal;color:var(--gold);}
+@media(max-width:720px){.wrap{padding:0 16px 56px;}.prog{grid-template-columns:1fr;gap:6px;padding:20px 0;}.btn{grid-template-columns:auto minmax(0,1fr);}.btn .arr{display:none;}.btn .due{grid-column:2;}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<main class="wrap" id="main">
+
+  <a id="backLink" class="sc" href="cyber1/index.html" style="display:inline-block;margin-top:22px;padding:12px 0;color:var(--muted);text-decoration:none;font-size:11px;">&larr; Return to course home</a>
+
+  <header style="text-align:center;padding:34px 0 30px;">
+    <div class="sc" style="color:var(--school);margin-bottom:22px;">Slippery Rock University &nbsp;·&nbsp; C2AC</div>
+    <hr class="double">
+    <div style="padding:34px 0 30px;">
+      <div class="sans" style="font-size:13px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;">Field Trip</div>
+      <h1 style="margin:0;font-weight:400;font-size:clamp(38px,6.4vw,64px);line-height:1.05;letter-spacing:-.01em;color:var(--ink);text-wrap:balance;">Cyberspace K-12 Summit</h1>
+      <p style="margin:18px 0 0;font-style:italic;font-size:clamp(17px,2.2vw,21px);color:var(--ink2);">At Slippery Rock University on NOV 5th, 2026</p>
+    </div>
+    <hr class="double">
+    <div class="sc" style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px 26px;margin-top:18px;color:var(--muted);font-size:11px;">
+      <span>Cybersecurity 1</span><span aria-hidden="true" style="color:var(--gold);">✦</span><span>AP Cybersecurity 2</span>
+    </div>
+  </header>
+
+  <section aria-label="About the summit" style="padding:10px 0 40px;">
+    <p style="margin:0 auto 18px;max-width:680px;text-align:center;font-size:22px;line-height:1.45;color:var(--ink);font-style:italic;">Empowering Schools to Secure the Future.</p>
+    <p style="margin:0 auto;max-width:680px;font-size:17px;line-height:1.8;color:var(--ink2);text-wrap:pretty;"><span style="float:left;font-size:64px;line-height:.9;padding:6px 10px 0 0;color:var(--school);">D</span>esigned to address the growing digital defense landscape, this cybersecurity outreach initiative at Slippery Rock University organized by Center for Cybersecurity and Advanced Computing (C2AC) focuses directly on the K-12 ecosystem. Connecting regional educators, school administrators, and higher education leaders, this forum evaluates modern digital safety, network security, and classroom-ready cybersecurity curriculum. Attendees will walk away with practical, real-world defensive methodologies to build strong institutional resilience and introduce students early to critical Cybersecurity career pathways.</p>
+  </section>
+
+  <section aria-labelledby="h-reg" style="padding:36px 0 40px;border-top:1px solid var(--rule2);">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
+      <h2 id="h-reg" style="margin:0;font-weight:400;font-size:28px;color:var(--ink);">Before You Go</h2>
+      <span style="font-style:italic;color:var(--muted);font-size:16px;">Field Trip form must be completed</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:22px;">
+      <div class="notice" style="border-top-color:var(--gold);">
+        <span class="sc" style="color:var(--gold);font-size:11px;">Permission slip due</span>
+        <span class="v" id="cdSlip">—</span>
+        <span class="d">Friday, October 9</span>
+      </div>
+      <div class="notice" style="border-top-color:var(--school);">
+        <span class="sc" style="color:var(--school);font-size:11px;">Intake form due</span>
+        <span class="v" id="cdIntake">—</span>
+        <span class="d">Monday, October 12</span>
+      </div>
+      <div class="notice">
+        <span class="sc" style="color:var(--muted);font-size:11px;">Summit day</span>
+        <span class="v" id="cdEvent">—</span>
+        <span class="d">Thursday, November 5, 2026</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;">
+      <a class="btn gold" href="https://drive.google.com/file/d/16Sb291b4_i3EqPkr_kVfyQYIK3gE-TRD/view?usp=sharing" target="_blank" rel="noopener"><span class="num">i.</span><span class="lbl">Field Trip Form</span><span class="due">Due Oct 9 <span class="arr" aria-hidden="true">&nbsp;&#8599;</span></span></a>
+      <a class="btn school" href="https://forms.gle/GMwxJrhx3sHfAPkd6" target="_blank" rel="noopener"><span class="num">ii.</span><span class="lbl">Student Intake Form</span><span class="due">Due Oct 12 <span class="arr" aria-hidden="true">&nbsp;&#8599;</span></span></a>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-travel" style="padding:36px 0 40px;border-top:1px solid var(--rule2);">
+    <h2 id="h-travel" style="margin:0 0 22px;font-weight:400;font-size:28px;color:var(--ink);">Travel</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));border-top:3px double var(--rule);border-bottom:3px double var(--rule);">
+      <div style="padding:20px 18px;text-align:center;border-right:1px solid var(--rule2);"><div class="sc" style="color:var(--muted);font-size:11px;margin-bottom:8px;">Bus leaves</div><div style="font-size:34px;color:var(--ink);font-variant-numeric:lining-nums;">7:30</div></div>
+      <div style="padding:20px 18px;text-align:center;border-right:1px solid var(--rule2);"><div class="sc" style="color:var(--muted);font-size:11px;margin-bottom:8px;">Returns</div><div style="font-size:34px;color:var(--ink);font-variant-numeric:lining-nums;">1:30</div></div>
+      <div style="padding:20px 18px;text-align:center;"><div class="sc" style="color:var(--muted);font-size:11px;margin-bottom:8px;">Location</div><div style="font-size:17px;line-height:1.45;color:var(--ink);font-style:italic;">Smith Center Ballroom, Slippery Rock University</div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-prog" style="padding:36px 0 0;border-top:1px solid var(--rule2);">
+    <div style="text-align:center;margin-bottom:26px;">
+      <h2 id="h-prog" style="margin:0 0 8px;font-weight:400;font-size:32px;color:var(--ink);">Tentative Schedule</h2>
+      <div style="font-style:italic;color:var(--muted);font-size:16px;">Location: Smith Center Ballroom, Slippery Rock University</div>
+      <div aria-hidden="true" style="color:var(--gold);margin-top:14px;letter-spacing:.6em;">✦ ✦ ✦</div>
+    </div>
+    <div class="prog">
+      <div class="t">9:30 AM – 9:45 AM</div>
+      <div><h3>Welcome &amp; Opening Remarks</h3><p>Introduction to the Cyberspace K-12 Summit and an overview of the day's goals for securing the digital defense landscape.</p></div>
+    </div>
+    <div class="prog">
+      <div class="t">9:45 AM – 10:30 AM</div>
+      <div><h3>Presentation: Secure the Future</h3><p>Presented by the Director Center for Cybersecurity and Advanced Computing (C2AC). An exploration of modern network security, defensive methodologies, and emerging career pathways in cyber.</p></div>
+    </div>
+    <div class="prog">
+      <div class="t">10:30 AM – 11:15 AM</div>
+      <div><h3>Student Lightning Talks</h3><p>Rapid-fire presentations from university students showcasing hands-on topics:</p>
+        <ul><li>Ethical Hacking &amp; Penetration Testing Basics</li><li>Digital Forensics and Cyber Crime Investigation</li><li>The Role of Artificial Intelligence (AI) in Modern Cybersecurity</li></ul></div>
+    </div>
+    <div class="prog">
+      <div class="t">11:15 AM – 12:00 PM</div>
+      <div><h3>Mentor-Protege Networking Lunch</h3><p>An interactive lunch session pairing K-12 attendees with university student mentors to discuss choosing college majors, finding tech internships, and navigating campus life.</p></div>
+    </div>
+    <hr class="double" style="margin-top:10px;">
+  </section>
+</main>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script>
+(function(){
+  var from = new URLSearchParams(location.search).get('from');
+  if (from === 'cyber2') document.getElementById('backLink').href = 'cyber2/index.html';
+  var SLIP = new Date(2026, 9, 9, 23, 59, 59), INTAKE = new Date(2026, 9, 12, 23, 59, 59), EVENT = new Date(2026, 10, 5, 7, 30, 0), END = new Date(2026, 10, 5, 13, 30, 0);
+  function fmt(ms){
+    var s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    var p = function(n){ return (n < 10 ? '0' : '') + n; };
+    return d > 0 ? d + 'd ' + p(h) + 'h ' + p(m) + 'm' : p(h) + ':' + p(m) + ':' + p(sec);
+  }
+  function tick(){
+    var now = Date.now();
+    document.getElementById('cdSlip').textContent = now < SLIP ? fmt(SLIP - now) : 'Closed';
+    document.getElementById('cdIntake').textContent = now < INTAKE ? fmt(INTAKE - now) : 'Closed';
+    document.getElementById('cdEvent').textContent = now < EVENT ? fmt(EVENT - now) : now < END ? 'Today' : 'Complete';
+  }
+  tick(); setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>

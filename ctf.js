@@ -2,10 +2,10 @@
 /* ============================================================
    CAPTURE THE FLAG — shared engine for every course.
    ONE file. All four courses use identical logic (like the
-   weekly-schedule engine). Content lives in config.js.
+   weekly-schedule engine). Content lives in ctf-data/<course>.js.
 
    HOW TO ADD / EDIT CHALLENGES:
-     Edit  window.COURSE_CONFIG.<course>.ctf  in config.js.
+     Edit  window.COURSE_CONFIG.<course>.ctf  in ctf-data/<course>.js.
      Each course's ctf block:
        { title, intro, challenges: [ {challenge}, ... ] }
      Each challenge:

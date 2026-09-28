@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=4.0.0"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Install Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#6a84a0;--accent:#00b3ff;--amber:#ffcf5c;--ok:#3ddc84;--bad:#ff5a6e;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5a6c80;--faint:#6f8196;--accent:#0a74d6;--amber:#8a6a00;--ok:#137a3c;--bad:#b3203a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+a{color:var(--accent);} a:hover{color:var(--bright);}
+.mono{font-family:'JetBrains Mono',monospace;}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.wrap{max-width:1100px;margin:0 auto;padding:22px clamp(14px,2.5vw,32px) 60px;}
+.kick{font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;}
+h1{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(24px,3vw,32px);margin:6px 0 8px;color:var(--bright);letter-spacing:-.5px;}
+h2{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin:0 0 12px;font-weight:700;display:flex;align-items:center;gap:10px;}
+h2 .cnt{margin-left:auto;letter-spacing:0;text-transform:none;font-weight:500;}
+.sub{color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 20px;max-width:70ch;text-wrap:pretty;}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.5px;padding:10px 14px;min-height:44px;border-radius:10px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;}
+.btn:hover{color:var(--bright);border-color:var(--accent);}
+.btn.primary{border-color:var(--accent);background:var(--accent);color:var(--bg);}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px;}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 16px;}
+.stat .n{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:var(--bright);line-height:1;}
+.stat .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-top:8px;text-transform:uppercase;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:16px;}
+.row{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--border2);}
+.row:last-child{border-bottom:none;}
+.row .t{color:var(--bright);font-size:14px;font-weight:600;}
+.row .d{color:var(--dim);font-size:13px;line-height:1.5;margin-top:2px;text-wrap:pretty;}
+.row .f{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);white-space:nowrap;}
+.ic{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:14px;line-height:20px;text-align:center;}
+.ok{color:var(--ok);} .bad{color:var(--bad);} .warn{color:var(--amber);} .na{color:var(--faint);}
+details summary{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);padding:8px 0;min-height:32px;}
+.course{border-top:1px solid var(--border2);padding-top:12px;margin-top:12px;}
+.course:first-of-type{border-top:none;margin-top:0;padding-top:0;}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--border3);color:var(--dim);}
+ul.iss{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.6;color:var(--text);}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel2);border:1px solid var(--border2);border-radius:5px;padding:1px 5px;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<main class="wrap" id="main">
+  <a class="mono" href="teacher.html" style="font-size:12px;color:var(--dim);text-decoration:none;display:inline-block;padding:10px 0;">&larr; Teacher dashboard</a>
+  <div class="kick mono">&gt; ./install-check</div>
+  <h1>Install Check</h1>
+  <p class="sub">Checks the site setup, the Supabase database and the course content in one place. It only reads. Work down anything marked <span class="bad mono">✕</span> or <span class="warn mono">!</span>.</p>
+  <div class="bar">
+    <button class="btn primary" id="rerun">RE-CHECK</button>
+    <button class="btn" id="copyMissing" style="display:none;">COPY FILES TO RUN</button>
+    <span class="mono" id="when" style="font-size:11px;color:var(--faint);margin-left:auto;"></span>
+  </div>
+  <div class="summary" id="summary" aria-live="polite"></div>
+
+  <section class="panel" aria-labelledby="h-site"><h2 id="h-site">Site + connection <span class="cnt" id="c-site"></span></h2><div id="site"></div></section>
+  <section class="panel" aria-labelledby="h-db"><h2 id="h-db">Database files <span class="cnt" id="c-db"></span></h2><div id="db"><div class="row"><span class="ic na">…</span><div><div class="t">Checking…</div></div><span></span></div></div></section>
+  <section class="panel" aria-labelledby="h-order"><h2 id="h-order">Run order <span class="cnt" id="c-order"></span></h2><div id="order"></div></section>
+  <section class="panel" aria-labelledby="h-content"><h2 id="h-content">Course content <span class="cnt" id="c-content"></span></h2><div id="content"></div></section>
+</main>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script src="config.js?v=4.0.0"></script>
+<script src="ctf-data/cyber1.js?v=4.0.0"></script>
+<script src="ctf-data/cyber2.js?v=4.0.0"></script>
+<script src="ctf-data/cyber3.js?v=4.0.0"></script>
+<script src="ctf-data/apcsp.js?v=4.0.0"></script>
+<script src="ctf-data/web3.js?v=4.0.0"></script>
+<script src="supabase-config.js?v=4.0.0"></script>
+<script src="auth.js?v=4.0.0"></script>
+<script>
+(function(){
+  var COURSES = [["cyber1","Cyber 1"],["cyber2","AP Cyber 2"],["cyber3","Cyber 3"],["apcsp","AP CSP"],["web3","Web3"]];
+  var INTERACTIVE = { match:1, order:1, spot:1, phish:1 };
+  var TIERS = [["Easy",50],["Medium",100],["Hard",150]];
+  var MISSING = [];
+  function el(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  var ICON = { ok:['✓','ok'], bad:['✕','bad'], warn:['!','warn'], na:['–','na'] };
+  function row(state, title, detail, file){
+    var i = ICON[state] || ICON.na;
+    return '<div class="row"><span class="ic ' + i[1] + '" aria-label="' + state + '">' + i[0] + '</span><div><div class="t">' + title + '</div>' +
+      (detail ? '<div class="d">' + detail + '</div>' : '') + '</div><span class="f">' + (file ? esc(file) : '') + '</span></div>';
+  }
+  function count(list){ var c = { ok:0, bad:0, warn:0, na:0 }; list.forEach(function(s){ c[s] = (c[s]||0) + 1; }); return c; }
+  function cnt(id, c, total){
+    var parts = [];
+    if (c.bad) parts.push('<span class="bad">' + c.bad + ' to fix</span>');
+    if (c.warn) parts.push('<span class="warn">' + c.warn + ' warning' + (c.warn>1?'s':'') + '</span>');
+    if (!c.bad && !c.warn) parts.push('<span class="ok">all good</span>');
+    el(id).innerHTML = parts.join(' · ');
+  }
+  var TOT = { bad:0, warn:0 };
+  function tally(c){ TOT.bad += c.bad||0; TOT.warn += c.warn||0; }
+
+  /* ---------- 1. site + connection ---------- */
+  async function checkSite(){
+    var S = [], H = [], cfg = window.SUPABASE_CONFIG || {}, AUTH = window.CTF_AUTH;
+    var filled = !!(cfg.url && cfg.anonKey);
+    S.push(filled ? 'ok' : 'bad');
+    H.push(row(S[0], 'supabase-config.js is filled in', filled ? esc(cfg.url) : 'Paste the Project URL and anon key. Without them the site runs in local-only mode.', 'supabase-config.js'));
+    var pre = document.querySelector('link[rel="preconnect"][href*="supabase.co"]');
+    if (filled && pre){
+      var same = pre.href.replace(/\/$/,'') === String(cfg.url).replace(/\/$/,'');
+      S.push(same ? 'ok' : 'warn');
+      H.push(row(S[S.length-1], 'Pages preconnect to the right server', same ? 'Pages open the database connection early, while the rest of the page loads.' : 'The preconnect link on the pages points at ' + esc(pre.href) + '. Update it on every page to match supabase-config.js.', ''));
+    }
+    var reach = 'na', who = 'na', whoTxt = 'Skipped until the server is reachable.';
+    if (filled && AUTH && AUTH.online){
+      try{ await AUTH.rpc('ctf_install_status'); reach = 'ok'; }
+      catch(e){ reach = /Could not find|PGRST202|function/i.test(String(e && e.message)) ? 'ok' : 'bad'; }
+      if (reach === 'ok'){
+        try{ var cl = await AUTH.rpc('ctf_t_classes'); who = Array.isArray(cl) ? 'ok' : 'warn';
+          whoTxt = Array.isArray(cl) ? 'Signed in as a teacher · ' + cl.length + ' class' + (cl.length===1?'':'es') + '.' : 'Not signed in as a teacher. Sign in on the <a href="teacher.html">teacher dashboard</a>, then re-check.'; }
+        catch(e){ who = 'warn'; whoTxt = 'Not signed in as a teacher. Sign in on the <a href="teacher.html">teacher dashboard</a>, then re-check.'; }
+      }
+    }
+    S.push(reach); H.push(row(reach, 'Database server reachable', reach === 'bad' ? 'The request failed. Check the URL and key, or whether the Supabase project is paused (free projects pause after a week of no use).' : reach === 'na' ? 'Skipped: no config.' : '', ''));
+    S.push(who); H.push(row(who, 'Teacher sign-in', whoTxt, ''));
+    var v = window.SITE_VERSION || '?';
+    var tags = [].slice.call(document.querySelectorAll('script[src*="?v="]')).map(function(s){ return (s.getAttribute('src').match(/\?v=([^&]+)/)||[])[1]; });
+    var off = tags.filter(function(t){ return t !== v; });
+    S.push(off.length ? 'warn' : 'ok');
+    H.push(row(S[S.length-1], 'Site version ' + esc(v), off.length ? 'Some script tags on this page carry a different cache tag (' + esc(off.join(', ')) + ').' : 'Script cache tags match SITE_VERSION.', 'site.js'));
+    el('site').innerHTML = H.join(''); var c = count(S); cnt('c-site', c); tally(c);
+  }
+
+  /* ---------- 2 + 3. database files + run order ---------- */
+  async function checkDb(){
+    var AUTH = window.CTF_AUTH, d = null, err = '';
+    if (AUTH && AUTH.online){
+      try{ d = await AUTH.rpc('ctf_install_status'); }catch(e){ err = String(e && e.message || e); }
+    } else err = 'offline';
+    if (!d || !d.rows){
+      var missingFn = /Could not find|PGRST202|function/i.test(err);
+      el('db').innerHTML = row(err === 'offline' ? 'na' : 'bad',
+        err === 'offline' ? 'No database connection' : missingFn ? 'Run supabase/install-check.sql once' : 'Couldn\u2019t read the install status',
+        err === 'offline' ? 'Fill in supabase-config.js first.' :
+        missingFn ? 'This page reads the database through one small function. Paste <code>supabase/install-check.sql</code> into the Supabase SQL Editor and run it, then press RE-CHECK. Until then, <code>supabase/check-installed.sql</code> shows the same list in the SQL Editor.' : esc(err), 'install-check.sql');
+      el('order').innerHTML = row('na', 'Waiting on the database check', '', '');
+      el('c-db').innerHTML = err === 'offline' ? '' : '<span class="bad">1 to fix</span>'; el('c-order').innerHTML = '';
+      if (err !== 'offline') tally({ bad:1 });
+      return;
+    }
+    var files = d.rows.filter(function(r){ return r.grp === 1; }), guards = d.rows.filter(function(r){ return r.grp === 2; });
+    MISSING = files.filter(function(r){ return r.state === 'missing'; }).map(function(r){ return r.file; });
+    var fs = files.map(function(r){ return r.state === 'ok' ? 'ok' : 'bad'; });
+    var have = fs.filter(function(s){ return s === 'ok'; }).length;
+    var okRows = files.filter(function(r){ return r.state === 'ok'; }), badRows = files.filter(function(r){ return r.state !== 'ok'; });
+    el('db').innerHTML =
+      (badRows.length ? badRows.map(function(r){ return row('bad', esc(r.feature), 'Not installed. Run it in the Supabase SQL Editor, in the order shown in SUPABASE-SETUP.md (step ' + esc(r.step) + ').', r.file); }).join('') : '') +
+      (okRows.length ? '<details' + (badRows.length ? '' : ' open') + '><summary>' + okRows.length + ' installed</summary>' + okRows.map(function(r){ return row('ok', esc(r.feature), '', r.file); }).join('') + '</details>' : '');
+    var c1 = count(fs); cnt('c-db', c1); tally(c1);
+    el('c-db').innerHTML = have + ' of ' + files.length + ' installed' + (c1.bad ? ' · <span class="bad">' + c1.bad + ' to run</span>' : ' · <span class="ok">all good</span>');
+    el('copyMissing').style.display = MISSING.length ? '' : 'none';
+
+    var gs = guards.map(function(r){ return r.state === 'ok' ? 'ok' : r.state === 'rerun' ? 'bad' : 'na'; });
+    el('order').innerHTML = guards.map(function(r, i){
+      var msg = String(r.status || '').replace(/^[✅⚠]\s*/, '');
+      return row(gs[i], esc(r.feature), esc(msg), '');
+    }).join('');
+    var c2 = count(gs); cnt('c-order', c2); tally(c2);
+
+    var snapState, snapTxt;
+    if (!d.last_snapshot){ snapState = files.some(function(r){ return r.file === 'weekly-winners.sql' && r.state === 'ok'; }) ? 'warn' : 'na'; snapTxt = snapState === 'na' ? 'weekly-winners.sql not installed.' : 'No weekly snapshot has been saved yet. The GitHub Action runs every Monday; you can also run it by hand from the repo\u2019s Actions tab.'; }
+    else {
+      var age = Math.floor((Date.now() - Date.parse(d.last_snapshot + 'T12:00:00')) / 864e5);
+      snapState = age <= 8 ? 'ok' : 'warn';
+      snapTxt = 'Latest Hall of Fame week: ' + esc(d.last_snapshot) + ' (' + d.snapshot_classes + ' class' + (d.snapshot_classes===1?'':'es') + ').' +
+        (age > 8 ? ' That\u2019s ' + age + ' days ago, so the Monday GitHub Action may not be running. Check the repo\u2019s Actions tab and the SUPABASE_URL / SUPABASE_SERVICE_KEY secrets.' : '');
+    }
+    el('order').innerHTML += row(snapState, 'Weekly snapshot is running', snapTxt, '.github/workflows');
+    var c3 = count([snapState]); tally(c3);
+    if (c3.warn) el('c-order').innerHTML += (el('c-order').textContent ? ' · ' : '') + '<span class="warn">snapshot</span>';
+    el('when').textContent = 'checked ' + new Date(d.checked_at || Date.now()).toLocaleTimeString(undefined, {hour:'numeric', minute:'2-digit'});
+  }
+
+  /* ---------- 4. course content (runs the loaded config, never regex) ---------- */
+  function auditCourse(key){
+    var cfg = (window.COURSE_CONFIG || {})[key] || {}, ctf = cfg.ctf;
+    var R = { errors:[], warns:[], stats:{} };
+    if (!ctf){ R.errors.push('ctf-data/' + key + '.js did not load (no CTF block for this course).'); return R; }
+    var ch = ctf.challenges || [], seen = {}, dup = {}, mods = {};
+    var text = 0, inter = 0, noObj = 0;
+    ch.forEach(function(c){
+      if (seen[c.id]) dup[c.id] = 1; seen[c.id] = 1;
+      var m = mods[c.module] || (mods[c.module] = { inter:0, vocab:0, total:0 }); m.total++;
+      var t = c.type || 'text';
+      if (INTERACTIVE[t]){ inter++; m.inter++; return; }
+      if (t === 'vocab'){ m.vocab++; return; }
+      text++;
+      if (!Array.isArray(c.levels)){ R.errors.push('<code>' + esc(c.id) + '</code> is a single-difficulty text flag. Text flags need Easy / Medium / Hard levels.'); return; }
+      TIERS.forEach(function(tier, i){
+        var L = c.levels[i];
+        if (!L){ R.errors.push('<code>' + esc(c.id) + '</code> is missing its ' + tier[0] + ' level.'); return; }
+        if (L.difficulty !== tier[0] || Number(L.points) !== tier[1]) R.warns.push('<code>' + esc(c.id) + '</code> level ' + (i+1) + ' is ' + esc(L.difficulty) + ' / ' + esc(L.points) + ' (expected ' + tier[0] + ' / ' + tier[1] + ').');
+        if (!/^[0-9a-f]{64}$/i.test(String(L.flagHash || ''))) R.errors.push('<code>' + esc(c.id) + '</code> ' + tier[0] + ' has no valid flagHash.');
+      });
+      if (!c.levels.some(function(L){ return /objective/i.test(L.prompt || ''); })) noObj++;
+    });
+    Object.keys(dup).forEach(function(id){ R.errors.push('Duplicate challenge id <code>' + esc(id) + '</code>.'); });
+    var modNums = Object.keys(mods).map(Number).sort(function(a,b){ return a-b; });
+    var thin = modNums.filter(function(n){ return mods[n].inter < 3; });
+    var noVocab = modNums.filter(function(n){ return !mods[n].vocab; });
+    if (thin.length) R.warns.push('Fewer than 3 interactive captures in module' + (thin.length>1?'s ':' ') + thin.map(function(n){ return n + ' (' + mods[n].inter + ')'; }).join(', ') + '.');
+    if (noVocab.length) R.warns.push('No vocab challenge in module' + (noVocab.length>1?'s ':' ') + noVocab.join(', ') + '.');
+    if (noObj) R.warns.push(noObj + ' text flag' + (noObj>1?'s don\u2019t':' doesn\u2019t') + ' name a course Objective in any prompt.');
+    var bq = (ctf.bossQuestions || []).length;
+    if (!bq) R.warns.push('No bossQuestions, so BEAT NEMESIS uses only the auto-generated bank.');
+    R.stats = { modules: modNums.length, challenges: ch.length, text: text, interactive: inter, boss: bq };
+    return R;
+  }
+  function checkContent(){
+    var S = [], H = [];
+    COURSES.forEach(function(c){
+      var R = auditCourse(c[0]), st = R.errors.length ? 'bad' : R.warns.length ? 'warn' : 'ok'; S.push(st);
+      var s = R.stats, i = ICON[st];
+      H.push('<div class="course"><div style="display:flex;align-items:center;gap:10px;"><span class="ic ' + i[1] + '" style="width:22px;">' + i[0] + '</span><b style="color:var(--bright);">' + c[1] + '</b><span class="f mono" style="margin-left:auto;font-size:12px;color:var(--faint);">ctf-data/' + c[0] + '.js</span></div>' +
+        (s.challenges != null ? '<div class="chips" style="padding-left:32px;">' + [[s.modules,'modules'],[s.challenges,'challenges'],[s.text,'text flags'],[s.interactive,'interactive'],[s.boss,'boss questions']].map(function(x){ return '<span class="chip">' + x[0] + ' ' + x[1] + '</span>'; }).join('') + '</div>' : '') +
+        (R.errors.length || R.warns.length ? '<details style="padding-left:32px;"' + (R.errors.length ? ' open' : '') + '><summary>' + (R.errors.length ? R.errors.length + ' to fix' : '') + (R.errors.length && R.warns.length ? ' · ' : '') + (R.warns.length ? R.warns.length + ' warning' + (R.warns.length>1?'s':'') : '') + '</summary><ul class="iss">' +
+          R.errors.map(function(e){ return '<li><span class="bad mono">✕</span> ' + e + '</li>'; }).join('') +
+          R.warns.map(function(w){ return '<li><span class="warn mono">!</span> ' + w + '</li>'; }).join('') + '</ul></details>' : '') +
+        '</div>');
+    });
+    el('content').innerHTML = H.join('') + '<p class="mono" style="font-size:11px;color:var(--faint);line-height:1.6;margin:14px 0 0;">Checks text-flag tiers + hashes, duplicate ids, ≥3 interactive captures and a vocab challenge per module, Objective wording and boss questions. Answers in answers.local.js are checked on <a href="answers.html">answers.html</a>.</p>';
+    var c = count(S); cnt('c-content', c); tally(c);
+  }
+
+  function paintSummary(){
+    el('summary').innerHTML = [
+      [TOT.bad, 'to fix', TOT.bad ? 'var(--bad)' : 'var(--ok)'],
+      [TOT.warn, 'warnings', TOT.warn ? 'var(--amber)' : null],
+      [window.SITE_VERSION || '?', 'site version']
+    ].map(function(x){ return '<div class="stat"><div class="n"' + (x[2] ? ' style="color:' + x[2] + ';"' : '') + '>' + x[0] + '</div><div class="k">' + x[1] + '</div></div>'; }).join('');
+  }
+  async function run(){
+    TOT = { bad:0, warn:0 }; MISSING = [];
+    el('rerun').disabled = true; el('rerun').textContent = 'CHECKING…';
+    checkContent(); paintSummary();
+    await checkSite(); paintSummary();
+    await checkDb(); paintSummary();
+    el('rerun').disabled = false; el('rerun').textContent = 'RE-CHECK';
+  }
+  el('rerun').onclick = run;
+  el('copyMissing').onclick = function(){
+    var t = MISSING.join('\n');
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ el('copyMissing').textContent = 'COPIED'; setTimeout(function(){ el('copyMissing').textContent = 'COPY FILES TO RUN'; }, 1500); }, function(){ prompt('Files to run, in order:', t); });
+  };
+  run();
+})();
+</script>
+</body>
+</html>

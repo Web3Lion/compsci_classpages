@@ -23,17 +23,24 @@
   that course's key. Keys are `"<id>"` or `"<id>#0|#1|#2"` (Easy/Medium/Hard);
   values are the exact typed answer. Interactive (`match`/`order`/`spot`/`phish`)
   and `vocab` challenges have no typed answer and never appear there. After
-  editing, re-verify every entry by hashing it against `config.js`. The file is
+  editing, re-verify every entry by hashing it against `ctf-data/<course>.js`. The file is
   gitignored and uploaded through `answers.html`; never commit or serve it.
 - **Every challenge lives in exactly one place**: the `challenges: [ ... ]` array
-  inside that course's `window.COURSE_CONFIG.<course>.ctf = { … }` block, grouped by
+  inside that course's `window.COURSE_CONFIG.<course>.ctf = { … }` block in
+  `ctf-data/<course>.js` (split out of `config.js` in 3.0.0; `config.js` now holds only
+  the per-course basics — meet, sheet, exam, syllabus, resource cards), grouped by
   `/* MODULE n — Name */` dividers, in display order. There are no `.push()` calls
   and no post-processing blocks that rewrite the array — do not reintroduce either.
   To add, edit, or remove a flag, edit that array directly.
-- **Still audit by EXECUTING `config.js`, not by scanning its text** — prompts contain
+- **Still audit by EXECUTING `config.js` + `ctf-data/*.js`, not by scanning their text** — prompts contain
   braces and escaped quotes that defeat regex/JSON scans, which makes live flags look
-  missing and hides duplicate ids. Enumerate with
-  `new Function('window','document',src)(win, stub)` then read `win.COURSE_CONFIG`.
+  missing and hides duplicate ids. Enumerate by running `config.js` then each
+  `ctf-data/*.js` through `new Function('window','document',src)(win, stub)` on the
+  same `win`, then read `win.COURSE_CONFIG`. `install-check.html` runs the same
+  structural audit in the browser.
+- Pages that need CTF data load `ctf-data/<course>.js` right after `config.js`
+  (a course's ctf.html/profile.html load only their own; teacher/answers/certificates/duel
+  load all five). Home/syllabus/news pages load `config.js` alone — keep it that way.
 - Each module should also have **≥3 dedicated interactive captures** (type `match`,
   `order`, `spot`, `phish`) plus the vocab `type:"vocab"` challenge (Easy/Med = typed,
   Hard = a per-module mini-game via `hardMode`).
@@ -74,3 +81,19 @@
   MINING BLOCK / BROADCASTING TRANSACTION). Each picks a random variant per load and
   is loaded on that course's ctf.html + index/vocab/syllabus/news (formal pages).
 - Vocab pool: `cyber2/vocab-data.js` (shared by vocab.html + ctf.html).
+
+## Versioning
+- The site version lives in `site.js` (`SITE_VERSION`) and `CHANGELOG.md`. Every
+  release: bump `SITE_VERSION`, add a CHANGELOG entry, and replace the `?v=x.y.z`
+  cache tag on every local script/stylesheet link to match. MAJOR = new SQL or new
+  pages, MINOR = features without SQL, PATCH = fixes.
+- Every page loads `site.js` in `<head>` right after the theme boot script (A11Y
+  panel, reduce-motion + high-contrast prefs, skip link). New pages must too.
+  JS-driven animation must check `window.SITE_REDUCED_MOTION()`.
+- `supabase/check-installed.sql` (SQL Editor) and `supabase/install-check.sql`
+  (the `ctf_install_status()` RPC behind `install-check.html`) carry the SAME file
+  list + run-order guards. Adding a SQL file or a redefining function means adding
+  it to both, and to the table in `SUPABASE-SETUP.md`.
+- `scheduled-unlocks.sql` must stay the last file to define `ctf_gates` /
+  `ctf_t_gates` / `ctf_t_classes`; if you change those in another file, mirror the
+  change there.

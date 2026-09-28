@@ -21,7 +21,8 @@ column is already there for the teacher streak-freeze we'll wire up next.
    - **anon public** key (a long `eyJ…` string)
 
 The anon key is safe to ship in the browser — the database is sealed behind
-row-level security and only the four `ctf_*` functions are reachable.
+row-level security; the browser can only call the `ctf_*` functions, and each one
+checks who is asking.
 
 ## 2. Run the schema
 1. Open **SQL Editor** in Supabase → **New query**.
@@ -62,6 +63,7 @@ row-level security and only the four `ctf_*` functions are reachable.
    | 28 | `class-pulse.sql` | **v2.0** Live Class Pulse dashboard (needs attempt-log.sql) |
    | 29 | `duels.sql` | **v2.0** Head-to-head duels (needs teacher-xp.sql) |
    | 30 | `scheduled-unlocks.sql` | **v2.0** Scheduled module/flag unlocks — must be the LAST file that defines the gate functions |
+   | 31 | `install-check.sql` | **v3.0** Live status for `install-check.html` (any time after schema.sql) |
 
    **Order matters in several places** (each is a case of two files redefining the
    same function, where the one that runs LAST wins):
@@ -78,15 +80,21 @@ row-level security and only the four `ctf_*` functions are reachable.
      students get rejected, granted bonus XP vanishes on next sync).
    - `allowed-emails.sql` must run after `multi-domain.sql`, always — re-running
      `multi-domain.sql` later silently drops the allowlist.
+   - `hint-log.sql` and `attempt-log.sql` each redefine a capture/cheat function
+     from `google-auth.sql` — re-run them after re-running it.
+   - `weekly-snapshot-auto.sql` redefines `ctf_t_snapshot_week` from
+     `weekly-winners.sql` — run it after, and re-run it if you re-run that file.
    - `scheduled-unlocks.sql` redefines `ctf_gates`, `ctf_t_gates` and `ctf_t_classes`
      as a superset of `class-gates.sql`, `squads.sql` and `objectives.sql`. Re-run it
      after re-running any of those (or `google-auth.sql`), or scheduled unlocks stop
      applying.
 
-4. **Check your work at any time:** paste the contents of
-   `supabase/check-installed.sql` → **Run**. It lists every add-on with
-   ✅/❌ and flags the run-order problems above. It only reads the catalog and
-   changes nothing.
+4. **Check your work at any time:** open **`install-check.html`** (also linked from
+   the teacher dashboard). It lists every file with ✓/✕, flags the run-order
+   problems above, confirms the Monday snapshot is still running and audits the
+   course content. It needs `install-check.sql` run once.
+   Without it, paste `supabase/check-installed.sql` into the SQL Editor → **Run**
+   for the same file list. Both only read the catalog and change nothing.
 
 ## 3. Turn it on in the site
 Edit `supabase-config.js` and paste your two values:
@@ -127,8 +135,9 @@ Hand each class its code. Students pick their own handle + PIN the first time.
 
 The gate only appears on the **CTF pages** — landing/syllabus/news pages stay open.
 
-## Reading progress & cheat events (until the dashboard exists)
-In the SQL Editor:
+## Reading progress & cheat events by hand
+The teacher dashboard shows all of this. If you ever need it straight from the
+SQL Editor:
 
 ```sql
 -- class leaderboard
