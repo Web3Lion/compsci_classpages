@@ -5,9 +5,8 @@
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <script src="site.js?v=5.0.0"></script>
 <meta charset="UTF-8">
-<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Class Reward Spinner</title>
+<title>Reward Games</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -125,7 +124,7 @@ body[data-lock] #pond{filter:grayscale(1);opacity:.45;pointer-events:none;}
 #pondReset{display:none;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:1px;padding:12px 22px;min-height:44px;border-radius:999px;border:none;background:linear-gradient(90deg,#ff00c8,#00f0ff);color:#04040a;cursor:pointer;}
 #fg,#fgTiers{display:none;--good:#39ff14;--bad:#ff4d6d;--pink:#ff00c8;}
 :root[data-theme="light"] #fg,:root[data-theme="light"] #fgTiers{--good:#11801f;--bad:#c4203e;--pink:#c4009a;}
-body[data-mode="fg"] #stage, body[data-mode="fg"] #spinBtn, body[data-mode="fg"] #odds{display:none;}
+body[data-mode="fg"] #stage, body[data-mode="fg"] #spinBtn{display:none;}
 body[data-mode="fg"] #fg, body[data-mode="fg"] #fgTiers{display:block;}
 body[data-lock] #fg{filter:grayscale(1);opacity:.45;pointer-events:none;}
 body[data-mode="fg"] #layout{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);}
@@ -199,15 +198,41 @@ body[data-mode="fg"] #layout{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)
 .pz.sel{border-color:var(--accent) !important;background:linear-gradient(90deg,rgba(255,0,200,.25),rgba(0,240,255,.25));}
 #claimBtn{display:none;margin-top:12px;width:100%;min-height:46px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:13px;letter-spacing:1px;border-radius:999px;border:1px solid var(--accent);background:transparent;color:var(--bright);cursor:pointer;}
 #claimBtn:disabled{opacity:.45;cursor:not-allowed;}
+#odds{border:1px solid var(--border3);border-radius:14px;background:var(--panel);padding:16px;transition:opacity .2s;}
+#odds.busy{opacity:.6;pointer-events:none;}
+.tableWrap{overflow-x:auto;}
+#rwTable{width:100%;min-width:320px;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+#rwTable col.c1{width:34px;} #rwTable col.c3{width:62px;} #rwTable col.c4{width:86px;} #rwTable col.c5{width:36px;}
+#rwTable td{padding-left:3px !important;padding-right:3px !important;}
+.numc{width:auto !important;gap:4px !important;}
+body:not([data-mode="fg"]) #layout{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);}
+@media (max-width:820px){body:not([data-mode="fg"]) #layout{grid-template-columns:minmax(0,1fr);}}
+#rwTable th{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);text-align:left;font-weight:700;padding:0 6px 8px;white-space:nowrap;}
+#rwTable td{padding:5px 6px;border-top:1px solid var(--border2);vertical-align:middle;}
+#rwTable input,#rwTable select{width:100%;padding:7px 8px;border-radius:8px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:inherit;font-size:13px;}
+#rwTable input:focus,#rwTable select:focus{outline:none;border-color:#00f0ff;}
+#rwTable input.pc{text-align:right;font-family:'JetBrains Mono',monospace;}
+#rwTable select{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 4px;}
+.numc{display:flex;align-items:center;gap:6px;width:42px;}
+.numc b{font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--bright);}
+.numc .sw{width:12px;height:12px;border-radius:3px;flex:none;}
+.rwDel{width:32px;height:32px;border-radius:8px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;font-size:16px;line-height:1;}
+.rwDel:hover{color:var(--bright);border-color:#ff4d6d;}
+#rwFoot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;}
+#rwTotal{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--bright);}
+#rwTotal.warn{color:var(--amber);}
+#rwNote{font-size:12px;color:var(--faint);margin:10px 0 0;line-height:1.5;}
+.pzNone{font-size:12px;color:var(--faint);}
+.foot{margin-top:40px;font-size:12px;color:var(--faint);}
 </style>
 </head>
-<body data-lock="1">
+<body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div id="spotlight"><div class="glow"></div><div class="glow2"></div><div class="glow3"></div></div>
 <div id="confettiWrap"></div>
 
 <div class="wrap">
-  <div class="kick mono">&gt; ./class-rewards</div>
+  <div class="kick mono">&gt; ./reward-games</div>
   <h1 class="mono" id="modeTitle">Reward Spinner</h1>
   <p class="lead" id="modeLead">Spin for a class reward. Bigger prizes come up less often.</p>
   <div id="modeRow" role="group" aria-label="Reward game">
@@ -263,75 +288,69 @@ body[data-mode="fg"] #layout{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)
     </div>
     <div id="odds">
       <div id="oddsHead">
-        <h2 class="mono">Odds</h2>
+        <h2 class="mono">Rewards</h2>
         <button class="oBtn" id="soundBtn" onclick="toggleSound()">SOUND ON</button>
-        <button class="oBtn" id="editOddsBtn" onclick="editOdds(true)">EDIT ODDS</button>
       </div>
-      <ul id="oddsList"></ul>
-      <div id="oddsFoot">
-        <button class="oBtn primary" onclick="saveOdds()">SAVE</button>
-        <button class="oBtn" onclick="editOdds(false)">CANCEL</button>
-        <button class="oBtn" onclick="resetOdds()">RESET TO DEFAULT</button>
-        <div id="oddsMsg" class="mono">Weights are relative. 0 removes a prize from the wheel. Saved on this device.</div>
+      <div class="tableWrap">
+        <table id="rwTable"><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"></colgroup>
+          <thead><tr><th>#</th><th>Reward</th><th>%</th><th>FG tier</th><th></th></tr></thead>
+          <tbody id="rwBody"></tbody>
+        </table>
       </div>
+      <div id="rwFoot">
+        <button class="oBtn primary" onclick="rwAdd()">+ ADD REWARD</button>
+        <button class="oBtn" onclick="rwReset()">RESET TO SAMPLE</button>
+        <span id="rwTotal"></span>
+      </div>
+      <p id="rwNote">The wheel and duck pond draw rewards by these chances. Field goal tiers are set by rarity unless you pick one: the rarest rewards go to the longest kicks. Saved in this browser only.</p>
     </div>
     <button id="spinBtn" onclick="spin()">SPIN</button>
     <div id="result">
       <div class="card">
         <div class="rl mono">You won</div>
         <div class="rv" id="resultText">—</div>
-        <div id="sendRow" style="display:none;margin-top:14px;">
-          <button id="sendBtn" class="mono" onclick="sendPrize()">SEND TO PROFILE</button>
-          <div id="sendMsg" class="mono"></div>
-        </div>
       </div>
     </div>
-    <div id="award">
-      <h2 class="mono">Spin for</h2>
-      <div id="awardBody" class="mono" style="font-size:12px;color:var(--faint);line-height:1.6;">Checking teacher sign-in…</div>
-    </div>
   </div>
   </div>
-  <div id="lockMsg" class="mono">The teacher is not available for spinning.</div>
 
   <div id="history">
     <h2 class="mono">Recent spins</h2>
     <ul id="historyList"></ul>
   </div>
 
-  <a class="back mono" href="teacher.html">&larr; back to teacher dashboard</a>
+  <div class="foot mono">Free for any classroom. Rewards and history stay in this browser; nothing is sent anywhere.</div>
 </div>
 
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();redrawTheme();};lbl();})();</script>
 <script>
-// Higher-value rewards get lower weight (less probable). Sum = 100 for easy % reading.
-// Each reward is split into multiple slices scattered around the wheel for a busier,
-// more colorful spin — probability per reward is unchanged (its weight, summed).
-var REWARDS = [
-  {label:"Streak Freeze (1 Week)",                 lines:["Streak","Freeze"],  weight:15, slices:2, kind:"freeze"},
-  {label:"Nightly Homework Pass",                  lines:["Homework","Pass"],   weight:6, slices:1, kind:"voucher"},
-  {label:"2x XP for 24 Hours",                     lines:["2x XP","24 Hours"], weight:15, slices:2, kind:"xp2x"},
-  {label:"1-Day Homework/Project Extension",       lines:["1-Day","Extension"], weight:6, slices:1, kind:"voucher"},
-  {label:"+500 Bonus XP",                          lines:["+500","XP"],        weight:15,  slices:2, kind:"xp500"},
-  {label:"+1 Bonus Point (Graded Assignment)",     lines:["+1 Bonus","Point"],  weight:10,  slices:2, kind:"voucher"},
-  {label:"1% Unit Test/Quiz Bonus",                lines:["1% Test","Bonus"],   weight:6,  slices:1, kind:"voucher"},
-  {label:"2% Unit Test/Quiz Bonus",                lines:["2% Test","Bonus"],   weight:2,  slices:1, kind:"voucher"},
-  {label:"Free Hint",                              lines:["Free","Hint"],       weight:5,  slices:1, kind:"hint"},
-  {label:"Mystery Box",                            lines:["Mystery","Box"],     weight:4,  slices:1, kind:"mystery"},
-  {label:"Retry Wipe",                             lines:["Retry","Wipe"],      weight:2,  slices:1, kind:"retry"},
-  {label:"Cooldown Skip",                          lines:["Cooldown","Skip"],   weight:2,  slices:1, kind:"cooldown"},
-  {label:"Firewall Shield",                        lines:["Firewall","Shield"], weight:2,  slices:1, kind:"shield"},
-  {label:"Overclock",                              lines:["Over-","clock"],     weight:2,  slices:1, kind:"overclock"},
-  {label:"Extra Life",                             lines:["Extra","Life"],      weight:2,  slices:1, kind:"extralife"},
-  {label:"Lucky Capture",                          lines:["Lucky","Capture"],   weight:2,  slices:1, kind:"lucky"},
-  {label:"Pioneer Boost",                          lines:["Pioneer","Boost"],   weight:2,  slices:1, kind:"pioneer"},
-  {label:"Time Freeze (10 Min)",                   lines:["Time","Freeze"],    weight:1,  slices:1, kind:"timefreeze"},
-  {label:"Squad Surge (1 Hour)",                   lines:["Squad","Surge"],    weight:1,  slices:1, kind:"squad"}
-];
 var NEON = ["#ff00c8","#00f0ff","#b026ff","#fff500","#39ff14","#ff4d6d","#05d9e8","#ff8a00","#d100d1","#7dff6e","#ff2079","#00ffa2","#8f00ff","#ffd400","#00b3ff","#ff5ec4"];
-REWARDS.forEach(function(r){ r.def = r.weight; });
-(function(){ try{ var sw = JSON.parse(localStorage.getItem('spinner-weights')||'null');
-  if (sw) REWARDS.forEach(function(r){ if (typeof sw[r.label] === 'number' && sw[r.label] >= 0) r.weight = sw[r.label]; }); }catch(e){} })();
+/* Teacher-entered rewards: {label, pct, tier:'auto'|'1'..'6'}. Saved per browser. */
+var RW_KEY = 'reward-games-items';
+var SAMPLE = [
+  {label:'Sticker', pct:20, tier:'auto'},
+  {label:'Piece of Candy', pct:15, tier:'auto'},
+  {label:'Pick the Class Music', pct:15, tier:'auto'},
+  {label:'Sit Anywhere (1 Day)', pct:15, tier:'auto'},
+  {label:'+2 Bonus Points', pct:12, tier:'auto'},
+  {label:'5 Minutes Free Time', pct:10, tier:'auto'},
+  {label:'Homework Pass', pct:8, tier:'auto'},
+  {label:'Teacher\u2019s Chair (1 Day)', pct:4, tier:'auto'},
+  {label:'Grand Prize', pct:1, tier:'auto'}
+];
+function loadItems(){ try{ var a = JSON.parse(localStorage.getItem(RW_KEY)||'null'); if (Array.isArray(a) && a.length) return a; }catch(e){} return SAMPLE.map(function(o){ return Object.assign({}, o); }); }
+var ITEMS = loadItems(), REWARDS = [];
+function saveItems(){ try{ localStorage.setItem(RW_KEY, JSON.stringify(ITEMS)); }catch(e){} }
+function syncRewards(){
+  REWARDS = ITEMS.filter(function(it){ return String(it.label||'').trim(); }).map(function(it){
+    var p = Math.max(0, parseFloat(it.pct)||0);
+    return {label:String(it.label).trim(), lines:[], weight:p, slices:p>=10?2:1, kind:'custom', tier:it.tier||'auto', src:it};
+  });
+  var s = REWARDS.slice().sort(function(a,b){ return b.weight - a.weight; });
+  s.forEach(function(r,i){ r.auto = Math.min(6, Math.floor(i*6/s.length)+1); r.fgTier = r.tier==='auto' ? r.auto : +r.tier; });
+}
+window.fgTiers = function(){ return [1,2,3,4,5,6].map(function(t){ return REWARDS.filter(function(r){ return r.fgTier===t; }).map(function(r){ return r.label; }); }); };
+syncRewards();
 var TOTAL_WEIGHT = 0, segs = [];
 function buildSegs(){
   segs = [];
@@ -457,12 +476,12 @@ function fireConfetti(big){
     (function(elm){ setTimeout(function(){ elm.remove(); }, 4000); })(c);
   }
 }
-function loadHistory(){ try{ return JSON.parse(localStorage.getItem('reward-spin-history')||'[]'); }catch(e){ return []; } }
+function loadHistory(){ try{ return JSON.parse(localStorage.getItem('reward-games-history')||'[]'); }catch(e){ return []; } }
 function logHistory(reward){
   var h = loadHistory();
   h.unshift({label:reward.label, ts:Date.now()});
   h = h.slice(0,8);
-  localStorage.setItem('reward-spin-history', JSON.stringify(h));
+  localStorage.setItem('reward-games-history', JSON.stringify(h));
   renderHistory();
 }
 function renderHistory(){
@@ -477,64 +496,51 @@ function renderHistory(){
 renderHistory();
 
 var EDITING = false;
-function colorOf(r){ var s = segs.filter(function(x){ return x.label===r.label; })[0]; return s ? s.color : 'var(--border2)'; }
-function fmtPct(w, tot){ if (!tot) return '0%'; var p = Math.round(w/tot*1000)/10; return (p%1===0?p:p.toFixed(1)) + '%'; }
-function editOdds(on){
-  EDITING = on;
-  document.getElementById('odds').classList.toggle('editing', on);
-  document.getElementById('editOddsBtn').style.display = on ? 'none' : '';
-  renderOdds();
-}
-function draftTotal(){ var t = 0; document.querySelectorAll('#oddsList input.w').forEach(function(i){ t += Math.max(0, parseFloat(i.value)||0); }); return t; }
-function refreshDraft(){
-  var t = draftTotal();
-  document.querySelectorAll('#oddsList li').forEach(function(li){
-    var i = li.querySelector('input.w'); var w = Math.max(0, parseFloat(i.value)||0);
-    li.querySelector('.pctE').textContent = fmtPct(w, t);
-    li.classList.toggle('off', w === 0);
-  });
-  document.getElementById('oddsMsg').textContent = t > 0 ? 'Weights are relative. 0 removes a prize from the wheel. Saved on this device.' : 'At least one prize needs a weight above 0.';
-}
-function saveOdds(){
-  if (spinning) return;
-  if (draftTotal() <= 0){ refreshDraft(); return; }
-  var map = {};
-  document.querySelectorAll('#oddsList input.w').forEach(function(i){
-    var r = REWARDS[+i.getAttribute('data-i')]; r.weight = Math.max(0, parseFloat(i.value)||0); map[r.label] = r.weight;
-  });
-  try{ localStorage.setItem('spinner-weights', JSON.stringify(map)); }catch(e){}
-  buildSegs(); drawWheel(); editOdds(false);
-}
-function resetOdds(){
-  document.querySelectorAll('#oddsList input.w').forEach(function(i){ i.value = REWARDS[+i.getAttribute('data-i')].def; });
-  refreshDraft();
-}
+function escH(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function segOf(r){ return segs.filter(function(x){ return x.num===r.num; })[0]; }
+function rwBusy(on){ var o = document.getElementById('odds'); if (o) o.classList.toggle('busy', !!on); }
 function renderOdds(){
-  var list = document.getElementById('oddsList');
-  if (EDITING){
-    list.innerHTML = REWARDS.map(function(r, idx){
-      return '<li><span class="sw" style="background:'+colorOf(r)+';"></span><span class="mono" style="font-weight:800;color:var(--bright);width:16px;">' + r.num + '</span><span style="min-width:0;">' + r.label + '</span><span class="pctE"></span><input class="w" type="number" min="0" step="1" data-i="' + idx + '" value="' + r.weight + '" oninput="refreshDraft()"></li>';
-    }).join('');
-    refreshDraft();
-    return;
-  }
-  var sorted = REWARDS.filter(function(r){ return r.weight > 0; }).sort(function(a,b){ return b.weight - a.weight; });
-  list.innerHTML = sorted.map(function(r){
-    var color = colorOf(r);
-    var pct = Math.round(r.weight/TOTAL_WEIGHT*1000)/10;
-    return '<li><span class="sw" style="background:'+color+';"></span><span class="mono" style="font-weight:800;color:var(--bright);width:16px;">' + r.num + '</span>' + r.label + '<span class="pct">' + (pct%1===0?pct:pct.toFixed(1)) + '%</span></li>';
+  var yd = ['10','20','30','40','50','60'];
+  document.getElementById('rwBody').innerHTML = ITEMS.map(function(it, i){
+    return '<tr><td><div class="numc"><span class="sw"></span><b></b></div></td>' +
+      '<td><input class="lab" maxlength="60" placeholder="Reward name" aria-label="Reward ' + (i+1) + ' name" value="' + escH(it.label) + '" oninput="rwEdit(' + i + ',\'label\',this.value)"></td>' +
+      '<td><input class="pc" type="number" min="0" max="100" step="0.5" aria-label="Reward ' + (i+1) + ' chance percent" value="' + escH(it.pct) + '" oninput="rwEdit(' + i + ',\'pct\',this.value)"></td>' +
+      '<td><select aria-label="Reward ' + (i+1) + ' field goal tier" onchange="rwEdit(' + i + ',\'tier\',this.value)"><option value="auto">Auto</option>' +
+        yd.map(function(y,t){ return '<option value="' + (t+1) + '"' + (String(it.tier)===String(t+1)?' selected':'') + '>' + y + ' yd</option>'; }).join('') + '</select></td>' +
+      '<td><button class="rwDel" onclick="rwDel(' + i + ')" aria-label="Remove reward ' + (i+1) + '">&times;</button></td></tr>';
   }).join('');
+  rwRefresh();
 }
+function rwRefresh(){
+  var rows = document.querySelectorAll('#rwBody tr');
+  ITEMS.forEach(function(it, i){
+    var row = rows[i]; if (!row) return;
+    var r = REWARDS.filter(function(x){ return x.src===it; })[0], sg = r && segOf(r);
+    row.querySelector('.numc b').textContent = r ? r.num : '\u2013';
+    row.querySelector('.sw').style.background = sg ? sg.color : 'var(--border2)';
+    row.querySelector('option[value="auto"]').textContent = r ? 'Auto ' + (r.auto*10) : 'Auto';
+  });
+  var tot = REWARDS.reduce(function(s,r){ return s + r.weight; }, 0), t = document.getElementById('rwTotal');
+  var tr = Math.round(tot*10)/10;
+  t.textContent = !tot ? 'Give one reward a chance above 0%.' : tr===100 ? 'Total: 100%' : 'Total: ' + tr + '% (scaled to 100%)';
+  t.classList.toggle('warn', tr !== 100);
+  document.getElementById('spinBtn').disabled = (document.body.getAttribute('data-mode') || 'wheel') !== 'wheel' || !tot;
+}
+function rwApply(){ saveItems(); syncRewards(); buildSegs(); drawWheel(); rwRefresh(); if (window.FG && FG.refresh) FG.refresh(); }
+function rwEdit(i, k, v){ if (spinning || !ITEMS[i]) return; ITEMS[i][k] = v; rwApply(); }
+function rwAdd(){ if (spinning || ITEMS.length >= 30) return; ITEMS.push({label:'', pct:0, tier:'auto'}); saveItems(); renderOdds(); var ins = document.querySelectorAll('#rwBody input.lab'); if (ins.length) ins[ins.length-1].focus(); }
+function rwDel(i){ if (spinning) return; ITEMS.splice(i,1); rwApply(); renderOdds(); }
+function rwReset(){ if (spinning) return; if (!confirm('Replace your rewards with the sample list?')) return; ITEMS = SAMPLE.map(function(o){ return Object.assign({}, o); }); rwApply(); renderOdds(); }
 function showResult(reward){
-  document.getElementById('resultText').textContent = reward.label;
+  document.getElementById('resultText').textContent = reward.label + (reward.all ? ' (whole class)' : '');
   document.getElementById('result').classList.add('show');
-  var big = reward.label === '2% Unit Test/Quiz Bonus' || reward.kind === 'xp500';
+  var big = reward.fgTier === 6;
   fireConfetti(big); sndWin(big);
   if (window.__awardReady) window.__awardReady(reward);
 }
 function spin(){
-  if (spinning || EDITING || document.body.hasAttribute('data-lock')) return;
-  spinning = true;
+  if (!TOTAL_WEIGHT || spinning || EDITING || document.body.hasAttribute('data-lock')) return;
+  spinning = true; rwBusy(true);
   sndStart();
   document.getElementById('spinBtn').disabled = true;
   document.getElementById('result').classList.remove('show');
@@ -549,7 +555,7 @@ function spin(){
   canvas.style.transform = 'rotate(' + totalRotation + 'deg)';
   tickLoop();
   setTimeout(function(){
-    spinning = false;
+    spinning = false; rwBusy(false);
     document.getElementById('spinBtn').disabled = false;
     showResult(chosen);
     logHistory(chosen);
@@ -610,8 +616,8 @@ function sndSplash(){ var a = audio(); if (!a) return; var len = a.sampleRate*0.
   var s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(); f.type = 'lowpass'; f.frequency.value = 1400; g.gain.value = 0.18;
   s.buffer = buf; s.connect(f).connect(g).connect(a.destination); s.start(); }
 function pickDuck(i){
-  if (picking || EDITING || document.body.hasAttribute('data-lock')) return;
-  picking = true; spinning = true;
+  if (!TOTAL_WEIGHT || picking || EDITING || document.body.hasAttribute('data-lock')) return;
+  picking = true; spinning = true; rwBusy(true);
   var d = DUCKS[i], chosen = pickReward();
   sndSplash(); setTimeout(sndQuack, 180);
   DUCKS.forEach(function(x){ x.el.disabled = true; });
@@ -625,7 +631,7 @@ function pickDuck(i){
   var rm = typeof window.SITE_REDUCED_MOTION === 'function' && window.SITE_REDUCED_MOTION();
   setTimeout(function(){ rv.classList.add('flipped'); sndTick(); }, rm ? 150 : 1100);
   setTimeout(function(){
-    spinning = false;
+    spinning = false; rwBusy(false);
     document.getElementById('pondHint').textContent = 'Duck #' + chosen.num + ' \u2192 ' + chosen.label;
     document.getElementById('pondReset').style.display = 'inline-block';
     showResult(chosen); logHistory(chosen);
@@ -644,20 +650,19 @@ function setMode(m){
   if (spinning || picking && m !== MODE) return;
   if (m !== MODE && MODE === 'fg' && window.FG && FG.busy()) return;
   MODE = m; document.body.setAttribute('data-mode', m);
-  try{ localStorage.setItem('reward-mode', m); }catch(e){}
+  try{ localStorage.setItem('reward-games-mode', m); }catch(e){}
   document.getElementById('mWheel').classList.toggle('on', m === 'wheel'); document.getElementById('mWheel').setAttribute('aria-pressed', m === 'wheel');
   document.getElementById('mDuck').classList.toggle('on', m === 'duck'); document.getElementById('mDuck').setAttribute('aria-pressed', m === 'duck');
   document.getElementById('mFg').classList.toggle('on', m === 'fg'); document.getElementById('mFg').setAttribute('aria-pressed', m === 'fg');
   document.getElementById('modeTitle').textContent = m === 'duck' ? 'Duck Pond' : m === 'fg' ? 'Field Goal Challenge' : 'Reward Spinner';
   document.getElementById('modeLead').textContent = m === 'duck' ? 'Pick a duck and flip it. The number on the bottom is your prize. Bigger prizes are rarer.' : m === 'fg' ? 'Kick from 10, 20, 30, 40, 50, then 60 yards. A miss ends the run. Your longest make sets your prize tier; pick any prize from that tier or lower. Make the 60 and every prize is yours to choose from.' : 'Spin for a class reward. Bigger prizes come up less often.';
-  document.getElementById('spinBtn').disabled = m !== 'wheel';
+  document.getElementById('spinBtn').disabled = m !== 'wheel' || !TOTAL_WEIGHT;
   if (window.FG){ if (m === 'fg') FG.start(); else FG.stop(); }
   if (m === 'duck'){ if (!DUCKS.length) buildPond(); if (!pondRaf) pondRaf = requestAnimationFrame(pondLoop); }
   else if (pondRaf){ cancelAnimationFrame(pondRaf); pondRaf = 0; drawWheel(); }
-  document.querySelector('#award h2').textContent = m === 'duck' ? 'Pick for' : m === 'fg' ? 'Kick for' : 'Spin for';
 }
 window.addEventListener('resize', function(){ if (MODE === 'duck') placeDucks(performance.now()); });
-(function(){ var m = 'wheel'; try{ m = localStorage.getItem('reward-mode') || 'wheel'; }catch(e){} setMode(m === 'duck' || m === 'fg' ? m : 'wheel'); })();
+(function(){ var m = 'wheel'; try{ m = localStorage.getItem('reward-games-mode') || 'wheel'; }catch(e){} setMode(m === 'duck' || m === 'fg' ? m : 'wheel'); })();
 </script>
 <script>
 /* ---------- FIELD GOAL ----------
@@ -666,14 +671,7 @@ window.addEventListener('resize', function(){ if (MODE === 'duck') placeDucks(pe
    with the same item kind as the wheel. "Whole class" sends it to every student in the class. */
 window.FG = (function(){
   var STEPS = [10,20,30,40,50,60];
-  var TIERS = [
-    ['Free Hint','Streak Freeze (1 Week)'],
-    ['2x XP for 24 Hours','+500 Bonus XP','Mystery Box'],
-    ['+1 Bonus Point (Graded Assignment)','Cooldown Skip','Retry Wipe','Firewall Shield'],
-    ['Nightly Homework Pass','1-Day Homework/Project Extension','Overclock','Extra Life','Lucky Capture','Pioneer Boost'],
-    ['1% Unit Test/Quiz Bonus','Time Freeze (10 Min)','Squad Surge (1 Hour)'],
-    ['2% Unit Test/Quiz Bonus']
-  ];
+  var TIERS = [];
   var ZONE = [.26,.20,.155,.115,.085,.06], REQ = [.30,.42,.54,.66,.78,.89];
   var PSPD = [.80,.90,1.0,1.1,1.2,1.32], ASPD = [.85,1.0,1.15,1.35,1.55,1.8];
   var WMAX = [4,7,10,13,16,20], DRIFT = .0055, HALF = 3.08, BAR = 3.33;
@@ -699,11 +697,12 @@ window.FG = (function(){
     }).join('');
   }
   function renderTiers(){
+    TIERS = window.fgTiers();
     var over = S.phase==='over', top = S.made;
     $('tiers').innerHTML = TIERS.map(function(list,i){
       var open = over && i<=top;
       return '<div class="tier'+(open?' open':'')+'"><div class="tHead"><span class="yd">'+STEPS[i]+' YD</span><span>TIER '+(i+1)+(i===5?' \u00b7 ANY PRIZE':'')+'</span><span class="lock">'+(i<=top?'UNLOCKED':'LOCKED')+'</span></div><div class="chips">'+
-        list.map(function(p){ return '<button class="pz'+(S.sel===p?' sel':'')+'" '+(open?'':'disabled')+' onclick="FG.pick(this)" data-p="'+esc(p)+'">'+esc(p)+'</button>'; }).join('')+'</div></div>';
+        list.map(function(p){ return '<button class="pz'+(S.sel===p?' sel':'')+'" '+(open?'':'disabled')+' onclick="FG.pick(this)" data-p="'+esc(p)+'">'+esc(p)+'</button>'; }).join('')+(list.length?'':'<span class="pzNone">No rewards set to this tier.</span>')+'</div></div>';
     }).join('');
     var m = $('prizeMsg'), cb = $('claimBtn');
     if (S.phase==='claimed'){ m.innerHTML = 'Claimed'+(S.forClass?' for <b>the whole class</b>':'')+'. Start a new run to kick again.'; cb.style.display='none'; return; }
@@ -730,7 +729,7 @@ window.FG = (function(){
     $('forOne').classList.toggle('on', !S.forClass); $('forOne').setAttribute('aria-pressed', !S.forClass);
     $('forAll').classList.toggle('on', S.forClass); $('forAll').setAttribute('aria-pressed', S.forClass);
     $('forOne').disabled = $('forAll').disabled = !sw;
-    $('forNote').textContent = !sw ? 'Locked until this run ends.' : S.forClass ? 'The prize goes to every student in the class.' : 'Choose the student under \u201cKick for\u201d.';
+    $('forNote').textContent = !sw ? 'Locked until this run ends.' : S.forClass ? 'Everyone in the class gets the prize.' : '';
     var w = Math.abs(S.wind);
     $('windTxt').textContent = w ? w+' MPH' : 'CALM';
     $('windArrow').style.display = w ? '' : 'none';
@@ -878,69 +877,9 @@ window.FG = (function(){
     S.aim = Math.max(-8, Math.min(8, Math.round((ev.clientX - r.left - r.width/2)*(D+8)/F*2)/2)); sndLock(); paint();
   });
   newWind(); renderTiers(); paint();
-  return {act:act, nudge:nudge, setFor:setFor, pick:pick, claim:claim, newRun:newRun, opt:opt, start:start, stop:stop, busy:busy};
+  return {refresh:function(){ renderTiers(); paint(); }, act:act, nudge:nudge, setFor:setFor, pick:pick, claim:claim, newRun:newRun, opt:opt, start:start, stop:stop, busy:busy};
 })();
 </script>
 <script>if (MODE === 'fg') FG.start();</script>
-<script src="supabase-config.js?v=5.0.0"></script>
-<script src="auth.js?v=5.0.0"></script>
-<script>
-/* Optional: pick a class + student before spinning and the prize can be sent
-   straight to that student's profile inventory (reward-items.sql). Works only
-   for the signed-in teacher; otherwise the spinner is purely a class display. */
-(function(){
-  var AUTH = window.CTF_AUTH, CLASSES = [], ROSTER = [], last = null;
-  var body = document.getElementById('awardBody');
-  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-  function note(t){ body.innerHTML = t; }
-  function pick(){ var s = document.getElementById('aStudent'); return s && s.value ? ROSTER.filter(function(r){return r.id===s.value;})[0] : null; }
-  function syncBtn(){
-    var row = document.getElementById('sendRow'), who = pick();
-    if (!last || !(last.all ? ROSTER.length : who)){ row.style.display = 'none'; return; }
-    row.style.display = 'block';
-    var b = document.getElementById('sendBtn'); b.disabled = false; b.textContent = last.all ? 'SEND TO WHOLE CLASS (' + ROSTER.length + ')' : 'SEND TO ' + who.handle.toUpperCase();
-    document.getElementById('sendMsg').textContent = last.all ? 'Lands in every student\u2019s profile in this class.' : last.kind === 'voucher' ? 'Lands in their profile to redeem with you.' : 'Lands in their profile, ready to use.';
-  }
-  async function loadRoster(id){
-    ROSTER = []; var s = document.getElementById('aStudent');
-    s.innerHTML = '<option value="">Loading\u2026</option>';
-    try { ROSTER = await AUTH.rpc('ctf_t_roster',{p_class:id}) || []; } catch(e){}
-    ROSTER.sort(function(a,b){ return String(a.handle).localeCompare(String(b.handle)); });
-    s.innerHTML = '<option value="">Whole class (display only)</option>' + ROSTER.map(function(r){ return '<option value="'+esc(r.id)+'">'+esc(r.handle)+'</option>'; }).join('');
-    syncBtn();
-  }
-  async function boot(){
-    if (!AUTH || !AUTH.online){ note('Connect the class backend to send prizes to student profiles.'); return; }
-    try { CLASSES = await AUTH.rpc('ctf_t_classes') || []; }
-    catch(e){ note('Sign in on the <a href="teacher.html" style="color:var(--accent)">teacher dashboard</a> to send prizes to student profiles.'); return; }
-    document.body.removeAttribute('data-lock');
-    if (!CLASSES.length){ note('No classes yet.'); return; }
-    body.innerHTML = '<select id="aClass">' + CLASSES.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>'; }).join('') + '</select>' +
-      '<select id="aStudent"></select>' +
-      '<div style="font-size:11px;color:var(--faint);line-height:1.5;">Pick a student and the prize goes straight to their profile when the wheel stops.</div>';
-    var c = document.getElementById('aClass');
-    try { var k = localStorage.getItem('spinner-class'); if (k && CLASSES.some(function(x){return x.id===k;})) c.value = k; } catch(e){}
-    c.onchange = function(){ try { localStorage.setItem('spinner-class', c.value); } catch(e){} loadRoster(c.value); };
-    document.getElementById('aStudent').onchange = syncBtn;
-    loadRoster(c.value);
-  }
-  window.__awardReady = function(r){ last = r; syncBtn(); if (r.all ? ROSTER.length : pick()) window.sendPrize(); };
-  window.sendPrize = async function(){
-    var who = pick(); if (!last || !(last.all ? ROSTER.length : who)) return;
-    var ids = last.all ? ROSTER.map(function(r){ return r.id; }) : [who.id], name = last.all ? 'WHOLE CLASS' : who.handle.toUpperCase();
-    var b = document.getElementById('sendBtn'), m = document.getElementById('sendMsg');
-    b.disabled = true; b.textContent = 'SENDING\u2026';
-    try {
-      await AUTH.rpc('ctf_t_send_items',{ p_students:ids, p_kind:last.kind, p_label: last.kind === 'voucher' ? last.label : null, p_note:null, p_source:'spinner' });
-      b.textContent = '\u2713 SENT TO ' + name; m.textContent = 'Check the item log on the Send Rewards tab.'; last = null;
-    } catch(e){
-      b.disabled = false; b.textContent = 'TRY AGAIN';
-      m.textContent = /send_items|function/.test((e&&e.message)||'') ? 'Run supabase/reward-items.sql first.' : 'Couldn\u2019t send: ' + ((e&&e.message)||e);
-    }
-  };
-  boot();
-})();
-</script>
-<script src="nemesis-intro.js?v=5.0.0"></script>
 </body>
 </html>

@@ -66,12 +66,18 @@ isn't filled in.
 - `certificates.html` — printable certificates (module / weekly top 3 / course /
   duel champion / custom), one landscape page per student.
 - `answers.html` — teacher page for uploading `answers.local.js`.
+- `sru-summit.html` — Cyberspace K-12 Summit field-trip page (Cyber 1 + AP Cyber 2),
+  linked from the announcement card on both course home pages.
+- `install-check.html` — setup + database + course-content check (needs
+  `supabase/install-check.sql`). Start here when something isn't working.
 - `countdown.html` — standalone countdown display.
 - `apcsp/carlow-grade-scale.html`, `cyber1/rmu-grade-scale.html` — dual-credit partner
   grade-scale reference pages, flagged as differing from South Fayette's own scale.
 - `config.js` — **single source of truth** for editable per-course settings: schedule
-  sheet IDs, exam/task countdown dates, Meet links, resource card links, CTF flags
-  (see `CLAUDE.md` for the CTF authoring rules).
+  sheet IDs, exam/task countdown dates, Meet links, resource card links.
+- `ctf-data/<course>.js` — each course's CTF flags, boss questions and frameworks,
+  loaded after `config.js` only by pages that need them (see `CLAUDE.md` for the CTF
+  authoring rules).
 - `ctf.js` — shared CTF engine (challenge rendering, grading, boss gauntlet, badges,
   ranks, streaks, reward items, loot drops, anti-AI deterrents). Loaded by every
   course's `ctf.html` and `profile.html`.
@@ -149,7 +155,7 @@ Backend: `supabase/reward-items.sql`.
   a fallback in `apcsp/index.html` (`const TASK = CFG.createTask || {...}`) — add a
   `createTask: { name, date, from }` entry to `config.js`'s `apcsp` block to make it
   editable from there too.
-- **CTF flags / challenges**: edit `config.js` only — see `CLAUDE.md` for the full
+- **CTF flags / challenges**: edit `ctf-data/<course>.js` only — see `CLAUDE.md` for the full
   rules (leveled text flags, `answers.local.js` sync, one array per course, etc.).
   Never edit `ctf.js` to add content.
 - **Quick Links / Class Links / Resources cards**: edit the links directly in each
