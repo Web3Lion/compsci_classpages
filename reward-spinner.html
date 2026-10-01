@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=4.1.0"></script>
+<script src="site.js?v=4.2.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -123,6 +123,82 @@ body[data-lock] #pond{filter:grayscale(1);opacity:.45;pointer-events:none;}
 #pondFoot{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:22px;min-height:48px;}
 #pondHint{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1px;color:var(--muted);}
 #pondReset{display:none;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:1px;padding:12px 22px;min-height:44px;border-radius:999px;border:none;background:linear-gradient(90deg,#ff00c8,#00f0ff);color:#04040a;cursor:pointer;}
+#fg,#fgTiers{display:none;--good:#39ff14;--bad:#ff4d6d;--pink:#ff00c8;}
+:root[data-theme="light"] #fg,:root[data-theme="light"] #fgTiers{--good:#11801f;--bad:#c4203e;--pink:#c4009a;}
+body[data-mode="fg"] #stage, body[data-mode="fg"] #spinBtn, body[data-mode="fg"] #odds{display:none;}
+body[data-mode="fg"] #fg, body[data-mode="fg"] #fgTiers{display:block;}
+body[data-lock] #fg{filter:grayscale(1);opacity:.45;pointer-events:none;}
+body[data-mode="fg"] #layout{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);}
+@media (max-width:820px){body[data-mode="fg"] #layout{grid-template-columns:minmax(0,1fr);}}
+#distTag,#windTag,.seg button,.tHead span,.pz{white-space:nowrap;}
+@container fgs (max-width:520px){#distTag .kn{display:none;}}
+#fgStage{container:fgs/inline-size;}
+#fgTiers{order:1;border:1px solid var(--border3);border-radius:14px;background:var(--panel);padding:16px;}
+#fgTiers h2{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin:0 0 10px;}
+#forRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.seg{display:inline-flex;gap:4px;padding:4px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);}
+.seg button{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;padding:9px 16px;min-height:40px;border-radius:999px;border:none;background:transparent;color:var(--muted);cursor:pointer;}
+.seg button.on{background:linear-gradient(90deg,#ff00c8,#00f0ff);color:#04040a;}
+.seg button:disabled{opacity:.5;cursor:not-allowed;}
+#forNote{font-size:12px;color:var(--faint);}
+#ladder{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:12px;}
+.rung{border:1px solid var(--border3);border-radius:10px;padding:8px 4px;text-align:center;background:var(--panel);transition:.2s;}
+.rung b{display:block;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;color:var(--muted);}
+.rung span{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--faint);}
+.rung.cur{border-color:var(--accent);box-shadow:0 0 18px -4px var(--accent);}
+.rung.cur b{color:var(--bright);}
+.rung.made{border-color:var(--good);background:var(--panel2);}
+.rung.made b{color:var(--good);}
+.rung.miss{border-color:var(--bad);}
+.rung.miss b{color:var(--bad);}
+#fgStage{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--border3);box-shadow:0 0 0 3px var(--panel),0 0 0 5px var(--pink),0 20px 60px -24px rgba(0,0,0,.7);}
+#fgField{display:block;width:100%;aspect-ratio:16/9;cursor:crosshair;}
+#banner{position:absolute;left:0;right:0;top:12%;text-align:center;pointer-events:none;opacity:0;transform:scale(.8);transition:opacity .25s ease,transform .35s cubic-bezier(.2,.9,.25,1.3);}
+#banner.show{opacity:1;transform:scale(1);}
+#banner b{display:inline-block;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(20px,3.6vw,40px);letter-spacing:2px;padding:8px 22px;border-radius:12px;background:rgba(4,6,12,.78);color:#fff;}
+#banner b.good{color:#39ff14;box-shadow:0 0 30px rgba(57,255,20,.35);}
+#banner b.bad{color:#ff6b84;}
+#distTag,#windTag{position:absolute;top:12px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:6px 10px;border-radius:8px;background:rgba(4,6,12,.72);color:#eaf4ff;}
+#distTag{left:12px;}
+#windTag{right:12px;display:flex;align-items:center;gap:8px;}
+#windArrow{display:inline-block;font-size:16px;line-height:1;}
+#meters{display:grid;gap:12px;margin-top:16px;padding:16px;border:1px solid var(--border3);border-radius:14px;background:var(--panel);}
+.mRow{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:center;gap:12px;}
+.mLab{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--dim);}
+.mRow.on .mLab{color:var(--bright);}
+.aimCtl{display:flex;align-items:center;gap:8px;}
+.aimCtl button{flex:none;width:44px;height:36px;border-radius:8px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-size:16px;cursor:pointer;}
+.aimCtl button:hover:not(:disabled){border-color:var(--accent);}
+.aimCtl button:disabled{opacity:.4;cursor:not-allowed;}
+#aimRead{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--bright);}
+.bar{position:relative;height:26px;border-radius:8px;background:var(--panel2);border:1px solid var(--border3);overflow:hidden;}
+#pFill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#ff00c8,#ffd400);}
+#pReq{position:absolute;top:-2px;bottom:-2px;width:3px;background:var(--bright);box-shadow:0 0 6px var(--bright);}
+#pReqLab{position:absolute;top:50%;transform:translate(6px,-50%);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;letter-spacing:1px;color:var(--bright);pointer-events:none;}
+#aZone{position:absolute;top:0;bottom:0;background:rgba(57,255,20,.32);border-left:2px solid var(--good);border-right:2px solid var(--good);}
+#aMid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--good);}
+#aNeedle{position:absolute;top:-3px;bottom:-3px;width:4px;margin-left:-2px;left:0;background:var(--bright);box-shadow:0 0 8px var(--accent);border-radius:2px;}
+#kickBtn{margin-top:14px;width:100%;min-height:56px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:16px;letter-spacing:1.5px;border-radius:999px;border:none;background:linear-gradient(90deg,#ff00c8,#00f0ff);color:#04040a;cursor:pointer;box-shadow:0 0 24px rgba(255,0,200,.35);}
+#kickBtn:disabled{opacity:.5;cursor:not-allowed;}
+#hint{margin-top:10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:.5px;}
+#fgOpts{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+#fgOpts label{display:flex;align-items:center;gap:6px;}
+#fgOpts select{font-family:inherit;font-size:12px;padding:6px 8px;border-radius:8px;border:1px solid var(--border3);background:var(--panel);color:var(--bright);}
+#prizeMsg{font-size:14px;line-height:1.5;color:var(--muted);margin:0 0 12px;}
+#prizeMsg b{color:var(--bright);}
+.tier{border-top:1px solid var(--border2);padding:10px 0;}
+.tier:first-of-type{border-top:none;padding-top:0;}
+.tHead{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--dim);}
+.tHead .yd{color:var(--bright);}
+.tHead .lock{margin-left:auto;color:var(--faint);font-weight:500;}
+.tier.open .tHead .lock{color:var(--good);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.pz{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:7px 11px;border-radius:999px;border:1px solid var(--border3);background:var(--panel2);color:var(--faint);cursor:not-allowed;}
+.tier.open .pz{color:var(--bright);cursor:pointer;}
+.tier.open .pz:hover{border-color:var(--accent);}
+.pz.sel{border-color:var(--accent) !important;background:linear-gradient(90deg,rgba(255,0,200,.25),rgba(0,240,255,.25));}
+#claimBtn{display:none;margin-top:12px;width:100%;min-height:46px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:13px;letter-spacing:1px;border-radius:999px;border:1px solid var(--accent);background:transparent;color:var(--bright);cursor:pointer;}
+#claimBtn:disabled{opacity:.45;cursor:not-allowed;}
 </style>
 </head>
 <body data-lock="1">
@@ -137,6 +213,7 @@ body[data-lock] #pond{filter:grayscale(1);opacity:.45;pointer-events:none;}
   <div id="modeRow" role="group" aria-label="Reward game">
     <button class="mBtn on" id="mWheel" aria-pressed="true" onclick="setMode('wheel')">WHEEL</button>
     <button class="mBtn" id="mDuck" aria-pressed="false" onclick="setMode('duck')">DUCK POND</button>
+    <button class="mBtn" id="mFg" aria-pressed="false" onclick="setMode('fg')">FIELD GOAL</button>
   </div>
 
   <div id="layout">
@@ -154,7 +231,36 @@ body[data-lock] #pond{filter:grayscale(1);opacity:.45;pointer-events:none;}
     <div id="pondFoot"><span id="pondHint">Tap any duck to flip it over.</span><button id="pondReset" onclick="resetPond()">PUT THE DUCK BACK</button></div>
   </div>
 
+  <div id="fg">
+    <div id="forRow"><span class="mLab">PLAYING FOR</span><div class="seg" role="group" aria-label="Playing for"><button id="forOne" class="on" aria-pressed="true" onclick="FG.setFor(false)">ONE STUDENT</button><button id="forAll" aria-pressed="false" onclick="FG.setFor(true)">WHOLE CLASS</button></div><span id="forNote"></span></div>
+    <div id="ladder"></div>
+    <div id="fgStage">
+      <canvas id="fgField"></canvas>
+      <div id="distTag">10 YD ATTEMPT</div>
+      <div id="windTag"><span>WIND</span><span id="windArrow">&rarr;</span><span id="windTxt">CALM</span></div>
+      <div id="banner" aria-live="polite"><b id="bannerTxt"></b></div>
+    </div>
+    <div id="meters">
+      <div class="mRow" id="rowD"><span class="mLab">POINT</span><div class="aimCtl"><button id="aimL" onclick="FG.nudge(-1)" aria-label="Aim left">&larr;</button><span id="aimRead">STRAIGHT</span><button id="aimR" onclick="FG.nudge(1)" aria-label="Aim right">&rarr;</button></div></div>
+      <div class="mRow" id="rowP"><span class="mLab">POWER</span><div class="bar"><div id="pFill"></div><div id="pReq"></div><span id="pReqLab">NEED</span></div></div>
+      <div class="mRow" id="rowA"><span class="mLab">AIM</span><div class="bar"><div id="aZone"></div><div id="aMid"></div><div id="aNeedle"></div></div></div>
+    </div>
+    <button id="kickBtn" onclick="FG.act()">START KICK</button>
+    <div id="hint"></div>
+    <div id="fgOpts">
+      <label>Difficulty <select id="fgDiff" onchange="FG.opt()"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
+      <label>Wind <select id="fgWind" onchange="FG.opt()"><option value="on" selected>On</option><option value="off">Off</option></select></label>
+      <button class="oBtn" onclick="FG.newRun()">NEW RUN</button>
+    </div>
+  </div>
+
   <div id="rightCol">
+    <div id="fgTiers">
+      <h2>Prize tiers</h2>
+      <p id="prizeMsg"></p>
+      <div id="tiers"></div>
+      <button id="claimBtn" onclick="FG.claim()" disabled>PICK A PRIZE</button>
+    </div>
     <div id="odds">
       <div id="oddsHead">
         <h2 class="mono">Odds</h2>
@@ -536,22 +642,248 @@ function resetPond(){
 }
 function setMode(m){
   if (spinning || picking && m !== MODE) return;
+  if (m !== MODE && MODE === 'fg' && window.FG && FG.busy()) return;
   MODE = m; document.body.setAttribute('data-mode', m);
   try{ localStorage.setItem('reward-mode', m); }catch(e){}
   document.getElementById('mWheel').classList.toggle('on', m === 'wheel'); document.getElementById('mWheel').setAttribute('aria-pressed', m === 'wheel');
   document.getElementById('mDuck').classList.toggle('on', m === 'duck'); document.getElementById('mDuck').setAttribute('aria-pressed', m === 'duck');
-  document.getElementById('modeTitle').textContent = m === 'duck' ? 'Duck Pond' : 'Reward Spinner';
-  document.getElementById('modeLead').textContent = m === 'duck' ? 'Pick a duck and flip it. The number on the bottom is your prize. Bigger prizes are rarer.' : 'Spin for a class reward. Bigger prizes come up less often.';
-  document.getElementById('spinBtn').disabled = m === 'duck';
+  document.getElementById('mFg').classList.toggle('on', m === 'fg'); document.getElementById('mFg').setAttribute('aria-pressed', m === 'fg');
+  document.getElementById('modeTitle').textContent = m === 'duck' ? 'Duck Pond' : m === 'fg' ? 'Field Goal Challenge' : 'Reward Spinner';
+  document.getElementById('modeLead').textContent = m === 'duck' ? 'Pick a duck and flip it. The number on the bottom is your prize. Bigger prizes are rarer.' : m === 'fg' ? 'Kick from 10, 20, 30, 40, 50, then 60 yards. A miss ends the run. Your longest make sets your prize tier; pick any prize from that tier or lower. Make the 60 and every prize is yours to choose from.' : 'Spin for a class reward. Bigger prizes come up less often.';
+  document.getElementById('spinBtn').disabled = m !== 'wheel';
+  if (window.FG){ if (m === 'fg') FG.start(); else FG.stop(); }
   if (m === 'duck'){ if (!DUCKS.length) buildPond(); if (!pondRaf) pondRaf = requestAnimationFrame(pondLoop); }
   else if (pondRaf){ cancelAnimationFrame(pondRaf); pondRaf = 0; drawWheel(); }
-  document.querySelector('#award h2').textContent = m === 'duck' ? 'Pick for' : 'Spin for';
+  document.querySelector('#award h2').textContent = m === 'duck' ? 'Pick for' : m === 'fg' ? 'Kick for' : 'Spin for';
 }
 window.addEventListener('resize', function(){ if (MODE === 'duck') placeDucks(performance.now()); });
-(function(){ var m = 'wheel'; try{ m = localStorage.getItem('reward-mode') || 'wheel'; }catch(e){} setMode(m === 'duck' ? 'duck' : 'wheel'); })();
+(function(){ var m = 'wheel'; try{ m = localStorage.getItem('reward-mode') || 'wheel'; }catch(e){} setMode(m === 'duck' || m === 'fg' ? m : 'wheel'); })();
 </script>
-<script src="supabase-config.js?v=4.1.0"></script>
-<script src="auth.js?v=4.1.0"></script>
+<script>
+/* ---------- FIELD GOAL ----------
+   Six kicks, 10 to 60 yards; a miss ends the run. The longest make sets the tier and the
+   kicker picks any prize from that tier or lower. Labels match REWARDS so the prize is sent
+   with the same item kind as the wheel. "Whole class" sends it to every student in the class. */
+window.FG = (function(){
+  var STEPS = [10,20,30,40,50,60];
+  var TIERS = [
+    ['Free Hint','Streak Freeze (1 Week)'],
+    ['2x XP for 24 Hours','+500 Bonus XP','Mystery Box'],
+    ['+1 Bonus Point (Graded Assignment)','Cooldown Skip','Retry Wipe','Firewall Shield'],
+    ['Nightly Homework Pass','1-Day Homework/Project Extension','Overclock','Extra Life','Lucky Capture','Pioneer Boost'],
+    ['1% Unit Test/Quiz Bonus','Time Freeze (10 Min)','Squad Surge (1 Hour)'],
+    ['2% Unit Test/Quiz Bonus']
+  ];
+  var ZONE = [.26,.20,.155,.115,.085,.06], REQ = [.30,.42,.54,.66,.78,.89];
+  var PSPD = [.80,.90,1.0,1.1,1.2,1.32], ASPD = [.85,1.0,1.15,1.35,1.55,1.8];
+  var WMAX = [4,7,10,13,16,20], DRIFT = .0055, HALF = 3.08, BAR = 3.33;
+  var DIFF = {easy:{z:1.35,s:.8,w:.6},normal:{z:1,s:1,w:1},hard:{z:.75,s:1.2,w:1.2}};
+  var S = {forClass:false, aim:0, wind:0, si:0, made:-1, missAt:-1, phase:'idle', p:0, pd:1, a:0, ad:1, lp:0, la:.5, fl:null, sel:null};
+  var $ = function(id){ return document.getElementById(id); }, raf = 0, last = 0;
+  var RM = function(){ return typeof window.SITE_REDUCED_MOTION === 'function' && window.SITE_REDUCED_MOTION(); };
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function diff(){ return DIFF[$('fgDiff').value] || DIFF.normal; }
+  function cfg(){ var d = diff(); return {D:STEPS[S.si], zone:Math.min(.6, ZONE[S.si]*d.z), req:REQ[S.si], ps:PSPD[S.si]*d.s, as:ASPD[S.si]*d.s}; }
+  function sndLock(){ tone(900,.05,'square',.05); }
+  function sndThump(){ tone(140,.18,'sine',.25,0,50); tone(320,.06,'square',.05); }
+  function sndGood(){ [523,659,784,1047].forEach(function(f,i){ tone(f,.28,'triangle',.12,i*.09); }); }
+  function sndMiss(){ tone(220,.35,'sawtooth',.07,0,110); }
+  function sndDoink(){ tone(1850,.5,'sine',.12); tone(2770,.35,'sine',.05); }
+  function canSwitch(){ return (S.made<0 && (S.phase==='idle' || S.phase==='over')) || S.phase==='claimed'; }
+  function busy(){ return !canSwitch(); }
+
+  function renderLadder(){
+    $('ladder').innerHTML = STEPS.map(function(yd,i){
+      var c = i<=S.made ? 'made' : i===S.missAt ? 'miss' : (i===S.si && S.phase!=='over' && S.phase!=='claimed') ? 'cur' : '';
+      return '<div class="rung '+c+'"><b>'+yd+'</b><span>TIER '+(i+1)+'</span></div>';
+    }).join('');
+  }
+  function renderTiers(){
+    var over = S.phase==='over', top = S.made;
+    $('tiers').innerHTML = TIERS.map(function(list,i){
+      var open = over && i<=top;
+      return '<div class="tier'+(open?' open':'')+'"><div class="tHead"><span class="yd">'+STEPS[i]+' YD</span><span>TIER '+(i+1)+(i===5?' \u00b7 ANY PRIZE':'')+'</span><span class="lock">'+(i<=top?'UNLOCKED':'LOCKED')+'</span></div><div class="chips">'+
+        list.map(function(p){ return '<button class="pz'+(S.sel===p?' sel':'')+'" '+(open?'':'disabled')+' onclick="FG.pick(this)" data-p="'+esc(p)+'">'+esc(p)+'</button>'; }).join('')+'</div></div>';
+    }).join('');
+    var m = $('prizeMsg'), cb = $('claimBtn');
+    if (S.phase==='claimed'){ m.innerHTML = 'Claimed'+(S.forClass?' for <b>the whole class</b>':'')+'. Start a new run to kick again.'; cb.style.display='none'; return; }
+    if (!over){ m.innerHTML = top<0 ? 'Make a kick to unlock its tier.' : 'Longest make so far: <b>'+STEPS[top]+' yd</b>. Keep kicking.'; cb.style.display='none'; return; }
+    cb.style.display = top<0 ? 'none' : 'block';
+    if (top<0) m.innerHTML = 'No kicks made this run, so no prize. Start a new run to try again.';
+    else if (top===5) m.innerHTML = '<b>60 yards!</b> Pick any prize on the board.';
+    else m.innerHTML = 'Longest make: <b>'+STEPS[top]+' yd</b>. Pick one prize from Tier '+(top+1)+' or lower.';
+    if (top>=0 && S.forClass) m.innerHTML += ' Everyone in the class gets it.';
+    cb.disabled = !S.sel; cb.textContent = S.sel ? (S.forClass ? 'CLAIM FOR CLASS: ' : 'CLAIM: ')+S.sel.toUpperCase() : 'PICK A PRIZE';
+  }
+  function pick(el){ if (S.phase!=='over') return; S.sel = el.getAttribute('data-p'); sndLock(); renderTiers(); }
+  function claim(){
+    if (!S.sel || S.phase!=='over') return;
+    var r = REWARDS.filter(function(x){ return x.label===S.sel; })[0] || {label:S.sel, kind:'voucher'};
+    S.phase = 'claimed';
+    showResult(Object.assign({}, r, {all:S.forClass}));
+    logHistory({label: S.sel + ' \u00b7 ' + STEPS[S.made] + ' yd FG' + (S.forClass ? ' (whole class)' : '')});
+    renderTiers(); paint();
+  }
+  function banner(txt, cls){ var b = $('banner'), t = $('bannerTxt'); if (!txt){ b.classList.remove('show'); return; } t.textContent = txt; t.className = cls; b.classList.add('show'); }
+  function paint(){
+    var c = cfg(), sw = canSwitch();
+    $('forOne').classList.toggle('on', !S.forClass); $('forOne').setAttribute('aria-pressed', !S.forClass);
+    $('forAll').classList.toggle('on', S.forClass); $('forAll').setAttribute('aria-pressed', S.forClass);
+    $('forOne').disabled = $('forAll').disabled = !sw;
+    $('forNote').textContent = !sw ? 'Locked until this run ends.' : S.forClass ? 'The prize goes to every student in the class.' : 'Choose the student under \u201cKick for\u201d.';
+    var w = Math.abs(S.wind);
+    $('windTxt').textContent = w ? w+' MPH' : 'CALM';
+    $('windArrow').style.display = w ? '' : 'none';
+    $('windArrow').style.transform = S.wind<0 ? 'scaleX(-1)' : '';
+    $('aimRead').textContent = S.aim===0 ? 'STRAIGHT' : Math.abs(S.aim)+' YD '+(S.aim<0?'LEFT':'RIGHT');
+    $('aimL').disabled = $('aimR').disabled = S.phase!=='idle';
+    $('pReq').style.left = $('pReqLab').style.left = (c.req*100)+'%';
+    $('aZone').style.left = ((.5-c.zone/2)*100)+'%'; $('aZone').style.width = (c.zone*100)+'%';
+    $('distTag').innerHTML = c.D+' YD<span class="kn"> \u00b7 KICK '+(S.si+1)+' OF 6</span>';
+    $('rowD').classList.toggle('on', S.phase==='idle');
+    $('rowP').classList.toggle('on', S.phase==='power');
+    $('rowA').classList.toggle('on', S.phase==='aim');
+    var L = {idle:'START KICK', power:'SET POWER', aim:'SET AIM', flight:'\u2026', next:'NEXT KICK: '+(STEPS[S.si+1]||'')+' YD', over:'NEW RUN', claimed:'NEW RUN'};
+    var H = {idle:'Point into the wind with the arrows (or click the field), then tap Space to start.', power:'Tap to lock power past the white line.', aim:'Tap to stop the needle inside the green.',
+      flight:'', next:'Good! The next kick is 10 yards longer.', over: S.made<0 ? 'Run over.' : 'Run over. Pick the prize on the right.', claimed:'Prize claimed.'};
+    $('kickBtn').textContent = L[S.phase]; $('kickBtn').disabled = S.phase==='flight'; $('hint').textContent = H[S.phase];
+    renderLadder();
+  }
+  function meterDom(){ $('pFill').style.width=(S.p*100)+'%'; $('aNeedle').style.left=(S.a*100)+'%'; }
+  function resetMeters(){ S.p=0; S.pd=1; S.a=0; S.ad=1; meterDom(); }
+  function newWind(){ S.wind = $('fgWind').value==='on' ? Math.round(Math.random()*WMAX[S.si]*diff().w) * (Math.random()<.5?-1:1) : 0; S.aim = 0; }
+  function nudge(dir){ if (S.phase!=='idle') return; S.aim = Math.max(-8, Math.min(8, Math.round((S.aim+dir*.5)*2)/2)); sndLock(); paint(); }
+  function setFor(all){ if (!canSwitch()) return; S.forClass = all; sndLock(); renderTiers(); paint(); }
+  function opt(){ if (S.phase==='idle'){ newWind(); } paint(); }
+  function newRun(){
+    if (S.phase==='flight') return;
+    if (S.phase==='over' && S.made>=0 && !confirm('Start a new run? The unclaimed prize will be lost.')) return;
+    S.si=0; S.made=-1; S.missAt=-1; S.phase='idle'; S.sel=null; S.fl=null; newWind(); resetMeters(); banner('');
+    document.getElementById('result').classList.remove('show');
+    renderTiers(); paint();
+  }
+  function act(){
+    if (document.body.hasAttribute('data-lock')) return;
+    if (S.phase==='idle'){ banner(''); document.getElementById('result').classList.remove('show'); resetMeters(); S.phase='power'; sndLock(); }
+    else if (S.phase==='power'){ S.lp=S.p; S.phase='aim'; S.a=0; S.ad=1; sndLock(); }
+    else if (S.phase==='aim'){ S.la=S.a; kick(); }
+    else if (S.phase==='next'){ S.si++; newWind(); S.phase='idle'; resetMeters(); banner(''); }
+    else { newRun(); return; }
+    paint();
+  }
+  function kick(){
+    var c = cfg(), D = c.D, xA = (S.la-.5)/(c.zone/2)*2.6 + S.aim, dr = S.wind*D*DRIFT, xP = xA+dr, ax = Math.abs(xP), ok = S.lp>=c.req, out;
+    if (!ok) out = 'short'; else if (ax >= HALF+.2) out = 'wide'; else if (ax >= HALF-.16) out = 'doink'; else out = 'good';
+    var hPk = BAR+1.2+D*.05, L = ok ? 2*D*(1+(S.lp-c.req)) : D*Math.max(.25, S.lp/c.req)*.9;
+    S.fl = {D:D, xP:xP, xA:xA, dr:dr, out:out, hPk:hPk, L:L, t:0, dur: RM() ? .45 : 1.0+D/60*.9, zEnd: out==='short' ? L : out==='doink' ? D : D*1.3, spin:0};
+    S.phase='flight'; sndThump(); paint();
+  }
+  function ballAt(f, t){
+    if (f.out==='doink' && t>.8){ var u=(t-.8)/.2, hp=f.hPk*4*(f.D/f.L)*(1-f.D/f.L);
+      return {z:f.D-u*4, x:f.xP+Math.sign(f.xP)*u*2.2, h:Math.max(0,hp*(1-u*u))}; }
+    var z = f.zEnd*(f.out==='doink' ? t/.8 : t), s = z/f.L, k = z/f.D;
+    return {z:z, x:f.xA*k + f.dr*k*k, h:Math.max(0, f.hPk*4*s*(1-s))};
+  }
+  function land(){
+    var f = S.fl, side = f.xP<0 ? 'LEFT' : 'RIGHT';
+    if (f.out==='good'){
+      S.made = S.si; sndGood();
+      if (S.si===5){ banner('60 YARDS! IT\u2019S GOOD!','good'); S.phase='over'; fireConfetti(true); }
+      else { banner('IT\u2019S GOOD!','good'); S.phase='next'; }
+    } else {
+      S.missAt = S.si; S.phase='over';
+      if (f.out==='doink'){ sndDoink(); banner('DOINK! OFF THE UPRIGHT','bad'); }
+      else { sndMiss(); banner(f.out==='short' ? 'NO GOOD \u2014 SHORT' : 'NO GOOD \u2014 WIDE '+side,'bad'); }
+    }
+    renderTiers(); paint();
+  }
+
+  var cv = $('fgField'), g = cv.getContext('2d'), CROWD = [];
+  for (var i=0;i<260;i++) CROWD.push([Math.random(), Math.random(), Math.random()]);
+  function draw(){
+    var dpr = window.devicePixelRatio||1, W = cv.clientWidth, H = cv.clientHeight; if (!W || !H) return;
+    if (cv.width!==Math.round(W*dpr) || cv.height!==Math.round(H*dpr)){ cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); }
+    g.setTransform(dpr,0,0,dpr,0,0);
+    var light = document.documentElement.getAttribute('data-theme')==='light';
+    var hy = H*.36, Z0 = 8, CAM = 2.2, F = (H*.97-hy)*Z0/CAM, cx = W/2, HS = .8;
+    function P(x,z,h){ var d = Math.max(.6, z+Z0); return {x:cx+x*F/d, y:hy+(CAM-(h||0)*HS)*F/d, s:F/d}; }
+    var D = S.fl ? S.fl.D : cfg().D;
+    var sky = g.createLinearGradient(0,0,0,hy);
+    if (light){ sky.addColorStop(0,'#7cc4f2'); sky.addColorStop(1,'#d9efff'); } else { sky.addColorStop(0,'#04060d'); sky.addColorStop(1,'#14223c'); }
+    g.fillStyle = sky; g.fillRect(0,0,W,hy);
+    if (!light){ [[.12,.12],[.88,.12]].forEach(function(p){ var r = g.createRadialGradient(W*p[0],H*p[1],0,W*p[0],H*p[1],W*.22); r.addColorStop(0,'rgba(255,255,230,.35)'); r.addColorStop(1,'rgba(255,255,230,0)'); g.fillStyle=r; g.fillRect(0,0,W,hy); g.fillStyle='#fffbe0'; g.fillRect(W*p[0]-14,H*p[1]-5,28,10); }); }
+    var cTop = hy-H*.09;
+    g.fillStyle = light ? '#5a6577' : '#0d1220'; g.fillRect(0,cTop,W,hy-cTop);
+    CROWD.forEach(function(c){ g.fillStyle = ['#ff00c8','#00f0ff','#ffd400','#ffffff','#b026ff'][Math.floor(c[2]*5)]; g.globalAlpha = light ? .5 : .35; g.fillRect(c[0]*W, cTop+c[1]*(hy-cTop-3), 2, 2); });
+    g.globalAlpha = 1;
+    g.fillStyle = light ? '#3f8f3a' : '#0b3a1b'; g.fillRect(0,hy,W,H-hy);
+    var zMax = D+30;
+    for (var z=-6; z<zMax; z+=5){
+      var a = P(-26.65,z), b = P(26.65,z), c2 = P(26.65,z+5), d2 = P(-26.65,z+5), ez = z>=D-10 && z<D;
+      g.fillStyle = ez ? (light ? '#2f6db5' : '#1a2f6b') : ((Math.round(z/5)%2===0) ? (light ? '#4fae45' : '#11592a') : (light ? '#47a03e' : '#0f4f25'));
+      g.beginPath(); g.moveTo(a.x,a.y); g.lineTo(b.x,b.y); g.lineTo(c2.x,c2.y); g.lineTo(d2.x,d2.y); g.closePath(); g.fill();
+    }
+    g.strokeStyle = 'rgba(255,255,255,.8)';
+    for (var y=0; y<=zMax; y+=5){ var l = P(-26.65,y), r2 = P(26.65,y); g.lineWidth = Math.max(1, .12*l.s); g.beginPath(); g.moveTo(l.x,l.y); g.lineTo(r2.x,r2.y); g.stroke(); }
+    [-26.65,26.65].forEach(function(x){ var n = P(x,-6), f2 = P(x,zMax); g.lineWidth = 2; g.beginPath(); g.moveTo(n.x,n.y); g.lineTo(f2.x,f2.y); g.stroke(); });
+    var tee = P(0,0); g.fillStyle = '#ff8a00'; g.beginPath(); g.moveTo(tee.x-.25*tee.s,tee.y); g.lineTo(tee.x+.25*tee.s,tee.y); g.lineTo(tee.x,tee.y-.3*tee.s); g.closePath(); g.fill();
+    var ball = S.fl ? ballAt(S.fl, Math.min(1,S.fl.t)) : {z:0,x:0,h:.25};
+    function flags(){
+      var mph = S.wind, len = .6 + Math.min(20,Math.abs(mph))*.09, droop = 1 - Math.min(1, Math.abs(mph)/10);
+      [-HALF,HALF].forEach(function(x){ var top = P(x,D,BAR+10), s = top.s, t = performance.now()/180;
+        g.strokeStyle = '#ff2a2a'; g.lineWidth = Math.max(1.5,.22*s); g.beginPath(); g.moveTo(top.x,top.y);
+        for (var i=1;i<=6;i++){ var u=i/6; g.lineTo(top.x + (mph<0?-1:1)*u*len*s*(1-droop*.7), top.y + u*droop*len*s*.9 + Math.sin(t+u*4)*(.12*s)*(mph?1:.3)); }
+        g.stroke(); });
+    }
+    function aimLine(){
+      if (S.phase!=='idle' && S.phase!=='power' && S.phase!=='aim') return;
+      var a = P(0,0,.3), b = P(S.aim,D,BAR+1.5);
+      g.save(); g.setLineDash([6,6]); g.lineWidth = 2; g.strokeStyle = light ? 'rgba(10,20,40,.7)' : 'rgba(0,240,255,.85)';
+      g.beginPath(); g.moveTo(a.x,a.y); g.lineTo(b.x,b.y); g.stroke(); g.setLineDash([]);
+      g.fillStyle = g.strokeStyle; g.beginPath(); g.arc(b.x,b.y,5,0,Math.PI*2); g.fill(); g.restore();
+    }
+    function posts(){
+      var base = P(0,D,0), cb = P(0,D,BAR), l = P(-HALF,D,BAR), r = P(HALF,D,BAR), lt = P(-HALF,D,BAR+10), rt = P(HALF,D,BAR+10), w = Math.max(2,.18*base.s);
+      g.strokeStyle = light ? '#e0b400' : '#ffd400'; g.lineCap = 'round'; g.lineWidth = w*1.4;
+      g.beginPath(); g.moveTo(base.x,base.y); g.lineTo(cb.x,cb.y); g.stroke();
+      g.lineWidth = w; g.beginPath(); g.moveTo(l.x,l.y); g.lineTo(r.x,r.y); g.moveTo(l.x,l.y); g.lineTo(lt.x,lt.y); g.moveTo(r.x,r.y); g.lineTo(rt.x,rt.y); g.stroke();
+    }
+    function drawBall(){
+      var gp = P(ball.x,ball.z,0), bp = P(ball.x,ball.z,ball.h), s = .34*bp.s;
+      g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(gp.x,gp.y,s*.7,s*.2,0,0,Math.PI*2); g.fill();
+      g.save(); g.translate(bp.x,bp.y-s*.4); g.rotate(S.fl ? S.fl.spin : -.3);
+      g.fillStyle = '#8a4a1f'; g.beginPath(); g.ellipse(0,0,s*.62,s*.38,0,0,Math.PI*2); g.fill();
+      g.strokeStyle = '#fff'; g.lineWidth = Math.max(1,s*.06); g.beginPath(); g.moveTo(-s*.18,0); g.lineTo(s*.18,0); g.stroke();
+      g.restore();
+    }
+    if (ball.z < D){ posts(); flags(); aimLine(); drawBall(); } else { drawBall(); posts(); flags(); }
+  }
+  function loop(t){
+    var dt = Math.min(.05,(t-last)/1000); last = t; var c = cfg();
+    if (S.phase==='power'){ S.p += S.pd*c.ps*dt; if (S.p>=1){ S.p=1; S.pd=-1; } if (S.p<=0 && S.pd<0){ S.p=0; S.lp=0; S.la=S.a=.5; kick(); } meterDom(); }
+    else if (S.phase==='aim'){ S.a += S.ad*c.as*dt; if (S.a>=1){ S.a=1; S.ad=-1; } if (S.a<=0){ S.a=0; S.ad=1; } meterDom(); }
+    else if (S.phase==='flight' && S.fl){ S.fl.t += dt/S.fl.dur; S.fl.spin += dt*9; if (S.fl.t>=1){ S.fl.t=1; land(); } }
+    draw(); raf = requestAnimationFrame(loop);
+  }
+  function start(){ if (!raf){ last = performance.now(); raf = requestAnimationFrame(loop); } }
+  function stop(){ if (raf){ cancelAnimationFrame(raf); raf = 0; } }
+  function active(e){ var t = e.target.tagName; return document.body.getAttribute('data-mode')==='fg' && !document.body.hasAttribute('data-lock') && t!=='SELECT' && t!=='INPUT' && t!=='BUTTON'; }
+  document.addEventListener('keydown', function(e){
+    if (e.code==='Space' || e.code==='Enter'){ if (!active(e)) return; e.preventDefault(); if (!$('kickBtn').disabled) act(); }
+    else if (e.code==='ArrowLeft' || e.code==='ArrowRight'){ if (!active(e)) return; e.preventDefault(); nudge(e.code==='ArrowLeft' ? -1 : 1); }
+  });
+  cv.addEventListener('click', function(ev){
+    if (S.phase!=='idle') return;
+    var r = cv.getBoundingClientRect(), H = r.height, hy = H*.36, F = (H*.97-hy)*8/2.2, D = cfg().D;
+    S.aim = Math.max(-8, Math.min(8, Math.round((ev.clientX - r.left - r.width/2)*(D+8)/F*2)/2)); sndLock(); paint();
+  });
+  newWind(); renderTiers(); paint();
+  return {act:act, nudge:nudge, setFor:setFor, pick:pick, claim:claim, newRun:newRun, opt:opt, start:start, stop:stop, busy:busy};
+})();
+</script>
+<script>if (MODE === 'fg') FG.start();</script>
+<script src="supabase-config.js?v=4.2.0"></script>
+<script src="auth.js?v=4.2.0"></script>
 <script>
 /* Optional: pick a class + student before spinning and the prize can be sent
    straight to that student's profile inventory (reward-items.sql). Works only
@@ -564,10 +896,10 @@ window.addEventListener('resize', function(){ if (MODE === 'duck') placeDucks(pe
   function pick(){ var s = document.getElementById('aStudent'); return s && s.value ? ROSTER.filter(function(r){return r.id===s.value;})[0] : null; }
   function syncBtn(){
     var row = document.getElementById('sendRow'), who = pick();
-    if (!last || !who){ row.style.display = 'none'; return; }
+    if (!last || !(last.all ? ROSTER.length : who)){ row.style.display = 'none'; return; }
     row.style.display = 'block';
-    var b = document.getElementById('sendBtn'); b.disabled = false; b.textContent = 'SEND TO ' + who.handle.toUpperCase();
-    document.getElementById('sendMsg').textContent = last.kind === 'voucher' ? 'Lands in their profile to redeem with you.' : 'Lands in their profile, ready to use.';
+    var b = document.getElementById('sendBtn'); b.disabled = false; b.textContent = last.all ? 'SEND TO WHOLE CLASS (' + ROSTER.length + ')' : 'SEND TO ' + who.handle.toUpperCase();
+    document.getElementById('sendMsg').textContent = last.all ? 'Lands in every student\u2019s profile in this class.' : last.kind === 'voucher' ? 'Lands in their profile to redeem with you.' : 'Lands in their profile, ready to use.';
   }
   async function loadRoster(id){
     ROSTER = []; var s = document.getElementById('aStudent');
@@ -592,14 +924,15 @@ window.addEventListener('resize', function(){ if (MODE === 'duck') placeDucks(pe
     document.getElementById('aStudent').onchange = syncBtn;
     loadRoster(c.value);
   }
-  window.__awardReady = function(r){ last = r; syncBtn(); if (pick()) window.sendPrize(); };
+  window.__awardReady = function(r){ last = r; syncBtn(); if (r.all ? ROSTER.length : pick()) window.sendPrize(); };
   window.sendPrize = async function(){
-    var who = pick(); if (!last || !who) return;
+    var who = pick(); if (!last || !(last.all ? ROSTER.length : who)) return;
+    var ids = last.all ? ROSTER.map(function(r){ return r.id; }) : [who.id], name = last.all ? 'WHOLE CLASS' : who.handle.toUpperCase();
     var b = document.getElementById('sendBtn'), m = document.getElementById('sendMsg');
     b.disabled = true; b.textContent = 'SENDING\u2026';
     try {
-      await AUTH.rpc('ctf_t_send_items',{ p_students:[who.id], p_kind:last.kind, p_label: last.kind === 'voucher' ? last.label : null, p_note:null, p_source:'spinner' });
-      b.textContent = '\u2713 SENT TO ' + who.handle.toUpperCase(); m.textContent = 'Check the item log on the Send Rewards tab.'; last = null;
+      await AUTH.rpc('ctf_t_send_items',{ p_students:ids, p_kind:last.kind, p_label: last.kind === 'voucher' ? last.label : null, p_note:null, p_source:'spinner' });
+      b.textContent = '\u2713 SENT TO ' + name; m.textContent = 'Check the item log on the Send Rewards tab.'; last = null;
     } catch(e){
       b.disabled = false; b.textContent = 'TRY AGAIN';
       m.textContent = /send_items|function/.test((e&&e.message)||'') ? 'Run supabase/reward-items.sql first.' : 'Couldn\u2019t send: ' + ((e&&e.message)||e);
@@ -608,6 +941,6 @@ window.addEventListener('resize', function(){ if (MODE === 'duck') placeDucks(pe
   boot();
 })();
 </script>
-<script src="nemesis-intro.js?v=4.1.0"></script>
+<script src="nemesis-intro.js?v=4.2.0"></script>
 </body>
 </html>
