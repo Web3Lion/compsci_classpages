@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=4.0.0"></script>
+<script src="../site.js?v=4.1.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -319,8 +319,8 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="mono" style="margin-top: 28px; text-align: center; font-size: 12px; color: var(--fainter);">&gt; end_of_transmission // stay curious, stay safe_</div>
 </div>
 
-<script src="vocab-data.js?v=4.0.0"></script>
-<script src="../config.js?v=4.0.0"></script>
+<script src="vocab-data.js?v=4.1.0"></script>
+<script src="../config.js?v=4.1.0"></script>
 <script src="../resources.js"></script>
 <script>
 const CFG = (window.COURSE_CONFIG && window.COURSE_CONFIG.cyber2) || {};
@@ -360,7 +360,7 @@ async function load(){
     let hi=clean.findIndex(r=>r.some(c=>/weekday/i.test(c))); if(hi<0)hi=0;
     const header=clean[hi].map(c=>(c||'').trim().toLowerCase());
     const find=k=>header.findIndex(c=>c.includes(k));
-    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=find('topic'),cHw=find('homework'),cWarmup=find('warm');
+    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=[find('topic'),find('section'),find('lesson')].find(i=>i>-1)??-1,cHw=find('homework'),cWarmup=find('warm');
     const wd=/^(mon|tue|wed|thu|fri|sat|sun)/i;
     const m=r=>{
       const lines=(cTopic>-1?(r[cTopic]||''):'').split(/\n+/).map(t=>t.trim()).filter(Boolean);
@@ -626,9 +626,9 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 })();
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="../supabase-config.js?v=4.0.0"></script>
-<script src="../nemesis-intro.js?v=4.0.0"></script>
-<script src="../profile-link.js?v=4.0.0"></script>
+<script src="../supabase-config.js?v=4.1.0"></script>
+<script src="../nemesis-intro.js?v=4.1.0"></script>
+<script src="../profile-link.js?v=4.1.0"></script>
 <script>
 (function(){
   try { localStorage.setItem('__diag_cyber2', 'af307c1e58.html'); } catch(e){}

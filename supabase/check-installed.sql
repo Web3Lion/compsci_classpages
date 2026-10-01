@@ -1,184 +1,137 @@
 -- ============================================================================
 --  WHAT'S INSTALLED?  —  paste this whole file into the Supabase SQL editor
---  and run it. ONE result table, in the order the files should be run.
---  Read the `status` column and work down the ❌ rows.
+--  and run it. ONE result table, in the order the files should be run
+--  (same order as the table in SUPABASE-SETUP.md). Work down the ❌ / ⚠ rows.
 --
 --  Reads nothing but the catalog. Changes nothing. Safe to run any time.
+--  The same checks power install-check.html once install-check.sql is run —
+--  if you add a file or guard here, add it to install-check.sql too.
 -- ============================================================================
 
 select r.step, r.file, r.feature, r.status
 from (
-
-  -- ---- one row per add-on file ----------------------------------------------
-  select
-    c.step::text as step,
-    c.file,
-    c.feature,
+  select c.step::text as step, c.file, c.feature,
+    case when c.present then 'ok' else 'missing' end as state,
     case when c.present then '✅ installed' else '❌ NOT RUN — run this file' end as status,
-    1 as grp,          -- display group: files first, guards after
-    c.step as ord      -- numeric sort key; sorting on the text would give 1,10,2,3…
+    1 as grp, c.step as ord
   from (values
-    (1, 'attempt-log.sql',    'Wrong-guess log + time-to-solve outliers',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='attempt_events'))),
-    (2, 'class-groups.sql',   'Teacher groups (squads depend on this)',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='class_groups'))),
-    (3, 'pioneer.sql',        'Pioneer bonus — first in class to capture a flag',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='pioneer_claims'))),
-    (4, 'vocab-log.sql',      'Vocab time on task',
-        (select exists (select 1 from information_schema.routines
-                        where routine_schema='public' and routine_name='ctf_t_vocab'))),
-    (5, 'vocab-sessions.sql', 'Per-run vocab audit trail',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='vocab_sessions'))),
-    (6, 'roster-csv.sql',     'CSV roster, move + remove students',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='roster_entries'))),
-    (7, 'squads.sql',         'Student-facing squads',
-        (select exists (select 1 from information_schema.columns
-                        where table_schema='public' and table_name='classes'
-                          and column_name='squads_on'))),
-    (8, 'objectives.sql',     'Objective mastery reporting (run after squads.sql)',
-        (select exists (select 1 from information_schema.columns
-                        where table_schema='public' and table_name='classes'
-                          and column_name='objectives_on'))),
-    (9, 'teachers.sql',       'Multiple teacher accounts (staff + owner roles)',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='teachers'))),
-    (10,'multi-domain.sql',   'Student sign-in from @lions.net as well as @southfayette.org',
-        (select exists (select 1 from pg_proc p
-                        join pg_namespace n on n.oid = p.pronamespace
-                        where n.nspname='public' and p.proname='_school_domains'))),
-    (11,'signin-log.sql',     'Rejected sign-in log — which domain got turned away',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='signin_rejects'))),
-    (12,'teacher-xp.sql',     'Manual XP grants with a reason, ±100 per grant',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='xp_grants'))),
-    (13,'hardmode-log.sql',   'Arena mini-game run log (Decrypt, Rapid Fire, Speed Match…)',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='hardmode_runs'))),
-    (14,'reward-items.sql',   'Reward items, spinner prizes, loot drops',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='reward_items'))),
-    (15,'weekly-winners.sql', 'Hall of Fame weekly top 3',
-        (select exists (select 1 from information_schema.routines
-                        where routine_schema='public' and routine_name='ctf_t_weekly_winners'))),
-    (16,'coins-cosmetics.sql','v2.0 · Coins + Coin Shop cosmetics',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='cosmetic_owned'))),
-    (17,'class-pulse.sql',    'v2.0 · Live Class Pulse dashboard',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='presence'))),
-    (18,'duels.sql',          'v2.0 · Head-to-head duels',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='duels'))),
-    (19,'scheduled-unlocks.sql','v2.0 · Scheduled unlocks (run LAST of the gate files)',
-        (select exists (select 1 from information_schema.tables
-                        where table_schema='public' and table_name='unlock_schedule')))
+    (0, 'schema.sql', 'Core tables + original class-code sign-in', exists (select 1 from information_schema.tables where table_schema='public' and table_name='classes')),
+    (1, 'google-auth.sql', 'Google sign-in, teacher identity', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_join_google')),
+    (2, 'teacher-reports.sql', 'Roster, flag captures, attendance', exists (select 1 from information_schema.tables where table_schema='public' and table_name='activity_days')),
+    (3, 'class-gates.sql', 'Module/flag locks, guide + answer-key + Ultimate Flags switches', exists (select 1 from information_schema.columns where table_schema='public' and table_name='classes' and column_name='locked_modules')),
+    (4, 'answer-key.sql', 'Sealed answer key', exists (select 1 from information_schema.tables where table_schema='public' and table_name='answer_key')),
+    (5, 'attempt-log.sql', 'Wrong-guess log + time-to-solve outliers', exists (select 1 from information_schema.tables where table_schema='public' and table_name='attempt_events')),
+    (6, 'item-analysis.sql', 'Per-flag attempt/abandonment analytics', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_flag_attempts')),
+    (7, 'class-groups.sql', 'Teacher groups (squads depend on this)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='class_groups')),
+    (8, 'squads.sql', 'Student-facing squads', exists (select 1 from information_schema.columns where table_schema='public' and table_name='classes' and column_name='squads_on')),
+    (9, 'objectives.sql', 'Objective mastery reporting', exists (select 1 from information_schema.columns where table_schema='public' and table_name='classes' and column_name='objectives_on')),
+    (10, 'pioneer.sql', 'Pioneer bonus — first in class to capture a flag', exists (select 1 from information_schema.tables where table_schema='public' and table_name='pioneer_claims')),
+    (11, 'vocab-log.sql', 'Vocab time on task', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_vocab')),
+    (12, 'vocab-sessions.sql', 'Per-run vocab audit trail', exists (select 1 from information_schema.tables where table_schema='public' and table_name='vocab_sessions')),
+    (13, 'roster-csv.sql', 'CSV roster, move + remove students', exists (select 1 from information_schema.tables where table_schema='public' and table_name='roster_entries')),
+    (14, 'teachers.sql', 'Multiple teacher accounts (staff + owner roles)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='teachers')),
+    (15, 'multi-domain.sql', 'Student sign-in from the second school domain', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_school_domains')),
+    (16, 'allowed-emails.sql', 'Extra allowed emails outside both domains', exists (select 1 from information_schema.tables where table_schema='public' and table_name='allowed_emails')),
+    (17, 'teacher-xp.sql', 'Manual XP grants with a reason', exists (select 1 from information_schema.tables where table_schema='public' and table_name='xp_grants')),
+    (18, 'hardmode-log.sql', 'Arena mini-game run log', exists (select 1 from information_schema.tables where table_schema='public' and table_name='hardmode_runs')),
+    (19, 'hint-log.sql', 'Hint-used tracking per flag', exists (select 1 from information_schema.columns where table_schema='public' and table_name='flag_events' and column_name='hint_used')),
+    (20, 'target-warmup.sql', 'Day-1 "Are You a Target?" warm-up', exists (select 1 from information_schema.tables where table_schema='public' and table_name='target_warmup_responses')),
+    (21, 'signin-log.sql', 'Rejected sign-in log', exists (select 1 from information_schema.tables where table_schema='public' and table_name='signin_rejects')),
+    (22, 'board-leaderboard.sql', 'Classroom leaderboard', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_leaderboard')),
+    (23, 'board-leaderboard-weekly.sql', '"This Week" leaderboard mode', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_leaderboard_weekly')),
+    (24, 'weekly-winners.sql', 'Hall of Fame weekly top 3', exists (select 1 from information_schema.tables where table_schema='public' and table_name='weekly_winners')),
+    (25, 'weekly-snapshot-auto.sql', 'Monday auto-snapshot (GitHub Action)', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='cron_snapshot_all_classes')),
+    (26, 'reward-items.sql', 'Reward items, spinner prizes, loot drops', exists (select 1 from information_schema.tables where table_schema='public' and table_name='reward_items')),
+    (27, 'coins-cosmetics.sql', 'Coins + Coin Shop cosmetics', exists (select 1 from information_schema.tables where table_schema='public' and table_name='cosmetic_owned')),
+    (28, 'class-pulse.sql', 'Live Class Pulse dashboard', exists (select 1 from information_schema.tables where table_schema='public' and table_name='presence')),
+    (29, 'duels.sql', 'Head-to-head duels', exists (select 1 from information_schema.tables where table_schema='public' and table_name='duels')),
+    (30, 'scheduled-unlocks.sql', 'Scheduled unlocks (run LAST of the gate files)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='unlock_schedule')),
+    (31, 'install-check.sql', 'Live status for install-check.html', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_install_status'))
   ) as c(step, file, feature, present)
 
   union all
-
-  -- ---- guard 1: squads.sql before objectives.sql ----------------------------
-  -- Both redefine ctf_t_classes/ctf_gates; only objectives.sql's version carries
-  -- BOTH switches. If squads.sql ran last, the student objective map silently
-  -- never appears. Fix: re-run objectives.sql on its own.
-  select '—', 'run order', 'objectives.sql must run after squads.sql',
-    case
-      when not exists (select 1 from information_schema.columns
-                       where table_schema='public' and table_name='classes'
-                         and column_name='objectives_on')
-        then 'objectives.sql not run yet — nothing to check'
-      when (select pg_get_functiondef(p.oid) from pg_proc p
-            join pg_namespace n on n.oid = p.pronamespace
-            where n.nspname='public' and p.proname='ctf_gates' limit 1)
-           like '%objectives_on%'
-        then '✅ fine — ctf_gates carries both switches'
-      else '⚠ RE-RUN objectives.sql — squads.sql overwrote ctf_gates'
-    end,
+  select '—', 'run order', 'objectives.sql must run after class-gates.sql + squads.sql',
+    case when not exists (select 1 from information_schema.columns where table_schema='public' and table_name='classes' and column_name='objectives_on') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_gates' limit 1), 'objectives_on'), 0) > 0
+           and coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_classes' limit 1), 'objectives_on'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.columns where table_schema='public' and table_name='classes' and column_name='objectives_on') then 'objectives.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_gates' limit 1), 'objectives_on'), 0) > 0
+           and coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_classes' limit 1), 'objectives_on'), 0) > 0
+           then '✅ fine — ctf_gates + ctf_t_classes carry the objectives switch'
+         else '⚠ RE-RUN objectives.sql, then scheduled-unlocks.sql' end,
     2, 1
 
   union all
-
-  -- ---- guard 2: google-auth.sql clobbers the domain list --------------------
-  -- google-auth.sql defines _is_school() against ONE hardcoded domain.
-  -- multi-domain.sql replaces it with a list. Re-running google-auth.sql (it
-  -- advertises itself as safe to re-run) silently reverts it, and every
-  -- @lions.net student is rejected with not_school_account.
-  select '—', 'run order', 'multi-domain.sql must run after google-auth.sql',
-    case
-      when not exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
-                       where n.nspname='public' and p.proname='_school_domains')
-        then 'multi-domain.sql not run yet — students on the second domain CANNOT sign in'
-      when (select pg_get_functiondef(p.oid) from pg_proc p
-            join pg_namespace n on n.oid = p.pronamespace
-            where n.nspname='public' and p.proname='_is_school' limit 1)
-           like '%_school_domains%'
-        then '✅ fine — _is_school() uses the domain list'
-      else '⚠ RE-RUN multi-domain.sql — google-auth.sql reverted _is_school() to one domain'
-    end,
+  select '—', 'run order', 'attempt-log.sql must run after google-auth.sql + teacher-reports.sql',
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='attempt_events') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_cheat_google' limit 1), 'flag_key'), 0) > 0
+           and coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_student' limit 1), 'attempt'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='attempt_events') then 'attempt-log.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_cheat_google' limit 1), 'flag_key'), 0) > 0
+           and coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_student' limit 1), 'attempt'), 0) > 0
+           then '✅ fine — cheat log + student report include attempts'
+         else '⚠ RE-RUN attempt-log.sql' end,
     2, 2
 
   union all
-
-  -- ---- guard 3: google-auth.sql clobbers multi-teacher ----------------------
-  -- Same trap for _is_teacher(): google-auth.sql pins it to one email address,
-  -- teachers.sql makes it table-driven. Reverting locks out every added teacher.
-  select '—', 'run order', 'teachers.sql must run after google-auth.sql',
-    case
-      when not exists (select 1 from information_schema.tables
-                       where table_schema='public' and table_name='teachers')
-        then 'teachers.sql not run yet — only the owner email has dashboard access'
-      when (select pg_get_functiondef(p.oid) from pg_proc p
-            join pg_namespace n on n.oid = p.pronamespace
-            where n.nspname='public' and p.proname='_is_teacher' limit 1)
-           like '%teachers%'
-        then '✅ fine — _is_teacher() reads the teachers table'
-      else '⚠ RE-RUN teachers.sql — google-auth.sql reverted _is_teacher() to one email'
-    end,
+  select '—', 'run order', 'multi-domain.sql must run after google-auth.sql',
+    case when not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_school_domains') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), '_school_domains'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_school_domains') then 'multi-domain.sql not run yet — second-domain students CANNOT sign in — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), '_school_domains'), 0) > 0
+           then '✅ fine — _is_school() uses the domain list'
+         else '⚠ RE-RUN multi-domain.sql, then allowed-emails.sql' end,
     2, 3
 
   union all
-
-  -- ---- guard 4: sync must preserve teacher XP grants -------------------------
-  -- teacher-xp.sql redefines ctf_sync_google so a student's push can't overwrite
-  -- or double-count granted XP. Re-running google-auth.sql reverts it: grants
-  -- then vanish on the student's next sync.
-  select '—', 'run order', 'teacher-xp.sql must run after google-auth.sql',
-    case
-      when not exists (select 1 from information_schema.tables
-                       where table_schema='public' and table_name='xp_grants')
-        then 'teacher-xp.sql not run yet — no manual XP grants'
-      when (select pg_get_functiondef(p.oid) from pg_proc p
-            join pg_namespace n on n.oid = p.pronamespace
-            where n.nspname='public' and p.proname='ctf_sync_google' limit 1)
-           like '%teacher_bonus%'
-        then '✅ fine — sync preserves granted XP'
-      else '⚠ RE-RUN teacher-xp.sql — google-auth.sql reverted ctf_sync_google, granted XP will be lost on sync'
-    end,
+  select '—', 'run order', 'allowed-emails.sql must run after multi-domain.sql',
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='allowed_emails') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), 'allowed_emails'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='allowed_emails') then 'allowed-emails.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), 'allowed_emails'), 0) > 0
+           then '✅ fine — _is_school() checks the allowlist'
+         else '⚠ RE-RUN allowed-emails.sql' end,
     2, 4
 
   union all
-
-  -- ---- guard 5: scheduled-unlocks.sql must be the last to define ctf_gates ---
-  -- class-gates.sql, squads.sql and objectives.sql all redefine ctf_gates. If any
-  -- of them runs after scheduled-unlocks.sql, due unlocks never apply.
-  select '—', 'run order', 'scheduled-unlocks.sql must run after the gate files',
-    case
-      when not exists (select 1 from information_schema.tables
-                       where table_schema='public' and table_name='unlock_schedule')
-        then 'scheduled-unlocks.sql not run yet — nothing to check'
-      when (select pg_get_functiondef(p.oid) from pg_proc p
-            join pg_namespace n on n.oid = p.pronamespace
-            where n.nspname='public' and p.proname='ctf_gates' limit 1)
-           like '%_apply_unlocks%'
-        then '✅ fine — ctf_gates applies scheduled unlocks'
-      else '⚠ RE-RUN scheduled-unlocks.sql — a later file overwrote ctf_gates'
-    end,
+  select '—', 'run order', 'teachers.sql must run after google-auth.sql',
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='teachers') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_teacher' limit 1), 'teachers'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='teachers') then 'teachers.sql not run yet — only the owner email has dashboard access — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_teacher' limit 1), 'teachers'), 0) > 0
+           then '✅ fine — _is_teacher() reads the teachers table'
+         else '⚠ RE-RUN teachers.sql — added teachers are locked out' end,
     2, 5
 
+  union all
+  select '—', 'run order', 'teacher-xp.sql must run after google-auth.sql',
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='xp_grants') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_sync_google' limit 1), 'teacher_bonus'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='xp_grants') then 'teacher-xp.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_sync_google' limit 1), 'teacher_bonus'), 0) > 0
+           then '✅ fine — sync preserves granted XP'
+         else '⚠ RE-RUN teacher-xp.sql — granted XP is lost on sync' end,
+    2, 6
+
+  union all
+  select '—', 'run order', 'hint-log.sql must run after google-auth.sql',
+    case when not exists (select 1 from information_schema.columns where table_schema='public' and table_name='flag_events' and column_name='hint_used') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_flag_google' limit 1), 'hint_used'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.columns where table_schema='public' and table_name='flag_events' and column_name='hint_used') then 'hint-log.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_flag_google' limit 1), 'hint_used'), 0) > 0
+           then '✅ fine — captures record hint use'
+         else '⚠ RE-RUN hint-log.sql' end,
+    2, 7
+
+  union all
+  select '—', 'run order', 'weekly-snapshot-auto.sql must run after weekly-winners.sql',
+    case when not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='cron_snapshot_all_classes') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_snapshot_week' limit 1), '_snapshot_week_for_class'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='cron_snapshot_all_classes') then 'weekly-snapshot-auto.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_snapshot_week' limit 1), '_snapshot_week_for_class'), 0) > 0
+           then '✅ fine — manual + automatic snapshots share one code path'
+         else '⚠ RE-RUN weekly-snapshot-auto.sql' end,
+    2, 8
+
+  union all
+  select '—', 'run order', 'scheduled-unlocks.sql must run after the gate files',
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='unlock_schedule') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_gates' limit 1), '_apply_unlocks'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='unlock_schedule') then 'scheduled-unlocks.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_gates' limit 1), '_apply_unlocks'), 0) > 0
+           then '✅ fine — ctf_gates applies scheduled unlocks'
+         else '⚠ RE-RUN scheduled-unlocks.sql — a later file overwrote ctf_gates' end,
+    2, 9
 ) as r
 order by r.grp, r.ord;

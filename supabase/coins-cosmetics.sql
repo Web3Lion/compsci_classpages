@@ -132,10 +132,10 @@ begin
     from students where class_id = p_class and equipped <> '{}'::jsonb), '[]'::json);
 end $$;
 
--- teacher: bonus coins (clamped ±20 per call)
+-- teacher: bonus coins (clamped ±500 per call; was ±20 before 4.1.0)
 create or replace function ctf_t_grant_coins(p_students uuid[], p_amount int, p_reason text default null)
 returns json language plpgsql security definer set search_path = public as $$
-declare v_amt int := greatest(-20, least(20, coalesce(p_amount,0))); v_n int;
+declare v_amt int := greatest(-500, least(500, coalesce(p_amount,0))); v_n int;
 begin
   if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
   if v_amt = 0 then return json_build_object('error','zero'); end if;
