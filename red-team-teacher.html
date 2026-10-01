@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<!-- PROTOTYPE — Teacher Red Team tab. Fake class data; no database calls. Shares the attacks on/off switch with system-monitor.html (same browser). -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=4.1.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Red Team — Teacher Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#6a84a0;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--amber-bg:#1a150a;--amber-bd:#4a3d1a;--ok:#3ddc84;--bad:#ff5a6e;--bad-bg:#2a0f16;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5a6c80;--faint:#6f8196;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--amber-bg:#fbf4dd;--amber-bd:#e4cf95;--ok:#137a3c;--bad:#b3203a;--bad-bg:#fbe7ea;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+a{color:var(--accent);} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+button{font:inherit;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.wrap{max-width:1240px;margin:0 auto;padding:18px clamp(12px,2vw,28px) 60px;}
+.panel{border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:18px;min-width:0;}
+.ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:14px;text-transform:uppercase;}
+.ph .r{margin-left:auto;letter-spacing:0;text-transform:none;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.5px;padding:8px 12px;min-height:36px;border-radius:9px;border:1px solid var(--border3);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.btn:hover:not(:disabled){color:var(--bright);border-color:var(--accent);}
+.btn.ok{border-color:var(--ok);color:var(--ok);}
+.btn.warn{border-color:var(--amber);color:var(--amber);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;margin-top:16px;}
+.t{width:100%;border-collapse:collapse;font-size:13px;}
+.t th{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--faint);text-align:left;font-weight:500;padding:0 10px 8px;border-bottom:1px solid var(--border2);white-space:nowrap;}
+.t td{padding:10px;border-bottom:1px solid var(--border2);vertical-align:middle;}
+.t tr:last-child td{border-bottom:none;}
+.t .n{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:999px;border:1px solid var(--border3);color:var(--faint);white-space:nowrap;}
+.tag.ok{border-color:var(--ok);color:var(--ok);}
+.tag.amber{border-color:var(--amber);color:var(--amber);background:var(--amber-bg);}
+.tag.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-bg);}
+.alert{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;border:1px solid var(--amber-bd);border-radius:12px;background:var(--amber-bg);}
+.alert.bad{border-color:color-mix(in oklab,var(--bad) 45%,transparent);background:var(--bad-bg);}
+.alert b{color:var(--bright);font-size:14px;}
+.alert span{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.45;}
+.feed{max-height:380px;overflow:auto;}
+.frow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--border2);font-size:13px;}
+.frow:last-child{border-bottom:none;}
+.frow .tm{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);}
+.frow .who{color:var(--bright);}
+.frow .sub{display:block;font-size:12px;color:var(--dim);margin-top:2px;}
+.hot{color:var(--amber);font-weight:700;}
+.bar{height:8px;border-radius:999px;background:var(--border2);overflow:hidden;}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--accent);}
+.master{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:18px 22px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,var(--panel2),var(--bg) 70%);}
+.switch{position:relative;display:inline-flex;align-items:center;gap:12px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:1px;}
+.switch input{position:absolute;opacity:0;width:1px;height:1px;}
+.switch .trk{width:64px;height:34px;border-radius:999px;background:var(--border3);position:relative;transition:background .2s ease;flex:none;}
+.switch .trk::after{content:"";position:absolute;top:4px;left:4px;width:26px;height:26px;border-radius:50%;background:var(--bright);transition:transform .2s ease;}
+.switch input:checked + .trk{background:var(--ok);}
+.switch input:checked + .trk::after{transform:translateX(30px);}
+.switch input:focus-visible + .trk{outline:3px solid var(--amber);outline-offset:3px;}
+@media(max-width:980px){.grid2{grid-template-columns:1fr;} .master{grid-template-columns:1fr;}}
+@media(max-width:640px){.t .hideS{display:none;}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<main class="wrap" id="main">
+  <a class="mono" href="teacher.html" style="font-size:12px;color:var(--dim);text-decoration:none;display:inline-block;padding:8px 0;">&larr; Teacher dashboard</a>
+  <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--accent);">&gt; ./red-team --class=cyber1-p3</div>
+  <h1 class="mono" style="margin:6px 0 4px;font-size:clamp(22px,3vw,28px);color:var(--bright);">Red Team</h1>
+  <p style="margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.5;max-width:75ch;">Prototype with fake class data (Cyber 1 · Period 3). The on/off switch is shared with <a href="system-monitor.html">system-monitor.html</a> in this browser, so you can open both and watch the student side react.</p>
+
+  <section class="master" aria-labelledby="mTitle">
+    <div>
+      <div id="mTitle" class="mono" style="font-size:18px;font-weight:800;color:var(--bright);">Attacks <span id="mState">ON</span> for this class</div>
+      <div id="mHelp" style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:6px;max-width:80ch;"></div>
+    </div>
+    <label class="switch"><input type="checkbox" id="mSwitch" checked aria-describedby="mHelp"><span class="trk"></span><span id="mLbl">ON</span></label>
+  </section>
+
+  <section class="panel" style="margin-top:16px;" aria-labelledby="hAlerts">
+    <div class="ph"><span id="hAlerts">Needs attention</span><span class="r mono" id="alertCount"></span></div>
+    <div id="alerts" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;"></div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel" aria-labelledby="hTarget">
+      <div class="ph"><span id="hTarget">Most targeted this week</span><span class="r mono">amber: 3+ in 24h · red: 5+ this week</span></div>
+      <div style="overflow-x:auto;"><table class="t" id="tgtTable"></table></div>
+    </section>
+    <section class="panel" aria-labelledby="hFeed">
+      <div class="ph"><span id="hFeed">Live attack feed</span><span class="r mono" id="feedCount"></span></div>
+      <div class="feed" id="feed"></div>
+    </section>
+  </div>
+
+  <div class="grid2">
+    <section class="panel" aria-labelledby="hAtk">
+      <div class="ph"><span id="hAtk">Attackers</span><span class="r mono">flag: over half their attacks at one student</span></div>
+      <div style="overflow-x:auto;"><table class="t" id="atkTable"></table></div>
+    </section>
+    <section class="panel" aria-labelledby="hLearn">
+      <div class="ph"><span id="hLearn">Learning data · by attack</span></div>
+      <div style="overflow-x:auto;"><table class="t" id="learnTable"></table></div>
+      <p style="margin:12px 2px 0;font-size:12px;color:var(--faint);line-height:1.5;">First-try diagnosis = the student named the right attack before any wrong guess. Low numbers show which attacks the class needs to review.</p>
+    </section>
+  </div>
+</main>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  var ATK = { crypto:'Cryptojacker', ddos:'DDoS', ransom:'Ransomware', phish:'Phishing', down:'Downgrade', inject:'Keystroke Injection', cursor:'Cursor Hijack' };
+
+  var STU = [
+    { h:'byteMe', rank:4, d24:3, wk:6, prot:false, canAtk:true, def:'5/6', fix:'1m 50s' },
+    { h:'nova-7', rank:6, d24:1, wk:3, prot:false, canAtk:true, def:'3/3', fix:'1m 12s' },
+    { h:'packetPal', rank:7, d24:2, wk:4, prot:true, canAtk:true, def:'2/4', fix:'3m 05s' },
+    { h:'cipherQueen', rank:5, d24:0, wk:2, prot:false, canAtk:true, def:'2/2', fix:'0m 58s' },
+    { h:'r0ot_kid', rank:2, d24:1, wk:2, prot:false, canAtk:true, def:'1/2', fix:'2m 40s' },
+    { h:'glitchGal', rank:9, d24:0, wk:1, prot:false, canAtk:true, def:'1/1', fix:'1m 30s' },
+    { h:'redfox', rank:3, d24:0, wk:0, prot:false, canAtk:true, def:'—', fix:'—' },
+    { h:'n0vice', rank:14, d24:0, wk:0, prot:false, canAtk:true, def:'—', fix:'—' }
+  ];
+  var ATTACKERS = [
+    { h:'redfox', sent:7, top:'byteMe', topN:5, xp:525 },
+    { h:'r0ot_kid', sent:5, top:'packetPal', topN:2, xp:350 },
+    { h:'glitchGal', sent:4, top:'nova-7', topN:2, xp:200 },
+    { h:'cipherQueen', sent:3, top:'r0ot_kid', topN:1, xp:175 },
+    { h:'byteMe', sent:2, top:'redfox', topN:1, xp:125 }
+  ];
+  var LEARN = [['phish',62,'0m 48s',9],['cursor',91,'0m 40s',6],['ddos',74,'1m 55s',5],['crypto',58,'2m 10s',4],['down',45,'2m 30s',3],['ransom',70,'2m 05s',3],['inject',50,'1m 40s',2]];
+  var FEED = [
+    { t:'10:52', a:'redfox', v:'byteMe', k:'ransom', res:'landed', fix:null },
+    { t:'10:47', a:'glitchGal', v:'nova-7', k:'cursor', res:'item', by:'Extension Guard' },
+    { t:'10:41', a:'r0ot_kid', v:'packetPal', k:'ddos', res:'ips', by:'teacher protected' },
+    { t:'10:33', a:'redfox', v:'byteMe', k:'phish', res:'landed', fix:'reported · 0m 40s' },
+    { t:'10:20', a:'cipherQueen', v:'r0ot_kid', k:'down', res:'landed', fix:'config fixed · 2m 12s' },
+    { t:'10:08', a:'redfox', v:'byteMe', k:'ddos', res:'ips', by:'repeat attacker this week' },
+    { t:'09:55', a:'byteMe', v:'redfox', k:'crypto', res:'immune', by:'post-restore immunity' },
+    { t:'09:41', a:'glitchGal', v:'cipherQueen', k:'inject', res:'landed', fix:'device ejected · 1m 05s' }
+  ];
+  var ON = true, dismissed = {};
+  try{ ON = localStorage.getItem('proto-redteam-on') !== 'off'; }catch(e){}
+
+  function level(s){ return s.wk >= 5 ? 'bad' : s.d24 >= 3 ? 'amber' : ''; }
+  function stu(h){ return STU.filter(function(s){ return s.h === h; })[0]; }
+
+  function renderMaster(){
+    $('mSwitch').checked = ON;
+    $('mState').textContent = ON ? 'ON' : 'OFF'; $('mState').style.color = ON ? 'var(--ok)' : 'var(--amber)';
+    $('mLbl').textContent = ON ? 'ON' : 'OFF';
+    $('mHelp').innerHTML = ON
+      ? 'Students can launch attacks and use defense items. <b style="color:var(--text);">Turning this off</b> stops every attack at once, lifts all active debuffs, and greys out attack and defense items on every student\u2019s screen. Items are kept and defense timers freeze until you turn it back on.'
+      : '<b style="color:var(--amber);">Attacks are off.</b> No one can attack, and no debuffs are active. Students see their items greyed out with \u201CAttacks off\u201D. Nothing is lost. Turn it back on whenever you\u2019re ready.';
+  }
+  function renderAlerts(){
+    var list = [];
+    STU.forEach(function(s){
+      if (s.prot || dismissed[s.h]) return;
+      var lv = level(s); if (!lv) return;
+      var top = ATTACKERS.filter(function(a){ return a.top === s.h; })[0];
+      list.push({ h:s.h, lv:lv, title: s.h + ' was attacked ' + s.wk + ' times this week' + (s.d24 >= 3 ? ', ' + s.d24 + ' in the last 24h' : ''), sub: top ? top.topN + ' of them from ' + top.h + '.' : 'From several classmates.' });
+    });
+    ATTACKERS.forEach(function(a){ if (a.topN / a.sent > .5 && !dismissed['atk-'+a.h]) list.push({ h:'atk-'+a.h, lv:'amber', atk:a.h, title: a.h + ' sent ' + a.topN + ' of ' + a.sent + ' attacks at ' + a.top, sub:'Possible targeting pattern. Consider a check-in, or stop them from attacking.' }); });
+    $('alertCount').textContent = list.length ? list.length + ' open' : '';
+    $('alerts').innerHTML = list.length ? list.map(function(x){
+      return '<div class="alert'+(x.lv==='bad'?' bad':'')+'"><div><b>'+esc(x.title)+'</b><span>'+esc(x.sub)+'</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">'+
+        (x.atk ? '<button class="btn warn" data-stop="'+esc(x.atk)+'">STOP ATTACKING</button>' : '<button class="btn ok" data-prot="'+esc(x.h)+'">PROTECT</button>')+
+        '<button class="btn" data-dis="'+esc(x.h)+'">DISMISS</button></div></div>';
+    }).join('') : '<div style="font-size:13px;color:var(--faint);">Nothing needs attention right now.</div>';
+  }
+  function renderTargets(){
+    var rows = STU.slice().sort(function(a,b){ return b.wk - a.wk || b.d24 - a.d24; });
+    $('tgtTable').innerHTML = '<thead><tr><th>STUDENT</th><th class="n">24H</th><th class="n">WEEK</th><th class="hideS">FIXED 1ST TRY</th><th class="hideS">AVG FIX</th><th>STATUS</th><th></th></tr></thead><tbody>'+
+      rows.map(function(s){ var lv = level(s);
+        return '<tr><td><b style="color:var(--bright);">'+esc(s.h)+'</b> <span class="mono" style="font-size:11px;color:var(--faint);">#'+s.rank+'</span></td>'+
+          '<td class="n'+(s.d24>=3?' hot':'')+'">'+s.d24+'</td><td class="n'+(s.wk>=5?' hot':'')+'" style="'+(s.wk>=5?'color:var(--bad);':'')+'">'+s.wk+'</td>'+
+          '<td class="hideS mono" style="font-size:12px;">'+s.def+'</td><td class="hideS mono" style="font-size:12px;">'+s.fix+'</td>'+
+          '<td>'+(s.prot ? '<span class="tag ok">PROTECTED</span>' : lv === 'bad' ? '<span class="tag bad">HEAVY</span>' : lv === 'amber' ? '<span class="tag amber">WATCH</span>' : '<span class="tag">OK</span>')+(!s.canAtk ? ' <span class="tag amber">CAN\u2019T ATTACK</span>' : '')+'</td>'+
+          '<td style="text-align:right;"><button class="btn'+(s.prot?'':' ok')+'" data-prot="'+esc(s.h)+'" aria-pressed="'+s.prot+'">'+(s.prot?'UNPROTECT':'PROTECT')+'</button></td></tr>';
+      }).join('')+'</tbody>';
+  }
+  function resTag(f){
+    if (f.res === 'landed') return '<span class="tag amber">LANDED</span>';
+    if (f.res === 'cleared') return '<span class="tag">CLEARED BY YOU</span>';
+    if (f.res === 'refunded') return '<span class="tag">REFUNDED</span>';
+    return '<span class="tag ok">BLOCKED</span>';
+  }
+  function renderFeed(){
+    $('feedCount').textContent = FEED.length + ' today';
+    $('feed').innerHTML = FEED.map(function(f, i){
+      var how = f.res === 'landed' ? (f.fix ? 'Fixed: ' + f.fix : 'Still active') : f.res === 'item' ? 'Blocked by ' + f.by : f.res === 'ips' ? 'IPS: ' + f.by : f.res === 'immune' ? 'Immune: ' + f.by : f.res === 'cleared' ? 'You cleared it' : 'Item + XP returned to ' + f.a;
+      var live = f.res === 'landed' && !f.fix;
+      return '<div class="frow"><span class="tm">'+f.t+'</span><div style="min-width:0;"><span class="who">'+esc(f.a)+' \u2192 '+esc(f.v)+'</span> <span class="mono" style="font-size:12px;color:var(--muted);">'+ATK[f.k]+'</span> '+resTag(f)+'<span class="sub">'+esc(how)+'</span></div>'+
+        '<div style="display:flex;gap:6px;">'+(live ? '<button class="btn" data-clear="'+i+'">CLEAR</button>' : '')+(f.res !== 'refunded' ? '<button class="btn" data-ref="'+i+'">REFUND</button>' : '')+'</div></div>';
+    }).join('');
+  }
+  function renderAttackers(){
+    $('atkTable').innerHTML = '<thead><tr><th>ATTACKER</th><th class="n">SENT</th><th>MOST AT</th><th class="n hideS">XP SPENT</th><th></th></tr></thead><tbody>'+
+      ATTACKERS.map(function(a){ var share = Math.round(a.topN/a.sent*100), s = stu(a.h), can = !s || s.canAtk;
+        return '<tr><td><b style="color:var(--bright);">'+esc(a.h)+'</b></td><td class="n">'+a.sent+'</td>'+
+          '<td><span style="'+(share>50?'color:var(--amber);font-weight:700;':'')+'">'+esc(a.top)+' \u00b7 '+share+'%</span><div class="bar" style="margin-top:5px;max-width:160px;"><i style="width:'+share+'%;'+(share>50?'background:var(--amber);':'')+'"></i></div></td>'+
+          '<td class="n hideS">'+a.xp+'</td><td style="text-align:right;"><button class="btn'+(can?' warn':'')+'" data-stop="'+esc(a.h)+'">'+(can?'STOP ATTACKING':'ALLOW AGAIN')+'</button></td></tr>';
+      }).join('')+'</tbody>';
+  }
+  function renderLearn(){
+    $('learnTable').innerHTML = '<thead><tr><th>ATTACK</th><th>FIRST-TRY DIAGNOSIS</th><th class="n">AVG FIX</th><th class="n hideS">LANDED</th></tr></thead><tbody>'+
+      LEARN.map(function(l){ var low = l[1] < 60;
+        return '<tr><td class="mono" style="font-size:12px;color:var(--bright);">'+ATK[l[0]]+'</td><td><div style="display:flex;align-items:center;gap:10px;"><div class="bar" style="flex:1;min-width:80px;"><i style="width:'+l[1]+'%;background:'+(low?'var(--amber)':'var(--ok)')+';"></i></div><b class="mono" style="font-size:12px;width:36px;text-align:right;color:'+(low?'var(--amber)':'var(--text)')+';">'+l[1]+'%</b></div></td><td class="n" style="font-size:12px;">'+l[2]+'</td><td class="n hideS">'+l[3]+'</td></tr>';
+      }).join('')+'</tbody>';
+  }
+  function renderAll(){ renderMaster(); renderAlerts(); renderTargets(); renderFeed(); renderAttackers(); renderLearn(); wire(); }
+  function wire(){
+    document.querySelectorAll('[data-prot]').forEach(function(b){ b.onclick = function(){ var s = stu(b.getAttribute('data-prot')); if (s){ s.prot = !s.prot; } renderAll(); }; });
+    document.querySelectorAll('[data-dis]').forEach(function(b){ b.onclick = function(){ dismissed[b.getAttribute('data-dis')] = 1; renderAll(); }; });
+    document.querySelectorAll('[data-stop]').forEach(function(b){ b.onclick = function(){ var h = b.getAttribute('data-stop'), s = stu(h); if (s) s.canAtk = !s.canAtk; dismissed['atk-'+h] = 1; renderAll(); }; });
+    document.querySelectorAll('[data-clear]').forEach(function(b){ b.onclick = function(){ FEED[+b.getAttribute('data-clear')].res = 'cleared'; renderAll(); }; });
+    document.querySelectorAll('[data-ref]').forEach(function(b){ b.onclick = function(){ FEED[+b.getAttribute('data-ref')].res = 'refunded'; renderAll(); }; });
+  }
+  $('mSwitch').onchange = function(){
+    ON = this.checked;
+    try{ localStorage.setItem('proto-redteam-on', ON ? 'on' : 'off'); }catch(e){}
+    if (!ON) FEED.forEach(function(f){ if (f.res === 'landed' && !f.fix) f.res = 'cleared'; });
+    renderAll();
+  };
+  window.addEventListener('storage', function(e){ if (e.key === 'proto-redteam-on'){ ON = e.newValue !== 'off'; renderAll(); } });
+  renderAll();
+})();
+</script>
+</body>
+</html>

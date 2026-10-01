@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=4.0.0"></script>
+<script src="site.js?v=4.1.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,6 +88,41 @@ body[data-lock] #spotlight{opacity:.25;}
 #lockMsg{display:none;margin-top:26px;font-size:15px;font-weight:700;letter-spacing:1px;color:var(--muted);}
 body[data-lock] #lockMsg{display:block;}
 body[data-lock] .back{display:none;}
+#modeRow{display:inline-flex;gap:4px;padding:4px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);margin:0 0 20px;}
+.mBtn{white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;padding:10px 16px;min-height:40px;border-radius:999px;border:none;background:transparent;color:var(--muted);cursor:pointer;}
+.mBtn:hover{color:var(--bright);}
+.mBtn.on{background:linear-gradient(90deg,#ff00c8,#00f0ff);color:#04040a;}
+.mBtn:disabled{opacity:.5;cursor:not-allowed;}
+body[data-lock] #modeRow{display:none;}
+#pond{display:none;position:sticky;top:20px;width:100%;max-width:620px;margin:0 auto;}
+body[data-mode="duck"] #stage{display:none;}
+body[data-mode="duck"] #pond{display:block;}
+body[data-mode="duck"] #spinBtn{display:none;}
+body[data-lock] #pond{filter:grayscale(1);opacity:.45;pointer-events:none;}
+#water{position:relative;width:100%;aspect-ratio:1.25;border-radius:48%/42%;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#0c5f86 0%,#07415f 55%,#052c42 100%);box-shadow:0 0 0 10px #6b4a2b,0 0 0 14px #ff00c8,0 20px 60px -20px rgba(0,0,0,.7),inset 0 0 60px rgba(0,0,0,.45);}
+:root[data-theme="light"] #water{background:radial-gradient(ellipse at 50% 45%,#5fc4ec 0%,#2e97c7 55%,#1c7aa6 100%);box-shadow:0 0 0 10px #a77b4f,0 0 0 14px #d4009f,0 20px 50px -24px rgba(0,0,0,.4),inset 0 0 50px rgba(0,0,0,.2);}
+#water .island{position:absolute;left:50%;top:50%;width:38%;height:30%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#2a6b3a,#18452a);box-shadow:0 0 0 6px rgba(255,255,255,.08),0 8px 18px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;text-align:center;}
+#water .island b{font-family:'JetBrains Mono',monospace;font-size:clamp(11px,1.6vw,14px);letter-spacing:2px;color:#eaffea;line-height:1.4;}
+.ripple{position:absolute;border:2px solid rgba(255,255,255,.14);border-radius:50%;pointer-events:none;}
+.duck{position:absolute;left:0;top:0;width:13%;aspect-ratio:1;padding:0;border:none;background:transparent;cursor:pointer;will-change:transform;-webkit-tap-highlight-color:transparent;}
+.duck svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 4px rgba(0,0,0,.35));transition:transform .15s ease;}
+.duck:hover svg{transform:scale(1.12) translateY(-4%);}
+.duck:focus-visible{outline:3px solid #fff500;outline-offset:4px;border-radius:50%;}
+.duck:disabled{cursor:default;}
+#reveal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5;}
+#reveal .flip{width:34%;aspect-ratio:1;perspective:700px;opacity:0;transform:translateY(40%) scale(.4);transition:transform .7s cubic-bezier(.2,.9,.25,1.2),opacity .3s ease;}
+#reveal.up .flip{opacity:1;transform:translateY(0) scale(1);}
+#reveal .inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.4,.1,.2,1);}
+#reveal.flipped .inner{transform:rotateX(180deg);}
+#reveal .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;align-items:center;justify-content:center;}
+#reveal .face svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 14px 18px rgba(0,0,0,.45));}
+#reveal .rear{transform:rotateX(180deg);}
+#reveal .bottom{width:92%;aspect-ratio:1.35;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#fff9d6,#f1d36b);border:5px solid #c79a1e;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 14px 30px rgba(0,0,0,.45);}
+#reveal .bottom b{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(34px,7vw,62px);line-height:1;color:#1a1204;}
+#reveal .bottom span{font-family:'JetBrains Mono',monospace;font-size:clamp(9px,1.2vw,11px);letter-spacing:2px;color:#6b5210;margin-top:4px;}
+#pondFoot{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:22px;min-height:48px;}
+#pondHint{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1px;color:var(--muted);}
+#pondReset{display:none;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:1px;padding:12px 22px;min-height:44px;border-radius:999px;border:none;background:linear-gradient(90deg,#ff00c8,#00f0ff);color:#04040a;cursor:pointer;}
 </style>
 </head>
 <body data-lock="1">
@@ -97,14 +132,26 @@ body[data-lock] .back{display:none;}
 
 <div class="wrap">
   <div class="kick mono">&gt; ./class-rewards</div>
-  <h1 class="mono">Reward Spinner</h1>
-  <p class="lead">Spin for a class reward. Bigger prizes come up less often.</p>
+  <h1 class="mono" id="modeTitle">Reward Spinner</h1>
+  <p class="lead" id="modeLead">Spin for a class reward. Bigger prizes come up less often.</p>
+  <div id="modeRow" role="group" aria-label="Reward game">
+    <button class="mBtn on" id="mWheel" aria-pressed="true" onclick="setMode('wheel')">WHEEL</button>
+    <button class="mBtn" id="mDuck" aria-pressed="false" onclick="setMode('duck')">DUCK POND</button>
+  </div>
 
   <div id="layout">
   <div id="stage">
     <div id="pointer"></div>
     <canvas id="wheel"></canvas>
     <div id="hub"></div>
+  </div>
+  <div id="pond">
+    <div id="water">
+      <div class="island"><b>PICK<br>A DUCK</b></div>
+      <div id="ducks"></div>
+      <div id="reveal" aria-live="polite"><div class="flip"><div class="inner"><div class="face" id="revFront"></div><div class="face rear"><div class="bottom"><b id="revNum">?</b><span>DUCK NO.</span></div></div></div></div></div>
+    </div>
+    <div id="pondFoot"><span id="pondHint">Tap any duck to flip it over.</span><button id="pondReset" onclick="resetPond()">PUT THE DUCK BACK</button></div>
   </div>
 
   <div id="rightCol">
@@ -402,9 +449,109 @@ function spin(){
     logHistory(chosen);
   }, 4700);
 }
+
+/* ---------- DUCK POND ----------
+   Same prizes and odds as the wheel. The prize is drawn with pickReward() when a
+   duck is picked, so the odds editor applies here too; the duck's number is that
+   prize's number in the Odds list. */
+var MODE = 'wheel', DUCKS = [], pondRaf = 0, picking = false;
+var DUCK_COLORS = ['#fff500','#ffd400','#ff8a00','#ff5ec4','#39ff14','#00f0ff','#b026ff','#ff4d6d','#7dff6e','#05d9e8','#ffd400','#ff2079'];
+function duckSVG(col){
+  return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+    '<ellipse cx="50" cy="90" rx="36" ry="6" fill="rgba(0,0,0,.18)"></ellipse>' +
+    '<path d="M14 62 C14 44 34 40 52 46 C58 36 60 26 66 22 C80 14 94 24 92 38 C91 46 86 50 80 52 C88 56 90 64 86 72 C80 84 62 88 44 86 C26 84 14 76 14 62 Z" fill="' + col + '" stroke="rgba(0,0,0,.25)" stroke-width="2"></path>' +
+    '<path d="M28 60 C36 54 50 56 58 64 C50 70 36 70 28 60 Z" fill="rgba(0,0,0,.12)"></path>' +
+    '<path d="M90 36 C98 36 102 40 100 44 C96 46 90 46 86 44 Z" fill="#ff8a00" stroke="rgba(0,0,0,.25)" stroke-width="1.5"></path>' +
+    '<circle cx="76" cy="32" r="4.2" fill="#0a0e14"></circle><circle cx="77.4" cy="30.6" r="1.4" fill="#fff"></circle>' +
+    '</svg>';
+}
+function buildPond(){
+  var box = document.getElementById('ducks'); box.innerHTML = ''; DUCKS = [];
+  var n = 12;
+  for (var i = 0; i < n; i++){
+    var b = document.createElement('button');
+    b.className = 'duck'; b.type = 'button'; b.setAttribute('aria-label', 'Duck ' + (i+1));
+    var col = DUCK_COLORS[i % DUCK_COLORS.length];
+    b.innerHTML = duckSVG(col);
+    b.onclick = (function(idx){ return function(){ pickDuck(idx); }; })(i);
+    box.appendChild(b);
+    DUCKS.push({ el:b, col:col, a:(i/n)*Math.PI*2, lane:i%2, bob:Math.random()*6.28, gone:false });
+  }
+  placeDucks(performance.now());
+}
+function placeDucks(t){
+  var w = document.getElementById('water'), W = w.clientWidth, H = w.clientHeight, sz = W*0.13;
+  DUCKS.forEach(function(d){
+    if (d.gone) return;
+    var rx = W*(d.lane ? 0.40 : 0.31), ry = H*(d.lane ? 0.38 : 0.28);
+    var x = W/2 + Math.cos(d.a)*rx - sz/2, y = H/2 + Math.sin(d.a)*ry - sz/2 + Math.sin(t/520 + d.bob)*3;
+    var face = Math.sin(d.a) > 0 ? -1 : 1;           /* face the direction of travel */
+    if (d.lane) face = -face;
+    var tilt = Math.sin(t/700 + d.bob)*5;
+    d.el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) rotate(' + tilt.toFixed(1) + 'deg) scaleX(' + face + ')';
+    d.el.style.zIndex = Math.round(y);
+  });
+}
+function pondLoop(t){
+  var rm = typeof window.SITE_REDUCED_MOTION === 'function' && window.SITE_REDUCED_MOTION();
+  if (!rm && !picking){ DUCKS.forEach(function(d){ d.a += d.lane ? -0.0026 : 0.0034; }); }
+  if (!rm || !pondRaf) placeDucks(rm ? 0 : t);
+  pondRaf = requestAnimationFrame(pondLoop);
+}
+function sndQuack(){ tone(520, 0.12, 'sawtooth', 0.07, 0, 300); tone(480, 0.14, 'sawtooth', 0.06, 0.13, 260); }
+function sndSplash(){ var a = audio(); if (!a) return; var len = a.sampleRate*0.35, buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for (var i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.5);
+  var s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(); f.type = 'lowpass'; f.frequency.value = 1400; g.gain.value = 0.18;
+  s.buffer = buf; s.connect(f).connect(g).connect(a.destination); s.start(); }
+function pickDuck(i){
+  if (picking || EDITING || document.body.hasAttribute('data-lock')) return;
+  picking = true; spinning = true;
+  var d = DUCKS[i], chosen = pickReward();
+  sndSplash(); setTimeout(sndQuack, 180);
+  DUCKS.forEach(function(x){ x.el.disabled = true; });
+  d.gone = true; d.el.style.transition = 'transform .45s ease, opacity .35s ease'; d.el.style.opacity = '0';
+  document.getElementById('mWheel').disabled = true;
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('revFront').innerHTML = duckSVG(d.col);
+  document.getElementById('revNum').textContent = chosen.num;
+  document.getElementById('pondHint').textContent = 'Flipping duck ' + (i+1) + '\u2026';
+  var rv = document.getElementById('reveal'); rv.classList.remove('flipped'); rv.classList.add('up');
+  var rm = typeof window.SITE_REDUCED_MOTION === 'function' && window.SITE_REDUCED_MOTION();
+  setTimeout(function(){ rv.classList.add('flipped'); sndTick(); }, rm ? 150 : 1100);
+  setTimeout(function(){
+    spinning = false;
+    document.getElementById('pondHint').textContent = 'Duck #' + chosen.num + ' \u2192 ' + chosen.label;
+    document.getElementById('pondReset').style.display = 'inline-block';
+    showResult(chosen); logHistory(chosen);
+  }, rm ? 500 : 2100);
+}
+function resetPond(){
+  var rv = document.getElementById('reveal'); rv.classList.remove('up','flipped');
+  document.getElementById('pondReset').style.display = 'none';
+  document.getElementById('pondHint').textContent = 'Tap any duck to flip it over.';
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('mWheel').disabled = false;
+  DUCKS.forEach(function(x){ x.el.disabled = false; if (x.gone){ x.gone = false; x.el.style.transition = 'opacity .5s ease'; x.el.style.opacity = '1'; setTimeout(function(){ x.el.style.transition = ''; }, 520); } });
+  picking = false; sndQuack();
+}
+function setMode(m){
+  if (spinning || picking && m !== MODE) return;
+  MODE = m; document.body.setAttribute('data-mode', m);
+  try{ localStorage.setItem('reward-mode', m); }catch(e){}
+  document.getElementById('mWheel').classList.toggle('on', m === 'wheel'); document.getElementById('mWheel').setAttribute('aria-pressed', m === 'wheel');
+  document.getElementById('mDuck').classList.toggle('on', m === 'duck'); document.getElementById('mDuck').setAttribute('aria-pressed', m === 'duck');
+  document.getElementById('modeTitle').textContent = m === 'duck' ? 'Duck Pond' : 'Reward Spinner';
+  document.getElementById('modeLead').textContent = m === 'duck' ? 'Pick a duck and flip it. The number on the bottom is your prize. Bigger prizes are rarer.' : 'Spin for a class reward. Bigger prizes come up less often.';
+  document.getElementById('spinBtn').disabled = m === 'duck';
+  if (m === 'duck'){ if (!DUCKS.length) buildPond(); if (!pondRaf) pondRaf = requestAnimationFrame(pondLoop); }
+  else if (pondRaf){ cancelAnimationFrame(pondRaf); pondRaf = 0; drawWheel(); }
+  document.querySelector('#award h2').textContent = m === 'duck' ? 'Pick for' : 'Spin for';
+}
+window.addEventListener('resize', function(){ if (MODE === 'duck') placeDucks(performance.now()); });
+(function(){ var m = 'wheel'; try{ m = localStorage.getItem('reward-mode') || 'wheel'; }catch(e){} setMode(m === 'duck' ? 'duck' : 'wheel'); })();
 </script>
-<script src="supabase-config.js?v=4.0.0"></script>
-<script src="auth.js?v=4.0.0"></script>
+<script src="supabase-config.js?v=4.1.0"></script>
+<script src="auth.js?v=4.1.0"></script>
 <script>
 /* Optional: pick a class + student before spinning and the prize can be sent
    straight to that student's profile inventory (reward-items.sql). Works only
@@ -461,6 +608,6 @@ function spin(){
   boot();
 })();
 </script>
-<script src="nemesis-intro.js?v=4.0.0"></script>
+<script src="nemesis-intro.js?v=4.1.0"></script>
 </body>
 </html>

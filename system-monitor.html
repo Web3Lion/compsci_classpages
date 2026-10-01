@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<!-- PROTOTYPE — System Monitor (debuffs). Fake data only; no database calls. Not linked from any page yet. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=4.1.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>System Monitor — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#6a84a0;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--amber-bg:#1a150a;--amber-bd:#4a3d1a;--ok:#3ddc84;--bad:#ff5a6e;--bad-bg:#2a0f16;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5a6c80;--faint:#6f8196;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--amber-bg:#fbf4dd;--amber-bd:#e4cf95;--ok:#137a3c;--bad:#b3203a;--bad-bg:#fbe7ea;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+a{color:var(--accent);} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+button{font:inherit;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.wrap{max-width:1240px;margin:0 auto;padding:18px clamp(12px,2vw,28px) 60px;}
+body.lagging, body.lagging *{cursor:progress !important;}
+
+/* prototype strip */
+.proto{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;margin:10px 0 16px;border:1px dashed var(--border3);border-radius:12px;background:var(--panel2);}
+.proto .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-right:6px;}
+.pbtn{font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 12px;min-height:36px;border-radius:8px;border:1px solid var(--border3);background:var(--panel);color:var(--muted);cursor:pointer;}
+.pbtn:hover{color:var(--bright);border-color:var(--bad);}
+.pbtn.on{border-color:var(--bad);color:var(--bad);}
+.pbtn.ghost:hover{border-color:var(--accent);}
+
+/* top bar */
+.top{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:22px;align-items:center;padding:18px 22px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,var(--panel2),var(--bg) 70%);}
+.ring{position:relative;width:96px;height:96px;}
+.ring svg{transform:rotate(-90deg);}
+.ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;}
+.ring .pct b{font-size:24px;color:var(--bright);line-height:1;}
+.ring .pct span{font-size:9px;letter-spacing:1.5px;margin-top:4px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;}
+.stat{padding:10px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--bg);min-width:0;}
+.stat .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--faint);}
+.stat .v{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:var(--bright);margin-top:4px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.restore{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;padding:12px 16px;min-height:48px;border-radius:10px;border:1px solid var(--amber-bd);background:var(--amber-bg);color:var(--amber);cursor:pointer;}
+.restore:hover:not(:disabled){border-color:var(--amber);}
+.restore:disabled{opacity:.45;cursor:not-allowed;}
+
+/* main */
+.main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;margin-top:16px;}
+.panel{border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:18px;min-width:0;}
+.ph{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:14px;text-transform:uppercase;}
+.ph .r{margin-left:auto;letter-spacing:0;text-transform:none;}
+
+/* stack */
+.stack{display:flex;flex-direction:column;gap:0;}
+.layer{display:grid;grid-template-columns:118px minmax(0,1fr) 128px;gap:14px;align-items:center;padding:14px;border:1px solid var(--border2);background:var(--bg);cursor:pointer;text-align:left;color:inherit;width:100%;position:relative;transition:border-color .15s ease,background-color .15s ease;}
+.layer + .layer{margin-top:-1px;}
+.layer:first-child{border-radius:12px 12px 0 0;}
+.layer:last-child{border-radius:0 0 12px 12px;}
+.layer:hover{border-color:var(--border3);z-index:1;}
+.layer.sel{border-color:var(--accent);z-index:2;background:var(--panel2);}
+.layer.hot{border-color:var(--amber-bd);background:var(--amber-bg);z-index:1;}
+.layer.hot.sel{border-color:var(--amber);}
+.layer .nm{font-family:'JetBrains Mono',monospace;}
+.layer .nm b{display:block;font-size:13px;color:var(--bright);letter-spacing:1px;}
+.layer .nm span{display:block;font-size:11px;color:var(--faint);margin-top:3px;}
+.layer .viz{height:38px;min-width:0;}
+.layer .st{display:flex;align-items:center;gap:8px;justify-content:flex-end;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);text-align:right;}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ok);flex:0 0 auto;box-shadow:0 0 0 3px color-mix(in oklab,var(--ok) 22%,transparent);}
+.dot.warn{background:var(--amber);box-shadow:0 0 0 3px color-mix(in oklab,var(--amber) 25%,transparent);}
+.bar{height:10px;border-radius:999px;background:var(--border2);overflow:hidden;margin-top:14px;}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--accent);transition:width .45s ease;}
+.bar.warn i{background:var(--amber);}
+
+/* inspector */
+.insp h3{margin:0 0 4px;font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--bright);}
+.insp .sub{margin:0 0 14px;color:var(--dim);font-size:13px;line-height:1.5;}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;font-family:'JetBrains Mono',monospace;font-size:13px;padding:12px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--bg);}
+.kv .k{color:var(--faint);} .kv .v{color:var(--bright);text-align:right;}
+.kv .v.warn{color:var(--amber);}
+.act{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.5px;padding:10px 14px;min-height:44px;border-radius:10px;border:1px solid var(--border3);background:transparent;color:var(--muted);cursor:pointer;}
+.btn:hover:not(:disabled){color:var(--bright);border-color:var(--accent);}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);}
+.btn.primary:hover:not(:disabled){color:var(--bg);filter:brightness(1.1);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.diag{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px;}
+.diag button{text-align:left;padding:12px 14px;min-height:56px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--text);cursor:pointer;}
+.diag button b{display:block;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--bright);}
+.diag button span{display:block;font-size:11px;color:var(--faint);margin-top:3px;}
+.diag button:hover{border-color:var(--accent);}
+.msg{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.5;}
+.msg.bad{background:var(--bad-bg);color:var(--bad);border:1px solid color-mix(in oklab,var(--bad) 40%,transparent);}
+.msg.ok{background:color-mix(in oklab,var(--ok) 12%,var(--bg));color:var(--ok);border:1px solid color-mix(in oklab,var(--ok) 40%,transparent);}
+.msg.info{background:var(--panel2);color:var(--muted);border:1px solid var(--border2);}
+
+/* games */
+.proc{display:grid;grid-template-columns:minmax(0,1fr) 70px 58px 64px;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:13px;}
+.proc:last-child{border-bottom:none;}
+.proc .cpu{text-align:right;font-variant-numeric:tabular-nums;}
+.kill{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 8px;min-height:32px;border-radius:6px;border:1px solid var(--border3);background:transparent;color:var(--bad);cursor:pointer;}
+.kill:hover{border-color:var(--bad);}
+.lane{position:relative;height:190px;border:1px solid var(--border2);border-radius:10px;background:repeating-linear-gradient(90deg,var(--bg) 0,var(--bg) 38px,var(--panel2) 38px,var(--panel2) 39px);overflow:hidden;}
+.pkt{position:absolute;left:0;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 8px;border-radius:6px;border:1px solid var(--border3);background:var(--panel);color:var(--text);cursor:pointer;white-space:nowrap;will-change:transform;}
+.pkt:hover{border-color:var(--accent);}
+.pkt.blk{background:var(--bad-bg);color:var(--bad);border-color:var(--bad);text-decoration:line-through;pointer-events:none;}
+.pkt.oops{background:var(--amber-bg);color:var(--amber);border-color:var(--amber);pointer-events:none;}
+.note{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;padding:14px;border:1px solid var(--bad);border-radius:10px;background:var(--bad-bg);color:var(--bad);white-space:pre-wrap;}
+.inp{width:100%;font-family:'JetBrains Mono',monospace;font-size:16px;padding:10px 12px;min-height:44px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);text-transform:uppercase;letter-spacing:2px;}
+.hdr{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;align-items:center;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:6px;}
+.hdr .k{color:var(--faint);}
+.hdr .v{color:var(--bright);word-break:break-all;}
+.hdr.flag{border-color:var(--amber);background:var(--amber-bg);}
+.hdr.right{border-color:var(--ok);}
+.hdr.wrong{border-color:var(--bad);background:var(--bad-bg);}
+.cfg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:8px 12px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:13px;}
+.cfg select{font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 10px;min-height:40px;border-radius:8px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);}
+.cfg select.bad{border-color:var(--bad);}
+.cfg select.good{border-color:var(--ok);}
+
+/* arena preview */
+.arena{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;}
+.astrip{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 14px;border:1px solid var(--border2);border-radius:12px;background:var(--bg);margin-bottom:12px;}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;min-height:36px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--muted);cursor:pointer;}
+.pill.warn{border-color:var(--amber);color:var(--amber);background:var(--amber-bg);}
+.aff{outline:2px dashed var(--amber);outline-offset:3px;border-radius:8px;}
+.etag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:999px;background:var(--amber);color:var(--bg);vertical-align:middle;}
+.meter{display:flex;gap:4px;align-items:center;}
+.meter i{display:block;width:30px;height:12px;border-radius:3px;background:var(--border2);font-style:normal;}
+.meter i.on{background:var(--accent);}
+.meter i.cap{background:repeating-linear-gradient(45deg,var(--border2) 0,var(--border2) 3px,color-mix(in oklab,var(--amber) 45%,transparent) 3px,color-mix(in oklab,var(--amber) 45%,transparent) 6px);}
+.flags{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.flag{padding:14px;border:1px solid var(--border2);border-radius:12px;background:var(--bg);display:flex;flex-direction:column;gap:8px;min-width:0;}
+.flag.locked{border-color:var(--bad);background:var(--bad-bg);}
+.flag .fid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);}
+.flag .ft{font-weight:600;color:var(--bright);font-size:14px;}
+.flag input{font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 10px;min-height:40px;border-radius:8px;border:1px solid var(--border3);background:var(--panel);color:var(--bright);width:100%;}
+.flag input:disabled{opacity:.5;}
+.eff{display:flex;flex-direction:column;gap:8px;}
+.eff .it{padding:12px 14px;border:1px solid var(--amber-bd);border-left-width:1px;border-radius:10px;background:var(--amber-bg);}
+.eff .it.good{border-color:color-mix(in oklab,var(--ok) 40%,transparent);background:color-mix(in oklab,var(--ok) 10%,var(--bg));}
+.eff .it b{display:block;color:var(--bright);font-size:14px;}
+.eff .it span{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45;}
+.eff .it .nm{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--amber);margin:0 0 4px;}
+.eff .it.good .nm{color:var(--ok);}
+@media(max-width:980px){.arena{grid-template-columns:1fr;} .defGrid{grid-template-columns:1fr !important;}}
+.paused{opacity:.45;filter:grayscale(1);pointer-events:none;}
+/* Downgrade: harmless "legacy" skin on the arena */
+#arenaSec.legacy .arena, #arenaSec.legacy .arena *{font-family:'Courier New',monospace !important;border-radius:0 !important;}
+#arenaSec.legacy .arena{background:#c0c0c0;color:#000;padding:10px;border:2px outset #fff;}
+#arenaSec.legacy .flag, #arenaSec.legacy .astrip, #arenaSec.legacy .eff .it{background:#c0c0c0 !important;border:2px outset #fff !important;color:#000 !important;}
+#arenaSec.legacy .flag .ft, #arenaSec.legacy .flag .fid, #arenaSec.legacy .eff .it b, #arenaSec.legacy .eff .it span, #arenaSec.legacy .astrip *{color:#000 !important;}
+#arenaSec.legacy .btn{background:#c0c0c0 !important;color:#000 !important;border:2px outset #fff !important;}
+#arenaSec.legacy .flag input{background:#fff !important;color:#000 !important;border:2px inset #fff !important;}
+#arenaSec.legacy .meter i.on{background:#000080 !important;}
+
+/* log */
+.log{margin-top:16px;}
+.logbox{height:210px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;padding:10px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--bg);}
+.logbox .ln{display:grid;grid-template-columns:max-content 44px minmax(0,1fr);gap:10px;}
+.logbox .t{color:var(--faint);white-space:nowrap;} .logbox .s{color:var(--dim);}
+.logbox .warn .m{color:var(--amber);} .logbox .good .m{color:var(--ok);} .logbox .bad .m{color:var(--bad);}
+
+/* toast + overlay */
+.toast{position:fixed;right:18px;bottom:18px;z-index:500;width:min(360px,calc(100vw - 36px));padding:16px;border-radius:14px;border:1px solid var(--accent);background:var(--panel);box-shadow:0 0 0 1px var(--accent),0 0 28px -6px var(--accent);}
+.toast .from{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--faint);}
+.toast .ttl{font-weight:700;color:var(--bright);margin:6px 0 4px;}
+.toast .bd{font-size:13px;color:var(--muted);line-height:1.5;}
+.ovl{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in oklab,var(--bg) 88%,transparent);}
+.ovl .box{width:min(560px,100%);border:1px solid var(--border3);border-radius:16px;background:var(--panel);padding:24px;}
+.boot{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:var(--ok);white-space:pre-wrap;min-height:220px;}
+.banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding:10px 14px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+
+@media(max-width:980px){.top{grid-template-columns:auto minmax(0,1fr);} .top .ttl{grid-column:1/-1;} .main{grid-template-columns:1fr;}}
+@media(max-width:560px){.layer{grid-template-columns:minmax(0,1fr) auto;} .layer .viz{grid-column:1/-1;order:3;} .proc{grid-template-columns:minmax(0,1fr) 56px 64px;} .proc .usr{display:none;}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<main class="wrap" id="main">
+  <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--accent);">&gt; ./sysmon --host=nova-7</div>
+
+  <div class="proto" role="group" aria-label="Prototype controls">
+    <span class="lbl">PROTOTYPE · SIMULATE INCOMING ATTACK</span>
+    <button class="pbtn" data-sim="crypto">Cryptojacker</button>
+    <button class="pbtn" data-sim="ddos">DDoS</button>
+    <button class="pbtn" data-sim="ransom">Ransomware</button>
+    <button class="pbtn" data-sim="phish">Phishing Lure</button>
+    <button class="pbtn" data-sim="down">Downgrade</button>
+    <button class="pbtn" data-sim="inject">Keystroke Injection</button>
+    <span style="display:inline-flex;align-items:center;gap:6px;"><button class="pbtn" data-sim="cursor">Cursor Hijack</button><select id="cursorPick" aria-label="Attacker's cursor choice" style="font-family:'JetBrains Mono',monospace;font-size:12px;min-height:36px;padding:6px 8px;border-radius:8px;border:1px solid var(--border3);background:var(--panel);color:var(--bright);"><option value="lion">Lion</option><option value="penguin">Penguin</option><option value="duck">Rubber duck</option><option value="trex">T-rex</option><option value="virus">Virus</option><option value="trojan">Trojan horse</option><option value="bug">Bug</option><option value="hook">Fishing hook</option><option value="cookie">Cookie</option><option value="padlock">Padlock</option></select>
+      <label class="mono" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);cursor:pointer;"><input type="checkbox" id="cursorGiant"> Giant</label>
+      <label class="mono" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);cursor:pointer;"><input type="checkbox" id="cursorTrail"> Trail</label></span>
+    <button class="pbtn ghost" id="simRandom">Random</button>
+    <button class="pbtn ghost" id="simClear">Clear all</button>
+    <button class="pbtn ghost" id="simFF">Fast-forward 5 min</button>
+    <button class="pbtn ghost" id="simReset">Reset restore, immunity + IPS</button>
+  </div>
+
+  <div role="group" aria-labelledby="tHead" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin:-6px 0 16px;padding:12px;border:1px dashed var(--border3);border-radius:12px;background:var(--panel2);">
+    <div id="tHead" class="mono" style="grid-column:1/-1;font-size:11px;letter-spacing:1.5px;color:var(--faint);">PROTOTYPE · TEACHER SETTINGS FOR NOVA-7 <span style="letter-spacing:0;">(on the real site these live on the teacher dashboard)</span></div>
+    <label id="tOnCard" style="grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:start;padding:12px 14px;border:1px solid var(--border3);border-radius:10px;background:var(--bg);cursor:pointer;">
+      <input type="checkbox" id="tOn" checked aria-describedby="tOnHelp" style="width:20px;height:20px;margin:2px 0 0;grid-row:span 2;">
+      <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b class="mono" style="font-size:13px;color:var(--bright);">Attacks on for this class</b><span id="tOnState" class="mono" style="font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:999px;border:1px solid var(--border3);color:var(--faint);">ON</span></span>
+      <span id="tOnHelp" style="font-size:12px;line-height:1.5;color:var(--dim);"></span>
+    </label>
+    <label id="tProtectCard" style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:start;padding:12px 14px;border:1px solid var(--border3);border-radius:10px;background:var(--bg);cursor:pointer;">
+      <input type="checkbox" id="tProtect" aria-describedby="tProtectHelp" style="width:20px;height:20px;margin:2px 0 0;grid-row:span 2;">
+      <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b class="mono" style="font-size:13px;color:var(--bright);">Protect this student</b><span id="tProtectState" class="mono" style="font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:999px;border:1px solid var(--border3);color:var(--faint);">OFF</span></span>
+      <span id="tProtectHelp" style="font-size:12px;line-height:1.5;color:var(--dim);"></span>
+    </label>
+    <label id="tSilentCard" style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:start;padding:12px 14px;border:1px solid var(--border3);border-radius:10px;background:var(--bg);cursor:pointer;">
+      <input type="checkbox" id="tSilent" aria-describedby="tSilentHelp" style="width:20px;height:20px;margin:2px 0 0;grid-row:span 2;">
+      <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b class="mono" style="font-size:13px;color:var(--bright);">Hide blocks from the student</b><span id="tSilentState" class="mono" style="font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:999px;border:1px solid var(--border3);color:var(--faint);">OFF</span></span>
+      <span id="tSilentHelp" style="font-size:12px;line-height:1.5;color:var(--dim);"></span>
+    </label>
+  </div>
+
+  <section class="top" aria-label="System health">
+    <div class="ttl">
+      <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">SYSTEM MONITOR</div>
+      <div class="mono" style="font-size:22px;font-weight:800;color:var(--bright);margin-top:4px;">nova-7</div>
+      <div style="font-size:12px;color:var(--dim);margin-top:2px;">Cybersecurity 1 · Red Team: ON</div>
+      <div id="ipsBadge" class="mono" style="display:none;margin-top:8px;font-size:11px;letter-spacing:1px;padding:5px 10px;border-radius:999px;border:1px solid var(--ok);color:var(--ok);width:max-content;">&#128737; PROTECTED BY IPS</div>
+    </div>
+    <div class="ring" aria-live="polite">
+      <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="40" fill="none" stroke="var(--border2)" stroke-width="9"></circle><circle id="ringArc" cx="48" cy="48" r="40" fill="none" stroke="var(--ok)" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="0" style="transition:stroke-dashoffset .6s ease,stroke .3s ease;"></circle></svg>
+      <div class="pct"><b id="healthPct">100</b><span id="healthLbl" style="color:var(--ok);">HEALTHY</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">COINS</div><div class="v" id="sCoins">240</div></div>
+      <div class="stat"><div class="k">COMBO</div><div class="v" id="sCombo">1.4x</div></div>
+      <div class="stat"><div class="k">LATENCY</div><div class="v" id="sLat">24ms</div></div>
+      <div class="stat"><div class="k">IMMUNITY</div><div class="v" id="sImm">—</div></div>
+      <div class="stat"><div class="k">XP</div><div class="v" id="sXp">1,240</div></div>
+    </div>
+    <button class="restore" id="restoreBtn" title="Clears every debuff at once, with no defeat bonus. Once a day.">FULL RESTORE</button>
+  </section>
+  <div id="bannerSlot"></div>
+
+  <div class="main">
+    <section class="panel" aria-labelledby="h-stack">
+      <div class="ph"><span id="h-stack">Your stack</span><span class="r" id="stackSum">6 layers · all nominal</span></div>
+      <div class="stack" id="stack">
+        <button class="layer" data-layer="user"><div class="nm"><b>L5 USER</b><span>inbox · notifications</span></div><div class="viz" id="vz-user"></div><div class="st" id="st-user"></div></button>
+        <button class="layer" data-layer="app"><div class="nm"><b>L4 APP</b><span>arena · browser · extensions</span></div><div class="viz" id="vz-app"></div><div class="st" id="st-app"></div></button>
+        <button class="layer" data-layer="data"><div class="nm"><b>L3 DATA</b><span>flags · files</span></div><div class="viz" id="vz-data"></div><div class="st" id="st-data"></div></button>
+        <button class="layer" data-layer="proc"><div class="nm"><b>L2 PROCESS</b><span>cpu · running tasks</span></div><div class="viz" id="vz-proc"></div><div class="st" id="st-proc"></div></button>
+        <button class="layer" data-layer="net"><div class="nm"><b>L1 NETWORK</b><span>traffic · connections</span></div><div class="viz" id="vz-net"></div><div class="st" id="st-net"></div></button>
+        <button class="layer" data-layer="hw"><div class="nm"><b>L0 HARDWARE</b><span>usb · input devices</span></div><div class="viz" id="vz-hw"></div><div class="st" id="st-hw"></div></button>
+      </div>
+      <p style="margin:12px 2px 0;font-size:12px;color:var(--faint);line-height:1.5;">Pick a layer to inspect it. Amber means something changed from normal. Work out what it is, then respond.</p>
+    </section>
+
+    <section class="panel insp" aria-labelledby="h-insp" aria-live="polite">
+      <div class="ph"><span id="h-insp">Inspector</span><span class="r" id="inspTag"></span></div>
+      <div id="insp"></div>
+    </section>
+  </div>
+
+  <section class="panel" id="arenaSec" aria-labelledby="h-arena" style="margin-top:16px;">
+    <div class="ph"><span id="h-arena">Arena preview · what the student sees</span>
+      <label class="r mono" style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);cursor:pointer;"><input type="checkbox" id="revealNames" style="width:16px;height:16px;"> Show attack names (teacher view)</label>
+    </div>
+    <div class="arena">
+      <div>
+        <div class="astrip">
+          <button class="pill" id="aPill" title="Opens System Monitor"></button>
+          <span class="mono" id="aCoinsWrap" style="font-size:13px;color:var(--muted);">COINS <b id="aCoins" style="color:var(--bright);"></b></span>
+          <span id="aComboWrap" style="display:inline-flex;align-items:center;gap:10px;"><span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--faint);">COMBO</span><span class="meter" id="aMeter"></span><b class="mono" id="aCombo" style="font-size:13px;color:var(--bright);"></b></span>
+        </div>
+        <div class="flags" id="aFlags"></div>
+      </div>
+      <div>
+        <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">ACTIVE EFFECTS</div>
+        <div class="eff" id="aEff"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-ars" style="margin-top:16px;">
+    <div class="ph"><span id="h-ars">Red Team arsenal · attacker view</span><span class="r mono">XP <b id="arsXp" style="color:var(--bright);"></b></span></div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px;">
+      <label class="mono" for="arsTarget" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">TARGET</label>
+      <select id="arsTarget" style="font-family:'JetBrains Mono',monospace;font-size:13px;min-height:40px;padding:8px 10px;border-radius:8px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);">
+        <option value="self">nova-7 · #6 (this screen)</option><option>byteMe · #4</option><option>cipherQueen · #5</option><option>packetPal · #7</option><option>r0ot_kid · #2</option>
+      </select>
+      <label class="mono" for="arsFrom" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-left:8px;">ATTACKING AS</label>
+      <select id="arsFrom" style="font-family:'JetBrains Mono',monospace;font-size:13px;min-height:40px;padding:8px 10px;border-radius:8px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);"><option>redfox</option><option>n0vice</option><option>glitchGal</option></select>
+    </div>
+    <div id="arsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;"></div>
+    <div id="arsMsg" class="mono" style="font-size:12px;color:var(--muted);margin-top:12px;min-height:18px;" aria-live="polite"></div>
+    <p style="margin:10px 2px 0;font-size:12px;color:var(--faint);line-height:1.5;">Launching uses one item and costs the attacker XP. Get more items from the Coin Shop, the Reward Spinner, or the teacher. Every launch shows “Attack sent”, even when the IPS silently blocks it.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="h-def" style="margin-top:16px;">
+    <div class="ph"><span id="h-def">Your defenses · student view</span><span class="r mono" id="defSum"></span></div>
+    <div id="defPaused"></div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;" class="defGrid">
+      <div id="defList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;"></div>
+      <div>
+        <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">CHANCE TO BLOCK EACH ATTACK</div>
+        <div id="defChances" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <p style="margin:12px 0 0;font-size:12px;color:var(--faint);line-height:1.5;">Defenses that cover the same attack stack, but never past 90%. No single defense is perfect.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel log" aria-labelledby="h-log">
+    <div class="ph"><span id="h-log">Event log</span><span class="r mono" id="logCount"></span></div>
+    <div class="logbox" id="log" role="log"></div>
+  </section>
+</main>
+<div id="toastSlot"></div>
+<div id="ovlSlot"></div>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var RM = typeof window.SITE_REDUCED_MOTION === 'function' ? window.SITE_REDUCED_MOTION() : matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function rnd(a,b){ return a + Math.random()*(b-a); }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  var ATTACKS = {
+    crypto:{ name:'Cryptojacker', layer:'proc', hint:'Hijacks your CPU to mine coins' },
+    ddos:{ name:'DDoS', layer:'net', hint:'Floods you with traffic' },
+    ransom:{ name:'Ransomware', layer:'data', hint:'Encrypts and holds files hostage' },
+    phish:{ name:'Phishing', layer:'user', hint:'Tricks you into clicking' },
+    down:{ name:'Downgrade', layer:'app', hint:'Forces an older, weaker version' },
+    inject:{ name:'Keystroke Injection', layer:'hw', hint:'A fake keyboard types for the attacker' },
+    cursor:{ name:'Browser Hijacker', layer:'app', hint:'A rogue extension takes over how your browser looks' }
+  };
+  var CURSORS = { lion:['\u{1F981}','Lion'], penguin:['\u{1F427}','Penguin'], duck:['\u{1F986}','Rubber duck'], trex:['\u{1F996}','T-rex'], virus:['\u{1F9A0}','Virus'], trojan:['\u{1F434}','Trojan horse'], bug:['\u{1F41B}','Bug'], hook:['\u{1F3A3}','Fishing hook'], cookie:['\u{1F36A}','Cookie'], padlock:['\u{1F513}','Padlock'] };
+  /* Hotspot is the centre of the image, so the click lands exactly where the picture is.
+     Giant = 96px (browsers allow up to 128px). Neither option moves or delays the click. */
+  function cursorCss(key, giant){
+    var e = CURSORS[key][0], px = giant ? 96 : 36, fs = giant ? 80 : 28;
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + px + '" height="' + px + '"><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="' + fs + '">' + e + '</text></svg>';
+    var url = 'url("data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '") ' + (px/2) + ' ' + (px/2);
+    return 'html.hijacked, html.hijacked *{cursor:' + url + ', auto !important;}';
+  }
+  /* Trail: purely decorative copies that fade out; pointer-events:none so they can't block clicks.
+     Off when reduced motion is on. */
+  var trailOn = false, lastTrail = 0;
+  function trailMove(ev){
+    if (!trailOn || RM) return;
+    var now = performance.now(); if (now - lastTrail < 45) return; lastTrail = now;
+    var s = document.createElement('span');
+    s.textContent = CURSORS[S.cursorKey][0]; s.setAttribute('aria-hidden', 'true');
+    s.style.cssText = 'position:fixed;left:' + ev.clientX + 'px;top:' + ev.clientY + 'px;transform:translate(-50%,-50%);font-size:18px;pointer-events:none;z-index:9999;opacity:.7;transition:opacity .6s ease,transform .6s ease;';
+    document.body.appendChild(s);
+    requestAnimationFrame(function(){ s.style.opacity = '0'; s.style.transform = 'translate(-50%,-50%) scale(.4)'; });
+    setTimeout(function(){ s.remove(); }, 650);
+  }
+  document.addEventListener('pointermove', trailMove, { passive: true });
+  var LAYERS = { user:'L5 USER', app:'L4 APP', data:'L3 DATA', proc:'L2 PROCESS', net:'L1 NETWORK', hw:'L0 HARDWARE' };
+  var BY_LAYER = {}; Object.keys(ATTACKS).forEach(function(k){ if (!BY_LAYER[ATTACKS[k].layer]) BY_LAYER[ATTACKS[k].layer] = k; });
+  function atkOn(layer){ var hit = Object.keys(S.active).filter(function(k){ return ATTACKS[k].layer === layer; }); return hit[0] || BY_LAYER[layer]; }
+  var HINTS = ["Their handle starts with \u201CR\u201D","They\u2019re in your class period","They\u2019re ranked within 3 places of you","They captured a flag 4 minutes ago","They have a 3-day streak"];
+
+  var S = {
+    paused:false, defs:{}, defOwned:{ antivirus:2, firewall:1, spam:1, patch:0, extguard:1, backup:1, honeypot:1 }, wrongOn:{},
+    xp:1240, protectedT:false, silentIps:false, recv:[], pairs:{}, autoShieldUntil:0,
+    owned:{ crypto:1, ddos:2, ransom:0, phish:1, down:1, inject:1, cursor:3 },
+    active:{}, coins:240, combo:1.4, sel:'net', mode:'overview', cooldown:0,
+    restoreUsed:false, immuneUntil:0, readOnlyUntil:0,
+    fake:null, ransomWord:null, net:[], cpu:18, lag:false
+  };
+  for (var i=0;i<40;i++) S.net.push(rnd(18,34));
+
+  /* ---------- log ---------- */
+  var LOG = [];
+  function log(src, msg, sev){
+    var d = new Date(), t = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+    LOG.unshift({t:t, s:src, m:msg, sev:sev||''}); if (LOG.length > 80) LOG.pop();
+    $('log').innerHTML = LOG.map(function(l){ return '<div class="ln '+l.sev+'"><span class="t">'+l.t+'</span><span class="s">'+l.s+'</span><span class="m">'+esc(l.m)+'</span></div>'; }).join('');
+    $('logCount').textContent = LOG.length + ' events';
+  }
+
+  /* ---------- lag wrapper (DDoS) ---------- */
+  function act(fn){
+    if (!S.active.ddos) return fn();
+    document.body.classList.add('lagging');
+    setTimeout(function(){ document.body.classList.remove('lagging'); fn(); }, 750);
+  }
+
+  /* ---------- attacks ---------- */
+  function fakeProc(){ return pick(['svch0st.exe','expl0rer.exe','xp-synk','updater .exe']); }
+  function rot3(w){ return w.replace(/[A-Z]/g,function(c){ return String.fromCharCode((c.charCodeAt(0)-65+3)%26+65); }); }
+  /* IPS: silent server-side protection. The attacker is never told; their "Attack sent" looks identical. */
+  function ipsCheck(k, from){
+    var now = Date.now(), week = 7*864e5, day = 864e5;
+    if (S.protectedT) return 'teacher protected';
+    if (!from) return null;                                   /* prototype buttons skip the auto rules */
+    if (S.autoShieldUntil > now) return 'auto shield';
+    if (S.pairs[from] && now - S.pairs[from] < week) return 'repeat attacker this week';
+    var recent = S.recv.filter(function(t){ return now - t < day; }).length;
+    if (recent >= 2){ S.autoShieldUntil = now + day; return 'hit twice in 24h'; }
+    return null;
+  }
+  function start(k, from){
+    if (S.active[k]) return;
+    if (S.paused){ log('teach','[teacher log only] '+ATTACKS[k].name+' not delivered \u2014 attacks are off for this class',''); return; }
+    var why = ipsCheck(k, from);
+    if (why){
+      if (!S.silentIps){ log('ips','\u{1F6E1} IPS blocked an incoming attack on '+LAYERS[ATTACKS[k].layer],'good'); }
+      log('teach','[teacher log only] Blocked '+ATTACKS[k].name+(from?' from '+from:'')+' \u2014 IPS: '+why,'');
+      renderTop(); return;
+    }
+    if (from){ S.recv.push(Date.now()); S.pairs[from] = Date.now(); }
+    if (Date.now() < S.immuneUntil){ log('fw','Incoming '+ATTACKS[k].name+' blocked by post-restore immunity','good'); flashBanner(); return; }
+    var hp = activeDef('honeypot');
+    if (hp){ delete S.defs.honeypot; S.coins += 10; log('def','\u{1F36F} Honeypot caught an incoming '+ATTACKS[k].name+'. The attacker\u2019s item was wasted. +10 coins','good'); log('teach','[teacher log only] '+(from||'sim')+' \u2192 nova-7: '+ATTACKS[k].name+' caught by Honeypot',''); renderAll(); return; }
+    var ch = blockChance(k);
+    if (ch.p > 0){
+      var roll = Math.random();
+      if (roll < ch.p){ log('def','\u{1F6E1} '+ch.names.join(' + ')+' blocked an incoming '+ATTACKS[k].name+' ('+Math.round(ch.p*100)+'% chance)','good'); log('teach','[teacher log only] '+(from||'sim')+' \u2192 nova-7: '+ATTACKS[k].name+' blocked by '+ch.names.join(' + '),''); renderAll(); return; }
+      log('def',ATTACKS[k].name+' got past '+ch.names.join(' + ')+' ('+Math.round(ch.p*100)+'% chance to block)','warn');
+    }
+    S.active[k] = { until: Date.now() + DUR[k]*60e3 };
+    if (k==='crypto'){ S.fake = fakeProc(); log('proc','New process started: '+S.fake+' (unsigned)','warn'); }
+    if (k==='ddos'){ log('net','Inbound requests spiking: 4,812/s from 203.0.113.66','warn'); }
+    if (k==='ransom' && activeDef('backup')){ setTimeout(function(){ if (S.active.ransom){ delete S.defs.backup; log('def','\u2601 Cloud Backup restored m3-osint.flag automatically','good'); clear('ransom','cloud backup'); } }, 2500); }
+    if (k==='ransom'){ S.ransomWord = pick(['VECTOR','CIPHER','BACKUP','PATCH','ROOTKIT','FIREWALL']); log('data','File renamed: m3-osint.flag \u2192 m3-osint.flag.lock','warn'); log('data','New file created: README_RESTORE.txt','warn'); }
+    if (k==='phish'){ log('user','Notification received from notif-svc (unverified sender)','warn'); showToast(); }
+    if (k==='down'){ log('app','combo-engine renegotiated to v1.2 (legacy)','warn'); }
+    if (k==='cursor'){ S.cursorKey = $('cursorPick').value; S.cursorGiant = $('cursorGiant').checked; trailOn = $('cursorTrail').checked; var st = $('hijackCss') || document.head.appendChild(Object.assign(document.createElement('style'), { id:'hijackCss' })); st.textContent = cursorCss(S.cursorKey, S.cursorGiant); document.documentElement.classList.add('hijacked'); log('app','Extension installed: CursorFun Pro \u2728 (not from the Web Store)','warn'); log('app','Extension permission granted: \u201CRead and change all data on all websites\u201D','warn'); }
+    if (k==='inject'){ log('usb','New input device connected: USB Keyboard (2)','warn'); log('usb','Device reports vendor ID 0x1337 (unknown vendor)','warn'); }
+    renderAll();
+  }
+  var DUR = { cursor:15, inject:8, phish:10, down:15, ddos:10, crypto:10, ransom:12 };      /* minutes until it wears off */
+  var BONUS = { cursor:15, inject:25, phish:20, down:20, ddos:25, crypto:30, ransom:40 };  /* XP for defeating it first */
+  var NO_BONUS = { silent:1, expired:1, 'lure clicked':1, 'cloud backup':1 };
+  function leftMs(k){ return S.active[k] ? Math.max(0, S.active[k].until - Date.now()) : 0; }
+  function mmss(ms){ var s = Math.ceil(ms/1000); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+  function clear(k, how){
+    if (!S.active[k]) return;
+    delete S.active[k];
+    if (how && !NO_BONUS[how]){ S.xp += BONUS[k]; log('xp','+'+BONUS[k]+' XP for defeating '+ATTACKS[k].name+' before it expired','good'); }
+    if (how === 'expired') log('soc',ATTACKS[k].name+' wore off on its own. Nothing was lost; no defeat bonus.','');
+    if (k==='phish') $('toastSlot').innerHTML = '';
+    if (k==='cursor'){ document.documentElement.classList.remove('hijacked'); trailOn = false; }
+    if (how === 'lure clicked' || how === 'cloud backup') log('soc',ATTACKS[k].name+' cleared ('+how+')','');
+    if (how && !NO_BONUS[how]){
+      log('soc','Threat neutralized: '+ATTACKS[k].name+' ('+how+')','good');
+      log('soc','Attacker hint: '+pick(HINTS)+'. Full report on Friday.','');
+    }
+    renderAll();
+  }
+  var CLUES = {
+    crypto:[function(){ return ['proc','CPU sustained above 85% for 60s']; }, function(){ return ['arena','Answer check queued: CPU busy (+3.0s)']; }],
+    ddos:[function(){ return ['net','Request queue full \u2014 dropping connections']; }, function(){ return ['net','Round-trip time '+Math.round(rnd(1500,2300))+'ms']; }],
+    ransom:[function(){ return ['data','Read failed: m3-osint.flag.lock (encrypted)']; }],
+    phish:[function(){ return ['user','1 unread notification waiting']; }],
+    down:[function(){ return ['app','Arena switched to legacy display mode']; }, function(){ return ['app','Handshake used deprecated protocol']; }],
+    cursor:[function(){ return ['app','Page style changed by an extension (cursor)']; }, function(){ return ['app','CursorFun Pro injected a script into this page']; }],
+    inject:[function(){ return ['usb','Two keyboards sending input at the same time']; }, function(){ return ['usb','Keystrokes arriving faster than a human can type (900/min)']; }]
+  };
+
+  /* ---------- health ---------- */
+  function health(){ return Math.max(10, 100 - 15*Object.keys(S.active).length); }
+  function renderTop(){
+    var h = health(), arc = $('ringArc'), lbl = $('healthLbl');
+    arc.setAttribute('stroke-dashoffset', (251.3*(1-h/100)).toFixed(1));
+    var col = h >= 90 ? 'var(--ok)' : h >= 60 ? 'var(--amber)' : 'var(--bad)';
+    arc.setAttribute('stroke', col); lbl.style.color = col;
+    lbl.textContent = h >= 90 ? 'HEALTHY' : h >= 60 ? 'DEGRADED' : 'COMPROMISED';
+    $('healthPct').textContent = h;
+    var shielded = S.protectedT || S.autoShieldUntil > Date.now();
+    $('ipsBadge').style.display = shielded && !S.silentIps ? 'block' : 'none';
+    $('sCoins').textContent = S.coins;
+    $('sCombo').textContent = S.combo.toFixed(1)+'x'; $('sXp').textContent = S.xp.toLocaleString();
+    $('restoreBtn').disabled = S.restoreUsed;
+    $('restoreBtn').textContent = S.restoreUsed ? 'RESTORE USED \u00B7 TOMORROW' : 'FULL RESTORE';
+    document.querySelectorAll('[data-sim]').forEach(function(b){ b.classList.toggle('on', !!S.active[b.getAttribute('data-sim')]); });
+    $('restoreBtn').style.display = S.paused ? 'none' : '';
+    var n = Object.keys(S.active).length;
+    $('stackSum').textContent = '6 layers \u00B7 ' + (n ? n + ' anomal' + (n>1?'ies':'y') : 'all nominal');
+  }
+
+  /* ---------- stack ---------- */
+  function spark(vals, warn){
+    var w = 300, h = 38, max = 100;
+    var pts = vals.map(function(v,i){ return (i*(w/(vals.length-1))).toFixed(1)+','+(h - v/max*h).toFixed(1); }).join(' ');
+    var c = warn ? 'var(--amber)' : 'var(--accent)';
+    return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" width="100%" height="38" aria-hidden="true"><polyline points="'+pts+'" fill="none" stroke="'+c+'" stroke-width="2" vector-effect="non-scaling-stroke"></polyline></svg>';
+  }
+  function barH(p, warn){ return '<div class="bar'+(warn?' warn':'')+'"><i style="width:'+p.toFixed(0)+'%;"></i></div>'; }
+  function renderStack(){
+    var A = S.active, lat = A.ddos ? Math.round(rnd(1600,2200)) : Math.round(rnd(18,32));
+    $('sLat').textContent = lat + 'ms'; $('sLat').style.color = A.ddos ? 'var(--amber)' : '';
+    var st = {
+      user:[A.phish, A.phish ? '1 unread' : '0 unread'],
+      app:[A.down || A.cursor, A.down && A.cursor ? '2 issues' : A.down ? 'v1.2 legacy' : A.cursor ? '1 new extension' : 'v2.0'],
+      data:[A.ransom, A.ransom ? '1 locked' : '0 locked'],
+      proc:[A.crypto, Math.round(S.cpu) + '% cpu'],
+      net:[A.ddos, lat + 'ms'],
+      hw:[A.inject, A.inject ? '5 devices' : '4 devices']
+    };
+    Object.keys(st).forEach(function(k){
+      var hot = st[k][0];
+      $('st-'+k).innerHTML = '<span>'+st[k][1]+'</span><span class="dot'+(hot?' warn':'')+'"></span>';
+      document.querySelector('[data-layer="'+k+'"]').classList.toggle('hot', !!hot);
+      document.querySelector('[data-layer="'+k+'"]').classList.toggle('sel', S.sel === k);
+    });
+    $('vz-net').innerHTML = spark(S.net, A.ddos);
+    $('vz-proc').innerHTML = barH(S.cpu, A.crypto);
+    $('vz-data').innerHTML = barH(A.ransom ? 100 : 0, A.ransom).replace('width:0%','width:0%');
+    $('vz-data').innerHTML = '<div class="mono" style="font-size:11px;color:'+(A.ransom?'var(--amber)':'var(--faint)')+';padding-top:12px;">'+(A.ransom?'m3-osint.flag.lock \u00B7 README_RESTORE.txt':'142 files \u00B7 last backup 3h ago')+'</div>';
+    $('vz-app').innerHTML = '<div class="mono" style="font-size:11px;color:'+(A.down||A.cursor?'var(--amber)':'var(--faint)')+';padding-top:12px;">combo-engine '+(A.down?'v1.2 (legacy) \u00B7 TLS 1.0':'v2.0 \u00B7 TLS 1.3')+(A.cursor?' \u00B7 +1 extension':' \u00B7 4 extensions')+'</div>';
+    $('vz-hw').innerHTML = '<div class="mono" style="font-size:11px;color:'+(A.inject?'var(--amber)':'var(--faint)')+';padding-top:12px;">'+(A.inject?'2 keyboards \u00B7 new: USB Keyboard (2)':'1 keyboard \u00B7 mouse \u00B7 webcam \u00B7 headset')+'</div>';
+    $('vz-user').innerHTML = '<div class="mono" style="font-size:11px;color:'+(A.phish?'var(--amber)':'var(--faint)')+';padding-top:12px;">'+(A.phish?'from: notif-svc \u00B7 \u201CClaim in 60s!\u201D':'no new messages')+'</div>';
+  }
+
+  /* ---------- inspector ---------- */
+  var gameTimer = null;
+  function stopGame(){ if (gameTimer){ cancelAnimationFrame(gameTimer.raf); clearInterval(gameTimer.spawn); gameTimer = null; } }
+  function setMode(m){ stopGame(); S.mode = m; renderInsp(); }
+  function overview(k){
+    var A = S.active, hot = !!A[atkOn(k)];
+    var rows = {
+      user:[['Unread notifications', A.phish?'1':'0', A.phish],['Last sender', A.phish?'notif-svc':'notify-svc', A.phish],['Links in last message', A.phish?'1 external':'0', A.phish]],
+      app:[['combo-engine', A.down?'v1.2 (legacy)':'v2.0', A.down],['Protocol', A.down?'TLS 1.0':'TLS 1.3', A.down],['Display mode', A.down?'legacy (1995)':'modern', A.down],['Browser extensions', A.cursor?'5 (1 new)':'4', A.cursor],['Cursor', A.cursor?'custom image':'system default', A.cursor]],
+      data:[['Flag files', '142'],['Locked files', A.ransom?'1':'0', A.ransom],['Unknown files', A.ransom?'README_RESTORE.txt':'none', A.ransom],['Last backup', '3h ago']],
+      proc:[['CPU', Math.round(S.cpu)+'%', A.crypto],['Processes', A.crypto?'9':'8', A.crypto],['Answer check time', A.crypto?'~3.2s':'~0.2s', A.crypto]],
+      net:[['Inbound', A.ddos?'4,812 req/s':'38 req/s', A.ddos],['Top source', A.ddos?'203.0.113.66':'10.12.4.1 (school)', A.ddos],['Latency', A.ddos?'~1,900ms':'~24ms', A.ddos]],
+      hw:[['Input devices', A.inject?'5':'4', A.inject],['Keyboards', A.inject?'2':'1', A.inject],['Last connected', A.inject?'just now':'08:02 (at login)', A.inject],['Typing speed', A.inject?'900 keys/min':'~180 keys/min', A.inject]]
+    }[k];
+    return '<h3>'+LAYERS[k]+'</h3><p class="sub">'+(hot ? 'This layer looks different from its normal baseline.' : 'No anomalies. Everything matches the normal baseline.')+'</p>'+
+      '<div class="kv">'+rows.map(function(r){ return '<span class="k">'+r[0]+'</span><span class="v'+(r[2]?' warn':'')+'">'+esc(r[1])+'</span>'; }).join('')+'</div>'+
+      (hot ? '<div class="mono" style="margin-top:10px;font-size:12px;color:var(--muted);">Wears off in <b id="inspLeft" style="color:var(--bright);">'+mmss(leftMs(atkOn(k)))+'</b> \u00b7 defeat it first for <b style="color:var(--ok);">+'+BONUS[atkOn(k)]+' XP</b></div>' : '')+
+      '<div class="act"><button class="btn primary" id="bRespond"'+(hot?'':' disabled')+'>RESPOND</button>'+(hot?'':'<span style="align-self:center;font-size:12px;color:var(--faint);">Nothing to respond to.</span>')+'</div>';
+  }
+  function diagnose(){
+    var cd = S.cooldown > Date.now();
+    return '<h3>What is attacking '+LAYERS[S.sel]+'?</h3><p class="sub">Pick the attack that matches the symptoms. A wrong call wastes time.</p>'+
+      '<div class="diag">'+Object.keys(ATTACKS).map(function(k){ return '<button data-diag="'+k+'"'+(cd?' disabled':'')+'><b>'+ATTACKS[k].name+'</b><span>'+ATTACKS[k].hint+'</span></button>'; }).join('')+'</div>'+
+      (cd ? '<div class="msg bad" id="cdMsg">Wrong diagnosis. Analyst cooldown: <b id="cdSec"></b></div>' : '')+
+      '<div class="act"><button class="btn" id="bBack">BACK</button></div>';
+  }
+
+  /* game: process hunt */
+  function gameCrypto(){
+    var list = [['arena.exe','you',rnd(14,22)],['xp-sync','system',rnd(2,5)],['combo-engine','you',rnd(3,7)],['notify-svc','system',rnd(1,3)],['svchost.exe','system',rnd(2,6)],['explorer.exe','you',rnd(1,4)],['updater','system',rnd(26,38)],['audio-svc','system',rnd(0,2)]];
+    list.splice(Math.floor(rnd(0,list.length)),0,[S.fake,'system',rnd(64,74),true]);
+    return '<h3>Process Hunt</h3><p class="sub">One of these is a look-alike stealing your CPU. Kill it. Killing a real process crashes it.</p>'+
+      '<div style="border:1px solid var(--border2);border-radius:10px;background:var(--bg);">'+
+      list.map(function(p,i){ return '<div class="proc"><span style="color:var(--bright);">'+esc(p[0])+'</span><span class="usr" style="color:var(--faint);">'+p[1]+'</span><span class="cpu">'+p[2].toFixed(0)+'%</span><button class="kill" data-kill="'+i+'" data-fake="'+(p[3]?1:0)+'" data-name="'+esc(p[0])+'">KILL</button></div>'; }).join('')+
+      '</div><div id="gMsg"></div>';
+  }
+  /* game: traffic filter */
+  function gameDdos(){
+    return '<h3>Traffic Filter</h3><p class="sub">Block the flood. Tap packets from the attacking source. Let real traffic through.</p>'+
+      '<div class="kv" style="margin-bottom:10px;"><span class="k">Blocked</span><span class="v" id="gBlk">0 / 8</span><span class="k">Real traffic dropped</span><span class="v" id="gDrop">0</span></div>'+
+      '<div class="lane" id="lane" aria-label="Incoming packets"></div><div id="gMsg"></div>';
+  }
+  function runDdos(){
+    var lane = $('lane'), W = lane.clientWidth, pk = [], blk = 0, drop = 0, BAD = '203.0.113.66';
+    function spawn(){
+      var bad = Math.random() < .6, ip = bad ? BAD : pick(['10.12.4.','10.12.9.','172.16.3.'])+Math.floor(rnd(2,250));
+      var el = document.createElement('button'); el.className = 'pkt'; el.textContent = ip + (bad ? '  GET /' : '  ' + pick(['GET /ctf','POST /sync','GET /vocab']));
+      el.style.top = Math.floor(rnd(8,150)) + 'px';
+      var o = { el:el, x:-170, v:rnd(1.3,2.1), bad:bad, done:false, born:performance.now() };
+      if (RM){ o.x = rnd(0, Math.max(0, W - 180)); el.style.transform = 'translateX('+o.x+'px)'; }
+      el.onclick = function(){
+        if (o.done) return; o.done = true;
+        if (o.bad){ blk++; el.classList.add('blk'); $('gBlk').textContent = blk + ' / 8'; }
+        else { drop++; el.classList.add('oops'); $('gDrop').textContent = drop; }
+        setTimeout(function(){ el.remove(); }, 450);
+        if (blk >= 8){ stopGame(); $('gMsg').innerHTML = '<div class="msg ok">Source 203.0.113.66 blocked at the firewall. Traffic is back to normal.</div>'; setTimeout(function(){ clear('ddos','filtered'); setMode('overview'); }, 1100); }
+      };
+      lane.appendChild(el); pk.push(o);
+    }
+    function step(t){
+      pk.forEach(function(o){
+        if (!o.el.isConnected) return;
+        if (RM){ if (t - o.born > 3200 && !o.done) o.el.remove(); return; }
+        if (o.done) return;
+        o.x += o.v; o.el.style.transform = 'translateX('+o.x+'px)';
+        if (o.x > W) o.el.remove();
+      });
+      pk = pk.filter(function(o){ return o.el.isConnected; });
+      gameTimer.raf = requestAnimationFrame(step);
+    }
+    gameTimer = { spawn: setInterval(spawn, RM ? 900 : 620), raf: 0 };
+    spawn(); gameTimer.raf = requestAnimationFrame(step);
+  }
+  /* game: decrypt */
+  function gameRansom(){
+    return '<h3>Decrypt or Restore</h3><p class="sub">The attacker left a note. The key is hidden in it, shifted by 3 letters (ROT-3). Or restore from your backup.</p>'+
+      '<div class="note">README_RESTORE.txt\n\nYOUR FLAG m3-osint HAS BEEN ENCRYPTED.\nPAY UP OR FIND THE KEY.\nKEY (ROT-3): '+rot3(S.ransomWord)+'</div>'+
+      '<label class="mono" for="gKey" style="display:block;font-size:11px;letter-spacing:1.5px;color:var(--faint);margin:14px 0 6px;">DECRYPTION KEY</label>'+
+      '<input class="inp" id="gKey" autocomplete="off" spellcheck="false" placeholder="shift each letter back 3">'+
+      '<div class="act"><button class="btn primary" id="bKey">DECRYPT</button><button class="btn" id="bBackup">RESTORE FROM BACKUP (3h ago)</button><button class="btn" id="bPay">PAY THE RANSOM</button></div><div id="gMsg"></div>';
+  }
+  /* game: phishing headers */
+  var PH = [['From','notif-svc@course-alerts.net',1,'The real service is notify-svc, on the school domain.'],['Display name','Course Notifications',0],['To','nova-7@southfayette.org',0],['Subject','Teacher sent you 2x XP! Claim in 60s',1,'Urgency (\u201C60s\u201D) is a classic pressure tactic.'],['Sent','10:41 AM today',0],['Link','https://sfsd-rewards.claim-now.co/2x',1,'The link goes to an outside domain, not this site.']];
+  function gamePhish(){
+    return '<h3>Inspect the Headers</h3><p class="sub">Tap every detail that gives this message away, then report it. There are 3.</p>'+
+      PH.map(function(h,i){ return '<button class="hdr" data-hdr="'+i+'" aria-pressed="false"><span class="k">'+h[0]+'</span><span class="v">'+esc(h[1])+'</span></button>'; }).join('')+
+      '<div class="act"><button class="btn primary" id="bReport">REPORT PHISHING</button></div><div id="gMsg"></div>';
+  }
+  /* game: config fix */
+  var CFG = [['TLS version',['1.0','1.2','1.3'],'1.3'],['Cipher',['RC4','3DES','AES-256-GCM'],'AES-256-GCM'],['combo-engine',['v1.2 (legacy)','v2.0'],'v2.0'],['Enforce minimum version',['Off','On'],'On']];
+  function gameDown(){
+    return '<h3>Config Fix</h3><p class="sub">The attacker forced your connection onto old settings. Set every option to the secure choice.</p>'+
+      '<div class="cfg">'+CFG.map(function(c,i){ var cur = i===0?'1.0':i===1?'RC4':i===2?'v1.2 (legacy)':'Off'; return '<label for="cf'+i+'">'+c[0]+'</label><select id="cf'+i+'">'+c[1].map(function(o){ return '<option'+(o===cur?' selected':'')+'>'+o+'</option>'; }).join('')+'</select>'; }).join('')+'</div>'+
+      '<div class="act"><button class="btn primary" id="bApply">APPLY CONFIG</button></div><div id="gMsg"></div>';
+  }
+
+  /* game: device audit */
+  var DEV = [['Built-in Keyboard','Dell Inc.','08:02',0],['USB Optical Mouse','Logitech','08:02',0],['USB Keyboard (2)','Unknown (0x1337)','just now',1],['Integrated Webcam','Realtek','08:02',0],['USB Headset','Plantronics','08:14',0]];
+  function gameInject(){
+    var list = DEV.slice().sort(function(){ return Math.random()-.5; });
+    return '<h3>Device Audit</h3><p class="sub">Something plugged in is pretending to be a keyboard. Find it and eject it. Ejecting a real device disconnects it for a few seconds.</p>'+
+      '<div style="border:1px solid var(--border2);border-radius:10px;background:var(--bg);">'+
+      '<div class="proc" style="color:var(--faint);font-size:11px;letter-spacing:1px;"><span>DEVICE</span><span class="usr">VENDOR</span><span class="cpu">CONNECTED</span><span></span></div>'+
+      list.map(function(d){ return '<div class="proc"><span style="color:var(--bright);">'+esc(d[0])+'</span><span class="usr" style="color:var(--faint);font-size:11px;">'+esc(d[1])+'</span><span class="cpu" style="font-size:11px;">'+d[2]+'</span><button class="kill" data-eject="'+(d[3]?1:0)+'" data-name="'+esc(d[0])+'">EJECT</button></div>'; }).join('')+
+      '</div><div id="gMsg"></div>';
+  }
+  /* game: extension audit */
+  var EXT = [['Grammar Helper','Web Store','Read and change data on docs.google.com','Aug 30',0],['Dark Reader','Web Store','Read and change data on all websites','Sep 2',0],['Google Docs Offline','Web Store','Store data on this device','Aug 15',0],['CursorFun Pro \u2728','Unknown source','Read and change all data on all websites','just now',1],['uBlock Origin','Web Store','Read and change data on all websites','Aug 15',0]];
+  function gameCursor(){
+    var list = EXT.slice().sort(function(){ return Math.random()-.5; });
+    return '<h3>Extension Audit</h3><p class="sub">A browser extension took over your cursor. Find the one that doesn\u2019t belong and remove it. Removing a real one turns it off for a few seconds.</p>'+
+      '<div style="border:1px solid var(--border2);border-radius:10px;background:var(--bg);">'+
+      list.map(function(x){ return '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border2);">'+
+        '<div style="min-width:0;"><div class="mono" style="font-size:13px;color:var(--bright);">'+esc(x[0])+'</div><div style="font-size:11px;color:var(--faint);margin-top:3px;line-height:1.45;">'+esc(x[1])+' \u00B7 added '+x[3]+' \u00B7 '+esc(x[2])+'</div></div>'+
+        '<button class="kill" data-ext="'+(x[4]?1:0)+'" data-name="'+esc(x[0])+'">REMOVE</button></div>'; }).join('')+
+      '</div><div id="gMsg"></div>';
+  }
+  function renderInsp(){
+    var k = S.sel, box = $('insp'), atk = atkOn(k);
+    $('inspTag').textContent = S.mode === 'game' ? 'responding' : S.mode === 'diagnose' ? 'diagnosing' : LAYERS[k];
+    if (S.mode === 'diagnose') box.innerHTML = diagnose();
+    else if (S.mode === 'game') box.innerHTML = { crypto:gameCrypto, ddos:gameDdos, ransom:gameRansom, phish:gamePhish, down:gameDown, inject:gameInject, cursor:gameCursor }[atk]();
+    else box.innerHTML = overview(k);
+    wire(atk);
+  }
+  function wire(atk){
+    var b;
+    if ((b = $('bRespond'))) b.onclick = function(){ act(function(){ setMode('diagnose'); }); };
+    if ((b = $('bBack'))) b.onclick = function(){ act(function(){ setMode('overview'); }); };
+    document.querySelectorAll('[data-diag]').forEach(function(el){
+      el.onclick = function(){ act(function(){
+        var g = el.getAttribute('data-diag');
+        if (g === atk){ log('soc','Diagnosis confirmed: '+ATTACKS[g].name+' on '+LAYERS[S.sel],'');
+          if (!S.wrongOn[atk]){ var dk = DEF_FOR[atk]; if (dk){ grantDef(dk, 12*3600e3); log('def','First-try diagnosis! Free '+DEFS[dk].name+' for 12h','good'); } }
+          delete S.wrongOn[atk]; setMode('game'); if (atk==='ddos') runDdos(); }
+        else { S.wrongOn[atk] = true; S.cooldown = Date.now() + 8000; log('soc','Wrong diagnosis on '+LAYERS[S.sel]+' ('+ATTACKS[g].name+'). Cooldown 8s.','bad'); renderInsp(); }
+      }); };
+    });
+    document.querySelectorAll('[data-kill]').forEach(function(el){
+      el.onclick = function(){ act(function(){
+        if (el.getAttribute('data-fake') === '1'){ $('gMsg').innerHTML = '<div class="msg ok">Killed '+esc(el.getAttribute('data-name'))+'. CPU dropping back to normal.</div>'; setTimeout(function(){ clear('crypto','process killed'); setMode('overview'); }, 1100); }
+        else {
+          var n = el.getAttribute('data-name');
+          log('proc','You killed '+n+' (a real process). Restarting\u2026','bad');
+          document.querySelectorAll('[data-kill]').forEach(function(x){ x.disabled = true; });
+          $('gMsg').innerHTML = '<div class="msg bad">'+esc(n)+' was a real process. It crashed and is restarting (5s). Look closer at the names.</div>';
+          setTimeout(function(){ if (S.mode==='game') renderInsp(); }, 5000);
+        }
+      }); };
+    });
+    if ((b = $('bKey'))){
+      var go = function(){ act(function(){
+        var v = ($('gKey').value||'').trim().toUpperCase();
+        if (v === S.ransomWord){ $('gMsg').innerHTML = '<div class="msg ok">Key accepted. m3-osint.flag decrypted.</div>'; setTimeout(function(){ clear('ransom','decrypted'); setMode('overview'); }, 1100); }
+        else $('gMsg').innerHTML = '<div class="msg bad">Wrong key. Shift each letter back 3 (D\u2192A, E\u2192B \u2026).</div>';
+      }); };
+      b.onclick = go; $('gKey').onkeydown = function(e){ if (e.key==='Enter') go(); };
+      $('bBackup').onclick = function(){ act(function(){ $('gMsg').innerHTML = '<div class="msg ok">Restored m3-osint.flag from the 3h-old backup. Backups beat ransomware.</div>'; setTimeout(function(){ clear('ransom','restored from backup'); setMode('overview'); }, 1300); }); };
+      $('bPay').onclick = function(){ act(function(){ $('gMsg').innerHTML = '<div class="msg bad">Nothing was paid. In a real attack, paying funds the attacker and often doesn\u2019t get the file back. Try the key or your backup.</div>'; log('data','Ransom payment attempted. Declined by SOC policy.','bad'); }); };
+    }
+    document.querySelectorAll('[data-hdr]').forEach(function(el){
+      el.onclick = function(){ var on = el.classList.toggle('flag'); el.setAttribute('aria-pressed', on ? 'true' : 'false'); };
+    });
+    if ((b = $('bReport'))) b.onclick = function(){ act(function(){
+      var ok = true, found = 0, why = [];
+      document.querySelectorAll('[data-hdr]').forEach(function(el){
+        var h = PH[+el.getAttribute('data-hdr')], on = el.classList.contains('flag');
+        el.classList.remove('right','wrong');
+        if (h[2] && on){ found++; el.classList.add('right'); why.push(h[3]); }
+        else if (!h[2] && on){ ok = false; el.classList.add('wrong'); }
+        else if (h[2] && !on) ok = false;
+      });
+      if (ok && found === 3){ S.coins += 5; $('gMsg').innerHTML = '<div class="msg ok">Reported. +5 coins.<br>'+why.map(esc).join('<br>')+'</div>'; setTimeout(function(){ clear('phish','reported'); setMode('overview'); }, 2200); }
+      else $('gMsg').innerHTML = '<div class="msg bad">Found '+found+' of 3'+(document.querySelector('.hdr.wrong')?', and flagged something that\u2019s normal':'')+'. Look again.</div>';
+    }); };
+    document.querySelectorAll('[data-ext]').forEach(function(el){
+      el.onclick = function(){ act(function(){
+        var n = el.getAttribute('data-name');
+        if (el.getAttribute('data-ext') === '1'){ $('gMsg').innerHTML = '<div class="msg ok">Removed '+esc(n)+'. It came from outside the Web Store, was added just now, and could read and change every site you visit. Cursor restored.</div>'; setTimeout(function(){ clear('cursor','rogue extension removed'); setMode('overview'); }, 1600); }
+        else {
+          log('app','You removed '+n+' (a real extension). Re-enabling\u2026','bad');
+          document.querySelectorAll('[data-ext]').forEach(function(x){ x.disabled = true; });
+          $('gMsg').innerHTML = '<div class="msg bad">'+esc(n)+' is one of yours. It\u2019s turning back on (5s). Check where each one came from and when it was added.</div>';
+          setTimeout(function(){ if (S.mode==='game') renderInsp(); }, 5000);
+        }
+      }); };
+    });
+    document.querySelectorAll('[data-eject]').forEach(function(el){
+      el.onclick = function(){ act(function(){
+        var n = el.getAttribute('data-name');
+        if (el.getAttribute('data-eject') === '1'){ $('gMsg').innerHTML = '<div class="msg ok">Ejected '+esc(n)+'. It connected seconds ago from an unknown vendor and typed faster than a person can. Your typing is back to normal.</div>'; setTimeout(function(){ clear('inject','rogue device ejected'); setMode('overview'); }, 1600); }
+        else {
+          log('usb','You ejected '+n+' (a real device). Reconnecting\u2026','bad');
+          document.querySelectorAll('[data-eject]').forEach(function(x){ x.disabled = true; });
+          $('gMsg').innerHTML = '<div class="msg bad">'+esc(n)+' is yours. It\u2019s reconnecting (5s). Check the vendor and when each device was connected.</div>';
+          setTimeout(function(){ if (S.mode==='game') renderInsp(); }, 5000);
+        }
+      }); };
+    });
+    if ((b = $('bApply'))) b.onclick = function(){ act(function(){
+      var bad = 0;
+      CFG.forEach(function(c,i){ var s = $('cf'+i), good = s.value === c[2]; s.classList.toggle('good', good); s.classList.toggle('bad', !good); if (!good) bad++; });
+      if (!bad){ $('gMsg').innerHTML = '<div class="msg ok">Secure config applied. combo-engine back on v2.0. Arena display back to normal.</div>'; setTimeout(function(){ clear('down','config hardened'); setMode('overview'); }, 1300); }
+      else $('gMsg').innerHTML = '<div class="msg bad">'+bad+' setting'+(bad>1?'s are':' is')+' still weak. Newest version, strongest cipher, and enforce the minimum.</div>';
+    }); };
+  }
+
+  /* ---------- toast (phishing lure) ---------- */
+  function showToast(){
+    $('toastSlot').innerHTML = '<div class="toast" role="alert"><div class="from">NOTIF-SVC \u00B7 JUST NOW</div><div class="ttl">\uD83C\uDF81 Teacher sent you 2x XP!</div><div class="bd">Claim in 60s or it expires.</div><div class="act"><button class="btn primary" id="tClaim">CLAIM</button><button class="btn" id="tInspect">INSPECT</button></div></div>';
+    $('tClaim').onclick = function(){ act(phished); };
+    $('tInspect').onclick = function(){ act(function(){ S.sel = 'user'; setMode('overview'); renderStack(); }); };
+  }
+  function phished(){
+    $('toastSlot').innerHTML = '';
+    log('user','Clicked link in notif-svc message. Lesson shown; nothing happened to your account.','bad');
+    $('ovlSlot').innerHTML = '<div class="ovl" role="dialog" aria-modal="true" aria-labelledby="phT"><div class="box"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--bad);">YOU GOT PHISHED</div><h2 id="phT" class="mono" style="margin:8px 0 12px;color:var(--bright);font-size:22px;">That wasn\u2019t your teacher.</h2>'+
+      '<p style="color:var(--muted);line-height:1.6;margin:0 0 12px;">Nothing happened to your account, and you can keep working. You just miss the defeat bonus this time. These were the giveaways:</p><ul style="margin:0 0 16px;padding-left:18px;line-height:1.8;color:var(--text);">'+
+      PH.filter(function(h){ return h[2]; }).map(function(h){ return '<li><span class="mono" style="color:var(--amber);">'+h[0]+':</span> '+esc(h[3])+'</li>'; }).join('')+
+      '</ul><button class="btn primary" id="phOk">GOT IT</button></div></div>';
+    $('phOk').focus();
+    $('phOk').onclick = function(){ $('ovlSlot').innerHTML = ''; clear('phish','lure clicked'); };
+  }
+
+  /* ---------- full restore ---------- */
+  function restore(){
+    if (S.restoreUsed) return;
+    var lines = ['[  OK  ] Stopping all user processes','[  OK  ] Flushing network connections','[  OK  ] Verifying flag files against backup','[  OK  ] Reinstalling combo-engine v2.0','[  OK  ] Clearing notification queue','[  OK  ] Applying firewall baseline','[  OK  ] Boot complete. System restored.'];
+    $('ovlSlot').innerHTML = '<div class="ovl" role="dialog" aria-modal="true" aria-label="Restoring system"><div class="box"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--amber);margin-bottom:10px;">FULL SYSTEM RESTORE</div><div class="boot" id="boot"></div></div></div>';
+    stopGame();
+    var i = 0, box = $('boot');
+    var iv = setInterval(function(){
+      box.textContent += lines[i] + '\n'; i++;
+      if (i >= lines.length){
+        clearInterval(iv);
+        setTimeout(function(){
+          $('ovlSlot').innerHTML = '';
+          Object.keys(S.active).forEach(function(k){ clear(k,'silent'); });
+          S.restoreUsed = true; S.immuneUntil = Date.now() + 12*3600e3;
+          log('soc','Full restore complete. Everything cleared (no defeat bonus). Immune for 12h.','good');
+          S.mode = 'overview'; renderAll();
+        }, 700);
+      }
+    }, RM ? 150 : 420);
+  }
+
+  var FLAGS = [['m3-osint','Open-Source Recon'],['m3-recon','Map the Target'],['m3-crack','Crack the Hash']];
+  var EFFECTS = {
+    crypto:['The arena is running slow','Flags take 3 seconds to open and answers take 3 seconds to check. Nothing is taken from you.','Flag cards + Submit'],
+    ddos:['Every click lags','Buttons respond about 0.75s late, including Submit.','Submit buttons'],
+    ransom:['A flag is locked','m3-osint can\u2019t be opened or answered until it\u2019s decrypted or restored.','Flag list'],
+    phish:['A notification is waiting','It looks like a reward. Check it in System Monitor before you click it.','Notifications'],
+    down:['Your arena went retro','Everything looks like a 1995 computer. It works exactly the same; it just looks old.','Arena look'],
+    cursor:['Your cursor has been swapped','Your mouse pointer is now a '+'CURSORNAME'+'. It still clicks normally, it just looks wrong.','Mouse pointer'],
+    inject:['Your typing is being changed','Some letters come out wrong (e\u21923, a\u2192@, o\u21920). Answers sent now don\u2019t count: no attempt used, no cooldown, no XP lost.','Answer boxes']
+  };
+  var demoMsg = {}, INPUTS = {};
+  var SWAP = { e:'3', a:'@', o:'0', s:'5', i:'1', E:'3', A:'@', O:'0', S:'5', I:'1' };
+  function renderArena(){
+    var A = S.active, reveal = $('revealNames').checked, now = Date.now(), ro = S.readOnlyUntil > now, n = Object.keys(A).length;
+    var p = $('aPill');
+    p.className = 'pill' + (n ? ' warn' : '');
+    p.innerHTML = '<span class="dot'+(n?' warn':'')+'"></span>' + (n ? n + ' ISSUE' + (n>1?'S':'') + ' \u00b7 OPEN SYSTEM MONITOR' : 'SYSTEM OK');
+    $('aCoins').textContent = S.coins;
+    $('aCoinsWrap').className = 'mono';
+    $('aCoinsWrap').innerHTML = 'COINS <b id="aCoins" style="color:var(--bright);">'+S.coins+'</b>';
+    var cur = S.combo, segs = '';
+    [1.1,1.2,1.3,1.4,1.5].forEach(function(v){ segs += '<i class="' + (v <= cur + 1e-9 ? 'on' : '') + '"></i>'; });
+    $('arenaSec').classList.toggle('legacy', !!A.down);
+    $('aMeter').innerHTML = segs;
+    $('aCombo').textContent = cur.toFixed(1) + 'x';
+    $('aFlags').innerHTML = FLAGS.map(function(f){
+      var locked = A.ransom && f[0] === 'm3-osint', dis = locked || ro;
+      return '<div class="flag'+(locked?' locked':'')+'"><span class="fid">'+f[0]+(locked?'.flag.lock':'')+'</span><span class="ft">'+(locked ? '<span style="color:var(--bad);word-break:break-all;">\u{1F512} '+rot3(f[1].toUpperCase().replace(/[^A-Z]/g,''))+'</span>' : f[1])+'</span>'+
+        (locked ? '<span class="etag" style="background:var(--bad);align-self:flex-start;">ENCRYPTED</span>' : '')+
+        '<input data-inp="'+f[0]+'" aria-label="Answer for '+f[0]+'" placeholder="flag{...}" value="'+esc(INPUTS[f[0]]||'')+'"'+(A.inject && !dis ? ' class="aff"' : '')+(dis?' disabled':'')+'>'+
+        (A.inject && !dis ? '<span class="etag" style="align-self:flex-start;">INPUT ALTERED \u00b7 WON\u2019T COUNT</span>' : '')+
+        (A.crypto && !dis ? '<span class="etag" style="align-self:flex-start;">SLOW \u00b7 +3s</span>' : '')+
+        '<button class="btn'+(A.ddos && !dis ? ' aff' : '')+'" data-sub="'+f[0]+'"'+(dis?' disabled':'')+'>'+(ro ? 'READ-ONLY' : locked ? 'LOCKED' : 'SUBMIT')+(A.ddos && !dis ? ' <span class="etag">LAG</span>' : '')+'</button>'+
+        (demoMsg[f[0]] ? '<span class="mono" style="font-size:11px;color:var(--ok);">'+demoMsg[f[0]]+'</span>' : '')+'</div>';
+    }).join('');
+    document.querySelectorAll('[data-inp]').forEach(function(inp){
+      inp.oninput = function(e){
+        var v = inp.value;
+        if (S.active.inject && e.inputType === 'insertText' && e.data && e.data.length === 1){
+          var ch = e.data, out = SWAP[ch] || ch;
+          if (!SWAP[ch] && Math.random() < .12) out = ch + pick(['#','~','^']);
+          if (out !== ch){ var pos = inp.selectionStart; inp.value = v.slice(0, pos-1) + out + v.slice(pos); inp.setSelectionRange(pos-1+out.length, pos-1+out.length); }
+        }
+        INPUTS[inp.getAttribute('data-inp')] = inp.value;
+      };
+    });
+    document.querySelectorAll('[data-sub]').forEach(function(b){
+      b.onclick = function(){ var id = b.getAttribute('data-sub'); var t0 = Date.now(); var inj = !!S.active.inject; var slow = !!S.active.crypto;
+        if (slow){ b.disabled = true; b.textContent = 'CHECKING\u2026'; }
+        setTimeout(function(){ act(function(){ demoMsg[id] = inj ? 'Not counted: your input was being altered. No attempt used, no cooldown, no XP lost.' : 'Checked in ' + ((Date.now()-t0)/1000).toFixed(1) + 's (demo, not graded)'; renderArena(); setTimeout(function(){ delete demoMsg[id]; renderArena(); }, 2500); }); }, slow ? 3000 : 0); };
+    });
+    var items = Object.keys(A).map(function(k){ var e = EFFECTS[k].slice(); if (k==='cursor') e[1] = e[1].replace('CURSORNAME', (S.cursorGiant ? 'giant ' : '') + (CURSORS[S.cursorKey]||CURSORS.lion)[1].toLowerCase() + (trailOn && !RM ? ' with a trail' : '')); return '<div class="it">'+(reveal ? '<div class="nm">'+ATTACKS[k].name.toUpperCase()+' \u00b7 '+LAYERS[ATTACKS[k].layer]+'</div>' : '<div class="nm">AFFECTS: '+e[2].toUpperCase()+'</div>')+'<b>'+e[0]+'</b><span>'+e[1]+'</span><span class="mono" style="margin-top:6px;color:var(--text);">Wears off in <b data-left="'+k+'">'+mmss(leftMs(k))+'</b> \u00b7 defeat it now: <b style="color:var(--ok);">+'+BONUS[k]+' XP</b></span></div>'; });
+    if (ro){ var s = Math.ceil((S.readOnlyUntil-now)/1000); items.push('<div class="it"><div class="nm">AFTER FULL RESTORE</div><b>Submitting is paused</b><span>You can read flags. Submit comes back in '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+'.</span></div>'); }
+    if (S.immuneUntil > now) items.push('<div class="it good"><div class="nm">PROTECTED</div><b>Immune to new attacks</b><span>Any attack sent at you is blocked until the timer runs out.</span></div>');
+    $('aEff').innerHTML = items.length ? items.join('') : '<div class="it good"><div class="nm">ALL CLEAR</div><b>No debuffs active</b><span>Your arena is running normally.</span></div>';
+  }
+  var DEFS = {
+    antivirus:{ name:'Antivirus', covers:{crypto:.6, ransom:.6, inject:.6}, dur:24, desc:'60% vs Cryptojacker, Ransomware, Keystroke Injection' },
+    firewall:{ name:'Firewall', covers:{ddos:.5}, dur:24, desc:'50% vs DDoS' },
+    spam:{ name:'Spam Filter', covers:{phish:.75}, dur:48, desc:'75% vs Phishing' },
+    patch:{ name:'Security Patch', covers:{down:.9}, dur:48, desc:'90% vs Downgrade' },
+    extguard:{ name:'Extension Guard', covers:{cursor:.8}, dur:24, desc:'80% vs Cursor Hijack' },
+    backup:{ name:'Cloud Backup', covers:{}, once:true, desc:'Auto-restores your flag if Ransomware lands. Single use.' },
+    honeypot:{ name:'Honeypot', covers:{}, once:true, desc:'Catches the next attack of any kind. Attacker\u2019s item is wasted, you get +10 coins. Single use.' }
+  };
+  var DEF_FOR = { crypto:'antivirus', ransom:'antivirus', inject:'antivirus', ddos:'firewall', phish:'spam', down:'patch', cursor:'extguard' };
+  function activeDef(k){ var d = S.defs[k]; if (!d) return false; if (d.once) return true; if (S.paused) return d.left > 0; return d.until > Date.now(); }
+  function grantDef(k, ms){ var d = DEFS[k]; if (d.once){ S.defs[k] = { once:true }; return; } var cur = S.defs[k] && S.defs[k].until > Date.now() ? S.defs[k].until : Date.now(); S.defs[k] = { until: cur + ms }; }
+  function blockChance(atk){
+    var miss = 1, names = [];
+    Object.keys(DEFS).forEach(function(k){ var p = DEFS[k].covers[atk]; if (p && activeDef(k)){ miss *= (1 - p); names.push(DEFS[k].name); } });
+    return { p: Math.min(.9, 1 - miss), names: names };
+  }
+  function fmtLeft(ms){ var s = Math.max(0, Math.ceil(ms/1000)), hh = Math.floor(s/3600), mm = Math.floor(s%3600/60); return hh + 'h ' + String(mm).padStart(2,'0') + 'm'; }
+  function renderDefenses(){
+    var P = S.paused, now = Date.now(), nAct = 0;
+    $('defPaused').innerHTML = P ? '<div class="banner" style="margin:0 0 12px;border-color:var(--amber-bd);background:var(--amber-bg);"><span style="color:var(--amber);">ATTACKS OFF</span><span>Your teacher turned attacks off for the class. Your defense items are saved and their timers are frozen.</span></div>' : '';
+    $('defList').className = P ? 'paused' : '';
+    $('defList').innerHTML = Object.keys(DEFS).map(function(k){
+      var d = DEFS[k], on = activeDef(k), own = S.defOwned[k] || 0; if (on) nAct++;
+      var left = on && !d.once ? (P ? S.defs[k].left : S.defs[k].until - now) : 0;
+      return '<div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid '+(on?'var(--ok)':'var(--border2)')+';border-radius:12px;background:'+(on?'color-mix(in oklab,var(--ok) 8%,var(--bg))':'var(--bg)')+';">'+
+        '<div style="display:flex;align-items:baseline;gap:8px;"><b class="mono" style="font-size:13px;color:var(--bright);">'+d.name+'</b><span class="mono" style="margin-left:auto;font-size:11px;color:var(--faint);">\u00d7'+own+'</span></div>'+
+        '<span style="font-size:12px;color:var(--dim);line-height:1.45;">'+d.desc+(d.dur?' \u00b7 '+d.dur+'h':'')+'</span>'+
+        (on ? '<span class="mono" style="font-size:12px;color:var(--ok);">'+(d.once ? 'ARMED \u00b7 waiting' : 'ACTIVE \u00b7 '+fmtLeft(left)+(P?' (frozen)':''))+'</span>'
+            : '<button class="btn'+(own?' primary':'')+'" data-def="'+k+'"'+(own&&!P?'':' disabled')+'>'+(own ? 'ACTIVATE' : 'NONE OWNED')+'</button>')+
+        '</div>';
+    }).join('');
+    document.querySelectorAll('[data-def]').forEach(function(b){ b.onclick = function(){ var k = b.getAttribute('data-def'); if (!S.defOwned[k] || S.paused) return; S.defOwned[k]--; grantDef(k, (DEFS[k].dur||0)*3600e3); log('def',DEFS[k].name+' activated','good'); renderAll(); }; });
+    $('defChances').innerHTML = ORDER.map(function(a){ var c = blockChance(a), pct = Math.round(c.p*100);
+      return '<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:10px;align-items:center;"><div style="min-width:0;"><div class="mono" style="font-size:12px;color:var(--text);">'+ATTACKS[a].name+'</div><div class="bar'+(pct?'':' warn')+'" style="margin-top:5px;"><i style="width:'+pct+'%;background:'+(pct?'var(--ok)':'var(--border3)')+';"></i></div></div><b class="mono" style="font-size:13px;text-align:right;color:'+(pct?'var(--ok)':'var(--faint)')+';">'+pct+'%</b></div>'; }).join('') +
+      (activeDef('honeypot') ? '<div class="mono" style="font-size:11px;color:var(--ok);">+ Honeypot armed: the next attack is caught 100%</div>' : '');
+    $('defSum').textContent = P ? 'paused' : nAct + ' active';
+  }
+  var COST = { cursor:25, inject:50, phish:50, down:50, ddos:75, crypto:100, ransom:150 };
+  var ORDER = ['cursor','inject','phish','down','ddos','crypto','ransom'];
+  function renderArsenal(){
+    $('arsXp').textContent = S.xp.toLocaleString();
+    $('arsList').className = S.paused ? 'paused' : '';
+    if (S.paused) $('arsMsg').innerHTML = '<span style="color:var(--amber);">ATTACKS OFF.</span> Your teacher turned attacks off for the class. Your attack items are saved.';
+    $('arsList').innerHTML = ORDER.map(function(k){
+      var own = S.owned[k] || 0, c = COST[k], ok = own > 0 && S.xp >= c;
+      return '<div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid var(--border2);border-radius:12px;background:var(--bg);">'+
+        '<div style="display:flex;align-items:baseline;gap:8px;"><b class="mono" style="font-size:13px;color:var(--bright);">'+ATTACKS[k].name+'</b><span class="mono" style="margin-left:auto;font-size:11px;color:var(--faint);">×'+own+'</span></div>'+
+        '<span style="font-size:12px;color:var(--dim);line-height:1.45;">'+ATTACKS[k].hint+'</span>'+
+        '<button class="btn'+(ok?' primary':'')+'" data-launch="'+k+'"'+(ok?'':' disabled')+'>'+(own ? 'LAUNCH · '+c+' XP' : 'NONE OWNED')+'</button></div>';
+    }).join('');
+    document.querySelectorAll('[data-launch]').forEach(function(b){ b.onclick = function(){ launch(b.getAttribute('data-launch')); }; });
+  }
+  function launch(k){
+    if (S.paused || !S.owned[k] || S.xp < COST[k]) return;
+    S.owned[k]--; S.xp -= COST[k];
+    var tgt = $('arsTarget'), from = $('arsFrom').value, name = tgt.options[tgt.selectedIndex].text.split(' · ')[0];
+    $('arsMsg').innerHTML = '<span style="color:var(--ok);">✓ Attack sent to '+esc(name)+'.</span> It lands within a minute. −'+COST[k]+' XP';
+    renderArsenal();
+    if (tgt.value === 'self') setTimeout(function(){ start(k, from); }, rnd(1500, 4000));
+  }
+  var lastBanner = null;
+  function flashBanner(){ var b = document.querySelector('#bannerSlot .banner'); if (!b) return; b.style.borderColor = 'var(--ok)'; setTimeout(function(){ b.style.borderColor = ''; }, 700); }
+  function renderBanner(){
+    var now = Date.now(), parts = [];
+    if (S.readOnlyUntil > now){ var s = Math.ceil((S.readOnlyUntil-now)/1000); parts.push('<span style="color:var(--amber);">ARENA READ-ONLY '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+'</span><span>Rebooting after restore. You can browse flags but not submit.</span>'); }
+    if (S.immuneUntil > now){ var ri = Math.ceil((S.immuneUntil-now)/1000); parts.push('<span style="color:var(--ok);">IMMUNE '+Math.floor(ri/3600)+'h '+String(Math.floor(ri%3600/60)).padStart(2,'0')+'m</span><span>Full Restore protects you from new attacks for 12 hours.</span><button class="pbtn ghost" id="endImm" style="margin-left:auto;">End immunity (prototype)</button>'); }
+    var html = parts.length ? '<div class="banner">'+parts.join('')+'</div>' : '';
+    if (html !== lastBanner){ $('bannerSlot').innerHTML = html; lastBanner = html; }
+    if ($('endImm')) $('endImm').onclick = function(){ S.immuneUntil = 0; S.readOnlyUntil = 0; log('proto','Immunity ended for testing',''); renderAll(); };
+    if (S.immuneUntil > now){ var r = Math.ceil((S.immuneUntil-now)/1000); $('sImm').textContent = Math.floor(r/3600)+'h '+String(Math.floor(r%3600/60)).padStart(2,'0')+'m'; $('sImm').style.color = 'var(--ok)'; }
+    else { $('sImm').textContent = '\u2014'; $('sImm').style.color = ''; }
+  }
+  function renderAll(){ renderTop(); renderStack(); if (S.mode !== 'game') renderInsp(); renderBanner(); renderArena(); renderArsenal(); renderDefenses(); }
+
+  /* ---------- live tick ---------- */
+  var tickN = 0;
+  setInterval(function(){
+    tickN++;
+    Object.keys(S.active).forEach(function(k){ if (leftMs(k) <= 0){ if (S.mode !== 'overview' && atkOn(S.sel) === k){ stopGame(); S.mode = 'overview'; } clear(k, 'expired'); } });
+    if ($('inspLeft') && S.mode === 'overview'){ var ak = atkOn(S.sel); if (S.active[ak]) $('inspLeft').textContent = mmss(leftMs(ak)); }
+    document.querySelectorAll('[data-left]').forEach(function(el){ var k = el.getAttribute('data-left'); if (S.active[k]) el.textContent = mmss(leftMs(k)); });
+    S.net.shift(); S.net.push(S.active.ddos ? rnd(82,99) : rnd(16,34));
+    S.cpu = S.active.crypto ? rnd(86,97) : rnd(12,24);
+    if (tickN % 12 === 0){ Object.keys(S.active).forEach(function(k){ var c = pick(CLUES[k])(); log(c[0], c[1], 'warn'); }); }
+    renderTop(); renderStack(); renderBanner();
+    if (tickN % 20 === 0) renderDefenses();
+    if ($('aCoins')) $('aCoins').textContent = S.coins;
+    if (S.readOnlyUntil > Date.now() && tickN % 2 === 0) renderArena();
+    var roNow = S.readOnlyUntil > Date.now(); if (roNow !== S._ro){ S._ro = roNow; renderArena(); }
+    if (S.mode === 'diagnose' && $('cdSec')){ var r = Math.ceil((S.cooldown - Date.now())/1000); if (r <= 0) renderInsp(); else $('cdSec').textContent = r + 's'; }
+  }, 500);
+
+  /* ---------- wiring ---------- */
+  document.querySelectorAll('.layer').forEach(function(el){
+    el.onclick = function(){ act(function(){ S.sel = el.getAttribute('data-layer'); setMode('overview'); renderStack(); }); };
+  });
+  document.querySelectorAll('[data-sim]').forEach(function(el){ el.onclick = function(){ start(el.getAttribute('data-sim')); }; });
+  $('simRandom').onclick = function(){ var off = Object.keys(ATTACKS).filter(function(k){ return !S.active[k]; }); if (off.length) start(pick(off)); };
+  $('simClear').onclick = function(){ stopGame(); Object.keys(S.active).forEach(function(k){ clear(k,'silent'); }); S.mode = 'overview'; log('proto','All attacks cleared',''); renderAll(); };
+  $('simReset').onclick = function(){ S.recv = []; S.pairs = {}; S.autoShieldUntil = 0; S.restoreUsed = false; S.immuneUntil = 0; S.readOnlyUntil = 0; log('proto','Restore + immunity reset',''); renderAll(); };
+  $('restoreBtn').onclick = function(){ act(restore); };
+  $('simFF').onclick = function(){ Object.keys(S.active).forEach(function(k){ S.active[k].until -= 5*60e3; }); log('proto','Fast-forwarded 5 minutes',''); };
+  function paintTeacher(){
+    var p = S.protectedT, s = S.silentIps, on = !S.paused;
+    (function(){ var e = $('tOnState'); e.textContent = on ? 'ON' : 'OFF \u00b7 NOBODY CAN ATTACK'; e.style.borderColor = on ? 'var(--ok)' : 'var(--amber)'; e.style.color = on ? 'var(--ok)' : 'var(--amber)'; })();
+    $('tOnCard').style.borderColor = on ? 'var(--border3)' : 'var(--amber)';
+    $('tOnHelp').innerHTML = on
+      ? '<b style="color:var(--text);">When unchecked:</b> nobody in the class can attack. Every active debuff is lifted right away. Attack and defense items are greyed out but kept, and defense timers freeze until you turn attacks back on. Good for test days.'
+      : '<b style="color:var(--text);">Now:</b> attacks are off. Students see their attack and defense items greyed out with \u201CAttacks off\u201D. Nothing is lost; timers are frozen. Check the box to turn attacks back on.';
+    function pill(id, on, txt){ var e = $(id); e.textContent = txt; e.style.borderColor = on ? 'var(--ok)' : 'var(--border3)'; e.style.color = on ? 'var(--ok)' : 'var(--faint)'; }
+    pill('tProtectState', p, p ? 'ON \u00b7 ALL ATTACKS BLOCKED' : 'OFF');
+    pill('tSilentState', s, s ? 'ON \u00b7 STUDENT NOT TOLD' : 'OFF');
+    $('tProtectCard').style.borderColor = p ? 'var(--ok)' : 'var(--border3)';
+    $('tSilentCard').style.borderColor = s ? 'var(--ok)' : 'var(--border3)';
+    $('tProtectHelp').innerHTML = p
+      ? '<b style="color:var(--text);">Now:</b> every attack sent at nova-7 is blocked before it lands. Attackers still see \u201CAttack sent \u2713\u201D and never find out. Try launching one from the arsenal below.'
+      : '<b style="color:var(--text);">When checked:</b> every attack sent at this student is quietly blocked. Attackers aren\u2019t told. Use it for an IEP, anxiety, or a hard week. Automatic protection (repeat attacker, 2 hits in 24h) still runs either way.';
+    $('tSilentHelp').innerHTML = s
+      ? '<b style="color:var(--text);">Now:</b> nova-7 sees nothing when an attack is blocked. No badge, no log line. You still see every block in the teacher log.'
+      : '<b style="color:var(--text);">When checked:</b> the student won\u2019t see the \u201CProtected by IPS\u201D badge or \u201CIPS blocked an attack\u201D messages. For students who\u2019d be stressed just knowing someone tried. Off = they see the badge and messages.';
+  }
+  $('tProtect').onchange = function(){ S.protectedT = this.checked; log('teach','[teacher log only] Protect this student '+(S.protectedT?'ON':'OFF')+' for nova-7',''); paintTeacher(); renderTop(); };
+  $('tSilent').onchange = function(){ S.silentIps = this.checked; log('teach','[teacher log only] Hide blocks from student '+(S.silentIps?'ON':'OFF'),''); paintTeacher(); renderTop(); };
+  function setPaused(p, quiet){
+    if (p === S.paused) return;
+    var now = Date.now();
+    Object.keys(S.defs).forEach(function(k){ var d = S.defs[k]; if (d.once) return; if (p){ d.left = Math.max(0, d.until - now); } else { d.until = now + (d.left || 0); delete d.left; } });
+    S.paused = p; $('tOn').checked = !p;
+    if (p){ stopGame(); Object.keys(S.active).forEach(function(k){ clear(k,'silent'); }); S.mode = 'overview'; }
+    if (!quiet) log('teach','[teacher] Attacks '+(p?'OFF':'ON')+' for the class'+(p?' \u2014 all active debuffs lifted, items saved, timers frozen':''),'');
+    try{ localStorage.setItem('proto-redteam-on', p ? 'off' : 'on'); }catch(e){}
+    paintTeacher(); renderAll();
+  }
+  $('tOn').onchange = function(){ setPaused(!this.checked); };
+  window.addEventListener('storage', function(e){ if (e.key === 'proto-redteam-on') setPaused(e.newValue === 'off'); });
+  paintTeacher();
+  $('revealNames').onchange = renderArena;
+  $('aPill').onclick = function(){ window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' }); };
+
+  log('soc','System Monitor online. Baseline captured.','good');
+  try{ if (localStorage.getItem('proto-redteam-on') === 'off') setPaused(true, true); }catch(e){}
+  renderAll();
+})();
+</script>
+</body>
+</html>

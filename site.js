@@ -12,7 +12,7 @@
       visible keyboard focus, and names for icon-only controls.
    ========================================================================== */
 (function () {
-  var VERSION = "4.0.0";
+  var VERSION = "4.1.0";
   window.SITE_VERSION = VERSION;
   var r = document.documentElement;
   function osReduce() { try { return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } }
@@ -108,7 +108,9 @@
         row.forEach(function (e) { e.style.right = right + "px"; right += Math.ceil(e.getBoundingClientRect().width) + GAP; });
         b.style.right = right + "px"; pop.style.right = "14px";
       };
-      place(); window.addEventListener("resize", place); setTimeout(place, 400); setTimeout(place, 1500);
+      place(); window.addEventListener("resize", place); window.addEventListener("load", place); setTimeout(place, 400); setTimeout(place, 1500);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+      if (window.ResizeObserver) { var ro = new ResizeObserver(function () { place(); }); [].slice.call(document.querySelectorAll("#themeToggle, .themebtn")).forEach(function (e) { if (e !== b) ro.observe(e); }); }
       if (theme) theme.addEventListener("click", function () { setTimeout(place, 0); });
       var mo = pop.querySelector("#siteMotion"), co = pop.querySelector("#siteContrast");
       var sync = function () { mo.checked = r.getAttribute("data-motion") === "reduce"; co.checked = r.getAttribute("data-contrast") === "high"; };

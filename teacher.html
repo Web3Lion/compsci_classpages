@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=4.0.0"></script>
+<script src="site.js?v=4.1.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -259,19 +259,19 @@
   </div>
 </div>
 
-<script src="config.js?v=4.0.0"></script>
-<script src="ctf-data/cyber1.js?v=4.0.0"></script>
-<script src="ctf-data/cyber2.js?v=4.0.0"></script>
-<script src="ctf-data/cyber3.js?v=4.0.0"></script>
-<script src="ctf-data/apcsp.js?v=4.0.0"></script>
-<script src="ctf-data/web3.js?v=4.0.0"></script>
-<script src="cipher.js?v=4.0.0"></script>
-<script src="supabase-config.js?v=4.0.0"></script>
-<script src="auth.js?v=4.0.0"></script>
-<script src="name-filter.js?v=4.0.0"></script>
-<script src="objectives.js?v=4.0.0"></script>
-<script src="standards.js?v=4.0.0"></script>
-<script src="csv.js?v=4.0.0"></script>
+<script src="config.js?v=4.1.0"></script>
+<script src="ctf-data/cyber1.js?v=4.1.0"></script>
+<script src="ctf-data/cyber2.js?v=4.1.0"></script>
+<script src="ctf-data/cyber3.js?v=4.1.0"></script>
+<script src="ctf-data/apcsp.js?v=4.1.0"></script>
+<script src="ctf-data/web3.js?v=4.1.0"></script>
+<script src="cipher.js?v=4.1.0"></script>
+<script src="supabase-config.js?v=4.1.0"></script>
+<script src="auth.js?v=4.1.0"></script>
+<script src="name-filter.js?v=4.1.0"></script>
+<script src="objectives.js?v=4.1.0"></script>
+<script src="standards.js?v=4.1.0"></script>
+<script src="csv.js?v=4.1.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -1524,11 +1524,16 @@ function r2(x){ return Math.round(Number(x)*100)/100; }
    chooses to use them. Unused items can be taken back from the log below. */
 var RITEMS=[], RSEL={}, RKIND="xp2x", RLABEL="", RNOTE="", RMSG="";
 var RQTY=1;
-var RGROUPS=[["classic","XP & streak"],["help","Flag help"],["boss","Boss fights"],["mult","XP multipliers"],["surprise","Surprises"],["class","Classroom"]];
+var RGROUPS=[["classic","XP, coins & streak"],["grade","Grade bonuses & passes"],["help","Flag help"],["boss","Boss fights"],["mult","XP multipliers"],["surprise","Surprises"]];
 var RKINDS=[
   {k:"xp2x",      g:"classic", tag:"2\u00d7",  name:"2\u00d7 XP \u00b7 24 hours",   col:"var(--warn)",    sub:"Every flag the student captures pays double XP for 24 hours."},
   {k:"freeze",    g:"classic", tag:"\u2744",   name:"Streak Freeze \u00b7 1 week", col:"var(--accent2)", sub:"For 7 days, missed school days don't break the login streak."},
   {k:"xp500",     g:"classic", tag:"+500",     name:"+500 Bonus XP",              col:"var(--accent)",  sub:"Adds 500 XP when the student claims it. Shows in the XP Log."},
+  {k:"coins",     g:"classic", tag:"\u25C9",   name:"Coins",                      col:"var(--warn)",    sub:"You choose how many (up to 500, or negative to take some back). Lands in their Coin Shop balance right away.", amt:{min:-500,max:500,def:25,unit:"coins each"}},
+  {k:"v_points",  g:"grade",   tag:"+pt",      name:"Bonus Points \u00b7 Graded Assignment", col:"var(--ok)", sub:"You choose how many points. The student redeems it with you on an assignment.", kind:"voucher", amt:{min:1,max:10,def:1,unit:"point(s)"}, label:function(n){ return "+"+n+" Bonus Point"+(n===1?"":"s")+" (Graded Assignment)"; }},
+  {k:"v_test",    g:"grade",   tag:"%",        name:"Unit Test/Quiz Bonus",        col:"var(--ok)",      sub:"You choose the percent. The student redeems it with you on a unit test or quiz.", kind:"voucher", amt:{min:1,max:10,def:1,unit:"%"}, label:function(n){ return n+"% Unit Test/Quiz Bonus"; }},
+  {k:"v_hwpass",  g:"grade",   tag:"HW",       name:"Nightly Homework Pass",       col:"var(--ok)",      sub:"Skip one night of homework. Redeemed with you.", kind:"voucher", label:function(){ return "Nightly Homework Pass"; }},
+  {k:"v_ext",     g:"grade",   tag:"+1d",      name:"1-Day Extension",             col:"var(--ok)",      sub:"One extra day on a homework or project. Redeemed with you.", kind:"voucher", label:function(){ return "1-Day Homework/Project Extension"; }},
   {k:"hint",      g:"help",    tag:"?",        name:"Free Hint",                  col:"var(--accent)",  sub:"The student's next hint reveal costs no XP."},
   {k:"retry",     g:"help",    tag:"\u21ba",   name:"Retry Wipe",                 col:"var(--accent)",  sub:"Next capture on a missed flag pays full XP, ignoring the retry cap."},
   {k:"cooldown",  g:"help",    tag:"\u00bb",   name:"Cooldown Skip",              col:"var(--accent)",  sub:"The next wrong-answer lockout is skipped."},
@@ -1540,11 +1545,17 @@ var RKINDS=[
   {k:"pioneer",   g:"mult",    tag:"P\u00d72", name:"Pioneer Boost",              col:"var(--warn)",    sub:"The next first-to-solve Pioneer bonus is doubled."},
   {k:"squad",     g:"mult",    tag:"1.5\u00d7",name:"Squad Surge \u00b7 1 hour",  col:"var(--warn)",    sub:"The student's whole squad earns 1.5\u00d7 XP for an hour (just them if no squad)."},
   {k:"mystery",   g:"surprise",tag:"???",      name:"Mystery Box",                col:"var(--accent2)", sub:"Opens into a random in-game item. Never a classroom prize."},
-  {k:"voucher",   g:"class",   tag:"\u2605",   name:"Classroom Prize",            col:"var(--bright)",  sub:"Homework Pass, Sticker Sheet, test bonus\u2026 the student redeems it with you."}
+  {k:"voucher",   g:"grade",   tag:"\u2605",   name:"Custom Classroom Prize",     col:"var(--bright)",  sub:"Name anything, e.g. Sticker Sheet or Pick Your Seat. The student redeems it with you."}
 ];
-var VOUCHERS=["Sticker Sheet","Teacher Reward","Nightly Homework Pass","1-Day Homework/Project Extension","+1 Bonus Point (Graded Assignment)","1% Unit Test/Quiz Bonus","2% Unit Test/Quiz Bonus"];
+var VOUCHERS=["Sticker Sheet","Nightly Homework Pass","1-Day Homework/Project Extension","+1 Bonus Point (Graded Assignment)","1% Unit Test/Quiz Bonus","2% Unit Test/Quiz Bonus"];
 function rkindMeta(k){ return RKINDS.filter(function(x){return x.k===k;})[0]||RKINDS[RKINDS.length-1]; }
 var CHARGE_KINDS={hint:1,retry:1,cooldown:1,shield:1,overclock:1,extralife:1,lucky:1,pioneer:1};
+var RAMT={};
+function ramt(m){ return m.amt ? (RAMT[m.k]!=null ? RAMT[m.k] : m.amt.def) : null; }
+function setRAmt(k,v){ var m=rkindMeta(k); var n=parseInt(v,10); if(isNaN(n)) return; RAMT[k]=Math.max(m.amt.min,Math.min(m.amt.max,n)); if(k==="coins"&&RAMT[k]===0) RAMT[k]=1; var b=el("rSend"); if(b&&!b.disabled) b.textContent=sendLabel(); }
+function rewardName(m){ var n=ramt(m); return m.k==="coins" ? n+" coin"+(Math.abs(n)===1?"":"s") : m.label ? m.label(n) : m.name; }
+function sendLabel(){ var n=Object.keys(RSEL).length, all=ROSTER.length&&n===ROSTER.length, m=rkindMeta(RKIND);
+  return (m.k==="coins"&&ramt(m)<0?"Take back ":"Send ")+(m.k==="coins"?Math.abs(ramt(m))+" coin"+(Math.abs(ramt(m))===1?"":"s"):RKIND==="voucher"?(RLABEL.trim()||"Classroom Prize"):rewardName(m))+(m.k==="coins"?(ramt(m)<0?" from ":" to "):" to ")+(all?"entire class":n+" student"+(n===1?"":"s")); }
 function setRKind(k){ RKIND=k; RMSG=""; renderMain(); }
 function toggleRSel(id){ if(RSEL[id]) delete RSEL[id]; else RSEL[id]=1; RMSG=""; renderMain(); }
 function setRSelAll(on){ RSEL={}; if(on) ROSTER.forEach(function(s){ RSEL[s.id]=1; }); RMSG=""; renderMain(); }
@@ -1579,7 +1590,7 @@ function rewardsView(){
   var ids=Object.keys(RSEL), n=ids.length, all=ROSTER.length&&n===ROSTER.length;
   var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;max-width:720px;">'+
     'Items go to each student\u2019s profile inventory. Students choose when to use them; timed items start counting down on use. '+
-    'The Reward Spinner can send its prizes here too.</div>'+coinCard();
+    'Everything on the Reward Spinner can also be sent from here.</div>';
   h+='<div class="card" style="padding:18px;margin-bottom:22px;">'+
     '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">1 \u00b7 ITEM</div>'+
     RGROUPS.map(function(G){
@@ -1592,8 +1603,14 @@ function rewardsView(){
           '<span><b style="display:block;color:var(--bright);font-size:13px;">'+r.name+'</b><span style="font-size:11px;color:var(--dim);line-height:1.45;">'+r.sub+'</span></span></button>'; }).join('')+
       '</div>'; }).join('')+
     '<div class="mono" style="font-size:11px;color:var(--faint);margin:0 0 14px;line-height:1.6;">\u2726 Loot drops run on their own: every capture has a 3% chance to drop a random in-game item. Mystery Boxes and loot never contain classroom prizes.</div>'+
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;"><span class="mono" style="font-size:12px;color:var(--dim);">Quantity each</span>'+
-      '<input type="number" min="1" max="10" value="'+RQTY+'" oninput="RQTY=Math.max(1,Math.min(10,parseInt(this.value)||1))" style="width:64px;padding:6px 8px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;"></div>'+
+    (function(){ var m=rkindMeta(RKIND); return '<div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:14px;">'+
+      (m.amt?'<label style="display:flex;align-items:center;gap:8px;"><span class="mono" style="font-size:12px;color:var(--bright);font-weight:700;">'+(m.k==="coins"?"Amount":"How many")+'</span>'+
+        '<input type="number" min="'+m.amt.min+'" max="'+m.amt.max+'" value="'+ramt(m)+'" oninput="setRAmt(\''+m.k+'\',this.value)" style="width:84px;padding:6px 8px;border-radius:7px;border:1px solid '+m.col+';background:var(--bg);color:var(--bright);font:inherit;font-size:14px;font-weight:700;">'+
+        '<span class="mono" style="font-size:12px;color:var(--dim);">'+m.amt.unit+'</span></label>':'')+
+      (m.k==="coins"?'':'<label style="display:flex;align-items:center;gap:8px;"><span class="mono" style="font-size:12px;color:var(--dim);">Quantity each</span>'+
+      '<input type="number" min="1" max="10" value="'+RQTY+'" oninput="RQTY=Math.max(1,Math.min(10,parseInt(this.value)||1))" style="width:64px;padding:6px 8px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;"></label>')+
+      (m.label?'<span class="mono" style="font-size:12px;color:var(--dim);">Student sees: <b style="color:var(--bright);">'+esc(rewardName(m))+'</b></span>':'')+
+      '</div>'; })()+
     (RKIND==="voucher"?'<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">'+
       '<input id="rLabel" list="rVouchers" value="'+esc(RLABEL)+'" oninput="RLABEL=this.value" placeholder="Prize name, e.g. Nightly Homework Pass" '+
         'style="padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;min-width:300px;">'+
@@ -1610,7 +1627,7 @@ function rewardsView(){
           (on?'\u2713 ':'')+esc(s.handle)+'</button>'; }).join('')+'</div>'
       :'<div class="empty" style="margin-bottom:18px;">No students in this class yet.</div>')+
     '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'+
-      '<button id="rSend" class="btn" onclick="sendRewards()" '+(n?'':'disabled')+'>Send '+esc(rkindMeta(RKIND).name)+' to '+(all?'entire class':n+' student'+(n===1?'':'s'))+'</button>'+
+      '<button id="rSend" class="btn" onclick="sendRewards()" '+(n?'':'disabled')+'>'+esc(sendLabel())+'</button>'+
       (RMSG?'<span class="mono" style="font-size:12px;color:'+(/^Sent/.test(RMSG)?'var(--ok)':'var(--bad)')+';">'+esc(RMSG)+'</span>':'')+
     '</div></div>';
 
@@ -1632,11 +1649,24 @@ function rewardsView(){
 async function sendRewards(){
   var ids=Object.keys(RSEL); if(!ids.length) return;
   if(RKIND==="voucher"&&!RLABEL.trim()){ RMSG="Name the prize first."; renderMain(); return; }
+  var m=rkindMeta(RKIND);
   var b=el("rSend"); if(b){ b.disabled=true; b.textContent="Sending\u2026"; }
+  if(m.k==="coins"){
+    var want=ramt(m);
+    try{ var rc=await rpc("ctf_t_grant_coins",{p_students:ids,p_amount:want,p_reason:RNOTE.trim()||"Teacher bonus"});
+      if(rc&&rc.error) RMSG="Couldn\u2019t send: "+rc.error;
+      else { var got=rc.amount, ns2=rc.students;
+        RMSG=(got<0?"Sent \u2212":"Sent ")+Math.abs(got)+" coin"+(Math.abs(got)===1?"":"s")+" to "+ns2+" student"+(ns2===1?"":"s")+"."+
+          (got!==want?" Capped at "+Math.abs(got)+" \u2014 re-run supabase/coins-cosmetics.sql to allow up to 500.":"");
+        RSEL={}; RNOTE=""; }
+    }catch(e){ RMSG="Couldn\u2019t send coins. Run supabase/coins-cosmetics.sql first."; }
+    renderMain(); return;
+  }
   try{
-    var r=await rpc("ctf_t_send_items",{p_students:ids,p_kind:RKIND,p_label:RKIND==="voucher"?RLABEL.trim():null,p_note:RNOTE.trim()||null,p_source:"teacher",p_qty:RQTY});
+    var label=RKIND==="voucher"?RLABEL.trim():m.label?m.label(ramt(m)):null;
+    var r=await rpc("ctf_t_send_items",{p_students:ids,p_kind:m.kind||RKIND,p_label:label,p_note:RNOTE.trim()||null,p_source:"teacher",p_qty:RQTY});
     var ns=(r&&r.students)||ids.length;
-    RMSG="Sent "+(RQTY>1?RQTY+"\u00d7 ":"")+rkindMeta(RKIND).name+" to "+ns+" student"+(ns===1?"":"s")+"."; RSEL={}; RNOTE="";
+    RMSG="Sent "+(RQTY>1?RQTY+"\u00d7 ":"")+(label||m.name)+" to "+ns+" student"+(ns===1?"":"s")+"."; RSEL={}; RNOTE="";
     RITEMS=keepErr(await rpc("ctf_t_items",{p_class:CUR.id,p_limit:300}).catch(function(){return RITEMS;}));
   }catch(e){ RMSG="Couldn\u2019t send: "+((e&&e.message)||e); }
   renderMain();
