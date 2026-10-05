@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../site.js?v=5.2.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Tools — Mr. Reasey</title>
+<meta name="description" content="Free classroom tools: reward games, countdown timers, and a Google Drive document translator.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@property --spin{syntax:'<angle>';inherits:false;initial-value:0deg;}
+:root{--bg:#07031a;--bg2:#120a33;--panel:rgba(18,12,48,.72);--line:rgba(140,120,255,.28);--text:#d9dcff;--bright:#ffffff;--muted:#b4b8e6;--dim:#8d91c4;--cy:#00f0ff;--mg:#ff2bd6;--lm:#b6ff3b;--gold:#ffd23f;--grid:rgba(0,240,255,.35);--glyph:rgba(182,255,59,.5);}
+:root[data-theme="light"]{--bg:#eef3ff;--bg2:#dfe6ff;--panel:rgba(255,255,255,.82);--line:rgba(80,60,200,.22);--text:#1f2340;--bright:#0b0e24;--muted:#3e4470;--dim:#5a6090;--cy:#0079a8;--mg:#b3008f;--lm:#3f7d00;--gold:#8a6400;--grid:rgba(60,80,200,.25);--glyph:rgba(90,60,200,.35);}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{background:radial-gradient(120% 70% at 50% -10%,var(--bg2) 0%,var(--bg) 60%);background-color:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+a:hover{color:var(--bright);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:100;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;backdrop-filter:blur(8px);}
+.themebtn:hover{border-color:var(--cy);color:var(--bright);}
+/* backdrop */
+#sky{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+#floor{position:absolute;left:-50%;right:-50%;bottom:-10%;height:60vh;transform-origin:50% 100%;transform:perspective(420px) rotateX(64deg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:60px 60px;-webkit-mask:linear-gradient(to top,#000 10%,transparent 85%);mask:linear-gradient(to top,#000 10%,transparent 85%);animation:floorRun 3.5s linear infinite;}
+@keyframes floorRun{to{background-position:0 60px,0 0;}}
+#sun{position:absolute;left:50%;bottom:34vh;width:min(520px,80vw);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:linear-gradient(180deg,var(--gold),var(--mg) 70%);opacity:.22;filter:blur(2px);-webkit-mask:repeating-linear-gradient(180deg,#000 0 14px,transparent 14px 20px);mask:repeating-linear-gradient(180deg,#000 0 14px,transparent 14px 20px);}
+:root[data-theme="light"] #sun{opacity:.16;}
+.glyph{position:absolute;bottom:-60px;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--glyph);white-space:nowrap;animation:rise linear infinite;}
+@keyframes rise{from{transform:translateY(0) rotate(var(--r0));opacity:0;}10%{opacity:1;}90%{opacity:1;}to{transform:translateY(-115vh) rotate(var(--r1));opacity:0;}}
+#glow{position:fixed;width:520px;height:520px;left:0;top:0;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(0,240,255,.12),transparent 65%);transform:translate(-50%,-50%);transition:opacity .3s;}
+:root[data-theme="light"] #glow{background:radial-gradient(circle,rgba(120,80,255,.12),transparent 65%);}
+.wrap{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:76px 24px 80px;}
+/* hero */
+.boot{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:1.5px;color:var(--lm);}
+.boot i{width:9px;height:9px;border-radius:50%;background:var(--lm);box-shadow:0 0 12px var(--lm);animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{50%{opacity:.25;}}
+.caret{display:inline-block;width:.6em;height:1em;margin-left:2px;vertical-align:-2px;background:var(--lm);animation:blink 1s steps(1) infinite;}
+@keyframes blink{50%{opacity:0;}}
+h1{position:relative;margin:16px 0 6px;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(48px,10vw,124px);line-height:.9;letter-spacing:-1px;text-transform:uppercase;background:linear-gradient(100deg,var(--cy) 0%,var(--bright) 30%,var(--mg) 55%,var(--gold) 80%,var(--cy) 100%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 6s linear infinite;}
+@keyframes shimmer{to{background-position:220% 0;}}
+h1::after{content:attr(data-text);position:absolute;left:3px;top:0;color:var(--mg);opacity:.0;-webkit-text-fill-color:var(--mg);clip-path:inset(40% 0 45% 0);animation:glitch 5s steps(1) infinite;}
+@keyframes glitch{0%,92%,100%{opacity:0;transform:none;}93%{opacity:.8;transform:translateX(-6px);clip-path:inset(10% 0 70% 0);}95%{opacity:.8;transform:translateX(5px);clip-path:inset(55% 0 20% 0);}97%{opacity:.6;transform:translateX(-3px);clip-path:inset(30% 0 50% 0);}}
+.tagline{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:14px 0 0;font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:clamp(18px,2.4vw,26px);letter-spacing:1px;text-transform:uppercase;color:var(--bright);}
+.tagline span{color:var(--cy);}
+.lead{max-width:640px;margin:16px 0 0;font-size:17px;line-height:1.6;color:var(--muted);text-wrap:pretty;}
+.sec{display:flex;align-items:center;gap:14px;margin:56px 0 18px;font-size:12px;font-weight:700;letter-spacing:3px;color:var(--dim);text-transform:uppercase;}
+.sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);}
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:24px;}
+.card{--spin:0deg;position:relative;display:flex;flex-direction:column;gap:14px;min-height:400px;padding:28px;border-radius:20px;background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);isolation:isolate;transform-style:preserve-3d;transition:transform .25s cubic-bezier(.2,.9,.3,1.2),box-shadow .25s ease;box-shadow:0 30px 60px -40px rgba(0,0,0,.8);}
+.card::before{content:"";position:absolute;inset:0;padding:1.5px;border-radius:inherit;z-index:-1;background:conic-gradient(from var(--spin),var(--ac),transparent 25%,var(--ac2) 50%,transparent 75%,var(--ac));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:.55;transition:opacity .25s;animation:spin 6s linear infinite;}
+@keyframes spin{to{--spin:360deg;}}
+.card:hover::before,.card:focus-within::before{opacity:1;}
+.card:hover,.card:focus-within{box-shadow:0 30px 70px -30px var(--ac);}
+.card .corner{position:absolute;width:16px;height:16px;border-color:var(--ac);border-style:solid;opacity:.8;}
+.card .tl{top:10px;left:10px;border-width:2px 0 0 2px;} .card .br{bottom:10px;right:10px;border-width:0 2px 2px 0;}
+.mod{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ac);}
+.mod b{padding:4px 9px;border-radius:6px;border:1px solid var(--ac);font-weight:700;}
+.art{height:140px;display:flex;align-items:center;justify-content:center;transform:translateZ(30px);}
+.art svg{height:130px;width:auto;overflow:visible;filter:drop-shadow(0 0 14px color-mix(in oklab,var(--ac) 55%,transparent));}
+.card h2{margin:0;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:30px;line-height:1.05;letter-spacing:.5px;text-transform:uppercase;color:var(--bright);}
+.card p{margin:0;font-size:14px;line-height:1.6;color:var(--muted);text-wrap:pretty;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chips span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:color-mix(in oklab,var(--ac) 14%,transparent);color:var(--bright);}
+.go{margin-top:auto;display:flex;flex-wrap:wrap;gap:10px;padding-top:6px;}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:11px 20px;border-radius:12px;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:15px;letter-spacing:1.5px;text-transform:uppercase;border:1.5px solid var(--ac);color:var(--bright);background:transparent;transition:transform .15s,box-shadow .15s;}
+.btn.pri{background:linear-gradient(90deg,var(--ac),var(--ac2));border-color:transparent;color:#07031a;}
+:root[data-theme="light"] .btn.pri{color:#fff;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px var(--ac);color:var(--bright);}
+.btn.pri:hover{color:#07031a;}
+:root[data-theme="light"] .btn.pri:hover{color:#fff;}
+a.card{cursor:pointer;}
+/* briefing */
+.brief{position:relative;margin-top:24px;padding:28px;border-radius:20px;border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+.brief h3{margin:0 0 4px;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:24px;letter-spacing:1px;text-transform:uppercase;color:var(--bright);}
+.brief .sub{margin:0 0 20px;font-size:14px;color:var(--dim);}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:16px;margin:0;padding:0;list-style:none;}
+.steps li{position:relative;padding:18px 18px 18px 18px;border-radius:14px;background:color-mix(in oklab,var(--cy) 6%,transparent);border:1px solid var(--line);font-size:14px;line-height:1.55;color:var(--muted);}
+.steps li b{color:var(--bright);}
+.hex{display:flex;align-items:center;justify-content:center;width:40px;height:44px;margin-bottom:10px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,var(--cy),var(--mg));font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:18px;color:#07031a;}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px 28px;margin-top:20px;font-size:13px;line-height:1.6;color:var(--dim);}
+.notes p{margin:0;text-wrap:pretty;}
+.notes b{color:var(--muted);}
+button.btn{cursor:pointer;}
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:10px;}
+.pick label{display:flex;flex-direction:column;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;}
+.pick select{width:100%;min-height:42px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--bright);font-family:'Inter',sans-serif;font-size:14px;}
+.pick select:focus{outline:2px solid var(--ac);outline-offset:1px;}
+#copyMsg{min-height:20px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ac);}
+.peek{margin-top:20px;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.peek summary{cursor:pointer;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
+.peek pre{margin:0;max-height:360px;overflow:auto;padding:16px;border-top:1px solid var(--line);background:var(--bg);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.55;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;}
+.wideGrid{margin-top:24px;}
+.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr);gap:28px;min-height:0;align-items:start;}
+.card.wide .go{margin-top:4px;}
+.mod{flex-wrap:wrap;gap:6px 10px;}
+.mod span{min-width:0;}
+.mod b,.chips span,.btn{white-space:nowrap;}
+@media (max-width:860px){.card.wide{grid-template-columns:minmax(0,1fr);}}
+.wl{display:flex;flex-direction:column;gap:14px;min-width:0;}
+.wr{min-width:0;padding-left:28px;border-left:1px dashed var(--line);}
+@media (max-width:860px){.wr{padding-left:0;border-left:none;padding-top:22px;border-top:1px dashed var(--line);}}
+.wrh{margin:0 0 14px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ac);}
+.card.wide .steps{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));}
+.card.wide .notes{margin-top:16px;}
+.foot{position:relative;z-index:1;margin-top:44px;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--dim);}
+.foot a{color:var(--cy);}
+html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-motion="reduce"] *::after{animation:none !important;transition:none !important;}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important;}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div id="sky" aria-hidden="true"><div id="sun"></div><div id="floor"></div></div>
+<div id="glow" aria-hidden="true"></div>
+<div class="wrap">
+  <div class="boot mono"><i></i>SYSTEM ONLINE &middot; SOUTH FAYETTE HIGH SCHOOL<span class="caret"></span></div>
+  <h1 data-text="Teacher Tools">Teacher Tools</h1>
+  <div class="tagline">Level up your classroom <span>&#9656;</span> free <span>&#9656;</span> no sign-in</div>
+  <p class="lead">Games that make review fun, timers that keep the day on track, and a translator that opens your materials to every learner. Settings stay in your own browser or Google account.</p>
+
+  <div class="sec mono">Select a module</div>
+  <div class="grid">
+    <a class="card" href="../reward.html" style="--ac:var(--mg);--ac2:var(--gold);">
+      <span class="corner tl"></span><span class="corner br"></span>
+      <div class="mod mono"><span>MODULE 01 // REWARDS</span><b>14 GAMES</b></div>
+      <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="72" r="54" fill="none" stroke="#ff2bd6" stroke-width="3"></circle><g><path d="M70 72 L70 22 A50 50 0 0 1 113.3 47 Z" fill="#ff2bd6" opacity=".85"></path><path d="M70 72 L113.3 47 A50 50 0 0 1 113.3 97 Z" fill="#00f0ff" opacity=".85"></path><path d="M70 72 L113.3 97 A50 50 0 0 1 70 122 Z" fill="#b6ff3b" opacity=".85"></path><path d="M70 72 L70 122 A50 50 0 0 1 26.7 97 Z" fill="#ffd23f" opacity=".85"></path><path d="M70 72 L26.7 97 A50 50 0 0 1 26.7 47 Z" fill="#8a5cff" opacity=".85"></path><path d="M70 72 L26.7 47 A50 50 0 0 1 70 22 Z" fill="#ff6b3d" opacity=".85"></path><animateTransform attributeName="transform" type="rotate" from="0 70 72" to="360 70 72" dur="9s" repeatCount="indefinite"></animateTransform></g><circle cx="70" cy="72" r="10" fill="#07031a" stroke="#fff" stroke-width="3"></circle><path d="M62 8 L78 8 L70 24 Z" fill="#fff"></path></svg></div>
+      <h2>Reward Big Top</h2>
+      <p>A carnival of prize games. Type your own rewards and odds into one table, and every game pays out from it.</p>
+      <div class="chips"><span>Prize Wheel</span><span>Plinko</span><span>Claw</span><span>Field Goal</span><span>Vocab Bingo</span><span>+9 more</span></div>
+      <div class="go"><span class="btn pri">Launch &rarr;</span></div>
+    </a>
+    <a class="card" href="../countdown.html" style="--ac:var(--lm);--ac2:var(--cy);">
+      <span class="corner tl"></span><span class="corner br"></span>
+      <div class="mod mono"><span>MODULE 02 // TIME</span><b>LIVE</b></div>
+      <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><rect x="60" y="6" width="20" height="10" rx="3" fill="#b6ff3b"></rect><circle cx="70" cy="76" r="52" fill="none" stroke="#b6ff3b" stroke-width="4"></circle><circle cx="70" cy="76" r="42" fill="none" stroke="#00f0ff" stroke-width="10" stroke-dasharray="200 64" stroke-linecap="round" transform="rotate(-90 70 76)"><animate attributeName="stroke-dashoffset" from="0" to="-264" dur="8s" repeatCount="indefinite"></animate></circle><path d="M70 76 L70 46" stroke="#fff" stroke-width="4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 70 76" to="360 70 76" dur="4s" repeatCount="indefinite"></animateTransform></path><circle cx="70" cy="76" r="5" fill="#fff"></circle><text x="70" y="108" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="12" fill="#b6ff3b">T-MINUS</text></svg></div>
+      <h2>SF Calendar Countdown Timers</h2>
+      <p>Live countdowns to breaks and school events, with a copy-ready embed for Canvas.</p>
+      <div class="chips"><span>Next Up</span><span>Breaks</span><span>Canvas embed</span></div>
+      <div class="go"><span class="btn pri">Launch &rarr;</span></div>
+    </a>
+  </div>
+
+  <div class="grid wideGrid">
+    <div class="card wide" id="translator" style="--ac:var(--cy);--ac2:var(--mg);">
+      <span class="corner tl"></span><span class="corner br"></span>
+      <div class="wl">
+        <div class="mod mono"><span>MODULE 03 // LANGUAGE</span><b>22 LANGS</b></div>
+        <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r="50" fill="none" stroke="#00f0ff" stroke-width="3"></circle><ellipse cx="70" cy="70" rx="22" ry="50" fill="none" stroke="#00f0ff" stroke-width="2" opacity=".7"></ellipse><path d="M20 70 H120 M28 45 H112 M28 95 H112" stroke="#00f0ff" stroke-width="2" opacity=".7"></path><g font-family="Chakra Petch, sans-serif" font-weight="700"><rect x="0" y="16" width="44" height="30" rx="8" fill="#ff2bd6"></rect><text x="22" y="37" text-anchor="middle" font-size="16" fill="#07031a">Aa</text><rect x="96" y="94" width="44" height="30" rx="8" fill="#b6ff3b"></rect><text x="118" y="115" text-anchor="middle" font-size="16" fill="#07031a">あ</text></g><path d="M48 32 Q96 30 112 88" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="5 5"><animate attributeName="stroke-dashoffset" from="20" to="0" dur="1s" repeatCount="indefinite"></animate></path><path d="M106 82 L113 92 L118 80" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+        <h2>Document / Folder Language Translator</h2>
+        <p>Translate a whole Drive folder or one file into another language: Docs, Sheets, Slides, Word, Excel, PowerPoint, and PDF. Optional OpenDyslexic font and PDF output.</p>
+        <div class="chips"><span>Folders</span><span>OCR for PDFs</span><span>OpenDyslexic</span></div>
+        <div class="go"><a class="btn pri" href="https://docs.google.com/spreadsheets/d/1cOigJvevhmt_1PcN2XJsgUNnBEjt9BoiOfOwSm9WNjg/copy" target="_blank" rel="noopener">Make my copy &rarr;</a></div>
+      </div>
+      <div class="wr">
+        <div class="wrh mono">HOW IT WORKS · ABOUT 2 MINUTES TO SET UP</div>
+        <ol class="steps">
+      <li><div class="hex">1</div>Click <b>Make my copy</b>. Google saves your own copy of the spreadsheet, script included, to your Drive.</li>
+      <li><div class="hex">2</div>Open the <b>📟Translate📟</b> menu and choose <b>Set Up Sheet</b>. The first run asks you to authorize the script once.</li>
+      <li><div class="hex">3</div>Paste a folder or file link into <b>B1</b>, pick the language in <b>B2</b>, and set OpenDyslexic (<b>B3</b>) and PDF (<b>B4</b>).</li>
+      <li><div class="hex">4</div>Choose <b>Start / Resume Translation</b> and watch <b>B6</b>. Big folders pause and resume on their own about a minute later.</li>
+    </ol>
+    <div class="notes">
+      <p><b>Runs on your account.</b> The script uses Google Translate under your own Google login and expects English source files. A folder becomes a new folder named FolderName_Language; a single file gets a translated copy beside the original.</p>
+      <p><b>PDFs and fonts.</b> Scanned PDFs are read with OCR, so results depend on scan quality. For OpenDyslexic, install the free font from opendyslexic.org first; those files come out as Word, Excel, or PowerPoint, since school Google accounts often can't show the font.</p>
+    </div>
+      </div>
+    </div>
+
+    <div class="card wide" id="canvas-builder" style="--ac:var(--gold);--ac2:var(--mg);">
+      <span class="corner tl"></span><span class="corner br"></span>
+      <div class="wl">
+        <div class="mod mono"><span>MODULE 04 // CANVAS</span><b>AI PROMPT</b></div>
+        <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><rect x="26" y="14" width="88" height="112" rx="10" fill="none" stroke="#ffd23f" stroke-width="3"></rect><rect x="26" y="14" width="88" height="26" rx="10" fill="#ffd23f" opacity=".85"></rect><circle cx="44" cy="62" r="7" fill="none" stroke="#ff2bd6" stroke-width="3"></circle><path d="M58 62 H100" stroke="#fff" stroke-width="3" stroke-linecap="round"></path><circle cx="44" cy="84" r="7" fill="none" stroke="#ff2bd6" stroke-width="3"></circle><path d="M58 84 H92" stroke="#fff" stroke-width="3" stroke-linecap="round"></path><circle cx="44" cy="106" r="7" fill="none" stroke="#ff2bd6" stroke-width="3"></circle><path d="M58 106 H96" stroke="#fff" stroke-width="3" stroke-linecap="round"></path><path d="M120 18 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4z" fill="#00f0ff"><animateTransform attributeName="transform" type="rotate" from="0 120 31" to="360 120 31" dur="6s" repeatCount="indefinite"></animateTransform></path></svg></div>
+        <h2>Canvas Page Builder Prompt</h2>
+        <p>Copy a ready-made AI prompt that turns your lesson into themed, student-facing step-by-step directions for a Canvas page. Paste it into Claude, ChatGPT, or Gemini along with your lesson text.</p>
+        <div class="pick">
+        <label>Subject<select id="pSubject"><option value="">Ask me</option><option>Math</option><option>Algebra</option><option>Geometry</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Earth Science</option><option>English / Language Arts</option><option>History</option><option>Social Studies</option><option>Spanish</option><option>French</option><option>Computer Science</option><option>Art</option><option>Music</option><option>Health / PE</option></select></label>
+        <label>Theme<select id="pTheme"><option value="">Ask me</option><option>Math Academic</option><option>Futuristic</option><option>Educational</option><option>Nature Explorer</option><option>Outer Space</option><option>Ocean Adventure</option><option>Sports Arena</option><option>Comic Book</option><option>Retro Arcade</option><option>Detective / Mystery</option></select></label>
+        <label>Colors<select id="pColors"><option value="">Ask me</option><option>Calming Purple</option><option>Ocean Blue</option><option>Forest Green</option><option>Sunset Orange</option><option>Steel Gray &amp; Electric Blue</option><option>High-Contrast Black &amp; Gold</option><option>Warm Neutral</option></select></label>
+      </div>
+        <div class="go"><button class="btn pri" id="copyPrompt" type="button">Copy prompt &rarr;</button></div>
+        <div id="copyMsg" aria-live="polite"></div>
+      </div>
+      <div class="wr">
+        <div class="wrh mono">HOW IT WORKS · ABOUT 5 MINUTES PER PAGE</div>
+        <ol class="steps">
+      <li><div class="hex">1</div>Pick your <b>Subject</b>, a <b>Theme</b>, and <b>Colors</b>, or leave any on <b>Ask me</b> and the AI will offer choices first. Then click <b>Copy prompt</b>.</li>
+      <li><div class="hex">2</div>Paste it into Claude, ChatGPT, or Gemini. Replace the last line with your <b>lesson directions, links, and instructions</b>, or with your <b>current Canvas page content</b>. To keep its links and embeds, copy it from the page's <b>&lt;/&gt; HTML editor</b>.</li>
+      <li><div class="hex">3</div>Copy the HTML it writes. In Canvas, edit the page and click the <b>&lt;/&gt; HTML editor</b> button under the editor.</li>
+      <li><div class="hex">4</div>Paste the HTML, switch back to the normal editor to preview, and <b>Save</b>. Ask the AI for changes if anything looks off.</li>
+    </ol>
+    <div class="notes">
+      <p><b>Why inline styles?</b> Canvas removes &lt;style&gt; blocks and CSS classes when you save, so the prompt tells the AI to put every color and spacing rule directly on each element.</p>
+      <p><b>Your words stay yours.</b> The prompt asks the AI to keep all of your text, links, images, and videos exactly as written, and only add structure and styling.</p>
+    </div>
+        <details class="peek"><summary>Preview the full prompt</summary><pre id="promptPeek"></pre></details>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot mono"><span>&copy; 2026 Robert Reasey, South Fayette School District</span><a href="../index.html">Course portal &rarr;</a></div>
+</div>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<script>
+(function(){
+  var rm = typeof window.SITE_REDUCED_MOTION === 'function' && window.SITE_REDUCED_MOTION();
+  if (rm || matchMedia('(prefers-reduced-motion: reduce)').matches){ document.getElementById('glow').style.display = 'none'; return; }
+  var G = ['E=mc²','a²+b²=c²','π','</>','H₂O','∑','01101','√x','Δv','f(x)','DNA','∞','λ','{ }','x̄','CO₂','≈','Ω','if()','%'];
+  var sky = document.getElementById('sky');
+  for (var i = 0; i < 22; i++){
+    var s = document.createElement('span'); s.className = 'glyph'; s.textContent = G[i % G.length];
+    s.style.left = (Math.random()*96 + 2) + '%';
+    s.style.fontSize = (14 + Math.random()*22).toFixed(0) + 'px';
+    s.style.animationDuration = (18 + Math.random()*22).toFixed(1) + 's';
+    s.style.animationDelay = (-Math.random()*40).toFixed(1) + 's';
+    s.style.setProperty('--r0', (Math.random()*40 - 20).toFixed(0) + 'deg');
+    s.style.setProperty('--r1', (Math.random()*80 - 40).toFixed(0) + 'deg');
+    sky.appendChild(s);
+  }
+  var glow = document.getElementById('glow');
+  addEventListener('pointermove', function(e){ glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; }, {passive:true});
+  if (!matchMedia('(hover: hover)').matches) return;
+  document.querySelectorAll('.card:not(.wide)').forEach(function(c){
+    c.addEventListener('pointermove', function(e){
+      var r = c.getBoundingClientRect(), x = (e.clientX - r.left)/r.width - .5, y = (e.clientY - r.top)/r.height - .5;
+      c.style.transform = 'perspective(900px) rotateY(' + (x*8).toFixed(2) + 'deg) rotateX(' + (-y*8).toFixed(2) + 'deg) translateY(-6px)';
+    });
+    c.addEventListener('pointerleave', function(){ c.style.transform = ''; });
+  });
+})();
+</script>
+<script type="text/plain" id="canvasPrompt">You are an expert instructional designer creating accessible, student-friendly HTML content for Canvas LMS in a {{SUBJECT}} classroom.
+
+Please take the lesson content provided below and convert it into clean HTML code formatted specifically for Canvas LMS, styled in the theme and color scheme listed here.
+
+CLASS SUBJECT: {{SUBJECT}}
+THEME: {{THEME}}
+COLOR SCHEME: {{COLORS}}
+
+BEFORE YOU WRITE ANY HTML: If the CLASS SUBJECT, THEME, or COLOR SCHEME above is still a [bracketed placeholder], stop and ask me for it first. Offer these examples:
+- Class subject examples: Math, Algebra, Geometry, Physics, Chemistry, Biology, Earth Science, English / Language Arts, History, Social Studies, Spanish, French, Computer Science, Art, Music, Health / PE.
+- Theme examples: Math Academic (chalkboard, graph-paper, and formula accents), Futuristic (sleek panels, glowing accents, "mission" and "level" wording), Educational (clean and friendly, notebook and pencil accents), Nature Explorer, Outer Space, Ocean Adventure, Sports Arena, Comic Book, Retro Arcade, Detective / Mystery.
+- Color scheme examples: Calming Purple, Ocean Blue, Forest Green, Sunset Orange, Steel Gray & Electric Blue, High-Contrast Black & Gold, Warm Neutral, or my school colors (I will tell you which).
+Use the theme for the header wording, section titles, icons or emoji, and small accents. Keep the page calm, uncluttered, and easy to read.
+
+CRITICAL CANVAS COMPATIBILITY RULES:
+
+NO CSS STYLESHEETS OR <style> TAGS: Do NOT use <style> blocks, external CSS links, or CSS class names anywhere. Canvas strips them out.
+
+ALL STYLING MUST BE INLINE: Apply ALL colors, margins, padding, fonts, and borders directly onto HTML elements using inline style attributes (e.g., <div style="padding: 20px; background-color: #ffffff;">).
+
+NO COMPLEX CSS: Do not use CSS Grid, flex gap, or absolute positioning. Stick to basic block containers (divs, tables, blockquotes, paragraphs, lists) with padding, margin, and standard display properties.
+
+DOCUMENT, MEDIA & LINK FORMATTING RULES:
+
+DOCUMENT LINKS & PDFS: Convert links to documents (PDFs, Word Docs, Google Docs, Worksheets) into styled HTML document cards with an explicit action button:
+Format:
+<div style="border: 1px solid [BORDER COLOR]; border-radius: 10px; padding: 16px 20px; margin: 16px 0; background-color: #ffffff;">
+  <p style="margin: 0 0 6px 0; font-weight: bold; color: [PRIMARY COLOR];">📄 Document Title</p>
+  <p style="margin: 0 0 12px 0; color: #2d2d2d;">One sentence describing the document.</p>
+  <a href="DOCUMENT_URL" target="_blank" rel="noopener" style="display: inline-block; padding: 10px 18px; background-color: [PRIMARY COLOR]; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Open Document ↗</a>
+</div>
+
+EMBEDDED GOOGLE DOCS / PDF IFRAMES: If an <iframe> embed code for a Google Doc, Google Slides, or PDF is provided, wrap it inside:
+<div style="border: 2px solid [BORDER COLOR]; border-radius: 10px; overflow: hidden; margin: 20px 0;">[IFRAME CODE HERE, with width="100%" and height="600"]</div>
+
+VIDEO EMBEDS: Preserve video links or <iframe> video embeds, wrapping them in a responsive container:
+<div style="max-width: 800px; margin: 20px auto; border-radius: 10px; overflow: hidden;">[VIDEO IFRAME HERE, with width="100%" and height="450"]</div>
+
+STANDARD BUTTON LINKS: Convert external website links into styled HTML buttons using inline styled <a> tags:
+<a href="URL" target="_blank" rel="noopener" style="display: inline-block; padding: 10px 18px; margin: 6px 0; background-color: [PRIMARY COLOR]; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Link Text ↗</a>
+
+DESIGN & ACCESSIBILITY REQUIREMENTS (UDL Best Practices):
+
+TYPOGRAPHY & READABILITY:
+
+Use clean, highly readable fonts: font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;.
+
+Generous line-height (1.6) and dark text (#2d2d2d) on light backgrounds for maximum contrast and readability.
+
+COLOR PALETTE (built from the chosen color scheme):
+
+Build the palette from the COLOR SCHEME above and assign colors to these roles. Every text color must have at least 4.5:1 contrast against its background. Example for Calming Purple:
+
+Header Banner: Deep Purple Gradient (background: linear-gradient(135deg, #5c2d91 0%, #3f1d66 100%);) with white header text (#ffffff) and soft lavender subtitle text (#f3effa). Tag pill (background-color: rgba(255, 255, 255, 0.2); color: #ffffff;).
+
+Primary Accent / Headers: Royal Purple (#5c2d91) and Deep Plum (#3f1d66).
+
+Borders & Dividers: Soft Lavender (#e1d8ee or #f0ecf7).
+
+Callout & Purpose Boxes: Light Lavender background (#f3effa) with strong left border (#5c2d91).
+
+Step Badges / Circle Indicators: Soft Purple background (#f3effa) with border (#d1c4e9) and purple text (#5c2d91).
+
+Card & Container Backgrounds: Pure White (#ffffff) or Soft Off-White/Lavender (#faf8fc).
+
+CONTENT CHUNKING & STRUCTURE:
+
+Header Card: Top banner with lesson title and subject/unit info.
+
+Learning Goals / Purpose Box: Clear callout box at the top stating what students will learn or achieve.
+
+Step-by-Step Breakdown: Divide instructions into clear, numbered step items (using circular step numbers) so text is easy to digest.
+
+Vocabulary / Word Bank Box: Highlight key vocabulary with simple definitions inside a soft card in the palette's lightest tint.
+
+Support Section: Footer directing students where to ask for help or accommodations.
+
+PRESERVE ALL CONTENT:
+
+Do NOT delete, truncate, or rephrase any core text provided below. Keep all sentences, document links, image source links (<img src="...">), video links, and instructions intact.
+
+EXISTING CANVAS PAGES: If the content below is copied from a current Canvas page (plain text or its HTML), restyle it into this format while keeping every sentence, link, image, and embed.
+
+LESSON CONTENT TO CONVERT:
+[PASTE LESSON DIRECTIONS, DOCUMENT LINKS, WORKSHEETS, & INSTRUCTIONS HERE, OR PASTE YOUR CURRENT CANVAS PAGE CONTENT / HTML]</script>
+<script>
+(function(){
+  var tpl = document.getElementById('canvasPrompt').textContent, th = document.getElementById('pTheme'), co = document.getElementById('pColors'), su = document.getElementById('pSubject'), msg = document.getElementById('copyMsg'), peek = document.getElementById('promptPeek');
+  function build(){ return tpl.split('{{SUBJECT}}').join(su.value || '[CHOOSE A CLASS SUBJECT]').replace('{{THEME}}', th.value || '[CHOOSE A THEME]').replace('{{COLORS}}', co.value || '[CHOOSE A COLOR SCHEME]'); }
+  function upd(){ peek.textContent = build(); }
+  su.addEventListener('change', upd); th.addEventListener('change', upd); co.addEventListener('change', upd); upd();
+  function fallback(t){ var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); var ok = false; try{ ok = document.execCommand('copy'); }catch(e){} a.remove(); return ok; }
+  document.getElementById('copyPrompt').addEventListener('click', function(){
+    var t = build(), b = this, done = function(ok){
+      msg.textContent = ok ? 'Copied! Paste it into your AI chat, then add your lesson at the bottom.' : 'Copy blocked. Open "Preview the full prompt" below and copy it by hand.';
+      if (ok){ b.textContent = 'Copied ✓'; setTimeout(function(){ b.innerHTML = 'Copy prompt &rarr;'; }, 2200); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ done(true); }, function(){ done(fallback(t)); });
+    else done(fallback(t));
+  });
+})();
+</script>
+</body>
+</html>
