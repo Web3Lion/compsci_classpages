@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=8.0.0"></script>
+<script src="../site.js?v=9.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Tools — Mr. Reasey</title>
@@ -195,12 +195,12 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
         <div class="wrh mono">GET THE CSV INTO YOUR COPY</div>
         <ol class="steps">
       <li><div class="hex">1</div>Paste the prompt into Claude, ChatGPT, or Gemini. Copy the CSV it returns and save it as a file ending in <b>.csv</b>.</li>
-      <li><div class="hex">2</div>In your copy, open the <b>Jeopardy</b> tab and click cell <b>B1</b>. Column A holds the point labels; leave it alone.</li>
-      <li><div class="hex">3</div><b>File → Import → Upload</b>, pick the CSV, set Import location to <b>Replace data at selected cell</b> and Separator to <b>Comma</b>.</li>
+      <li><div class="hex">2</div>In your copy, open the <b>Jeopardy</b> tab and put your cursor in cell <b>C1</b>. Columns A and B hold the game's labels; leave them alone. If the board already has questions, select them from C1 to row 11 and press <b>Delete</b> first so no old columns are left over.</li>
+      <li><div class="hex">3</div>With <b>C1</b> still selected, choose <b>File → Import → Upload</b>, pick the CSV, set Import location to <b>Replace data at selected cell</b> and Separator to <b>Comma</b>.</li>
       <li><div class="hex">4</div>Read every question before class. AI can get facts wrong.</li>
     </ol>
     <div class="notes">
-      <p><b>No file?</b> Paste the CSV into B1, then use <b>Data → Split text to columns</b>.</p>
+      <p><b>No file?</b> Paste the CSV into C1, then use <b>Data → Split text to columns</b>.</p>
       <p><b>Why quotes everywhere?</b> The prompt has the AI quote every cell so commas inside a question don't split it into two columns.</p>
     </div>
         <details class="peek"><summary>Preview the full prompt</summary><pre id="jpPeek"></pre></details>
@@ -258,6 +258,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
     <div class="notes">
       <p><b>Why inline styles?</b> Canvas removes &lt;style&gt; blocks and CSS classes when you save, so the prompt tells the AI to put every color and spacing rule directly on each element.</p>
       <p><b>Your words stay yours.</b> The prompt asks the AI to keep all of your text, links, images, and videos exactly as written, and only add structure and styling.</p>
+      <p><b>Restyling a page you already built?</b> Copy its embedded HTML, not the text you see on screen. Edit the page, click the <b>&lt;/&gt; HTML editor</b>, select all, and copy. That keeps every image, video, and link working.</p>
     </div>
         <details class="peek"><summary>Preview the full prompt</summary><pre id="promptPeek"></pre></details>
       </div>
