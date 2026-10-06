@@ -471,6 +471,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "5f86bbef5f248c3803388c9f92d9c75a2a5b5264d41a1e39cbc7bed898265653" }
     ] },
 
+  { id: "ap-m2a-trace", module: 2, title: "Trace the Output: Program Building Blocks", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: Variables & assignment.\n\na = 4\nb = a + 3\na = b * 2\nprint(a, b)\n\nWhat does this Python code print?\n\nSubmit every printed value in order, separated by single spaces, as flag{...}.",
+        hint: "b is set while a is still 4. Changing a later doesn't change b.",
+        flagHash: "c4b8f6725afc32a508e06981d0857f3f9dc91203a791ddc931efd7f76452f48d" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: Variables & assignment.\n\nx = 10\ny = 3\nx = y\ny = x\nprint(x + y)\n\nA student wrote this to swap x and y. What does it actually print?\n\nSubmit as flag{number}.",
+        hint: "After x = y, the original 10 is gone.",
+        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: Variables & assignment.\n\na = 2\nb = 5\nc = a\na = b\nb = c\na = a * b + c\nprint(a, b, c)\n\nTrace every assignment in order. What does this print?\n\nSubmit every printed value in order, separated by single spaces, as flag{...}.",
+        hint: "Keep a table of a, b, c and update one cell per line.",
+        flagHash: "7ae6cdfd119cba0c4270d552f9819da50f3506d60873a78ce57dd3a3c72563a6" }
+    ] },
+
   { id: "ap-m2b", module: 2, title: "Debugging & Interfaces", category: "Python Programming",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -485,6 +501,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         prompt: "Objective — Libraries. The specifications for how a library's procedures behave and are used — Application Program Interface — is abbreviated ___.\n\nSubmit as flag{abbreviation} (lowercase).",
         hint: "Application Programming Interface — give the acronym.",
         flagHash: "e7f0fa54d28539fa670912d186744701b325cef6d8270fc58aad66edbb9b1b85" }
+    ] },
+
+  { id: "ap-m2b-trace", module: 2, title: "Trace the Output: Debugging & Interfaces", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: Program development & libraries.\n\ntotal = 0\nfor n in [4, 8, 12]:\n    total = 0\n    total = total + n\nprint(total)\n\nThis was meant to print the sum of the list. What does it actually print?\n\nSubmit as flag{number}.",
+        hint: "Look at what happens to total at the top of every pass.",
+        flagHash: "bf54bcd49d2a45eeba9ec402813a4a00fdd7f070d59b6f8dbb9fa573ab0a19e1" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: Program development & libraries.\n\nimport random\nroll = random.randint(1, 6) + random.randint(1, 6)\nprint(roll)\n\nrandom.randint(a, b) returns a whole number from a to b, inclusive (like AP's RANDOM(a, b)). What is the LARGEST value this could print?\n\nSubmit as flag{number}.",
+        hint: "Both ends of the range can be chosen.",
+        flagHash: "bf54bcd49d2a45eeba9ec402813a4a00fdd7f070d59b6f8dbb9fa573ab0a19e1" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: Program development & libraries.\n\ntotal = 0\ni = 1\nwhile i < 5:\n    i = i + 1\n    total = total + i\nprint(total)\n\nThe programmer wanted 1 + 2 + 3 + 4 + 5 = 15. What does this code actually print?\n\nSubmit as flag{number}.",
+        hint: "i is increased BEFORE it is added. Write down each value of i that gets added.",
+        flagHash: "6dea1405467e485b57266afc7feb68950332cc52c81b47421f80fe24f0fa5ec9" }
     ] },
 
   { id: "ap-m2c", module: 2, title: "Data Types & Typecasting", category: "Python Programming",
@@ -503,6 +535,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529" }
     ] },
 
+  { id: "ap-m2c-trace", module: 2, title: "Trace the Output: Data Types & Typecasting", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: Data types & typecasting.\n\nx = int(\"7\") + 2\nprint(x)\n\nWhat does this Python code print?\n\nSubmit as flag{value}.",
+        hint: "int() turns the text into a number before the +.",
+        flagHash: "1203df1573ea0f4077ca6a65df1e0113dc69fa1e267be5bf0c2ff757be0cda12" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: Data types & typecasting.\n\nx = \"12\"\ny = 3\nz = str(int(x) + y) + x\nprint(z)\n\nWhat does this Python code print?\n\nSubmit as flag{value}.",
+        hint: "Work inside out: the math happens first, then the result becomes text and is joined to x.",
+        flagHash: "ce347e6908b8341d3ce54713609a90d6985143ad50167d54a2878f67bad148b4" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: Data types & typecasting.\n\na = 7\nb = 2\nprint(a / b, a // b, a % b)\n\n/ is division, // is integer (floor) division, and % is MOD. What does this print?\n\nSubmit every printed value in order, separated by single spaces, as flag{...}.",
+        hint: "7 / 2 keeps the decimal. 7 // 2 drops it. 7 % 2 is the remainder.",
+        flagHash: "1869d55ced8afa4a4deec40297cb0880b28716ba1d078d97c86e779ca24bb0e7" }
+    ] },
+
   { id: "ap-m2d", module: 2, title: "Nested Conditionals", category: "Python Programming",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -517,6 +565,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         prompt: "Objective — Tracing nested conditionals. Trace this code with x \u2190 5:\nIF x > 0:\n  IF x > 10:\n    result \u2190 \"big\"\n  ELSE:\n    result \u2190 \"small\"\nELSE:\n  result \u2190 \"negative\"\nWhat is the value of result?\n\nSubmit as flag{word} (lowercase).",
         hint: "x is positive, so you're inside the outer IF — now check the inner condition.",
         flagHash: "81db8ebbbbc69c6c6ad4a6aa92b76e0c08af547da236b9e2c9dbe1d8285a8130" }
+    ] },
+
+  { id: "ap-m2d-trace", module: 2, title: "Trace the Output: Nested Conditionals", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: Selection & Boolean logic.\n\ntemp = 72\nraining = False\nif temp > 70 and not raining:\n    print(\"beach\")\nelse:\n    print(\"movies\")\n\nWhat does this Python code print?\n\nSubmit as flag{word} (lowercase).",
+        hint: "not False is True. Are both sides of the and True?",
+        flagHash: "c090a8b930f2640f19c6e4bb8cc7e16a8c2ae74f3d19fe37ea9659d693d62238" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: Selection & Boolean logic.\n\nx = 15\nif x % 3 == 0:\n    if x % 5 == 0:\n        print(\"FizzBuzz\")\n    else:\n        print(\"Fizz\")\nelif x % 5 == 0:\n    print(\"Buzz\")\nelse:\n    print(x)\n\nWhat does this Python code print?\n\nSubmit as flag{word} (lowercase).",
+        hint: "15 is divisible by 3, so enter the outer if, then check the inner one.",
+        flagHash: "dfbc07abfdc96a277b6acd0c943eb2aa820589e82bdf58de38f8cc28539de868" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: Selection & Boolean logic.\n\nn = 12\nif n > 10:\n    n = n - 5\nif n > 5:\n    n = n * 2\nelse:\n    n = n + 100\nprint(n)\n\nCareful: these are two separate if statements, not an if/elif chain. What does this print?\n\nSubmit as flag{number}.",
+        hint: "The second if checks the NEW value of n after the first if runs.",
+        flagHash: "6dea1405467e485b57266afc7feb68950332cc52c81b47421f80fe24f0fa5ec9" }
     ] },
 
   { id: "ap-m2e", module: 2, title: "Iteration: For, While & Nested Loops", category: "Python Programming",
@@ -535,6 +599,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683" }
     ] },
 
+  { id: "ap-m2e-trace", module: 2, title: "Trace the Output: Iteration", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: Iteration & nested loops.\n\nfor i in range(2, 11, 3):\n    print(i, end=\" \")\n\nrange(start, stop, step) stops BEFORE stop. What does this print?\n\nSubmit every printed value in order, separated by single spaces, as flag{...}.",
+        hint: "Start at 2 and add 3 each time. Would the next value reach 11?",
+        flagHash: "3d3d9b59804e6ba35a5c535fb0e559239df06d36828a1962dd870692dbe16f02" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: Iteration & nested loops.\n\ncount = 0\nn = 50\nwhile n > 1:\n    n = n // 2\n    count = count + 1\nprint(count)\n\nWhat does this Python code print?\n\nSubmit as flag{number}.",
+        hint: "List each n: 50, 25, ... and count the passes until n is no longer greater than 1.",
+        flagHash: "e33e6f54ac279b85e63d04fa22e0c0be9867370d7e500cbde21eb428de662e38" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: Iteration & nested loops.\n\ntotal = 0\nfor i in range(1, 4):\n    for j in range(i):\n        total = total + j\nprint(total)\n\nTrace the nested loop. The inner loop's range depends on i. What does this print?\n\nSubmit as flag{number}.",
+        hint: "i = 1 adds j = 0. i = 2 adds 0, 1. i = 3 adds 0, 1, 2.",
+        flagHash: "7be5aec942dbdcfb4e21cd12dd137de80acf61b69c924a3500a50673253943c2" }
+    ] },
+
   { id: "ap-m2f", module: 2, title: "Strings", category: "Python Programming",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -549,6 +629,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         prompt: "Objective — String length. What is the length of the string \"COMPUTER\"?\n\nSubmit as flag{number}.",
         hint: "Count every character, including none that repeat.",
         flagHash: "2c624232cdd221771294dfbb310aca000a0df6ac8b66b696d90ef06fdefb64a3" }
+    ] },
+
+  { id: "ap-m2f-trace", module: 2, title: "Trace the Output: Strings", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: String indexing & concatenation.\n\nword = \"PYTHON\"\nprint(word[1] + word[-1])\n\nPython indexes start at 0, and index -1 is the last character. What does this print?\n\nSubmit as flag{value} (lowercase).",
+        hint: "+ on two strings joins them.",
+        flagHash: "1ba7d36a5a8642e7ca1ed14a663c61b7123dc146dc6684c367417e880d0cefc1" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: String indexing & concatenation.\n\ns = \"\"\nfor ch in \"LOOP\":\n    s = ch + s\nprint(s)\n\nWhat does this Python code print?\n\nSubmit as flag{word} (lowercase).",
+        hint: "Each new character goes on the FRONT of s.",
+        flagHash: "bb3f9d83886d17a675bd6625f7905f59e82ba349ad9067c5a9a86c8155bdba0b" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: String indexing & concatenation.\n\nword = \"BANANA\"\nresult = \"\"\nfor i in range(len(word)):\n    if i % 2 == 0:\n        result = result + word[i]\n    else:\n        result = result + \"*\"\nprint(result + str(len(result)))\n\nWhat does this Python code print?\n\nSubmit as flag{value} (lowercase).",
+        hint: "Even indexes keep the letter; odd indexes become *. Then the length is joined on as text.",
+        flagHash: "92841ae82d4766124ecefddd2b3d99b8c6c6f9fca312ee1a69b69b7cfe223f3d" }
     ] },
 
   { id: "ap-m2g", module: 2, title: "Lists & Index Values", category: "Python Programming",
@@ -567,6 +663,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "b09dbca537aa6104c4f3bebd98750d1f67da1f336b91b41c267338a5661e3f43" }
     ] },
 
+  { id: "ap-m2g-trace", module: 2, title: "Trace the Output: Lists & Index Values", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: Lists & indexes.\n\ncolors = [\"red\", \"green\", \"blue\", \"gold\"]\ncolors[1] = colors[3]\nprint(colors[1], colors[-1])\n\nPython lists start at index 0. What does this print?\n\nSubmit every printed value in order, separated by single spaces, as flag{...}. (lowercase)",
+        hint: "Index 1 is replaced. Index -1 is the last element.",
+        flagHash: "d4a71c82349c790e3137e3697c8a0a2c639fd814aae9ab6973d9ac8356be98a5" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: Lists & indexes.\n\nnums = [5, 3, 8]\nnums.append(nums[0] + nums[2])\nnums.insert(1, 7)\nprint(nums[3], len(nums))\n\nappend adds to the end. insert(i, v) puts v at index i and shifts the rest right. What does this print?\n\nSubmit every printed value in order, separated by single spaces, as flag{...}.",
+        hint: "Write the whole list out after each line.",
+        flagHash: "1a5ec1b52e0429aa9546b006c97274eb92b7ef7a9db492da679add1d87f8354f" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: Lists & indexes.\n\naList ← [4, 9, 2, 7]\nINSERT(aList, 2, 5)\nAPPEND(aList, aList[1])\nREMOVE(aList, 4)\nDISPLAY(aList[3] + LENGTH(aList))\n\nAP pseudocode: list indexes start at 1. What is displayed?\n\nSubmit as flag{number}.",
+        hint: "AP lists are 1-indexed. Rewrite the list after INSERT, APPEND, and REMOVE.",
+        flagHash: "6dea1405467e485b57266afc7feb68950332cc52c81b47421f80fe24f0fa5ec9" }
+    ] },
+
   { id: "ap-m2h", module: 2, title: "Processing Lists (Traversals)", category: "Python Programming",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -581,6 +693,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         prompt: "Objective — Searching within a traversal. Given the list [10, 20, 30, 40], what is the index of the FIRST value greater than 25?\n\nSubmit as flag{number}.",
         hint: "Walk the list from index 0: 10 (no), 20 (no), 30 (yes) — that's the index you want.",
         flagHash: "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35" }
+    ] },
+
+  { id: "ap-m2h-trace", module: 2, title: "Trace the Output: Processing Lists", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: List traversals.\n\nnums = [4, 7, 2, 9, 5]\nbig = nums[0]\nfor n in nums:\n    if n > big:\n        big = n\nprint(big)\n\nWhat does this Python code print?\n\nSubmit as flag{number}.",
+        hint: "big only changes when a larger value shows up.",
+        flagHash: "1203df1573ea0f4077ca6a65df1e0113dc69fa1e267be5bf0c2ff757be0cda12" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: List traversals.\n\nnums = [3, 8, 1, 6, 5]\ntotal = 0\nfor n in nums:\n    if n % 2 == 0:\n        total = total + n\nprint(total)\n\nWhat does this Python code print?\n\nSubmit as flag{number}.",
+        hint: "Only values with remainder 0 when divided by 2 are added.",
+        flagHash: "6dea1405467e485b57266afc7feb68950332cc52c81b47421f80fe24f0fa5ec9" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: List traversals.\n\nmyList ← [2, 4, 6, 8]\ni ← 1\nREPEAT UNTIL (i > LENGTH(myList))\n{\n  myList[i] ← myList[i] + i\n  i ← i + 2\n}\nDISPLAY(myList)\n\nAP pseudocode: list indexes start at 1. What list is displayed?\n\nSubmit the four values in order, separated by single spaces, as flag{...}.",
+        hint: "i takes the values 1, then 3, then 5 (which stops the loop). Only those positions change.",
+        flagHash: "fa004d3d2c0b1e522573355752bf1fc78790acbc600b1436759f2433c7514e52" }
     ] },
 
   { id: "ap-m2i", module: 2, title: "Functions & Parameters", category: "Python Programming",
@@ -599,6 +727,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "f5ca38f748a1d6eaf726b8a42fb575c3c71f1864a8143301782de13da2d9202b" }
     ] },
 
+  { id: "ap-m2i-trace", module: 2, title: "Trace the Output: Functions & Parameters", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: Procedures & return values.\n\ndef double(x):\n    return x * 2\n\nprint(double(double(3)))\n\nWhat does this Python code print?\n\nSubmit as flag{number}.",
+        hint: "Evaluate the inner call first, then pass its result to the outer call.",
+        flagHash: "bf54bcd49d2a45eeba9ec402813a4a00fdd7f070d59b6f8dbb9fa573ab0a19e1" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: Procedures & return values.\n\ndef mystery(a, b):\n    a = a + b\n    return a * b\n\nx = 2\ny = 5\nz = mystery(y, x)\nprint(x, z)\n\nWatch the argument order. What does this print?\n\nSubmit every printed value in order, separated by single spaces, as flag{...}.",
+        hint: "y goes into a and x goes into b. Changing a inside the function doesn't change x.",
+        flagHash: "10ea3405aa74e564479c4f69fe994f92a79c370fe9fd3ad6d2dfdf72d3202f5b" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: Procedures & return values.\n\ndef update(total, n):\n    if n % 2 == 0:\n        return total + n\n    return total - 1\n\nt = 10\nfor k in range(1, 6):\n    t = update(t, k)\nprint(t)\n\nWhat does this Python code print?\n\nSubmit as flag{number}.",
+        hint: "Track t for k = 1, 2, 3, 4, 5. Even k adds k; odd k subtracts 1.",
+        flagHash: "8e2b3c871d1cd5f5f092bf525442202354736cd4236e2bab7e289f5bac4dc125" }
+    ] },
+
   { id: "ap-m2j", module: 2, title: "Syntax, Runtime & Logic Errors", category: "Python Programming",
     levels: [
       { difficulty: "Easy", points: 50,
@@ -613,6 +757,22 @@ window.COURSE_CONFIG.apcsp.ctf = {
         prompt: "Objective — Program errors. This code runs from start to finish with no crash, but a student meant to write average \u2190 total / count and instead wrote average \u2190 total * count, so every average printed is wrong. What TYPE of error is this?\n\nSubmit as flag{words_with_underscores} (lowercase).",
         hint: "It runs fine and never crashes — the program just doesn't do what it was supposed to do.",
         flagHash: "78d855a26780fa5de753eb8b9a44558076334fdfb5643f89711d7ce1afde3cca" }
+    ] },
+
+  { id: "ap-m2j-trace", module: 2, title: "Trace the Output: Program Errors", category: "Python Programming",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: Program errors.\n\nprint(\"A\")\nx = 10 / 2\nprint(\"B\", x)\ny = 10 / 0\nprint(\"C\")\n\nHow many lines are printed before this program stops?\n\nSubmit as flag{number}.",
+        hint: "A runtime error stops the program at the line where it happens.",
+        flagHash: "9d07f357d7ed03d4cc5a16d23572708c4e6140693849cd3020189d6803aa58d9" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: Program errors.\n\ncount = 0\nfor n in [5, 6, 2, 9]:\n    if n > 5:\n        count = count + 1\nprint(count)\n\nThis was meant to count values that are 5 or more. What does it actually print?\n\nSubmit as flag{number}.",
+        hint: "Is 5 > 5 true?",
+        flagHash: "9d07f357d7ed03d4cc5a16d23572708c4e6140693849cd3020189d6803aa58d9" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: Program errors.\n\nnums = [4, 2, 0, 1]\ntotal = 0\nfor i in range(len(nums)):\n    total = total + 8 // nums[i]\n    print(total)\n\nThis program crashes partway through. What is the LAST value printed before the crash?\n\nSubmit as flag{number}.",
+        hint: "Trace each pass until you reach a division by zero.",
+        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" }
     ] },
 
   { id: "ap-m2-errortypes", module: 2, title: "Match the Error Type", category: "Python Programming", type: "match", points: 150,

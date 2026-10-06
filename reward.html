@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=5.2.0"></script>
+<script src="site.js?v=5.3.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reward Games</title>
@@ -671,11 +671,13 @@ body[data-view="student"] #bgStudent{display:block;}
       <div id="bgDef" aria-live="polite"></div>
       <div id="bgTerm"></div>
       <div class="bgRow"><button id="bgCall" onclick="BG.call()">CALL NEXT</button><button class="oBtn" id="bgReveal" onclick="BG.reveal()">SHOW TERM</button></div>
+      <div class="bgRow"><button class="oBtn" onclick="BG.reset()" title="Clear the called list. Student cards stay the same.">RESET GAME</button><button class="oBtn" onclick="BG.end()" title="End this game and go back to the Big Top">END GAME &amp; EXIT</button></div>
     </div>
     <details id="bgSetup" class="bgPanel" open>
       <summary>Word list</summary>
       <p>One term per line: <b>term | definition</b>. You need at least 24 terms. Student cards show the terms; you read the definitions.</p>
-      
+      <p>Or use a spreadsheet: download the CSV template, fill in column A (term) and column B (definition) in Excel or Google Sheets, save as CSV, and upload it. Cards generate automatically.</p>
+      <div class="bgRow" style="margin-bottom:10px;"><a class="oBtn" href="bingo-template.csv" download="bingo-template.csv" style="text-decoration:none;">DOWNLOAD CSV TEMPLATE</a><button class="oBtn primary" onclick="document.getElementById('bgCsv').click()">UPLOAD CSV</button><input type="file" id="bgCsv" accept=".csv,text/csv" hidden onchange="BG.csv(this)"><span id="bgCsvMsg" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);"></span></div>
       <textarea id="bgList" spellcheck="false" aria-label="Bingo word list"></textarea>
       <div class="bgRow"><span id="bgCount"></span><button class="oBtn" onclick="BG.sample()">USE SAMPLE LIST</button><button class="oBtn" onclick="BG.clear()">CLEAR</button><button class="bgGo" onclick="BG.newGame()">START NEW GAME</button></div>
     </details>
@@ -2356,6 +2358,15 @@ window.BG = (function(){
     render(); var d = $('bgDef'); d.classList.remove('pop'); void d.offsetWidth; d.classList.add('pop');
     tone(784, .12, 'triangle', .1); tone(1175, .2, 'triangle', .08, .1);
   }
+  function reset(){
+    if (!G) return; if (G.called.length && !confirm('Reset this game? The called list clears. Student cards stay the same, so the class can play again with the same link.')) return;
+    G.called = []; G.cur = -1; G.shown = false; G.awarded = []; store(KEY, G); $('bgCheckOut').innerHTML = ''; render(); tone(520, .1, 'triangle', .08);
+  }
+  function end(){
+    if (G && !confirm('End this game and go back to the Big Top? The student link stops matching once you start a new game.')) return;
+    G = null; store(KEY, 'null'); $('bgCheckOut').innerHTML = ''; $('bgSetup').open = true; render();
+    if (typeof backToLobby === 'function') backToLobby();
+  }
   function reveal(){ if (!G || G.cur < 0) return; G.shown = !G.shown; store(KEY, G); render(); }
   function link(){ return new URL('reward.html', location.href).href.split('#')[0].split('?')[0] + '#bingo-play=' + enc({i:G.id, t:G.terms.map(function(x){ return x.t; })}); }
   function copyLink(btn){
@@ -2449,7 +2460,41 @@ window.BG = (function(){
     if (e.code === 'Space'){ e.preventDefault(); if (!e.repeat) call(); }
   });
   if ((location.hash || '').indexOf('#bingo-play=') === 0) student(location.hash.slice(12));
-  return {enter:enter, call:call, reveal:reveal, newGame:newGame, copyLink:copyLink, print:print, check:check, award:award, renderCalled:renderCalled,
+  function csvRows(txt){
+    var rows = [], row = [], f = '', q = false; txt = String(txt).replace(/^\uFEFF/, '');
+    for (var i = 0; i < txt.length; i++){
+      var c = txt[i];
+      if (q){ if (c === '"'){ if (txt[i+1] === '"'){ f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true;
+      else if (c === ',' || c === ';' || c === '\t'){ row.push(f); f = ''; }
+      else if (c === '\n' || c === '\r'){ if (c === '\r' && txt[i+1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; }
+      else f += c;
+    }
+    if (f || row.length){ row.push(f); rows.push(row); }
+    return rows;
+  }
+  function csv(input){
+    var file = input.files && input.files[0], msg = $('bgCsvMsg'); if (!file) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      var seen = {}, lines = [];
+      csvRows(fr.result).forEach(function(r, n){
+        var t = (r[0] || '').trim().replace(/\|/g, '/'), d = (r.slice(1).join(', ') || '').trim().replace(/\s+/g, ' ');
+        if (!t || !d) return;
+        if (n === 0 && /^term$/i.test(t)) return;
+        if (/^replace with/i.test(t)) return;
+        var k = t.toLowerCase(); if (seen[k]) return; seen[k] = 1; lines.push(t + ' | ' + d);
+      });
+      input.value = '';
+      if (lines.length < 24){ msg.style.color = '#ff4d6d'; msg.textContent = file.name + ': ' + lines.length + ' terms found. Bingo needs at least 24.'; return; }
+      $('bgList').value = lines.join('\n'); store(LKEY, $('bgList').value); count();
+      msg.style.color = ''; msg.textContent = file.name + ': ' + lines.length + ' terms loaded.';
+      newGame();
+    };
+    fr.onerror = function(){ msg.style.color = '#ff4d6d'; msg.textContent = 'Could not read that file.'; };
+    fr.readAsText(file);
+  }
+  return {enter:enter, call:call, reveal:reveal, newGame:newGame, copyLink:copyLink, print:print, check:check, award:award, renderCalled:renderCalled, csv:csv, reset:reset, end:end,
     sample:function(){ if ($('bgList').value.trim() && !confirm('Replace the word list with the sample list?')) return; $('bgList').value = DEFAULT; store(LKEY, DEFAULT); count(); },
     clear:function(){ if ($('bgList').value.trim() && !confirm('Clear the word list?')) return; $('bgList').value = ''; store(LKEY, ''); count(); }};
 })();
