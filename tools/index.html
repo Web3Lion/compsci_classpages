@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=5.3.0"></script>
+<script src="../site.js?v=8.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Tools — Mr. Reasey</title>
@@ -90,6 +90,10 @@ button.btn{cursor:pointer;}
 .pick label{display:flex;flex-direction:column;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;}
 .pick select{width:100%;min-height:42px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--bright);font-family:'Inter',sans-serif;font-size:14px;}
 .pick select:focus{outline:2px solid var(--ac);outline-offset:1px;}
+.pick input{width:100%;min-height:42px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--bright);font-family:'Inter',sans-serif;font-size:14px;letter-spacing:0;text-transform:none;}
+.pick input:focus{outline:2px solid var(--ac);outline-offset:1px;}
+.pick .full{grid-column:1/-1;}
+#jpMsg{min-height:20px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ac);}
 #copyMsg{min-height:20px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ac);}
 .peek{margin-top:20px;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
 .peek summary{cursor:pointer;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
@@ -146,10 +150,67 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
   </div>
 
   <div class="grid wideGrid">
+    <div class="card wide" id="jeopardy" style="--ac:var(--gold);--ac2:var(--cy);">
+      <span class="corner tl"></span><span class="corner br"></span>
+      <div class="wl">
+        <div class="mod mono"><span>MODULE 03 // REVIEW</span><b>2–6 TEAMS</b></div>
+        <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><rect x="10" y="16" width="120" height="108" rx="10" fill="none" stroke="#ffd23f" stroke-width="3"></rect><g fill="#00f0ff" opacity=".85"><rect x="18" y="24" width="32" height="14" rx="3"></rect><rect x="54" y="24" width="32" height="14" rx="3"></rect><rect x="90" y="24" width="32" height="14" rx="3"></rect></g><g font-family="Chakra Petch, sans-serif" font-weight="700" font-size="12" fill="#ffd23f" text-anchor="middle"><text x="34" y="58">$100</text><text x="70" y="58">$100</text><text x="106" y="58">$100</text><text x="34" y="80">$200</text><text x="70" y="80">$200</text><text x="106" y="80">$200</text><text x="34" y="102">$300</text><text x="106" y="102">$300</text></g><rect x="56" y="88" width="28" height="20" rx="3" fill="#ff2bd6"><animate attributeName="opacity" values="1;.35;1" dur="1.6s" repeatCount="indefinite"></animate></rect></svg></div>
+        <h2>Jeopardy Review Game</h2>
+        <p>A Google Sheets Jeopardy board you project in class. Teams pick a category and dollar amount, you award points with one click, and scores save back to the sheet.</p>
+        <div class="chips"><span>6 themes</span><span>Daily Double</span><span>Image questions</span><span>Saved scores</span></div>
+        <div class="go"><a class="btn pri" href="https://docs.google.com/spreadsheets/d/1dEfdYKEpX1yenx38UzBSk1JpOVce9jaWoo9xN5FV-xQ/copy" target="_blank" rel="noopener">Make my copy &rarr;</a><a class="btn" href="https://docs.google.com/spreadsheets/d/1dEfdYKEpX1yenx38UzBSk1JpOVce9jaWoo9xN5FV-xQ/edit?gid=397245795#gid=397245795" target="_blank" rel="noopener">View original</a></div>
+      </div>
+      <div class="wr">
+        <div class="wrh mono">HOW IT WORKS · ABOUT 3 MINUTES TO SET UP</div>
+        <ol class="steps">
+      <li><div class="hex">1</div>Click <b>Make my copy</b>. Google saves your own copy of the spreadsheet, script included, to your Drive. The original is view-only.</li>
+      <li><div class="hex">2</div>Open your copy and wait a few seconds for the <b>🎯 Jeopardy</b> menu. The first run asks you to authorize the script once: <b>Advanced → Go to project → Allow</b>.</li>
+      <li><div class="hex">3</div>Fill in the <b>Jeopardy</b> tab: categories in row 1, questions and answers below. Or build the board with the <b>AI prompt</b> below.</li>
+      <li><div class="hex">4</div>Choose <b>🎯 Jeopardy → ▶ Run Game</b>, pick a theme, enter team names, and project full-screen.</li>
+    </ol>
+    <div class="notes">
+      <p><b>Edit anytime.</b> The game reads live from the Jeopardy tab, so changing a question takes effect the next time you run it.</p>
+      <p><b>More in the sheet.</b> The Instructions tab in your copy covers images, Daily Doubles, themes, and saving scores.</p>
+    </div>
+      </div>
+    </div>
+
+    <div class="card wide" id="jeopardy-ai" style="--ac:var(--mg);--ac2:var(--gold);">
+      <span class="corner tl"></span><span class="corner br"></span>
+      <div class="wl">
+        <div class="mod mono"><span>MODULE 04 // REVIEW</span><b>AI PROMPT</b></div>
+        <h2>Jeopardy Question Builder</h2>
+        <p>Copy an AI prompt that writes a full board as CSV in the exact layout the Jeopardy tab expects: categories in row 1, then question and answer rows for $100–$500.</p>
+        <div class="pick">
+          <label class="full">Topic / unit<input id="jpTopic" type="text" placeholder="e.g. The water cycle"></label>
+          <label>Grade / class<input id="jpAud" type="text" placeholder="e.g. 9th grade Biology"></label>
+          <label>Categories<select id="jpN"><option>4</option><option selected>5</option><option>6</option></select></label>
+          <label class="full">Category ideas (optional)<input id="jpCats" type="text" placeholder="Leave blank to let the AI choose"></label>
+          <label class="full">Vocab or notes (optional)<input id="jpNotes" type="text" placeholder="Paste key terms, or attach your notes in the AI chat"></label>
+        </div>
+        <div class="go"><button class="btn pri" id="jpCopy" type="button">Copy prompt &rarr;</button></div>
+        <div id="jpMsg" aria-live="polite"></div>
+      </div>
+      <div class="wr">
+        <div class="wrh mono">GET THE CSV INTO YOUR COPY</div>
+        <ol class="steps">
+      <li><div class="hex">1</div>Paste the prompt into Claude, ChatGPT, or Gemini. Copy the CSV it returns and save it as a file ending in <b>.csv</b>.</li>
+      <li><div class="hex">2</div>In your copy, open the <b>Jeopardy</b> tab and click cell <b>B1</b>. Column A holds the point labels; leave it alone.</li>
+      <li><div class="hex">3</div><b>File → Import → Upload</b>, pick the CSV, set Import location to <b>Replace data at selected cell</b> and Separator to <b>Comma</b>.</li>
+      <li><div class="hex">4</div>Read every question before class. AI can get facts wrong.</li>
+    </ol>
+    <div class="notes">
+      <p><b>No file?</b> Paste the CSV into B1, then use <b>Data → Split text to columns</b>.</p>
+      <p><b>Why quotes everywhere?</b> The prompt has the AI quote every cell so commas inside a question don't split it into two columns.</p>
+    </div>
+        <details class="peek"><summary>Preview the full prompt</summary><pre id="jpPeek"></pre></details>
+      </div>
+    </div>
+
     <div class="card wide" id="translator" style="--ac:var(--cy);--ac2:var(--mg);">
       <span class="corner tl"></span><span class="corner br"></span>
       <div class="wl">
-        <div class="mod mono"><span>MODULE 03 // LANGUAGE</span><b>22 LANGS</b></div>
+        <div class="mod mono"><span>MODULE 05 // LANGUAGE</span><b>22 LANGS</b></div>
         <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r="50" fill="none" stroke="#00f0ff" stroke-width="3"></circle><ellipse cx="70" cy="70" rx="22" ry="50" fill="none" stroke="#00f0ff" stroke-width="2" opacity=".7"></ellipse><path d="M20 70 H120 M28 45 H112 M28 95 H112" stroke="#00f0ff" stroke-width="2" opacity=".7"></path><g font-family="Chakra Petch, sans-serif" font-weight="700"><rect x="0" y="16" width="44" height="30" rx="8" fill="#ff2bd6"></rect><text x="22" y="37" text-anchor="middle" font-size="16" fill="#07031a">Aa</text><rect x="96" y="94" width="44" height="30" rx="8" fill="#b6ff3b"></rect><text x="118" y="115" text-anchor="middle" font-size="16" fill="#07031a">あ</text></g><path d="M48 32 Q96 30 112 88" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="5 5"><animate attributeName="stroke-dashoffset" from="20" to="0" dur="1s" repeatCount="indefinite"></animate></path><path d="M106 82 L113 92 L118 80" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
         <h2>Document / Folder Language Translator</h2>
         <p>Translate a whole Drive folder or one file into another language: Docs, Sheets, Slides, Word, Excel, PowerPoint, and PDF. Optional OpenDyslexic font and PDF output.</p>
@@ -174,14 +235,14 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
     <div class="card wide" id="canvas-builder" style="--ac:var(--gold);--ac2:var(--mg);">
       <span class="corner tl"></span><span class="corner br"></span>
       <div class="wl">
-        <div class="mod mono"><span>MODULE 04 // CANVAS</span><b>AI PROMPT</b></div>
+        <div class="mod mono"><span>MODULE 06 // CANVAS</span><b>AI PROMPT</b></div>
         <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><rect x="26" y="14" width="88" height="112" rx="10" fill="none" stroke="#ffd23f" stroke-width="3"></rect><rect x="26" y="14" width="88" height="26" rx="10" fill="#ffd23f" opacity=".85"></rect><circle cx="44" cy="62" r="7" fill="none" stroke="#ff2bd6" stroke-width="3"></circle><path d="M58 62 H100" stroke="#fff" stroke-width="3" stroke-linecap="round"></path><circle cx="44" cy="84" r="7" fill="none" stroke="#ff2bd6" stroke-width="3"></circle><path d="M58 84 H92" stroke="#fff" stroke-width="3" stroke-linecap="round"></path><circle cx="44" cy="106" r="7" fill="none" stroke="#ff2bd6" stroke-width="3"></circle><path d="M58 106 H96" stroke="#fff" stroke-width="3" stroke-linecap="round"></path><path d="M120 18 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4z" fill="#00f0ff"><animateTransform attributeName="transform" type="rotate" from="0 120 31" to="360 120 31" dur="6s" repeatCount="indefinite"></animateTransform></path></svg></div>
         <h2>Canvas Page Builder Prompt</h2>
         <p>Copy a ready-made AI prompt that turns your lesson into themed, student-facing step-by-step directions for a Canvas page. Paste it into Claude, ChatGPT, or Gemini along with your lesson text.</p>
         <div class="pick">
         <label>Subject<select id="pSubject"><option value="">Ask me</option><option>Math</option><option>Algebra</option><option>Geometry</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Earth Science</option><option>English / Language Arts</option><option>History</option><option>Social Studies</option><option>Spanish</option><option>French</option><option>Computer Science</option><option>Art</option><option>Music</option><option>Health / PE</option></select></label>
-        <label>Theme<select id="pTheme"><option value="">Ask me</option><option>Math Academic</option><option>Futuristic</option><option>Educational</option><option>Nature Explorer</option><option>Outer Space</option><option>Ocean Adventure</option><option>Sports Arena</option><option>Comic Book</option><option>Retro Arcade</option><option>Detective / Mystery</option></select></label>
-        <label>Colors<select id="pColors"><option value="">Ask me</option><option>Calming Purple</option><option>Ocean Blue</option><option>Forest Green</option><option>Sunset Orange</option><option>Steel Gray &amp; Electric Blue</option><option>High-Contrast Black &amp; Gold</option><option>Warm Neutral</option></select></label>
+        <label>Theme<select id="pTheme"><option value="">Ask me</option><option>SF Lions</option><option>Math Academic</option><option>Futuristic</option><option>Educational</option><option>Nature Explorer</option><option>Outer Space</option><option>Ocean Adventure</option><option>Sports Arena</option><option>Comic Book</option><option>Retro Arcade</option><option>Detective / Mystery</option></select></label>
+        <label>Colors<select id="pColors"><option value="">Ask me</option><option>SF Lions Green &amp; White</option><option>Calming Purple</option><option>Ocean Blue</option><option>Forest Green</option><option>Sunset Orange</option><option>Steel Gray &amp; Electric Blue</option><option>High-Contrast Black &amp; Gold</option><option>Warm Neutral</option></select></label>
       </div>
         <div class="go"><button class="btn pri" id="copyPrompt" type="button">Copy prompt &rarr;</button></div>
         <div id="copyMsg" aria-live="polite"></div>
@@ -244,10 +305,10 @@ COLOR SCHEME: {{COLORS}}
 
 BEFORE YOU WRITE ANY HTML: If the CLASS SUBJECT, THEME, or COLOR SCHEME above is still a [bracketed placeholder], stop and ask me for it first. Offer these examples:
 - Class subject examples: Math, Algebra, Geometry, Physics, Chemistry, Biology, Earth Science, English / Language Arts, History, Social Studies, Spanish, French, Computer Science, Art, Music, Health / PE.
-- Theme examples: Math Academic (chalkboard, graph-paper, and formula accents), Futuristic (sleek panels, glowing accents, "mission" and "level" wording), Educational (clean and friendly, notebook and pencil accents), Nature Explorer, Outer Space, Ocean Adventure, Sports Arena, Comic Book, Retro Arcade, Detective / Mystery.
-- Color scheme examples: Calming Purple, Ocean Blue, Forest Green, Sunset Orange, Steel Gray & Electric Blue, High-Contrast Black & Gold, Warm Neutral, or my school colors (I will tell you which).
+- Theme examples: SF Lions (South Fayette school branding: green and white, Neuton headings, Lato body), Math Academic (chalkboard, graph-paper, and formula accents), Futuristic (sleek panels, glowing accents, "mission" and "level" wording), Educational (clean and friendly, notebook and pencil accents), Nature Explorer, Outer Space, Ocean Adventure, Sports Arena, Comic Book, Retro Arcade, Detective / Mystery.
+- Color scheme examples: SF Lions Green & White, Calming Purple, Ocean Blue, Forest Green, Sunset Orange, Steel Gray & Electric Blue, High-Contrast Black & Gold, Warm Neutral, or my school colors (I will tell you which).
 Use the theme for the header wording, section titles, icons or emoji, and small accents. Keep the page calm, uncluttered, and easy to read.
-
+{{SFBRAND}}
 CRITICAL CANVAS COMPATIBILITY RULES:
 
 NO CSS STYLESHEETS OR <style> TAGS: Do NOT use <style> blocks, external CSS links, or CSS class names anywhere. Canvas strips them out.
@@ -322,13 +383,71 @@ LESSON CONTENT TO CONVERT:
 <script>
 (function(){
   var tpl = document.getElementById('canvasPrompt').textContent, th = document.getElementById('pTheme'), co = document.getElementById('pColors'), su = document.getElementById('pSubject'), msg = document.getElementById('copyMsg'), peek = document.getElementById('promptPeek');
-  function build(){ return tpl.split('{{SUBJECT}}').join(su.value || '[CHOOSE A CLASS SUBJECT]').replace('{{THEME}}', th.value || '[CHOOSE A THEME]').replace('{{COLORS}}', co.value || '[CHOOSE A COLOR SCHEME]'); }
+  function build(){ return tpl.split('{{SUBJECT}}').join(su.value || '[CHOOSE A CLASS SUBJECT]').replace('{{THEME}}', th.value || '[CHOOSE A THEME]').replace('{{COLORS}}', co.value || '[CHOOSE A COLOR SCHEME]').replace('{{SFBRAND}}', (/SF Lions/.test(th.value + co.value)) ? SF : ''); }
+  th.addEventListener('change', function(){ if (th.value === 'SF Lions' && !co.value) co.value = 'SF Lions Green & White'; });
+  var SF = '\nSF LIONS BRANDING (South Fayette Township School District brand guide; follow it exactly whenever SF Lions is the theme or color scheme):\n' +
+    '- Primary colors are kelly green and white. Green and white must always be the main colors; other colors may only accent, never replace them.\n' +
+    '- Web-accessible green: use #008539 for all green text, buttons, links, borders, and banner backgrounds (white text on #008539 passes contrast). The official print green #009A44 does NOT meet WCAG for text, so use it only for thin decorative lines or large non-text shapes. A darker shade like #006b2e is fine for gradient ends and hover-style accents.\n' +
+    '- Secondary colors (accents only; green and white stay primary): Black #000000 for body text; Light Gray #e0e2e2 for card borders, dividers, and callout or table-stripe backgrounds; Dark Gray #7c7c7d for borders, icons, and large headings only (too light for small text on white, so use #000000 for small secondary text). White #ffffff is the page and card background.\n' +
+    '- Fonts: headings use font-family: Neuton, "Times New Roman", serif; body text uses font-family: Lato, "Open Sans", Arial, sans-serif. Put these inline on every heading and text block.\n' +
+    '- Header banner: green background (#008539, or a gradient from #008539 to #006b2e) with white text. A small tag pill may read "SF Lions".\n' +
+    '- Voice: draw on the district words Tradition, Pride, and Excellence and on student-centered, future-focused, innovation-driven learning. Lion and paw-print emoji (\ud83e\udd81 \ud83d\udc3e) are fine as small accents.\n' +
+    '- Always capitalize "South Fayette" and "Lions".\n' +
+    '- Do NOT recreate, draw, or approximate any official South Fayette logo (SF logo, ribbon, seal, athletic, or lion head). Only include a logo if I give you an image URL for an approved one, and never place text or other images over it.\n';
   function upd(){ peek.textContent = build(); }
   su.addEventListener('change', upd); th.addEventListener('change', upd); co.addEventListener('change', upd); upd();
   function fallback(t){ var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); var ok = false; try{ ok = document.execCommand('copy'); }catch(e){} a.remove(); return ok; }
   document.getElementById('copyPrompt').addEventListener('click', function(){
     var t = build(), b = this, done = function(ok){
       msg.textContent = ok ? 'Copied! Paste it into your AI chat, then add your lesson at the bottom.' : 'Copy blocked. Open "Preview the full prompt" below and copy it by hand.';
+      if (ok){ b.textContent = 'Copied ✓'; setTimeout(function(){ b.innerHTML = 'Copy prompt &rarr;'; }, 2200); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ done(true); }, function(){ done(fallback(t)); });
+    else done(fallback(t));
+  });
+})();
+</script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  function build(){
+    var n = +$('jpN').value, topic = $('jpTopic').value.trim() || '[TOPIC]', aud = $('jpAud').value.trim() || '[GRADE / CLASS]';
+    var cats = $('jpCats').value.trim(), notes = $('jpNotes').value.trim(), L = [];
+    L.push('You are writing a classroom Jeopardy review game.');
+    L.push('Topic: ' + topic);
+    L.push('Audience: ' + aud);
+    L.push('');
+    L.push('Create ' + n + ' categories with 5 questions each. Difficulty rises from $100 (easiest) to $500 (hardest) within every category.');
+    if (cats) L.push('Use these categories (add your own if fewer than ' + n + ' are listed): ' + cats);
+    if (notes) L.push('Base the questions on this material: ' + notes);
+    L.push('If the Topic or Audience above is still a [bracketed placeholder], ask me for it before writing anything.');
+    L.push('');
+    L.push('OUTPUT FORMAT (follow exactly):');
+    L.push('- Output ONLY one CSV code block. No text before or after it.');
+    L.push('- Exactly 11 rows and exactly ' + n + ' columns. Each column is one category.');
+    L.push('- Do NOT add a point-value column, row labels, or any extra header row.');
+    L.push('- Row 1: the ' + n + ' category names.');
+    L.push('- Rows 2, 4, 6, 8, 10: the questions for $100, $200, $300, $400, $500.');
+    L.push('- Rows 3, 5, 7, 9, 11: the answer to the question directly above it.');
+    L.push('- Wrap EVERY cell in double quotes. If a cell contains a double quote, write it as two double quotes ("").');
+    L.push('- No line breaks inside a cell. No empty cells.');
+    L.push('- Questions: one clear sentence, under 25 words. Answers: under 10 words. Category names: 3 words or fewer.');
+    L.push('- Every fact must be accurate and right for the audience. No duplicate questions.');
+    L.push('');
+    L.push('Example of the layout with 2 categories (yours must have ' + n + '):');
+    L.push('"Planets","Weather"');
+    L.push('"This planet is closest to the Sun.","This instrument measures air pressure."');
+    L.push('"Mercury","Barometer"');
+    L.push('...continue until row 11...');
+    return L.join('\n');
+  }
+  function upd(){ $('jpPeek').textContent = build(); }
+  ['jpTopic','jpAud','jpN','jpCats','jpNotes'].forEach(function(id){ $(id).addEventListener('input', upd); });
+  upd();
+  function fallback(t){ var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); var ok = false; try{ ok = document.execCommand('copy'); }catch(e){} a.remove(); return ok; }
+  $('jpCopy').addEventListener('click', function(){
+    var t = build(), b = this, done = function(ok){
+      $('jpMsg').textContent = ok ? 'Copied! Paste it into your AI chat.' : 'Copy blocked. Open "Preview the full prompt" and copy it by hand.';
       if (ok){ b.textContent = 'Copied ✓'; setTimeout(function(){ b.innerHTML = 'Copy prompt &rarr;'; }, 2200); }
     };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ done(true); }, function(){ done(fallback(t)); });
