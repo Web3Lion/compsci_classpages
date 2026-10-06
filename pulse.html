@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=5.3.0"></script>
+<script src="site.js?v=8.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -80,8 +80,9 @@ select{padding:10px 12px;border-radius:10px;border:1px solid var(--border3);back
   </div>
 </div>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="supabase-config.js?v=5.3.0"></script>
-<script src="auth.js?v=5.3.0"></script>
+<script src="supabase-config.js?v=8.0.0"></script>
+<script src="auth.js?v=8.0.0"></script>
+<script src="cosmetics.js?v=8.0.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, CLASSES = [], CUR = null, DATA = null, FILTER = "all", timer = null;
@@ -115,9 +116,12 @@ select{padding:10px 12px;border-radius:10px;border:1px solid var(--border3);back
     DATA = null; el("tiles").innerHTML = ""; load();
     clearInterval(timer); timer = setInterval(function(){ if (!document.hidden) load(); }, 10000);
   }
+  var COS = {}, COS_AT = 0, COS_CLASS = null;
+  function nm(h){ var eq = COS[String(h || "").toLowerCase()]; return eq && window.CTF_COSMETICS ? window.CTF_COSMETICS.nameHtml(h, eq) : esc(h); }
   async function load(){
     if (!CUR) return; var id = CUR.id;
     try{
+      if (window.CTF_COSMETICS && (COS_CLASS !== id || Date.now() - COS_AT > 120000)) { COS_CLASS = id; COS_AT = Date.now(); try { COS = await window.CTF_COSMETICS.forClass(id); } catch (e) {} }
       var d = await AUTH.rpc("ctf_t_pulse", { p_class: id });
       if (!CUR || CUR.id !== id) return;
       if (!d || d.error){ showEmpty("Couldn\u2019t load pulse (" + ((d&&d.error)||"error") + ")."); return; }
@@ -137,7 +141,7 @@ select{padding:10px 12px;border-radius:10px;border:1px solid var(--border3);back
 
     var helpers = studs.filter(function(s){ return stuck(s, now); });
     el("helpWrap").innerHTML = helpers.length ? '<div class="lbl" style="color:var(--bad);">Needs help</div><div class="help">' + helpers.map(function(s){
-      return '<div class="tile stuck"><div class="hd"><span class="dot" style="background:var(--bad);" aria-hidden="true"></span><b>' + esc(s.handle) + '</b></div>' +
+      return '<div class="tile stuck"><div class="hd"><span class="dot" style="background:var(--bad);" aria-hidden="true"></span><b>' + nm(s.handle) + '</b></div>' +
         '<div class="flag">' + esc(s.flag_title || s.flag_key) + '</div>' +
         '<div class="meta"><span class="pill" style="border-color:var(--bad);color:var(--bad);">' + Math.max(s.recent_misses, s.misses) + ' misses</span><span>last capture ' + ago(s.last_capture, now) + '</span></div></div>';
     }).join("") + '</div>' : "";
@@ -155,7 +159,7 @@ select{padding:10px 12px;border-radius:10px;border:1px solid var(--border3);back
     el("tiles").innerHTML = list.map(function(s){
       var st = status(s, now), sk = stuck(s, now);
       return '<div class="tile' + (sk ? " stuck" : "") + (st === "away" ? " away" : "") + '">' +
-        '<div class="hd"><span class="dot" style="background:' + (sk ? "var(--bad)" : DOT[st]) + ';" aria-hidden="true"></span><b>' + esc(s.handle) + '</b>' +
+        '<div class="hd"><span class="dot" style="background:' + (sk ? "var(--bad)" : DOT[st]) + ';" aria-hidden="true"></span><b>' + nm(s.handle) + '</b>' +
           '<span class="mono" style="font-size:11px;color:var(--dim);">' + (sk ? "needs help" : LBL[st]) + '</span></div>' +
         '<div class="flag">' + (st !== "away" && s.flag_title ? '\u25B8 ' + esc(s.flag_title) : '<span style="color:var(--faint);">' + (st === "away" ? "seen " + ago(s.seen_at, now) : "browsing") + '</span>') + '</div>' +
         '<div class="meta">' +
@@ -168,7 +172,7 @@ select{padding:10px 12px;border-radius:10px;border:1px solid var(--border3);back
     var feed = DATA.feed || [];
     el("feed").innerHTML = feed.length ? feed.map(function(f){
       return '<div><span class="mono" style="flex:none;width:58px;color:var(--faint);font-size:11px;">' + new Date(f.created_at).toLocaleTimeString(undefined, {hour:"numeric", minute:"2-digit"}) + '</span>' +
-        '<span style="flex:1;min-width:0;"><b style="color:var(--bright);">' + esc(f.handle) + '</b> ' + esc(f.title) + (f.level ? ' <span class="mono" style="font-size:11px;color:var(--dim);">' + esc(f.level) + '</span>' : '') + '</span>' +
+        '<span style="flex:1;min-width:0;"><b style="color:var(--bright);">' + nm(f.handle) + '</b> ' + esc(f.title) + (f.level ? ' <span class="mono" style="font-size:11px;color:var(--dim);">' + esc(f.level) + '</span>' : '') + '</span>' +
         '<span class="mono" style="flex:none;color:var(--amber);font-size:12px;">+' + f.points + '</span></div>';
     }).join("") : '<span class="mono" style="font-size:12px;color:var(--faint);">No captures yet today.</span>';
     el("upd").textContent = "updated " + new Date().toLocaleTimeString(undefined, {hour:"numeric", minute:"2-digit", second:"2-digit"});

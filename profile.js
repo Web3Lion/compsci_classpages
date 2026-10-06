@@ -45,9 +45,10 @@
     var name = (s && s.handle) || localName();
     return '<div class="card" style="padding:22px;">' +
       '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">' + esc(T.term.toUpperCase()) + '</div>' +
+      '<div id="pfBanner">' + (window.CTF_COSMETICS ? window.CTF_COSMETICS.bannerHtml(window.CTF_COSMETICS.mine(), 64) : "") + '</div>' +
       '<div id="pfIdView" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">' +
-        '<div style="font-size:26px;font-weight:800;color:var(--bright);letter-spacing:-.3px;">' +
-          (name ? esc(name) : '<span style="color:var(--faint);font-weight:600;font-size:18px;">not set yet</span>') +
+        '<div id="pfIdName" style="font-size:26px;font-weight:800;color:var(--bright);letter-spacing:-.3px;">' +
+          (name ? (window.CTF_COSMETICS ? window.CTF_COSMETICS.nameHtml(name, window.CTF_COSMETICS.mine()) : esc(name)) : '<span style="color:var(--faint);font-weight:600;font-size:18px;">not set yet</span>') +
         '</div>' +
         '<button id="pfEdit" class="mono" style="font-size:11px;letter-spacing:.5px;background:none;border:1px solid var(--border3);color:var(--dim);padding:6px 14px;min-height:44px;border-radius:8px;cursor:pointer;">CHANGE</button>' +
       '</div>' +
@@ -333,10 +334,21 @@
     pioneer:    { tag: "P\u00d72",  col: G.mult,     type: "charge", done: "ARMED", desc: "Your next first-to-solve Pioneer bonus is doubled." },
     xp500:      { tag: "+500",      col: "var(--accent)", type: "instant", done: "CLAIMED", desc: "Adds 500 XP to your score the moment you claim it." },
     mystery:    { tag: "???",       col: G.surprise, type: "instant", done: "OPENED", desc: "Opens into a random in-game item. Never a classroom prize." },
-    voucher:    { tag: "\u2605",    col: "var(--bright)", type: "instant", done: "REDEEMED", desc: "A classroom prize. Show it to your teacher, then mark it redeemed." }
+    voucher:    { tag: "\u2605",    col: "var(--bright)", type: "instant", done: "REDEEMED", desc: "A classroom prize. Show it to your teacher, then mark it redeemed." },
+    hint2:      { tag: "??",        col: G.help,     type: "charge", done: "ARMED", desc: "Your next TWO hint reveals on the CTF page cost no XP." },
+    skip:       { tag: "\u21e5",    col: G.help,     type: "charge", done: "ARMED", desc: "Open one flag your teacher hasn't unlocked yet. A button appears on locked flags." },
+    repel:      { tag: "\u26e8",    col: G.boss,     type: "charge", done: "ARMED", desc: "The guide can't take over your screen when you leave the arena, until your next capture." },
+    shard:      { tag: "\u25c7",    col: G.surprise, type: "instant", done: "COLLECTED", desc: "Collect 3 Badge Shards to earn the rare Prism badge (6 and 9 level it up)." },
+    streak1:    { tag: "+1\u25b2",  col: "var(--amber)", type: "instant", done: "CLAIMED", desc: "Adds one day to your login streak the moment you claim it." },
+    duelticket: { tag: "\u2694",    col: G.boss,     type: "instant", done: "REQUESTED", desc: "Ask your teacher for a head-to-head duel. Claim it, then show your teacher." },
+    pack:       { tag: "\u25a3",    col: G.surprise, type: "instant", done: "OPENED", desc: "A crate of items. Open it and everything inside lands in your items." }
   };
+  var KIND_NAME = { xp2x:"2\u00d7 XP", freeze:"Streak Freeze", timefreeze:"Time Freeze", squad:"Squad Surge", hint:"Free Hint", retry:"Retry Wipe", cooldown:"Cooldown Skip",
+    shield:"Firewall Shield", overclock:"Overclock", extralife:"Extra Life", lucky:"Lucky Capture", pioneer:"Pioneer Boost", xp500:"+500 XP", mystery:"Mystery Box",
+    hint2:"Double Hint", skip:"Skip Token", repel:"Nemesis Repel", shard:"Badge Shard", streak1:"Streak +1", duelticket:"Duel Ticket", coins:"coins" };
+  function packList(c) { return (c || []).map(function (x) { return x.k === "coins" ? x.n + " coins" : (x.n > 1 ? x.n + "\u00d7 " : "") + (KIND_NAME[x.k] || x.k); }).join(", "); }
   function meta(k) { return ITEM_META[k] || ITEM_META.voucher; }
-  function verb(k) { var t = meta(k).type; return k === "voucher" ? "Redeem" : k === "mystery" ? "Open" : k === "xp500" ? "Claim" : t === "charge" ? "Arm" : "Activate"; }
+  function verb(k) { var t = meta(k).type; return k === "voucher" ? "Redeem" : (k === "mystery" || k === "pack") ? "Open" : (k === "xp500" || k === "streak1") ? "Claim" : k === "shard" ? "Collect" : k === "duelticket" ? "Request" : t === "charge" ? "Arm" : "Activate"; }
   var ITEMS = [], itemTick = null;
   function itemsCard() { return '<div id="pfItems"></div>'; }
   function fmtLeft(ms) {
@@ -417,7 +429,7 @@
       h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;">' +
         unused.map(function (it) {
           var mt = meta(it.kind);
-          var src = it.source === "spinner" ? "Spinner prize" : it.source === "loot" ? "Loot drop" : it.source === "mystery" ? "Mystery Box" : "From your teacher";
+          var src = it.source === "spinner" ? "Spinner prize" : it.source === "loot" ? "Loot drop" : it.source === "mystery" ? "Mystery Box" : it.source === "pack" ? "From a pack" : it.source === "clear" ? "Module clear" : "From your teacher";
           return '<div style="display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--border2);border-radius:12px;background:var(--panel2);">' +
             '<div style="display:flex;align-items:center;gap:10px;">' + tagBox(it.kind) +
               '<div style="min-width:0;"><div style="font-size:13px;font-weight:700;color:var(--bright);">' + esc(it.label) + '</div>' +
@@ -425,7 +437,8 @@
                   esc(new Date(it.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })) + '</div></div>' +
             '</div>' +
             '<div style="font-size:12px;color:var(--dim);line-height:1.5;">' + esc(mt.desc) + '</div>' +
-            (it.note && it.source === "teacher" ? '<div style="font-size:12px;color:var(--text);line-height:1.5;">\u201c' + esc(it.note) + '\u201d</div>' : '') +
+            (it.kind === "pack" && it.contents ? '<div class="mono" style="font-size:11px;color:var(--text);line-height:1.5;">Inside: ' + esc(packList(it.contents)) + '</div>' : '') +
+            (it.note && (it.source === "teacher" || it.source === "clear") ? '<div style="font-size:12px;color:var(--text);line-height:1.5;">\u201c' + esc(it.note) + '\u201d</div>' : '') +
             '<button class="mono pfUse" data-id="' + esc(it.id) + '" style="margin-top:auto;padding:8px 0;border-radius:8px;border:1px solid ' + mt.col + ';' +
               'background:transparent;color:' + mt.col + ';font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer;">' + verb(it.kind).toUpperCase() + '</button>' +
           '</div>';
@@ -557,7 +570,9 @@
         var r = await AUTH.rpc("ctf_use_item", { p_student: s.studentId, p_item: id });
         ITEMS = ITEMS.map(function (x) { return x.id === id ? Object.assign({}, x, r.item) : x; });
         if (r.reveal) ITEMS.unshift(r.reveal);
+        (r.reveals || []).forEach(function (x) { ITEMS.unshift(x); });
         cacheItems();
+        if (it.kind === "streak1" && window.CTF && window.CTF.applyStreakItems) window.CTF.applyStreakItems();
         if (it.kind === "xp500") {
           var st = API.getState ? API.getState() : null;
           if (st) {
@@ -566,7 +581,7 @@
             try { localStorage.setItem(API.stateKey, JSON.stringify(st)); } catch (e) {}
           }
         }
-        if (it.kind === "mystery" && r.reveal) reveal(r.reveal); else confirmDone(r.item);
+        if (it.kind === "mystery" && r.reveal) reveal(r.reveal); else if (it.kind === "pack") crate(r.reveals || [], r.coins || 0); else confirmDone(r.item);
       } catch (e) {
         fired = false; btn.disabled = false; btn.lastChild.textContent = "HOLD TO " + verb(it.kind).toUpperCase(); fill.style.width = "0";
         el("pfUseErr").textContent = "Couldn't use that item: " + ((e && e.message) || "try again");
@@ -579,6 +594,9 @@
       var line = mt.type === "timed" ? "Running until " + fmtEnd(Date.parse(item.expires_at)) + "."
         : mt.type === "charge" ? "Ready. It triggers by itself on the CTF page."
         : it.kind === "xp500" ? "+500 XP added to your score."
+        : it.kind === "streak1" ? "+1 day added to your login streak."
+        : it.kind === "shard" ? shardLine()
+        : it.kind === "duelticket" ? "Request sent. Show your teacher to start the duel."
         : "Marked redeemed. Show your teacher.";
       el("pfUseBody").innerHTML =
         '<div style="width:72px;height:72px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid ' + mt.col + ';color:' + mt.col + ';font-size:34px;font-weight:800;animation:pfPop .35s ease,pfGlow 1.4s ease 1;">\u2713</div>' +
@@ -586,6 +604,49 @@
         '<div style="font-size:20px;font-weight:800;color:var(--bright);margin-top:6px;">' + esc(it.label) + '</div>' +
         '<div style="font-size:13px;color:var(--dim);line-height:1.6;margin-top:8px;">' + esc(line) + '</div>' + doneBtn();
       el("pfDone").onclick = function () { close(); boot(); };
+    }
+    function shardLine() {
+      var n = ITEMS.filter(function (x) { return x.kind === "shard" && x.used_at && !x.shared; }).length;
+      return n >= 3 && n % 3 === 0 ? n + " shards collected. Prism badge level unlocked!" : n + " shard" + (n === 1 ? "" : "s") + " collected. " + (3 - n % 3) + " more for the next Prism level.";
+    }
+    /* Pack opening: the crate shakes harder and harder, bursts, then every item pops out. */
+    function crate(list, coins) {
+      var rm = (typeof window.SITE_REDUCED_MOTION === "function" && window.SITE_REDUCED_MOTION()) || matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!document.getElementById("pfCrateCss")) {
+        var st = document.createElement("style"); st.id = "pfCrateCss";
+        st.textContent = "@keyframes pfRattle{0%,100%{transform:rotate(0) translateY(0)}15%{transform:rotate(-4deg) translateY(-2px)}30%{transform:rotate(4deg)}45%{transform:rotate(-7deg) translateY(-4px)}60%{transform:rotate(8deg)}75%{transform:rotate(-11deg) translateY(-6px)}90%{transform:rotate(12deg) scale(1.06)}}" +
+          "@keyframes pfBurst{0%{transform:scale(.2);opacity:.9}100%{transform:scale(3.2);opacity:0}}" +
+          "@keyframes pfRay{0%{transform:rotate(var(--r)) scaleY(.1);opacity:1}100%{transform:rotate(var(--r)) scaleY(1);opacity:0}}" +
+          "@keyframes pfOut{0%{opacity:0;transform:translateY(24px) scale(.5)}70%{transform:translateY(-4px) scale(1.06)}100%{opacity:1;transform:none}}";
+        document.head.appendChild(st);
+      }
+      var groups = {}; list.forEach(function (x) { (groups[x.kind] = groups[x.kind] || []).push(x); });
+      var keys = Object.keys(groups);
+      var crateBox = '<div style="width:110px;height:96px;border-radius:14px;border:2px solid var(--accent2);background:linear-gradient(180deg,var(--panel2),var(--bg));position:relative;box-shadow:0 0 24px -6px var(--accent2);">' +
+        '<div style="position:absolute;left:0;right:0;top:26px;height:2px;background:var(--accent2);"></div>' +
+        '<div style="position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--accent2);opacity:.6;"></div>' +
+        '<div class="mono" style="position:absolute;left:0;right:0;bottom:14px;text-align:center;font-weight:800;font-size:22px;color:var(--accent2);">\u25a3</div></div>';
+      el("pfUseBody").innerHTML = '<div style="display:flex;justify-content:center;margin:16px 0 18px;' + (rm ? '' : 'animation:pfRattle .45s ease-in-out 3;') + '">' + crateBox + '</div>' +
+        '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--faint);">OPENING ' + esc(it.label.toUpperCase()) + '\u2026</div>';
+      setTimeout(function () {
+        var rays = "";
+        if (!rm) for (var i = 0; i < 12; i++) rays += '<span style="position:absolute;left:50%;top:50%;width:3px;height:120px;margin-left:-1.5px;transform-origin:50% 0;--r:' + (i * 30) + 'deg;background:linear-gradient(var(--accent2),transparent);animation:pfRay .7s ease-out both;"></span>';
+        var tiles = keys.map(function (k, i) {
+          var nm = meta(k), n = groups[k].length;
+          return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border:1px solid var(--border2);border-radius:12px;background:var(--panel2);' + (rm ? '' : 'animation:pfOut .45s ease ' + (0.25 + i * 0.12).toFixed(2) + 's both;') + '">' +
+            tagBox(k, 44) + '<div style="font-size:12px;font-weight:700;color:var(--bright);line-height:1.3;">' + esc(groups[k][0].label) + '</div>' +
+            (n > 1 ? '<div class="mono" style="font-size:11px;color:' + nm.col + ';font-weight:800;">\u00d7' + n + '</div>' : '') + '</div>';
+        });
+        if (coins) tiles.push('<div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border:1px solid var(--border2);border-radius:12px;background:var(--panel2);' + (rm ? '' : 'animation:pfOut .45s ease ' + (0.25 + keys.length * 0.12).toFixed(2) + 's both;') + '">' +
+          '<span class="mono" style="min-width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:var(--amber);border:1px solid var(--amber);">\u25c9</span>' +
+          '<div style="font-size:12px;font-weight:700;color:var(--bright);">' + coins + ' coins</div></div>');
+        el("pfUseBody").innerHTML =
+          '<div style="position:relative;height:0;">' + (rm ? '' : '<span style="position:absolute;left:50%;top:40px;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:radial-gradient(var(--accent2),transparent 70%);animation:pfBurst .6s ease-out both;"></span>') + rays + '</div>' +
+          '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--accent2);font-weight:700;">' + esc(it.label.toUpperCase()) + ' OPENED</div>' +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:16px 0 4px;text-align:center;">' + tiles.join("") + '</div>' +
+          '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:8px;">' + (list.length ? "Everything is in your items, ready to use." : "") + (coins ? " Coins are in your Coin Shop balance." : "") + '</div>' + doneBtn();
+        el("pfDone").onclick = function () { close(); boot(); };
+      }, rm ? 200 : 1400);
     }
     function reveal(nu) {
       var nm = meta(nu.kind);
@@ -601,6 +662,40 @@
         el("pfDone").onclick = function () { close(); boot(); };
       }, 1100);
     }
+  }
+
+  /* ---- trophy wall (module-clears.sql) ----------------------------------- */
+  var CLEARS = null;
+  function trophyCard() { return '<div id="pfTrophies"></div>'; }
+  function renderTrophies() {
+    var box = el("pfTrophies"); if (!box || !window.CTF || !window.CTF.moduleClears) return;
+    var loc = window.CTF.moduleClears(), names = window.CTF.moduleNames ? window.CTF.moduleNames() : [];
+    var by = {}; Object.keys(loc).forEach(function (m) { by[m] = { rank: loc[m].rank, at: loc[m].ts }; });
+    (CLEARS || []).forEach(function (c) { by[c.module] = { rank: c.rank, at: Date.parse(c.cleared_at) }; });
+    var n = names.length, got = Object.keys(by).length;
+    if (!n) return;
+    var tiles = names.map(function (nm, i) {
+      var m = i + 1, c = by[m], on = !!c, van = on && c.rank === 1;
+      var col = van ? "var(--amber)" : on ? "var(--accent)" : "var(--border2)";
+      return '<div title="' + esc(on ? "Cleared " + new Date(c.at).toLocaleDateString() + (c.rank ? " \u00b7 #" + c.rank + " in class" : "") : "Clear every flag and the boss to earn this trophy") + '" ' +
+        'style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border:1px solid ' + col + ';border-radius:12px;background:var(--panel2);text-align:center;' + (on ? '' : 'opacity:.55;') + '">' +
+        '<span class="mono" style="font-size:28px;line-height:1;color:' + col + ';' + (van ? 'text-shadow:0 0 16px var(--amber);' : '') + '">' + (on ? "\u2655" : "\u25cb") + '</span>' +
+        '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">MODULE ' + (m < 10 ? "0" : "") + m + '</span>' +
+        '<span style="font-size:12px;font-weight:700;color:' + (on ? "var(--bright)" : "var(--dim)") + ';line-height:1.3;">' + esc(nm) + '</span>' +
+        (on ? '<span class="mono" style="font-size:10px;color:' + col + ';font-weight:800;letter-spacing:1px;">' + (van ? "\u2691 VANGUARD \u00b7 MENTOR" : "\u2726 MENTOR") + '</span>' : '<span class="mono" style="font-size:10px;color:var(--faint);">locked</span>') +
+      '</div>';
+    }).join("");
+    box.innerHTML = '<div class="card" style="padding:22px;margin-top:20px;">' +
+      '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px;">' +
+        '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">TROPHY WALL</span>' +
+        '<span class="mono" style="font-size:11px;color:var(--dim);">' + got + ' of ' + n + ' modules cleared</span></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;">' + tiles + '</div>' +
+      '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:14px;line-height:1.6;">Clear every flag in a module and beat its boss: you get a Clear Crate, a Coin Pack, the module\u2019s Mentor badge and its Vault flag. First in your class earns Vanguard.</div></div>';
+  }
+  async function loadClears() {
+    renderTrophies();
+    var s = sess(); if (!ONLINE || !s) return;
+    try { var d = await AUTH.rpc("ctf_my_clears", { p_student: s.studentId }); if (Array.isArray(d)) { CLEARS = d; renderTrophies(); } } catch (e) {}
   }
 
   /* ---- boot -------------------------------------------------------------- */
@@ -624,11 +719,20 @@
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start;">' +
         identityCard() + xpCard() +
       '</div>' +
-      itemsCard() + '<div id="pfShop"></div>' + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
+      itemsCard() + trophyCard() + '<div id="pfShop"></div>' + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
     wireIdentity();
-    if (window.CTF_COSMETICS) window.CTF_COSMETICS.mountShop(el("pfShop"));
+    if (window.CTF_COSMETICS) {
+      window.CTF_COSMETICS.mountShop(el("pfShop"));
+      window.CTF_COSMETICS_CHANGED = function (eq) {
+        var n = el("pfIdName"), b = el("pfBanner"), nmv = (sess() && sess().handle) || localName();
+        if (n && nmv) n.innerHTML = window.CTF_COSMETICS.nameHtml(nmv, eq);
+        if (b) b.innerHTML = window.CTF_COSMETICS.bannerHtml(eq, 64);
+      };
+      window.CTF_COSMETICS.refreshMine().then(function (eq) { if (window.CTF_COSMETICS_CHANGED) window.CTF_COSMETICS_CHANGED(eq); });
+    }
     if (ITEMS.length) renderItems();
     loadItems();
+    loadClears();
     loadObjectives();
     loadLb();
   }

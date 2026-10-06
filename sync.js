@@ -222,6 +222,16 @@
     var sess = loadSess(); if (!sess || !p || !p.key) return Promise.resolve(null);
     return AUTH.rpc("ctf_loot_roll", { p_student: sess.studentId, p_key: p.key }).catch(function () { return null; });
   };
+  /* Module + boss cleared (module-clears.sql). The server records the clear once,
+     ranks it in the class, and drops the Clear Crate + Coin Pack. Null on failure. */
+  window.CTF_MODULE_CLEAR = function (p) {
+    var sess = loadSess(); if (!sess || !p || p.module == null) return Promise.resolve(null);
+    return AUTH.rpc("ctf_module_clear", { p_student: sess.studentId, p_module: +p.module }).catch(function () { return null; });
+  };
+  window.CTF_BOSS_WIN = function (p) {
+    var sess = loadSess(); if (!sess || !p || p.module == null) return Promise.resolve(null);
+    return AUTH.rpc("ctf_boss_win", { p_student: sess.studentId, p_module: +p.module }).catch(function () { return null; });
+  };
   window.CTF_REPORT = function (p) {
     scheduleSync();
     if (!p || !p.challengeId) return;
@@ -277,10 +287,17 @@
     var row = document.getElementById("ctfIdentity");
     if (!row || row.getAttribute("data-bound")) return;
     row.setAttribute("data-bound", "1");
+    if (window.CTF_COSMETICS && !decorate._cos) {
+      decorate._cos = true;
+      window.CTF_COSMETICS.refreshMine().then(function (eq) {
+        var n = document.getElementById("ctfMeName"), s2 = loadSess();
+        if (n && s2) n.innerHTML = window.CTF_COSMETICS.nameHtml(s2.handle, eq);
+      });
+    }
     row.style.cssText = "display:flex;align-items:center;gap:10px;flex-wrap:wrap;";
     row.innerHTML =
       '<span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--faint);">PLAYING AS</span>' +
-      '<span style="font-weight:700;color:var(--bright);">' + esc(sess.handle) + '</span>' +
+      '<span id="ctfMeName" style="font-weight:700;color:var(--bright);">' + (window.CTF_COSMETICS ? window.CTF_COSMETICS.nameHtml(sess.handle, window.CTF_COSMETICS.mine()) : esc(sess.handle)) + '</span>' +
       '<span class="mono" style="font-size:11px;color:var(--dim);">' + esc(sess.className || "") + '</span>' +
       '<a class="mono taplink" href="profile.html" style="font-size:11px;padding:4px 10px;border:1px solid var(--border2);border-radius:7px;">PROFILE</a>' +
       '<button id="ctfSignout" class="mono" style="margin-left:auto;font-size:11px;background:none;border:1px solid var(--border2);color:var(--dim);padding:4px 10px;border-radius:7px;cursor:pointer;">SIGN OUT</button>';

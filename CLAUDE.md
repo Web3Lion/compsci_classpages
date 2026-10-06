@@ -44,6 +44,16 @@
 - Each module should also have **≥3 dedicated interactive captures** (type `match`,
   `order`, `spot`, `phish`) plus the vocab `type:"vocab"` challenge (Easy/Med = typed,
   Hard = a per-module mini-game via `hardMode`).
+- **Vault flags**: a challenge with `vault: true` stays in the module's array but is hidden
+  until that module + its boss are cleared, and is excluded from every count (`flagsOf`
+  returns []). Leveled like any text flag; add its answers to `answers.local.js`.
+- Module clears are server-checked: `ctf_module_clear` requires a `flag_events` row for every
+  key in `module_manifest` (published by teacher.html `syncManifest`, same key rules as
+  `flagsOf`) plus a `boss_wins` row when the guide is on. Keep those key rules in sync.
+- Module clears (module-clears.sql) send a Clear Crate + Coin Pack once per module, and
+  earn the Module N Mentor / Vanguard badges. Pack contents are validated by `_pack_clean`
+  in reward-items.sql — new item kinds must be added there, to the `reward_items` kind
+  check, `_reward_label`, profile.js `ITEM_META`, and teacher.html `RKINDS`.
 - Every module auto-gets a **BEAT NEMESIS** boss card as its last flag (rendered by
   ctf.js — no config needed). Add applied/scenario boss questions to
   `COURSE_CONFIG.<course>.ctf.bossQuestions` (kind mc|text, diff Easy|Medium|Hard).

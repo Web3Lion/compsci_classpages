@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../site.js?v=8.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Run — Algorithm Tracing Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#a855f7;--accent2:#c98bff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--fainter:#7488a3;--accent:#7c3fc0;--accent2:#6a2fb0;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;}
+body,.card,.panel,.tab,.btn,.slot,.row{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent2);}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.back{font-size:13px;color:var(--faint);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:26px;}
+.card + .card{margin-top:16px;}
+.lead{color:var(--muted);line-height:1.6;font-size:15px;margin:0 0 18px;}
+.probRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.probBtn{font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 15px;border-radius:999px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);cursor:pointer;min-height:40px;}
+.probBtn:hover{border-color:var(--border-hi);}
+.probBtn.active{background:var(--panel3);border-color:var(--accent);color:var(--accent2);}
+.stepLabel{font-size:11.5px;letter-spacing:.06em;color:var(--faint);margin:0 0 8px;}
+/* ---------- grid ---------- */
+.gridStage{display:flex;justify-content:center;padding:16px 0;}
+.grid{display:grid;background:#04070c;border:1px solid var(--border3);border-radius:10px;padding:6px;position:relative;}
+.cell{width:38px;height:38px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;position:relative;}
+.cell.goal{background:color-mix(in srgb,var(--warn) 16%,transparent);border-color:color-mix(in srgb,var(--warn) 50%,transparent);}
+.cell .arrow{font-size:15px;color:var(--fainter);}
+.cell.trail{background:color-mix(in srgb,var(--accent) 16%,transparent);}
+.robot{position:absolute;width:38px;height:38px;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform .34s cubic-bezier(.4,0,.2,1),left .34s cubic-bezier(.4,0,.2,1),top .34s cubic-bezier(.4,0,.2,1);}
+.robot .tri{font-size:20px;color:var(--accent2);text-shadow:0 0 10px rgba(200,139,255,.6);}
+.startMark{position:absolute;width:38px;height:38px;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.35;}
+.startMark .tri{font-size:20px;color:var(--dim);}
+.goalFlag{font-size:15px;}
+.legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);margin-top:6px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.legDot{width:10px;height:10px;border-radius:3px;display:inline-block;}
+/* ---------- options ---------- */
+.optGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+@media(max-width:640px){.optGrid{grid-template-columns:1fr;}}
+.optCard{border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:14px 16px;cursor:pointer;}
+.optCard:hover{border-color:var(--border-hi);}
+.optCard.sel{border-color:var(--accent);background:var(--panel3);}
+.optCard .letter{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);font-weight:700;margin-bottom:8px;letter-spacing:1px;}
+.codeLine{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);line-height:1.65;white-space:pre;}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
+.ctrlBtn{font-family:'JetBrains Mono',monospace;font-size:13px;padding:12px 20px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--accent2);cursor:pointer;min-height:44px;}
+.ctrlBtn:hover{background:var(--panel3);}
+.ctrlBtn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#1c0a30;font-weight:700;border:none;}
+.ctrlBtn.primary:hover{filter:brightness(1.08);}
+.ctrlBtn:disabled{opacity:.4;cursor:default;filter:none;}
+.quizBtn{background:#e0293f;color:#fff;border:none;font-weight:800;box-shadow:0 10px 22px -12px #e0293f;}
+.quizBtn:hover{background:#ff3a52;}
+.quizBar{display:none;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;padding:10px 14px;border-radius:10px;background:color-mix(in srgb,#e0293f 14%,transparent);border:1px solid color-mix(in srgb,#e0293f 40%,transparent);font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--bright);flex-wrap:wrap;}
+.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+.modalCard{background:var(--panel);border:1px solid var(--border3);border-radius:14px;padding:28px;max-width:360px;width:100%;}
+.modalCard h3{margin:0 0 6px;color:var(--bright);font-size:17px;}
+.modalCard p{margin:0 0 16px;color:var(--muted);font-size:13.5px;line-height:1.5;}
+.modalInput{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--border2);background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;margin-bottom:14px;box-sizing:border-box;}
+.modalInput:focus{outline:none;border-color:var(--accent);}
+.gradeBanner{margin-top:18px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.6;display:none;}
+.gradeBanner.show{display:block;}
+.gradeBanner.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);}
+.gradeBanner.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);}
+.note{margin-top:18px;font-size:12.5px;color:var(--faint);line-height:1.6;}
+.note b{color:var(--dim);}
+.layerToggleRow{display:flex;align-items:center;gap:10px;margin-top:16px;}
+.layerToggle{padding:8px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--bg);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
+.layerToggle.on{border-color:var(--accent);background:var(--panel3);color:var(--accent2);}
+.stackWrap{display:none;margin-top:16px;flex-direction:column;gap:6px;}
+.stackWrap.show{display:flex;}
+.stackLayer{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--bg);opacity:.3;transition:opacity .25s,background .25s;}
+.stackLayer.active{opacity:1;background:var(--panel3);border-color:var(--accent);}
+.stackLayer .ln{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);font-weight:700;min-width:120px;}
+.stackLayer .ld{font-size:12px;color:var(--muted);flex:1;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>ROBOT RUN</h1></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="back mono">algorithm tracing practice · no XP</span>
+      <a class="back mono" href="index.html">&larr; practice</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="lead">The robot (triangle) needs to land on the goal square (the flag). Four pseudocode options are given — pick the one that actually gets it there, then run it and watch. Each option is real, runnable code: what you see is exactly what it does. Only the final square matters — facing direction doesn't count.</p>
+    <div class="stepLabel mono">1. PICK THE SCENARIO</div>
+    <div class="probRow" id="probRow"></div>
+    <div class="stepLabel mono" style="margin-top:14px;">2. PICK THE MODE</div>
+    <div class="probRow" id="modeRow"></div>
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;margin:16px 0;">
+    <button class="ctrlBtn quizBtn" id="quizStartBtn" onclick="openNameModal()">🔴 TAKE THE QUIZ — 5 QUESTIONS</button>
+  </div>
+  <div class="quizBar mono" id="quizBar" style="margin-bottom:16px;"></div>
+
+  <div class="card">
+    <div class="gridStage"><div class="grid" id="gridEl"></div></div>
+    <div class="legend">
+      <span><span class="legDot" style="background:color-mix(in srgb,var(--warn) 30%,transparent);"></span>goal</span>
+      <span><span class="legDot" style="background:color-mix(in srgb,var(--accent) 30%,transparent);"></span>path taken</span>
+      <span><span style="color:var(--fainter);">→</span>target path</span>
+    </div>
+
+    <div class="optGrid" id="optGrid"></div>
+
+    <div class="controls">
+      <button class="ctrlBtn primary" id="runBtn" onclick="runSelected()" disabled>▶ RUN SELECTED CODE</button>
+      <button class="ctrlBtn primary" id="nextBtn" onclick="quizNext()" style="display:none;">NEXT QUESTION →</button>
+      <button class="ctrlBtn" id="resetBtn" onclick="loadProblem(currentIdx)">↺ RESET GRID</button>
+      <button class="ctrlBtn" id="newProbBtn" onclick="randomProblem()">🔀 NEW PROBLEM</button>
+    </div>
+    <div class="gradeBanner mono" id="gradeBanner"></div>
+    <div class="note" id="modeNote">Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you're told; the grid shows you exactly what each option does.</div>
+
+    <div class="layerToggleRow">
+      <button class="layerToggle" id="layerBtn" onclick="toggleLayers()">▾ SHOW ABSTRACTION LAYERS</button>
+      <span class="mono" style="font-size:11.5px;color:var(--faint);">watch what "MOVE_FORWARD" actually costs underneath, one layer at a time</span>
+    </div>
+    <div class="stackWrap" id="stackWrap">
+      <div class="stackLayer" data-layer="0"><span class="ln">YOUR PSEUDOCODE</span><span class="ld">MOVE_FORWARD — one line, one idea: go forward one cell.</span></div>
+      <div class="stackLayer" data-layer="1"><span class="ln">APPLICATION</span><span class="ld">Interpreter reads that line and updates the robot's stored (x, y, direction) state.</span></div>
+      <div class="stackLayer" data-layer="2"><span class="ln">OPERATING SYSTEM</span><span class="ld">Schedules the redraw, hands the browser a request to repaint the page.</span></div>
+      <div class="stackLayer" data-layer="3"><span class="ln">HARDWARE</span><span class="ld">GPU renders new pixels; the change becomes light your eyes actually see.</span></div>
+    </div>
+    <div class="note" id="stackNote" style="display:none;"><b>Abstraction</b> is why one line of pseudocode is usable at all — you never think about pixels or schedulers when you write MOVE_FORWARD. Run the program above with layers shown and watch each layer light up in sequence on every move.</div>
+  </div>
+</div>
+
+<div class="card" style="border-color:var(--accent);">
+  <div class="stepLabel mono" style="color:var(--accent2);">NEXT STEPS</div>
+  <p class="lead" style="margin-bottom:14px;">Ready to write your own path instead of picking from options? <b>Robot Build</b> lets you place the robot, set a goal, and write MOVE_FORWARD( ) / ROTATE_LEFT( ) / ROTATE_RIGHT( ) yourself — good for checking a path you worked out on paper.</p>
+  <a class="ctrlBtn primary" href="../simulators/robotbuild.html" style="display:inline-block;text-decoration:none;">TRY ROBOT BUILD →</a>
+</div>
+
+<div class="modalOverlay" id="scoreModal">
+  <div class="modalCard" id="scoreModalCard" style="max-width:440px;"></div>
+</div>
+
+<div class="modalOverlay" id="nameModal">
+  <div class="modalCard">
+    <h3>Robot Run Quiz</h3>
+    <p>5 questions, randomly picked from the problem bank. Your name shows on the results printout at the end.</p>
+    <input type="text" class="modalInput" id="quizNameInput" placeholder="Your name" maxlength="40">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="ctrlBtn" onclick="closeNameModal()">Cancel</button>
+      <button class="ctrlBtn primary" onclick="beginQuiz()">Begin Quiz</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- tiny robot-pseudocode interpreter ---------- */
+var DIRV=[[0,-1],[1,0],[0,1],[-1,0]]; // up, right, down, left
+var DIRCH=['\u25B2','\u25B6','\u25BC','\u25C0'];
+function runAST(ast, start, grid){
+  var state={x:start.x,y:start.y,dir:start.dir,n:0};
+  var steps=[{x:state.x,y:state.y,dir:state.dir}];
+  var crashed=false;
+  function exec(node){
+    if(crashed) return;
+    if(Array.isArray(node)){ for(var k=0;k<node.length;k++) exec(node[k]); return; }
+    if(node.t==='assign1'){ state.n=1; }
+    else if(node.t==='inc'){ state.n=state.n+1; }
+    else if(node.t==='move'){
+      var d=DIRV[state.dir], nx=state.x+d[0], ny=state.y+d[1];
+      if(nx<0||nx>=grid.w||ny<0||ny>=grid.h){ crashed=true; return; }
+      state.x=nx; state.y=ny; steps.push({x:state.x,y:state.y,dir:state.dir});
+    }
+    else if(node.t==='left'){ state.dir=(state.dir+3)%4; steps.push({x:state.x,y:state.y,dir:state.dir}); }
+    else if(node.t==='right'){ state.dir=(state.dir+1)%4; steps.push({x:state.x,y:state.y,dir:state.dir}); }
+    else if(node.t==='repeatFixed'){ for(var i=0;i<node.n;i++) exec(node.body); }
+    else if(node.t==='repeatVar'){ var times=state.n; for(var j=0;j<times;j++) exec(node.body); }
+  }
+  exec(ast);
+  return {steps:steps, crashed:crashed};
+}
+function uniqueCells(steps){
+  var out=[]; steps.forEach(function(s){ var last=out[out.length-1]; if(!last||last.x!==s.x||last.y!==s.y) out.push({x:s.x,y:s.y}); });
+  return out;
+}
+function renderLines(node, depth, lines){
+  if(Array.isArray(node)){ node.forEach(function(n){ renderLines(n,depth,lines); }); return; }
+  var pad='  '.repeat(depth);
+  if(node.t==='assign1') lines.push(pad+'n \u2190 1');
+  else if(node.t==='inc') lines.push(pad+'n \u2190 n + 1');
+  else if(node.t==='move') lines.push(pad+'MOVE_FORWARD( )');
+  else if(node.t==='left') lines.push(pad+'ROTATE_LEFT( )');
+  else if(node.t==='right') lines.push(pad+'ROTATE_RIGHT( )');
+  else if(node.t==='repeatFixed'){ lines.push(pad+'REPEAT '+node.n+' TIMES {'); renderLines(node.body,depth+1,lines); lines.push(pad+'}'); }
+  else if(node.t==='repeatVar'){ lines.push(pad+'REPEAT n TIMES {'); renderLines(node.body,depth+1,lines); lines.push(pad+'}'); }
+}
+/* Generic option generator: given the turn direction and outer loop count,
+   produces the target program plus three classic misconception variants —
+   incrementing n too early, turning before moving, and incrementing n from
+   inside the very loop whose length n controls. */
+function buildPrograms(turn, times){
+  var t={t:turn};
+  return {
+    correct:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'repeatVar',body:[{t:'move'}]},t,{t:'inc'}]}],
+    incBefore:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'inc'},{t:'repeatVar',body:[{t:'move'}]},t]}],
+    turnBefore:[{t:'assign1'},{t:'repeatFixed',n:times,body:[t,{t:'repeatVar',body:[{t:'move'}]},{t:'inc'}]}],
+    incInside:[{t:'assign1'},{t:'repeatFixed',n:times,body:[{t:'repeatVar',body:[{t:'move'},{t:'inc'}]},t]}]
+  };
+}
+/* Loop-free equivalent: same staircase pattern, written as plain MOVE_FORWARD/
+   ROTATE lines with no REPEAT and no variable, plus straight-line ordering
+   mistakes instead of loop-variable-timing mistakes. */
+function moveN(n){ var out=[]; for(var i=0;i<n;i++) out.push({t:'move'}); return out; }
+function lastLeafType(ast){
+  if(!ast || !ast.length) return null;
+  var node=ast[ast.length-1];
+  if(node.t==='repeatFixed' || node.t==='repeatVar') return lastLeafType(node.body);
+  return node.t;
+}
+function ensureEndsInMove(ast){ return lastLeafType(ast)==='move' ? ast : ast.concat([{t:'move'}]); }
+function buildProgramsFlat(turn, times){
+  var t={t:turn};
+  var correct=[], turnFirst=[], reversed=[], noFinalTurn=[];
+  for(var i=1;i<=times;i++){
+    correct=correct.concat(moveN(i),[t]);
+    turnFirst=turnFirst.concat([t],moveN(i));
+  }
+  for(var j=times;j>=1;j--){ reversed=reversed.concat(moveN(j),[t]); }
+  for(var k=1;k<=times;k++){ noFinalTurn=noFinalTurn.concat(moveN(k), k<times?[t]:[]); }
+  var shortLast=[];
+  for(var m=1;m<=times;m++){ shortLast=shortLast.concat(moveN(m===times?Math.max(1,m-1):m),[t]); }
+  return { correct:correct, turnFirst:turnFirst, reversed:reversed, shortLast:shortLast };
+}
+
+/* ---------- practice problem bank ---------- */
+var PROBLEMS=[
+  { title:"Rising Staircase", grid:{w:8,h:8}, start:{x:3,y:6,dir:1}, turn:'left', times:3 },
+  { title:"Descending Steps", grid:{w:8,h:8}, start:{x:2,y:4,dir:1}, turn:'right', times:3 },
+  { title:"Corner Climb", grid:{w:7,h:7}, start:{x:2,y:5,dir:1}, turn:'left', times:3 },
+  { title:"Spiral In", grid:{w:9,h:9}, start:{x:4,y:5,dir:1}, turn:'right', times:3 },
+  { title:"Long Way Round", grid:{w:9,h:9}, start:{x:1,y:5,dir:2}, turn:'left', times:3 },
+  { title:"Quick Turn", grid:{w:9,h:9}, start:{x:4,y:6,dir:0}, turn:'right', times:3 }
+];
+
+var currentIdx=0, currentProbs=null, currentTarget=null, selectedKey=null, CELL=38, codeMode='flat';
+var layersOn=false;
+function toggleLayers(){
+  layersOn=!layersOn;
+  document.getElementById('layerBtn').className='layerToggle'+(layersOn?' on':'');
+  document.getElementById('layerBtn').textContent=(layersOn?'▴ HIDE':'▾ SHOW')+' ABSTRACTION LAYERS';
+  document.getElementById('stackWrap').className='stackWrap'+(layersOn?' show':'');
+  document.getElementById('stackNote').style.display=layersOn?'block':'none';
+}
+function pulseLayers(){
+  if(!layersOn) return;
+  var layers=document.querySelectorAll('.stackLayer');
+  layers.forEach(function(l){ l.classList.remove('active'); });
+  var i=0;
+  (function step(){
+    if(i>=layers.length) return;
+    layers[i].classList.add('active');
+    setTimeout(function(){ layers[i].classList.remove('active'); i++; step(); }, 220);
+  })();
+}
+
+function renderProbTabs(){
+  document.getElementById('probRow').innerHTML = PROBLEMS.map(function(p,i){
+    return '<button class="probBtn'+(i===currentIdx?' active':'')+'" onclick="loadProblem('+i+')">'+p.title+'</button>';
+  }).join('');
+  document.getElementById('modeRow').innerHTML =
+    '<button class="probBtn'+(codeMode==='flat'?' active':'')+'" onclick="setCodeMode(\'flat\')">\u{1F4CB} STEP-BY-STEP (NO LOOPS)</button>'+
+    '<button class="probBtn'+(codeMode==='loop'?' active':'')+'" onclick="setCodeMode(\'loop\')">\u{1F501} REPEAT( ) LOOP VERSION</button>';
+}
+function setCodeMode(m){
+  if(m===codeMode) return; codeMode=m;
+  document.getElementById('modeNote').innerHTML = codeMode==='loop'
+    ? 'Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you\'re told; the grid shows you exactly what each option does. <b>REPEAT n TIMES</b> reads the value of <b>n</b> once, right when that loop starts — changing n partway through a loop doesn\'t change how many times that loop was already set to repeat.'
+    : 'Every option is real pseudocode, run by an actual interpreter — nothing here is a fixed "correct answer" you\'re told; the grid shows you exactly what each option does.';
+  loadProblem(currentIdx);
+}
+function randomProblem(){ loadProblem(Math.floor(Math.random()*PROBLEMS.length)); }
+
+function loadProblem(idx){
+  currentIdx=idx;
+  renderProbTabs();
+  var p=PROBLEMS[idx];
+  currentProbs=p;
+  var entries;
+  if(codeMode==='loop'){
+    var progs=buildPrograms(p.turn, p.times);
+    Object.keys(progs).forEach(function(k){ progs[k]=ensureEndsInMove(progs[k]); });
+    currentTarget=runAST(progs.correct, p.start, p.grid);
+    entries=[
+      {key:'correct',ast:progs.correct},
+      {key:'incBefore',ast:progs.incBefore},
+      {key:'turnBefore',ast:progs.turnBefore},
+      {key:'incInside',ast:progs.incInside}
+    ];
+  } else {
+    var flat=buildProgramsFlat(p.turn, p.times);
+    Object.keys(flat).forEach(function(k){ flat[k]=ensureEndsInMove(flat[k]); });
+    currentTarget=runAST(flat.correct, p.start, p.grid);
+    entries=[
+      {key:'correct',ast:flat.correct},
+      {key:'turnFirst',ast:flat.turnFirst},
+      {key:'reversed',ast:flat.reversed},
+      {key:'shortLast',ast:flat.shortLast}
+    ];
+  }
+  for(var i=entries.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=entries[i]; entries[i]=entries[j]; entries[j]=tmp; }
+  currentOptions=entries;
+  selectedKey=null;
+
+  buildGrid(p);
+  drawTargetOverlay(p, currentTarget);
+  renderOptions();
+  placeRobot(p.start, false);
+  document.getElementById('runBtn').disabled=true;
+  var gb=document.getElementById('gradeBanner'); gb.classList.remove('show','ok','bad');
+}
+
+function buildGrid(p){
+  var el=document.getElementById('gridEl');
+  el.style.gridTemplateColumns='repeat('+p.grid.w+', '+CELL+'px)';
+  el.style.gridTemplateRows='repeat('+p.grid.h+', '+CELL+'px)';
+  var html='';
+  for(var y=0;y<p.grid.h;y++){
+    for(var x=0;x<p.grid.w;x++){ html+='<div class="cell" id="cell-'+x+'-'+y+'"></div>'; }
+  }
+  html+='<div class="robot" id="robotEl"><span class="tri">\u25B2</span></div>';
+  html+='<div class="startMark" id="startMark"><span class="tri">\u25B2</span></div>';
+  el.innerHTML=html;
+}
+function drawTargetOverlay(p, target){
+  var cells=uniqueCells(target.steps);
+  var goal=cells[cells.length-1];
+  document.getElementById('cell-'+goal.x+'-'+goal.y).classList.add('goal');
+  document.getElementById('cell-'+goal.x+'-'+goal.y).innerHTML='<span class="goalFlag">\u2691</span>';
+  var arrowFor={ '1,0':'\u2192','-1,0':'\u2190','0,1':'\u2193','0,-1':'\u2191' };
+  for(var i=1;i<cells.length;i++){
+    var prev=cells[i-1], cur=cells[i];
+    if(cur.x===goal.x && cur.y===goal.y) continue;
+    var key=(cur.x-prev.x)+','+(cur.y-prev.y);
+    var cellEl=document.getElementById('cell-'+cur.x+'-'+cur.y);
+    if(cellEl && !cellEl.querySelector('.goalFlag')) cellEl.innerHTML='<span class="arrow">'+(arrowFor[key]||'')+'</span>';
+  }
+  var startMark=document.getElementById('startMark');
+  startMark.style.left=(p.start.x*CELL)+'px'; startMark.style.top=(p.start.y*CELL)+'px';
+  startMark.querySelector('.tri').style.transform='rotate('+(p.start.dir*90)+'deg)';
+}
+function placeRobot(state, animate){
+  var el=document.getElementById('robotEl');
+  el.style.transition = animate ? 'left .34s cubic-bezier(.4,0,.2,1),top .34s cubic-bezier(.4,0,.2,1),transform .34s cubic-bezier(.4,0,.2,1)' : 'none';
+  el.style.left=(state.x*CELL)+'px'; el.style.top=(state.y*CELL)+'px';
+  el.querySelector('.tri').style.transform='rotate('+(state.dir*90)+'deg)';
+  if(!animate){ void el.offsetHeight; }
+}
+function renderOptions(){
+  var letters=['A','B','C','D'];
+  document.getElementById('optGrid').innerHTML = currentOptions.map(function(opt,i){
+    var lines=[]; renderLines(opt.ast,0,lines);
+    return '<div class="optCard" id="opt-'+opt.key+'" onclick="selectOption(\''+opt.key+'\')">'+
+      '<div class="letter">('+letters[i]+')</div>'+
+      '<div class="codeLine">'+lines.join('\n')+'</div></div>';
+  }).join('');
+}
+function selectOption(key){
+  if(quizMode && quizLocked) return;
+  selectedKey=key;
+  document.querySelectorAll('.optCard').forEach(function(c){ c.classList.toggle('sel', c.id==='opt-'+key); });
+  document.getElementById('runBtn').disabled=false;
+}
+function clearTrail(){
+  document.querySelectorAll('.cell.trail').forEach(function(c){ c.classList.remove('trail'); });
+}
+function runSelected(){
+  if(!selectedKey) return;
+  clearTrail();
+  document.getElementById('runBtn').disabled=true;
+  var opt=currentOptions.find(function(o){ return o.key===selectedKey; });
+  var result=runAST(opt.ast, currentProbs.start, currentProbs.grid);
+  var i=0;
+  (function playStep(){
+    if(i>=result.steps.length){
+      if(result.crashed){
+        var flag=document.createElement('div'); // brief visual: nothing extra needed, banner explains
+      }
+      finishRun(result);
+      return;
+    }
+    var s=result.steps[i];
+    document.getElementById('cell-'+s.x+'-'+s.y).classList.add('trail');
+    placeRobot(s, true);
+    pulseLayers();
+    i++;
+    setTimeout(playStep, 380);
+  })();
+}
+function finishRun(result){
+  document.getElementById('runBtn').disabled=false;
+  var gb=document.getElementById('gradeBanner');
+  gb.classList.remove('ok','bad'); gb.classList.add('show');
+  var wasCorrect=false;
+  if(result.crashed){
+    gb.classList.add('bad');
+    gb.textContent='✗ This code drives the robot off the edge of the grid before it finishes — not a valid path to the goal.';
+    registerQuizAnswer(false);
+    return;
+  }
+  var goalCell=uniqueCells(currentTarget.steps).slice(-1)[0];
+  var aCells=uniqueCells(result.steps);
+  var lastA=aCells[aCells.length-1];
+  if(lastA.x===goalCell.x && lastA.y===goalCell.y){
+    wasCorrect=true;
+    gb.classList.add('ok');
+    gb.textContent='✓ Correct — this code lands the robot on the goal square.';
+  } else {
+    gb.classList.add('bad');
+    gb.textContent='✗ Not quite — this code ends at ('+lastA.x+','+lastA.y+') instead of the goal at ('+goalCell.x+','+goalCell.y+').';
+  }
+  registerQuizAnswer(wasCorrect);
+}
+
+/* ---------- quiz mode ---------- */
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+var quizMode=false, quizName='', quizQueue=[], quizStep=0, quizScore=0, quizLog=[], quizLocked=false, quizModeUsed='flat';
+
+function openNameModal(){
+  document.getElementById('quizNameInput').value='';
+  document.getElementById('nameModal').style.display='flex';
+  setTimeout(function(){ document.getElementById('quizNameInput').focus(); },50);
+}
+function closeNameModal(){ document.getElementById('nameModal').style.display='none'; }
+
+function beginQuiz(){
+  var name=document.getElementById('quizNameInput').value.trim();
+  if(!name){ document.getElementById('quizNameInput').focus(); return; }
+  quizName=name;
+  closeNameModal();
+  quizModeUsed=codeMode;
+  var order=PROBLEMS.map(function(_,i){ return i; });
+  for(var i=order.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=order[i]; order[i]=order[j]; order[j]=tmp; }
+  quizQueue=order.slice(0,5);
+  quizStep=0; quizScore=0; quizLog=[]; quizMode=true;
+  document.getElementById('quizStartBtn').style.display='none';
+  document.getElementById('probRow').style.display='none';
+  document.getElementById('modeRow').style.display='none';
+  document.getElementById('newProbBtn').style.display='none';
+  document.getElementById('resetBtn').style.display='none';
+  document.getElementById('quizBar').style.display='flex';
+  loadQuizQuestion();
+}
+function loadQuizQuestion(){
+  quizLocked=false;
+  loadProblem(quizQueue[quizStep]);
+  updateQuizBar();
+  document.getElementById('nextBtn').style.display='none';
+  document.getElementById('runBtn').style.display='inline-block';
+}
+function updateQuizBar(){
+  document.getElementById('quizBar').innerHTML='QUESTION '+(quizStep+1)+' OF 5 &middot; '+esc(quizName)+' &middot; SCORE SO FAR: '+quizScore+'/'+quizStep;
+}
+function registerQuizAnswer(wasCorrect){
+  if(!quizMode || quizLocked) return;
+  quizLocked=true;
+  quizLog.push({title:currentProbs.title, correct:wasCorrect});
+  if(wasCorrect) quizScore++;
+  updateQuizBar();
+  document.getElementById('runBtn').style.display='none';
+  document.getElementById('nextBtn').style.display='inline-block';
+  document.getElementById('nextBtn').textContent = quizStep<4 ? 'NEXT QUESTION →' : 'FINISH & SEE SCORE →';
+}
+function quizNext(){
+  if(quizStep<4){ quizStep++; loadQuizQuestion(); }
+  else { showScoreModal(); }
+}
+function showScoreModal(){
+  var rows=quizLog.map(function(r,i){
+    return '<tr><td style="padding:7px 8px;border-bottom:1px solid var(--border2);color:var(--muted);">'+(i+1)+'</td>'+
+      '<td style="padding:7px 8px;border-bottom:1px solid var(--border2);color:var(--text);">'+esc(r.title)+'</td>'+
+      '<td style="padding:7px 8px;border-bottom:1px solid var(--border2);font-weight:700;color:'+(r.correct?'#2ecc71':'#ff5566')+';">'+(r.correct?'CORRECT':'INCORRECT')+'</td></tr>';
+  }).join('');
+  var card = document.getElementById('scoreModalCard');
+  card.innerHTML =
+    '<h3 style="margin:0 0 2px;">Robot Run — Quiz Result</h3>'+
+    '<p style="margin:0 0 14px;color:var(--muted);font-size:13px;">'+esc(quizName)+' &middot; '+esc(new Date().toLocaleDateString())+' &middot; Mode: '+(quizModeUsed==='loop'?'REPEAT( ) loop version':'Step-by-step (no loops)')+'</p>'+
+    '<div style="font-size:52px;font-weight:800;color:var(--bright);margin:6px 0 16px;">'+quizScore+' / 5</div>'+
+    '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px;"><tr><th style="text-align:left;padding:7px 8px;color:var(--muted);border-bottom:1px solid var(--border2);">#</th><th style="text-align:left;padding:7px 8px;color:var(--muted);border-bottom:1px solid var(--border2);">Problem</th><th style="text-align:left;padding:7px 8px;color:var(--muted);border-bottom:1px solid var(--border2);">Result</th></tr>'+rows+'</table>'+
+    '<div style="display:flex;justify-content:flex-end;"><button class="ctrlBtn primary" onclick="closeScoreModal()">Done</button></div>';
+  document.getElementById('scoreModal').style.display='flex';
+  resetQuizUI();
+}
+function closeScoreModal(){ document.getElementById('scoreModal').style.display='none'; }
+function resetQuizUI(){
+  quizMode=false; quizLocked=false;
+  document.getElementById('quizStartBtn').style.display='inline-block';
+  document.getElementById('probRow').style.display='flex';
+  document.getElementById('modeRow').style.display='flex';
+  document.getElementById('newProbBtn').style.display='inline-block';
+  document.getElementById('resetBtn').style.display='inline-block';
+  document.getElementById('quizBar').style.display='none';
+  document.getElementById('nextBtn').style.display='none';
+  document.getElementById('runBtn').style.display='inline-block';
+  loadProblem(0);
+}
+
+loadProblem(0);
+</script>
+
+<div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
+  </a>
+  <span style="font-size:13px;color:#7f9cb8;font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
+</div>
+</body>
+</html>

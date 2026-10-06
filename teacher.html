@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=5.3.0"></script>
+<script src="site.js?v=8.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -259,19 +259,19 @@
   </div>
 </div>
 
-<script src="config.js?v=5.3.0"></script>
-<script src="ctf-data/cyber1.js?v=5.3.0"></script>
-<script src="ctf-data/cyber2.js?v=5.3.0"></script>
-<script src="ctf-data/cyber3.js?v=5.3.0"></script>
-<script src="ctf-data/apcsp.js?v=5.3.0"></script>
-<script src="ctf-data/web3.js?v=5.3.0"></script>
-<script src="cipher.js?v=5.3.0"></script>
-<script src="supabase-config.js?v=5.3.0"></script>
-<script src="auth.js?v=5.3.0"></script>
-<script src="name-filter.js?v=5.3.0"></script>
-<script src="objectives.js?v=5.3.0"></script>
-<script src="standards.js?v=5.3.0"></script>
-<script src="csv.js?v=5.3.0"></script>
+<script src="config.js?v=8.0.0"></script>
+<script src="ctf-data/cyber1.js?v=8.0.0"></script>
+<script src="ctf-data/cyber2.js?v=8.0.0"></script>
+<script src="ctf-data/cyber3.js?v=8.0.0"></script>
+<script src="ctf-data/apcsp.js?v=8.0.0"></script>
+<script src="ctf-data/web3.js?v=8.0.0"></script>
+<script src="cipher.js?v=8.0.0"></script>
+<script src="supabase-config.js?v=8.0.0"></script>
+<script src="auth.js?v=8.0.0"></script>
+<script src="name-filter.js?v=8.0.0"></script>
+<script src="objectives.js?v=8.0.0"></script>
+<script src="standards.js?v=8.0.0"></script>
+<script src="csv.js?v=8.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -362,8 +362,26 @@ var HRUNS=[];
 var ATTEMPTS=[];
 function selectClass(c){ CUR=c; TAB="summary"; syncGateFromClass(); renderClassList(); renderMain(); loadDetail(); }
 
+/* Module clears are checked against the server's capture log (module-clears.sql).
+   The server learns which flags each module has from here: every dashboard load
+   publishes the course's module -> flag-key list, built with the same key rules
+   as ctf.js (levels -> id#i, vocab -> id#0..2, else id; vault flags excluded). */
+var MANIFEST_SENT={};
+function syncManifest(course){
+  if(!course||MANIFEST_SENT[course]) return; MANIFEST_SENT[course]=1;
+  var cfg=((window.COURSE_CONFIG||{})[course]||{}).ctf||{}, man={};
+  (cfg.challenges||[]).forEach(function(c){
+    if(c.vault||c.module==null) return;
+    var keys=c.type==="vocab"?[0,1,2].map(function(i){return c.id+"#"+i;})
+      :(c.levels&&c.type!=="phish")?c.levels.map(function(l,i){return c.id+"#"+i;}):[c.id];
+    (man[c.module]=man[c.module]||[]).push.apply(man[c.module],keys);
+  });
+  if(!Object.keys(man).length) return;
+  rpc("ctf_t_sync_manifest",{p_course:course,p_manifest:man}).catch(function(){ MANIFEST_SENT[course]=0; });
+}
 async function loadDetail(){
-  ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;GROUPS=[];GSEL={};GFILTER="all";PIONEERS=[];VOCAB=[];EXPECTED=[];VSESS=[];STAND=[];CAPS=[];GRANTS=[];HRUNS=[];ATTEMPTS=[];RITEMS=[];RSEL={};
+  MCLEARS=null;CRATE=null;CRATEMSG="";ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;GROUPS=[];GSEL={};GFILTER="all";PIONEERS=[];VOCAB=[];EXPECTED=[];VSESS=[];STAND=[];CAPS=[];GRANTS=[];HRUNS=[];ATTEMPTS=[];RITEMS=[];RSEL={};
+  syncManifest(CUR.course);
   try{
     ROSTER=await rpc("ctf_t_roster",{p_class:CUR.id})||[];
     renderMain();
@@ -429,6 +447,7 @@ function renderMain(){
         '<a class="btn sm" target="_blank" rel="noopener" href="duel.html?class='+encodeURIComponent(CUR.id)+'">Duel Arena \u2197</a>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="certificates.html?class='+encodeURIComponent(CUR.id)+'">Certificates \u2197</a>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="install-check.html">Install Check \u2197</a>'+
+        '<a class="btn sm" href="teacher_cyber_tools/">Teacher Resources \u2192</a>'+
       '</span>'+
     '</div>';
   // stat strip
@@ -1524,7 +1543,7 @@ function r2(x){ return Math.round(Number(x)*100)/100; }
    chooses to use them. Unused items can be taken back from the log below. */
 var RITEMS=[], RSEL={}, RKIND="xp2x", RLABEL="", RNOTE="", RMSG="";
 var RQTY=1;
-var RGROUPS=[["classic","XP, coins & streak"],["grade","Grade bonuses & passes"],["help","Flag help"],["boss","Boss fights"],["mult","XP multipliers"],["surprise","Surprises"]];
+var RGROUPS=[["packs","Rewards Packs"],["classic","XP, coins & streak"],["grade","Grade bonuses & passes"],["help","Flag help"],["boss","Boss fights"],["mult","XP multipliers"],["surprise","Surprises"]];
 var RKINDS=[
   {k:"xp2x",      g:"classic", tag:"2\u00d7",  name:"2\u00d7 XP \u00b7 24 hours",   col:"var(--warn)",    sub:"Every flag the student captures pays double XP for 24 hours."},
   {k:"freeze",    g:"classic", tag:"\u2744",   name:"Streak Freeze \u00b7 1 week", col:"var(--accent2)", sub:"For 7 days, missed school days don't break the login streak."},
@@ -1545,16 +1564,90 @@ var RKINDS=[
   {k:"pioneer",   g:"mult",    tag:"P\u00d72", name:"Pioneer Boost",              col:"var(--warn)",    sub:"The next first-to-solve Pioneer bonus is doubled."},
   {k:"squad",     g:"mult",    tag:"1.5\u00d7",name:"Squad Surge \u00b7 1 hour",  col:"var(--warn)",    sub:"The student's whole squad earns 1.5\u00d7 XP for an hour (just them if no squad)."},
   {k:"mystery",   g:"surprise",tag:"???",      name:"Mystery Box",                col:"var(--accent2)", sub:"Opens into a random in-game item. Never a classroom prize."},
+  {k:"pack",      g:"packs",   tag:"\u25a3",   name:"Rewards Pack",               col:"var(--accent2)", sub:"Build a crate: tick any in-game items, set how many of each, add coins. The student opens it with a crate-burst reveal."},
+  {k:"streak1",   g:"classic", tag:"+1\u25b2", name:"Streak +1",                  col:"var(--warn)",    sub:"Adds one day to the student's login streak when claimed."},
+  {k:"hint2",     g:"help",    tag:"??",       name:"Double Hint",                col:"var(--accent)",  sub:"The student's next TWO hint reveals cost no XP."},
+  {k:"skip",      g:"help",    tag:"\u21e5",   name:"Skip Token",                 col:"var(--accent)",  sub:"Opens one flag you have locked, early. The student picks which."},
+  {k:"repel",     g:"boss",    tag:"\u26e8",   name:"Nemesis Repel",              col:"var(--bad)",     sub:"No focus-loss takeover until the student's next capture. Leaving the arena is still logged."},
+  {k:"shard",     g:"surprise",tag:"\u25c7",   name:"Badge Shard",                col:"var(--accent2)", sub:"Collect 3 for the rare Prism badge (6 and 9 level it up)."},
+  {k:"duelticket",g:"surprise",tag:"\u2694",   name:"Duel Ticket",                col:"var(--bad)",     sub:"The student claims it to request a duel. Shows as Duel requested in the log; start it from the Duel page."},
   {k:"voucher",   g:"grade",   tag:"\u2605",   name:"Custom Classroom Prize",     col:"var(--bright)",  sub:"Name anything, e.g. Sticker Sheet or Pick Your Seat. The student redeems it with you."}
 ];
 var VOUCHERS=["Sticker Sheet","Nightly Homework Pass","1-Day Homework/Project Extension","+1 Bonus Point (Graded Assignment)","1% Unit Test/Quiz Bonus","2% Unit Test/Quiz Bonus"];
 function rkindMeta(k){ return RKINDS.filter(function(x){return x.k===k;})[0]||RKINDS[RKINDS.length-1]; }
-var CHARGE_KINDS={hint:1,retry:1,cooldown:1,shield:1,overclock:1,extralife:1,lucky:1,pioneer:1};
+var CHARGE_KINDS={hint:1,retry:1,cooldown:1,shield:1,overclock:1,extralife:1,lucky:1,pioneer:1,hint2:1,skip:1,repel:1};
+/* Rewards Pack builder. PACK = {kind: qty}; coins ride along as their own line.
+   The same builder saves the class's Module Clear Crate (module-clears.sql). */
+var PACK={}, PACKCOINS=0, PACKNAME="", CRATE=null, MCLEARS=null, CRATEMSG="";
+var PACK_KINDS=["hint","hint2","retry","cooldown","timefreeze","skip","shield","overclock","extralife","repel","lucky","pioneer","squad","xp2x","freeze","streak1","xp500","mystery","shard","duelticket"];
+function packContents(){ var c=PACK_KINDS.filter(function(k){return PACK[k]>0;}).map(function(k){return {k:k,n:PACK[k]};}); if(PACKCOINS>0) c.push({k:"coins",n:PACKCOINS}); return c; }
+function packSummary(c){ return (c||[]).map(function(x){ return x.k==="coins"?x.n+" coins":(x.n>1?x.n+"\u00d7 ":"")+rkindMeta(x.k).name.replace(/ \u00b7 .*/,""); }).join(", "); }
+function packStep(k,d){ PACK[k]=Math.max(0,Math.min(10,(PACK[k]||0)+d)); renderMain(); }
+function packLoad(c){ PACK={}; PACKCOINS=0; (c||[]).forEach(function(x){ if(x.k==="coins") PACKCOINS=x.n; else PACK[x.k]=x.n; }); }
+function packBuilder(){
+  var c=packContents();
+  return '<div style="border:1px solid var(--accent2);border-radius:12px;padding:14px;margin-bottom:14px;background:var(--bg2);">'+
+    '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--dim);margin-bottom:8px;">PACK CONTENTS \u00b7 TAP + / \u2212 (UP TO 10 OF EACH)</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-bottom:12px;">'+
+    PACK_KINDS.map(function(k){ var m=rkindMeta(k), n=PACK[k]||0;
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:9px;border:1px solid '+(n?m.col:'var(--border)')+';">'+
+        '<span class="mono" style="flex:none;min-width:30px;height:30px;padding:0 4px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:'+m.col+';border:1px solid '+m.col+';">'+m.tag+'</span>'+
+        '<span style="flex:1;min-width:0;font-size:12px;color:'+(n?'var(--bright)':'var(--dim)')+';">'+m.name.replace(/ \u00b7 .*/,"")+'</span>'+
+        '<button class="btn sm" style="padding:2px 9px;" aria-label="One fewer '+esc(m.name)+'" onclick="packStep(\''+k+'\',-1)">\u2212</button>'+
+        '<b class="mono" style="min-width:16px;text-align:center;color:'+(n?'var(--bright)':'var(--faint)')+';">'+n+'</b>'+
+        '<button class="btn sm" style="padding:2px 9px;" aria-label="One more '+esc(m.name)+'" onclick="packStep(\''+k+'\',1)">+</button></div>'; }).join('')+
+    '</div>'+
+    '<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">'+
+      '<label style="display:flex;align-items:center;gap:8px;"><span class="mono" style="font-size:12px;color:var(--warn);font-weight:700;">\u25C9 Coins</span>'+
+        '<input type="number" min="0" max="500" value="'+PACKCOINS+'" oninput="PACKCOINS=Math.max(0,Math.min(500,parseInt(this.value)||0))" onchange="renderMain()" style="width:80px;padding:6px 8px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;"></label>'+
+      '<input value="'+esc(PACKNAME)+'" oninput="PACKNAME=this.value" placeholder="Pack name, e.g. Lab Champion Pack" style="padding:7px 10px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;min-width:240px;">'+
+      '<button class="btn sm" onclick="PACK={};PACKCOINS=0;renderMain()">Clear</button>'+
+    '</div>'+
+    '<div class="mono" style="font-size:12px;color:'+(c.length?'var(--bright)':'var(--faint)')+';line-height:1.6;">'+(c.length?'Inside: '+esc(packSummary(c)):'Empty pack \u2014 add at least one item or some coins.')+'</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border2);">'+
+      '<span class="mono" style="font-size:11px;color:var(--dim);flex-basis:100%;line-height:1.6;">MODULE CLEAR CRATE \u00b7 sent automatically when a student clears every flag in a module and beats its boss. '+
+        (CRATE&&!CRATE.error?'Now: '+esc(packSummary(CRATE.contents))+(CRATE.coins?' \u00b7 Coin Pack: '+CRATE.coins+' coins':'')+(CRATE.custom?'':' (default)'):'Run supabase/module-clears.sql to use it.')+'</span>'+
+      (CRATE&&!CRATE.error?'<button class="btn sm" onclick="packLoad(CRATE.contents.concat(CRATE.coins?[{k:\'coins\',n:CRATE.coins}]:[]));renderMain()">Load crate into builder</button>'+
+        '<button class="btn sm pri" onclick="saveCrate()">Save builder as the Module Clear Crate</button>':'')+
+      (CRATEMSG?'<span class="mono" style="font-size:11px;color:'+(/^\u2713/.test(CRATEMSG)?'var(--ok)':'var(--bad)')+';">'+esc(CRATEMSG)+'</span>':'')+
+    '</div></div>';
+}
+async function saveCrate(){
+  var items=packContents().filter(function(x){return x.k!=="coins";});
+  if(!items.length&&!PACKCOINS){ CRATEMSG="Add items or coins first."; renderMain(); return; }
+  try{ var r=await rpc("ctf_t_set_crate",{p_class:CUR.id,p_contents:items,p_coins:PACKCOINS});
+    if(r&&r.error) CRATEMSG="Couldn\u2019t save: "+r.error;
+    else { CRATE=await rpc("ctf_t_crate",{p_class:CUR.id}); CRATEMSG="\u2713 Saved. Crate: "+packSummary(items)+" \u00b7 Coin Pack: "+PACKCOINS+" coins."; } }
+  catch(e){ CRATEMSG="Run supabase/module-clears.sql first."; }
+  renderMain();
+}
+async function loadClearsData(){
+  if(!CUR) return; var cid=CUR.id;
+  var a=await Promise.all([rpc("ctf_t_crate",{p_class:cid}).catch(function(){return {error:"missing_rpc"};}),
+                           rpc("ctf_t_module_clears",{p_class:cid}).catch(function(){return {error:"missing_rpc"};})]);
+  if(!CUR||CUR.id!==cid) return;
+  CRATE=a[0]; MCLEARS=a[1]; if(TAB==="rewards") renderMain();
+}
+function clearsView(){
+  if(MCLEARS==null) return '';
+  if(MCLEARS.error) return '<div class="mono" style="font-size:11px;color:var(--faint);margin:22px 0;">Run supabase/module-clears.sql to see module clears and Mentors.</div>';
+  var by={}; MCLEARS.forEach(function(c){ (by[c.module]=by[c.module]||[]).push(c); });
+  var mods=Object.keys(by).sort(function(a,b){return a-b;});
+  var h='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin:26px 0 8px;">MODULE CLEARS \u00b7 MENTORS</div>'+
+    '<div class="mono" style="font-size:11px;color:var(--dim);margin-bottom:10px;line-height:1.6;max-width:720px;">Students who cleared every flag in a module and beat its boss. Each one holds that module\u2019s Mentor badge, so they\u2019re good people to pair with classmates who are stuck. \u2691 = first in class (Vanguard).</div>';
+  if(!mods.length) return h+'<div class="empty">No module clears yet.</div>';
+  var names=((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf; names=(names&&names.modules)||[];
+  return h+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:22px;">'+mods.map(function(m){
+    return '<div class="card" style="padding:12px 14px;"><div class="mono" style="font-size:11px;color:var(--accent);letter-spacing:1px;margin-bottom:6px;">MODULE '+String(m).padStart(2,"0")+(names[m-1]?' \u00b7 '+esc(names[m-1]):'')+'</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+by[m].map(function(c){ return '<span class="mono" title="'+esc(fmtDate(c.cleared_at))+'" style="font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid '+(c.rank===1?'var(--warn)':'var(--border)')+';color:var(--bright);">'+(c.rank===1?'\u2691 ':'')+esc(c.handle)+'</span>'; }).join('')+'</div></div>';
+  }).join('')+'</div>';
+}
 var RAMT={};
 function ramt(m){ return m.amt ? (RAMT[m.k]!=null ? RAMT[m.k] : m.amt.def) : null; }
 function setRAmt(k,v){ var m=rkindMeta(k); var n=parseInt(v,10); if(isNaN(n)) return; RAMT[k]=Math.max(m.amt.min,Math.min(m.amt.max,n)); if(k==="coins"&&RAMT[k]===0) RAMT[k]=1; var b=el("rSend"); if(b&&!b.disabled) b.textContent=sendLabel(); }
 function rewardName(m){ var n=ramt(m); return m.k==="coins" ? n+" coin"+(Math.abs(n)===1?"":"s") : m.label ? m.label(n) : m.name; }
 function sendLabel(){ var n=Object.keys(RSEL).length, all=ROSTER.length&&n===ROSTER.length, m=rkindMeta(RKIND);
+  if(RKIND==="pack") return "Send "+(RQTY>1?RQTY+"\u00d7 ":"")+(PACKNAME.trim()||"Rewards Pack")+" to "+(all?"entire class":n+" student"+(n===1?"":"s"));
   return (m.k==="coins"&&ramt(m)<0?"Take back ":"Send ")+(m.k==="coins"?Math.abs(ramt(m))+" coin"+(Math.abs(ramt(m))===1?"":"s"):RKIND==="voucher"?(RLABEL.trim()||"Classroom Prize"):rewardName(m))+(m.k==="coins"?(ramt(m)<0?" from ":" to "):" to ")+(all?"entire class":n+" student"+(n===1?"":"s")); }
 function setRKind(k){ RKIND=k; RMSG=""; renderMain(); }
 function toggleRSel(id){ if(RSEL[id]) delete RSEL[id]; else RSEL[id]=1; RMSG=""; renderMain(); }
@@ -1564,7 +1657,8 @@ function itemStatus(it){
   if(!it.used_at) return ['Unused','var(--dim)'];
   if(it.expires_at&&Date.parse(it.expires_at)>now) return [Date.parse(it.starts_at)>now?'Queued':'Active','var(--ok)'];
   if(CHARGE_KINDS[it.kind]&&!it.consumed_at) return ['Armed','var(--warn)'];
-  return [it.kind==='voucher'?'Redeemed':'Used','var(--faint)'];
+  if(it.kind==='duelticket') return ['Duel requested','var(--warn)'];
+  return [it.kind==='voucher'?'Redeemed':it.kind==='pack'?'Opened':'Used','var(--faint)'];
 }
 var CAMT=1, CMSG="";
 async function sendCoins(){
@@ -1587,6 +1681,7 @@ function coinCard(){
 }
 function rewardsView(){
   if(RITEMS&&RITEMS.error) return '<div class="empty" style="color:var(--bad)">Run supabase/reward-items.sql to send reward items.</div>';
+  if(MCLEARS==null&&!rewardsView._loading){ rewardsView._loading=true; loadClearsData().finally(function(){ rewardsView._loading=false; }); }
   var ids=Object.keys(RSEL), n=ids.length, all=ROSTER.length&&n===ROSTER.length;
   var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;max-width:720px;">'+
     'Items go to each student\u2019s profile inventory. Students choose when to use them; timed items start counting down on use. '+
@@ -1611,6 +1706,7 @@ function rewardsView(){
       '<input type="number" min="1" max="10" value="'+RQTY+'" oninput="RQTY=Math.max(1,Math.min(10,parseInt(this.value)||1))" style="width:64px;padding:6px 8px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;"></label>')+
       (m.label?'<span class="mono" style="font-size:12px;color:var(--dim);">Student sees: <b style="color:var(--bright);">'+esc(rewardName(m))+'</b></span>':'')+
       '</div>'; })()+
+    (RKIND==="pack"?packBuilder():'')+
     (RKIND==="voucher"?'<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">'+
       '<input id="rLabel" list="rVouchers" value="'+esc(RLABEL)+'" oninput="RLABEL=this.value" placeholder="Prize name, e.g. Nightly Homework Pass" '+
         'style="padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;min-width:300px;">'+
@@ -1631,6 +1727,7 @@ function rewardsView(){
       (RMSG?'<span class="mono" style="font-size:12px;color:'+(/^Sent/.test(RMSG)?'var(--ok)':'var(--bad)')+';">'+esc(RMSG)+'</span>':'')+
     '</div></div>';
 
+  h+=clearsView();
   var list=Array.isArray(RITEMS)?RITEMS:[];
   h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">ITEM LOG</div>';
   if(!list.length) return h+'<div class="empty">No items sent yet.</div>';
@@ -1639,8 +1736,9 @@ function rewardsView(){
     h+='<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(it.created_at)+'</td>'+
       '<td><b style="color:var(--bright)">'+esc(it.handle||'')+'</b></td>'+
       '<td><span class="mono" style="color:'+mt.col+';font-weight:700;margin-right:6px;">'+mt.tag+'</span>'+esc(it.label||'')+
+        (it.kind==='pack'&&it.contents?'<div class="mono" style="color:var(--text);font-size:11px;margin-top:2px;">'+esc(packSummary(it.contents))+'</div>':'')+
         (it.note?'<div style="color:var(--dim);font-size:11px;margin-top:2px;">'+esc(it.note)+'</div>':'')+'</td>'+
-      '<td class="mono" style="color:var(--dim)">'+(it.source==='spinner'?'spinner':'teacher')+'</td>'+
+      '<td class="mono" style="color:var(--dim)">'+(it.source==='spinner'?'spinner':it.source==='clear'?'module clear':it.source==='pack'?'pack':it.source==='loot'?'loot':it.source==='mystery'?'mystery box':'teacher')+'</td>'+
       '<td class="mono" style="color:'+st[1]+';white-space:nowrap">'+st[0]+(it.used_at?' \u00b7 '+fmtDate(it.used_at):'')+'</td>'+
       '<td>'+(it.used_at?'':'<button class="btn sm" style="padding:3px 8px;font-size:11px;" onclick="revokeItem(\''+it.id+'\')">Take back</button>')+'</td></tr>';
   });
@@ -1650,6 +1748,16 @@ async function sendRewards(){
   var ids=Object.keys(RSEL); if(!ids.length) return;
   if(RKIND==="voucher"&&!RLABEL.trim()){ RMSG="Name the prize first."; renderMain(); return; }
   var m=rkindMeta(RKIND);
+  if(RKIND==="pack"){
+    var pc=packContents(); if(!pc.length){ RMSG="Add something to the pack first."; renderMain(); return; }
+    var bp=el("rSend"); if(bp){ bp.disabled=true; bp.textContent="Sending\u2026"; }
+    try{ var rp=await rpc("ctf_t_send_pack",{p_students:ids,p_contents:pc,p_label:PACKNAME.trim()||null,p_note:RNOTE.trim()||null,p_qty:RQTY});
+      if(rp&&rp.error) RMSG="Couldn\u2019t send: "+rp.error;
+      else { RMSG="Sent "+(PACKNAME.trim()||"Rewards Pack")+" to "+rp.students+" student"+(rp.students===1?"":"s")+"."; RSEL={}; RNOTE="";
+        RITEMS=keepErr(await rpc("ctf_t_items",{p_class:CUR.id,p_limit:300}).catch(function(){return RITEMS;})); } }
+    catch(e){ RMSG="Couldn\u2019t send the pack. Re-run supabase/reward-items.sql (6.0)."; }
+    renderMain(); return;
+  }
   var b=el("rSend"); if(b){ b.disabled=true; b.textContent="Sending\u2026"; }
   if(m.k==="coins"){
     var want=ramt(m);
@@ -1746,7 +1854,7 @@ function exportGradebook(){
   var idx=(window.OBJECTIVES&&objIndex())||null;
   var by=idx?capsByStudent():null;
   var cfg=(window.COURSE_CONFIG||{})[CUR.course]||{};
-  var chals=((cfg.ctf||{}).challenges)||[];
+  var chals=(((cfg.ctf||{}).challenges)||[]).filter(function(c){ return !c.vault; });
   var availXP=0, availFlags=0;
   chals.forEach(function(c){
     if(c.type==="vocab"){ availXP+=300; availFlags+=3; return; }

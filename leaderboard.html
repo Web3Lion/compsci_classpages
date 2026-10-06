@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="site.js?v=5.3.0"></script>
+<script src="site.js?v=8.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -209,10 +209,10 @@ button{font-family:inherit;cursor:pointer;}
   <div id="myRankChip"></div>
 </div>
 
-<script src="cipher.js?v=5.3.0"></script>
-<script src="supabase-config.js?v=5.3.0"></script>
-<script src="auth.js?v=5.3.0"></script>
-<script src="cosmetics.js?v=5.3.0"></script>
+<script src="cipher.js?v=8.0.0"></script>
+<script src="supabase-config.js?v=8.0.0"></script>
+<script src="auth.js?v=8.0.0"></script>
+<script src="cosmetics.js?v=8.0.0"></script>
 <script>
 var FX = (function(){
   var canvas, ctx, raf = null, w = 0, h = 0, dpr = 1;
@@ -509,6 +509,8 @@ var COS = {}, COS_AT = 0, COS_CLASS = null;
 function cosOf(h){ return COS[String(h||"").toLowerCase()] || null; }
 function cosName(eq){ return (eq && window.CTF_COSMETICS) ? window.CTF_COSMETICS.nameStyle(eq) : ""; }
 function cosTitle(eq, sz){ return (eq && window.CTF_COSMETICS) ? window.CTF_COSMETICS.titleHtml(eq, sz) : ""; }
+function cosNameHtml(h, eq){ return (eq && window.CTF_COSMETICS && window.CTF_COSMETICS.nameHtml) ? window.CTF_COSMETICS.nameHtml(h, eq) : esc(h); }
+function cosRow(eq){ var c = (eq && window.CTF_COSMETICS && window.CTF_COSMETICS.rowClass) ? window.CTF_COSMETICS.rowClass(eq) : ""; return c ? " " + c : ""; }
 function cosFrame(eq){ var c = (eq && window.CTF_COSMETICS) ? window.CTF_COSMETICS.frameClass(eq) : ""; return c ? " " + c : ""; }
 
 function applyTheme(course){
@@ -720,7 +722,7 @@ function renderBoard(data){
     return '<div class="pod' + (p.handle===myHandle?' isMe':'') + cosFrame(eq) + '" id="pod' + (i+1) + '" data-handle="' + esc(p.handle) + '" data-pos="' + p.pos + '">' +
       '<div class="medal">' + MEDALS[i] + '</div>' +
       '<div class="rank">RANK ' + p.pos + moveHtml(p) + '</div>' +
-      '<div class="handle"><span style="' + cosName(eq) + '">' + esc(p.handle) + '</span>' + (p.handle===myHandle?' · YOU':'') + cosTitle(eq, 12) + '</div>' +
+      '<div class="handle">' + cosNameHtml(p.handle, eq) + (p.handle===myHandle?' · YOU':'') + cosTitle(eq, 12) + '</div>' +
       '<div class="xp" style="color:var(--accent);">' + p.xp + ' XP</div>' +
       (p.total_count ? '<div class="solved">' + p.solved_count + '/' + p.total_count + ' flags</div>' : '') +
       (p.streak_count > 1 ? '<div class="streak" style="margin-top:6px;">🔥 ' + p.streak_count + ' day streak</div>' : '') +
@@ -733,9 +735,9 @@ function renderBoard(data){
     var pct = Math.max(4, Math.round((p.xp / maxXp) * 100));
     var isUp = PREV[p.handle] != null && p.xp > PREV[p.handle];
     var eq = cosOf(p.handle);
-    return '<div class="row' + (isUp ? ' rowUp' : '') + (p.handle===myHandle?' isMe':'') + cosFrame(eq) + '" data-handle="' + esc(p.handle) + '" data-pos="' + p.pos + '">' +
+    return '<div class="row' + (isUp ? ' rowUp' : '') + (p.handle===myHandle?' isMe':'') + cosFrame(eq) + cosRow(eq) + '" data-handle="' + esc(p.handle) + '" data-pos="' + p.pos + '">' +
       '<div class="rk">#' + p.pos + '</div>' + moveHtml(p) +
-      '<div class="hd"><span style="' + cosName(eq) + '">' + esc(p.handle) + '</span>' + (p.handle===myHandle?' · YOU':'') + cosTitle(eq, 10) + '</div>' +
+      '<div class="hd">' + cosNameHtml(p.handle, eq) + (p.handle===myHandle?' · YOU':'') + cosTitle(eq, 10) + '</div>' +
       '<div class="solved">' + (p.total_count ? p.solved_count + '/' + p.total_count : '—') + '</div>' +
       '<div class="streak' + (p.streak_count > 1 ? '' : ' empty') + '">' + (p.streak_count > 1 ? '🔥 ' + p.streak_count : '—') + '</div>' +
       '<div class="badges' + (p.badge_count ? '' : ' empty') + '">' + (p.badge_count ? '🎖 ' + p.badge_count : '—') + '</div>' +

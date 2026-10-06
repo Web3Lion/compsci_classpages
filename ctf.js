@@ -117,6 +117,7 @@
     return { mods: (L.modules || []).map(Number), flags: L.flags || [] };
   }
   function isLocked(c) {
+    try { if (state && state.skipOpen && state.skipOpen[c.id]) return false; } catch (e) {}
     var L = locks();
     if (L.flags.indexOf(c.id) !== -1) return true;
     return L.mods.indexOf(Number(c.module || 0)) !== -1;
@@ -224,6 +225,25 @@
     if (typeof window.CTF_CONSUME_ITEM === "function") { try { window.CTF_CONSUME_ITEM(it.id); } catch (e) {} }
     return true;
   }
+  // Double Hint: one armed item covers two free reveals; a Free Hint is spent first.
+  function freeHintReady(){ return armedItems("hint").length > 0 || armedItems("hint2").length > 0; }
+  function spendFreeHint(){
+    if (consumeItem("hint")) return true;
+    const it = armedItems("hint2")[0]; if (!it) return false;
+    state.hint2Uses = state.hint2Uses || {}; state.hint2Uses[it.id] = (state.hint2Uses[it.id] || 0) + 1;
+    if (state.hint2Uses[it.id] >= 2) consumeItem("hint2"); else save(state);
+    return true;
+  }
+  // Streak +1: every claimed one adds a day to the streak, exactly once.
+  function applyStreakItems(){
+    state.streakAdd = state.streakAdd || {}; let n = 0;
+    rewardItems().forEach(it => { if (it.kind === "streak1" && it.used_at && !it.shared && !state.streakAdd[it.id]) { state.streakAdd[it.id] = Date.now(); n++; } });
+    if (!n) return 0;
+    const st = state.streak || { last: null, count: 0, best: 0 };
+    st.count = (st.count || 0) + n; st.best = Math.max(st.best || 0, st.count); state.streak = st; save(state);
+    return n;
+  }
+  let repelNoted = false;
   // Item toasts show whether or not the NEMESIS persona is switched on.
   function itemToast(title, body){
     let host = document.getElementById("itemToasts");
@@ -368,6 +388,119 @@
     };
     return course === "apcsp" ? csp : course === "web3" ? web3 : cyber;
   }
+  /* MODULE CLEARS (module-clears.sql) — every flag in the module plus its boss.
+     The first clear drops a Clear Crate + Coin Pack, earns the module's Mentor
+     badge, opens the module's Vault flag, and ranks the student in the class
+     (rank 1 = Vanguard). The server sends the packs once; this only asks. */
+  function bossBeaten(m){ const w = state.bossWins || {}; return !!w[(window.CTF_COURSE || "c") + ":" + m]; }
+  function vaultOpen(m){ return !!((state.modClears || {})[m]); }
+  function fullyCleared(m){
+    const cs = (byModule()[m] || []).filter(c => !c.vault);
+    if (!cs.length || cs.some(isLocked)) return false;
+    return moduleCleared(m) && (window.CTF_PERSONA === false || bossBeaten(m));
+  }
+  /* The server only accepts a clear its own logs agree with. If a capture or the
+     boss win never reached it (offline, closed tab), resend what this device has
+     and ask once more. */
+  function reportBoss(m){ if (typeof window.CTF_BOSS_WIN === "function") return Promise.resolve(window.CTF_BOSS_WIN({ module: +m })); return Promise.resolve(null); }
+  function resendCaptures(keys){
+    if (typeof window.CTF_REPORT !== "function") return 0; let n = 0;
+    (keys || []).forEach(k => {
+      if (!state.solved[k]) return;
+      const id = String(k).split("#")[0], li = /#\d+$/.test(k) ? +String(k).split("#")[1] : 0;
+      const ch = (ctf.challenges || []).find(x => x.id === id); if (!ch) return;
+      const lvl = ch.type === "vocab" ? VOCAB_DIFFS[li] : (ch.levels && ch.type !== "phish" && ch.levels[li] ? ch.levels[li].difficulty : null);
+      try { window.CTF_REPORT({ course, handle: getHandle(), challengeId: ch.id, key: k, level: lvl, title: ch.title, points: state.earned[k] || 0, secs: null, retries: state.retry[k] || 0, tainted: false }); n++; } catch (e) {}
+    });
+    return n;
+  }
+  function askClear(m, again){
+    const p = typeof window.CTF_MODULE_CLEAR === "function" ? Promise.resolve(window.CTF_MODULE_CLEAR({ module: +m })) : Promise.resolve(null);
+    return p.then(r => {
+      if (again || !r || !r.error) return r;
+      if (r.error === "no_boss" && bossBeaten(m)) return reportBoss(m).then(() => askClear(m, true));
+      if (r.error === "not_cleared" && resendCaptures(r.missing)) return new Promise(res => setTimeout(res, 1800)).then(() => askClear(m, true));
+      return r;
+    });
+  }
+  function sendClear(m, quiet){
+    const rec = state.modClears[m];
+    return (bossBeaten(m) ? reportBoss(m) : Promise.resolve()).then(() => askClear(m, false)).then(r => {
+      if (r && !r.error) { rec.sent = true; if (r.rank) rec.rank = r.rank; save(state); }
+      if (r && (r.error === "not_cleared" || r.error === "no_boss") && !quiet) { delete state.modClears[m]; save(state); render(); return; }
+      if (r && r.items && r.items.length) { try { const list = rewardItems(); r.items.forEach(x => list.unshift(x)); localStorage.setItem("ctf-items-" + course, JSON.stringify(list)); } catch (e) {} }
+      const nb = checkBadgeUnlocks();
+      if (quiet) { if (r && r.items && r.items.length) itemToast("\u2605 MODULE " + String(m).padStart(2, "0") + " REWARDS", "your Clear Crate + Coin Pack are in your items."); if (nb.length) announceBadges(nb); }
+      else clearMoment(+m, r, nb);
+      render();
+    });
+  }
+  function checkModuleClears(quiet){
+    state.modClears = state.modClears || {};
+    Object.keys(byModule()).forEach(m => {
+      const rec = state.modClears[m];
+      if (rec) { if (!rec.sent && !rec.trying) { rec.trying = true; sendClear(m, true).then(() => { delete rec.trying; }); } return; }
+      if (!fullyCleared(+m)) return;
+      state.modClears[m] = { ts: Date.now(), rank: null, sent: false }; save(state);
+      sendClear(m, quiet);
+    });
+  }
+  function clearMoment(m, r, nb){
+    if (document.getElementById("clearMoment")) return;
+    const rm = (typeof window.SITE_REDUCED_MOTION === "function" && window.SITE_REDUCED_MOTION()) || matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!document.getElementById("cmStyle")) {
+      const st = document.createElement("style"); st.id = "cmStyle";
+      st.textContent = "@keyframes cmIn{from{opacity:0}to{opacity:1}}" +
+        "@keyframes cmBreak{0%{transform:none;filter:none;opacity:1}18%{transform:translate(-8px,3px) skewX(9deg);filter:hue-rotate(80deg)}30%{transform:translate(7px,-4px) skewX(-12deg);filter:hue-rotate(-60deg) saturate(3)}46%{transform:scale(1.08);filter:brightness(2.4)}100%{transform:scale(1.7);filter:blur(16px) brightness(3);opacity:0}}" +
+        "@keyframes cmShard{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}" +
+        "@keyframes cmUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}" +
+        "@keyframes cmGlow{0%,100%{text-shadow:0 0 18px var(--accent)}50%{text-shadow:0 0 42px var(--accent)}}";
+      document.head.appendChild(st);
+    }
+    const tag = "MODULE " + String(m).padStart(2, "0");
+    const hasVault = (ctf.challenges || []).some(c => c.vault && (c.module || 0) === m);
+    const rank = r && r.rank;
+    const coinIt = r && r.items && r.items.filter(x => /Coin Pack/.test(x.label || ""))[0];
+    const coins = coinIt && coinIt.contents && coinIt.contents[0] ? coinIt.contents[0].n : null;
+    const rows = [];
+    if (r && r.items && r.items.length) {
+      r.items.forEach(x => rows.push(["\u25a3", x.label + (/Coin Pack/.test(x.label || "") && coins ? " \u00b7 " + coins + " coins" : "")]));
+    } else rows.push(["\u25a3", "Clear Crate + Coin Pack \u00b7 on the way \u2014 they land in your items once the server confirms the clear"]);
+    rows.push(["\u2726", "Module " + m + " Mentor badge"]);
+    if (hasVault) rows.push(["\u26bf", "Vault flag unlocked in " + tag]);
+    if (rank === 1) rows.push(["\u2691", "FIRST IN CLASS \u00b7 Vanguard"]);
+    else if (rank) rows.push(["#", "#" + rank + " in your class to clear " + tag]);
+    (nb || []).forEach(b => { if (!/^Module \d+ Mentor$/.test(b.name)) rows.push([b.glyph, b.name + " \u2014 " + b.label]); });
+    let shards = "";
+    if (!rm) for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * Math.PI * 2, d = 160 + Math.random() * 160;
+      shards += '<span style="position:absolute;left:50%;top:50%;width:' + (8 + Math.random() * 18) + 'px;height:' + (3 + Math.random() * 6) + 'px;background:' + ADVC2 + ';box-shadow:0 0 10px ' + ADVGLOW + ';--dx:' + Math.round(Math.cos(a) * d) + 'px;--dy:' + Math.round(Math.sin(a) * d) + 'px;--rot:' + Math.round(Math.random() * 720 - 360) + 'deg;animation:cmShard 1.1s cubic-bezier(.2,.7,.3,1) .55s both;"></span>';
+    }
+    const head = MENTOR ? ADV + ": YOU DID IT" : ADV + " // CONNECTION SEVERED";
+    const ov = document.createElement("div"); ov.id = "clearMoment"; ov.className = "mono";
+    ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", tag + " cleared");
+    ov.style.cssText = "position:fixed;inset:0;z-index:13700;background:rgba(2,4,8,.94);display:flex;align-items:center;justify-content:center;padding:20px;animation:cmIn .3s ease;overflow:auto;";
+    ov.innerHTML = '<div style="width:min(560px,100%);text-align:center;">' +
+      '<div style="position:relative;height:150px;display:flex;align-items:center;justify-content:center;">' +
+        '<div style="' + (rm ? "opacity:.25;" : "animation:cmBreak 1.3s ease-in .2s forwards;") + '">' + eyesSVG("min(70vw,320px)") + '</div>' + shards + '</div>' +
+      '<div style="font-size:12px;letter-spacing:3px;color:' + ADVC2 + ';margin-top:8px;' + (rm ? "" : "animation:cmUp .5s ease 1.2s both;") + '">' + esc(head) + '</div>' +
+      '<div style="font-size:clamp(30px,7vw,48px);font-weight:800;color:var(--bright);letter-spacing:1px;margin:10px 0 4px;' + (rm ? "" : "animation:cmUp .5s ease 1.4s both,cmGlow 2.4s ease-in-out 2s infinite;") + '">' + tag + ' CLEARED</div>' +
+      '<div style="font-size:13px;color:var(--dim);margin-bottom:20px;' + (rm ? "" : "animation:cmUp .5s ease 1.55s both;") + '">every flag captured and the boss beaten.</div>' +
+      '<div style="display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:22px;">' +
+        rows.map((x, i) => '<div style="display:flex;gap:12px;align-items:center;padding:11px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--panel);font-size:13px;color:var(--bright);' + (rm ? "" : "animation:cmUp .4s ease " + (1.75 + i * 0.15).toFixed(2) + "s both;") + '"><span style="flex:none;width:22px;text-align:center;color:var(--accent);font-weight:800;">' + esc(x[0]) + '</span>' + esc(x[1]) + '</div>').join("") +
+      '</div>' +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+        (hasVault ? '<button type="button" id="cmVault" style="font:inherit;font-size:13px;font-weight:800;letter-spacing:1px;padding:13px 20px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#04121e;cursor:pointer;">\u26bf OPEN THE VAULT</button>' : '') +
+        '<a href="profile.html#pfItems" style="font-size:13px;font-weight:800;letter-spacing:1px;padding:13px 20px;border-radius:10px;border:1px solid var(--border3);color:var(--bright);text-decoration:none;">OPEN MY ITEMS</a>' +
+        '<button type="button" id="cmClose" style="font:inherit;font-size:13px;font-weight:700;padding:13px 20px;border-radius:10px;border:1px solid var(--border2);background:none;color:var(--dim);cursor:pointer;">CONTINUE</button>' +
+      '</div></div>';
+    document.body.appendChild(ov);
+    const close = () => { ov.remove(); };
+    document.getElementById("cmClose").onclick = close;
+    const v = document.getElementById("cmVault");
+    if (v) v.onclick = () => { close(); if (typeof closeBoss === "function" && document.getElementById("bossWrap")) { try { closeBoss(); } catch (e) {} } openMods.add(String(m)); render(); };
+    if (!MENTOR && personaOn()) { try { nemesisSpeak("Connection severed. " + tag + " is yours."); } catch (e) {} }
+  }
   function badgeDefs(){
     const s = stats();
     const by = byModule();
@@ -395,7 +528,10 @@
       { id:"earlyBird", glyph:"\u2600", name:th.earlyBird.name, value:earlyBirdCount(), tiers:mk(th.earlyBird, [1, 5, 15]) },
       { id:"speedrunner", glyph:"\u26a1", name:th.speedrunner.name, value:speedrunModsCount(), tiers:mk(th.speedrunner, [1, Math.ceil(N/2), N]) },
       { id:"weekend", glyph:"\u25d1", name:th.weekend.name, value:weekendCount(), tiers:mk(th.weekend, [1, 5, 15]) },
-      { id:"fullClear", glyph:"\u2605", name:th.fullClear.name, value:fullClearDone(), tiers:mk(th.fullClear, [1]) }
+      { id:"fullClear", glyph:"\u2605", name:th.fullClear.name, value:fullClearDone(), tiers:mk(th.fullClear, [1]) },
+      ...modKeys.filter(m => +m > 0).map(m => ({ id:"mentor" + m, glyph:"\u2726", name:"Module " + m + " Mentor", value:(state.modClears || {})[m] ? 1 : 0, tiers:[{ label:"Mentor", need:1 }] })),
+      { id:"vanguard", glyph:"\u2691", name:"Vanguard", value:Object.keys(state.modClears || {}).filter(k => (state.modClears[k] || {}).rank === 1).length, tiers:mk({ tiers:["First In","Trailblazer","Vanguard"] }, [1, Math.ceil(N/2), N]) },
+      { id:"prism", glyph:"\u25c7", name:"Prism", value:rewardItems().filter(it => it.kind === "shard" && it.used_at && !it.shared).length, tiers:[{ label:"Shard Set", need:3 }, { label:"Prism", need:6 }, { label:"Spectrum", need:9 }] }
     ];
   }
   function tierColor(t){ return ["var(--faint)", "#cd8a3c", "#c3d0de", "var(--amber)"][t] || "var(--amber)"; }
@@ -465,8 +601,10 @@
   function bootProgress(){
     stampModuleSeen();
     const ds = checkDailyLogin();
+    applyStreakItems();
     const nb = checkBadgeUnlocks();
     render();
+    setTimeout(function(){ checkModuleClears(true); }, 1500);
     if (ds) setTimeout(function(){ nemesisToast("\u25b2 DAY " + ds.count + " STREAK", "+" + ds.bonus + " XP daily login bonus" + (ds.count >= 10 ? " \u00b7 max streak!" : ""), "var(--amber)"); }, 500);
     if (nb.length) setTimeout(function(){ announceBadges(nb); }, 1100);
     if (course === "cyber1") { initUltimateFlag5(); initUltimateFlag14(); }
@@ -579,6 +717,9 @@
   window.CTF.rerender = function () { try { state = load(); render(); } catch (e) {} };
   // profile page (profile.js) reuses the engine's badge + tier math so the two
   // views can never disagree. Each entry carries its earned tier (0 = locked).
+  window.CTF.moduleClears = function () { return Object.assign({}, state.modClears || {}); };
+  window.CTF.moduleNames = function () { return (ctf.modules || []).slice(); };
+  window.CTF.applyStreakItems = function () { try { return applyStreakItems(); } catch (e) { return 0; } };
   window.CTF.badges = function () {
     try { return badgeDefs().map(d => Object.assign({}, d, { tier: tierOf(d) })); } catch (e) { return []; }
   };
@@ -638,6 +779,7 @@
   }
 
   function flagsOf(c) {
+    if (c.vault) return [];        // vault flags are a reward, never part of the denominator
     if (c.type === "vocab") return [0, 1, 2].map(i => ({ key: c.id + "#" + i, points: VOCAB_PTS[i] }));
     if (isLocked(c)) return [];   // locked work isn't part of the denominator yet
     return (c.levels && c.type !== "phish") ? c.levels.map((lv, i) => ({ key: c.id + "#" + i, points: lv.points || 0 })) : [{ key: c.id, points: c.points || 0 }];
@@ -830,7 +972,7 @@
     return Math.max(1, Math.round(decayedPoints(base, sec) * capFor(key) * hintMult(key)));
   }
   function hintPreviewTxt(key, base) {
-    if (armedItems("hint").length) return `<span style="color:var(--accent);font-weight:700;">Free Hint armed</span> \u00b7 this reveal costs 0 XP`;
+    if (freeHintReady()) return `<span style="color:var(--accent);font-weight:700;">Free Hint armed</span> \u00b7 this reveal costs 0 XP`;
     const now = valueNow(key, base), after = Math.max(1, Math.round(now * (1 - HINT_COST)));
     return `cost preview \u00b7 worth <b style="color:var(--amber);">${now} XP</b> now \u2192 <b style="color:var(--amber);">${after} XP</b> after the hint <span style="color:var(--adv2);">(\u2212${now - after} XP)</span>`;
   }
@@ -900,6 +1042,10 @@
   function nemesisTakeover(){
     if (typeof window.CTF_CHEAT === "function") { try { window.CTF_CHEAT("focus", "left the arena (tab/window blur)", activeFlagKey()); } catch (e) {} }
     if (!personaOn()) return;   // guide asleep: log it, but no theatre
+    if (armedItems("repel").length) {   // Nemesis Repel: no takeover until the next capture (still logged above)
+      if (!repelNoted) { repelNoted = true; itemToast("\u26e8 " + ADV + " REPELLED", "no takeover until your next capture."); }
+      return;
+    }
     if (MENTOR) { connectionLost(); return; }
     if (document.getElementById("nemTakeover")) return;
     injectGlitchStyle();
@@ -1427,8 +1573,9 @@
     </div>`;
   }
 
+  function vaultFlags(c) { return (c.levels && c.type !== "phish") ? c.levels.map((lv, i) => ({ key: c.id + "#" + i, points: lv.points || 0 })) : [{ key: c.id, points: c.points || 0 }]; }
   function chalRow(c) {
-    const fl = flagsOf(c);
+    const fl = c.vault ? vaultFlags(c) : flagsOf(c);
     const done = fl.filter(f => state.solved[f.key]).length;
     const all = done === fl.length && fl.length > 0;
     const open = openChals.has(c.id);
@@ -1519,7 +1666,7 @@
     }
     const names = ctf.modules || [];
     const byMod = {};
-    chals.forEach(c => { const m = c.module || 0; (byMod[m] = byMod[m] || []).push(c); });
+    chals.forEach(c => { const m = c.module || 0; if (c.vault && !vaultOpen(m)) return; (byMod[m] = byMod[m] || []).push(c); });
     return savedBar(chals) + Object.keys(byMod).sort((a, b) => a - b).map(m => moduleBlock(+m, names, byMod[m])).join("");
   }
 
@@ -1856,6 +2003,7 @@
         <div class="mono" style="font-size:11px;color:var(--faint);letter-spacing:.5px;margin-bottom:10px;">${esc(line)}</div>
         <div class="mono ctfCryptoText" style="user-select:text;white-space:pre-wrap;word-break:break-all;font-size:12.5px;line-height:1.75;
           color:var(--adv2,#8fb6d9);background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:13px 15px;margin-bottom:12px;">${esc(enc)}</div>
+        ${armedItems("skip").length ? `<button type="button" class="skipUse mono" data-id="${esc(c.id)}" style="font-size:13px;font-weight:700;padding:11px 18px;border-radius:10px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;">\u21e5 USE SKIP TOKEN \u00b7 open this flag now</button>` : ""}
       </div>`;
   }
 
@@ -2483,6 +2631,14 @@
   function bind() {
     // display name is owned by the class account now (sync.js chip + profile.html)
     bindFlagStart();
+    document.querySelectorAll(".skipUse").forEach(b => b.addEventListener("click", () => {
+      const id = b.getAttribute("data-id");
+      if (!confirm("Use a Skip Token to open this flag before your teacher unlocks it?")) return;
+      if (!consumeItem("skip")) return;
+      state.skipOpen = state.skipOpen || {}; state.skipOpen[id] = Date.now(); save(state);
+      itemToast("\u21e5 SKIP TOKEN", "flag opened early \u2014 it's yours to capture."); render();
+    }));
+    document.querySelectorAll(".vaultHere").forEach(b => b.addEventListener("click", () => { openMods.add(String(b.getAttribute("data-m"))); render(); }));
 
     const howTo = document.getElementById("ctfHowTo");
     if (howTo) howTo.addEventListener("click", () => { if (window.CTF_WELCOME) window.CTF_WELCOME.open(); });
@@ -2550,12 +2706,12 @@
     if (eg) eg.addEventListener("click", () => openBoss(null, { endgame: true }));
     document.querySelectorAll(".ctfHintBuy").forEach(b => b.addEventListener("click", () => {
       const key = b.getAttribute("data-key"), base = +b.getAttribute("data-base") || 0;
-      const free = armedItems("hint").length > 0;
+      const free = freeHintReady();
       const now = valueNow(key, base), after = Math.max(1, Math.round(now * (1 - HINT_COST)));
       if (!confirm(free ? "Use a Free Hint? This reveal costs no XP.\n\nThis is permanent for this flag."
         : "Reveal this hint?\n\nThis flag is worth " + now + " XP right now. After the hint it will be worth " + after + " XP (\u2212" + (now - after) + ").\n\nThis is permanent for this flag.")) return;
       buyHint(key);
-      if (free && consumeItem("hint")) { state.hintFree = state.hintFree || {}; state.hintFree[key] = Date.now(); save(state); itemToast("? FREE HINT", "no XP cost on this reveal."); }
+      if (free && spendFreeHint()) { state.hintFree = state.hintFree || {}; state.hintFree[key] = Date.now(); save(state); itemToast("? FREE HINT", "no XP cost on this reveal."); }
       render();
     }));
     document.querySelectorAll(".ctfHint").forEach(h => h.addEventListener("click", () => {
@@ -2722,6 +2878,7 @@
     if (cm > 1) points = Math.round(points * cm);
     state.combo = { n: tainted[key] ? 0 : Math.min(comboCount() + 1, 99) };
     const lucky = !tainted[key] && consumeItem("lucky");
+    if (armedItems("repel").length && consumeItem("repel")) repelNoted = false;
     if (lucky) { points = points * 3; setTimeout(() => itemToast("3\u00d7 LUCKY CAPTURE", "+" + points + " XP on that flag."), 300); }
     const wasQueued = !state.solved[key] && (state.retry[key] || 0) > 0;
     state.solved[key] = true;
@@ -2738,6 +2895,8 @@
     nemesisProgress(before, s);
     reportAttempt(chal, li, key, true, null);
     if (!tainted[key]) { claimPioneer(chal, key); rollLoot(key); }
+    if (window.CTF_COSMETICS && window.CTF_COSMETICS.celebrate) { try { setTimeout(() => window.CTF_COSMETICS.celebrate(), 150); } catch (e) {} }
+    setTimeout(() => checkModuleClears(false), 900);
     if (typeof window.CTF_REPORT === "function") {
       try {
         const secs = timers[key] ? Math.round((Date.now() - timers[key]) / 1000) : null;
@@ -3039,7 +3198,7 @@
     document.getElementById("bAgain").onclick = function () { closeBoss(); openBoss(againScope); };
     document.getElementById("bDone").onclick = closeBoss;
   }
-  function bossWin() { if (!boss) return; if (boss.endgame && !state.endgameWon) { state.endgameWon = Date.now(); save(state); } try { state.bossWins = state.bossWins || {}; var _wk = (window.CTF_COURSE || "c") + (boss.scope ? ":" + boss.scope : ""); if (!state.bossWins[_wk]) { state.bossWins[_wk] = 1; save(state); } var _nb = checkBadgeUnlocks(); if (_nb.length) setTimeout(function(){ announceBadges(_nb); }, 1400); } catch (e) {} nemAgitated = false; nemesisMood("beaten"); nemesisSpeak(MENTOR ? "You did it! I knew you had this in you." : "Impossible. You... you beat me. The system is yours."); bossEndCard(MENTOR ? "GAUNTLET CLEARED!" : "NEMESIS DEFEATED", MENTOR ? "Outstanding work \u2014 you mastered this module." : "You reclaimed the terminal. Well played, human.", "#39ff88", MENTOR ? "\u21bb play again" : "\u21bb duel again"); }
+  function bossWin() { if (!boss) return; if (boss.endgame && !state.endgameWon) { state.endgameWon = Date.now(); save(state); } try { state.bossWins = state.bossWins || {}; var _wk = (window.CTF_COURSE || "c") + (boss.scope ? ":" + boss.scope : ""); if (!state.bossWins[_wk]) { state.bossWins[_wk] = 1; save(state); } var _nb = checkBadgeUnlocks(); if (_nb.length) setTimeout(function(){ announceBadges(_nb); }, 1400); } catch (e) {} nemAgitated = false; nemesisMood("beaten"); nemesisSpeak(MENTOR ? "You did it! I knew you had this in you." : "Impossible. You... you beat me. The system is yours."); if (/^\d+$/.test(String(boss.scope)) && !boss.endgame) reportBoss(+boss.scope); setTimeout(function(){ checkModuleClears(false); }, 2600); bossEndCard(MENTOR ? "GAUNTLET CLEARED!" : "NEMESIS DEFEATED", MENTOR ? "Outstanding work \u2014 you mastered this module." : "You reclaimed the terminal. Well played, human.", "#39ff88", MENTOR ? "\u21bb play again" : "\u21bb duel again"); }
   function bossLose() { if (!boss) return; nemAgitated = false; nemesisMood(); nemesisSpeak(MENTOR ? "Good run! You're learning fast. Come back and give it another go." : "Close match. This round is mine \u2014 but you are learning fast. Come back and finish me."); bossEndCard(MENTOR ? "GOOD RUN!" : "YOU WERE DELETED", MENTOR ? "You're getting sharper every time. Try again when you're ready." : "NEMESIS holds the system. Study up and try again.", MENTOR ? "var(--adv2)" : "var(--adv)", MENTOR ? "\u21bb try again" : "\u21bb rematch"); }
   var bossMiniTimer = null;
   function bossMiniRainStart() {

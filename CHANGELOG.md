@@ -7,9 +7,98 @@ Version numbers follow `MAJOR.MINOR.PATCH`:
 
 The current version lives in `site.js` (`SITE_VERSION`) and shows in every page
 footer and the A11Y panel. Script and stylesheet links carry the same number as
-a cache tag (`?v=5.2.0`) — bump both together on every release.
+a cache tag (`?v=8.0.0`) — bump both together on every release.
 
 ---
+
+## 8.0.0 — 2026-10-06
+
+**New page:** `teacher_cyber_tools/` (Teacher Resources), linked from the teacher dashboard's class toolbar.
+Not linked anywhere students see; `noindex`. Starts with NCL (Cyber Skyline), Paradigm Centra and CLARK.
+
+## 7.0.0 — 2026-10-06
+
+**New page:** `competitions.html` (linked from Cybersecurity 1 and AP Cybersecurity 2 homes).
+
+### Competitions
+- New Cyber Competitions page with NCL Fall 2026 and picoCTF 2027: format, team size,
+  cost, schedule and official links. Palette follows the course (`?from=cyber1|cyber2`).
+- New COMPETITIONS card on the cyber1 and cyber2 home pages. Each event counts down to its
+  start, switches to LIVE with a countdown to the end while running, and drops off when over.
+- All dates live in `competitions.js` — edit that one file to add or change events.
+
+## 6.1.0 — 2026-10-06
+
+**SQL:** re-run `supabase/coins-cosmetics.sql` (new prices + slots).
+
+### Coin Shop
+- **Name colors:** Cyber Green, Byte Purple, Block Orange (course themes), SF Lions, Fire,
+  Ocean, Rainbow, Matrix Glitch, Living Rainbow (animated), Holographic (animated shimmer).
+- **Name effects:** Glow, Typewriter, Sparkle.
+- **Pets:** Computer Mouse, Rubber Duck, Penguin, Robot, Cat, Owl, Ghost, Dinosaur, SF Lion,
+  Dragon. Shown beside the name; your own pet also follows your mouse on the arena and
+  profile pages (toggle in the shop; off with reduced motion or on touch screens).
+- **Capture celebrations:** Confetti, Pixel Burst, Starfall, Binary Rain, Pet Parade, each
+  with a short sound (toggle in the shop).
+- **Profile banners** and **leaderboard row trails** (Neon Underline, Scanline, Comet, Flame).
+- Prices 5–40 coins. Cosmetics now show on the class leaderboard (rows + podium), the
+  duel screen, Class Pulse, the profile card and the arena's PLAYING AS chip.
+
+## 6.0.2 — 2026-10-06
+
+**SQL:** re-run `supabase/module-clears.sql`, then open the teacher dashboard once per course.
+
+- **Server check on module clears.** The Clear Crate + Coin Pack are only sent when the
+  server's own capture log has every flag in the module for that student, and (when the
+  guide is on) a recorded boss win. The teacher dashboard publishes each course's
+  module → flag list on load (`module_manifest`); boss wins are logged to `boss_wins`.
+  If a capture never reached the server, the CTF page resends what the device has and asks
+  once more.
+
+## 6.0.1 — 2026-10-06
+
+- **Robot Run** moved from Simulators to Practice (`practice/robotrun.html`), with a row in
+  the Practice teacher guide. Robot Build stays in Simulators; the two still link to each
+  other. The old `simulators/robotrun.html` URL redirects.
+
+## 6.0.0 — 2026-10-06
+
+**SQL:** re-run `supabase/reward-items.sql`, then run the new `supabase/module-clears.sql`,
+then re-run `supabase/install-check.sql`.
+
+### Rewards Packs (teacher.html → Send Rewards)
+- New **Rewards Pack** item: tick any in-game items, set 1–10 of each, add coins, name it,
+  and send. Students open it on their profile: the crate rattles, bursts, and every item
+  pops into their inventory. Packs never contain classroom prizes.
+- Six new items, sendable alone or in packs: **Double Hint** (two free hint reveals),
+  **Skip Token** (open one locked flag early), **Nemesis Repel** (no focus-loss takeover
+  until the next capture; leaving is still logged), **Badge Shard** (3 / 6 / 9 earn the
+  Prism badge), **Duel Ticket** (shows as Duel requested in the item log), **Streak +1**.
+
+### Module clears (every flag in a module + its boss)
+- Automatic **Module Clear Crate** and **Coin Pack** in the student's items. Teachers set
+  the crate contents and coin amount per class from the pack builder (default: Double Hint,
+  Mystery Box, Lucky Capture, Firewall Shield, Badge Shard + 100 coins).
+- **Module N Mentor** badge per module, **Vanguard** badge for first in class, and a
+  **Trophy Wall** on the profile. Teachers see who cleared each module (Mentors) on the
+  Send Rewards tab.
+- A defeat moment: the guide (NEMESIS, ADA, ORACLE…) breaks apart and the rewards are listed.
+- **Vault flags**: a hidden leveled flag per module that appears once the module is
+  cleared. AP CSP has one for every module (`ap-m1-vault` … `ap-m7-vault`); other courses
+  can add `vault: true` challenges. Vault flags never count toward module or course totals.
+
+## 5.3.0 — 2026-10-05
+
+### AP CSP CTF — Trace the Output
+- Ten new leveled flags in Module 2, one per lesson (`ap-m2a-trace` … `ap-m2j-trace`).
+  Students read Python or AP pseudocode and type what it prints: variables, typecasting,
+  sequential vs. nested conditionals, range/while/nested loops, string concatenation,
+  0- vs. 1-indexed lists, traversals, function calls, and errors.
+
+### Vocab Bingo (reward.html)
+- Download a CSV template (`bingo-template.csv`), fill it in a spreadsheet, and upload it
+  to load the word list and generate cards.
+- Reset Game (clear the called list, keep the cards) and End Game & Exit buttons.
 
 ## 5.2.0 — 2026-10-04
 
