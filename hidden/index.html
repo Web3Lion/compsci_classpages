@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../site.js?v=9.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Example Programs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0a14;--panel:#15111d;--panel2:#1a1524;--border:#332845;--border2:#241d33;--border3:#48395f;--text:#d8d2e6;--bright:#f5f2ff;--muted:#aca2c4;--dim:#867ba0;--faint:#6d6289;--accent:#a855f7;--accent2:#c98bff;}
+:root[data-theme="light"]{--bg:#f1eef7;--panel:#ffffff;--panel2:#f6f3fb;--border:#d7cfe4;--border2:#e4ddf0;--border3:#b8accf;--text:#2c2740;--bright:#140e26;--muted:#524a6a;--dim:#6f668c;--faint:#7a7096;--accent:#8b2fd6;--accent2:#6f1fb0;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);transition:background-color .25s ease,color .25s ease;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px 60px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:18px;margin-top:22px;}
+.ex{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:14px;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:border-color .15s ease,box-shadow .15s ease,transform .08s ease;}
+.ex:hover{border-color:var(--accent);box-shadow:0 10px 26px -16px var(--accent);color:var(--text);}
+.ex:active{transform:translateY(2px);}
+.tag{white-space:nowrap;flex:none;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 9px;border-radius:999px;border:1px solid var(--border3);background:var(--panel2);color:var(--dim);}
+@media(max-width:720px){.wrap{padding:0 12px 48px;}.themebtn{top:8px;right:8px;}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<main class="wrap" id="main">
+  <div style="margin-top:56px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(135deg,var(--panel2) 0%,var(--bg) 60%);padding:34px 32px;">
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;">&gt; ./hidden</div>
+    <h1 class="mono" style="font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1.1;margin:0 0 10px;color:var(--bright);letter-spacing:-.5px;">Example Programs</h1>
+    <p style="margin:0;font-size:16px;line-height:1.6;color:var(--muted);max-width:600px;text-wrap:pretty;">Play the finished program first. Then build it yourself.</p>
+  </div>
+
+  <div class="grid">
+    <a class="ex" href="mastermind.html">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag" style="color:var(--accent);border-color:var(--accent);">AP CSP</span><span class="tag">PYTHON</span><span class="tag">CONSOLE</span></div>
+      <h2 class="mono" style="margin:4px 0 0;font-size:22px;color:var(--bright);">Mastermind</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:var(--muted);text-wrap:pretty;">The computer picks a secret code of four numbers from 1 to 9. Guess all four, and it tells you how many are in the right spot. Keep going until you crack it.</p>
+      <span class="mono" style="margin-top:auto;padding-top:6px;font-size:13px;font-weight:700;color:var(--accent);">&#9654; Run program &rarr;</span>
+    </a>
+  </div>
+</main>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>
