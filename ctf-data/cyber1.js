@@ -22,7 +22,9 @@ window.COURSE_CONFIG.cyber1.ctf = {
   adversaryColor: "#ff4c00",
   adversaryColor2: "#ff7a3d",
   adversaryGlow: "#ff2e00",
-  modules: ["What is Cybersecurity?","Digital Footprint & Cyber Hygiene","Social Engineering","Computer Number Systems","OS Basics & Command Lines","Network Basics","Cyber Threats","Intro to Security Controls","Cryptology","Cyber Competitions","Intro to Cyber Frameworks"],
+  modules: ["What is Cybersecurity?","Digital Footprint & Cyber Hygiene","Social Engineering","Computer Number Systems","OS Basics & Command Lines","Network Basics","Cyber Threats","Intro to Security Controls","Cryptology","Cyber Competitions","Intro to Cyber Frameworks","Test Experience"],
+  /* Modules that stay locked until a teacher opens them in teacher.html (opening saves an "open:N" token in locked_flags). */
+  lockedByDefault: [12],
   challenges: [
 
   /* MODULE 1 — What is Cybersecurity? (Play → 1.1–1.4, 1.6–1.7 → Perform) ─── */
@@ -2500,11 +2502,140 @@ window.COURSE_CONFIG.cyber1.ctf = {
     bias: ["confidentiality","integrity","availability","authentication","authorization","accounting","nist framework","govern","identify","protect","detect","respond","recover","adversary","mitre att&ck","tactics","techniques","procedures","cis controls","implementation groups","ig1","ig2","ig3","hipaa","pci dss","dtsa","coppa","cfaa"],
     hardMode: "speedmatch" },
 
+  /* MODULE 12 — Test Experience (educator demo · general knowledge · locked by default via lockedByDefault) ── */
+
+  { id: "c1-tx-world", module: 12, title: "TX.1 — Around the World", category: "General Knowledge",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Educator Demo. What is the largest planet in our solar system?\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It's a gas giant named after the king of the Roman gods.",
+        flagHash: "bcd3ec1a76fbb21ed46cc8e25659fb07b680eb1cae38c8cf0c60aadda5996b05" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Educator Demo. What is the chemical symbol for gold on the periodic table?\n\nSubmit as flag{answer} — two lowercase letters.",
+        hint: "Two letters, from the Latin word aurum.",
+        flagHash: "cab45bf430f686c735a03720887e7982a29cd86fa89c524bba0aef4ce9fc04fb" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Educator Demo. Which U.S. president is the only one elected to more than two terms? Give his last name.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "He led the country through the Great Depression and most of World War II.",
+        flagHash: "a46233df11ce70afd249cc4c91826331768a57e0f56bb5e70f14cfd76005d21a" }
+    ] },
+
+  { id: "c1-tx-math", module: 12, title: "TX.2 — Math Minute", category: "General Knowledge",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Educator Demo. What is 7 × 8?\n\nSubmit as flag{answer} — digits only.",
+        hint: "Five, six, seven, eight...",
+        flagHash: "ead800ea48e7884affab91d58a47226350f8c84347b8f5561f4960a246b182d3" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Educator Demo. What is the square root of 144?\n\nSubmit as flag{answer} — digits only.",
+        hint: "What number times itself equals 144?",
+        flagHash: "bf54bcd49d2a45eeba9ec402813a4a00fdd7f070d59b6f8dbb9fa573ab0a19e1" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Educator Demo. Computers count in binary (base 2). Convert the binary number 1010 to decimal.\n\nSubmit as flag{answer} — digits only.",
+        hint: "Place values from the right are 1, 2, 4, 8. Add the places that hold a 1.",
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" }
+    ] },
+
+  { id: "c1-tx-capitals", module: 12, title: "TX.5 — Match the Capital", category: "Matching", type: "match", points: 150,
+    intro: "Objective — Educator Demo: matching. Match each country to its capital city. Tap a country, then tap its capital.",
+    pairs: [
+      { left: "France", right: "Paris" },
+      { left: "Japan", right: "Tokyo" },
+      { left: "Canada", right: "Ottawa" },
+      { left: "Australia", right: "Canberra" },
+      { left: "Egypt", right: "Cairo" }
+    ] },
+
+  { id: "c1-tx-subjects", module: 12, title: "TX.6 — Sort by Subject", category: "Sorting", type: "match", points: 150,
+    intro: "Objective — Educator Demo: sorting. Sort each idea into the class where you would learn it. Tap an idea, then tap its subject. Subjects can be used more than once.",
+    pairs: [
+      { left: "Photosynthesis", right: "Science" },
+      { left: "The Pythagorean theorem", right: "Math" },
+      { left: "Simile and metaphor", right: "English" },
+      { left: "The Magna Carta", right: "History" },
+      { left: "The water cycle", right: "Science" },
+      { left: "Adding fractions", right: "Math" }
+    ] },
+
+  { id: "c1-tx-timeline", module: 12, title: "TX.7 — History Timeline", category: "Ordering", type: "order", points: 150,
+    intro: "Objective — Educator Demo: ordering. Put these events in order from OLDEST to NEWEST.",
+    steps: [
+      "The Great Pyramid of Giza is built",
+      "The Magna Carta is signed",
+      "The Declaration of Independence is signed",
+      "Humans first walk on the Moon",
+      "The first iPhone is released"
+    ] },
+
+  { id: "c1-tx-scale", module: 12, title: "TX.8 — Smallest to Largest", category: "Ordering", type: "order", points: 150,
+    intro: "Objective — Educator Demo: ordering. Order these from SMALLEST to LARGEST.",
+    steps: [
+      "An atom",
+      "A human cell",
+      "An ant",
+      "An elephant",
+      "The Earth",
+      "The Sun"
+    ] },
+
+  { id: "c1-tx-spot", module: 12, title: "TX.9 — Spot the Red Flags", category: "Spot the Phish", type: "spot", points: 150,
+    intro: "Objective — Educator Demo: spot the phish. This email landed in a teacher's inbox and it is a phishing attempt. Click every element that is a red flag — the sender, the subject, the link, and anything suspicious in the body. Click again to deselect, then submit. You must find them all and select nothing safe.",
+    items: [{"field":"from","text":"it-helpdesk@","click":false},{"field":"from","text":"district-helpdesk-support.co","click":true,"bad":true},{"field":"subject","text":"FINAL NOTICE: ","click":true,"bad":true},{"field":"subject","text":"Your email password ","click":false},{"field":"subject","text":"expires in 1 hour","click":true,"bad":true},{"field":"body","text":"Dear Staff Member,\n\n","click":true,"bad":true},{"field":"body","text":"Our records show your account password is out of date. ","click":false},{"field":"body","text":"To keep access to your gradebook, sign in here: ","click":false},{"field":"body","text":"http://district-login-verify.co/reset","click":true,"bad":true,"link":true},{"field":"body","text":"\n\nThen reply with your ","click":false},{"field":"body","text":"current password and employee ID","click":true,"bad":true},{"field":"body","text":" so we can confirm the change.\n\nThanks,\nIT Department","click":false}] },
+
+  { id: "c1-tx-words", module: 12, title: "TX.3 — Words & Codes", category: "General Knowledge",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Educator Demo. Who wrote Romeo and Juliet? Give his last name.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "The Bard of Avon.",
+        flagHash: "46809960353c7b4d00e83a72f4453eac774da2a8d4d9d33482b8ce7bf7d1bdab" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Educator Demo. A word that reads the same forward and backward, like \"racecar\" or \"level,\" is called a ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It starts with \"palin,\" Greek for \"back again.\"",
+        flagHash: "8e4c99aea864ad446f31859f935d5666cee9077ae4d50fee81d0538a3119425c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Educator Demo. Julius Caesar hid messages by shifting every letter 3 places forward in the alphabet (A→D, B→E). Decode this message by shifting each letter 3 places back: VFKRRO\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "V→S, F→C, K→H... keep going.",
+        flagHash: "aba534416cb1d4c976775012bfc68396c1aff0a01d0be556835d46cd02bc591e" }
+    ] },
+
+  { id: "c1-tx-cyber", module: 12, title: "TX.4 — Cyber Sense", category: "Cyber Sense",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Educator Demo. A fake email that tries to trick you into clicking a link or sharing a password is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "It sounds like a hobby that uses bait and a hook.",
+        flagHash: "01fbd5d51977823ec0902cc5fdd02dacc020930a12ed4fe0a328d5b4edd6c6c8" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Educator Demo. Requiring a second proof of identity, such as a code texted to your phone, on top of a password. Give the three-letter acronym.\n\nSubmit as flag{answer} — three lowercase letters.",
+        hint: "Multi-___ Authentication.",
+        flagHash: "b54b228a7dd04447468f32451d10e2a025f9bb5775ae2b74ef2cb377eadbed73" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Educator Demo. Malicious software that locks or encrypts your files and demands payment to unlock them is called ___.\n\nSubmit as flag{answer} — one lowercase word.",
+        hint: "Think of a kidnapper's note, but for your files.",
+        flagHash: "c3eab0cae2df20bf8a4b32c23cfe39e1d2e2f630a2c77d8b989431866e84712c" }
+    ] },
+
+  { id: "c1-tx-steps", module: 12, title: "TX.10 — The Scientific Method", category: "Ordering", type: "order", points: 150,
+    intro: "Objective — Educator Demo: ordering. Put the steps of the scientific method in order, first to last.",
+    steps: [
+      "Ask a question",
+      "Do background research",
+      "Form a hypothesis",
+      "Test it with an experiment",
+      "Analyze the data",
+      "Share your conclusion"
+    ] },
+
   ]
 };
 
 
 window.COURSE_CONFIG.cyber1.ctf.bossQuestions = [
+  { module: 12, topic: "M12", diff: "Easy", kind: "mc", prompt: "Which planet is known as the Red Planet?", choices: ["Mars", "Venus", "Jupiter", "Mercury"], answer: "Mars" },
+  { module: 12, topic: "M12", diff: "Easy", kind: "mc", prompt: "How many continents are there on Earth?", choices: ["7", "5", "6", "8"], answer: "7" },
+  { module: 12, topic: "M12", diff: "Medium", kind: "mc", prompt: "Which gas do plants take in from the air to make food through photosynthesis?", choices: ["Carbon dioxide", "Oxygen", "Nitrogen", "Helium"], answer: "Carbon dioxide" },
+  { module: 12, topic: "M12", diff: "Medium", kind: "mc", prompt: "An email says your account will be closed in one hour unless you click a link and sign in. What is the safest move?", choices: ["Contact the sender another way to check if it's real", "Click the link quickly before time runs out", "Reply with your password", "Forward it to your coworkers"], answer: "Contact the sender another way to check if it's real" },
+  { module: 12, topic: "M12", diff: "Hard", kind: "mc", prompt: "Which of these numbers is prime?", choices: ["97", "91", "87", "51"], answer: "97" },
+  { module: 12, topic: "M12", diff: "Hard", kind: "text", prompt: "What is 2 to the 5th power? Type the number.", answer: "32" },
   { module: 11, topic: "M11", diff: "Medium", kind: "mc",
     prompt: "A company suffers a ransomware attack that encrypts their file server, taking it offline for two days. Which CIA triad principle was violated?",
     choices: ["Availability", "Confidentiality", "Integrity", "Accounting"], answer: "Availability" },

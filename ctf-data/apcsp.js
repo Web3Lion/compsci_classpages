@@ -93,7 +93,7 @@ window.COURSE_CONFIG.apcsp.ctf = {
     levels: [
       { difficulty: "Easy", points: 50,
         prompt: "Objective — Algorithm tracing & iteration. A robot runs this pseudocode:\nn \u2190 1\nREPEAT 3 TIMES {\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n  n \u2190 n + 1\n}\nHow many total MOVE_FORWARD steps execute?\n\nSubmit as flag{number}.",
-        hint: "REPEAT n TIMES reads n once, right when it starts. Trace n across all 3 outer loops: 1, then 2, then 3. Try the ROBOT RUN simulator's first practice problem.",
+        hint: "REPEAT n TIMES reads n once, right when it starts. Trace n across all 3 outer loops: 1, then 2, then 3. Try the first problem in ROBOT RUN (Practice).",
         flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" },
       { difficulty: "Medium", points: 100,
         prompt: "Objective — Order of operations in loops. Same robot, but the increment moved:\nn \u2190 1\nREPEAT 3 TIMES {\n  n \u2190 n + 1\n  REPEAT n TIMES { MOVE_FORWARD }\n  ROTATE_LEFT\n}\nHow many total MOVE_FORWARD steps execute now?\n\nSubmit as flag{number}.",
@@ -453,6 +453,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
   { id: "ap-m1-vocab", module: 1, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["algorithm","abstraction","decomposition","generalized","sequenc","selection","iteration","efficiency","scalability","heuristic","binary search","decidable","confidentiality","integrity","availability","ambiguity","syntax","compilation","cipher","plaintext","ciphertext","key","pseudocode","bias","incoding","flowchart"],
     hardMode: "rapid" },
+
+  /* VAULT — hidden until Module 1 and its boss are cleared (ctf.js vault:true). */
+  { id: "ap-m1-vault", module: 1, vault: true, title: "Vault: Algorithm Efficiency", category: "Vault",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Algorithmic efficiency. Binary search halves the list on every step. Starting with a sorted list of 1,024 items, how many halvings does it take to get down to 1 item?\n\nSubmit as flag{number}.",
+        hint: "1,024 is a power of 2.",
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Iteration. Trace this AP pseudocode:\n\nx ← 1\nREPEAT 4 TIMES\n{\n  x ← x * 3\n}\nDISPLAY(x)\n\nWhat is displayed?\n\nSubmit as flag{number}.",
+        hint: "Multiply by 3 four times.",
+        flagHash: "8220c2d2a04007acf2a3084f787ee499894ddfbf64144c48824ea949aa69275c" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Reasonable vs. unreasonable time. A brute-force algorithm tries every possible 20-bit password. How many passwords must it try in the worst case?\n\nSubmit as flag{number} (digits only, no commas).",
+        hint: "Each bit doubles the count: 2 to the 20th power.",
+        flagHash: "e51762c8e90b29b23d6150355e78d020952a75a369b11c553e9dce88267407d6" }
+    ] },
 
   /* MODULE 2 — Python Programming ─────────────────────────────────────────── */
   { id: "ap-m2a", module: 2, title: "Program Building Blocks", category: "Python Programming",
@@ -815,6 +832,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
     bias: ["program","function","variable","conditional","iteration","list","debugging","logic","api","library","boolean"],
     hardMode: "unscramble" },
 
+  /* VAULT — hidden until Module 2 and its boss are cleared (ctf.js vault:true). */
+  { id: "ap-m2-vault", module: 2, vault: true, title: "Vault: Python Gauntlet", category: "Vault",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Tracing code: strings & loops.\n\nresult = \"\"\nfor i in range(3):\n    result = result + str(i) * 2\nprint(result)\n\nWhat does this print?\n\nSubmit as flag{value}.",
+        hint: "str(i) * 2 repeats the text: \"0\" * 2 is \"00\".",
+        flagHash: "412411c5819a757b487d38dbef8458b3f4d7331ce2f877475a08217a4ddd6419" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Tracing code: nested loops.\n\ncount = 0\nfor i in range(4):\n    for j in range(i, 4):\n        count += 1\nprint(count)\n\nWhat does this print?\n\nSubmit as flag{number}.",
+        hint: "The inner loop runs 4 times, then 3, then 2, then 1.",
+        flagHash: "de2ff58afd20a703c95fd257208c257010b2265dd71ea4c9e54d047762c4e523" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Tracing code: while loops & lists.\n\nnums = [3, 1, 4, 1, 5]\ni = 0\ntotal = 0\nwhile i < len(nums):\n    if nums[i] % 2 == 1:\n        total += nums[i] * i\n    i += 2\nprint(total)\n\nWhat does this print?\n\nSubmit as flag{number}.",
+        hint: "i only visits 0, 2 and 4. Multiply each odd value by its index.",
+        flagHash: "0f813841dbf3bce9c17d3157eade4f3304d7055b4cb1121a39caebc4b35d8cb5" }
+    ] },
+
   /* MODULE 3 — Digital Media Processing ───────────────────────────────────── */
   { id: "ap-m3a", module: 3, title: "Bits & Bytes", category: "Digital Media",
     levels: [
@@ -985,6 +1019,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "117079a22e1ed790d17d349adcd1082c40f4f9f6406f88c33d6100318aa22c80" }
     ] },
 
+  /* VAULT — hidden until Module 3 and its boss are cleared (ctf.js vault:true). */
+  { id: "ap-m3-vault", module: 3, vault: true, title: "Vault: Bits, Pixels & Bytes", category: "Vault",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Binary numbers. Convert the binary number 101101 to decimal.\n\nSubmit as flag{number}.",
+        hint: "Place values from the right: 1, 2, 4, 8, 16, 32.",
+        flagHash: "ba5c4369cb0205ad48a79fe591b1f8a16abc2f158e2b291a28d46238f127256a" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Data representation. In 24-bit RGB color, each pixel uses 8 bits for red, 8 for green and 8 for blue. How many different colors can one pixel represent?\n\nSubmit as flag{number} (digits only, no commas).",
+        hint: "2 to the 24th power.",
+        flagHash: "c878aa6e20319594d84bdf8b6a1ff4a4a85c56488a331a930abc09b92ed9aeba" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Data representation. An uncompressed image is 100 pixels wide and 50 pixels tall, using 24-bit color. How many BYTES does it take to store?\n\nSubmit as flag{number}.",
+        hint: "24 bits is 3 bytes per pixel. Multiply by the number of pixels.",
+        flagHash: "c9e9a0f49376221e2101a581fccd8ab3943a691691265597dd3c224a7c7e8379" }
+    ] },
+
   /* MODULE 4 — Data Science ───────────────────────────────────────────────── */
   { id: "ap-m4a", module: 4, title: "Working with Data", category: "Data Science",
     levels: [
@@ -1130,6 +1181,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "09f5ffef28309853265c4a98d0e56e1be522b6b402d8193594fd05103064fc6a" }
     ] },
 
+  /* VAULT — hidden until Module 4 and its boss are cleared (ctf.js vault:true). */
+  { id: "ap-m4-vault", module: 4, vault: true, title: "Vault: Data Detective", category: "Vault",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Summarizing data. What is the mean (average) of 4, 8, 6, 10, 12?\n\nSubmit as flag{number}.",
+        hint: "Add them, then divide by how many there are.",
+        flagHash: "b4d955af2fe6d0058b4f20a8f4bfb87b4d280263eaf0ed9e082d857c9b2b9dcb" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Filtering data. Trace this AP pseudocode:\n\nscores ← [72, 95, 88, 61, 99]\ncount ← 0\nFOR EACH s IN scores\n{\n  IF (s ≥ 88)\n  {\n    count ← count + 1\n  }\n}\nDISPLAY(count)\n\nWhat is displayed?\n\nSubmit as flag{number}.",
+        hint: "≥ includes 88 itself.",
+        flagHash: "07c67cc36d721525a477be5d2cfa6c3fa981190a537178a02b64849fd972fcc6" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Summarizing data. What is the median of 7, 3, 9, 1, 12, 5?\n\nSubmit as flag{number}.",
+        hint: "Sort first. With an even count, average the two middle values.",
+        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" }
+    ] },
+
   /* MODULE 5 — Creative Task ──────────────────────────────────────────────── */
   { id: "ap-m5a", module: 5, title: "The Create Task", category: "Creative Task",
     levels: [
@@ -1194,6 +1262,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
   { id: "ap-m5-vocab", module: 5, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["procedure","abstraction","list","iteration","selection","debugging","parameter","collaboration","decomposition"],
     hardMode: "cipher" },
+
+  /* VAULT — hidden until Module 5 and its boss are cleared (ctf.js vault:true). */
+  { id: "ap-m5-vault", module: 5, vault: true, title: "Vault: Create Task Engineer", category: "Vault",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Create Task requirements. The written response asks about a student-developed procedure with at least one ___ that affects how the procedure works.\n\nSubmit as flag{word} (lowercase).",
+        hint: "The input named in the procedure's header.",
+        flagHash: "0f2d5c7fd4c51b85c8f68e3ebea7847561d728ea0af5fc39364eb4c8e32318dc" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Procedures & selection. Trace this AP pseudocode:\n\nPROCEDURE scoreBonus(points, streak)\n{\n  IF (streak > 3)\n  {\n    RETURN(points * 2)\n  }\n  RETURN(points + streak)\n}\nDISPLAY(scoreBonus(10, 2) + scoreBonus(10, 5))\n\nWhat is displayed?\n\nSubmit as flag{number}.",
+        hint: "The first call fails the IF; the second passes it.",
+        flagHash: "065d47bd7777fa4d62c1cdc2ad76452c41fe47af2998d26cc85d0e149f4825e7" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Procedures with lists. Trace this AP pseudocode:\n\nPROCEDURE countAbove(aList, limit)\n{\n  n ← 0\n  FOR EACH x IN aList\n  {\n    IF (x > limit)\n    {\n      n ← n + 1\n    }\n  }\n  RETURN(n)\n}\nnums ← [5, 12, 8, 20, 3]\nDISPLAY(countAbove(nums, 7) * countAbove(nums, 10))\n\nWhat is displayed?\n\nSubmit as flag{number}.",
+        hint: "Count values above 7, count values above 10, then multiply.",
+        flagHash: "1a232608612178c94c0e9fd560df1b1385ad189aa832939e57caec79eeee56ad" }
+    ] },
 
   /* MODULE 6 — Innovative Technologies ────────────────────────────────────── */
   { id: "ap-m6a", module: 6, title: "The Internet", category: "Innovative Technologies",
@@ -1377,6 +1462,23 @@ window.COURSE_CONFIG.apcsp.ctf = {
       "Server sends back the page to display"
     ] },
 
+  /* VAULT — hidden until Module 6 and its boss are cleared (ctf.js vault:true). */
+  { id: "ap-m6-vault", module: 6, vault: true, title: "Vault: Network Architect", category: "Vault",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — The Internet. How many bits are in an IPv4 address?\n\nSubmit as flag{number}.",
+        hint: "Four numbers from 0 to 255, each one byte.",
+        flagHash: "065d47bd7777fa4d62c1cdc2ad76452c41fe47af2998d26cc85d0e149f4825e7" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Fault tolerance. A network has these connections:\nA — B\nB — C\nA — C\nC — D\nHow many different paths from A to D exist that never visit the same device twice?\n\nSubmit as flag{number}.",
+        hint: "Every path to D must pass through C. How many ways can A reach C?",
+        flagHash: "9d07f357d7ed03d4cc5a16d23572708c4e6140693849cd3020189d6803aa58d9" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Parallel computing. Three tasks take 20, 30 and 10 seconds. Run in parallel on three processors, they all start at once. A final 15-second step can only start after all three finish. How many seconds does the parallel solution take in total?\n\nSubmit as flag{number}.",
+        hint: "The parallel part takes as long as its slowest task. Then add the final step.",
+        flagHash: "ba5c4369cb0205ad48a79fe591b1f8a16abc2f158e2b291a28d46238f127256a" }
+    ] },
+
   /* MODULE 7 — AP Test Prep ───────────────────────────────────────────────── */
   { id: "ap-m7a", module: 7, title: "Big Ideas Review", category: "AP Test Prep",
     levels: [
@@ -1442,7 +1544,24 @@ window.COURSE_CONFIG.apcsp.ctf = {
 
   { id: "ap-m7-vocab", module: 7, title: "Vocabulary Recall", category: "Vocabulary", type: "vocab",
     bias: ["abstraction","algorithm","data","internet","efficiency","bias","undecidable","copyright","divide"],
-    hardMode: "cipher" }
+    hardMode: "cipher" },
+
+  /* VAULT — hidden until Module 7 and its boss are cleared (ctf.js vault:true). */
+  { id: "ap-m7-vault", module: 7, vault: true, title: "Vault: Exam Day Boss", category: "Vault",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Boolean expressions. Evaluate:\n\n(NOT (5 > 3)) OR (2 = 2)\n\nSubmit as flag{true} or flag{false}.",
+        hint: "Evaluate each side first. OR needs only one side true.",
+        flagHash: "37be86dd47ac2320b04b8cdd6210b6d18440331e2a4d679636c7f764a4a7c3a9" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Lists (AP pseudocode, indexes start at 1). Trace:\n\nmyList ← [10, 20, 30]\nAPPEND(myList, myList[1] + myList[LENGTH(myList)])\nREMOVE(myList, 2)\nDISPLAY(myList[2])\n\nWhat is displayed?\n\nSubmit as flag{number}.",
+        hint: "myList[1] is 10 and the last element is 30. Rewrite the list after each line.",
+        flagHash: "5fc2708914338e527f1aaaa80cbea2a3824a4a79714937e3d4a52c852ffb91a4" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Iteration & MOD. Trace this AP pseudocode:\n\nn ← 0\ni ← 1\nREPEAT UNTIL (i > 20)\n{\n  IF ((i MOD 3 = 0) AND (i MOD 2 = 1))\n  {\n    n ← n + i\n  }\n  i ← i + 1\n}\nDISPLAY(n)\n\nWhat is displayed?\n\nSubmit as flag{number}.",
+        hint: "Add the odd multiples of 3 from 1 to 20.",
+        flagHash: "d6bada6eba17158bb31eac2e6ab2c4fc36bb06434f8b543313b4fefff01653b5" }
+    ] }
 
   ]
 };
