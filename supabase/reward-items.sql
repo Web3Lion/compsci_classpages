@@ -20,6 +20,18 @@
 --    xp500       +500 XP (via teacher_bonus + an xp_grants row, so every board counts it)
 --    mystery     Mystery Box: becomes a random IN-GAME item (never a classroom prize)
 --    voucher     Classroom prize (Homework Pass, test bonus…); used = redeemed
+--    shard       Badge Shard: collect 3 (used) for the rare Prism badge
+--    streak1     Streak +1: adds one day to the login streak
+--    duelticket  Duel Ticket: student asks the teacher for a duel; used = requested
+--  CHARGES added in 6.0
+--    hint2       Double Hint: the next TWO hint reveals cost no XP
+--    skip        Skip Token: open one teacher-locked flag early
+--    repel       Nemesis Repel: no focus-loss takeover until the next capture
+--  PACKS (6.0)
+--    pack        Rewards Pack: a bundle the teacher builds (items + quantities,
+--                optional coins). Opening it adds every item to the inventory
+--                (source 'pack') and pays the coins. Never contains vouchers.
+--                Module Clear Crates and Coin Packs (module-clears.sql) are packs.
 --
 --  LOOT DROPS: each flag a student captures rolls once (server-side) for a 3%
 --  chance at a random in-game item. Mystery Box and loot share one pool, and
@@ -44,11 +56,13 @@ create table if not exists reward_items (
   expires_at  timestamptz
 );
 alter table reward_items add column if not exists consumed_at timestamptz;
+alter table reward_items add column if not exists contents jsonb;
 alter table reward_items drop constraint if exists reward_items_kind_check;
 alter table reward_items add constraint reward_items_kind_check check (kind in (
   'xp2x','freeze','timefreeze','squad',
   'hint','retry','cooldown','shield','overclock','extralife','lucky','pioneer',
-  'xp500','mystery','voucher'));
+  'xp500','mystery','voucher',
+  'hint2','skip','repel','shard','streak1','duelticket','pack'));
 create index if not exists reward_items_student on reward_items (student_id, created_at desc);
 create index if not exists reward_items_class   on reward_items (class_id, created_at desc);
 alter table reward_items enable row level security;
@@ -80,6 +94,13 @@ returns text language sql immutable as $$
     when 'pioneer'    then 'Pioneer Boost'
     when 'xp500'      then '+500 Bonus XP'
     when 'mystery'    then 'Mystery Box'
+    when 'hint2'      then 'Double Hint'
+    when 'skip'       then 'Skip Token'
+    when 'repel'      then 'Nemesis Repel'
+    when 'shard'      then 'Badge Shard'
+    when 'streak1'    then 'Streak +1'
+    when 'duelticket' then 'Duel Ticket'
+    when 'pack'       then 'Rewards Pack'
     else 'Class Reward' end
 $$;
 
@@ -105,6 +126,20 @@ begin
   end loop;
   return 'hint';
 end $$;
+
+-- Pack contents: keep only in-game kinds (never voucher/pack), 1-10 of each item,
+-- coins 1-500. Shape: [{"k":"hint","n":2},{"k":"coins","n":50}]
+create or replace function _pack_clean(p jsonb)
+returns jsonb language sql immutable as $
+  select coalesce(jsonb_agg(jsonb_build_object('k', k, 'n',
+           case when k = 'coins' then greatest(1, least(500, n)) else greatest(1, least(10, n)) end)), '[]'::jsonb)
+  from (
+    select x->>'k' as k, coalesce(nullif(x->>'n','')::int, 1) as n
+    from jsonb_array_elements(case when jsonb_typeof(p) = 'array' then p else '[]'::jsonb end) x
+  ) t
+  where k in ('coins','xp2x','freeze','timefreeze','squad','hint','retry','cooldown','shield','overclock',
+              'extralife','lucky','pioneer','xp500','mystery','hint2','skip','repel','shard','streak1','duelticket')
+$;
 
 create or replace function _owns_student(p_student uuid)
 returns boolean language sql stable security definer set search_path = public as $$
@@ -139,6 +174,26 @@ end $$;
 revoke all on function ctf_t_send_items(uuid[], text, text, text, text, int) from public, anon;
 grant execute on function ctf_t_send_items(uuid[], text, text, text, text, int) to authenticated;
 
+-- ---- teacher: send a Rewards Pack -----------------------------------------
+create or replace function ctf_t_send_pack(
+  p_students uuid[], p_contents jsonb, p_label text default null, p_note text default null, p_qty int default 1
+) returns json language plpgsql security definer set search_path = public as $
+declare v_c jsonb := _pack_clean(p_contents); v_n int; v_q int := greatest(1, least(10, coalesce(p_qty,1)));
+begin
+  if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
+  if jsonb_array_length(v_c) = 0 then return json_build_object('error','empty_pack'); end if;
+  if p_students is null or array_length(p_students,1) is null then return json_build_object('error','no_students'); end if;
+  insert into reward_items (class_id, student_id, kind, label, note, source, granted_by, contents)
+  select s.class_id, s.id, 'pack', coalesce(nullif(btrim(coalesce(p_label,'')),''), 'Rewards Pack'),
+         nullif(btrim(coalesce(p_note,'')),''), 'teacher', lower(coalesce(_email(),'')), v_c
+  from students s cross join generate_series(1, v_q)
+  where s.id = any(p_students);
+  get diagnostics v_n = row_count;
+  return json_build_object('ok', true, 'sent', v_n, 'students', v_n / v_q);
+end $;
+revoke all on function ctf_t_send_pack(uuid[], jsonb, text, text, int) from public, anon;
+grant execute on function ctf_t_send_pack(uuid[], jsonb, text, text, int) to authenticated;
+
 -- ---- teacher: item log for a class ------------------------------------------
 create or replace function ctf_t_items(p_class uuid, p_limit integer default 300)
 returns json language plpgsql security definer set search_path = public as $$
@@ -147,7 +202,7 @@ begin
   return coalesce((
     select json_agg(row_to_json(t)) from (
       select r.id, r.student_id, s.handle, r.kind, r.label, r.note, r.source, r.granted_by,
-             r.created_at, r.used_at, r.starts_at, r.expires_at, r.consumed_at
+             r.created_at, r.used_at, r.starts_at, r.expires_at, r.consumed_at, r.contents
       from reward_items r join students s on s.id = r.student_id
       where r.class_id = p_class
       order by r.created_at desc
@@ -179,11 +234,11 @@ begin
   select nullif(to_jsonb(s)->>'group_id','')::uuid into v_group from students s where s.id = p_student;
   return json_build_object('now', now(), 'items', coalesce((
     select json_agg(row_to_json(t) order by t.created_at desc) from (
-      select id, kind, label, note, source, created_at, used_at, starts_at, expires_at, consumed_at,
+      select id, kind, label, note, source, created_at, used_at, starts_at, expires_at, consumed_at, contents,
              false as shared, null::text as from_handle
       from reward_items where student_id = p_student
       union all
-      select r.id, r.kind, r.label, r.note, r.source, r.created_at, r.used_at, r.starts_at, r.expires_at, r.consumed_at,
+      select r.id, r.kind, r.label, r.note, r.source, r.created_at, r.used_at, r.starts_at, r.expires_at, r.consumed_at, null::jsonb,
              true, s2.handle
       from reward_items r join students s2 on s2.id = r.student_id
       where v_group is not null and r.kind = 'squad' and r.expires_at > now()
@@ -197,6 +252,7 @@ grant execute on function ctf_my_items(uuid) to authenticated;
 create or replace function ctf_use_item(p_student uuid, p_item uuid)
 returns json language plpgsql security definer set search_path = public as $$
 declare v reward_items; v2 reward_items; v_start timestamptz; v_tb int; v_cb int; v_bonus int; v_k text;
+        rec record; v_reveals jsonb := '[]'::jsonb; v_part jsonb; v_coins int := 0;
 begin
   if not _owns_student(p_student) then return json_build_object('error','not_yours'); end if;
   select * into v from reward_items where id = p_item and student_id = p_student for update;
@@ -229,7 +285,28 @@ begin
       returning * into v2;
     update reward_items set used_at = now(), consumed_at = now() where id = p_item;
 
-  elsif v.kind = 'voucher' then
+  elsif v.kind = 'pack' then
+    for rec in select x->>'k' as k, greatest(1, coalesce(nullif(x->>'n','')::int, 1)) as n
+               from jsonb_array_elements(_pack_clean(v.contents)) x loop
+      if rec.k = 'coins' then
+        if to_regclass('public.coin_grants') is not null then
+          execute 'insert into coin_grants (class_id, student_id, amount, reason, granted_by) values ($1,$2,$3,$4,$5)'
+            using v.class_id, p_student, rec.n, 'Opened ' || coalesce(v.label,'Rewards Pack'), 'reward-pack';
+          v_coins := v_coins + rec.n;
+        end if;
+      else
+        with ins as (
+          insert into reward_items (class_id, student_id, kind, label, note, source)
+          select v.class_id, p_student, rec.k, _reward_label(rec.k), 'From ' || coalesce(v.label,'a Rewards Pack'), 'pack'
+          from generate_series(1, rec.n)
+          returning *)
+        select coalesce(jsonb_agg(to_jsonb(ins)), '[]'::jsonb) into v_part from ins;
+        v_reveals := v_reveals || v_part;
+      end if;
+    end loop;
+    update reward_items set used_at = now(), consumed_at = now() where id = p_item;
+
+  elsif v.kind in ('voucher','shard','streak1','duelticket') then
     update reward_items set used_at = now(), consumed_at = now() where id = p_item;
 
   else  -- charge: armed until the CTF page spends it
@@ -238,7 +315,8 @@ begin
 
   select * into v from reward_items where id = p_item;
   return json_build_object('ok', true, 'bonus', v_bonus, 'item', row_to_json(v),
-                           'reveal', case when v2.id is null then null else row_to_json(v2) end);
+                           'reveal', case when v2.id is null then null else row_to_json(v2) end,
+                           'reveals', v_reveals, 'coins', v_coins);
 end $$;
 revoke all on function ctf_use_item(uuid, uuid) from public, anon;
 grant execute on function ctf_use_item(uuid, uuid) to authenticated;

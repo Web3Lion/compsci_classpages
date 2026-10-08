@@ -1,5 +1,5 @@
 -- ============================================================================
---  COINS + COSMETICS  (v2.0)  —  a second currency, separate from XP.
+--  COINS + COSMETICS  (v2.0, items added in 6.1)  —  a second currency, separate from XP.
 --
 --  Students EARN coins from XP milestones: 1 coin for every 250 XP on the board
 --  (points + bonus, the same number every leaderboard shows). Teachers can also
@@ -51,11 +51,29 @@ returns int language sql immutable as $$
     when 'c_gold' then 3  when 'c_plasma' then 3  when 'c_aurora' then 6
     -- frames
     when 'f_pulse' then 4  when 'f_glitch' then 4  when 'f_circuit' then 5  when 'f_gold' then 8
+    -- 6.1: themed + gradient + animated name colors
+    when 'c_cyber' then 5  when 'c_apcsp' then 5  when 'c_web3' then 5
+    when 'c_sflions' then 12  when 'c_fire' then 12  when 'c_ocean' then 12  when 'c_rainbow' then 15
+    when 'c_matrix' then 25  when 'c_rainbow_live' then 30  when 'c_holo' then 35
+    -- 6.1: name effects
+    when 'x_glow' then 15  when 'x_type' then 18  when 'x_sparkle' then 20
+    -- 6.1: pets (shown beside the name; your own pet follows your cursor)
+    when 'p_mouse' then 10  when 'p_duck' then 10  when 'p_penguin' then 15  when 'p_robot' then 15
+    when 'p_cat' then 15  when 'p_owl' then 15  when 'p_ghost' then 15  when 'p_dino' then 20
+    when 'p_lion' then 20  when 'p_dragon' then 40
+    -- 6.1: capture celebrations
+    when 'k_confetti' then 8  when 'k_pixels' then 12  when 'k_stars' then 15  when 'k_binary' then 15  when 'k_parade' then 25
+    -- 6.1: profile banners
+    when 'b_circuit' then 10  when 'b_grid' then 10  when 'b_sunset' then 12  when 'b_starfield' then 15
+    when 'b_lions' then 15  when 'b_aurora' then 20
+    -- 6.1: leaderboard row trails
+    when 'r_neon' then 10  when 'r_scan' then 12  when 'r_comet' then 15  when 'r_flame' then 20
     else null end
 $$;
 create or replace function _cosmetic_slot(p_item text)
 returns text language sql immutable as $$
-  select case left(coalesce(p_item,''), 2) when 't_' then 'title' when 'c_' then 'color' when 'f_' then 'frame' else null end
+  select case left(coalesce(p_item,''), 2) when 't_' then 'title' when 'c_' then 'color' when 'f_' then 'frame'
+    when 'x_' then 'fx' when 'p_' then 'pet' when 'k_' then 'celebrate' when 'b_' then 'banner' when 'r_' then 'row' else null end
 $$;
 
 create or replace function _coin_state(p_student uuid)
@@ -110,7 +128,7 @@ returns json language plpgsql security definer set search_path = public as $$
 begin
   if not exists (select 1 from students where id = p_student and auth_user_id = auth.uid())
     then return json_build_object('error','not_yours'); end if;
-  if p_slot not in ('title','color','frame') then return json_build_object('error','bad_slot'); end if;
+  if p_slot not in ('title','color','frame','fx','pet','celebrate','banner','row') then return json_build_object('error','bad_slot'); end if;
   if p_item is null then
     update students set equipped = equipped - p_slot where id = p_student;
   else

@@ -46,7 +46,9 @@ from (
     (28, 'class-pulse.sql', 'Live Class Pulse dashboard', exists (select 1 from information_schema.tables where table_schema='public' and table_name='presence')),
     (29, 'duels.sql', 'Head-to-head duels', exists (select 1 from information_schema.tables where table_schema='public' and table_name='duels')),
     (30, 'scheduled-unlocks.sql', 'Scheduled unlocks (run LAST of the gate files)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='unlock_schedule')),
-    (31, 'install-check.sql', 'Live status for install-check.html', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_install_status'))
+    (31, 'install-check.sql', 'Live status for install-check.html', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_install_status')),
+    (32, 'module-clears.sql', 'Module clear crates, coin packs, Mentor + Vanguard', exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_clears')),
+    (33, 'guest-mode.sql', 'Guest mode — any Google account joins one class by code, for a set time', exists (select 1 from information_schema.tables where table_schema='public' and table_name='guest_mode'))
   ) as c(step, file, feature, present)
 
   union all
@@ -125,6 +127,30 @@ from (
          else '⚠ RE-RUN weekly-snapshot-auto.sql' end,
     2, 8
 
+  union all
+  select '—', 'run order', 'reward-items.sql must be the 6.0 version (Rewards Packs)',
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='reward_items') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_use_item' limit 1), '_pack_clean'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='reward_items') then 'reward-items.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_use_item' limit 1), '_pack_clean'), 0) > 0
+           then '✅ fine — ctf_use_item opens Rewards Packs'
+         else '⚠ RE-RUN reward-items.sql, then module-clears.sql' end,
+    2, 90
+
+  union all
+  select '—', 'run order', 'module-clears.sql must be the 6.0.2 version (server check)',
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_clears') then 'na' when exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_manifest') then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_clears') then 'module-clears.sql not run yet — nothing to check'
+         when exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_manifest') then '✅ fine — clears are checked against the capture log'
+         else '⚠ RE-RUN module-clears.sql (adds the server check)' end,
+    2, 91
+  union all
+  select '—', 'run order', 'guest-mode.sql must run after google-auth.sql + multi-domain.sql + allowed-emails.sql',
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='guest_mode') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), '_is_school_member'), 0) > 0 and coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school_member' limit 1), 'allowed_emails'), 0) > 0 and coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_join_google' limit 1), 'guest_mode'), 0) > 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='guest_mode') then 'guest-mode.sql not run yet — nothing to check'
+         when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), '_is_school_member'), 0) > 0 and coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school_member' limit 1), 'allowed_emails'), 0) > 0 and coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_join_google' limit 1), 'guest_mode'), 0) > 0
+           then '✅ fine — _is_school() + ctf_join_google honor guest mode'
+         else '⚠ RE-RUN guest-mode.sql — a later file turned guest mode off' end,
+    2, 92
   union all
   select '—', 'run order', 'scheduled-unlocks.sql must run after the gate files',
     case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='unlock_schedule') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_gates' limit 1), '_apply_unlocks'), 0) > 0 then 'ok' else 'rerun' end,

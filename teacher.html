@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=9.0.0"></script>
+<script src="site.js?v=10.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -259,19 +259,19 @@
   </div>
 </div>
 
-<script src="config.js?v=9.0.0"></script>
-<script src="ctf-data/cyber1.js?v=9.0.0"></script>
-<script src="ctf-data/cyber2.js?v=9.0.0"></script>
-<script src="ctf-data/cyber3.js?v=9.0.0"></script>
-<script src="ctf-data/apcsp.js?v=9.0.0"></script>
-<script src="ctf-data/web3.js?v=9.0.0"></script>
-<script src="cipher.js?v=9.0.0"></script>
-<script src="supabase-config.js?v=9.0.0"></script>
-<script src="auth.js?v=9.0.0"></script>
-<script src="name-filter.js?v=9.0.0"></script>
-<script src="objectives.js?v=9.0.0"></script>
-<script src="standards.js?v=9.0.0"></script>
-<script src="csv.js?v=9.0.0"></script>
+<script src="config.js?v=10.0.0"></script>
+<script src="ctf-data/cyber1.js?v=10.0.0"></script>
+<script src="ctf-data/cyber2.js?v=10.0.0"></script>
+<script src="ctf-data/cyber3.js?v=10.0.0"></script>
+<script src="ctf-data/apcsp.js?v=10.0.0"></script>
+<script src="ctf-data/web3.js?v=10.0.0"></script>
+<script src="cipher.js?v=10.0.0"></script>
+<script src="supabase-config.js?v=10.0.0"></script>
+<script src="auth.js?v=10.0.0"></script>
+<script src="name-filter.js?v=10.0.0"></script>
+<script src="objectives.js?v=10.0.0"></script>
+<script src="standards.js?v=10.0.0"></script>
+<script src="csv.js?v=10.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -320,7 +320,7 @@ var CLASSES=[], CUR=null;
 async function loadClasses(refresh){
   try{
     CLASSES=await rpc("ctf_t_classes")||[];
-    if(!refresh){ await loadWhoami(); await loadTeachers(); await loadAllowedEmails(); await loadRejects(); }
+    if(!refresh){ await loadWhoami(); await loadTeachers(); await loadAllowedEmails(); await loadRejects(); loadGuest(); }
     renderClassList();
     if(refresh&&CUR){ var again=CLASSES.filter(function(c){return c.id===CUR.id;})[0]; if(again) selectClass(again); }
   }catch(e){ el("classList").innerHTML='<div class="empty" style="color:var(--bad)">Failed to load.</div>'; }
@@ -748,7 +748,13 @@ function syncGateFromClass(){
   GATE={mods:{},flags:{},persona:!!CUR.persona_on,answerKey:!!CUR.answer_key_on,ultimateFlags:CUR.ultimate_flags_on!==false};
   (CUR.locked_modules||[]).forEach(function(m){ GATE.mods[Number(m)]=true; });
   (CUR.locked_flags||[]).forEach(function(f){ GATE.flags[f]=true; });
+  // lockedByDefault modules stay closed unless an "open:N" token was saved
+  defaultLocked().forEach(function(m){ var k="open:"+m; if(GATE.flags[k]) delete GATE.flags[k]; else GATE.mods[m]=true; });
   GATE_DIRTY=false;
+}
+function defaultLocked(){
+  var cfg=(window.COURSE_CONFIG||{})[CUR.course]||{};
+  return (((cfg.ctf||{}).lockedByDefault)||[]).map(Number);
 }
 /* ----- scheduled unlocks (scheduled-unlocks.sql) ----- */
 var UNLOCKS=null, UNLOCK_ERR=false;
@@ -825,6 +831,7 @@ async function saveGates(){
   var b=el("gateSave"); if(b){ b.disabled=true; b.textContent="Saving\u2026"; }
   var mods=Object.keys(GATE.mods).filter(function(k){return GATE.mods[k];}).map(Number);
   var flags=Object.keys(GATE.flags).filter(function(k){return GATE.flags[k];});
+  defaultLocked().forEach(function(m){ if(!GATE.mods[m]) flags.push("open:"+m); });
   try{
     await rpc("ctf_t_set_gates",{p_class:CUR.id,p_locked_modules:mods,p_locked_flags:flags,
       p_persona:GATE.persona,p_answer_key:GATE.answerKey,p_ultimate_flags:GATE.ultimateFlags});
@@ -3898,10 +3905,46 @@ function allowedEmailsPanel(){
   return h+'</tbody></table></div></div>';
 }
 
+/* ----- guest mode (guest-mode.sql): any Google account may join ONE class by code, for a set time ----- */
+var GUEST=null, GUEST_T=null;
+async function loadGuest(){
+  try{ var r=await rpc("ctf_t_guest"); GUEST=(r&&!r.error)?r:{error:(r&&r.error)||"x"}; }
+  catch(e){ GUEST={error:"missing_rpc"}; }
+  clearTimeout(GUEST_T);
+  if(GUEST&&GUEST.open&&GUEST.open_until){ var ms=Date.parse(GUEST.open_until)-Date.now()+1500; if(ms>0&&ms<13*3600*1000) GUEST_T=setTimeout(function(){ loadGuest().then(function(){ if(TAB==="settings") renderMain(); }); },ms); }
+}
+async function setGuest(min){
+  if(min>0&&GUEST&&GUEST.open&&GUEST.class_id!==CUR.id&&!confirm("Guest mode is open for "+(GUEST.class_name||"another class")+". Move it to "+CUR.name+"?")) return;
+  try{ var r=await rpc("ctf_t_guest_set",{p_class:CUR.id,p_minutes:min}); if(r&&r.error) throw new Error(r.error); }
+  catch(e){ alert(/missing|function/i.test((e&&e.message)||"")?"Run supabase/guest-mode.sql first.":"Couldn\u2019t change guest mode."); return; }
+  await loadGuest(); renderMain();
+}
+function guestPanel(){
+  var wrap='<div style="margin-bottom:26px;padding:16px;border-radius:12px;border:1px solid '+(GUEST&&GUEST.open?'var(--ok)':'var(--border2)')+';">'+
+    '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Guest mode</div>';
+  if(!GUEST||GUEST.error) return wrap+'<div style="color:var(--dim);font-size:13px;line-height:1.6;">Lets visitors sign in with <b>any</b> Google account and join one class with just its code, for a set time. Run <span class="mono" style="color:var(--accent);">supabase/guest-mode.sql</span> to turn this on.</div></div>';
+  var here=GUEST.open&&GUEST.class_id===CUR.id, h=wrap;
+  if(here){
+    var left=Math.max(0,Math.round((Date.parse(GUEST.open_until)-Date.now())/60000));
+    h+='<div style="color:var(--ok);font-size:13px;font-weight:700;margin-bottom:6px;">\u25CF Open now \u00b7 closes '+esc(new Date(GUEST.open_until).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}))+' ('+left+' min left)</div>'+
+      '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">Visitors open this course\u2019s arena, sign in with any Google account, and enter class code <b class="mono" style="color:var(--bright);font-size:15px;letter-spacing:1px;">'+esc(CUR.code||GUEST.code||"")+'</b>. '+(GUEST.guests||0)+' guest'+(GUEST.guests===1?'':'s')+' joined so far.</div>';
+  } else {
+    h+='<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">Lets visitors (for example, educators at a PD session) sign in with <b>any</b> Google account and join <b>this class</b> with its code. It closes on its own when time runs out; after that, guest accounts are refused again. Only one class can be open to guests at a time.'+
+      (GUEST.open?'<br><span style="color:var(--warn);">Currently open for '+esc(GUEST.class_name||"another class")+'.</span>':'')+'</div>';
+  }
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    [[60,"1 hour"],[120,"2 hours"],[240,"4 hours"]].map(function(o){ return '<button class="btn sm'+(here?'':' pri')+'" onclick="setGuest('+o[0]+')">'+(here?'Extend to ':'Open for ')+o[1]+'</button>'; }).join('')+
+    (here?'<button class="btn sm danger" onclick="setGuest(0)">Close now</button>':'')+
+  '</div>'+
+  '<div class="mono" style="font-size:11px;color:var(--faint);line-height:1.6;margin-top:10px;">Guests stay on the roster with their progress after it closes \u2014 remove them from the Roster tab when you\u2019re done. Google Cloud\u2019s OAuth consent screen must be External and published (In production).</div></div>';
+  return h;
+}
+
 /* ----- settings: streak-freeze, code, delete ----- */
 function settingsView(){
   var frozen=(CUR.frozen_dates||[]).slice().sort();
   var h='<div style="max-width:620px;">';
+  h+=guestPanel();
   // streak freeze
   h+='<div style="margin-bottom:26px;">'+
     '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Streak freeze — no-class days</div>'+

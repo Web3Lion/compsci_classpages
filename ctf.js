@@ -114,7 +114,10 @@
      locked flag is still listed: title in the clear, prompt enciphered. */
   function locks() {
     var L = window.CTF_LOCKS || {};
-    return { mods: (L.modules || []).map(Number), flags: L.flags || [] };
+    var flags = L.flags || [], mods = (L.modules || []).map(Number);
+    // ctf.lockedByDefault: closed until the teacher opens it, which saves an "open:N" token in locked_flags
+    (ctf.lockedByDefault || []).forEach(function (m) { m = Number(m); if (flags.indexOf("open:" + m) === -1 && mods.indexOf(m) === -1) mods.push(m); });
+    return { mods: mods, flags: flags };
   }
   function isLocked(c) {
     try { if (state && state.skipOpen && state.skipOpen[c.id]) return false; } catch (e) {}

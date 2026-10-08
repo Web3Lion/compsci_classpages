@@ -368,6 +368,7 @@
       head("Sign in to play", "Use your " + domainPhrase(true) + " school Google account. This is the only page that needs a sign-in.") +
       (art() ? art().guideBox(course) : "") +
       (msg ? '<div style="font-size:12px;color:var(--adv2,#ff6b6b);margin-bottom:12px;line-height:1.5;">' + msg + '</div>' : "") +
+      '<div id="gGuest"></div>' +
       '<button id="gGoogle" style="width:100%;padding:13px;border-radius:10px;border:1px solid var(--border3,#244a6d);' +
         'background:#fff;color:#1f2733;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">' +
         g + (art() ? art().buttonLabel(course) + ' with Google' : 'Sign in with Google') + '</button>' +
@@ -376,6 +377,11 @@
     );
     // the guide speaks; escalates each time the student lands back here
     if (art()) art().typeLine(course, attempts++, msg ? art().wrongDomainLine(course) : null);
+    if (AUTH.guestStatus) AUTH.guestStatus().then(function (g) {
+      var el = document.getElementById("gGuest"); if (!el || !g || !g.open) return;
+      el.innerHTML = '<div style="font-size:12px;line-height:1.5;margin-bottom:12px;padding:10px 12px;border-radius:10px;border:1px solid var(--accent,#3fb2ff);color:var(--text,#cfe0f3);">' +
+        '<b>Guest mode is on.</b> Visitors can sign in with any Google account, then enter the class code on the screen.</div>';
+    });
     document.getElementById("gGoogle").onclick = function () {
       this.disabled = true; this.textContent = "Opening Google\u2026";
       AUTH.signIn().catch(function () { gateSignIn("Couldn't reach Google. Check your connection."); });
@@ -438,7 +444,8 @@
           /class_not_found/.test(m) ? "No class with that code. Check with your teacher." :
           /handle_taken/.test(m)    ? "Someone in that class already uses that name." :
           /not_allowed/.test(m)     ? "Please choose a school-appropriate name." :
-          /not_school_account/.test(m) ? "Use your " + domainPhrase(false) + " school account." :
+          /not_guest_class/.test(m) ? "Guest sign-in only works with the class code on the screen." :
+          /not_school_account/.test(m) ? (u && u.isGuest ? "Guest mode just ended. Ask the presenter to reopen it." : "Use your " + domainPhrase(false) + " school account.") :
           /not_signed_in/.test(m)   ? "Your sign-in expired — reload the page." :
                                       "Couldn't join. Check your connection.";
         go.disabled = false; go.textContent = "JOIN CLASS";

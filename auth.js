@@ -124,6 +124,11 @@
       });
     } catch (e) {}
   }
+  async function guestStatus() {
+    try { var db = await client(); var r = await db.rpc("ctf_guest_status", {});
+      return (r && r.data && typeof r.data === "object") ? r.data : { open: false }; }
+    catch (e) { return { open: false }; }
+  }
   async function requireSchool() {
     var u = await user();
     if (!u) return null;
@@ -139,6 +144,12 @@
         try { localStorage.setItem(EXTRA_KEY, JSON.stringify(list)); } catch (e) {}
       } catch (e) {}
     }
+    /* Guest mode (guest-mode.sql): while the teacher has it open, any Google
+       account may continue; the server limits joining to the guest class. */
+    if (!isSchool(u)) {
+      var g = await guestStatus();
+      if (g.open) { u.isGuest = true; return u; }
+    }
     if (!isSchool(u)) {
       await logReject("wrong_domain");
       await signOut();
@@ -150,7 +161,7 @@
   window.CTF_AUTH = {
     online: ONLINE, domain: DOMAIN, domains: DOMAINS, teacherEmail: TEACHER,
     client: client, rpc: rpc, user: user, requireSchool: requireSchool,
-    signIn: signIn, signOut: signOut, isSchool: isSchool, isTeacher: isTeacher,
+    signIn: signIn, signOut: signOut, isSchool: isSchool, isTeacher: isTeacher, guestStatus: guestStatus,
     isStaffDomain: isStaffDomain, domainOf: domainOf, emailOf: emailOf,
     logReject: logReject
   };
