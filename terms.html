@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=10.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Use — South Fayette Computer Science Classes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--border:#1e3350;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--accent:#00b3ff;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--border:#cdd8e5;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--accent:#0a74d6;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);line-height:1.65;}
+a{color:var(--accent);} a:hover{color:var(--bright);}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+.wrap{max-width:760px;margin:0 auto;padding:64px 22px 80px;}
+.kick{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;}
+h1{font-size:34px;color:var(--bright);margin:8px 0 6px;letter-spacing:-.5px;}
+.date{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);margin-bottom:28px;}
+h2{font-size:18px;color:var(--bright);margin:34px 0 8px;}
+p,li{font-size:15px;color:var(--muted);text-wrap:pretty;}
+ul{padding-left:20px;} li{margin-bottom:6px;}
+b{color:var(--text);}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:18px 20px;margin-top:10px;}
+.foot{margin-top:46px;padding-top:18px;border-top:1px solid var(--border);display:flex;gap:18px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div class="kick">Legal</div>
+  <h1>Terms of Use</h1>
+  <div class="date">Effective October 7, 2026</div>
+
+  <p>These terms apply to the course pages, simulators, and Capture the Flag (CTF) arena on this site, created by Robert Reasey for computer science classes at South Fayette School District. By using the site, you agree to them.</p>
+
+  <h2>Who may use the site</h2>
+  <p>The site is for students enrolled in these classes, their teachers, and guests the teacher invites. Signing in to join a class requires an approved Google account or an active guest session opened by the teacher.</p>
+
+  <h2>Acceptable use</h2>
+  <ul>
+    <li>Use the site for learning and as your teacher directs.</li>
+    <li>Choose a school-appropriate handle that is not your real name.</li>
+    <li>Do not share flags or answers, or use another person's account.</li>
+    <li>The security skills taught here are for practice inside this site only. Do not attack, probe, or test any other system, network, or account without written permission from its owner.</li>
+    <li>Do not try to break, overload, or get around the site's sign-in, scoring, or locks outside of challenges that ask you to.</li>
+  </ul>
+  <p>Breaking these rules may lead to lost points, removal from a class, or action under school discipline policies.</p>
+
+  <h2>Points, badges, and rewards</h2>
+  <p>Points, coins, badges, items, and ranks exist only inside the site, have no cash value, and may be adjusted or reset by the teacher.</p>
+
+  <h2>Content and license</h2>
+  <p>Course materials on this site are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>: you may share and adapt them with attribution, but not for commercial use. Links to outside sites and tools are provided for convenience; those sites have their own terms.</p>
+
+  <h2>No warranty</h2>
+  <p>The site is provided as-is for educational use. Features may change or be unavailable at times, and progress could be lost. The site is not responsible for outside services it links to or relies on.</p>
+
+  <h2>Privacy</h2>
+  <p>How information is collected and used is described in the <a href="privacy.html">Privacy Policy</a>.</p>
+
+  <h2>Changes</h2>
+  <p>These terms may be updated. Continued use after an update means you accept the new terms.</p>
+
+  <h2>Contact</h2>
+  <div class="card"><p style="margin:0;">Robert Reasey, South Fayette School District<br><a href="mailto:rnreasey@southfayette.org">rnreasey@southfayette.org</a></p></div>
+
+  <div class="foot"><a href="index.html">Course portal</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a><span>&copy; 2026 Robert Reasey, South Fayette School District</span></div>
+</div>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>
