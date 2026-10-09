@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=10.0.0"></script>
+<script src="site.js?v=11.1.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,15 +116,15 @@
   </div>
 </div>
 
-<script src="config.js?v=10.0.0"></script>
-<script src="ctf-data/cyber1.js?v=10.0.0"></script>
-<script src="ctf-data/cyber2.js?v=10.0.0"></script>
-<script src="ctf-data/cyber3.js?v=10.0.0"></script>
-<script src="ctf-data/apcsp.js?v=10.0.0"></script>
-<script src="ctf-data/web3.js?v=10.0.0"></script>
-<script src="cipher.js?v=10.0.0"></script>
-<script src="supabase-config.js?v=10.0.0"></script>
-<script src="auth.js?v=10.0.0"></script>
+<script src="config.js?v=11.1.0"></script>
+<script src="ctf-data/cyber1.js?v=11.1.0"></script>
+<script src="ctf-data/cyber2.js?v=11.1.0"></script>
+<script src="ctf-data/cyber3.js?v=11.1.0"></script>
+<script src="ctf-data/apcsp.js?v=11.1.0"></script>
+<script src="ctf-data/web3.js?v=11.1.0"></script>
+<script src="cipher.js?v=11.1.0"></script>
+<script src="supabase-config.js?v=11.1.0"></script>
+<script src="auth.js?v=11.1.0"></script>
 <script>
 var AUTH=window.CTF_AUTH, CLASSES=[], CUR=null;
 /* Answer plaintext is NEVER a static file on this site — a public Pages deploy
@@ -312,6 +312,7 @@ async function renderKey(gates){
   var lockedMods=(gates.locked_modules||[]).map(Number), lockedFlags=gates.locked_flags||[];
   var isLocked=function(c){ return lockedFlags.indexOf(c.id)!==-1||lockedMods.indexOf(Number(c.module||0))!==-1; };
 
+  var bq0=((cfg.ctf||{}).bossQuestions)||[];
   var mods={}; chals.forEach(function(c){ var k=Number(c.module||0); (mods[k]=mods[k]||[]).push(c); });
   var keys=Object.keys(mods).map(Number).sort(function(a,b){return a-b;});
 
@@ -350,32 +351,67 @@ async function renderKey(gates){
       '<button class="btn pri" onclick="verifyGuess()">Check</button></div>'+
     '<div id="vqOut" class="mono" style="font-size:12px;min-height:18px;margin-top:9px;"></div></div>';
 
+  // module filter chips
+  var chip=function(val,label){ return '<button class="btn akChip" data-mod="'+val+'" onclick="setModFilter(this.dataset.mod)" style="padding:6px 12px;font-size:12px;">'+label+'</button>'; };
+  h+='<div id="akFilter" class="noprint" style="position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;margin-bottom:6px;border-bottom:1px solid var(--border);">'+
+    '<div class="lbl" style="margin-bottom:8px;">SHOW MODULE</div>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+chip('all','All')+
+      keys.map(function(k){ return chip(String(k),'M'+k+' <span style="opacity:.6;">'+mods[k].length+'</span>'); }).join('')+
+      (bq0.length?chip('boss','Boss <span style="opacity:.6;">'+bq0.length+'</span>'):'')+
+    '</div></div>';
+
   for(var k=0;k<keys.length;k++){
     var mk=keys[k], list=mods[mk];
     var lockedN=list.filter(isLocked).length;
+    h+='<div class="akMod" data-mod="'+mk+'">';
     h+='<div style="margin:22px 0 10px;display:flex;align-items:center;gap:10px;">'+
       '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--bright);font-weight:800;">MODULE '+mk+'</div>'+
       '<div class="mono" style="font-size:11px;color:var(--faint);">'+list.length+' challenge'+(list.length===1?'':'s')+
         (lockedN?' \u00b7 '+lockedN+' locked':'')+'</div></div>';
     for(var i=0;i<list.length;i++) h+=await rowHtml(list[i],isLocked(list[i]),course);
+    h+='</div>';
   }
 
   // boss questions carry real plaintext answers in config
-  var bq=((cfg.ctf||{}).bossQuestions)||[];
+  var bq=bq0;
   if(bq.length){
-    h+='<div style="margin:26px 0 10px;" class="mono"><span style="font-size:12px;letter-spacing:2px;color:var(--bright);font-weight:800;">BOSS QUESTIONS</span>'+
+    h+='<div id="akBoss"><div id="akBossHead" style="margin:26px 0 10px;" class="mono">'+'<span style="font-size:12px;letter-spacing:2px;color:var(--bright);font-weight:800;">BOSS QUESTIONS</span>'+
       ' <span style="font-size:11px;color:var(--faint);">'+bq.length+' items</span></div>';
     bq.forEach(function(q){
-      h+='<div class="ansrow"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'+
+      h+='<div class="ansrow akBq" data-mod="'+esc(q.module==null?'':q.module)+'"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'+
         '<span class="pill" style="background:color-mix(in srgb,var(--dim) 20%,transparent);color:var(--muted);">'+esc(q.diff||"")+'</span>'+
         '<span class="mono" style="font-size:11px;color:var(--dim);">module '+esc(q.module==null?"\u2014":q.module)+' \u00b7 '+esc(q.kind||"")+'</span></div>'+
         '<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">'+esc(q.prompt||"")+'</div>'+
         (q.choices?'<div class="mono" style="font-size:11.5px;color:var(--faint);margin-bottom:6px;">'+q.choices.map(esc).join("  \u00b7  ")+'</div>':"")+
         '<div class="mono" style="font-size:13px;color:var(--ok);font-weight:700;">'+esc(q.answer||"")+'</div></div>';
     });
+    h+='</div>';
   }
 
   el("akBody").innerHTML=h;
+  var saved='all'; try{ saved=localStorage.getItem('ctf-ak-mod-'+CUR.id)||'all'; }catch(e){}
+  setModFilter(saved);
+}
+
+/* ---------- module filter: 'all' | module number | 'boss' ---------- */
+function setModFilter(val){
+  val=String(val);
+  var chips=document.querySelectorAll('.akChip');
+  if(![].some.call(chips,function(c){return c.getAttribute('data-mod')===val;})) val='all';
+  try{ localStorage.setItem('ctf-ak-mod-'+CUR.id,val); }catch(e){}
+  [].forEach.call(chips,function(c){
+    var on=c.getAttribute('data-mod')===val;
+    c.classList.toggle('pri',on);
+  });
+  [].forEach.call(document.querySelectorAll('.akMod'),function(d){
+    d.style.display=(val==='all'||d.getAttribute('data-mod')===val)?'':'none';
+  });
+  var shown=0;
+  [].forEach.call(document.querySelectorAll('.akBq'),function(d){
+    var vis=val==='all'||val==='boss'||d.getAttribute('data-mod')===val;
+    d.style.display=vis?'':'none'; if(vis) shown++;
+  });
+  var boss=el('akBoss'); if(boss) boss.style.display=shown?'':'none';
 }
 
 async function verifyGuess(){

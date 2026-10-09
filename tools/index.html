@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=9.0.0"></script>
+<script src="../site.js?v=11.1.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Tools — Mr. Reasey</title>
@@ -31,8 +31,6 @@ a:hover{color:var(--bright);}
 :root[data-theme="light"] #sun{opacity:.16;}
 .glyph{position:absolute;bottom:-60px;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--glyph);white-space:nowrap;animation:rise linear infinite;}
 @keyframes rise{from{transform:translateY(0) rotate(var(--r0));opacity:0;}10%{opacity:1;}90%{opacity:1;}to{transform:translateY(-115vh) rotate(var(--r1));opacity:0;}}
-#glow{position:fixed;width:520px;height:520px;left:0;top:0;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(0,240,255,.12),transparent 65%);transform:translate(-50%,-50%);transition:opacity .3s;}
-:root[data-theme="light"] #glow{background:radial-gradient(circle,rgba(120,80,255,.12),transparent 65%);}
 .wrap{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:76px 24px 80px;}
 /* hero */
 .boot{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:1.5px;color:var(--lm);}
@@ -111,21 +109,30 @@ button.btn{cursor:pointer;}
 .wrh{margin:0 0 14px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ac);}
 .card.wide .steps{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));}
 .card.wide .notes{margin-top:16px;}
+.card{transform-style:preserve-3d;transition:transform .25s ease,box-shadow .25s ease;
+  box-shadow:0 1px 0 color-mix(in oklab,var(--ac) 60%,transparent),0 6px 0 -1px color-mix(in oklab,var(--ac) 50%,var(--bg)),0 18px 30px -8px rgba(0,0,0,.4),0 40px 70px -20px color-mix(in oklab,var(--ac) 40%,transparent);}
+.card:hover,.card:focus-within{box-shadow:0 1px 0 color-mix(in oklab,var(--ac) 60%,transparent),0 10px 0 -1px color-mix(in oklab,var(--ac) 50%,var(--bg)),0 30px 44px -10px rgba(0,0,0,.45),0 60px 90px -20px color-mix(in oklab,var(--ac) 55%,transparent);}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.14),transparent 55%);opacity:0;transition:opacity .25s;}
+.card:hover::after{opacity:1;}
+.card .btn.pri{box-shadow:0 5px 0 color-mix(in oklab,var(--ac) 55%,#000);}
+.card .btn.pri:active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in oklab,var(--ac) 55%,#000);}
 .foot{position:relative;z-index:1;margin-top:44px;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--dim);}
 .foot a{color:var(--cy);}
 html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-motion="reduce"] *::after{animation:none !important;transition:none !important;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important;}}
 </style>
 </head>
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div id="sky" aria-hidden="true"><div id="sun"></div><div id="floor"></div></div>
-<div id="glow" aria-hidden="true"></div>
 <div class="wrap">
   <div class="boot mono"><i></i>SYSTEM ONLINE &middot; SOUTH FAYETTE HIGH SCHOOL<span class="caret"></span></div>
   <h1 data-text="Teacher Tools">Teacher Tools</h1>
   <div class="tagline">Level up your classroom <span>&#9656;</span> free <span>&#9656;</span> no sign-in</div>
-  <p class="lead">Games that make review fun, timers that keep the day on track, and a translator that opens your materials to every learner. Settings stay in your own browser or Google account.</p>
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:20px 28px;margin-top:18px;">
+    <p class="lead" style="flex:1 1 420px;min-width:0;margin:0;">Games that make review fun, timers that keep the day on track, and a translator that opens your materials to every learner. Settings stay in your own browser or Google account.</p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=8&data=https%3A%2F%2Fweb3lion.github.io%2Fcompsci_classpages%2Ftools%2F" width="120" height="120" alt="QR code for Teacher Tools" style="display:block;flex:none;border-radius:10px;background:#fff;">
+  </div>
+
 
   <div class="sec mono">Select a module</div>
   <div class="grid">
@@ -241,8 +248,8 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
         <p>Copy a ready-made AI prompt that turns your lesson into themed, student-facing step-by-step directions for a Canvas page. Paste it into Claude, ChatGPT, or Gemini along with your lesson text.</p>
         <div class="pick">
         <label>Subject<select id="pSubject"><option value="">Ask me</option><option>Math</option><option>Algebra</option><option>Geometry</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Earth Science</option><option>English / Language Arts</option><option>History</option><option>Social Studies</option><option>Spanish</option><option>French</option><option>Computer Science</option><option>Art</option><option>Music</option><option>Health / PE</option></select></label>
-        <label>Theme<select id="pTheme"><option value="">Ask me</option><option>SF Lions</option><option>Math Academic</option><option>Futuristic</option><option>Educational</option><option>Nature Explorer</option><option>Outer Space</option><option>Ocean Adventure</option><option>Sports Arena</option><option>Comic Book</option><option>Retro Arcade</option><option>Detective / Mystery</option></select></label>
-        <label>Colors<select id="pColors"><option value="">Ask me</option><option>SF Lions Green &amp; White</option><option>Calming Purple</option><option>Ocean Blue</option><option>Forest Green</option><option>Sunset Orange</option><option>Steel Gray &amp; Electric Blue</option><option>High-Contrast Black &amp; Gold</option><option>Warm Neutral</option></select></label>
+        <label>Theme<select id="pTheme"><option value="">Ask me</option><option>SF Lions</option><option>Math Academic</option><option>Futuristic</option><option>Educational</option><option>Nature Explorer</option><option>Outer Space</option><option>Ocean Adventure</option><option>Sports Arena</option><option>Comic Book</option><option>Retro Arcade</option><option>Detective / Mystery</option><option>Arcade Champion</option></select></label>
+        <label>Colors<select id="pColors"><option value="">Ask me</option><option>SF Lions Green &amp; White</option><option>Calming Purple</option><option>Ocean Blue</option><option>Forest Green</option><option>Sunset Orange</option><option>Steel Gray &amp; Electric Blue</option><option>High-Contrast Black &amp; Gold</option><option>Warm Neutral</option><option>Royal Purple &amp; Gold</option></select></label>
       </div>
         <div class="go"><button class="btn pri" id="copyPrompt" type="button">Copy prompt &rarr;</button></div>
         <div id="copyMsg" aria-live="polite"></div>
@@ -271,7 +278,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
 <script>
 (function(){
   var rm = typeof window.SITE_REDUCED_MOTION === 'function' && window.SITE_REDUCED_MOTION();
-  if (rm || matchMedia('(prefers-reduced-motion: reduce)').matches){ document.getElementById('glow').style.display = 'none'; return; }
+  if (rm) return;
   var G = ['E=mc²','a²+b²=c²','π','</>','H₂O','∑','01101','√x','Δv','f(x)','DNA','∞','λ','{ }','x̄','CO₂','≈','Ω','if()','%'];
   var sky = document.getElementById('sky');
   for (var i = 0; i < 22; i++){
@@ -284,13 +291,13 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
     s.style.setProperty('--r1', (Math.random()*80 - 40).toFixed(0) + 'deg');
     sky.appendChild(s);
   }
-  var glow = document.getElementById('glow');
-  addEventListener('pointermove', function(e){ glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; }, {passive:true});
   if (!matchMedia('(hover: hover)').matches) return;
-  document.querySelectorAll('.card:not(.wide)').forEach(function(c){
+  document.querySelectorAll('.card').forEach(function(c){
+    var wide = c.classList.contains('wide'), amt = wide ? 2.5 : 10;
     c.addEventListener('pointermove', function(e){
       var r = c.getBoundingClientRect(), x = (e.clientX - r.left)/r.width - .5, y = (e.clientY - r.top)/r.height - .5;
-      c.style.transform = 'perspective(900px) rotateY(' + (x*8).toFixed(2) + 'deg) rotateX(' + (-y*8).toFixed(2) + 'deg) translateY(-6px)';
+      c.style.transform = 'perspective(' + (wide ? 1800 : 900) + 'px) rotateY(' + (x*amt).toFixed(2) + 'deg) rotateX(' + (-y*amt*.8).toFixed(2) + 'deg) translateY(' + (wide ? -4 : -8) + 'px)';
+      c.style.setProperty('--gx', ((x+.5)*100) + '%'); c.style.setProperty('--gy', ((y+.5)*100) + '%');
     });
     c.addEventListener('pointerleave', function(){ c.style.transform = ''; });
   });
@@ -306,10 +313,10 @@ COLOR SCHEME: {{COLORS}}
 
 BEFORE YOU WRITE ANY HTML: If the CLASS SUBJECT, THEME, or COLOR SCHEME above is still a [bracketed placeholder], stop and ask me for it first. Offer these examples:
 - Class subject examples: Math, Algebra, Geometry, Physics, Chemistry, Biology, Earth Science, English / Language Arts, History, Social Studies, Spanish, French, Computer Science, Art, Music, Health / PE.
-- Theme examples: SF Lions (South Fayette school branding: green and white, Neuton headings, Lato body), Math Academic (chalkboard, graph-paper, and formula accents), Futuristic (sleek panels, glowing accents, "mission" and "level" wording), Educational (clean and friendly, notebook and pencil accents), Nature Explorer, Outer Space, Ocean Adventure, Sports Arena, Comic Book, Retro Arcade, Detective / Mystery.
-- Color scheme examples: SF Lions Green & White, Calming Purple, Ocean Blue, Forest Green, Sunset Orange, Steel Gray & Electric Blue, High-Contrast Black & Gold, Warm Neutral, or my school colors (I will tell you which).
+- Theme examples: SF Lions (South Fayette school branding: green and white, Neuton headings, Lato body), Math Academic (chalkboard, graph-paper, and formula accents), Futuristic (sleek panels, glowing accents, "mission" and "level" wording), Educational (clean and friendly, notebook and pencil accents), Nature Explorer, Outer Space, Ocean Adventure, Sports Arena, Comic Book, Retro Arcade, Detective / Mystery, Arcade Champion (royal purple-to-magenta header, gold trophy pill, game-controller emoji).
+- Color scheme examples: SF Lions Green & White, Calming Purple, Ocean Blue, Forest Green, Sunset Orange, Steel Gray & Electric Blue, High-Contrast Black & Gold, Warm Neutral, Royal Purple & Gold, or my school colors (I will tell you which).
 Use the theme for the header wording, section titles, icons or emoji, and small accents. Keep the page calm, uncluttered, and easy to read.
-{{SFBRAND}}
+{{SFBRAND}}{{ARCADE}}
 CRITICAL CANVAS COMPATIBILITY RULES:
 
 NO CSS STYLESHEETS OR <style> TAGS: Do NOT use <style> blocks, external CSS links, or CSS class names anywhere. Canvas strips them out.
@@ -384,8 +391,8 @@ LESSON CONTENT TO CONVERT:
 <script>
 (function(){
   var tpl = document.getElementById('canvasPrompt').textContent, th = document.getElementById('pTheme'), co = document.getElementById('pColors'), su = document.getElementById('pSubject'), msg = document.getElementById('copyMsg'), peek = document.getElementById('promptPeek');
-  function build(){ return tpl.split('{{SUBJECT}}').join(su.value || '[CHOOSE A CLASS SUBJECT]').replace('{{THEME}}', th.value || '[CHOOSE A THEME]').replace('{{COLORS}}', co.value || '[CHOOSE A COLOR SCHEME]').replace('{{SFBRAND}}', (/SF Lions/.test(th.value + co.value)) ? SF : ''); }
-  th.addEventListener('change', function(){ if (th.value === 'SF Lions' && !co.value) co.value = 'SF Lions Green & White'; });
+  function build(){ return tpl.split('{{SUBJECT}}').join(su.value || '[CHOOSE A CLASS SUBJECT]').replace('{{THEME}}', th.value || '[CHOOSE A THEME]').replace('{{COLORS}}', co.value || '[CHOOSE A COLOR SCHEME]').replace('{{SFBRAND}}', (/SF Lions/.test(th.value + co.value)) ? SF : '').replace('{{ARCADE}}', (/Arcade Champion|Royal Purple/.test(th.value + co.value)) ? AC : ''); }
+  th.addEventListener('change', function(){ if (th.value === 'SF Lions' && !co.value) co.value = 'SF Lions Green & White'; if (th.value === 'Arcade Champion' && !co.value) co.value = 'Royal Purple & Gold'; });
   var SF = '\nSF LIONS BRANDING (South Fayette Township School District brand guide; follow it exactly whenever SF Lions is the theme or color scheme):\n' +
     '- Primary colors are kelly green and white. Green and white must always be the main colors; other colors may only accent, never replace them.\n' +
     '- Web-accessible green: use #008539 for all green text, buttons, links, borders, and banner backgrounds (white text on #008539 passes contrast). The official print green #009A44 does NOT meet WCAG for text, so use it only for thin decorative lines or large non-text shapes. A darker shade like #006b2e is fine for gradient ends and hover-style accents.\n' +
@@ -395,6 +402,16 @@ LESSON CONTENT TO CONVERT:
     '- Voice: draw on the district words Tradition, Pride, and Excellence and on student-centered, future-focused, innovation-driven learning. Lion and paw-print emoji (\ud83e\udd81 \ud83d\udc3e) are fine as small accents.\n' +
     '- Always capitalize "South Fayette" and "Lions".\n' +
     '- Do NOT recreate, draw, or approximate any official South Fayette logo (SF logo, ribbon, seal, athletic, or lion head). Only include a logo if I give you an image URL for an approved one, and never place text or other images over it.\n';
+  var AC = '\nARCADE CHAMPION STYLE (follow exactly whenever Arcade Champion is the theme or Royal Purple & Gold is the color scheme):\n' +
+    '- Outer wrapper: one <div> with font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size 16px; line-height 1.6; color #1e1b4b; background-color #faf5ff; max-width 900px; margin 20px auto; border-radius 16px; overflow hidden; border 3px solid #7c3aed.\n' +
+    '- Header banner: background linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #c026d3 100%); padding 32px 24px; centered white text; h1 at 32px. Above the h1, a gold pill (background #facc15, color #4c1d95, font-size 13px, padding 6px 16px, border-radius 20px) in caps, e.g. "\ud83c\udfc6 ASSIGNMENT & RUBRIC (15 PTS)". One-line subtitle under the h1.\n' +
+    '- Body padding 28px 24px. Cards: white background, border-radius 12px, padding 22px, border 1px solid #e0e7ff; section headings 20-22px in #4c1d95 (or #6b21a8 for the rubric).\n' +
+    '- Featured callout (demo, preview, or bonus): background linear-gradient(135deg, #facc15 0%, #f59e0b 100%), centered, heading and text in #78350f, with a pill button (background #4c1d95, white text, border 2px solid #ffffff, border-radius 30px, padding 12px 24px).\n' +
+    '- Important-rule warning box: background #fef2f2, border 1px solid #fecaca with a 6px solid #ef4444 left border, heading #991b1b, text #7f1d1d. Use it once, only for a rule students must not miss.\n' +
+    '- Primary link buttons: background #7c3aed, white text, border-radius 30px, padding 14px 26px, no underline, inside a centered card with border 2px solid #7c3aed.\n' +
+    '- Tables (rubrics, schedules): width 100%, border-collapse collapse, border 1px solid #ddd6fe; header row background #7c3aed with white text; rows alternate #ffffff and #faf5ff with a 1px solid #e0e7ff bottom border; first column text #4c1d95; point values in #16a34a with a small #64748b note underneath.\n' +
+    '- Footer: border-top 2px solid #e0e7ff, centered 14px text in #64748b with a short encouraging sign-off.\n' +
+    '- Voice: game and achievement wording (level, unlock, champion, play) used lightly. Use emoji only as section-heading icons (\ud83d\udd79\ufe0f \ud83c\udfae \ud83c\udfc6 \ud83d\udce6 \ud83d\udcca \ud83d\udea8), one per heading.\n';
   function upd(){ peek.textContent = build(); }
   su.addEventListener('change', upd); th.addEventListener('change', upd); co.addEventListener('change', upd); upd();
   function fallback(t){ var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); var ok = false; try{ ok = document.execCommand('copy'); }catch(e){} a.remove(); return ok; }
