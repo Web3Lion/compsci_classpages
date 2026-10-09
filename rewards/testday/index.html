@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../../site.js?v=12.1.0"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Test Day Duck Pond</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--panel:#111620;--panel2:#161d29;--border:#26303e;--border3:#3a4658;--text:#c6d0dc;--bright:#f0f5fb;--dim:#7d8b9d;--accent:#4ba3ff;--gold:#ffd400;--ok:#3ecf8e;--bad:#ff6b6b;--w1:#0f5f86;--w2:#1c8fc4;--w3:#5fc4ec;}
+:root[data-theme="light"]{--bg:#f2f5fa;--panel:#ffffff;--panel2:#eef2f8;--border:#d6e0ee;--border3:#bccde3;--text:#2c3a4e;--bright:#0f1826;--dim:#5a6c84;--accent:#0a6fc2;--gold:#9a6b00;--ok:#147a4a;--bad:#b8283f;--w1:#1a78a8;--w2:#3aa6d8;--w3:#8ad6f4;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--bright);}
+button{font-family:inherit;cursor:pointer;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);}
+.themebtn:hover{border-color:var(--accent);}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;}
+.btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--text);font-size:13px;font-weight:700;}
+.btn:hover{border-color:var(--accent);color:var(--bright);}
+.wrap{max-width:1280px;margin:0 auto;padding:56px 20px 60px;}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start;}
+@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr);}}
+#water{position:relative;width:100%;aspect-ratio:16/10;border-radius:50%;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 45%,var(--w3) 0%,var(--w2) 45%,var(--w1) 100%);
+  box-shadow:inset 0 0 0 10px #6b4a2a,inset 0 0 0 16px #4a3220,inset 0 20px 60px rgba(0,0,0,.35),0 30px 60px -20px rgba(0,0,0,.5);}
+#ducks{position:absolute;inset:0;}
+.duck{position:absolute;left:0;top:0;padding:0;border:0;background:none;transform-origin:50% 70%;}
+.duck svg{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25));}
+.duck:hover svg{filter:drop-shadow(0 0 8px #fff) drop-shadow(0 3px 2px rgba(0,0,0,.25));}
+.duck:disabled{cursor:default;}
+#reveal{position:absolute;left:50%;top:50%;width:min(46%,320px);aspect-ratio:1;transform:translate(-50%,-30%) scale(.4);opacity:0;pointer-events:none;perspective:900px;transition:transform .6s cubic-bezier(.2,1.4,.4,1),opacity .3s;z-index:2000;}
+#reveal.up{transform:translate(-50%,-50%) scale(1);opacity:1;}
+#flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,1.3,.5,1);}
+#reveal.flipped #flip{transform:rotateY(180deg);}
+.face{position:absolute;inset:0;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;}
+.back{transform:rotateY(180deg);flex-direction:column;border-radius:50%;background:radial-gradient(circle at 50% 35%,#fff7c2,#ffd400 60%,#e0a800);border:6px solid #fff;box-shadow:0 20px 50px rgba(0,0,0,.45);color:#2a1d00;text-align:center;}
+.back .num{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;letter-spacing:2px;opacity:.7;}
+.back .big{font-size:clamp(44px,7vw,78px);font-weight:800;line-height:1;letter-spacing:-2px;}
+.back .sm{font-size:clamp(12px,1.4vw,15px);font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-top:6px;}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;}
+.chart{display:grid;gap:6px;margin-top:10px;}
+.crow{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--panel2);font-size:13px;}
+.crow b{font-family:'JetBrains Mono',monospace;color:var(--gold);}
+.crow span:last-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);}
+input.txt{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-size:15px;font-family:inherit;}
+input.txt:focus{outline:none;border-color:var(--accent);}
+.lrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.lrow b{color:var(--ok);font-family:'JetBrains Mono',monospace;}
+body.fs .wrap{max-width:none;padding:14px;}
+body.fs .layout{grid-template-columns:minmax(0,1fr);}
+body.fs #side,body.fs #top{display:none;}
+body.fs #water{aspect-ratio:auto;height:calc(100vh - 90px);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+
+<div id="gate" style="display:none;">
+  <div style="max-width:430px;margin:15vh auto;padding:0 22px;">
+    <div class="card" style="padding:30px;">
+      <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--gold);">TEST DAY // DUCK POND</div>
+      <h1 style="font-size:22px;color:var(--bright);margin:6px 0 6px;">Teacher access only</h1>
+      <p id="gateMsg" style="color:var(--dim);font-size:13px;margin:0 0 20px;line-height:1.6;">Sign in with the teacher Google account.</p>
+      <button id="gateBtn" class="btn" style="width:100%;padding:13px;background:#fff;color:#1f2733;border-color:#fff;" onclick="gateSignIn()">Sign in with Google</button>
+      <div id="gateErr" style="color:var(--bad);font-size:12px;min-height:16px;margin-top:12px;line-height:1.5;"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+<div class="wrap">
+  <div id="top" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:18px;">
+    <div>
+      <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--gold);">TEST DAY</div>
+      <h1 style="font-size:36px;color:var(--bright);margin:4px 0 0;letter-spacing:-.6px;">Duck Pond</h1>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn" onclick="toggleFs()">FULL SCREEN</button>
+      <button class="btn" onclick="signOut()">SIGN OUT</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div id="water">
+        <div id="ducks"></div>
+        <div id="reveal"><div id="flip">
+          <div class="face" id="revFront"></div>
+          <div class="face back"><div class="num" id="revNum">DUCK #7</div><div class="big">+2%</div><div class="sm">on the test</div></div>
+        </div></div>
+      </div>
+      <div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-top:14px;min-height:42px;">
+        <div id="hint" class="mono" style="font-size:14px;color:var(--dim);">Tap any duck to flip it over.</div>
+        <button id="again" class="btn" style="display:none;" onclick="resetPond()">NEXT DUCK</button>
+      </div>
+    </div>
+
+    <div id="side" style="display:grid;gap:16px;">
+      <div class="card" style="padding:18px;">
+        <div class="lbl">Pulling for</div>
+        <input id="who" class="txt" placeholder="Student name (optional)" autocomplete="off" style="margin-top:8px;">
+      </div>
+      <div class="card" style="padding:18px;">
+        <div class="lbl">Prize chart</div>
+        <div class="chart" id="chart"></div>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="lbl">Today's bonuses</div>
+          <button class="btn" style="padding:5px 10px;font-size:11px;" onclick="clearLog()">CLEAR</button>
+        </div>
+        <div id="log" style="margin-top:6px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+var CHART = [['Homework pass','rare'],['Pick your seat','common'],['Snack from the bin','common'],['5 min early break','uncommon'],['Music during work','common'],['Teacher high five','common'],['Sticker','common'],['Skip a warm-up','uncommon'],['Choose the class game','uncommon'],['Drop lowest quiz','legendary']];
+document.getElementById('chart').innerHTML = CHART.map(function(c,i){ return '<div class="crow"><b>#'+(i+1)+'</b><span>'+c[0]+'</span><span>'+c[1]+'</span></div>'; }).join('');
+
+var DUCKS=[], raf=0, picking=false, COLORS=['#fff500','#ffd400','#ff8a00','#ff5ec4','#39ff14','#00f0ff','#b026ff','#ff4d6d','#7dff6e','#05d9e8','#ffd400','#ff2079'];
+function rm(){ return typeof window.SITE_REDUCED_MOTION==='function' && window.SITE_REDUCED_MOTION(); }
+function duckSVG(col){
+  return '<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="90" rx="36" ry="6" fill="rgba(0,0,0,.18)"></ellipse>'+
+    '<path d="M14 62 C14 44 34 40 52 46 C58 36 60 26 66 22 C80 14 94 24 92 38 C91 46 86 50 80 52 C88 56 90 64 86 72 C80 84 62 88 44 86 C26 84 14 76 14 62 Z" fill="'+col+'" stroke="rgba(0,0,0,.25)" stroke-width="2"></path>'+
+    '<path d="M28 60 C36 54 50 56 58 64 C50 70 36 70 28 60 Z" fill="rgba(0,0,0,.12)"></path>'+
+    '<path d="M90 36 C98 36 102 40 100 44 C96 46 90 46 86 44 Z" fill="#ff8a00" stroke="rgba(0,0,0,.25)" stroke-width="1.5"></path>'+
+    '<circle cx="76" cy="32" r="4.2" fill="#0a0e14"></circle><circle cx="77.4" cy="30.6" r="1.4" fill="#fff"></circle></svg>';
+}
+function buildPond(){
+  var box=document.getElementById('ducks'), LANES=[9,11,14,16], lane=[], slot=[];
+  LANES.forEach(function(c,l){ for(var k=0;k<c;k++){ lane.push(l); slot.push((k+(l%2?.5:0))/c); } });
+  for(var i=0;i<50;i++){
+    var b=document.createElement('button'), col=COLORS[i%COLORS.length];
+    b.className='duck'; b.type='button'; b.setAttribute('aria-label','Duck '+(i+1)); b.innerHTML=duckSVG(col);
+    b.onclick=(function(n){ return function(){ pick(n); }; })(i);
+    box.appendChild(b);
+    DUCKS.push({el:b,col:col,a:slot[i]*Math.PI*2,lane:lane[i],bob:Math.random()*6.28,gone:false});
+  }
+}
+function place(t){
+  var w=document.getElementById('water'), W=w.clientWidth, H=w.clientHeight, sz=Math.min(W,H*1.25)*0.075, RX=[.25,.31,.37,.43], RY=[.215,.275,.335,.39];
+  DUCKS.forEach(function(d){
+    if(d.gone) return;
+    var x=W/2+Math.cos(d.a)*W*RX[d.lane]-sz/2, y=H/2+Math.sin(d.a)*H*RY[d.lane]-sz/2+Math.sin(t/520+d.bob)*3;
+    var face=Math.sin(d.a)>0?-1:1; if(d.lane%2) face=-face;
+    d.el.style.width=sz.toFixed(1)+'px';
+    d.el.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) rotate('+(Math.sin(t/700+d.bob)*5).toFixed(1)+'deg) scaleX('+face+')';
+    d.el.style.zIndex=Math.round(y);
+  });
+}
+function loop(t){
+  var dt=Math.min(.05,(t-(loop.last||t))/1000); loop.last=t;
+  if(!rm() && !picking) DUCKS.forEach(function(d){ d.a+=[0.07,-0.056,0.047,-0.04][d.lane]*dt; });
+  place(rm()?0:t); raf=requestAnimationFrame(loop);
+}
+var AC=null;
+function tone(f,d,type,vol,delay,end){ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); var o=AC.createOscillator(), g=AC.createGain(), s=AC.currentTime+(delay||0);
+  o.type=type; o.frequency.setValueAtTime(f,s); if(end) o.frequency.exponentialRampToValueAtTime(end,s+d); g.gain.setValueAtTime(vol,s); g.gain.exponentialRampToValueAtTime(.0001,s+d);
+  o.connect(g).connect(AC.destination); o.start(s); o.stop(s+d+.02);}catch(e){} }
+function quack(){ tone(520,.12,'sawtooth',.07,0,300); tone(480,.14,'sawtooth',.06,.13,260); }
+function ding(){ [660,880,1320].forEach(function(f,i){ tone(f,.25,'triangle',.08,i*.09); }); }
+function pick(i){
+  if(picking) return; picking=true;
+  var d=DUCKS[i], fake=1+Math.floor(Math.random()*CHART.length);
+  quack(); DUCKS.forEach(function(x){ x.el.disabled=true; });
+  d.gone=true; d.el.style.transition='opacity .35s'; d.el.style.opacity='0';
+  document.getElementById('revFront').innerHTML=duckSVG(d.col);
+  document.getElementById('revNum').textContent='DUCK #'+fake;
+  document.getElementById('hint').textContent='Flipping duck '+(i+1)+'\u2026';
+  var rv=document.getElementById('reveal'); rv.classList.remove('flipped'); rv.classList.add('up');
+  setTimeout(function(){ rv.classList.add('flipped'); ding(); }, rm()?150:1100);
+  setTimeout(function(){
+    var who=document.getElementById('who').value.trim();
+    document.getElementById('hint').textContent=(who?who+': ':'')+'+2% on the test';
+    document.getElementById('again').style.display='inline-block';
+    addLog(who||'Student');
+  }, rm()?500:2000);
+}
+function resetPond(){
+  document.getElementById('reveal').classList.remove('up','flipped');
+  document.getElementById('again').style.display='none';
+  document.getElementById('hint').textContent='Tap any duck to flip it over.';
+  document.getElementById('who').value='';
+  DUCKS.forEach(function(x){ x.el.disabled=false; if(x.gone){ x.gone=false; x.el.style.opacity='1'; } });
+  picking=false;
+}
+var LOGKEY='testday-duck-log';
+function getLog(){ try{ var o=JSON.parse(localStorage.getItem(LOGKEY)||'{}'); return o.day===new Date().toDateString()?o:{day:new Date().toDateString(),rows:[]}; }catch(e){ return {day:new Date().toDateString(),rows:[]}; } }
+function addLog(n){ var o=getLog(); o.rows.push(n); try{ localStorage.setItem(LOGKEY,JSON.stringify(o)); }catch(e){} renderLog(); }
+function clearLog(){ if(!confirm("Clear today's bonus list?")) return; try{ localStorage.removeItem(LOGKEY); }catch(e){} renderLog(); }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function renderLog(){
+  var o=getLog(), tot={}, order=[];
+  o.rows.forEach(function(n){ if(!(n in tot)){ tot[n]=0; order.push(n); } tot[n]+=2; });
+  document.getElementById('log').innerHTML = order.length ? order.map(function(n){ return '<div class="lrow"><span>'+esc(n)+'</span><b>+'+tot[n]+'%</b></div>'; }).join('')
+    : '<div style="color:var(--dim);font-size:13px;padding:8px 0;">No ducks pulled yet.</div>';
+}
+function toggleFs(){
+  var on=!document.body.classList.contains('fs'); document.body.classList.toggle('fs',on);
+  try{ if(on&&document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){}); if(!on&&document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+}
+document.addEventListener('fullscreenchange',function(){ if(!document.fullscreenElement) document.body.classList.remove('fs'); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.body.classList.remove('fs'); });
+function startApp(){ document.getElementById('app').style.display='block'; buildPond(); renderLog(); raf=requestAnimationFrame(loop); }
+</script>
+<script src="../../supabase-config.js?v=12.1.0"></script>
+<script src="../../auth.js?v=12.1.0"></script>
+<script>
+var AUTH=window.CTF_AUTH;
+function el(id){ return document.getElementById(id); }
+async function gateSignIn(){ el('gateBtn').disabled=true; try{ await AUTH.signIn(location.href); }catch(e){ el('gateErr').textContent="Couldn't reach Google."; el('gateBtn').disabled=false; } }
+async function signOut(){ await AUTH.signOut(); location.reload(); }
+(async function(){
+  if(!AUTH||!AUTH.online){ el('gate').style.display='block'; el('gateMsg').textContent="Supabase isn't connected yet."; el('gateBtn').style.display='none'; return; }
+  var u=null; try{ u=await AUTH.user(); }catch(e){}
+  if(!u){ el('gate').style.display='block'; return; }
+  if(!AUTH.isTeacher(u)){
+    el('gate').style.display='block'; el('gateMsg').textContent='Signed in as '+AUTH.emailOf(u)+'.';
+    el('gateErr').innerHTML='That account isn\u2019t the teacher account.<br><a href="#" onclick="signOut();return false;">Use a different account</a>'; return;
+  }
+  startApp();
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>
