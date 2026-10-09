@@ -12,7 +12,7 @@
       visible keyboard focus, and names for icon-only controls.
    ========================================================================== */
 (function () {
-  var VERSION = "11.1.0";
+  var VERSION = "13.0.0";
   window.SITE_VERSION = VERSION;
   var r = document.documentElement;
   function osReduce() { try { return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } }

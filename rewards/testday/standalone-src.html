@@ -5,7 +5,6 @@
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <script src="../../site.js?v=13.0.0"></script>
 <meta charset="UTF-8">
-<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Test Day Duck Pond</title>
@@ -55,6 +54,7 @@ body.fs .layout{grid-template-columns:minmax(0,1fr);}
 body.fs #side,body.fs #top{display:none;}
 body.fs #water{aspect-ratio:auto;height:calc(100vh - 90px);}
 </style>
+<template id="__bundler_thumbnail" data-bg-color="#1c8fc4"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="62" rx="40" ry="14" fill="#0f5f86"/><g transform="translate(25 22) scale(.5)"><path d="M14 62 C14 44 34 40 52 46 C58 36 60 26 66 22 C80 14 94 24 92 38 C91 46 86 50 80 52 C88 56 90 64 86 72 C80 84 62 88 44 86 C26 84 14 76 14 62 Z" fill="#ffd400"/><path d="M90 36 C98 36 102 40 100 44 C96 46 90 46 86 44 Z" fill="#ff8a00"/><circle cx="76" cy="32" r="4.2" fill="#0a0e14"/></g></svg></template>
 </head>
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
@@ -80,7 +80,7 @@ body.fs #water{aspect-ratio:auto;height:calc(100vh - 90px);}
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn" onclick="toggleFs()">FULL SCREEN</button>
-      <button class="btn" onclick="signOut()">SIGN OUT</button>
+      
     </div>
   </div>
 
@@ -204,24 +204,8 @@ document.addEventListener('fullscreenchange',function(){ if(!document.fullscreen
 document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.body.classList.remove('fs'); });
 function startApp(){ document.getElementById('app').style.display='block'; buildPond(); renderLog(); raf=requestAnimationFrame(loop); }
 </script>
-<script src="../../supabase-config.js?v=13.0.0"></script>
-<script src="../../auth.js?v=13.0.0"></script>
-<script>
-var AUTH=window.CTF_AUTH;
-function el(id){ return document.getElementById(id); }
-async function gateSignIn(){ el('gateBtn').disabled=true; try{ await AUTH.signIn(location.href); }catch(e){ el('gateErr').textContent="Couldn't reach Google."; el('gateBtn').disabled=false; } }
-async function signOut(){ await AUTH.signOut(); location.reload(); }
-(async function(){
-  if(!AUTH||!AUTH.online){ el('gate').style.display='block'; el('gateMsg').textContent="Supabase isn't connected yet."; el('gateBtn').style.display='none'; return; }
-  var u=null; try{ u=await AUTH.user(); }catch(e){}
-  if(!u){ el('gate').style.display='block'; return; }
-  if(!AUTH.isTeacher(u)){
-    el('gate').style.display='block'; el('gateMsg').textContent='Signed in as '+AUTH.emailOf(u)+'.';
-    el('gateErr').innerHTML='That account isn\u2019t the teacher account.<br><a href="#" onclick="signOut();return false;">Use a different account</a>'; return;
-  }
-  startApp();
-})();
-</script>
+<script>function signOut(){}
+startApp();</script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 </body>
 </html>

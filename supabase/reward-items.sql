@@ -130,7 +130,7 @@ end $$;
 -- Pack contents: keep only in-game kinds (never voucher/pack), 1-10 of each item,
 -- coins 1-500. Shape: [{"k":"hint","n":2},{"k":"coins","n":50}]
 create or replace function _pack_clean(p jsonb)
-returns jsonb language sql immutable as $
+returns jsonb language sql immutable as $$
   select coalesce(jsonb_agg(jsonb_build_object('k', k, 'n',
            case when k = 'coins' then greatest(1, least(500, n)) else greatest(1, least(10, n)) end)), '[]'::jsonb)
   from (
@@ -139,7 +139,7 @@ returns jsonb language sql immutable as $
   ) t
   where k in ('coins','xp2x','freeze','timefreeze','squad','hint','retry','cooldown','shield','overclock',
               'extralife','lucky','pioneer','xp500','mystery','hint2','skip','repel','shard','streak1','duelticket')
-$;
+$$;
 
 create or replace function _owns_student(p_student uuid)
 returns boolean language sql stable security definer set search_path = public as $$
@@ -177,7 +177,7 @@ grant execute on function ctf_t_send_items(uuid[], text, text, text, text, int) 
 -- ---- teacher: send a Rewards Pack -----------------------------------------
 create or replace function ctf_t_send_pack(
   p_students uuid[], p_contents jsonb, p_label text default null, p_note text default null, p_qty int default 1
-) returns json language plpgsql security definer set search_path = public as $
+) returns json language plpgsql security definer set search_path = public as $$
 declare v_c jsonb := _pack_clean(p_contents); v_n int; v_q int := greatest(1, least(10, coalesce(p_qty,1)));
 begin
   if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
@@ -190,7 +190,7 @@ begin
   where s.id = any(p_students);
   get diagnostics v_n = row_count;
   return json_build_object('ok', true, 'sent', v_n, 'students', v_n / v_q);
-end $;
+end $$;
 revoke all on function ctf_t_send_pack(uuid[], jsonb, text, text, int) from public, anon;
 grant execute on function ctf_t_send_pack(uuid[], jsonb, text, text, int) to authenticated;
 

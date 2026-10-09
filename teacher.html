@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=12.0.0"></script>
+<script src="site.js?v=13.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -259,19 +259,19 @@
   </div>
 </div>
 
-<script src="config.js?v=12.0.0"></script>
-<script src="ctf-data/cyber1.js?v=12.0.0"></script>
-<script src="ctf-data/cyber2.js?v=12.0.0"></script>
-<script src="ctf-data/cyber3.js?v=12.0.0"></script>
-<script src="ctf-data/apcsp.js?v=12.0.0"></script>
-<script src="ctf-data/web3.js?v=12.0.0"></script>
-<script src="cipher.js?v=12.0.0"></script>
-<script src="supabase-config.js?v=12.0.0"></script>
-<script src="auth.js?v=12.0.0"></script>
-<script src="name-filter.js?v=12.0.0"></script>
-<script src="objectives.js?v=12.0.0"></script>
-<script src="standards.js?v=12.0.0"></script>
-<script src="csv.js?v=12.0.0"></script>
+<script src="config.js?v=13.0.0"></script>
+<script src="ctf-data/cyber1.js?v=13.0.0"></script>
+<script src="ctf-data/cyber2.js?v=13.0.0"></script>
+<script src="ctf-data/cyber3.js?v=13.0.0"></script>
+<script src="ctf-data/apcsp.js?v=13.0.0"></script>
+<script src="ctf-data/web3.js?v=13.0.0"></script>
+<script src="cipher.js?v=13.0.0"></script>
+<script src="supabase-config.js?v=13.0.0"></script>
+<script src="auth.js?v=13.0.0"></script>
+<script src="name-filter.js?v=13.0.0"></script>
+<script src="objectives.js?v=13.0.0"></script>
+<script src="standards.js?v=13.0.0"></script>
+<script src="csv.js?v=13.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -380,6 +380,7 @@ function syncManifest(course){
   rpc("ctf_t_sync_manifest",{p_course:course,p_manifest:man}).catch(function(){ MANIFEST_SENT[course]=0; });
 }
 async function loadDetail(){
+  WEEKXP=null;
   MCLEARS=null;CRATE=null;CRATEMSG="";ROSTER=[];FLAGS=[];CHEATS=[];SUMMARY=null;FSTATS=[];ATTEND=null;GROUPS=[];GSEL={};GFILTER="all";PIONEERS=[];VOCAB=[];EXPECTED=[];VSESS=[];STAND=[];CAPS=[];GRANTS=[];HRUNS=[];ATTEMPTS=[];RITEMS=[];RSEL={};
   syncManifest(CUR.course);
   try{
@@ -459,7 +460,7 @@ function renderMain(){
   h+='<div class="tabs">'+
       tabBtn("summary","Summary")+tabBtn("spread","Distributions")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
       tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+tabBtn("ultimate","Ultimate Flags")+
-      tabBtn("vocab","Vocab Lab")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("rewards","Send Rewards")+tabBtn("enroll","Enrollment")+
+      tabBtn("vocab","Vocab Lab")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("weekxp","Weekly XP")+tabBtn("rewards","Send Rewards")+tabBtn("enroll","Enrollment")+
       tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
     '</div><div style="padding-top:16px;">';
   if(TAB==="roster") h+=rosterView();
@@ -474,6 +475,7 @@ function renderMain(){
   else if(TAB==="squads") h+=squadsView();
   else if(TAB==="objectives") h+=objectivesView();
   else if(TAB==="xplog") h+=xpLogView();
+  else if(TAB==="weekxp") h+=weekXpView();
   else if(TAB==="rewards") h+=rewardsView();
   else if(TAB==="enroll") h+=enrollView();
   else if(TAB==="cheats") h+=cheatsView();
@@ -500,7 +502,7 @@ function openPracticeGuide(){
   if(CUR.course !== "apcsp"){ alert("The practice module map is for AP CSP only."); return; }
   window.open("practice/teacher-guide.html", "_blank");
 }
-function setTab(t){ TAB=t; renderMain(); }
+function setTab(t){ TAB=t; if(t==="weekxp"&&!WEEKXP) loadWeekXp(); renderMain(); }
 function copyCode(){ navigator.clipboard&&navigator.clipboard.writeText(CUR.code); }
 
 /* ----- class summary ----- */
@@ -1847,6 +1849,68 @@ function xpLogView(){
     '</tr>';
   });
   return h+'</tbody></table></div>';
+}
+/* ----- Weekly XP summary (weekly-xp-summary.sql) ----- */
+var WEEKXP=null, WXP_WEEKS=8, WXP_SORT="google", WXP_DIR=1;
+async function loadWeekXp(){
+  if(!CUR) return; var cid=CUR.id; WEEKXP={loading:true}; if(TAB==="weekxp") renderMain();
+  try{ var r=await rpc("ctf_t_weekly_xp",{p_class:cid,p_weeks:WXP_WEEKS}); if(!CUR||CUR.id!==cid) return; WEEKXP=r||{error:"empty"}; }
+  catch(e){ if(!CUR||CUR.id!==cid) return; WEEKXP={error:/function|not find|schema cache/i.test((e&&e.message)||"")?"missing_rpc":((e&&e.message)||"failed")}; }
+  if(TAB==="weekxp") renderMain();
+}
+function setWxpWeeks(n){ WXP_WEEKS=+n; loadWeekXp(); }
+function setWxpSort(k){ if(WXP_SORT===k) WXP_DIR=-WXP_DIR; else { WXP_SORT=k; WXP_DIR=(k==="google"||k==="hacker")?1:-1; } renderMain(); }
+function wxpGoogle(s){ return s.full_name||(s.email||"").split("@")[0]||""; }
+function wxpRows(){
+  var d=WEEKXP||{}, weeks=d.weeks||[];
+  var rows=(d.students||[]).map(function(s){
+    var w=s.weeks||{}, tot=0; weeks.forEach(function(k){ tot+=Number(w[k])||0; });
+    return {s:s,w:w,tot:tot,g:wxpGoogle(s)};
+  });
+  rows.sort(function(a,b){
+    var v;
+    if(WXP_SORT==="google") v=a.g.localeCompare(b.g,undefined,{sensitivity:"base"});
+    else if(WXP_SORT==="hacker") v=(a.s.handle||"").localeCompare(b.s.handle||"",undefined,{sensitivity:"base"});
+    else if(WXP_SORT==="total") v=a.tot-b.tot;
+    else v=(Number(a.w[WXP_SORT])||0)-(Number(b.w[WXP_SORT])||0);
+    return v*WXP_DIR || a.g.localeCompare(b.g);
+  });
+  return {weeks:weeks,rows:rows};
+}
+function wxpWeekLabel(k){ var p=k.split("-"); var d=new Date(+p[0],+p[1]-1,+p[2]); return d.toLocaleDateString(undefined,{month:"short",day:"numeric"}); }
+function weekXpView(){
+  if(!WEEKXP||WEEKXP.loading) return '<div class="empty"><span class="spin"></span></div>';
+  if(WEEKXP.error) return '<div class="empty" style="color:var(--bad)">'+(WEEKXP.error==="missing_rpc"?'Run supabase/weekly-xp-summary.sql in the Supabase SQL Editor to turn this on.':'Could not load: '+esc(WEEKXP.error))+'</div>';
+  var R=wxpRows(), weeks=R.weeks;
+  var arrow=function(k){ return WXP_SORT===k?(WXP_DIR>0?' \u25b2':' \u25bc'):''; };
+  var th=function(k,label,extra){ return '<th style="cursor:pointer;white-space:nowrap;'+(extra||'')+'" onclick="setWxpSort(\''+k+'\')">'+label+arrow(k)+'</th>'; };
+  var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;max-width:720px;">'+
+    'XP each student earned per week (Sunday to Saturday, Eastern time): flag captures plus XP you granted by hand. Click a column heading to sort.</div>';
+  h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'+
+    '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">SORT BY</span>'+
+    '<button class="btn sm'+(WXP_SORT==="google"?' pri':'')+'" onclick="setWxpSort(\'google\')">Google name'+arrow("google")+'</button>'+
+    '<button class="btn sm'+(WXP_SORT==="hacker"?' pri':'')+'" onclick="setWxpSort(\'hacker\')">Hacker name'+arrow("hacker")+'</button>'+
+    '<button class="btn sm'+(WXP_SORT==="total"?' pri':'')+'" onclick="setWxpSort(\'total\')">Total XP'+arrow("total")+'</button>'+
+    '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-left:10px;">SHOW</span>'+
+    '<select onchange="setWxpWeeks(this.value)" style="padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:12px;">'+
+      [4,8,12,18].map(function(n){ return '<option value="'+n+'"'+(n===WXP_WEEKS?' selected':'')+'>Last '+n+' weeks</option>'; }).join('')+'</select>'+
+    '<span style="margin-left:auto;">'+CSV.button("exportWeekXp()")+'</span></div>';
+  if(!R.rows.length) return h+'<div class="empty">No students in this class yet.</div>';
+  h+='<div style="overflow:auto;"><table style="font-size:12px;"><thead><tr>'+th("google","Google name")+th("hacker","Hacker name")+
+    weeks.map(function(k,i){ return th(k,(i===0?'This wk':wxpWeekLabel(k)),'text-align:right;'); }).join('')+th("total","Total",'text-align:right;')+'</tr></thead><tbody>';
+  R.rows.forEach(function(r){
+    h+='<tr><td style="color:var(--bright)">'+esc(r.g||"\u2014")+(r.s.full_name?'':' <span class="mono" style="font-size:10px;color:var(--faint)">'+esc(r.s.email||"")+'</span>')+'</td>'+
+      '<td><b style="color:var(--accent)">'+esc(r.s.handle||"\u2014")+'</b></td>'+
+      weeks.map(function(k){ var v=Number(r.w[k])||0; return '<td class="mono" style="text-align:right;color:'+(v?'var(--bright)':'var(--faint)')+'">'+(v?v.toLocaleString():'0')+'</td>'; }).join('')+
+      '<td class="mono" style="text-align:right;font-weight:800;color:var(--ok)">'+r.tot.toLocaleString()+'</td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+function exportWeekXp(){
+  var R=wxpRows();
+  var out=[["Google name","Email","Hacker name"].concat(R.weeks.map(function(k){ return "Week of "+k; })).concat(["Total"])];
+  R.rows.forEach(function(r){ out.push([r.s.full_name||"",r.s.email||"",r.s.handle||""].concat(R.weeks.map(function(k){ return Number(r.w[k])||0; })).concat([r.tot])); });
+  CSV.download(out,"weekly-xp",CUR.name);
 }
 function exportXpLog(){
   var out=[["When","Student","XP","Reason","Granted by"]];

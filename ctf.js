@@ -3051,7 +3051,13 @@
   function bossPick() {
     if (boss.reviewQ.length) { for (var i = 0; i < boss.reviewQ.length; i++) { if (boss.reviewQ[i].due <= boss.round) { return boss.reviewQ.splice(i, 1)[0].q; } } }
     var cfg = boss.cfgBank;
-    if (cfg.length && Math.random() < 0.35) {
+    /* A small hand-authored bank (e.g. a module with no vocab) reshuffles instead of running dry. */
+    if (!cfg.length && boss.cfgAll.length && (!boss.pool.length || Math.random() < 0.35)) {
+      var last = boss.cur && boss.cur.prompt;
+      cfg = boss.cfgBank = boss.cfgAll.filter(function (q) { return q.prompt !== last; });
+      if (!cfg.length) cfg = boss.cfgBank = boss.cfgAll.slice();
+    }
+    if (cfg.length && (!boss.pool.length || Math.random() < 0.35)) {
       var idxs = cfg.map(function (_, i) { return i; });
       var wc = idxs.map(function (i) { var q = cfg[i]; return { i: i, k: Math.pow(Math.random() || 1e-9, 1 / (boss.weak[q.topic || ("M" + q.module)] || 1)) }; }).sort(function (a, b) { return b.k - a.k; })[0];
       var picked = cfg.splice(wc.i, 1)[0];
@@ -3072,12 +3078,14 @@
     if (document.getElementById("bossWrap")) return;
     var endgame = !!(opts && opts.endgame);
     scopeModule = (!endgame && scopeModule) ? +scopeModule : null;
-    var vocab = bossVocab(); if (scopeModule) vocab = vocab.filter(function (v) { return +v.m === scopeModule; });
+    /* ctf.bossVocabFrom = { 12: 1 } lets a module's boss borrow another module's vocab. */
+    var vocabMod = scopeModule && ctf.bossVocabFrom && ctf.bossVocabFrom[scopeModule] ? +ctf.bossVocabFrom[scopeModule] : scopeModule;
+    var vocab = bossVocab(); if (scopeModule) vocab = vocab.filter(function (v) { return +v.m === vocabMod; });
     var cfg = bossConfigBank(); if (scopeModule) cfg = cfg.filter(function (q) { return +q.module === scopeModule; });
     if (vocab.length < 4 && cfg.length < 1) { nemesisToast(GLYPH + " " + ADV, MENTOR ? "no challenges loaded for this module yet \u2014 check back soon." : "not enough intel loaded for this module yet.", "var(--adv2)"); return; }
     // The endgame draws from the entire course and hits harder — it's the summit.
     boss = { nemHP: endgame ? 140 : 100, hp: 100, round: 0, streak: 0, best: 0, dmgDealt: 0, correct: 0,
-             phase: 1, weak: {}, reviewQ: [], pool: vocab, cfgBank: cfg, scope: scopeModule,
+             phase: 1, weak: {}, reviewQ: [], pool: vocab, cfgBank: cfg, cfgAll: cfg.slice(), scope: scopeModule,
              endgame: endgame, timer: null, locked: false };
     if (consumeItem("extralife")) boss.hp = 125;
     boss.maxHp = boss.hp;

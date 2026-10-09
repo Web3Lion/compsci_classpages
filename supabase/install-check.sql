@@ -62,7 +62,8 @@ begin
       (30, 'scheduled-unlocks.sql', 'Scheduled unlocks (run LAST of the gate files)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='unlock_schedule')),
       (31, 'install-check.sql', 'Live status for install-check.html', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_install_status')),
       (32, 'module-clears.sql', 'Module clear crates, coin packs, Mentor + Vanguard', exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_clears')),
-      (33, 'guest-mode.sql', 'Guest mode — any Google account joins one class by code, for a set time', exists (select 1 from information_schema.tables where table_schema='public' and table_name='guest_mode'))
+      (33, 'guest-mode.sql', 'Guest mode — any Google account joins one class by code, for a set time', exists (select 1 from information_schema.tables where table_schema='public' and table_name='guest_mode')),
+      (34, 'weekly-xp-summary.sql', 'Weekly XP summary tab in teacher.html', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_weekly_xp'))
     ) as c(step, file, feature, present)
   
     union all
