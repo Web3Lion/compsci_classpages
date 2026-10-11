@@ -32,6 +32,12 @@ window.COMPETITIONS = [
       { name: "Register on Cyber Skyline", url: "https://cyberskyline.com/events/ncl" },
       { name: "NCL competition overview", url: "https://nationalcyberleague.org/competition" }
     ],
+    spotlight: {
+      tag: "PRACTICE · GYMNASIUM WALKTHROUGHS",
+      title: "Stuck on a Gymnasium challenge? Use Trove.",
+      text: "Cyber Skyline's Trove has step-by-step walkthroughs for NCL Gymnasium practice challenges, organized by category. Try a challenge first, then check the walkthrough to see how it's solved and which tools to use.",
+      link: { name: "Open Trove walkthroughs", url: "https://trove.cyberskyline.com/" }
+    },
     events: [
       { name: "NCL Gymnasium (practice)", start: "2026-08-17T00:00", end: "2026-12-11T23:59", featured: false },
       { name: "NCL regular registration", end: "2026-10-09T23:59", deadline: true },
@@ -39,6 +45,31 @@ window.COMPETITIONS = [
       { name: "NCL Practice Game", start: "2026-10-12T00:00", end: "2026-10-18T23:59" },
       { name: "NCL Individual Game", start: "2026-10-23T00:00", end: "2026-10-25T23:59" },
       { name: "NCL Team Game", start: "2026-11-06T00:00", end: "2026-11-08T23:59" }
+    ]
+  },
+  {
+    id: "pcwa",
+    name: "PCWA High School CTF",
+    short: "PCWA CTF",
+    season: "Fall 2026",
+    courses: ["cyber1", "cyber2"],
+    format: "Jeopardy-style CTF · team (solo allowed)",
+    blurb: "A virtual capture-the-flag for high school students hosted by the PA Cyber Workforce Alliance at IUP on Hack The Box. Ten challenges across four topics, ranging in difficulty. Top three teams win gift cards for every member ($75 / $50 / $25).",
+    facts: [
+      ["Who", "U.S. high school students"],
+      ["Team size", "Up to 4 (solo still needs a team)"],
+      ["Cost", "Free"],
+      ["Where", "Online, Hack The Box CTF"]
+    ],
+    links: [
+      { name: "Event details (IUP)", url: "https://www.iup.edu/cybersecurity/grants/pcwa/capture-the-flag.html" },
+      { name: "Hack The Box event page", url: "https://ctf.hackthebox.com/event/details/pcwa-fall-2026-high-school-ctf-3647" },
+      { name: "Request event password", url: "https://form.jotform.com/262725259050153" },
+      { name: "Find teammates", url: "https://form.jotform.com/262734303562050" },
+      { name: "Practice: HTB CTF Try Out", url: "https://ctf.hackthebox.com/event/details/ctf-try-out-1434" }
+    ],
+    events: [
+      { name: "PCWA High School CTF", start: "2026-10-30T08:00", end: "2026-10-31T23:30" }
     ]
   },
   {

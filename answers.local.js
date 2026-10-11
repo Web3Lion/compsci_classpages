@@ -25,7 +25,7 @@
    executed COURSE_CONFIG. Zero missing, zero mismatched, zero orphaned.
    ============================================================================ */
 window.CTF_ANSWERS = {
-  /* ---- CYBER 1 · SPECTER — 78 answers ---- */
+  /* ---- CYBER 1 · SPECTER — 90 answers ---- */
   "cyber1": {
     "c1-m1-1.1-core#0": "flag{cybersecurity}",
     "c1-m1-1.1-core#1": "flag{onity}",
@@ -366,6 +366,20 @@ window.CTF_ANSWERS = {
     "c1-sc-8.5-core#0": "flag{physical}",
     "c1-sc-8.5-core#1": "flag{hvac}",
     "c1-sc-8.5-core#2": "flag{suppression_system}",
+
+    /* Module 12 — Test Experience (educator demo) */
+    "c1-tx-world#0": "flag{jupiter}",
+    "c1-tx-world#1": "flag{au}",
+    "c1-tx-world#2": "flag{roosevelt}",
+    "c1-tx-math#0": "flag{56}",
+    "c1-tx-math#1": "flag{12}",
+    "c1-tx-math#2": "flag{10}",
+    "c1-tx-words#0": "flag{shakespeare}",
+    "c1-tx-words#1": "flag{palindrome}",
+    "c1-tx-words#2": "flag{school}",
+    "c1-tx-cyber#0": "flag{phishing}",
+    "c1-tx-cyber#1": "flag{mfa}",
+    "c1-tx-cyber#2": "flag{ransomware}",
 
   },
 
@@ -889,10 +903,6 @@ window.CTF_ANSWERS = {
     "ap-m1-y2k#1": "flag{two}",
     "ap-m1-y2k#2": "flag{2000}",
 
-    "ap-m1-langs#0": "flag{artificial language}",
-    "ap-m1-langs#1": "flag{high}",
-    "ap-m1-langs#2": "flag{low}",
-
     "ap-m1-pseudocode#0": "flag{pseudocode}",
     "ap-m1-pseudocode#1": "flag{testing}",
     "ap-m1-pseudocode#2": "flag{10}",
@@ -940,6 +950,74 @@ window.CTF_ANSWERS = {
     "ap-m2j#0": "flag{syntax_error}",
     "ap-m2j#1": "flag{runtime_error}",
     "ap-m2j#2": "flag{logic_error}",
+
+    "ap-m2a-trace#0": "flag{14 7}",
+    "ap-m2a-trace#1": "flag{6}",
+    "ap-m2a-trace#2": "flag{12 2 2}",
+
+    "ap-m2b-trace#0": "flag{12}",
+    "ap-m2b-trace#1": "flag{12}",
+    "ap-m2b-trace#2": "flag{14}",
+
+    "ap-m2c-trace#0": "flag{9}",
+    "ap-m2c-trace#1": "flag{1512}",
+    "ap-m2c-trace#2": "flag{3.5 3 1}",
+
+    "ap-m2d-trace#0": "flag{beach}",
+    "ap-m2d-trace#1": "flag{fizzbuzz}",
+    "ap-m2d-trace#2": "flag{14}",
+
+    "ap-m2e-trace#0": "flag{2 5 8}",
+    "ap-m2e-trace#1": "flag{5}",
+    "ap-m2e-trace#2": "flag{4}",
+
+    "ap-m2f-trace#0": "flag{yn}",
+    "ap-m2f-trace#1": "flag{pool}",
+    "ap-m2f-trace#2": "flag{b*n*n*6}",
+
+    "ap-m2g-trace#0": "flag{gold gold}",
+    "ap-m2g-trace#1": "flag{8 5}",
+    "ap-m2g-trace#2": "flag{14}",
+
+    "ap-m2h-trace#0": "flag{9}",
+    "ap-m2h-trace#1": "flag{14}",
+    "ap-m2h-trace#2": "flag{3 4 9 8}",
+
+    "ap-m2i-trace#0": "flag{12}",
+    "ap-m2i-trace#1": "flag{2 14}",
+    "ap-m2i-trace#2": "flag{13}",
+
+    "ap-m2j-trace#0": "flag{2}",
+    "ap-m2j-trace#1": "flag{2}",
+    "ap-m2j-trace#2": "flag{6}",
+
+    "ap-m1-vault#0": "flag{10}",
+    "ap-m1-vault#1": "flag{81}",
+    "ap-m1-vault#2": "flag{1048576}",
+
+    "ap-m2-vault#0": "flag{001122}",
+    "ap-m2-vault#1": "flag{10}",
+    "ap-m2-vault#2": "flag{20}",
+
+    "ap-m3-vault#0": "flag{45}",
+    "ap-m3-vault#1": "flag{16777216}",
+    "ap-m3-vault#2": "flag{15000}",
+
+    "ap-m4-vault#0": "flag{8}",
+    "ap-m4-vault#1": "flag{3}",
+    "ap-m4-vault#2": "flag{6}",
+
+    "ap-m5-vault#0": "flag{parameter}",
+    "ap-m5-vault#1": "flag{32}",
+    "ap-m5-vault#2": "flag{6}",
+
+    "ap-m6-vault#0": "flag{32}",
+    "ap-m6-vault#1": "flag{2}",
+    "ap-m6-vault#2": "flag{45}",
+
+    "ap-m7-vault#0": "flag{true}",
+    "ap-m7-vault#1": "flag{30}",
+    "ap-m7-vault#2": "flag{27}",
 
     "ap-m3a#0": "flag{bit}",
     "ap-m3a#1": "flag{byte}",

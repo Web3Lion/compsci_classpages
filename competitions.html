@@ -3,39 +3,82 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}try{var f=new URLSearchParams(location.search).get('from');if(f==='cyber2')document.documentElement.setAttribute('data-course','cyber2');}catch(e){}})();</script>
-<script src="site.js?v=13.0.0"></script>
+<script src="site.js?v=14.1.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cyber Competitions — Cybersecurity 1 &amp; AP Cybersecurity 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* Palette follows the course you came from: Cyber 1 blue (default), AP Cyber 2 green. */
-:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--amber-bd:#4a3d1a;--amber-bg:#1a150a;}
-:root[data-course="cyber2"]{--panel:#0d1410;--panel2:#0d1a12;--panel3:#0f2318;--border:#1e3a2e;--border2:#17281f;--border3:#244d38;--text:#cfe3d8;--bright:#eafff2;--muted:#a9c4b6;--dim:#7fa896;--faint:#5c7a6b;--fainter:#3d5749;--accent:#39ff88;--accent2:#7dffb3;}
-:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#6f8196;--fainter:#a6b3c2;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6c0c;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;}
-:root[data-theme="light"][data-course="cyber2"]{--bg:#e9efe9;--panel2:#f2f7f2;--panel3:#e8f6ee;--border:#cdddd2;--border2:#dde8e0;--border3:#b6d4c1;--text:#2b3a31;--bright:#0e1a13;--muted:#48594f;--dim:#5f7568;--faint:#6d8476;--accent:#0b8a4c;--accent2:#086b3b;}
+/* Arcade palette. Course accent: Cyber 1 cyan (default), AP Cyber 2 lime. */
+:root{--bg:#07061a;--bg2:#0d0b2a;--panel:rgba(18,16,52,.82);--panel2:rgba(28,24,74,.7);--line:rgba(140,130,255,.22);--line2:rgba(140,130,255,.38);
+--text:#d9d6ff;--bright:#ffffff;--muted:#b4b0e6;--dim:#9591cc;--faint:#7a76b3;
+--cyan:#22e4ff;--mag:#ff3bd4;--yel:#ffe14a;--lime:#7dff6b;--org:#ff8a3b;--accent:var(--cyan);--accent2:#8ff1ff;
+--grid:rgba(255,59,212,.35);--glow:.9;}
+:root[data-course="cyber2"]{--accent:var(--lime);--accent2:#b8ffad;}
+:root[data-theme="light"]{--bg:#f1efff;--bg2:#e6e2ff;--panel:rgba(255,255,255,.9);--panel2:rgba(244,241,255,.95);--line:rgba(90,70,200,.2);--line2:rgba(90,70,200,.35);
+--text:#2a2550;--bright:#130f33;--muted:#454072;--dim:#58538a;--faint:#6b669c;
+--cyan:#0078a8;--mag:#b8128f;--yel:#8a6a00;--lime:#1c7f12;--org:#b4500c;--accent2:#005b80;--grid:rgba(184,18,143,.16);--glow:.35;}
+:root[data-theme="light"][data-course="cyber2"]{--accent2:#145f0c;}
 *{box-sizing:border-box;}
-body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);transition:background-color .25s ease,color .25s ease;}
+html{background:var(--bg);}
+body{margin:0;min-height:100vh;font-family:'IBM Plex Sans',sans-serif;color:var(--text);background:
+  radial-gradient(900px 500px at 12% -5%,color-mix(in oklab,var(--mag) 28%,transparent),transparent 70%),
+  radial-gradient(800px 500px at 95% 5%,color-mix(in oklab,var(--cyan) 24%,transparent),transparent 70%),
+  linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);background-attachment:fixed;transition:background-color .25s ease,color .25s ease;}
+body::before{content:"";position:fixed;left:-50%;right:-50%;bottom:-10vh;height:55vh;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:60px 60px;
+  transform:perspective(420px) rotateX(62deg);transform-origin:50% 100%;-webkit-mask-image:linear-gradient(to top,#000 10%,transparent 85%);mask-image:linear-gradient(to top,#000 10%,transparent 85%);animation:gridrun 3.5s linear infinite;}
+@keyframes gridrun{to{background-position:0 60px,0 0;}}
 a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
 .mono{font-family:'JetBrains Mono',monospace;}
-.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.disp{font-family:'Chakra Petch',sans-serif;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--line2);background:var(--panel);color:var(--accent);cursor:pointer;backdrop-filter:blur(8px);}
 .themebtn:hover{border-color:var(--accent);}
-.wrap{max-width:1000px;margin:0 auto;padding:0 20px 60px;}
-.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:28px;}
+.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 20px 80px;}
+.hud{position:relative;border:1px solid var(--line);border-radius:6px;background:var(--panel);backdrop-filter:blur(10px);}
+.hud::before,.hud::after{content:"";position:absolute;width:22px;height:22px;pointer-events:none;border:2px solid var(--c,var(--accent));}
+.hud::before{top:-2px;left:-2px;border-right:0;border-bottom:0;border-top-left-radius:6px;}
+.hud::after{bottom:-2px;right:-2px;border-left:0;border-top:0;border-bottom-right-radius:6px;}
+.grad{background:linear-gradient(90deg,var(--cyan),var(--mag) 55%,var(--yel));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;border:1px solid currentColor;background:color-mix(in oklab,currentColor 12%,transparent);}
 @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
-@keyframes pulse{0%{box-shadow:0 0 0 0 var(--accent)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
-.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.6s ease-out infinite;}
-.rm .live-dot,.rm .cursor{animation:none !important;}
-.evrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:center;padding:14px 16px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);}
-.evrow[data-kind="live"]{border-color:var(--accent);}
-.evrow[data-kind="ended"]{opacity:.55;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;color:var(--lime);animation:pulse 1.4s ease-out infinite;}
+.evrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 16px;align-items:center;padding:14px 16px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--k,var(--faint));transition:transform .12s ease,border-color .12s ease;}
+.evrow:hover{transform:translateX(4px);}
+.evrow[data-kind="live"]{--k:var(--lime);box-shadow:0 0 calc(22px * var(--glow)) color-mix(in oklab,var(--lime) 35%,transparent);}
+.evrow[data-kind="deadline"]{--k:var(--yel);}
+.evrow[data-kind="upcoming"]{--k:var(--cyan);}
+.evrow[data-kind="ended"]{opacity:.5;}
+.evrow .st{grid-row:span 2;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:800;color:var(--k,var(--faint));border:2px solid var(--k,var(--faint));}
 .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;}
-.lnk{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:9px;border:1px solid var(--border3);background:var(--panel2);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;transition:border-color .15s ease,transform .08s ease;}
-.lnk:hover{border-color:var(--accent);}
+.fact{padding:12px 14px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);}
+.lnk{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:6px;border:1px solid var(--line2);background:var(--panel2);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;transition:border-color .15s ease,transform .08s ease,box-shadow .15s ease;}
+.lnk:hover{border-color:var(--accent);box-shadow:0 0 calc(18px * var(--glow)) color-mix(in oklab,var(--accent) 40%,transparent);}
 .lnk:active{transform:translateY(2px);}
-@media(max-width:720px){.wrap{padding:0 12px 48px;}.card{padding:16px;}.themebtn{top:8px;right:8px;}.hero{padding:30px 20px !important;}}
+/* Power-up (Trove walkthrough) */
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg;}
+@keyframes spin{to{--ang:360deg;}}
+@keyframes sheen{0%{transform:translateX(-120%) skewX(-20deg)}60%,100%{transform:translateX(320%) skewX(-20deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.pwr{position:relative;margin:4px 0 24px;padding:3px;border-radius:14px;background:conic-gradient(from var(--ang),var(--yel),var(--mag),var(--cyan),var(--lime),var(--yel));animation:spin 4s linear infinite;box-shadow:0 0 calc(40px * var(--glow)) color-mix(in oklab,var(--mag) 45%,transparent),0 0 calc(80px * var(--glow)) color-mix(in oklab,var(--yel) 22%,transparent);}
+.pwr-in{position:relative;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px 24px;align-items:center;padding:24px 26px;border-radius:11px;background:
+  radial-gradient(400px 200px at 0% 0%,color-mix(in oklab,var(--yel) 22%,transparent),transparent 70%),
+  radial-gradient(400px 220px at 100% 100%,color-mix(in oklab,var(--mag) 26%,transparent),transparent 70%),var(--bg2);}
+.pwr-in::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);animation:sheen 4.5s ease-in-out infinite;pointer-events:none;}
+.pwr-ico{width:64px;height:64px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--yel),var(--org));color:#1a1030;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:30px;box-shadow:0 0 calc(24px * var(--glow)) color-mix(in oklab,var(--yel) 60%,transparent);animation:bob 2.4s ease-in-out infinite;}
+.pwr-btn{position:relative;z-index:1;display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:12px 22px;border-radius:8px;background:linear-gradient(90deg,var(--yel),var(--mag));color:#140c2a !important;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;box-shadow:0 0 calc(24px * var(--glow)) color-mix(in oklab,var(--mag) 55%,transparent);transition:transform .1s ease,filter .15s ease;}
+.pwr-btn:hover{filter:brightness(1.12);transform:translateY(-2px);}
+.pwr-btn:active{transform:translateY(1px);}
+:root[data-theme="light"] .pwr-in{background:radial-gradient(400px 200px at 0% 0%,rgba(255,200,0,.25),transparent 70%),radial-gradient(400px 220px at 100% 100%,rgba(255,59,212,.18),transparent 70%),#fff;}
+:root[data-theme="light"] .pwr-ico,:root[data-theme="light"] .pwr-btn{background:linear-gradient(90deg,#ffd21f,#ff5cd9);}
+.cd{font-family:'Chakra Petch',sans-serif;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.rm body::before,.rm .live-dot,.rm .cursor,.rm .pwr,.rm .pwr-in::after,.rm .pwr-ico{animation:none !important;}
+@media(max-width:720px){.wrap{padding:0 12px 56px;}.hud{padding:18px !important;}.themebtn{top:8px;right:8px;}.hero{padding:30px 20px !important;}
+  .pwr-in{grid-template-columns:auto minmax(0,1fr);padding:20px;}.pwr-btn{grid-column:1/-1;justify-content:center;}
+  .nu{grid-template-columns:1fr !important;}.nu .r{text-align:left !important;}}
 </style>
 </head>
 <body>
@@ -43,23 +86,26 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
 <main class="wrap" id="main">
   <a id="backLink" class="mono" href="cyber1/index.html" style="display:inline-flex;align-items:center;min-height:44px;margin-top:18px;font-size:12px;color:var(--dim);">&larr; cd ../course-home</a>
 
-  <div class="hero" style="position:relative;overflow:hidden;margin-top:10px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(135deg,var(--panel2) 0%,var(--bg) 60%);padding:40px;">
-    <div style="position:absolute;inset:0;opacity:.06;background-image:repeating-linear-gradient(0deg,var(--accent) 0,var(--accent) 1px,transparent 1px,transparent 4px);pointer-events:none;"></div>
+  <div class="hud hero" style="--c:var(--mag);margin-top:10px;padding:44px 40px;overflow:hidden;">
+    <div style="position:absolute;inset:0;opacity:.07;background-image:repeating-linear-gradient(0deg,var(--bright) 0,var(--bright) 1px,transparent 1px,transparent 4px);pointer-events:none;"></div>
     <div style="position:relative;">
-      <div class="mono" style="font-size:13px;letter-spacing:2px;color:var(--accent);margin-bottom:14px;">&gt; ./competitions --season=2026-27</div>
-      <h1 class="mono" style="font-weight:800;font-size:clamp(34px,6vw,50px);line-height:1.05;margin:0 0 14px;color:var(--bright);letter-spacing:-1px;">Cyber Competitions<span class="cursor" style="display:inline-block;width:.3em;height:.85em;background:var(--accent);margin-left:10px;vertical-align:-.08em;animation:blink 1.1s step-end infinite;"></span></h1>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
+        <span class="chip" style="color:var(--yel);">SEASON 2026–27</span>
+        <span class="chip" style="color:var(--accent);">&gt; ./competitions</span>
+      </div>
+      <h1 class="disp" style="font-weight:700;font-size:clamp(40px,7.4vw,72px);line-height:.98;margin:0 0 16px;letter-spacing:-.5px;text-transform:uppercase;"><span class="grad">Cyber Competitions</span><span class="cursor" style="display:inline-block;width:.28em;height:.8em;background:var(--yel);margin-left:12px;vertical-align:-.04em;animation:blink 1.1s step-end infinite;"></span></h1>
       <p style="font-size:17px;line-height:1.6;max-width:620px;margin:0;color:var(--muted);text-wrap:pretty;">Competitions open to Cybersecurity 1 and AP Cybersecurity 2 students this year. Timers count down to each start date, then switch to a countdown to the finish while the event is running.</p>
     </div>
   </div>
 
-  <div id="nextUp" class="card" style="margin-top:22px;display:none;"></div>
+  <div id="nextUp" class="hud" style="--c:var(--cyan);margin-top:22px;padding:26px 28px;display:none;"></div>
 
-  <div id="comps" style="display:flex;flex-direction:column;gap:22px;margin-top:22px;"></div>
+  <div id="comps" style="display:flex;flex-direction:column;gap:26px;margin-top:26px;"></div>
 
-  <p class="mono" style="margin:22px 0 0;font-size:12px;line-height:1.6;color:var(--faint);">// Times shown in Eastern. Exact start/end hours are set by each competition; check the official site before game day. Ask Mr. Reasey about registration codes and team assignments.</p>
+  <p class="mono" style="margin:26px 0 0;font-size:12px;line-height:1.6;color:var(--faint);">// Times shown in Eastern. Exact start/end hours are set by each competition; check the official site before game day. Ask Mr. Reasey about registration codes and team assignments.</p>
 </main>
 
-<script src="competitions.js?v=13.0.0"></script>
+<script src="competitions.js?v=14.1.0"></script>
 <script>
 (function(){
   var from = new URLSearchParams(location.search).get('from');
@@ -67,22 +113,26 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
   if (from === 'cyber2') document.getElementById('backLink').href = 'cyber2/index.html';
   if (window.SITE_REDUCED_MOTION && window.SITE_REDUCED_MOTION()) document.documentElement.classList.add('rm');
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  var HUES = [['var(--mag)','var(--cyan)'],['var(--yel)','var(--org)'],['var(--lime)','var(--cyan)']];
+  var ICON = { live:'&#9654;', deadline:'!', upcoming:'&#8250;', ended:'&#10003;', tba:'?' };
   var timers = [];
 
   function row(ev){
     return '<div class="evrow" data-cc-ev>'
+      + '<span class="st" data-st></span>'
       + '<span style="font-size:15px;font-weight:600;color:var(--bright);min-width:0;">' + esc(ev.name) + '</span>'
-      + '<span class="mono" data-cc-l style="font-size:10px;letter-spacing:1px;text-align:right;color:var(--faint);"></span>'
+      + '<span class="mono" data-cc-l style="font-size:10px;letter-spacing:1.2px;text-align:right;color:var(--faint);"></span>'
       + '<span class="mono" style="font-size:12px;color:var(--dim);">' + esc(CompClock.range(ev)) + '</span>'
-      + '<span class="mono" data-cc-t style="font-size:17px;font-weight:800;text-align:right;color:var(--bright);font-variant-numeric:tabular-nums;white-space:nowrap;"></span>'
+      + '<span class="cd" data-cc-t style="font-size:19px;text-align:right;color:var(--bright);"></span>'
       + '</div>';
   }
   function styleRows(root){
-    root.querySelectorAll('[data-cc-ev]').forEach(function(r){
+    root.querySelectorAll('.evrow[data-cc-ev]').forEach(function(r){
       var k = CompClock.state(r.__ev).kind; r.setAttribute('data-kind', k);
       var l = r.querySelector('[data-cc-l]');
-      l.style.color = k === 'live' ? 'var(--accent)' : k === 'deadline' ? 'var(--amber)' : 'var(--faint)';
-      l.style.fontWeight = k === 'live' ? '800' : '500';
+      l.style.color = k === 'live' ? 'var(--lime)' : k === 'deadline' ? 'var(--yel)' : k === 'upcoming' ? 'var(--cyan)' : 'var(--faint)';
+      l.style.fontWeight = k === 'ended' ? '500' : '800';
+      r.querySelector('[data-st]').innerHTML = ICON[k] || '';
     });
   }
 
@@ -93,13 +143,13 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
     if (next){
       var live = next.st.kind === 'live';
       nu.style.display = '';
-      nu.style.borderColor = live ? 'var(--accent)' : '';
-      nu.innerHTML = '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 28px;align-items:center;" data-cc-ev>'
-        + '<div style="min-width:0;"><div class="mono" style="display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:1.5px;color:var(--accent);margin-bottom:10px;">' + (live ? '<span class="live-dot"></span>// LIVE NOW' : '// NEXT UP') + '</div>'
-        + '<div class="mono" style="font-weight:800;font-size:clamp(20px,3vw,26px);line-height:1.2;color:var(--bright);">' + esc(next.ev.name) + '</div>'
-        + '<div class="mono" style="margin-top:6px;font-size:13px;color:var(--dim);">' + esc(next.comp.name) + ' · ' + esc(CompClock.range(next.ev)) + '</div></div>'
-        + '<div style="text-align:right;"><div class="mono" data-cc-l style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;"></div>'
-        + '<div class="mono" data-cc-t style="font-weight:800;font-size:clamp(26px,4.4vw,40px);color:var(--bright);font-variant-numeric:tabular-nums;white-space:nowrap;"></div></div></div>';
+      nu.style.setProperty('--c', live ? 'var(--lime)' : 'var(--cyan)');
+      nu.innerHTML = '<div class="nu" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 28px;align-items:center;" data-cc-ev>'
+        + '<div style="min-width:0;"><div class="chip" style="color:' + (live ? 'var(--lime)' : 'var(--cyan)') + ';margin-bottom:14px;">' + (live ? '<span class="live-dot"></span>LIVE NOW' : 'NEXT MISSION') + '</div>'
+        + '<div class="disp" style="font-weight:700;font-size:clamp(24px,3.6vw,32px);line-height:1.15;color:var(--bright);">' + esc(next.ev.name) + '</div>'
+        + '<div class="mono" style="margin-top:8px;font-size:13px;color:var(--dim);">' + esc(next.comp.name) + ' · ' + esc(CompClock.range(next.ev)) + '</div></div>'
+        + '<div class="r" style="text-align:right;"><div class="mono" data-cc-l style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;"></div>'
+        + '<div class="cd grad" data-cc-t style="font-size:clamp(32px,5.4vw,52px);line-height:1;"></div></div></div>';
       var nuEl = nu.querySelector('[data-cc-ev]'); nuEl.__ev = next.ev; nuEl.setAttribute('data-kind', next.st.kind);
       timers.push(CompClock.bindTicker(nu, draw));
     } else nu.style.display = 'none';
@@ -107,22 +157,33 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
     var list = (window.COMPETITIONS || []).filter(function(c){ return !course || c.courses.indexOf(course) > -1; });
     var host = document.getElementById('comps');
     host.innerHTML = list.map(function(c, ci){
+      var h = HUES[ci % HUES.length];
       var evs = c.events.slice().sort(function(a, b){
         var ea = CompClock.state(a).kind === 'ended', eb = CompClock.state(b).kind === 'ended';
         return (ea - eb) || (new Date(a.start || a.end || 0) - new Date(b.start || b.end || 0));
       });
-      return '<section class="card" aria-labelledby="c' + ci + '">'
-        + '<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px;"><span class="mono" style="color:var(--accent);font-size:15px;">' + String(ci + 1).padStart(2, '0') + ' //</span>'
-        + '<h2 id="c' + ci + '" class="mono" style="font-size:22px;margin:0;color:var(--bright);">' + esc(c.name) + '</h2>'
-        + '<span class="mono" style="margin-left:auto;font-size:11px;padding:5px 11px;border-radius:999px;border:1px solid var(--border3);background:var(--panel2);color:var(--dim);">' + esc(c.season) + '</span></div>'
-        + '<div class="mono" style="font-size:12px;color:var(--faint);margin-bottom:14px;">' + esc(c.format) + '</div>'
-        + '<p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:var(--muted);max-width:760px;text-wrap:pretty;">' + esc(c.blurb) + '</p>'
-        + '<div class="facts" style="margin-bottom:20px;">' + c.facts.map(function(f){
-            return '<div style="padding:12px 14px;border-radius:10px;background:var(--panel2);border:1px solid var(--border2);"><div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-bottom:4px;">' + esc(f[0]).toUpperCase() + '</div><div style="font-size:14px;color:var(--bright);">' + esc(f[1]) + '</div></div>';
+      var sp = c.spotlight;
+      return '<section class="hud" aria-labelledby="c' + ci + '" style="--c:' + h[0] + ';padding:30px;overflow:hidden;">'
+        + '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,' + h[0] + ',' + h[1] + ');"></div>'
+        + '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px;">'
+        + '<span class="chip" style="color:' + h[0] + ';">LEVEL ' + String(ci + 1).padStart(2, '0') + '</span>'
+        + '<h2 id="c' + ci + '" class="disp" style="font-size:clamp(24px,3.4vw,30px);font-weight:700;margin:0;color:var(--bright);text-transform:uppercase;letter-spacing:.3px;">' + esc(c.name) + '</h2>'
+        + '<span class="mono" style="margin-left:auto;font-size:11px;padding:5px 11px;border-radius:4px;border:1px solid var(--line2);background:var(--panel2);color:var(--dim);">' + esc(c.season) + '</span></div>'
+        + '<div class="mono" style="font-size:12px;color:' + h[1] + ';margin-bottom:14px;">' + esc(c.format) + '</div>'
+        + '<p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:var(--muted);max-width:760px;text-wrap:pretty;">' + esc(c.blurb) + '</p>'
+        + (sp ? '<div class="pwr"><div class="pwr-in">'
+          + '<div class="pwr-ico" aria-hidden="true">&#9654;</div>'
+          + '<div style="position:relative;z-index:1;min-width:0;"><div class="mono" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;"><span style="font-size:10px;font-weight:800;letter-spacing:1.5px;padding:3px 8px;border-radius:3px;background:var(--yel);color:#1a1030;">POWER-UP</span><span style="font-size:11px;letter-spacing:1.5px;color:var(--yel);font-weight:700;">' + esc(sp.tag) + '</span></div>'
+          + '<div class="disp" style="font-weight:700;font-size:clamp(20px,2.8vw,25px);line-height:1.2;color:var(--bright);margin-bottom:6px;">' + esc(sp.title) + '</div>'
+          + '<p style="margin:0;font-size:14px;line-height:1.6;color:var(--text);text-wrap:pretty;">' + esc(sp.text) + '</p></div>'
+          + '<a class="pwr-btn" href="' + esc(sp.link.url) + '" target="_blank" rel="noopener">' + esc(sp.link.name) + ' <span>&nearr;</span></a>'
+          + '</div></div>' : '')
+        + '<div class="facts" style="margin-bottom:24px;">' + c.facts.map(function(f){
+            return '<div class="fact"><div class="mono" style="font-size:10px;letter-spacing:1.5px;color:' + h[1] + ';margin-bottom:4px;">' + esc(f[0]).toUpperCase() + '</div><div style="font-size:14px;color:var(--bright);">' + esc(f[1]) + '</div></div>';
           }).join('') + '</div>'
-        + '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">SCHEDULE</div>'
+        + '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">// QUEST LOG</div>'
         + '<div class="evs" data-ci="' + ci + '" style="display:flex;flex-direction:column;gap:8px;">' + evs.map(row).join('') + '</div>'
-        + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">' + c.links.map(function(l){
+        + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;">' + c.links.map(function(l){
             return '<a class="lnk" href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.name) + ' <span>&nearr;</span></a>';
           }).join('') + '</div>'
         + '</section>';

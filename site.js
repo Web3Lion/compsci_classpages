@@ -12,7 +12,7 @@
       visible keyboard focus, and names for icon-only controls.
    ========================================================================== */
 (function () {
-  var VERSION = "13.0.0";
+  var VERSION = "14.1.0";
   window.SITE_VERSION = VERSION;
   var r = document.documentElement;
   function osReduce() { try { return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } }
@@ -41,7 +41,10 @@
     "#siteA11yPop label{display:flex;align-items:center;gap:10px;min-height:44px;font-size:14px;color:var(--bright,#eaf4ff);cursor:pointer;}" +
     "#siteA11yPop input{width:20px;height:20px;accent-color:var(--accent,#00b3ff);}" +
     "#siteA11yPop .v{font:11px 'JetBrains Mono',monospace;color:var(--faint,#6a84a0);margin-top:8px;}" +
-    "@media print{#siteA11yBtn,#siteA11yPop,.siteSkip{display:none !important;}}";
+    "#siteSignOut{position:fixed;top:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:999px;border:1px solid var(--border3,#244a6d);background:var(--panel,#0b1220);color:var(--dim,#9fb3c8);cursor:pointer;display:none;}" +
+    "#siteSignOut:hover{color:#ff6b81;border-color:#ff6b81;}" +
+    "html[data-theme='light'] #siteSignOut:hover{color:#c0213b;border-color:#c0213b;}" +
+    "@media print{#siteA11yBtn,#siteA11yPop,#siteSignOut,.siteSkip{display:none !important;}}";
   var st = document.createElement("style"); st.id = "siteCss"; st.textContent = css;
   (document.head || r).appendChild(st);
 
@@ -93,21 +96,45 @@
         '<label><input type="checkbox" id="siteContrast"> High contrast text</label>' +
         '<div class="v">Saved on this device for every course page \u00b7 v' + VERSION + '</div>';
       document.body.appendChild(b); document.body.appendChild(pop);
+      /* SIGN OUT — shown on every page while a Google session is stored on this device.
+         Works on pages without auth.js too: the Supabase session lives in localStorage. */
+      var so = document.createElement("button"); so.id = "siteSignOut"; so.type = "button"; so.textContent = "SIGN OUT";
+      so.setAttribute("aria-label", "Sign out of your school account");
+      document.body.appendChild(so);
+      var lsKeys = function (re) { var k = []; try { for (var i = 0; i < localStorage.length; i++) { var n = localStorage.key(i); if (re.test(n)) k.push(n); } } catch (e) {} return k; };
+      var sbKeys = function () { return lsKeys(/^sb-.+-auth-token$/); };
+      var refreshSO = function () {
+        var keys = sbKeys(), on = keys.length > 0, mail = "";
+        if (on) { try { var s = JSON.parse(localStorage.getItem(keys[0])); mail = (s && (s.user || (s.currentSession && s.currentSession.user)) || {}).email || ""; } catch (e) {} }
+        so.title = mail ? "Signed in as " + mail : "Sign out";
+        var was = so.style.display === "inline-block";
+        so.style.display = on ? "inline-block" : "none";
+        if (was !== on && typeof place === "function") place();
+      };
+      so.onclick = async function () {
+        if (!confirm("Sign out?" + (so.title.indexOf("@") > -1 ? "\n" + so.title + "." : "") + "\nYour progress is saved to your school account \u2014 sign back in on any device to pick up where you left off.")) return;
+        so.disabled = true;
+        try { if (window.CTF_AUTH && window.CTF_AUTH.online) await window.CTF_AUTH.signOut(); } catch (e) {}
+        sbKeys().concat(lsKeys(/^ctf-sess-/)).forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+        location.reload();
+      };
       /* Lay every fixed top-right control out right-to-left with a gap:
          theme toggle first, then any other .themebtn (e.g. BOARD), then A11Y.
          offsetParent is always null for position:fixed, so test rects instead. */
       var place = function () {
         var shown = function (e) { return e && e.getClientRects().length && getComputedStyle(e).display !== "none" && getComputedStyle(e).visibility !== "hidden"; };
-        var row = [].slice.call(document.querySelectorAll("#themeToggle, .themebtn")).filter(function (e, i, a) {
+        var row = [].slice.call(document.querySelectorAll("#themeToggle, .themebtn, #siteSignOut")).filter(function (e, i, a) {
           if (e === b || a.indexOf(e) !== i || !shown(e)) return false;
           var cs = getComputedStyle(e);
           return cs.position === "fixed" && e.getBoundingClientRect().top < 60 && cs.right !== "auto";
         });
-        row.sort(function (x, y) { return (x === theme ? -1 : 0) - (y === theme ? -1 : 0) || (y.getBoundingClientRect().right - x.getBoundingClientRect().right); });
+        var rank = function (e) { return e === theme ? -2 : e === so ? 1 : 0; };
+        row.sort(function (x, y) { return rank(x) - rank(y) || (y.getBoundingClientRect().right - x.getBoundingClientRect().right); });
         var right = 14, GAP = 8;
         row.forEach(function (e) { e.style.right = right + "px"; right += Math.ceil(e.getBoundingClientRect().width) + GAP; });
         b.style.right = right + "px"; pop.style.right = "14px";
       };
+      refreshSO(); setInterval(refreshSO, 3000); window.addEventListener("storage", refreshSO);
       place(); window.addEventListener("resize", place); window.addEventListener("load", place); setTimeout(place, 400); setTimeout(place, 1500);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
       if (window.ResizeObserver) { var ro = new ResizeObserver(function () { place(); }); [].slice.call(document.querySelectorAll("#themeToggle, .themebtn")).forEach(function (e) { if (e !== b) ro.observe(e); }); }

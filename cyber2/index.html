@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=5.3.0"></script>
+<script src="../site.js?v=14.1.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,7 +99,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
     </div>
   </div>
 
-  <a id="tripCard" href="../sru-summit.html?from=cyber2" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;margin-top:22px;padding:24px 28px;border:1px solid var(--amber-bd);border-radius:14px;background:linear-gradient(135deg,var(--amber-bg) 0%,var(--bg) 70%);color:var(--text);">
+  <a id="tripCard" href="../summit/sru-summit.html?from=cyber2" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;margin-top:22px;padding:24px 28px;border:1px solid var(--amber-bd);border-radius:14px;background:linear-gradient(135deg,var(--amber-bg) 0%,var(--bg) 70%);color:var(--text);">
     <div style="min-width:0;">
       <div class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--amber);margin-bottom:10px;">// ANNOUNCEMENT · FIELD TRIP</div>
       <div class="mono" style="font-weight:800;font-size:clamp(20px,2.6vw,26px);line-height:1.2;color:var(--bright);margin-bottom:8px;">Cyberspace K-12 Summit</div>
@@ -246,6 +246,8 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 
     <div style="display: flex; flex-direction: column; gap: 24px;">
 
+      <div id="compCard" class="card" style="display:none;"></div>
+
       <div id="examCard" class="card" style="position: relative; overflow: hidden;">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(180deg, rgba(57,255,136,0.14), transparent); animation: scan 3.5s linear infinite;"></div>
         <div class="mono" style="font-size: 12px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 14px;">// AP EXAM COUNTDOWN</div>
@@ -319,8 +321,10 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
   <div class="mono" style="margin-top: 28px; text-align: center; font-size: 12px; color: var(--fainter);">&gt; end_of_transmission // stay curious, stay safe_</div>
 </div>
 
-<script src="vocab-data.js?v=5.3.0"></script>
-<script src="../config.js?v=5.3.0"></script>
+<script src="vocab-data.js?v=14.1.0"></script>
+<script src="../config.js?v=14.1.0"></script>
+<script src="../competitions.js?v=14.1.0"></script>
+<script>renderCompCard(document.getElementById("compCard"), "cyber2");</script>
 <script src="../resources.js"></script>
 <script>
 const CFG = (window.COURSE_CONFIG && window.COURSE_CONFIG.cyber2) || {};
@@ -626,9 +630,9 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 })();
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="../supabase-config.js?v=5.3.0"></script>
-<script src="../nemesis-intro.js?v=5.3.0"></script>
-<script src="../profile-link.js?v=5.3.0"></script>
+<script src="../supabase-config.js?v=14.1.0"></script>
+<script src="../nemesis-intro.js?v=14.1.0"></script>
+<script src="../profile-link.js?v=14.1.0"></script>
 <script>
 (function(){
   try { localStorage.setItem('__diag_cyber2', 'af307c1e58.html'); } catch(e){}

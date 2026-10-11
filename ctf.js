@@ -1110,10 +1110,32 @@
     document.body.appendChild(o);
     document.getElementById("connBack").onclick = function(){ o.remove(); nemesisToast(GLYPH + " " + ADV + " // RECONNECTED", "welcome back \u2014 right where you left off.", "var(--adv2)"); };
   }
-  var VKEY = "ctf-nemesis-voice";
+  /* Each course has its own voice and its own saved settings, so a tweak in one
+     course can't change another. The voice is the same whether the guide is a
+     mentor or an adversary. If the named voice isn't installed, pickVoice() falls
+     back to one matching the course's gender + accent. */
+  var VKEY = "ctf-nemesis-voice:" + course;
   var nemVoices = [], nemMoodEl = null, nemBooted = false;
-  var VOICE_DEFAULTS_BY_GUIDE = { SPECTER: { pitch: 0.50, rate: 0.9, volume: 0.40, voice: "Google UK English Male" } };
-  function defaultVoice(){ return Object.assign({ enabled: true, pitch: 1.15, rate: 0.9, volume: 0.40, voice: "Google UK English Female" }, VOICE_DEFAULTS_BY_GUIDE[String(ADV).toUpperCase()] || {}); }
+  var VOICE_DEFAULTS_BY_COURSE = {
+    cyber2: { pitch: 0.30, rate: 0.82, volume: 0.45, voice: "Google UK English Male", gender: "m", lang: "en-GB" },
+    cyber1: { pitch: 0.85, rate: 0.95, volume: 0.40, voice: "Microsoft David - English (United States)", gender: "m", lang: "en-US" },
+    apcsp:  { pitch: 1.10, rate: 0.95, volume: 0.40, voice: "Google UK English Female", gender: "f", lang: "en-GB" }
+  };
+  var VOICE_DEFAULTS_BY_GUIDE = { SPECTER: { pitch: 0.50, rate: 0.9, volume: 0.40, voice: "Google UK English Male", gender: "m", lang: "en-GB" } };
+  function defaultVoice(){ return Object.assign({ enabled: true, pitch: 1.15, rate: 0.9, volume: 0.40, voice: "Google UK English Female", gender: "f", lang: "en-GB" }, VOICE_DEFAULTS_BY_GUIDE[String(ADV).toUpperCase()] || {}, VOICE_DEFAULTS_BY_COURSE[course] || {}); }
+  var V_FEM = /female|woman|samantha|serena|kate|hazel|susan|libby|sonia|maisie|martha|fiona|moira|karen|victoria|zira|aria|jenny|emma|amy|tessa/i;
+  var V_MALE = /\bmale|\bman\b|daniel|george|ryan|oliver|arthur|david|mark|guy|alex|fred|thomas|rishi|aaron|christopher|eric|james/i;
+  function pickVoice(name){
+    if(name){ var ex = nemVoices.filter(function(x){return x.name===name;})[0]; if(ex) return ex; }
+    var d = defaultVoice(), want = d.gender === "m" ? V_MALE : V_FEM, avoid = d.gender === "m" ? V_FEM : V_MALE;
+    var en = nemVoices.filter(function(v){ return /^en/i.test(v.lang); });
+    function first(f){ return en.filter(f)[0]; }
+    var lang = (d.lang||"").toLowerCase().replace("_","-");
+    return first(function(v){ return v.lang.toLowerCase().replace("_","-")===lang && want.test(v.name) && !(d.gender==="m" && V_FEM.test(v.name)); })
+        || first(function(v){ return want.test(v.name) && !(d.gender==="m" && V_FEM.test(v.name)); })
+        || first(function(v){ return v.lang.toLowerCase().replace("_","-")===lang && !avoid.test(v.name); })
+        || null;
+  }
   function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
   function vGet(){ try{ return Object.assign(defaultVoice(), JSON.parse(localStorage.getItem(VKEY)||"{}")); }catch(e){ return {enabled:true,pitch:1.20,rate:0.9,volume:0.40,voice:"Google UK English Female"}; } }
   function vSet(o){ try{ localStorage.setItem(VKEY, JSON.stringify(o)); }catch(e){} }
@@ -1126,7 +1148,7 @@
       var clean = String(text).replace(/[\u2620\u25b6\u2022\u00b7\u2192\u2014]/g, " ").replace(/\/\//g, " ");
       var u = new SpeechSynthesisUtterance(clean);
       u.pitch = +cfg.pitch; u.rate = +cfg.rate; u.volume = +cfg.volume;
-      if(cfg.voice){ var v = nemVoices.filter(function(x){return x.name===cfg.voice;})[0]; if(v) u.voice = v; }
+      var v = pickVoice(cfg.voice); if(v){ u.voice = v; u.lang = v.lang; } else if(cfg.lang){ u.lang = cfg.lang; }
       speechSynthesis.cancel(); speechSynthesis.speak(u);
     }catch(e){}
   }
@@ -1447,8 +1469,8 @@
   var NEM_SAMPLES = MENTOR
     ? ["you're doing great.","nice work \u2014 keep it up.","i believe in you.","every capture makes you sharper.","you've got this.","one step at a time."]
     : ["i see every keystroke you make.","you cannot copy your way past me.","impressive, for a human.","this terminal belongs to me.","the flags will not crack themselves.","nice try. i am always one step ahead."];
-  function nvCfg(){ return { enabled: document.getElementById("nvEn").checked, voice: document.getElementById("nvVoice").value, pitch: +document.getElementById("nvPitch").value, rate: +document.getElementById("nvRate").value, volume: +document.getElementById("nvVol").value }; }
-  function nvSpeak(text){ try{ if(!window.speechSynthesis) return; var c = nvCfg(); var u = new SpeechSynthesisUtterance(text); u.pitch = c.pitch; u.rate = c.rate; u.volume = c.volume; if(c.voice){ var v = nemVoices.filter(function(x){return x.name===c.voice;})[0]; if(v) u.voice = v; } speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
+  function nvCfg(){ var d = defaultVoice(); return { gender: d.gender, lang: d.lang, enabled: document.getElementById("nvEn").checked, voice: document.getElementById("nvVoice").value, pitch: +document.getElementById("nvPitch").value, rate: +document.getElementById("nvRate").value, volume: +document.getElementById("nvVol").value }; }
+  function nvSpeak(text){ try{ if(!window.speechSynthesis) return; var c = nvCfg(); var u = new SpeechSynthesisUtterance(text); u.pitch = c.pitch; u.rate = c.rate; u.volume = c.volume; var v = pickVoice(c.voice); if(v){ u.voice = v; u.lang = v.lang; } speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
   function nvRow(label, inner){ return '<div style="margin-bottom:14px;"><div style="font-size:12px;margin-bottom:6px;">' + label + '</div>' + inner + '</div>'; }
   function nvSlider(label, id, min, max, step, val, hint){ return '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span>' + label + (hint ? ' <span style="color:#a86;font-size:10px;">' + hint + '</span>' : '') + '</span><b id="' + id + 'V" style="color:#ff8fa3;">' + val + '</b></div><input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '" style="width:100%;accent-color:var(--adv2);"></div>'; }
   function openTuner(){
@@ -1457,7 +1479,7 @@
     var ex = document.getElementById("nemTuner"); if(ex) ex.remove();
     var ov = document.createElement("div"); ov.id = "nemTuner";
     ov.style.cssText = "position:fixed;inset:0;z-index:13000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);";
-    var voiceOpts = '<option value="">(browser default)</option>' + nemVoices.filter(function(v){return /en/i.test(v.lang);}).map(function(v){ return '<option value="' + esc(v.name) + '"' + (v.name===cfg.voice ? ' selected' : '') + '>' + esc(v.name) + ' \u00b7 ' + esc(v.lang) + '</option>'; }).join("");
+    var voiceOpts = '<option value="">(browser default)</option>' + nemVoices.filter(function(v){return /en/i.test(v.lang);}).map(function(v){ return '<option value="' + esc(v.name) + '"' + (v.name===(cfg.voice && nemVoices.some(function(x){return x.name===cfg.voice;}) ? cfg.voice : ((pickVoice(cfg.voice)||{}).name)) ? ' selected' : '') + '>' + esc(v.name) + ' \u00b7 ' + esc(v.lang) + '</option>'; }).join("");
     ov.innerHTML = '<div class="mono" style="width:min(460px,92vw);background:#0d0709;border:1px solid var(--adv2);border-radius:14px;padding:22px 22px 18px;box-shadow:0 0 40px -8px var(--adv2);color:#ffd9e2;">'
       + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><div style="font-size:15px;font-weight:800;letter-spacing:1px;color:var(--adv2);">' + GLYPH + ' ' + ADV + ' VOICE</div><button id="nemClose" style="background:none;border:none;color:#ff8fa3;font-size:18px;cursor:pointer;">\u2715</button></div>'
       + '<div style="font-size:11px;color:#c98a97;margin-bottom:16px;">shape the ' + (MENTOR ? "guide" : "adversary") + ' voice. changes save on this device. (browser speech supports deepness, speed, volume and voice only.)</div>'
@@ -1477,7 +1499,7 @@
     var en = document.getElementById("nvEn"); en.onchange = function(){ document.getElementById("nvEnL").textContent = en.checked ? "on" : "off"; vSet(nvCfg()); };
     document.getElementById("nvTest").onclick = function(){ nvSpeak(pick(NEM_SAMPLES)); };
     document.getElementById("nvSave").onclick = function(){ ov.remove(); };
-    document.getElementById("nvReset").onclick = function(){ var d=defaultVoice(); vSet(d); document.getElementById("nvEn").checked=true; document.getElementById("nvEnL").textContent="on"; document.getElementById("nvVoice").value=""; document.getElementById("nvPitch").value=0.35; document.getElementById("nvPitchV").textContent="0.35"; document.getElementById("nvRate").value=0.9; document.getElementById("nvRateV").textContent="0.90"; document.getElementById("nvVol").value=0.85; document.getElementById("nvVolV").textContent="0.85"; nemesisToast("☠ NEMESIS // VOICE RESET", "restored to my original voice.", "var(--adv2)"); nvSpeak(pick(NEM_SAMPLES)); };
+    document.getElementById("nvReset").onclick = function(){ var d=defaultVoice(); vSet(d); document.getElementById("nvEn").checked=true; document.getElementById("nvEnL").textContent="on"; var pv = pickVoice(d.voice); document.getElementById("nvVoice").value = pv ? pv.name : ""; document.getElementById("nvPitch").value=d.pitch; document.getElementById("nvPitchV").textContent=(+d.pitch).toFixed(2); document.getElementById("nvRate").value=d.rate; document.getElementById("nvRateV").textContent=(+d.rate).toFixed(2); document.getElementById("nvVol").value=d.volume; document.getElementById("nvVolV").textContent=(+d.volume).toFixed(2); nemesisToast("☠ NEMESIS // VOICE RESET", "restored to my original voice.", "var(--adv2)"); nvSpeak(pick(NEM_SAMPLES)); };
   }
   function taintToast(kind) {
     const map = MENTOR ? {
