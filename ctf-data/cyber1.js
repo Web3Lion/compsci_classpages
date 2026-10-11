@@ -2629,6 +2629,7 @@ window.COURSE_CONFIG.cyber1.ctf = {
 };
 
 
+window.COURSE_CONFIG.cyber1.ctf.bossVocabFrom = { 12: 1 };   // Module 12 demo boss also uses Module 1 vocab
 window.COURSE_CONFIG.cyber1.ctf.bossQuestions = [
   { module: 12, topic: "M12", diff: "Easy", kind: "mc", prompt: "Which planet is known as the Red Planet?", choices: ["Mars", "Venus", "Jupiter", "Mercury"], answer: "Mars" },
   { module: 12, topic: "M12", diff: "Easy", kind: "mc", prompt: "How many continents are there on Earth?", choices: ["7", "5", "6", "8"], answer: "7" },
