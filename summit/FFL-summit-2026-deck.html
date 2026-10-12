@@ -1,5 +1,421 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><title>Moved — Summit talk slides</title>
-<meta http-equiv="refresh" content="0; url=summit/FFL-summit-2026-deck.html">
-<script>location.replace('summit/FFL-summit-2026-deck.html'+location.search+location.hash);</script>
-</head><body><p><a href="summit/FFL-summit-2026-deck.html">Summit talk slides</a></p></body></html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../site.js?v=15.0.0"></script>
+<script src="../image-slot.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Press Start: Student Engagement With Gamification — Talk Slides · Future-Focused Learning Summit 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14111f;--panel:#1d1930;--panel2:#252040;--border:#332c4f;--text:#e7e3f3;--bright:#ffffff;--muted:#b9b2d1;--dim:#958db0;
+  --red:#ff6a5c;--purple:#b48cff;--blue:#5aa9ff;--teal:#3fd6b4;--gold:#ffc94a;--ink-on:#14111f;
+  --holo:linear-gradient(100deg,#ff6a5c 0%,#ffc94a 16%,#7dffcf 32%,#5aa9ff 48%,#b48cff 64%,#ff7ad9 80%,#ff6a5c 100%);--depth:#4a3a7a;}
+:root[data-theme="light"]{--bg:#faf7f2;--panel:#ffffff;--panel2:#f3eee6;--border:#e4ddd2;--text:#2b2638;--bright:#16121f;--muted:#544d63;--dim:#6e6780;
+  --red:#d2382b;--purple:#6a3fb5;--blue:#1f6fd1;--teal:#0b7a66;--gold:#8a5a00;--ink-on:#ffffff;
+  --holo:linear-gradient(100deg,#c02a1e 0%,#9a6200 16%,#0b7a66 32%,#1f5fb8 48%,#6a3fb5 64%,#b0277f 80%,#c02a1e 100%);--depth:#d9cfee;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);font-family:'Public Sans',sans-serif;color:var(--text);line-height:1.55;overflow:hidden;}
+a{color:var(--blue);} a:hover{color:var(--purple);}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;}
+.themebtn:hover{border-color:var(--purple);}
+.prog{position:fixed;top:0;left:0;right:0;height:6px;background:var(--border);z-index:50;}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--purple),var(--blue));transition:width .35s ease;}
+.stage{position:fixed;inset:6px 0 76px 0;}
+.s{position:absolute;inset:0;overflow-y:auto;padding:64px 24px 40px;opacity:0;visibility:hidden;transform:translateX(40px);transition:opacity .35s ease,transform .35s ease,visibility 0s .35s;}
+.s.on{opacity:1;visibility:visible;transform:none;transition:opacity .35s ease,transform .35s ease;}
+.s.left{transform:translateX(-40px);}
+.in{max-width:1080px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:22px;}
+.kick{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);display:flex;flex-wrap:wrap;gap:6px 14px;}
+.kick b{color:var(--ac,var(--red));font-weight:700;}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(44px,8vw,96px);line-height:1;letter-spacing:-2px;margin:0;text-wrap:balance;
+  background:var(--holo);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(1px 1px 0 var(--depth)) drop-shadow(1px 1px 0 var(--depth)) drop-shadow(2px 2px 0 var(--depth)) drop-shadow(0 14px 18px rgba(0,0,0,.35));animation:holo 8s linear infinite;}
+h1 span{display:block;}
+@keyframes holo{to{background-position:300% 0;}}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(34px,5vw,58px);line-height:1.05;letter-spacing:-1px;color:var(--bright);margin:0;text-wrap:balance;}
+h2 em{font-style:normal;color:var(--ac,var(--purple));}
+.lead{font-size:clamp(18px,2vw,22px);color:var(--muted);margin:0;max-width:760px;text-wrap:pretty;}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px;}
+.box{border:1px solid var(--border);border-top:6px solid var(--ac,var(--purple));border-radius:18px;background:var(--panel);padding:22px;display:flex;flex-direction:column;gap:10px;}
+button.box:hover{border-color:var(--ac);transform:translateY(-2px);}
+button.box{transition:transform .2s,border-color .2s;}
+.box h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:26px;color:var(--bright);margin:0;letter-spacing:-.3px;}
+.box .tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac);font-weight:700;}
+.box p{margin:0;font-size:16px;color:var(--muted);text-wrap:pretty;}
+.box ul{margin:0;padding-left:18px;} .box li{font-size:16px;color:var(--muted);margin-bottom:5px;} .box li b{color:var(--text);}
+.pick{margin-top:auto;padding-top:10px;border-top:1px dashed var(--border);font-size:15px;color:var(--text);}
+.pick b{color:var(--ac);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;display:block;margin-bottom:2px;}
+.try{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;color:var(--ink-on);background:var(--ac,var(--purple));align-self:flex-start;}
+.try:hover{color:var(--ink-on);filter:brightness(1.08);}
+.row{display:flex;flex-wrap:wrap;gap:10px;}
+.qr{padding:12px;border-radius:16px;background:#fff;border:1px solid var(--border);align-self:flex-start;}
+.qr img{display:block;}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:14px;align-items:stretch;}
+.node{position:relative;border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:18px;text-align:center;border-bottom:5px solid var(--ac);}
+.node .n{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ac);font-weight:700;letter-spacing:1px;}
+.node h4{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;margin:4px 0;color:var(--bright);}
+.node p{margin:0;font-size:14px;color:var(--muted);}
+.prompt{font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.6;background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:18px 20px;color:var(--text);}
+.prompt .who{color:var(--purple);font-weight:700;display:block;margin-bottom:6px;font-size:12px;letter-spacing:1.5px;}
+.quiz{border:1px solid var(--border);border-radius:20px;background:var(--panel);padding:26px;display:flex;flex-direction:column;gap:16px;min-height:260px;}
+.quiz .q{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(24px,3vw,32px);font-weight:700;color:var(--bright);line-height:1.15;text-wrap:balance;}
+.quiz .opts{display:flex;flex-wrap:wrap;gap:12px;}
+.btn{min-height:48px;padding:0 20px;border-radius:12px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text);font:700 16px 'Public Sans',sans-serif;cursor:pointer;}
+.btn:hover{border-color:var(--purple);color:var(--bright);}
+.btn.pri{background:var(--purple);border-color:var(--purple);color:var(--ink-on);}
+.trail{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);}
+.ans{border-left:0;border-radius:14px;padding:16px 18px;background:var(--panel2);}
+.ans h4{margin:0 0 4px;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;color:var(--teal);}
+.ans p{margin:0;color:var(--muted);}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:16px;counter-reset:st;}
+.steps .box h3::before{counter-increment:st;content:counter(st,decimal-leading-zero);display:block;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ac);letter-spacing:1px;margin-bottom:6px;}
+.codechip{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:22px;letter-spacing:2px;color:var(--bright);}
+/* NEMESIS */
+.hack{border:2px solid var(--red);border-radius:20px;padding:28px;background:color-mix(in oklab,var(--red) 10%,var(--panel));display:flex;flex-direction:column;gap:16px;}
+.cipher{font-family:'JetBrains Mono',monospace;font-size:clamp(28px,5vw,52px);font-weight:700;letter-spacing:6px;color:var(--red);word-break:break-word;}
+.hack input{min-height:52px;flex:1 1 260px;padding:0 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--bright);font:700 20px 'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;}
+.hack input:focus{outline:2px solid var(--red);outline-offset:2px;}
+.msg{font-family:'JetBrains Mono',monospace;font-size:14px;min-height:20px;color:var(--muted);}
+.glitch{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;}
+body.hacked .glitch{opacity:1;background:repeating-linear-gradient(0deg,transparent 0 3px,color-mix(in oklab,var(--red) 14%,transparent) 3px 4px);animation:scan 1.2s steps(6) infinite;}
+body.hacked .stage{animation:jit 2.4s steps(1) infinite;}
+body.hacked h2.nem{color:var(--red);text-shadow:3px 0 var(--blue),-3px 0 var(--red);}
+@keyframes scan{50%{transform:translateY(2px);opacity:.7;}}
+@keyframes jit{0%,92%,100%{transform:none;}93%{transform:translate(4px,-2px) skewX(-2deg);}95%{transform:translate(-5px,1px);}97%{transform:translate(2px,2px) skewX(3deg);}}
+body.restored .hack{border-color:var(--teal);background:color-mix(in oklab,var(--teal) 10%,var(--panel));}
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;height:76px;z-index:60;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 14px;background:color-mix(in oklab,var(--bg) 88%,transparent);border-top:1px solid var(--border);backdrop-filter:blur(8px);}
+.nav button{min-width:52px;min-height:52px;border-radius:14px;border:1px solid var(--border);background:var(--panel);color:var(--text);font:700 18px 'JetBrains Mono',monospace;cursor:pointer;}
+.nav button:hover:not(:disabled){border-color:var(--purple);color:var(--bright);}
+.nav button:disabled{opacity:.35;cursor:default;}
+.nav .next{background:var(--purple);border-color:var(--purple);color:var(--ink-on);padding:0 22px;}
+.nav .next:hover:not(:disabled){color:var(--ink-on);filter:brightness(1.08);}
+.count{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--muted);min-width:110px;text-align:center;}
+.count b{color:var(--bright);}
+.menu{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:70;width:min(92vw,440px);max-height:min(70vh,560px);overflow-y:auto;border:1px solid var(--border);border-radius:18px;background:var(--panel);padding:10px;box-shadow:0 24px 60px -12px rgba(0,0,0,.5);display:none;}
+.menu.open{display:block;}
+.menu button{display:flex;gap:12px;width:100%;text-align:left;align-items:center;min-height:46px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:var(--text);font:600 15px 'Public Sans',sans-serif;cursor:pointer;}
+.menu button:hover,.menu button.cur{background:var(--panel2);color:var(--bright);}
+.menu button span{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);min-width:22px;}
+.hint{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);}
+html[data-motion='reduce'] h1{animation:none !important;}
+html[data-motion='reduce'] .s,html[data-motion='reduce'] .prog i{transition:none !important;transform:none !important;}
+html[data-motion='reduce'] body.hacked .glitch,html[data-motion='reduce'] body.hacked .stage{animation:none !important;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>if(/[?&]embed=1/.test(location.search)){document.getElementById('themeToggle').style.display='none';}</script>
+<div class="prog" aria-hidden="true"><i id="bar"></i></div>
+<div class="glitch" aria-hidden="true"></div>
+
+<main class="stage" id="stage">
+
+<section class="s" data-title="Press Start" style="--ac:var(--red);">
+  <div class="in">
+    <div class="kick"><b>Future-Focused Learning Summit 2026</b><span>New Pedagogies</span><span>Mr. Robert Reasey</span></div>
+    <h1>Press Start: <span>Student Engagement With Gamification</span></h1>
+    <div class="kick" style="color:var(--text);letter-spacing:1px;"><span>Day - 1 : Mon, Oct 12, 2026</span><span>10:50 AM - 11:30 AM (EDT)</span><span>AA 213</span></div>
+    <p class="lead">These slides stay online after the talk, so there's no need to take notes. Click through at your own pace while we explore the platform together.</p>
+    <div class="row" style="align-items:center;gap:22px;">
+      <div class="qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=https%3A%2F%2Fweb3lion.github.io%2Fcompsci_classpages%2Fsummit%2FFFL-summit-2026-deck.html" width="140" height="140" alt="QR code for these slides"></div>
+      <div class="hint">Use &larr; &rarr; keys, swipe, or the buttons below.<br>&#9776; jumps to any slide.</div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="About this session" style="--ac:var(--purple);">
+  <div class="in">
+    <div class="kick"><b>About Session</b><span>New Pedagogies</span></div>
+    <h2>Press Start: <em>Student Engagement With Gamification</em></h2>
+    <p class="lead" style="max-width:none;font-size:clamp(16px,1.6vw,19px);">Come see the vision of gamifying the classroom using AI! Student engagement in challenging subjects can include more than just standard lectures! By leveraging AI, educators can create a dynamic, competitive, and highly rewarding environment that turns coursework into something students actively compete over. In this session, we will walk through the evolution of my classroom gamification&mdash;starting from a simple, AI-generated Jeopardy game to a fully integrated ecosystem featuring capture-the-flag (CTF) challenges, XP points, daily streaks, and digital badges. You will see a live demonstration of a classroom leaderboard with rank changes that keep students hooked and motivated. Beyond the WOW factor, this session offers a transparent, honest conversation about the journey. We will pull back the curtain on where this project started, the iterations it went through, the technical hurdles overcome, and exactly what it takes for an educator to implement a system like this today.</p>
+    <div class="kick"><b>Session Outcomes</b></div>
+    <div class="cols">
+      <div class="box" style="--ac:var(--red);"><div class="tag">01</div><h3>Identify AI-Driven Gamification Mechanics</h3><p>Understand how to use AI to generate and manage game elements like CTF challenges, XP systems, and badge requirements.</p></div>
+      <div class="box" style="--ac:var(--blue);"><div class="tag">02</div><h3>Visualize the Student Experience</h3><p>See exactly how live leaderboards, streaks, and rank animations shift student behavior from passive learning to active competition.</p></div>
+      <div class="box" style="--ac:var(--teal);"><div class="tag">03</div><h3>Evaluate Implementation Feasibility</h3><p>Gain a realistic understanding of the time, tools, and effort required to build and maintain a gamified classroom, avoiding common pitfalls.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="Presentation preview" style="--ac:var(--blue);">
+  <div class="in">
+    <div class="kick"><b>Presentation preview</b></div>
+    <h2>Where we're <em>headed</em></h2>
+    <div class="steps">
+      <button class="box" data-go="1" style="--ac:var(--red);text-align:left;cursor:pointer;font:inherit;color:inherit;"><h3>Introduction</h3><p>Slides 1&ndash;3</p></button>
+      <button class="box" data-go="4" style="--ac:var(--purple);text-align:left;cursor:pointer;font:inherit;color:inherit;"><h3>What I am going to show</h3><p>Slide 4</p></button>
+      <button class="box" data-go="5" style="--ac:var(--blue);text-align:left;cursor:pointer;font:inherit;color:inherit;"><h3>Creation Preview</h3><p>Slide 5</p></button>
+      <button class="box" data-go="6" style="--ac:var(--teal);text-align:left;cursor:pointer;font:inherit;color:inherit;"><h3>What tools are necessary and how do I do it</h3><p>Slides 6&ndash;14</p></button>
+      <button class="box" data-go="15" style="--ac:var(--gold);text-align:left;cursor:pointer;font:inherit;color:inherit;"><h3>Play time!</h3><p>Slide 15</p></button>
+    </div>
+    <p class="hint">Tap a section to jump to it.</p>
+  </div>
+</section>
+
+<section class="s" data-title="What I built" style="--ac:var(--purple);">
+  <div class="in">
+    <div class="kick"><b>The platform</b></div>
+    <h2>One online classroom, <em>ALL COURSES!</em></h2>
+    <p class="lead">Many classes, one same game engine!</p>
+    <div class="cols">
+      <div class="box" style="--ac:var(--blue);"><div class="tag">Students</div><h3>Capture the Flag</h3><p>Challenges mapped to course objectives, with points, badges, streaks, and a NEMESIS boss fight at the end of every module.</p><a class="try" href="../cyber1/ctf.html" target="_blank" rel="noopener">Try it &rarr;</a></div>
+      <div class="box" style="--ac:var(--purple);"><div class="tag">Teachers</div><h3>Teacher dashboard</h3><p>Class rosters, scheduled module unlocks, hand-granted XP, and weekly XP reports with CSV export.</p></div>
+      <div class="box" style="--ac:var(--gold);"><div class="tag">Classroom</div><h3>Rewards &amp; tools</h3><p>Prize games, review boards, timers, and a translator. Free and no sign-in needed.</p><a class="try" href="../tools/" target="_blank" rel="noopener">Try it &rarr;</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="Creation Preview" style="--ac:var(--blue);">
+  <div class="in">
+    <div class="kick"><b>Creation Preview</b></div>
+    <h2>A look at <em>my creations</em></h2>
+    <div class="cols">
+      <div class="box" style="--ac:var(--gold);"><div style="aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--panel2);"><image-slot id="cp-classhub" src="assets/creation/classhub.png" fit="cover" placeholder="Screenshot: ClassHub"></image-slot></div><h3>ClassHub</h3></div>
+      <div class="box" style="--ac:var(--blue);"><div style="aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--panel2);"><image-slot id="cp-ctf" src="assets/creation/ctf-arena.png" fit="cover" placeholder="Screenshot: CTF Arena"></image-slot></div><h3>CTF Arena</h3></div>
+      <div class="box" style="--ac:var(--purple);"><div style="aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--panel2);"><image-slot id="cp-teacher" src="assets/creation/teacher-dashboard.png" fit="cover" placeholder="Screenshot: Teacher dashboard"></image-slot></div><h3>Teacher dashboard</h3></div>
+      <div class="box" style="--ac:var(--red);"><div style="aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--panel2);"><image-slot id="cp-crypto" src="assets/creation/crypto-platform.png" fit="cover" placeholder="Screenshot: Crypto Trading Platform"></image-slot></div><h3>Crypto Trading Platform</h3></div>
+      <div class="box" style="--ac:var(--teal);"><div style="aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--panel2);"><image-slot id="cp-hedera" src="assets/creation/hedera-toolkit.png" fit="cover" placeholder="Screenshot: Hedera Token Studio"></image-slot></div><h3>Hedera Token Studio</h3><p>Cryptocurrency tokens, fungible (FT) or NFT, on Hedera testnet or mainnet.</p></div>
+      <div class="box" style="--ac:var(--gold);"><div style="aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--panel2);"><image-slot id="cp-jeopardy" src="assets/creation/jeopardy.png" fit="cover" placeholder="Screenshot: Jeopardy Review Game"></image-slot></div><h3>Jeopardy Review Game</h3></div>
+      <div class="box" style="--ac:var(--purple);"><div style="aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--panel2);"><image-slot id="cp-rewards" src="assets/creation/reward-big-top.png" fit="cover" placeholder="Screenshot: Reward Big Top"></image-slot></div><h3>Reward Big Top</h3></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="The stack" style="--ac:var(--blue);">
+  <div class="in">
+    <div class="kick"><b>How it fits together</b></div>
+    <h2>Four pieces <em>run the whole thing</em></h2>
+    <div class="flow">
+      <div class="node" style="--ac:var(--purple);"><div class="n">01 &middot; BUILD</div><h4>Claude.ai</h4><p>I describe what I want and get working code back.</p></div>
+      <div class="node" style="--ac:var(--text);"><div class="n">02 &middot; SAVE</div><h4>GitHub</h4><p>Stores every file and every version.</p></div>
+      <div class="node" style="--ac:var(--blue);"><div class="n">03 &middot; HOST</div><h4>Pages &middot; Render &middot; Vercel</h4><p>Puts the site on the internet.</p></div>
+      <div class="node" style="--ac:var(--teal);"><div class="n">04 &middot; REMEMBER</div><h4>Supabase &middot; Neon</h4><p>Saves scores, accounts, and progress.</p></div>
+    </div>
+    <p class="lead">Students only ever see a web page. Everything behind it runs on free tiers or close to it.</p>
+  </div>
+</section>
+
+<section class="s" data-title="Claude.ai" style="--ac:var(--purple);">
+  <div class="in">
+    <div class="kick"><b>Build</b><span>claude.ai</span></div>
+    <h2>Claude is my <em>coding partner</em></h2>
+    <div class="cols">
+      <div class="box"><div class="tag">What I use it for</div><ul>
+        <li><b>Building features</b> by describing them in plain English.</li>
+        <li><b>Writing challenges</b> mapped to course objectives.</li>
+        <li><b>Debugging</b> by pasting the error message.</li>
+        <li><b>Explaining</b> code I didn't write myself.</li></ul></div>
+      <div class="box"><div class="tag">What makes it work</div><ul>
+        <li>Keep a <b>project notes file</b> with your rules, so it remembers them every time.</li>
+        <li>Ask for <b>one change at a time</b>, then test it.</li>
+        <li>Say <b>who it's for</b> and what "done" looks like.</li></ul></div>
+    </div>
+    <div class="prompt"><span class="who">A REAL REQUEST</span>Add a Weekly XP tab to the teacher dashboard: XP per student for the last 4, 8, 12 or 18 weeks, sortable by Google name or hacker name, with a CSV download.</div>
+  </div>
+</section>
+
+<section class="s" data-title="Databases: Supabase vs Neon" style="--ac:var(--teal);">
+  <div class="in">
+    <div class="kick"><b>Remember</b><span>Databases</span></div>
+    <h2>Supabase or Neon?</h2>
+    <p class="lead">Both are PostgreSQL databases. The difference is how much comes built in.</p>
+    <div class="cols">
+      <div class="box" style="--ac:var(--teal);border-color:var(--teal);box-shadow:0 0 0 1px var(--teal),0 18px 40px -18px var(--teal);"><div class="tag">Database + everything around it &middot; what I use</div><h3>Supabase</h3><ul>
+        <li>Google sign-in, file storage, and live updates built in.</li>
+        <li><b>Row-level security</b> lets the web page talk to the database safely.</li>
+        <li>A friendly dashboard for viewing and editing tables.</li>
+        <li>Free projects pause after a week with no activity.</li></ul>
+        <div class="pick"><b>CHOOSE IT WHEN</b>students sign in and you don't want to run a server. This course site uses it.</div></div>
+      <div class="box" style="--ac:var(--blue);"><div class="tag">Just the database</div><h3>Neon</h3><ul>
+        <li>Serverless Postgres that scales to zero when nobody's using it.</li>
+        <li><b>Branching:</b> copy the whole database to test a change safely.</li>
+        <li>No built-in sign-in. You bring your own server code.</li></ul>
+        <div class="pick"><b>CHOOSE IT WHEN</b>you already have an app or server and only need a place to store data.</div></div>
+    </div>
+    <div class="box" style="--ac:var(--teal);border-top-width:1px;border-left:6px solid var(--teal);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px;align-items:center;">
+      <div style="display:flex;flex-direction:column;gap:8px;"><div class="tag">Zero server code</div><h3>The web page talks straight to the database</h3><p>With Supabase I never wrote or hosted a backend. A few lines of JavaScript on the page save and load data, and security rules inside the database decide what each student can see or change.</p></div>
+      <div class="prompt" style="font-size:14px;"><span class="who">SAVING A CAPTURED FLAG</span>await supabase<br>&nbsp;&nbsp;.from("flag_events")<br>&nbsp;&nbsp;.insert({ flag: "m1-phish" });</div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="Hosting: Pages vs Render vs Vercel" style="--ac:var(--blue);">
+  <div class="in">
+    <div class="kick"><b>Host</b><span>Putting it online</span></div>
+    <h2>Three ways to <em>go live</em></h2>
+    <div class="cols">
+      <div class="box" style="--ac:var(--text);"><div class="tag">Static files</div><h3>GitHub Pages</h3><ul>
+        <li>Free. Push your files and the site updates.</li>
+        <li>HTML, CSS and JavaScript only. No server code.</li></ul>
+        <div class="pick"><b>I USE IT FOR</b>this course site, paired with Supabase.</div></div>
+      <div class="box" style="--ac:var(--teal);"><div class="tag">Real servers</div><h3>Render</h3><ul>
+        <li>Runs long-running apps in Node, Python, and more.</li>
+        <li>Free servers sleep after 15 minutes idle. The first visit can take up to a minute to wake up.</li></ul>
+        <div class="pick"><b>I USE IT FOR</b>the Hedera Token Studio. Open it before class!</div></div>
+      <div class="box" style="--ac:var(--red);"><div class="tag">Modern front ends</div><h3>Vercel</h3><ul>
+        <li>Built for React and Next.js apps, with serverless functions.</li>
+        <li>Every push gets its own preview link.</li></ul>
+        <div class="pick"><b>I USE IT FOR</b>the Crypto Trading Platform.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="Which should I use?" style="--ac:var(--gold);">
+  <div class="in">
+    <div class="kick"><b>Your turn</b><span>Interactive</span></div>
+    <h2>Which should <em>you</em> use?</h2>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<section class="s" data-title="Privacy & safety" style="--ac:var(--teal);">
+  <div class="in">
+    <div class="kick"><b>Student safety</b></div>
+    <h2>Keeping students <em>safe</em></h2>
+    <div class="cols">
+      <div class="box"><div class="tag">Accounts</div><p>Students sign in with Google, so there are no new passwords. On leaderboards they appear under a hacker handle, not their real name.</p></div>
+      <div class="box"><div class="tag">Data</div><p>Row-level security means each student can read and write only their own records. Teachers see only their own classes.</p></div>
+      <div class="box"><div class="tag">Answers</div><p>Flags are checked against scrambled hashes. The answer key never goes into the public code.</p></div>
+      <div class="box"><div class="tag">AI deterrents</div><p>Challenge pages block pasting and set traps for AI copy-and-paste answers. Looking things up is still allowed.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="Cost" style="--ac:var(--gold);">
+  <div class="in">
+    <div class="kick"><b>Budget</b></div>
+    <h2>What it <em>costs</em></h2>
+    <p class="lead">A classroom can run on free tiers. These are the limits you'll hit first.</p>
+    <div class="cols">
+      <div class="box" style="--ac:var(--teal);"><h3>Free</h3><ul><li>GitHub Pages</li><li>Supabase and Neon starter plans</li><li>Render and Vercel hobby plans</li></ul></div>
+      <div class="box" style="--ac:var(--red);"><h3>Watch for</h3><ul><li>Free databases <b>pausing</b> when nobody uses them</li><li>Free servers <b>sleeping</b> between visits</li><li>Storage and bandwidth caps</li></ul></div>
+      <div class="box" style="--ac:var(--purple);"><h3>Worth paying for</h3><ul><li>An AI plan with higher usage limits</li><li>An always-on database for class days</li></ul></div>
+    </div>
+    <p class="hint">Plans change often, so check each provider's pricing page.</p>
+  </div>
+</section>
+
+<section class="s" data-title="Lessons learned" style="--ac:var(--red);">
+  <div class="in">
+    <div class="kick"><b>Lessons learned</b></div>
+    <h2>Things I wish <em>I'd known</em></h2>
+    <div class="cols">
+      <div class="box"><h3>Start tiny</h3><p>One page that works beats ten that almost work. Add features once students use the first one.</p></div>
+      <div class="box"><h3>Write rules down</h3><p>Every rule I learned the hard way goes into the project notes file, so the AI follows it next time.</p></div>
+      <div class="box"><h3>Bust the cache</h3><p>Browsers keep old files. A version number on every file makes students load the new one.</p></div>
+      <div class="box"><h3>Test as a student</h3><p>Keep a student test account. Teacher accounts hide the bugs students hit.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="Start Monday" style="--ac:var(--blue);">
+  <div class="in">
+    <div class="kick"><b>Start Monday</b></div>
+    <h2>Your first page <em>in a weekend</em></h2>
+    <div class="steps">
+      <div class="box" style="--ac:var(--purple);"><h3>Ask</h3><p>In Claude.ai, describe one page your class needs, such as a review game or a timer.</p></div>
+      <div class="box" style="--ac:var(--text);"><h3>Save</h3><p>Create a free GitHub account and a repository, then upload the file.</p></div>
+      <div class="box" style="--ac:var(--blue);"><h3>Publish</h3><p>Turn on GitHub Pages in the repository settings. You'll get a link to share.</p></div>
+      <div class="box" style="--ac:var(--teal);"><h3>Grow</h3><p>Need sign-ins or saved scores? Add Supabase next.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" data-title="Play time!" style="--ac:var(--purple);">
+  <div class="in">
+    <div class="kick"><b>Play time!</b></div>
+    <h2>Go try it <em>yourself</em></h2>
+    <div class="cols">
+      <div class="box" style="--ac:var(--gold);"><div class="tag">All courses</div><h3>ClassHub</h3><p>Every course home page, syllabus, and study tool in one place.</p><a class="try" href="../index.html" target="_blank" rel="noopener">Open &rarr;</a></div>
+      <div class="box" style="--ac:var(--blue);"><div class="tag">Cybersecurity 1</div><h3>CTF Arena</h3><p>Sign in with Google, enter the code, and open Module 12.</p><div class="codechip">CY1-YWY4</div><a class="try" href="../cyber1/ctf.html" target="_blank" rel="noopener">Open &rarr;</a></div>
+      <div class="box" style="--ac:var(--red);"><div class="tag">Web3</div><h3>Crypto Trading</h3><p>Trade with simulated money.</p><div class="codechip">HWFGYX</div><a class="try" href="https://virtualcryptoportfolio-supabasev3.vercel.app/" target="_blank" rel="noopener">Open &rarr;</a></div>
+      <div class="box" style="--ac:var(--teal);"><div class="tag">Web3</div><h3>Hedera Token Studio</h3><p>Create cryptocurrency tokens, fungible (FT) or NFT, on Hedera testnet or mainnet.</p><a class="try" href="https://hederahtsteachertoolklit46.onrender.com/" target="_blank" rel="noopener">Open &rarr;</a></div>
+      <div class="box" style="--ac:var(--gold);"><div class="tag">Free &middot; Review</div><h3>Jeopardy Review Game</h3><p>A Google Sheets board for 2&ndash;6 teams. Make your own copy.</p><a class="try" href="https://docs.google.com/spreadsheets/d/1dEfdYKEpX1yenx38UzBSk1JpOVce9jaWoo9xN5FV-xQ/copy" target="_blank" rel="noopener">Make my copy &rarr;</a></div>
+      <div class="box" style="--ac:var(--purple);"><div class="tag">Free &middot; Rewards</div><h3>Reward Big Top</h3><p>14 prize games for the classroom.</p><a class="try" href="../reward.html" target="_blank" rel="noopener">Open &rarr;</a></div>
+      <div class="box" style="--ac:var(--text);"><div class="tag">Free</div><h3>Teacher Tools</h3><p>Games, timers, and a translator.</p><a class="try" href="../tools/" target="_blank" rel="noopener">Open &rarr;</a></div>
+    </div>
+    <div class="row" style="align-items:center;justify-content:space-between;gap:16px;">
+      <div><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:28px;color:var(--bright);">Mr. Robert Reasey</div><a href="mailto:rnreasey@southfayette.org" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;color:var(--gold);">rnreasey@southfayette.org</a></div>
+      <a class="try" href="FFL-summit-mainpage.html" style="--ac:var(--purple);">All summit links &rarr;</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="menu" id="menu" role="menu"></div>
+<nav class="nav" aria-label="Slide navigation">
+  <button id="prev" aria-label="Previous slide">&larr;</button>
+  <button id="menuBtn" aria-label="All slides" aria-expanded="false">&#9776;</button>
+  <div class="count" id="count" aria-live="polite"></div>
+  <button class="next" id="next" aria-label="Next slide">Next &rarr;</button>
+</nav>
+
+<script>
+(function(){
+  var S=[].slice.call(document.querySelectorAll('.s')),N=S.length,cur=0,KEY='summit-deck-slide';
+  var bar=document.getElementById('bar'),cnt=document.getElementById('count'),prev=document.getElementById('prev'),next=document.getElementById('next'),
+      menu=document.getElementById('menu'),mBtn=document.getElementById('menuBtn');
+  S.forEach(function(s,i){s.setAttribute('data-screen-label',String(i+1).padStart(2,'0')+' '+s.dataset.title);s.setAttribute('aria-roledescription','slide');
+    var b=document.createElement('button');b.innerHTML='<span>'+(i+1)+'</span>'+s.dataset.title.replace(/</g,'&lt;');b.onclick=function(){go(i);toggleMenu(false);};menu.appendChild(b);});
+  function toggleMenu(v){v=v==null?!menu.classList.contains('open'):v;menu.classList.toggle('open',v);mBtn.setAttribute('aria-expanded',v);}
+  mBtn.onclick=function(e){e.stopPropagation();toggleMenu();};
+  document.addEventListener('click',function(e){if(!menu.contains(e.target))toggleMenu(false);});
+  function go(i){i=Math.max(0,Math.min(N-1,i));
+    S.forEach(function(s,k){s.classList.toggle('on',k===i);s.classList.toggle('left',k<i);s.setAttribute('aria-hidden',k!==i);});
+    cur=i;bar.style.width=((i+1)/N*100)+'%';cnt.innerHTML='<b>'+(i+1)+'</b> / '+N;prev.disabled=i===0;next.disabled=i===N-1;
+    [].forEach.call(menu.children,function(b,k){b.classList.toggle('cur',k===i);});
+    try{localStorage.setItem(KEY,i);}catch(e){}
+    if(window.top===window&&location.hash!=='#'+(i+1))history.replaceState(null,'','#'+(i+1));
+    S[i].scrollTop=0;window.__deckNemesis&&window.__deckNemesis(S[i].dataset.nemesis==='1');}
+  prev.onclick=function(){go(cur-1);};next.onclick=function(){go(cur+1);};
+  document.addEventListener('keydown',function(e){if(/INPUT|TEXTAREA/.test(e.target.tagName))return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1);}
+    else if(e.key==='Home')go(0);else if(e.key==='End')go(N-1);else if(e.key==='Escape')toggleMenu(false);});
+  var sx=null,sy=0;var st=document.getElementById('stage');
+  st.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  st.addEventListener('touchend',function(e){if(sx==null)return;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(cur+(dx<0?1:-1));},{passive:true});
+  addEventListener('hashchange',function(){var h=parseInt(location.hash.slice(1),10);if(h&&h-1!==cur)go(h-1);});
+  var start=parseInt(location.hash.slice(1),10);if(!start){try{start=parseInt(localStorage.getItem(KEY),10)+1;}catch(e){}}
+  window.__deckGo=go;go((start||1)-1);
+  [].forEach.call(document.querySelectorAll('[data-go]'),function(b){b.onclick=function(){go(+b.dataset.go-1);};});
+})();
+
+(function(){
+  var T={
+    start:{q:'Does your project need to save data or let students sign in?',o:[['Yes','auth'],['No','static']]},
+    static:{q:'Is it only HTML, CSS and JavaScript files?',o:[['Yes, just files','pages'],['No, it has server code','server']]},
+    server:{q:'What kind of app is it?',o:[['A React or Next.js front end','vercel'],['A long-running server (Node, Python, Flask)','render']]},
+    auth:{q:'Do you want sign-in and storage built in, without running your own server?',o:[['Yes, give me everything','supabase'],['No, I just need a database','neon']]},
+    pages:{a:'GitHub Pages',p:'Free and simple. Upload your files and turn on Pages in the repository settings.'},
+    vercel:{a:'Vercel',p:'Connect your GitHub repository and every push deploys, with a preview link for each change.'},
+    render:{a:'Render',p:'Runs real servers. On the free plan, open the site a minute before class so it has time to wake up.'},
+    supabase:{a:'Supabase + GitHub Pages',p:'Host the pages on GitHub Pages and let Supabase handle sign-ins and data. This is how the course site works.'},
+    neon:{a:'Neon + Render or Vercel',p:'Neon stores the data. Your server code on Render or Vercel connects to it.'}
+  };
+  var el=document.getElementById('quiz'),path=[];
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function show(k){var n=T[k],h='';
+    if(path.length)h+='<div class="trail">'+path.map(esc).join(' &rarr; ')+'</div>';
+    if(n.q){h+='<div class="q">'+esc(n.q)+'</div><div class="opts">'+n.o.map(function(o,i){return '<button class="btn" data-i="'+i+'">'+esc(o[0])+'</button>';}).join('')+'</div>';}
+    else{h+='<div class="ans"><h4>'+esc(n.a)+'</h4><p>'+esc(n.p)+'</p></div><div class="opts"><button class="btn pri" data-r="1">Start over</button></div>';}
+    el.innerHTML=h;
+    [].forEach.call(el.querySelectorAll('[data-i]'),function(b){b.onclick=function(){var o=n.o[+b.dataset.i];path.push(o[0]);show(o[1]);};});
+    var r=el.querySelector('[data-r]');if(r)r.onclick=function(){path=[];show('start');};}
+  show('start');
+})();
+
+
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>
