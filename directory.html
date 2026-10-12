@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=15.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Directory — Mr. Reasey's Site Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080c14;--panel:#0e1522;--panel2:#131c2c;--line:#1f2b40;--line2:#2c3b57;--text:#d3dceb;--bright:#fff;--muted:#a3b1c7;--dim:#8494ad;
+--c1:#3ee0ff;--c2:#8cff6b;--c3:#ff5c6c;--csp:#b48cff;--w3:#ffa24a;--yel:#ffd84a;--accent:#3ee0ff;}
+:root[data-theme="light"]{--bg:#f3f5f9;--panel:#fff;--panel2:#f7f9fc;--line:#dfe5ee;--line2:#c6d0de;--text:#273248;--bright:#0d1424;--muted:#46536b;--dim:#5a6780;
+--c1:#00739a;--c2:#2a7a12;--c3:#b81d33;--csp:#6a3fc4;--w3:#a8520a;--yel:#806200;--accent:#00739a;}
+*{box-sizing:border-box;}
+html{background:var(--bg);}
+body{margin:0;min-height:100vh;font-family:'IBM Plex Sans',sans-serif;color:var(--text);background:var(--bg);transition:background-color .25s,color .25s;}
+a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--line2);background:var(--panel);color:var(--accent);cursor:pointer;}
+.wrap{max-width:1180px;margin:0 auto;padding:72px 22px 90px;}
+header{display:grid;gap:14px;margin-bottom:26px;}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--dim);}
+h1{margin:0;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(30px,5vw,48px);color:var(--bright);letter-spacing:-1px;}
+h1 span{color:var(--accent);}
+.sub{margin:0;color:var(--muted);max-width:640px;line-height:1.55;text-wrap:pretty;}
+.bar{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 0;background:var(--bg);border-bottom:1px solid var(--line);margin-bottom:28px;}
+.search{flex:1 1 280px;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:0 12px;}
+.search:focus-within{border-color:var(--accent);}
+.search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--bright);font:15px 'JetBrains Mono',monospace;padding:12px 0;}
+.search kbd{font:11px 'JetBrains Mono',monospace;color:var(--dim);border:1px solid var(--line2);border-radius:4px;padding:2px 6px;}
+.jump{display:flex;flex-wrap:wrap;gap:6px;}
+.jump a{font:12px 'JetBrains Mono',monospace;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 11px;}
+.jump a:hover{color:var(--bright);border-color:var(--line2);text-decoration:none;}
+.count{font:12px 'JetBrains Mono',monospace;color:var(--dim);}
+section.cat{margin:0 0 40px;scroll-margin-top:90px;}
+.cat-h{display:flex;align-items:baseline;gap:14px;margin:0 0 6px;}
+.cat-h .n{font:700 13px 'JetBrains Mono',monospace;color:var(--accent);}
+.cat-h h2{margin:0;font:700 20px 'JetBrains Mono',monospace;color:var(--bright);}
+.cat-d{margin:0 0 16px;color:var(--dim);font-size:14px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.item{position:relative;display:grid;gap:4px;padding:14px 14px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--text);transition:border-color .15s,transform .15s;}
+.item:hover{border-color:var(--hue,var(--accent));text-decoration:none;transform:translateY(-1px);}
+.item .t{font-weight:600;color:var(--bright);padding-right:52px;}
+.item .p{font:12px 'JetBrains Mono',monospace;color:var(--hue,var(--accent));word-break:break-all;}
+.item .d{font-size:13px;color:var(--muted);line-height:1.45;text-wrap:pretty;}
+.item .tag{justify-self:start;font:10px 'JetBrains Mono',monospace;letter-spacing:1px;color:var(--yel);border:1px solid currentColor;border-radius:3px;padding:1px 5px;margin-top:2px;}
+.copy{position:absolute;top:10px;right:10px;font:11px 'JetBrains Mono',monospace;color:var(--dim);background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:3px 7px;cursor:pointer;}
+.copy:hover{color:var(--bright);border-color:var(--line2);}
+.courses{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;}
+.course{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--hue);border-radius:8px;padding:14px;display:grid;gap:10px;align-content:start;}
+.course h3{margin:0;font:700 15px 'JetBrains Mono',monospace;color:var(--hue);}
+.course ul{list-style:none;margin:0;padding:0;display:grid;gap:2px;}
+.course li a{display:flex;justify-content:space-between;gap:8px;padding:5px 6px;border-radius:4px;color:var(--text);font-size:14px;}
+.course li a:hover{background:var(--panel2);text-decoration:none;color:var(--bright);}
+.course li a span{font:11px 'JetBrains Mono',monospace;color:var(--dim);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.chips a{font:12px 'JetBrains Mono',monospace;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:6px 9px;}
+.chips a:hover{color:var(--bright);border-color:var(--accent);text-decoration:none;}
+.sublabel{font:12px 'JetBrains Mono',monospace;color:var(--dim);margin:18px 0 0;letter-spacing:1px;}
+.hide{display:none !important;}
+.empty{color:var(--dim);font-family:'JetBrains Mono',monospace;padding:30px 0;}
+footer{margin-top:50px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);padding-top:16px;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<main class="wrap" id="main">
+  <header>
+    <div class="kicker">TEACHER · SITE MAP</div>
+    <h1>~/<span>directory</span></h1>
+    <p class="sub">Every main page on the site, sorted by when you'd reach for it. Type to filter. <span class="mono">/</span> jumps to search, <span class="mono">Enter</span> opens the first match.</p>
+  </header>
+  <div class="bar">
+    <label class="search"><span class="mono" style="color:var(--dim)">&gt;</span><input id="q" type="search" placeholder="find a page… (timer, summit, ncl, sim)" autocomplete="off" aria-label="Filter pages"><kbd>/</kbd></label>
+    <nav class="jump" id="jump"></nav>
+    <span class="count" id="count"></span>
+  </div>
+  <div id="cats"></div>
+  <div class="empty hide" id="empty">No pages match.</div>
+  <footer>Pages marked <span class="mono" style="color:var(--yel)">TEACHER</span> need your teacher sign-in. Student puzzle pages (secret/, hashed flag pages, honeypots) are left off on purpose.</footer>
+</main>
+<script>
+(function(){
+var CATS=[
+ {id:"live",name:"In class, on the board",desc:"Projector and live-display pages.",items:[
+  ["Class Pulse","pulse.html","Live dashboard of who's working and what they're solving.","TEACHER"],
+  ["Live Leaderboard","leaderboard.html","Classroom display of CTF standings."],
+  ["Duel Arena","duel.html","Head-to-head classroom display."],
+  ["School Day Countdowns","countdown.html","Timers: end of period, day, breaks."],
+  ["Reward Big Top","carnival.html","Class reward spinner and carnival games."],
+  ["Reward Games","reward.html","Quick reward games."],
+  ["Test Day Duck Pond","rewards/testday/index.html","Test-day reward game."]]},
+ {id:"teach",name:"Plan & teach",desc:"Your tool shelves and teaching references.",items:[
+  ["Teacher Tools","tools/index.html","Reward games, countdown timers, Drive document translator."],
+  ["Cyber Teacher Resources","teacher_cyber_tools/index.html","Cyber teaching tools and resources."],
+  ["Simulators","simulators/index.html","All interactive simulators in one place."],
+  ["Practice hub","practice/index.html","AP CSP practice modules."],
+  ["Practice teacher guide","practice/teacher-guide.html","Which practice module maps to which unit."],
+  ["Example Programs","hidden/index.html","Hidden example programs, e.g. Mastermind."],
+  ["Red Team prototype","red-team-teacher.html","Teacher-side red team prototype.","TEACHER"],
+  ["System Monitor prototype","system-monitor.html","System monitor prototype."]]},
+ {id:"events",name:"Events, trips & talks",desc:"Competitions, field trips and conference pages.",items:[
+  ["Cyber Competitions","competitions.html","NCL, PCWA CTF, picoCTF: countdowns, quest log, Trove walkthrough."],
+  ["Future-Focused Learning Summit","summit/FFL-summit-mainpage.html","\"Built to Connect\" summit main page."],
+  ["FFL Summit talk slides","summit/FFL-summit-2026-deck.html","\"Press Start: Student Engagement With Gamification\" deck."],
+  ["SRU Cyberspace K-12 Summit","summit/sru-summit.html","Slippery Rock field trip page."]]},
+ {id:"admin",name:"Back office",desc:"Grading, setup and maintenance.",items:[
+  ["Teacher Dashboard","teacher.html","Classes, settings, manifests, rewards, gates.","TEACHER"],
+  ["Answer Key","answers.html","Upload answers.local.js and view the key.","TEACHER"],
+  ["Certificates","certificates.html","Print student certificates."],
+  ["Install Check","install-check.html","Supabase install status and CTF config audit."]]},
+ {id:"public",name:"Front door & fine print",desc:"What students and parents land on.",items:[
+  ["Course Portal","index.html","Main home page for all courses."],
+  ["Privacy","privacy.html","Privacy policy."],
+  ["Terms","terms.html","Terms of use."],
+  ["404 page","404.html","Not-found page."]]},
+ {id:"embeds",name:"Embed buttons",desc:"Small pages for Schoology / Google Sites embeds.",items:[
+  ["Open Course (generic)","buttons/open-button.html",""],
+  ["Open Cyber 1","buttons/open-cyber1.html",""],["Open Cyber 2","buttons/open-cyber2.html",""],["Open Cyber 3","buttons/open-cyber3.html",""],
+  ["Open AP CSP","buttons/open-apcsp.html",""],["Open Web 3.0","buttons/open-web3.html",""],
+  ["Cyber 1 documents","buttons/docs-cyber1.html",""],["Cyber 2 documents","buttons/docs-cyber2.html",""],["Cyber 3 documents","buttons/docs-cyber3.html",""]]}
+];
+var COURSES=[
+ {name:"Cybersecurity 1",dir:"cyber1",hue:"var(--c1)",extra:[["Are You a Target?","are-you-a-target"],["Warm-up review","target-warmup-review"],["RMU grade scale","rmu-grade-scale"]]},
+ {name:"AP Cybersecurity 2",dir:"cyber2",hue:"var(--c2)",extra:[["Are You a Target?","are-you-a-target"],["Warm-up review","target-warmup-review"]]},
+ {name:"Cybersecurity 3",dir:"cyber3",hue:"var(--c3)",extra:[]},
+ {name:"AP CS Principles",dir:"apcsp",hue:"var(--csp)",extra:[["Student info","student-info"],["Student info review","student-info-review"],["Carlow grade scale","carlow-grade-scale"]]},
+ {name:"Intro to Web 3.0",dir:"web3",hue:"var(--w3)",extra:[]}
+];
+var CORE=[["Home","index"],["CTF","ctf"],["Syllabus","syllabus"],["Vocab","vocab"],["News","news"],["Profile","profile"]];
+var SIMS=[["Address Space","addressspace"],["Algorithm Race","algorace"],["Base Shift","baseshift"],["Bias Lab","biaslab"],["Black Box","blackbox"],["Block Rush","blockrush"],["Bug Hunt","bughunt"],["Cipher Lab","cipherlab"],["Codebook","codebook"],["Code Points","codepoints"],["Cold Call","coldcall"],["Breach Clock","cracktime"],["Flow Trace","flowtrace"],["Gatekeeper","gatekeeper"],["Hidden Bits","hiddenbits"],["Inbox Zero","inboxzero"],["Incident Command","incidentcommand"],["Key Cracker","keycracker"],["Least Privilege","leastprivilege"],["List Scale","listscale"],["Packet Route","packetroute"],["Work Crew","parallelwork"],["Phish Box","phishbox"],["Proof of Life","proofoflife"],["Protocol Stack","protocolstack"],["Robot Build","robotbuild"],["Robot Run","robotrun"],["Rollover","rollover"],["Rubric Check","rubriccheck"],["Sort Lab","sortlab"],["Squeeze","squeeze"],["War Room","warroom"],["Wiretap","wiretap"]];
+var PRAC=[["Abstraction & Decomposition","abstraction-and-decomposition"],["Boolean Logic","boolean-logic"],["Build the Program","build-the-program"],["Cipher Lab","cipher-lab-practice"],["Compression Lab","compression-lab"],["Data Representation","data-representation"],["Efficiency Check","efficiency-check"],["Fix the Bug","fix-the-bug"],["Impact of Computing","impact-of-computing"],["List & Loop Tracer","list-loop-tracer"],["Name That Error","name-that-error"],["Robot Run","robotrun"],["Route & Protocol","route-and-protocol"],["Trace the Algorithm","trace-the-algorithm"]];
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+var html="",jump="",n=0;
+CATS.forEach(function(c,i){
+  if(i===2){html+=coursesHTML(n+1);jump+='<a href="#courses">Courses</a>';n++;}
+  n++;jump+='<a href="#'+c.id+'">'+esc(c.name.split(",")[0].split(" &")[0])+'</a>';
+  html+='<section class="cat" id="'+c.id+'"><div class="cat-h"><span class="n">0'+n+'</span><h2>'+esc(c.name)+'</h2></div><p class="cat-d">'+esc(c.desc)+'</p><div class="grid">'+
+   c.items.map(function(it){return '<a class="item" data-s="'+esc((it[0]+" "+it[1]+" "+it[2]+" "+c.name).toLowerCase())+'" href="'+it[1]+'"><span class="t">'+esc(it[0])+'</span><span class="p">/'+esc(it[1])+'</span>'+(it[2]?'<span class="d">'+esc(it[2])+'</span>':'')+(it[3]?'<span class="tag">'+it[3]+'</span>':'')+'<button class="copy" type="button" data-u="'+it[1]+'">copy</button></a>';}).join("")+
+   '</div>'+(c.id==="teach"?chips("SIMULATORS · "+SIMS.length,"simulators/",SIMS)+chips("PRACTICE MODULES · "+PRAC.length,"practice/",PRAC):"")+'</section>';
+});
+function chips(label,dir,arr){return '<div class="sublabel" data-group>'+label+'</div><div class="chips">'+arr.map(function(s){return '<a data-s="'+esc((s[0]+" "+dir+s[1]+" sim practice").toLowerCase())+'" href="'+dir+s[1]+'.html">'+esc(s[0])+'</a>';}).join("")+'</div>';}
+function coursesHTML(num){return '<section class="cat" id="courses"><div class="cat-h"><span class="n">0'+num+'</span><h2>Courses</h2></div><p class="cat-d">The same six core pages per course, plus course-specific extras.</p><div class="courses">'+
+  COURSES.map(function(c){var rows=CORE.concat(c.extra);return '<div class="course" style="--hue:'+c.hue+'"><h3>'+esc(c.name)+'</h3><ul>'+rows.map(function(r){var u=c.dir+"/"+r[1]+".html";return '<li><a data-s="'+esc((c.name+" "+c.dir+" "+r[0]+" "+u).toLowerCase())+'" href="'+u+'">'+esc(r[0])+'<span>'+r[1]+'</span></a></li>';}).join("")+'</ul></div>';}).join("")+'</div></section>';}
+document.getElementById("cats").innerHTML=html;
+document.getElementById("jump").innerHTML=jump;
+var q=document.getElementById("q"),all=[].slice.call(document.querySelectorAll("[data-s]")),cnt=document.getElementById("count");
+function filter(){
+  var v=q.value.trim().toLowerCase(),terms=v.split(/\s+/).filter(Boolean),shown=0;
+  all.forEach(function(el){var ok=terms.every(function(t){return el.getAttribute("data-s").indexOf(t)>-1;});(el.closest("li")||el).classList.toggle("hide",!ok);if(ok)shown++;});
+  document.querySelectorAll(".course").forEach(function(c){c.classList.toggle("hide",!c.querySelector("li:not(.hide)"));});
+  document.querySelectorAll(".chips").forEach(function(c){var on=!!c.querySelector("a:not(.hide)");c.classList.toggle("hide",!on);c.previousElementSibling.classList.toggle("hide",!on);});
+  document.querySelectorAll("section.cat").forEach(function(s){s.classList.toggle("hide",!s.querySelector("[data-s]:not(.hide), li:not(.hide)"));});
+  document.getElementById("empty").classList.toggle("hide",shown>0);
+  cnt.textContent=v?shown+" match"+(shown===1?"":"es"):all.length+" pages";
+}
+q.addEventListener("input",filter);
+q.addEventListener("keydown",function(e){if(e.key==="Enter"){var f=all.find(function(el){return !(el.closest("li")||el).classList.contains("hide");});if(f)location.href=f.getAttribute("href");}if(e.key==="Escape"){q.value="";filter();q.blur();}});
+document.addEventListener("keydown",function(e){if(e.key==="/"&&document.activeElement!==q&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();q.focus();}});
+document.addEventListener("click",function(e){var b=e.target.closest(".copy");if(!b)return;e.preventDefault();e.stopPropagation();
+  var u=new URL(b.getAttribute("data-u"),location.href).href;
+  (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){b.textContent="copied";},function(){prompt("Copy link:",u);}).then(function(){setTimeout(function(){b.textContent="copy";},1400);});});
+filter();
+})();
+</script>
+<script>
+(function(){var b=document.getElementById('themeToggle');function lbl(){b.textContent=document.documentElement.getAttribute('data-theme')==='light'?'DARK':'LIGHT';}
+window.__toggleTheme=function(){var t=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('course-theme',t);}catch(e){}lbl();};lbl();})();
+</script>
+</body>
+</html>
