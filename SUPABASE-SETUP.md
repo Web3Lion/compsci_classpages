@@ -64,6 +64,11 @@ checks who is asking.
    | 29 | `duels.sql` | **v2.0** Head-to-head duels (needs teacher-xp.sql) |
    | 30 | `scheduled-unlocks.sql` | **v2.0** Scheduled module/flag unlocks — must be the LAST file that defines the gate functions |
    | 31 | `install-check.sql` | **v3.0** Live status for `install-check.html` (any time after schema.sql) |
+   | 32 | `module-clears.sql` | **v6.0** Module Clear Crates, Coin Packs, Mentor + Vanguard, server-checked against the capture log (needs the 6.0 `reward-items.sql` + `coins-cosmetics.sql`). Open the teacher dashboard once per course afterwards so it publishes the module flag lists. |
+   | 33 | `guest-mode.sql` | **v10.0** Guest mode: teacher.html → Settings opens ONE class to any Google account for 1–4 hours (PD sessions, visitors). Redefines `_is_school()` and `ctf_join_google` — run after `google-auth.sql`, `multi-domain.sql` and `allowed-emails.sql`, and re-run it if you re-run any of them. Re-run `install-check.sql` afterwards. |
+   | 34 | `weekly-xp-summary.sql` | **v13.0** Weekly XP tab in teacher.html: XP per student per week, sortable by Google name or hacker name (needs teacher-xp.sql + roster-csv.sql) |
+   | 35 | `tool-clicks.sql` | **v16.0** Anonymous click counts for each card on `tools/` (Teacher Tools), shown in teacher.html → Settings → Teacher Tools clicks |
+   | 36 | `vocab-quizzes.sql` | **v17.0** Assigned vocab quizzes: teacher.html → Assigned Vocab Quizzes, student page `quiz.html`, glow on course home + profile (needs google-auth.sql, teachers.sql, roster-csv.sql) |
 
    **Order matters in several places** (each is a case of two files redefining the
    same function, where the one that runs LAST wins):
@@ -80,10 +85,14 @@ checks who is asking.
      students get rejected, granted bonus XP vanishes on next sync).
    - `allowed-emails.sql` must run after `multi-domain.sql`, always — re-running
      `multi-domain.sql` later silently drops the allowlist.
+   - `guest-mode.sql` must run after `google-auth.sql`, `multi-domain.sql` and
+     `allowed-emails.sql` — re-running any of those silently turns guest mode off.
    - `hint-log.sql` and `attempt-log.sql` each redefine a capture/cheat function
      from `google-auth.sql` — re-run them after re-running it.
    - `weekly-snapshot-auto.sql` redefines `ctf_t_snapshot_week` from
      `weekly-winners.sql` — run it after, and re-run it if you re-run that file.
+   - **6.0:** re-run `reward-items.sql` (it adds Rewards Packs and six new items in place), then run
+     `module-clears.sql`, then re-run `install-check.sql` so install-check.html lists the new file.
    - `scheduled-unlocks.sql` redefines `ctf_gates`, `ctf_t_gates` and `ctf_t_classes`
      as a superset of `class-gates.sql`, `squads.sql` and `objectives.sql`. Re-run it
      after re-running any of those (or `google-auth.sql`), or scheduled unlocks stop

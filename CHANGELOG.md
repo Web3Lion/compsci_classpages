@@ -7,9 +7,91 @@ Version numbers follow `MAJOR.MINOR.PATCH`:
 
 The current version lives in `site.js` (`SITE_VERSION`) and shows in every page
 footer and the A11Y panel. Script and stylesheet links carry the same number as
-a cache tag (`?v=8.0.0`) — bump both together on every release.
+a cache tag (`?v=9.0.0`) — bump both together on every release.
 
 ---
+
+## 17.0.0 — 2026-10-13
+- New SQL: `supabase/vocab-quizzes.sql` (run #36). Teacher-assigned vocab quizzes: a term pool, terms per student, and a count per format (word-bank completion, matching, multiple choice, type the term). The server draws and shuffles a different paper for every student and every attempt, keeps the answer key server-side, and grades on the server (text comparison; typed answers forgive 1–2 typos). Optional time limit, open/due dates, manual open/close, attempts (default 2, best score counts).
+- New page: `quiz.html?q=<id>`. Students sign in with Google and their name fills in automatically. Calm, high-legibility theme (Atkinson Hyperlegible), keyboard and screen-reader friendly, autosave, timer with auto turn-in, copy/paste blocked, leaving the page is counted for the teacher. After turning in: score plus the questions they missed. Integrity rule (warned at the top of the page): the quiz opens in full screen; leaving full screen, switching tabs/apps, clicking outside the window, or closing/reloading the page ends the attempt immediately. It is graded on the answers so far (students are told the quiz screen lost focus) and flagged as an integrity violation in the teacher results, CSV, and the Integrity tab.
+- teacher.html: new "Assigned Vocab Quizzes" tab. Build from the course vocab list (filter by module, search) plus custom terms; copy the link for Classroom; open/close, edit dates, per-student results (best score, attempts, missed terms, left-page/paste counts), most-missed terms, reset a student, CSV export.
+- New `quiz-notice.js` on every course home + profile page: an "Assigned Quizzes" Quick Link that glows (same glow as new rewards) with a notice card while a quiz is waiting, and an Assigned Quizzes card in the profile with scores and missed questions.
+- Summit: "Students still need to bring their own lunch" notice on the Cyber 1 / Cyber 2 summit cards and on `summit/sru-summit.html`.
+
+## 16.0.0 — 2026-10-12
+- New SQL: `supabase/tool-clicks.sql` (run #35). Anonymous click counts for each card/button on `tools/` (Teacher Tools). No names, emails or IPs stored.
+- New `click-log.js`: any element with `data-track="Card name"` logs clicks on itself or its links/buttons. Loaded on `tools/index.html`.
+- teacher.html → Settings: new "Teacher Tools clicks" panel (today / 7 days / all time per card, with a per-button breakdown, plus Reset).
+- Added to `check-installed.sql`, `install-check.sql` and `SUPABASE-SETUP.md`.
+- Summit: tinyurl.com/42apjrw7 under the main-page QR and on the title slide; small slide-deck QR in the corner of every slide after the first.
+
+## 15.0.0 — 2026-10-11
+- New page: `directory.html`, a searchable teacher site map of every main page (live displays, teaching tools, courses, events/summits, back office, embeds). Linked from the Teacher Dashboard toolbar (🗂 Directory). `noindex`.
+
+## 14.1.0 — 2026-10-10
+- Site-wide SIGN OUT button in the top-right control row (site.js), shown on every page while a Google session is stored on the device. Signs out of Supabase, clears cached class sessions (`ctf-sess-*`), and reloads.
+- Competitions: added the PCWA High School CTF (IUP, Hack The Box, Oct 30–31).
+- Summit pages moved into `summit/`: FFL-summit-mainpage.html, FFL-summit-2026-deck.html, sru-summit.html, their screenshots (`summit/assets/creation/`) and image-slot state. Old root URLs (including summit.html) redirect, so printed QR codes keep working. Deck QR points to the new path; cyber1/cyber2 field-trip cards link to `summit/sru-summit.html`.
+
+## 14.0.1 — 2026-10-10
+- Fix: NEMESIS/guide voices bled between courses. Voice settings were saved under one shared key, so tuning one course changed every course, and only the SPECTER guide had its own default. Each course now saves under `ctf-nemesis-voice:<course>` and has its own default, the same in mentor and adversary mode: Cyber 2 deep and slow (UK male, pitch 0.30), Cyber 1 a lighter male (US, pitch 0.85), AP CSP British female. When a named voice isn't installed, a matching gender + accent voice is picked instead. The voice tuner's Reset now restores the course's real defaults.
+
+## 14.0.0 — 2026-10-10
+- New page: FFL-summit-2026-deck.html — self-paced talk slides for the Future-Focused Learning Summit (13 slides: platform tour, stack, Claude.ai, Supabase vs Neon, GitHub Pages vs Render vs Vercel, interactive "which should I use?" picker, NEMESIS takeover puzzle, privacy, cost, lessons, start Monday, explore links). Arrow keys, swipe, slide menu, #n deep links; respects reduce-motion.
+- summit.html renamed to FFL-summit-mainpage.html (summit.html now redirects there). Hedera Token Studio card (teal), full-width Teacher Tools, presenter panel with gold email button, holographic title, "Talk slides" link.
+
+## 13.0.0 — 2026-10-09
+- New SQL: supabase/weekly-xp-summary.sql (`ctf_t_weekly_xp`). Added to install-check.sql, check-installed.sql and SUPABASE-SETUP.md (#34).
+- teacher.html: new **Weekly XP** tab — XP per student for each of the last 4/8/12/18 weeks (Sunday–Saturday ET; flag captures + hand-granted XP), with a total. Sort by Google name, hacker name, total, or any week; CSV export.
+
+## 12.1.0 — 2026-10-09
+- Boss fights can borrow another module's vocabulary with `ctf.bossVocabFrom = { module: sourceModule }`. Cyber 1 Module 12 (Test Experience) now mixes Module 1 vocab with its own boss questions.
+
+## 12.0.1 — 2026-10-09
+- Fix: boss fight froze on modules with no vocabulary terms (Cyber 1 Module 12 Test Experience). It now draws only from the module's boss questions and reshuffles them when they run out.
+
+## 12.0.0 — 2026-10-09
+- New page: rewards/testday/ — Test Day Duck Pond. Teacher sign-in required. Every duck flips to +2% on the test (this page only); the prize chart is shown for fun but does not affect the result. Optional student name, today's bonus list kept in this browser, full-screen mode.
+
+## 11.1.0 — 2026-10-08
+- summit.html restyled for the Future-Focused Learning Summit ("Built to Connect: Designing School for the AI Era"): summit title, date, four pillars, red/purple/blue spark palette, presenter block (Mr. Robert Reasey). QR codes added to summit.html and tools/index.html.
+
+## 11.0.0 — 2026-10-08
+- New page: summit.html — Future Focused Summit (Oct 12, 2026) landing page linking educators to the Cybersecurity 1 CTF (code CY1-YWY4, Module 12 Test Experience) and the Crypto Trading Platform (code HWFGYX), with copy-code buttons and light/dark theme.
+
+## 10.1.0 — 2026-10-08
+- Answer key: module filter chips (All / M1…Mn / Boss) per class. Selection is remembered per class, stays pinned while scrolling, and printing outputs only the filtered module.
+
+## 10.0.0 — 2026-10-07
+
+**New SQL:** `supabase/guest-mode.sql` (run after `google-auth.sql`, `multi-domain.sql`, `allowed-emails.sql`; then re-run `install-check.sql`).
+
+- Guest mode: teacher.html → Settings opens one class to **any** Google account for 1, 2, or 4
+  hours. Visitors sign in and join with the class code; it closes on its own. Built for PD
+  sessions where guest emails aren't known ahead of time.
+- Arena sign-in screen shows a "Guest mode is on" note while it's open; guests who try another
+  class code get a clear message.
+- check-installed.sql / install-check.html list the file and guard its run order.
+
+**New pages:** `privacy.html` and `terms.html` (required to publish the Google OAuth app),
+linked from the home page footer.
+
+## 9.1.0 — 2026-10-07
+
+- Cyber 1 CTF: new **Module 12 — Test Experience**, an educator demo of the arena with 10
+  general-knowledge captures (4 leveled text flags, 2 match, 3 order, 1 spot-the-phish) and
+  6 boss questions.
+- New `ctf.lockedByDefault` option: listed modules stay locked for every class until the
+  teacher opens them on the Gates tab (saved as an `open:N` token in `locked_flags`, no SQL).
+
+## 9.0.0 — 2026-10-06
+
+**New pages:** `hidden/` (Example Programs, unlinked, `noindex`) and `hidden/mastermind.html`.
+
+- Mastermind (AP CSP): a browser console that behaves like the Python program students
+  will write — same prompts, "You guessed N correctly.", the congratulations line, and a
+  real-looking `ValueError` traceback on non-integer input. Debug toggle prints the answer.
+- Tools page: Jeopardy import now starts at cell C1.
 
 ## 8.0.0 — 2026-10-06
 

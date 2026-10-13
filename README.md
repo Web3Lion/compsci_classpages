@@ -55,7 +55,7 @@ isn't filled in.
   rank chip. Three modes: **Overall**, **This Week**, and **Hall of Fame** (past weekly
   top 3). Rank movement arrows (▲/▼/NEW) compare against the first board seen that
   day on that device. Fullscreen button for projectors; auto-refreshes every 60s.
-- `reward-spinner.html` — teacher-only prize wheel (students see a locked view).
+- `carnival.html` (served at `./carnival`; formerly `reward-spinner.html`) — teacher-only prize wheel (students see a locked view).
   Pick a class + student and the prize is sent to their profile when the wheel stops.
   **EDIT ODDS** lets the teacher reweight or remove prizes (saved per device); sound
   effects can be toggled off.
@@ -66,7 +66,7 @@ isn't filled in.
 - `certificates.html` — printable certificates (module / weekly top 3 / course /
   duel champion / custom), one landscape page per student.
 - `answers.html` — teacher page for uploading `answers.local.js`.
-- `sru-summit.html` — Cyberspace K-12 Summit field-trip page (Cyber 1 + AP Cyber 2),
+- `summit/sru-summit.html` — Cyberspace K-12 Summit field-trip page (Cyber 1 + AP Cyber 2),
   linked from the announcement card on both course home pages.
 - `install-check.html` — setup + database + course-content check (needs
   `supabase/install-check.sql`). Start here when something isn't working.

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=15.0.0"></script>
+<script src="site.js?v=17.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -260,19 +260,19 @@
   </div>
 </div>
 
-<script src="config.js?v=15.0.0"></script>
-<script src="ctf-data/cyber1.js?v=15.0.0"></script>
-<script src="ctf-data/cyber2.js?v=15.0.0"></script>
-<script src="ctf-data/cyber3.js?v=15.0.0"></script>
-<script src="ctf-data/apcsp.js?v=15.0.0"></script>
-<script src="ctf-data/web3.js?v=15.0.0"></script>
-<script src="cipher.js?v=15.0.0"></script>
-<script src="supabase-config.js?v=15.0.0"></script>
-<script src="auth.js?v=15.0.0"></script>
-<script src="name-filter.js?v=15.0.0"></script>
-<script src="objectives.js?v=15.0.0"></script>
-<script src="standards.js?v=15.0.0"></script>
-<script src="csv.js?v=15.0.0"></script>
+<script src="config.js?v=17.0.0"></script>
+<script src="ctf-data/cyber1.js?v=17.0.0"></script>
+<script src="ctf-data/cyber2.js?v=17.0.0"></script>
+<script src="ctf-data/cyber3.js?v=17.0.0"></script>
+<script src="ctf-data/apcsp.js?v=17.0.0"></script>
+<script src="ctf-data/web3.js?v=17.0.0"></script>
+<script src="cipher.js?v=17.0.0"></script>
+<script src="supabase-config.js?v=17.0.0"></script>
+<script src="auth.js?v=17.0.0"></script>
+<script src="name-filter.js?v=17.0.0"></script>
+<script src="objectives.js?v=17.0.0"></script>
+<script src="standards.js?v=17.0.0"></script>
+<script src="csv.js?v=17.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -321,7 +321,7 @@ var CLASSES=[], CUR=null;
 async function loadClasses(refresh){
   try{
     CLASSES=await rpc("ctf_t_classes")||[];
-    if(!refresh){ await loadWhoami(); await loadTeachers(); await loadAllowedEmails(); await loadRejects(); loadGuest(); }
+    if(!refresh){ await loadWhoami(); await loadTeachers(); await loadAllowedEmails(); await loadRejects(); loadToolClicks(); loadGuest(); }
     renderClassList();
     if(refresh&&CUR){ var again=CLASSES.filter(function(c){return c.id===CUR.id;})[0]; if(again) selectClass(again); }
   }catch(e){ el("classList").innerHTML='<div class="empty" style="color:var(--bad)">Failed to load.</div>'; }
@@ -355,6 +355,7 @@ var GROUPS=[], GFILTER="all", GSEL={};
 var PIONEERS=[], VOCAB=[], EXPECTED=[], VSESS=[], STAND=[], CAPS=[];
 // Global, not class-scoped: a rejected sign-in has no class yet.
 var REJECTS=null;
+var TOOLCLICKS=null;
 // Teacher XP grants for the selected class (supabase/teacher-xp.sql).
 var GRANTS=[];
 // Arena Hard-tier mini-game runs (supabase/hardmode-log.sql).
@@ -461,7 +462,7 @@ function renderMain(){
   h+='<div class="tabs">'+
       tabBtn("summary","Summary")+tabBtn("spread","Distributions")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
       tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+tabBtn("ultimate","Ultimate Flags")+
-      tabBtn("vocab","Vocab Lab")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("weekxp","Weekly XP")+tabBtn("rewards","Send Rewards")+tabBtn("enroll","Enrollment")+
+      tabBtn("vocab","Vocab Lab")+tabBtn("quizzes","Assigned Vocab Quizzes")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("weekxp","Weekly XP")+tabBtn("rewards","Send Rewards")+tabBtn("enroll","Enrollment")+
       tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
     '</div><div style="padding-top:16px;">';
   if(TAB==="roster") h+=rosterView();
@@ -473,6 +474,7 @@ function renderMain(){
   else if(TAB==="flags") h+=flagsView();
   else if(TAB==="ultimate") h+=ultimateView();
   else if(TAB==="vocab") h+=vocabView();
+  else if(TAB==="quizzes") h+=vqView();
   else if(TAB==="squads") h+=squadsView();
   else if(TAB==="objectives") h+=objectivesView();
   else if(TAB==="xplog") h+=xpLogView();
@@ -483,6 +485,7 @@ function renderMain(){
   else h+=settingsView();
   h+='</div></div>';
   el("main").innerHTML=h;
+  if(TAB==="quizzes"&&VQ.build&&VQV[CUR.course]){ vqTerms(); vqPlan(); }
 }
 function stat(n,k){ return '<div class="stat"><div class="n">'+n+'</div><div class="k">'+k+'</div></div>'; }
 function tabBtn(id,label){ return '<button class="tab '+(TAB===id?"on":"")+'" onclick="setTab(\''+id+'\')">'+label+'</button>'; }
@@ -4031,9 +4034,330 @@ function settingsView(){
   h+=teachersPanel();
   h+=allowedEmailsPanel();
   h+=rejectsPanel();
+  h+=toolClicksPanel();
   h+='</div>';
   return h;
 }
+
+/* ----- Assigned Vocab Quizzes (supabase/vocab-quizzes.sql, student page quiz.html) -----
+   The teacher picks a term pool + how many to draw + how many per format. The
+   server draws a different paper per student per attempt and grades it. */
+var VQ={cls:null,list:null,loading:false,err:null,open:null,res:{},exp:{},edit:null,build:null,msg:""};
+var VQV={}; // course -> {terms,modules}
+var VQSRC={cyber1:["cyber1/vocab-data.js","CY1_VOCAB"],cyber2:["cyber2/vocab-data.js","CY2_VOCAB"],cyber3:["cyber3/vocab-data.js","CY3_VOCAB"],apcsp:["apcsp/vocab-data.js","APCSP_VOCAB"],web3:["web3/vocab-data.js","WEB3_VOCAB"]};
+var VQFMT={bank:"word bank",match:"matching",mc:"multiple choice",typed:"typed"};
+function vqNorm(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim(); }
+function vqLink(id){ return new URL("quiz.html?q="+id, location.href).href; }
+function vqWhen(ts){ return ts?new Date(ts).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):""; }
+function vqLocal(ts){ if(!ts) return ""; var d=new Date(ts); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
+function vqIso(v){ return v?new Date(v).toISOString():null; }
+async function vqLoad(){
+  if(!CUR) return; VQ.cls=CUR.id; VQ.loading=true;
+  try{ var r=await rpc("vq_t_list",{p_class:CUR.id}); VQ.list=Array.isArray(r)?r:[]; VQ.err=null; }
+  catch(e){ VQ.list=[]; VQ.err=(e&&e.message)||"missing_rpc"; }
+  VQ.loading=false; if(TAB==="quizzes") renderMain();
+}
+function vqLoadVocab(course){
+  if(VQV[course]) return Promise.resolve(VQV[course]);
+  var src=VQSRC[course]; if(!src) return Promise.resolve({terms:[],modules:{}});
+  return new Promise(function(res){
+    function done(){ var g=window[src[1]]||{}; VQV[course]={terms:(g.terms||[]).filter(function(t){return t&&t.t&&t.d;}),modules:g.modules||{}}; res(VQV[course]); }
+    if(window[src[1]]) return done();
+    var s=document.createElement("script"); s.src=src[0]+"?v="+(window.SITE_VERSION||""); s.onload=done; s.onerror=done; document.head.appendChild(s);
+  });
+}
+function vqView(){
+  if(VQ.cls!==CUR.id){ VQ={cls:CUR.id,list:null,loading:false,err:null,open:null,res:{},exp:{},edit:null,build:null,msg:""}; vqLoad(); }
+  var h='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">'+
+    '<div style="font-size:16px;font-weight:700;color:var(--bright);">Assigned Vocab Quizzes</div>'+
+    '<a class="btn sm" target="_blank" rel="noopener" href="quiz.html?demo=1" style="margin-left:auto;">Student view demo \u2197</a>'+
+    (VQ.build?'':'<button class="btn pri sm" onclick="vqNew()">+ New quiz</button>')+
+    '<button class="btn sm" onclick="vqLoad()">Refresh</button></div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:16px;">Pick a term pool, how many terms each student gets, and how many of each format. Every student (and every attempt) gets a different random draw. Students sign in with Google; grading happens on the server. Share the link in Classroom; it also glows on the course home page and appears in each student\'s profile.</div>';
+  if(VQ.msg) h+='<div class="card" style="padding:14px 16px;margin-bottom:16px;border-color:var(--ok);">'+VQ.msg+'</div>';
+  if(VQ.build) return h+vqBuilder();
+  if(VQ.err) return h+'<div class="empty" style="color:var(--bad);">Run <span class="mono">supabase/vocab-quizzes.sql</span> to turn on assigned quizzes.<div class="mono" style="font-size:11px;color:var(--dim);margin-top:8px;">'+esc(VQ.err)+'</div></div>';
+  if(!VQ.list) return h+'<div class="empty"><span class="spin"></span></div>';
+  if(!VQ.list.length) return h+'<div class="empty">No quizzes for this class yet. Click <b>+ New quiz</b>.</div>';
+  VQ.list.forEach(function(q){ h+=vqCard(q); });
+  return h;
+}
+function vqStatusPill(s){
+  var m={open:["OPEN","var(--ok)"],not_yet:["SCHEDULED","var(--accent)"],past_due:["PAST DUE","var(--warn)"],closed:["CLOSED","var(--dim)"]}[s]||[s,"var(--dim)"];
+  return '<span class="pill" style="color:'+m[1]+';border:1px solid '+m[1]+';">'+m[0]+'</span>';
+}
+function vqFmtLine(sec){ return ["bank","match","mc","typed"].filter(function(k){return +sec[k]>0;}).map(function(k){return sec[k]+" "+VQFMT[k];}).join(" \u00b7 "); }
+function vqCard(q){
+  var pct=q.students?Math.round(q.done/q.students*100):0, open=VQ.open===q.id;
+  var h='<div class="card" style="padding:16px 18px;margin-bottom:12px;'+(open?'border-color:var(--accent);':'')+'">'+
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+vqStatusPill(q.status)+
+      '<b style="color:var(--bright);font-size:15px;">'+esc(q.title)+'</b>'+
+      '<span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;">'+
+        '<button class="btn sm" onclick="vqCopy(\''+q.id+'\')">Copy link</button>'+
+        '<button class="btn sm" onclick="vqToggleOpen(\''+q.id+'\')">'+(q.is_open?"Close":"Open")+'</button>'+
+        '<button class="btn sm" onclick="vqEdit(\''+q.id+'\')">Edit</button>'+
+        '<button class="btn sm'+(open?' pri':'')+'" onclick="vqResults(\''+q.id+'\')">'+(open?"Hide results":"Results")+'</button>'+
+        '<button class="btn sm danger" onclick="vqDelete(\''+q.id+'\')">Delete</button>'+
+      '</span></div>'+
+    '<div class="mono" style="font-size:11px;color:var(--dim);margin-top:8px;line-height:1.7;">'+
+      q.draw+' of '+q.pool_size+' terms \u00b7 '+esc(vqFmtLine(q.sections||{}))+(q.bank_extras?' \u00b7 +'+q.bank_extras+' bank extras':'')+
+      ' \u00b7 '+(q.time_limit_min?q.time_limit_min+' min':'untimed')+' \u00b7 '+q.max_attempts+' attempt'+(q.max_attempts>1?'s':'')+' (best counts)'+
+      (q.opens_at?' \u00b7 opens '+esc(vqWhen(q.opens_at)):'')+(q.due_at?' \u00b7 due '+esc(vqWhen(q.due_at)):'')+'</div>'+
+    '<div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">'+
+      '<span style="flex:1;min-width:160px;height:8px;border-radius:99px;background:var(--bg2);overflow:hidden;display:block;"><span style="display:block;height:100%;width:'+pct+'%;background:var(--accent);"></span></span>'+
+      '<span class="mono" style="font-size:12px;color:var(--bright);">'+q.done+'/'+q.students+' turned in</span>'+
+      (q.in_progress?'<span class="mono" style="font-size:12px;color:var(--warn);">'+q.in_progress+' in progress</span>':'')+
+      (q.violations?'<span class="mono" style="font-size:12px;color:var(--bad);font-weight:700;">\u26a0 '+q.violations+' integrity violation'+(q.violations>1?'s':'')+'</span>':'')+
+      '<span class="mono" style="font-size:12px;color:var(--accent);">'+(q.avg_pct!=null?'avg best '+q.avg_pct+'%':'no scores yet')+'</span></div>';
+  if(VQ.edit===q.id){
+    h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border2);">'+
+      '<label><div class="lbl">Opens (optional)</div><input class="in" type="datetime-local" id="vqeOpens" value="'+vqLocal(q.opens_at)+'"></label>'+
+      '<label><div class="lbl">Due (optional)</div><input class="in" type="datetime-local" id="vqeDue" value="'+vqLocal(q.due_at)+'"></label>'+
+      '<label><div class="lbl">Attempts</div><input class="in" type="number" min="1" max="10" id="vqeAtt" value="'+q.max_attempts+'"></label>'+
+      '<label><div class="lbl">Time limit (min, 0 = none)</div><input class="in" type="number" min="0" max="240" id="vqeTime" value="'+q.time_limit_min+'"></label>'+
+      '<div style="display:flex;gap:6px;align-items:flex-end;"><button class="btn pri sm" onclick="vqSaveEdit(\''+q.id+'\')">Save</button><button class="btn sm" onclick="VQ.edit=null;renderMain()">Cancel</button></div></div>';
+  }
+  if(open) h+=vqResultsHtml(q);
+  return h+'</div>';
+}
+function vqFind(id){ return (VQ.list||[]).filter(function(q){return q.id===id;})[0]; }
+function vqCopy(id){ var u=vqLink(id); if(navigator.clipboard) navigator.clipboard.writeText(u); VQ.msg='Link copied: <span class="mono" style="font-size:12px;color:var(--accent);word-break:break-all;">'+esc(u)+'</span>'; renderMain(); }
+async function vqToggleOpen(id){ var q=vqFind(id); if(!q) return; try{ await rpc("vq_t_set",{p_id:id,p_open:!q.is_open,p_opens:q.opens_at,p_due:q.due_at,p_max_attempts:q.max_attempts,p_time_limit:q.time_limit_min}); }catch(e){ alert(e.message||e); } vqLoad(); }
+function vqEdit(id){ VQ.edit=VQ.edit===id?null:id; renderMain(); }
+async function vqSaveEdit(id){
+  var q=vqFind(id); if(!q) return;
+  try{ await rpc("vq_t_set",{p_id:id,p_open:q.is_open,p_opens:vqIso(el("vqeOpens").value),p_due:vqIso(el("vqeDue").value),p_max_attempts:+el("vqeAtt").value||q.max_attempts,p_time_limit:+el("vqeTime").value||0}); }
+  catch(e){ alert(e.message||e); return; }
+  VQ.edit=null; vqLoad();
+}
+async function vqDelete(id){
+  var q=vqFind(id); if(!q||!confirm('Delete "'+q.title+'" and every student result for it?')) return;
+  try{ await rpc("vq_t_delete",{p_id:id}); }catch(e){ alert(e.message||e); }
+  if(VQ.open===id) VQ.open=null; vqLoad();
+}
+async function vqResults(id){
+  if(VQ.open===id){ VQ.open=null; renderMain(); return; }
+  VQ.open=id; VQ.res[id]=null; renderMain();
+  try{ VQ.res[id]=await rpc("vq_t_results",{p_quiz:id}); }catch(e){ VQ.res[id]={error:(e&&e.message)||"error"}; }
+  renderMain();
+}
+function vqResultsHtml(q){
+  var r=VQ.res[q.id];
+  var h='<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border2);">';
+  if(!r) return h+'<div class="empty" style="padding:20px;"><span class="spin"></span></div></div>';
+  if(r.error) return h+'<div style="color:var(--bad);font-size:13px;">'+esc(r.error)+'</div></div>';
+  var st=r.students||[], seen=r.seen||{};
+  if((r.most_missed||[]).length){
+    h+='<div class="lbl">Most missed terms</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">'+
+      r.most_missed.map(function(m){ var s=seen[m.term]||0; return '<span class="chip"><b style="color:var(--bright);">'+esc(m.term)+'</b><span class="mono" style="color:var(--bad);">'+m.n+(s?'/'+s:'')+' missed</span></span>'; }).join("")+'</div>';
+  }
+  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div class="lbl" style="margin:0;">Students</div><button class="btn sm" style="margin-left:auto;" onclick="vqCsv(\''+q.id+'\')">Export CSV</button></div>';
+  h+='<div style="overflow-x:auto;"><table><tr><th>Name</th><th>Hacker name</th><th>Status</th><th>Attempts</th><th>Best</th><th>Last turned in</th><th title="Times the student left the quiz screen / tried to paste">Left / Paste</th><th></th></tr>';
+  st.forEach(function(s){
+    var status=s.in_progress?'<span style="color:var(--warn);">In progress</span>':s.used?'<span style="color:var(--ok);">Turned in</span>':'<span style="color:var(--dim);">Not started</span>';
+    if(s.violations) status+='<div class="mono" style="font-size:11px;color:var(--bad);font-weight:700;margin-top:3px;">\u26a0 INTEGRITY VIOLATION'+(s.violations>1?' \u00d7'+s.violations:'')+'</div>';
+    var pct=s.best!=null&&s.total?Math.round(s.best/s.total*100):null, ex=VQ.exp[s.student_id];
+    h+='<tr><td style="color:var(--bright);font-weight:600;">'+esc(s.name)+'</td><td class="mono" style="font-size:12px;">'+esc(s.handle)+'</td><td>'+status+'</td>'+
+      '<td class="mono">'+s.used+'/'+q.max_attempts+'</td>'+
+      '<td class="mono" style="color:var(--bright);font-weight:700;">'+(pct!=null?s.best+'/'+s.total+' <span style="color:var(--accent);">'+pct+'%</span>':'\u2014')+'</td>'+
+      '<td style="font-size:12px;">'+(s.last_at?esc(vqWhen(s.last_at)):'\u2014')+'</td>'+
+      '<td class="mono" style="color:'+(s.focus_losses||s.pastes?'var(--warn)':'var(--dim)')+';">'+s.focus_losses+' / '+s.pastes+'</td>'+
+      '<td style="white-space:nowrap;">'+(s.used?'<button class="btn sm" onclick="vqExp(\''+s.student_id+'\')">'+(ex?'Hide':'Details')+'</button> <button class="btn sm danger" onclick="vqReset(\''+q.id+'\',\''+s.student_id+'\')">Reset</button>':'')+'</td></tr>';
+    if(ex){
+      h+='<tr><td colspan="8" style="background:var(--bg2);">'+(s.attempts||[]).map(function(a){
+        var m=a.missed||[];
+        return '<div style="margin:6px 0 12px;"><div class="mono" style="font-size:12px;color:var(--bright);font-weight:700;">ATTEMPT '+a.no+' \u00b7 '+(a.score!=null?a.score+'/'+a.total:'in progress')+
+          (a.violation?' <span style="color:var(--bad);">\u00b7 \u26a0 INTEGRITY VIOLATION: '+esc(a.violation)+' (ended early, graded as is)</span>':'')+
+          ' <span style="color:var(--dim);font-weight:400;">\u00b7 started '+esc(vqWhen(a.started_at))+(a.submitted_at?' \u00b7 turned in '+esc(vqWhen(a.submitted_at)):'')+' \u00b7 left page '+a.focus_losses+' \u00b7 pastes '+a.pastes+'</span></div>'+
+          (a.score==null?'':m.length?'<ul style="margin:6px 0 0;padding-left:18px;font-size:12px;line-height:1.6;">'+m.map(function(x){ return '<li><b style="color:var(--bright);">'+esc(x.a)+'</b> <span class="mono" style="color:var(--dim);">('+esc(VQFMT[x.kind]||x.kind)+')</span> \u2014 answered: <span style="color:var(--bad);">'+(x.given?esc(x.given):'<i>blank</i>')+'</span></li>'; }).join("")+'</ul>':'<div style="font-size:12px;color:var(--ok);margin-top:4px;">All correct.</div>')+'</div>';
+      }).join("")+'</td></tr>';
+    }
+  });
+  return h+'</table></div></div>';
+}
+function vqExp(sid){ VQ.exp[sid]=!VQ.exp[sid]; renderMain(); }
+async function vqReset(qid,sid){
+  if(!confirm("Delete this student's attempts on this quiz so they can start over?")) return;
+  try{ await rpc("vq_t_reset",{p_quiz:qid,p_student:sid}); }catch(e){ alert(e.message||e); }
+  VQ.open=null; vqResults(qid); vqLoad();
+}
+function vqCsv(id){
+  var q=vqFind(id), r=VQ.res[id]; if(!q||!r||!r.students) return;
+  var rows=[["Name","Email","Hacker name","Attempts used","Best score","Out of","Best %","Last turned in","Integrity violations","Violation details","Paste attempts"]];
+  r.students.forEach(function(s){ var vd=(s.attempts||[]).filter(function(a){return a.violation;}).map(function(a){return "Attempt "+a.no+": "+a.violation;}).join("; ");
+    rows.push([s.name,s.email||"",s.handle,s.used,s.best==null?"":s.best,s.total||"",s.best!=null&&s.total?Math.round(s.best/s.total*100):"",s.last_at?new Date(s.last_at).toLocaleString():"",s.violations||0,vd,s.pastes]); });
+  var csv=rows.map(function(r){ return r.map(function(v){ v=String(v==null?"":v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(","); }).join("\n");
+  var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download=(q.title||"quiz").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-")+"-results.csv"; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* builder */
+function vqNew(){
+  VQ.msg="";
+  VQ.build={mod:"all",q:"",sel:{},title:"",draw:10,bank:5,match:5,mc:0,typed:0,extras:2,time:0,attempts:2,opens:"",due:"",open:true,ct:"",cd:""};
+  renderMain();
+  vqLoadVocab(CUR.course).then(function(){ if(TAB==="quizzes"&&VQ.build) renderMain(); });
+}
+function vqBuilder(){
+  var b=VQ.build, V=VQV[CUR.course];
+  if(!V) return '<div class="empty"><span class="spin"></span> Loading vocab\u2026</div>';
+  var mods={}; V.terms.forEach(function(t){ mods[t.m]=1; });
+  var modOpts='<option value="all">All modules ('+V.terms.length+' terms)</option>'+Object.keys(mods).sort(function(a,b){return a-b;}).map(function(m){
+    var n=V.terms.filter(function(t){return String(t.m)===m;}).length;
+    return '<option value="'+m+'"'+(String(b.mod)===m?' selected':'')+'>'+esc((V.modules[m]?m+". "+V.modules[m]:"Module "+m)+" ("+n+")")+'</option>'; }).join("");
+  var num=function(k,lab,min,max){ return '<label><div class="lbl">'+lab+'</div><input class="in" type="number" min="'+min+'" max="'+max+'" value="'+b[k]+'" oninput="vqSet(\''+k+'\',+this.value||0)"></label>'; };
+  return '<div class="card" style="padding:18px;">'+
+    '<div style="display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;" class="layout">'+
+    // left: term picker
+    '<div style="min-width:0;">'+
+      '<div class="lbl">1 \u00b7 Pick the term pool</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">'+
+        '<select class="in" style="flex:1;min-width:180px;" onchange="vqSet(\'mod\',this.value);vqTerms()">'+modOpts+'</select>'+
+        '<input class="in" style="flex:1;min-width:140px;" placeholder="Search terms" value="'+esc(b.q)+'" oninput="vqSet(\'q\',this.value);vqTerms()"></div>'+
+      '<div style="display:flex;gap:6px;margin-bottom:8px;"><button class="btn sm" onclick="vqAllShown(true)">Select all shown</button><button class="btn sm" onclick="vqAllShown(false)">Clear shown</button><button class="btn sm" style="margin-left:auto;" onclick="VQ.build.sel={};vqTerms();vqPlan()">Clear all</button></div>'+
+      '<div id="vqTerms" style="max-height:380px;overflow:auto;border:1px solid var(--border2);border-radius:10px;background:var(--bg2);"></div>'+
+      '<div class="lbl" style="margin-top:14px;">Add a custom term</div>'+
+      '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:6px;">'+
+        '<input class="in" id="vqCt" placeholder="Term">'+
+        '<input class="in" id="vqCd" placeholder="Definition">'+
+        '<button class="btn sm" onclick="vqAddCustom()">Add</button></div>'+
+      '<div class="lbl" style="margin-top:14px;">Selected <span id="vqSelN"></span></div>'+
+      '<div id="vqSel" style="display:flex;flex-wrap:wrap;gap:6px;"></div>'+
+    '</div>'+
+    // right: settings
+    '<div style="min-width:0;display:flex;flex-direction:column;gap:12px;">'+
+      '<div class="lbl" style="margin:0;">2 \u00b7 Set the format</div>'+
+      '<label><div class="lbl">Quiz title</div><input class="in" maxlength="120" placeholder="e.g. Module 3 Vocab Quiz" value="'+esc(b.title)+'" oninput="vqSet(\'title\',this.value)"></label>'+
+      num("draw","Terms per student",1,100)+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'+num("bank","Word bank",0,100)+num("match","Matching",0,100)+num("mc","Multiple choice",0,100)+num("typed","Type the term",0,100)+'</div>'+
+      '<button class="btn sm" style="align-self:flex-start;" onclick="vqSplit()">Split evenly across formats in use</button>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">'+num("extras","Extra bank words",0,20)+num("time","Minutes (0 = none)",0,240)+num("attempts","Attempts",1,10)+'</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'+
+        '<label><div class="lbl">Opens (optional)</div><input class="in" type="datetime-local" value="'+b.opens+'" oninput="vqSet(\'opens\',this.value)"></label>'+
+        '<label><div class="lbl">Due (optional)</div><input class="in" type="datetime-local" value="'+b.due+'" oninput="vqSet(\'due\',this.value)"></label></div>'+
+      '<div id="vqPlan" style="font-size:13px;line-height:1.6;padding:12px 14px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);"></div>'+
+      '<div style="display:flex;gap:8px;"><button class="btn pri" id="vqCreate" onclick="vqCreate()">Assign quiz</button><button class="btn" onclick="VQ.build=null;renderMain()">Cancel</button></div>'+
+    '</div></div></div>';
+}
+function vqSet(k,v){ if(VQ.build){ VQ.build[k]=v; if(k!=="q"&&k!=="mod") vqPlan(); } }
+function vqShown(){
+  var b=VQ.build, V=VQV[CUR.course], q=vqNorm(b.q);
+  return V.terms.map(function(t,i){ return {t:t,i:i}; }).filter(function(x){
+    return (b.mod==="all"||String(x.t.m)===String(b.mod)) && (!q||vqNorm(x.t.t).indexOf(q)!==-1||vqNorm(x.t.d).indexOf(q)!==-1);
+  });
+}
+function vqTerms(){
+  var box=el("vqTerms"); if(!box||!VQ.build) return;
+  var b=VQ.build, shown=vqShown();
+  box.innerHTML=shown.length?shown.map(function(x){
+    var k=vqNorm(x.t.t), on=!!b.sel[k];
+    return '<label style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:9px 12px;border-bottom:1px solid var(--border2);cursor:pointer;'+(on?'background:color-mix(in srgb,var(--accent) 10%,transparent);':'')+'">'+
+      '<input type="checkbox" '+(on?'checked':'')+' onchange="vqPick('+x.i+',this.checked)" style="margin-top:3px;">'+
+      '<span style="min-width:0;"><b style="color:var(--bright);font-size:13px;">'+esc(x.t.t)+'</b> <span class="mono" style="font-size:10px;color:var(--faint);">M'+esc(x.t.m)+'</span>'+
+      '<span style="display:block;font-size:12px;color:var(--dim);line-height:1.45;margin-top:2px;">'+esc(x.t.d.length>150?x.t.d.slice(0,150)+"\u2026":x.t.d)+'</span></span></label>';
+  }).join(""):'<div class="empty" style="padding:20px;">No terms match.</div>';
+  vqSelRender();
+}
+function vqPick(i,on){ var t=VQV[CUR.course].terms[i], k=vqNorm(t.t); if(on) VQ.build.sel[k]={t:t.t,d:t.d}; else delete VQ.build.sel[k]; vqTerms(); vqPlan(); }
+function vqAllShown(on){ vqShown().forEach(function(x){ var k=vqNorm(x.t.t); if(on) VQ.build.sel[k]={t:x.t.t,d:x.t.d}; else delete VQ.build.sel[k]; }); vqTerms(); vqPlan(); }
+function vqAddCustom(){
+  var t=el("vqCt").value.trim(), d=el("vqCd").value.trim();
+  if(!t||!d){ alert("Enter both a term and a definition."); return; }
+  VQ.build.sel[vqNorm(t)]={t:t,d:d,custom:true}; el("vqCt").value=""; el("vqCd").value=""; el("vqCt").focus(); vqTerms(); vqPlan();
+}
+function vqUnpick(k){ delete VQ.build.sel[k]; vqTerms(); vqPlan(); }
+function vqSelRender(){
+  var box=el("vqSel"), n=el("vqSelN"); if(!box) return;
+  var keys=Object.keys(VQ.build.sel);
+  if(n) n.textContent="("+keys.length+")";
+  box.innerHTML=keys.length?keys.map(function(k){ var s=VQ.build.sel[k];
+    return '<span class="chip" title="'+esc(s.d)+'">'+(s.custom?'<span class="mono" style="font-size:9px;color:var(--warn);">CUSTOM</span>':'')+esc(s.t)+'<button class="btn sm" style="padding:0 6px;min-height:0;border:none;background:none;" aria-label="Remove '+esc(s.t)+'" onclick="vqUnpick(\''+k.replace(/'/g,"")+'\')">\u00d7</button></span>'; }).join(""):'<span style="font-size:12px;color:var(--dim);">Nothing selected yet.</span>';
+}
+function vqSplit(){
+  var b=VQ.build, ks=["bank","match","mc","typed"].filter(function(k){return b[k]>0;}); if(!ks.length) ks=["bank","match"];
+  var each=Math.floor(b.draw/ks.length), rem=b.draw-each*ks.length;
+  ["bank","match","mc","typed"].forEach(function(k){ b[k]=0; });
+  ks.forEach(function(k,i){ b[k]=each+(i<rem?1:0); });
+  renderMain();
+}
+function vqCheck(){
+  var b=VQ.build, N=Object.keys(b.sel).length, sum=b.bank+b.match+b.mc+b.typed, errs=[];
+  if(!b.title.trim()) errs.push("Give the quiz a title.");
+  if(N<1) errs.push("Select at least one term.");
+  if(b.draw<1) errs.push("Terms per student must be at least 1.");
+  if(b.draw>N) errs.push("Terms per student ("+b.draw+") is more than the pool ("+N+").");
+  if(sum!==b.draw) errs.push("The formats add up to "+sum+" but terms per student is "+b.draw+".");
+  if(b.match===1) errs.push("Matching needs at least 2 terms.");
+  if(b.mc>0&&N<4) errs.push("Multiple choice works best with 4+ terms in the pool (fewer gives fewer choices).");
+  if(b.opens&&b.due&&new Date(b.due)<=new Date(b.opens)) errs.push("Due must be after opens.");
+  return {N:N,errs:errs,warnOnly:errs.length===1&&/works best/.test(errs[0])};
+}
+function vqPlan(){
+  var box=el("vqPlan"), btn=el("vqCreate"); if(!box||!VQ.build) return;
+  var b=VQ.build, c=vqCheck(), parts=["bank","match","mc","typed"].filter(function(k){return b[k]>0;}).map(function(k){return b[k]+" "+VQFMT[k];});
+  var spare=Math.max(c.N-b.draw,0);
+  var h='<b style="color:var(--bright);">Each student gets '+b.draw+' of your '+c.N+' terms</b>'+(parts.length?': '+esc(parts.join(", "))+'.':'.')+
+    '<div style="color:var(--dim);margin-top:4px;">'+(b.time?b.time+' minute limit':'No time limit')+' \u00b7 '+b.attempts+' attempt'+(b.attempts>1?'s':'')+', best score counts, each attempt is a new draw'+
+    (b.bank>0?' \u00b7 word bank gets up to '+Math.min(b.extras,spare)+' extra word'+(Math.min(b.extras,spare)===1?'':'s')+(b.extras>spare?' (only '+spare+' unused terms in the pool)':''):'')+'</div>';
+  if(c.errs.length) h+='<ul style="margin:8px 0 0;padding-left:18px;color:'+(c.warnOnly?'var(--warn)':'var(--bad)')+';">'+c.errs.map(function(e){return '<li>'+esc(e)+'</li>';}).join("")+'</ul>';
+  box.innerHTML=h;
+  if(btn) btn.disabled=!!c.errs.length&&!c.warnOnly;
+}
+async function vqCreate(){
+  var b=VQ.build, c=vqCheck(); if(c.errs.length&&!c.warnOnly) return;
+  var btn=el("vqCreate"); if(btn){ btn.disabled=true; btn.textContent="Assigning\u2026"; }
+  try{
+    var r=await rpc("vq_t_create",{p_class:CUR.id,p_title:b.title.trim(),p_pool:Object.keys(b.sel).map(function(k){return {t:b.sel[k].t,d:b.sel[k].d};}),
+      p_draw:b.draw,p_sections:{bank:b.bank,match:b.match,mc:b.mc,typed:b.typed},p_bank_extras:b.extras,p_time_limit:b.time,p_max_attempts:b.attempts,
+      p_opens:vqIso(b.opens),p_due:vqIso(b.due)});
+    var u=vqLink(r.id); if(navigator.clipboard) navigator.clipboard.writeText(u).catch(function(){});
+    VQ.build=null;
+    VQ.msg='<b style="color:var(--ok);">Quiz assigned.</b> Link copied, paste it into Classroom: <span class="mono" style="font-size:12px;color:var(--accent);word-break:break-all;">'+esc(u)+'</span>';
+    vqLoad();
+  }catch(e){ if(btn){ btn.disabled=false; btn.textContent="Assign quiz"; } alert("Couldn't create the quiz: "+((e&&e.message)||e)); }
+}
+
+/* ----- Teacher Tools card clicks (supabase/tool-clicks.sql) ----- */
+async function loadToolClicks(){
+  try{ var r=await rpc("ctf_t_tool_clicks"); TOOLCLICKS=(r&&r.error)?{error:r.error}:r; }
+  catch(e){ TOOLCLICKS={error:"missing_rpc"}; }
+}
+async function refreshToolClicks(){ await loadToolClicks(); renderMain(); }
+async function clearToolClicks(){
+  if(!confirm("Reset all Teacher Tools click counts to zero?")) return;
+  try{ await rpc("ctf_t_tool_clicks_clear"); }catch(e){}
+  await refreshToolClicks();
+}
+function toolClicksPanel(){
+  var h='<div style="border-top:1px solid var(--border);padding-top:18px;margin-top:26px;">'+
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">'+
+      '<div style="font-size:15px;font-weight:700;color:var(--bright);">Teacher Tools clicks</div>'+
+      '<a class="btn sm" href="../tools/" target="_blank" rel="noopener" style="margin-left:auto;">Open page</a>'+
+      '<button class="btn sm" onclick="refreshToolClicks()">Refresh</button>'+
+    '</div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">Anonymous count of clicks on each card and button on <span class="mono" style="color:var(--accent);">tools/</span>. No names or emails are stored.</div>';
+  if(!TOOLCLICKS) return h+'<div style="color:var(--dim);font-size:13px;">Loading…</div></div>';
+  if(TOOLCLICKS.error) return h+'<div class="empty" style="color:var(--bad);text-align:left;padding:10px 0;">Run <span class="mono">supabase/tool-clicks.sql</span> to start counting.</div></div>';
+  var rows=TOOLCLICKS.rows||[];
+  if(!rows.length) return h+'<div style="color:var(--dim);font-size:13px;">No clicks yet.</div></div>';
+  var cards={};
+  rows.forEach(function(r){ var k=r.card; if(!cards[k]) cards[k]={card:k,today:0,week:0,total:0,acts:[]}; var c=cards[k]; c.today+=r.today; c.week+=r.week; c.total+=r.total; c.acts.push(r); });
+  var list=Object.keys(cards).map(function(k){return cards[k];}).sort(function(a,b){return b.total-a.total;});
+  var num='font-family:\'JetBrains Mono\',monospace;font-size:12px;text-align:right;';
+  h+='<div class="card" style="padding:6px 12px;"><table style="width:100%;border-collapse:collapse;">'+
+    '<tr class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);"><td style="padding:6px 0;">CARD</td><td style="text-align:right;">TODAY</td><td style="text-align:right;">7 DAYS</td><td style="text-align:right;">ALL TIME</td></tr>';
+  list.forEach(function(c){
+    h+='<tr style="border-top:1px solid var(--border);"><td style="padding:8px 0;color:var(--bright);font-weight:600;font-size:13px;">'+esc(c.card)+'</td><td style="'+num+'">'+c.today+'</td><td style="'+num+'">'+c.week+'</td><td style="'+num+'color:var(--bright);font-weight:700;">'+c.total+'</td></tr>';
+    if(c.acts.length>1||(c.acts[0]&&c.acts[0].action&&c.acts[0].action!=="Open")) c.acts.forEach(function(a){
+      h+='<tr><td style="padding:2px 0 2px 14px;color:var(--dim);font-size:12px;">↳ '+esc(a.action||"(card)")+'</td><td style="'+num+'color:var(--dim);">'+a.today+'</td><td style="'+num+'color:var(--dim);">'+a.week+'</td><td style="'+num+'color:var(--dim);">'+a.total+'</td></tr>';
+    });
+  });
+  h+='</table></div>';
+  if(TOOLCLICKS.since) h+='<div class="mono" style="font-size:11px;color:var(--faint);margin-top:8px;">Counting since '+esc(new Date(TOOLCLICKS.since).toLocaleDateString())+'</div>';
+  h+='<button class="btn sm" style="margin-top:12px;" onclick="clearToolClicks()">Reset counts</button>';
+  return h+'</div>';
+}
+
 
 /* ----- rejected sign-ins -----
    Every account our own gate turned away, with the domain it came from. A run

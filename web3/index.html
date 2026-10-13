@@ -3,7 +3,9 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../site.js?v=17.0.0"></script>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Intro to Web 3.0 — Course Home</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -435,7 +437,7 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
 })();
 </script>
 
-<script src="../config.js?v=20260920"></script>
+<script src="../config.js?v=17.0.0"></script>
 <script src="../resources.js"></script>
 <script>
 const CFG = (window.COURSE_CONFIG && window.COURSE_CONFIG.web3) || {};
@@ -475,7 +477,7 @@ async function load(){
     let hi=clean.findIndex(r=>r.some(c=>/weekday/i.test(c))); if(hi<0)hi=0;
     const header=clean[hi].map(c=>(c||'').trim().toLowerCase());
     const find=k=>header.findIndex(c=>c.includes(k));
-    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=find('topic');
+    const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=[find('topic'),find('section'),find('lesson')].find(i=>i>-1)??-1;
     let cHw=find('assign'); if(cHw<0)cHw=find('homework');
     const cAct=find('activit');
     const wd=/^(mon|tue|wed|thu|fri|sat|sun)/i;
@@ -544,9 +546,10 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 })();
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="../supabase-config.js?v=20260920"></script>
-<script src="consensus-intro.js?v=20260920"></script>
-<script src="../profile-link.js?v=20260927"></script>
+<script src="../supabase-config.js?v=17.0.0"></script>
+<script src="consensus-intro.js?v=17.0.0"></script>
+<script src="../profile-link.js?v=17.0.0"></script>
+<script src="../quiz-notice.js?v=17.0.0"></script>
 
 <div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
   <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">

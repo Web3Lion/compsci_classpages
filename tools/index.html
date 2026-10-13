@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=15.0.0"></script>
+<script src="../site.js?v=17.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Tools — Mr. Reasey</title>
@@ -121,7 +121,7 @@ button.btn{cursor:pointer;}
 html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-motion="reduce"] *::after{animation:none !important;transition:none !important;}
 </style>
 </head>
-<body>
+<body data-track-page="tools">
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div id="sky" aria-hidden="true"><div id="sun"></div><div id="floor"></div></div>
 <div class="wrap">
@@ -136,7 +136,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
 
   <div class="sec mono">Select a module</div>
   <div class="grid">
-    <a class="card" href="../reward.html" style="--ac:var(--mg);--ac2:var(--gold);">
+    <a class="card" data-track="Reward Big Top" href="../reward.html" style="--ac:var(--mg);--ac2:var(--gold);">
       <span class="corner tl"></span><span class="corner br"></span>
       <div class="mod mono"><span>MODULE 01 // REWARDS</span><b>14 GAMES</b></div>
       <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="72" r="54" fill="none" stroke="#ff2bd6" stroke-width="3"></circle><g><path d="M70 72 L70 22 A50 50 0 0 1 113.3 47 Z" fill="#ff2bd6" opacity=".85"></path><path d="M70 72 L113.3 47 A50 50 0 0 1 113.3 97 Z" fill="#00f0ff" opacity=".85"></path><path d="M70 72 L113.3 97 A50 50 0 0 1 70 122 Z" fill="#b6ff3b" opacity=".85"></path><path d="M70 72 L70 122 A50 50 0 0 1 26.7 97 Z" fill="#ffd23f" opacity=".85"></path><path d="M70 72 L26.7 97 A50 50 0 0 1 26.7 47 Z" fill="#8a5cff" opacity=".85"></path><path d="M70 72 L26.7 47 A50 50 0 0 1 70 22 Z" fill="#ff6b3d" opacity=".85"></path><animateTransform attributeName="transform" type="rotate" from="0 70 72" to="360 70 72" dur="9s" repeatCount="indefinite"></animateTransform></g><circle cx="70" cy="72" r="10" fill="#07031a" stroke="#fff" stroke-width="3"></circle><path d="M62 8 L78 8 L70 24 Z" fill="#fff"></path></svg></div>
@@ -145,7 +145,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
       <div class="chips"><span>Prize Wheel</span><span>Plinko</span><span>Claw</span><span>Field Goal</span><span>Vocab Bingo</span><span>+9 more</span></div>
       <div class="go"><span class="btn pri">Launch &rarr;</span></div>
     </a>
-    <a class="card" href="../countdown.html" style="--ac:var(--lm);--ac2:var(--cy);">
+    <a class="card" data-track="Countdown Timers" href="../countdown.html" style="--ac:var(--lm);--ac2:var(--cy);">
       <span class="corner tl"></span><span class="corner br"></span>
       <div class="mod mono"><span>MODULE 02 // TIME</span><b>LIVE</b></div>
       <div class="art"><svg viewBox="0 0 140 140" aria-hidden="true"><rect x="60" y="6" width="20" height="10" rx="3" fill="#b6ff3b"></rect><circle cx="70" cy="76" r="52" fill="none" stroke="#b6ff3b" stroke-width="4"></circle><circle cx="70" cy="76" r="42" fill="none" stroke="#00f0ff" stroke-width="10" stroke-dasharray="200 64" stroke-linecap="round" transform="rotate(-90 70 76)"><animate attributeName="stroke-dashoffset" from="0" to="-264" dur="8s" repeatCount="indefinite"></animate></circle><path d="M70 76 L70 46" stroke="#fff" stroke-width="4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 70 76" to="360 70 76" dur="4s" repeatCount="indefinite"></animateTransform></path><circle cx="70" cy="76" r="5" fill="#fff"></circle><text x="70" y="108" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="12" fill="#b6ff3b">T-MINUS</text></svg></div>
@@ -157,7 +157,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
   </div>
 
   <div class="grid wideGrid">
-    <div class="card wide" id="jeopardy" style="--ac:var(--gold);--ac2:var(--cy);">
+    <div class="card wide" id="jeopardy" data-track="Jeopardy Review Game" style="--ac:var(--gold);--ac2:var(--cy);">
       <span class="corner tl"></span><span class="corner br"></span>
       <div class="wl">
         <div class="mod mono"><span>MODULE 03 // REVIEW</span><b>2–6 TEAMS</b></div>
@@ -182,7 +182,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
       </div>
     </div>
 
-    <div class="card wide" id="jeopardy-ai" style="--ac:var(--mg);--ac2:var(--gold);">
+    <div class="card wide" id="jeopardy-ai" data-track="Jeopardy Question Builder" style="--ac:var(--mg);--ac2:var(--gold);">
       <span class="corner tl"></span><span class="corner br"></span>
       <div class="wl">
         <div class="mod mono"><span>MODULE 04 // REVIEW</span><b>AI PROMPT</b></div>
@@ -214,7 +214,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
       </div>
     </div>
 
-    <div class="card wide" id="translator" style="--ac:var(--cy);--ac2:var(--mg);">
+    <div class="card wide" id="translator" data-track="Language Translator" style="--ac:var(--cy);--ac2:var(--mg);">
       <span class="corner tl"></span><span class="corner br"></span>
       <div class="wl">
         <div class="mod mono"><span>MODULE 05 // LANGUAGE</span><b>22 LANGS</b></div>
@@ -239,7 +239,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
       </div>
     </div>
 
-    <div class="card wide" id="canvas-builder" style="--ac:var(--gold);--ac2:var(--mg);">
+    <div class="card wide" id="canvas-builder" data-track="Canvas Page Builder" style="--ac:var(--gold);--ac2:var(--mg);">
       <span class="corner tl"></span><span class="corner br"></span>
       <div class="wl">
         <div class="mod mono"><span>MODULE 06 // CANVAS</span><b>AI PROMPT</b></div>
@@ -473,5 +473,7 @@ LESSON CONTENT TO CONVERT:
   });
 })();
 </script>
+<script src="../supabase-config.js?v=17.0.0"></script>
+<script src="../click-log.js?v=17.0.0"></script>
 </body>
 </html>
