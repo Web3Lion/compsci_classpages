@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=23.0.1"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Team Battle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--amber-bg:#1a150a;--ok:#3ddc97;--bad:#ff7a85;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--amber-bg:#fbf4dd;--ok:#1d7a4c;--bad:#b3261e;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 24px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--amber);background:var(--amber);color:#1a1200;cursor:pointer;}
+:root[data-theme="light"] .btn:not(.ghost){background:#f3c94b;border-color:#8a6a00;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;}
+.chip[aria-pressed="true"]{border-color:var(--amber);background:var(--amber-bg);color:var(--bright);}
+.chip[aria-pressed="true"]::before{content:"\2713  ";}
+select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div id="hdr" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;">
+    <a href="teacher.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; Teacher dashboard</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9873; TEAM BATTLE</div>
+    <span style="flex:1;"></span>
+    <label class="mono" for="cls" style="font-size:12px;color:var(--dim);">Class</label>
+    <select id="cls"></select>
+  </div>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script src="config.js?v=23.0.1"></script>
+<script src="ctf-data/cyber1.js?v=23.0.1"></script>
+<script src="ctf-data/cyber2.js?v=23.0.1"></script>
+<script src="ctf-data/cyber3.js?v=23.0.1"></script>
+<script src="ctf-data/apcsp.js?v=23.0.1"></script>
+<script src="ctf-data/web3.js?v=23.0.1"></script>
+<script src="supabase-config.js?v=23.0.1"></script>
+<script src="auth.js?v=23.0.1"></script>
+<script>
+(function(){
+  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls");
+  var CLASSES = [], CUR = null, SET = null, ST = null, skew = 0, msg = "", busy = false, pick = {}, mins = 15, timer = null;
+  var LENGTHS = [[5,"5 min"],[10,"10 min"],[15,"15 min (default)"],[20,"20 min"],[45,"Whole period"]];
+  var FALLBACK = ["#3a86ff","#ff5d73","#2ec27e","#f4a300"];
+  var ERR = { ungrouped:"Every student needs a team first. Use Randomize teams, or put them in a squad on the teacher dashboard.", need_two_teams:"You need at least 2 teams with students in them.",
+    too_many_teams:"Battles take 2\u20134 teams. Merge some squads or use Randomize teams.", no_modules:"Pick at least one module.",
+    no_manifest:"Open this class once in teacher.html so its flag list is published, then try again.", battle_live:"A battle is already running in this class." };
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+  function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+  function names(){ return ((((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}).modules || []; }
+  function modName(m){ var n = names()[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
+  function col(t, i){ return t.color || FALLBACK[i % 4]; }
+  function rpc(fn, a){ return AUTH.rpc(fn, a || {}); }
+  function fail(e){ busy = false; msg = /tb_|function/.test(String(e && e.message)) ? "Run supabase/team-battles.sql first." : "Something went wrong: " + (e && e.message || e); paint(); }
+
+  function setupView(){
+    var T = SET.teams.filter(function(t){ return t.members > 0; }), un = SET.ungrouped || [], M = SET.manifest || [];
+    var selMods = Object.keys(pick).filter(function(m){ return pick[m]; });
+    var ready = T.length >= 2 && T.length <= 4 && !un.length && selMods.length && !busy;
+    var teams = T.length ? T.map(function(t, i){ return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);"><span style="width:14px;height:14px;border-radius:4px;background:' + esc(col(t,i)) + ';"></span><b style="flex:1;color:var(--bright);">' + esc(t.name) + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + t.members + ' students</span></div>'; }).join("")
+      : '<div style="color:var(--dim);font-size:14px;">No teams yet.</div>';
+    return '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;" id="g">' +
+      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TEAMS (YOUR SQUADS)</div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;">' + teams + '</div>' +
+        (un.length ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--bad);font-weight:700;">' + un.length + ' student' + (un.length>1?"s aren\u2019t":" isn\u2019t") + ' on a team: ' + esc(un.slice(0,8).join(", ")) + (un.length > 8 ? "\u2026" : "") + '</div>' : '') +
+        (T.length > 4 ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--bad);font-weight:700;">Battles take 2\u20134 teams.</div>' : '') +
+        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;"><span style="font-size:14px;color:var(--bright);font-weight:700;">Randomize teams:</span>' +
+          [2,3,4].map(function(n){ return '<button type="button" class="btn ghost tbRand" data-n="' + n + '"' + (busy ? " disabled" : "") + '>' + n + ' teams</button>'; }).join("") + '</div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-top:8px;line-height:1.5;">Randomizing reshuffles every student in this class into the first squads (creates Team A\u2013D if needed). Students see squad names once the battle starts.</div></div>' +
+      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BATTLE OPTIONS</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules that count</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (M.length ? M.map(function(m){ return '<button type="button" class="chip tbMod" data-m="' + m.module + '" aria-pressed="' + !!pick[m.module] + '">' + esc(modName(m.module)) + '</button>'; }).join("") : '<span style="color:var(--dim);font-size:13px;">Open this class in teacher.html once to publish its flags.</span>') + '</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Length</div>' +
+        '<div role="group" aria-label="Length" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + LENGTHS.map(function(l){ return '<button type="button" class="chip tbMin" data-n="' + l[0] + '" aria-pressed="' + (mins === l[0]) + '">' + l[1] + '</button>'; }).join("") + '</div>' +
+        '<button type="button" class="btn" id="tbStart"' + (ready ? "" : " disabled") + '>Start battle</button>' +
+        '<div style="font-size:12px;color:var(--dim);margin-top:10px;line-height:1.5;">Starting turns Squads on, ends any student flag duels in this class, and pauses new ones until the battle ends. Every battle has a clock (15 min if you don\u2019t pick). Students can exit any time; they stop scoring and get no XP. Score = team duel points \u00f7 teammates who captured a flag. Winners +10 XP, everyone who played +5.</div></div></div>' +
+      (msg ? '<div role="alert" class="mono" style="margin-top:14px;color:var(--bad);font-weight:700;font-size:13px;">' + esc(msg) + '</div>' : '');
+  }
+  function battleView(b){
+    var T = b.teams || [], max = Math.max.apply(null, T.map(function(t){ return +t.avg; }).concat([1]));
+    var byId = {}; T.forEach(function(t, i){ byId[t.id] = { name: t.name, color: col(t, i) }; });
+    var live = b.status === "live";
+    var winners = T.filter(function(t){ return t.won; }).map(function(t){ return esc(t.name); });
+    var head = live
+      ? '<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;"><div><div class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--faint);">' + (b.ends_at ? "TIME LEFT" : "NO CLOCK") + '</div><div class="mono" id="clock" style="font-size:64px;font-weight:800;color:var(--bright);line-height:1;">' + (b.ends_at ? "" : "\u221e") + '</div></div>' +
+        '<div class="mono" style="flex:1;min-width:200px;font-size:14px;color:var(--muted);">' + (b.modules||[]).map(modName).map(esc).join(" \u00b7 ") + '</div>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" id="tbEnd">End &amp; award</button><button type="button" class="btn ghost" id="tbCancel">Cancel (no XP)</button></div></div>'
+      : '<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;"><div style="flex:1;min-width:240px;"><div class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--faint);">' + (b.status === "done" ? "FINAL" : "CANCELLED") + '</div>' +
+        '<div style="font-size:44px;font-weight:800;color:var(--bright);line-height:1.1;margin-top:4px;">' + (b.status !== "done" ? "Battle cancelled" : winners.length > 1 ? "Tie! " + winners.join(" & ") : winners.length ? winners[0] + " wins!" : "No team scored") + '</div></div>' +
+        '<button type="button" class="btn" id="tbNew">New battle</button></div>';
+    var bars = T.map(function(t, i){
+      var c = col(t, i), pct = Math.round((+t.avg) / max * 100);
+      var mvp = (b.players || []).filter(function(p){ return p.team === t.id && p.mvp; }).map(function(p){ return esc(p.handle); });
+      var top = (b.players || []).filter(function(p){ return p.team === t.id; })[0];
+      return '<div class="card" style="padding:18px 20px;border-color:' + (t.won ? "var(--amber)" : "var(--border)") + ';border-width:' + (t.won ? "2px" : "1px") + ';">' +
+        '<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px;"><span style="width:16px;height:16px;border-radius:4px;background:' + esc(c) + ';align-self:center;"></span>' +
+          '<span style="font-size:26px;font-weight:800;color:var(--bright);flex:1;min-width:0;">' + esc(t.name) + (t.won ? ' <span class="mono" style="font-size:14px;color:var(--amber);">\u2605 WINNER</span>' : '') + '</span>' +
+          '<span class="mono" style="font-size:40px;font-weight:800;color:var(--bright);">' + (+t.avg).toFixed(1) + '</span><span class="mono" style="font-size:13px;color:var(--dim);">avg</span></div>' +
+        '<div role="img" aria-label="' + esc(t.name) + ' average ' + (+t.avg).toFixed(1) + '" style="height:22px;border-radius:999px;background:var(--bg);border:1px solid var(--border2);overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + esc(c) + ';border-radius:999px;transition:width .6s ease;"></div></div>' +
+        '<div class="mono" style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px;"><span>' + t.total + ' pts total</span><span>' + t.played + '/' + t.members + ' played</span>' +
+          (b.status === "done" ? (mvp.length ? '<span style="color:var(--bright);font-weight:700;">MVP: ' + mvp.join(", ") + '</span>' : '') : (top && top.points ? '<span>Leading: ' + esc(top.handle) + ' (' + top.points + ')</span>' : '')) + '</div></div>';
+    }).join("");
+    var feed = (b.feed || []).map(function(f){ var t = byId[f.team] || {}; return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border2);font-size:15px;"><span style="width:10px;height:10px;border-radius:3px;background:' + esc(t.color || "var(--dim)") + ';flex:none;"></span><b style="color:var(--bright);">' + esc(f.handle) + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + esc(t.name || "") + '</span><span style="flex:1;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(f.title) + '</span><span class="mono" style="font-weight:800;color:var(--amber);">+' + f.pts + '</span></div>'; }).join("");
+    return '<div class="card" style="margin-bottom:18px;border-color:var(--amber);">' + head + '</div>' +
+      '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;" id="g"><div style="display:flex;flex-direction:column;gap:14px;">' + bars + '</div>' +
+      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">LIVE CAPTURES</div>' + (feed || '<div style="color:var(--dim);font-size:14px;padding-top:6px;">No captures yet.</div>') + '</div></div>' +
+      (msg ? '<div role="alert" class="mono" style="margin-top:14px;color:var(--bad);font-weight:700;font-size:13px;">' + esc(msg) + '</div>' : '');
+  }
+  var showSetup = false;
+  function paint(){
+    if (!CUR) return;
+    var b = ST && ST.battle;
+    view.innerHTML = (b && (b.status === "live" || !showSetup)) ? battleView(b) : SET ? setupView() : '<div class="card mono" style="color:var(--dim);">Loading&hellip;</div>';
+    var g = document.getElementById("g"); if (g && innerWidth < 900) g.style.gridTemplateColumns = "1fr";
+    bind(); clock();
+  }
+  function bind(){
+    view.querySelectorAll(".tbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
+    view.querySelectorAll(".tbMin").forEach(function(b){ b.onclick = function(){ mins = +b.getAttribute("data-n"); paint(); }; });
+    view.querySelectorAll(".tbRand").forEach(function(b){ b.onclick = function(){
+      var n = +b.getAttribute("data-n");
+      if (!confirm("Shuffle every student in " + CUR.name + " into " + n + " random teams? This replaces their current squads.")) return;
+      busy = true; msg = ""; paint();
+      rpc("ctf_t_tb_randomize", { p_class: CUR.id, p_n: n }).then(function(r){ busy = false; if (!r || r.error) msg = ERR[r && r.error] || "Couldn\u2019t randomize."; load(); }).catch(fail);
+    }; });
+    var s = document.getElementById("tbStart"); if (s) s.onclick = function(){
+      var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
+      busy = true; msg = ""; paint();
+      rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: mods, p_minutes: mins || 15 }).then(function(r){
+        busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; }
+        showSetup = false; load();
+      }).catch(fail);
+    };
+    var e = document.getElementById("tbEnd"); if (e) e.onclick = function(){ if (!confirm("End the battle now and award XP?")) return; rpc("ctf_t_tb_end", { p_battle: ST.battle.id, p_award: true }).then(load).catch(fail); };
+    var c = document.getElementById("tbCancel"); if (c) c.onclick = function(){ if (!confirm("Cancel the battle? No XP is awarded.")) return; rpc("ctf_t_tb_end", { p_battle: ST.battle.id, p_award: false }).then(load).catch(fail); };
+    var n = document.getElementById("tbNew"); if (n) n.onclick = function(){ showSetup = true; msg = ""; paint(); };
+  }
+  function clock(){
+    var el = document.getElementById("clock"), b = ST && ST.battle; if (!el || !b || !b.ends_at || b.status !== "live") return;
+    var left = new Date(b.ends_at).getTime() - (Date.now() + skew);
+    el.textContent = mmss(left); el.style.color = left < 60000 ? "var(--amber)" : "var(--bright)";
+    if (left <= 0 && !clock._w) { clock._w = 1; setTimeout(function(){ clock._w = 0; load(); }, 1500); }
+  }
+  function load(){
+    clearTimeout(timer); if (!CUR) return;
+    var id = CUR.id;
+    Promise.all([rpc("ctf_t_tb_state", { p_class: id }), rpc("ctf_t_tb_setup", { p_class: id })]).then(function(r){
+      if (!CUR || CUR.id !== id) return;
+      if (r[0] && r[0].error) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> first.</div>'; return; }
+      ST = r[0]; SET = r[1]; if (ST.now) skew = new Date(ST.now).getTime() - Date.now();
+      paint();
+      timer = setTimeout(load, ST.battle && ST.battle.status === "live" ? 3000 : 15000);
+    }).catch(function(e){ fail(e); timer = setTimeout(load, 15000); });
+  }
+  function pickClass(id){
+    CUR = CLASSES.filter(function(c){ return c.id === id; })[0] || CLASSES[0]; if (!CUR) return;
+    try { localStorage.setItem("battle-class", CUR.id); } catch (e) {}
+    sel.value = CUR.id; pick = {}; ST = null; SET = null; showSetup = false; msg = ""; load();
+  }
+  // keep the header clear of the fixed theme + A11Y buttons (site.js places A11Y left of the toggle)
+  function clearFixed(){
+    var hdr = document.getElementById("hdr"), minLeft = innerWidth;
+    document.querySelectorAll("#themeToggle, #siteA11yBtn").forEach(function(b){ var r = b.getBoundingClientRect(); if (r.width && r.top < 60 && r.left < minLeft) minLeft = r.left; });
+    hdr.style.paddingRight = (minLeft < innerWidth ? innerWidth - minLeft + 12 - (innerWidth - document.querySelector(".wrap").getBoundingClientRect().right) : 0) + "px";
+  }
+  window.addEventListener("resize", clearFixed); setTimeout(clearFixed, 0); setTimeout(clearFixed, 600);
+  setInterval(clock, 500);
+  (async function(){
+    if (!AUTH || !AUTH.online) { view.innerHTML = '<div class="card">Connect the class backend (supabase-config.js) first.</div>'; return; }
+    try { CLASSES = await rpc("ctf_t_classes") || []; } catch (e) { CLASSES = null; }
+    if (!Array.isArray(CLASSES)) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> to run team battles.</div>'; return; }
+    if (!CLASSES.length) { view.innerHTML = '<div class="card">No classes yet.</div>'; return; }
+    sel.innerHTML = CLASSES.map(function(c){ return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join("");
+    sel.onchange = function(){ pickClass(sel.value); };
+    var want = new URLSearchParams(location.search).get("class"); try { want = want || localStorage.getItem("battle-class"); } catch (e) {}
+    pickClass(want);
+  })();
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) load(); });
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

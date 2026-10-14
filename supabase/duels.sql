@@ -48,6 +48,10 @@ create table if not exists duel_rounds (
 create index if not exists duel_rounds_duel on duel_rounds (duel_id, n);
 alter table duel_rounds enable row level security;
 
+-- 20.1.1: clear any duel left live by a closed projector tab
+update duels set status = 'cancelled', ended_at = now()
+ where status = 'live' and created_at < now() - interval '15 minutes';
+
 create table if not exists duel_answers (
   round_id    uuid not null references duel_rounds(id) on delete cascade,
   student_id  uuid not null references students(id) on delete cascade,
@@ -156,6 +160,26 @@ begin
   return json_build_object('ok', true);
 end $$;
 
+-- 20.2: cancel every live duel in every class this teacher owns (no XP awarded)
+create or replace function ctf_t_duel_end_all()
+returns json language plpgsql security definer set search_path = public as $$
+declare v_n int;
+begin
+  if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
+  with x as (
+    update duels d set status = 'cancelled', ended_at = now()
+      from classes c
+     where c.id = d.class_id and d.status = 'live'
+       and lower(coalesce(c.owner_email, _email())) = lower(_email())
+    returning d.id
+  ) select count(*) into v_n from x;
+  update duel_rounds r set closed_at = now()
+    from duels d where d.id = r.duel_id and d.status = 'cancelled' and r.closed_at is null;
+  return json_build_object('ok', true, 'ended', v_n);
+end $$;
+revoke all on function ctf_t_duel_end_all() from public, anon;
+grant execute on function ctf_t_duel_end_all() to authenticated;
+
 -- recent results for the projector's history strip
 create or replace function ctf_t_duel_history(p_class uuid)
 returns json language plpgsql security definer set search_path = public as $$
@@ -178,6 +202,12 @@ declare v_class uuid; v_d duels; v_r duel_rounds; v_me int; v_mine duel_answers;
 begin
   select class_id into v_class from students where id = p_student and auth_user_id = auth.uid();
   if v_class is null then return json_build_object('error','not_yours'); end if;
+  -- 20.1.1: a duel left "live" (projector tab closed without ending it) expires
+  -- after 15 minutes with no new round, so it can't trap students on the pad.
+  update duels d set status = 'cancelled', ended_at = now()
+   where d.class_id = v_class and d.status = 'live'
+     and d.created_at < now() - interval '15 minutes'
+     and not exists (select 1 from duel_rounds r where r.duel_id = d.id and r.opened_at > now() - interval '15 minutes');
   select * into v_d from duels
    where class_id = v_class and (p1 = p_student or p2 = p_student)
      and (status = 'live' or (status = 'done' and ended_at > now() - interval '20 seconds'))

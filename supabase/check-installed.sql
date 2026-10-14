@@ -53,7 +53,11 @@ from (
     (35, 'tool-clicks.sql', 'Anonymous Teacher Tools card click counts', exists (select 1 from information_schema.tables where table_schema='public' and table_name='tool_clicks')),
     (36, 'vocab-quizzes.sql', 'Assigned vocab quizzes (quiz.html + teacher tab)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='vocab_quizzes')),
     (37, 'progress-grids.sql', 'Private progress monitoring grids (profile + teacher tab)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='progress_grids')),
-      (38, 'coins-cosmetics.sql (re-run, v19)', 'Quiz skins in the Coin Shop', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_cosmetic_slot' and p.prosrc like '%skin%'))
+      (38, 'coins-cosmetics.sql (re-run, v19)', 'Quiz skins in the Coin Shop', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_cosmetic_slot' and p.prosrc like '%skin%')),
+      (39, 'teacher-mirror.sql', 'Teacher plays once, shows on every class board', exists (select 1 from pg_trigger where tgname='teacher_mirror')),
+      (40, 'arena-duels.sql', 'Student flag duels in the arena', exists (select 1 from information_schema.tables where table_schema='public' and table_name='arena_duels')),
+      (41, 'team-battles.sql', 'Teacher-run squad vs squad battles', exists (select 1 from information_schema.tables where table_schema='public' and table_name='team_battles')),
+      (42, 'vocab-duels.sql', 'Vocab Duels (1v1) + class Vocab Battles', exists (select 1 from information_schema.tables where table_schema='public' and table_name='vd_sessions'))
   ) as c(step, file, feature, present)
 
   union all

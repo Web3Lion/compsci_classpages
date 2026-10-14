@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=19.0.1"></script>
+<script src="site.js?v=23.0.1"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -260,19 +260,20 @@
   </div>
 </div>
 
-<script src="config.js?v=19.0.1"></script>
-<script src="ctf-data/cyber1.js?v=19.0.1"></script>
-<script src="ctf-data/cyber2.js?v=19.0.1"></script>
-<script src="ctf-data/cyber3.js?v=19.0.1"></script>
-<script src="ctf-data/apcsp.js?v=19.0.1"></script>
-<script src="ctf-data/web3.js?v=19.0.1"></script>
-<script src="cipher.js?v=19.0.1"></script>
-<script src="supabase-config.js?v=19.0.1"></script>
-<script src="auth.js?v=19.0.1"></script>
-<script src="name-filter.js?v=19.0.1"></script>
-<script src="objectives.js?v=19.0.1"></script>
-<script src="standards.js?v=19.0.1"></script>
-<script src="csv.js?v=19.0.1"></script>
+<script src="config.js?v=23.0.1"></script>
+<script src="ctf-data/cyber1.js?v=23.0.1"></script>
+<script src="ctf-data/cyber2.js?v=23.0.1"></script>
+<script src="ctf-data/cyber3.js?v=23.0.1"></script>
+<script src="ctf-data/apcsp.js?v=23.0.1"></script>
+<script src="ctf-data/web3.js?v=23.0.1"></script>
+<script src="cipher.js?v=23.0.1"></script>
+<script src="supabase-config.js?v=23.0.1"></script>
+<script src="auth.js?v=23.0.1"></script>
+<script src="name-filter.js?v=23.0.1"></script>
+<script src="objectives.js?v=23.0.1"></script>
+<script src="standards.js?v=23.0.1"></script>
+<script src="csv.js?v=23.0.1"></script>
+<script src="skins.js?v=23.0.1"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -448,6 +449,9 @@ function renderMain(){
       '<span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;">'+
         '<a class="btn sm" target="_blank" rel="noopener" href="pulse.html?class='+encodeURIComponent(CUR.id)+'">Live Pulse \u2197</a>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="duel.html?class='+encodeURIComponent(CUR.id)+'">Duel Arena \u2197</a>'+
+        '<a class="btn sm" target="_blank" rel="noopener" href="battle.html?class='+encodeURIComponent(CUR.id)+'">Team Battle \u2197</a>'+
+        '<a class="btn sm" target="_blank" rel="noopener" href="vocab-battle.html?class='+encodeURIComponent(CUR.id)+'">Vocab Battle \u2197</a>'+
+        '<button class="btn sm" type="button" onclick="endAllDuels()" title="Cancel every live duel in all your classes">End all duels</button>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="certificates.html?class='+encodeURIComponent(CUR.id)+'">Certificates \u2197</a>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="install-check.html">Install Check \u2197</a>'+
         '<a class="btn sm" href="teacher_cyber_tools/">Teacher Resources \u2192</a>'+
@@ -870,7 +874,7 @@ function gatesView(){
   var mentor=!!(guide.mentor||guide.tone==="mentor");
 
   if(UNLOCKS===null) setTimeout(loadUnlocks,0);
-  var h='<div style="max-width:820px;">';
+  var h='<div style="max-width:820px;">'+adCard();
   var pend=(UNLOCKS||[]).filter(function(u){return !u.done_at;});
   if(UNLOCK_ERR) h+='<div class="mono" style="font-size:11px;color:var(--warn);margin-bottom:14px;">Run supabase/scheduled-unlocks.sql to schedule unlocks.</div>';
   else if(pend.length) h+='<div class="card" style="padding:14px 16px;margin-bottom:20px;border-color:var(--ok);">'+
@@ -4076,17 +4080,86 @@ function vqView(){
   if(VQ.cls!==CUR.id){ VQ={cls:CUR.id,list:null,loading:false,err:null,open:null,res:{},exp:{},edit:null,build:null,msg:""}; vqLoad(); }
   var h='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">'+
     '<div style="font-size:16px;font-weight:700;color:var(--bright);">Assigned Vocab Quizzes</div>'+
-    '<a class="btn sm" target="_blank" rel="noopener" href="quiz.html?demo=1" style="margin-left:auto;">Student view demo \u2197</a>'+
+    '<a class="btn sm" target="_blank" rel="noopener" href="quiz.html?demo=1'+vqSkinQ()+'" style="margin-left:auto;">Student view demo \u2197</a>'+
     (VQ.build?'':'<button class="btn pri sm" onclick="vqNew()">+ New quiz</button>')+
     '<button class="btn sm" onclick="vqLoad()">Refresh</button></div>'+
     '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:16px;">Pick a term pool, how many terms each student gets, and how many of each format. Every student (and every attempt) gets a different random draw. Students sign in with Google; grading happens on the server. Share the link in Classroom; it also glows on the course home page and appears in each student\'s profile.</div>';
   if(VQ.msg) h+='<div class="card" style="padding:14px 16px;margin-bottom:16px;border-color:var(--ok);">'+VQ.msg+'</div>';
+  h+=vqSkinPicker();
   if(VQ.build) return h+vqBuilder();
   if(VQ.err) return h+'<div class="empty" style="color:var(--bad);">Run <span class="mono">supabase/vocab-quizzes.sql</span> to turn on assigned quizzes.<div class="mono" style="font-size:11px;color:var(--dim);margin-top:8px;">'+esc(VQ.err)+'</div></div>';
   if(!VQ.list) return h+'<div class="empty"><span class="spin"></span></div>';
   if(!VQ.list.length) return h+'<div class="empty">No quizzes for this class yet. Click <b>+ New quiz</b>.</div>';
   VQ.list.forEach(function(q){ h+=vqCard(q); });
   return h+copyModal();
+}
+/* teacher quiz skin: every skin is free for teachers; used for the demo + previews */
+/* ends every live projector duel (duels.sql) AND every student flag duel (arena-duels.sql) in the teacher's classes */
+async function endAllDuels(){
+  if(!confirm("End every live duel and team battle in all your classes, including student flag duels? Students will be released. No XP is awarded.")) return;
+  var n=0, errs=[];
+  try{ var r=await AUTH.rpc("ctf_t_duel_end_all",{}); if(r&&!r.error) n+=r.ended||0; else errs.push("duels.sql"); }catch(e){ errs.push("duels.sql"); }
+  try{ var r2=await AUTH.rpc("ctf_t_ad_end_all",{}); if(r2&&!r2.error) n+=r2.ended||0; else errs.push("arena-duels.sql"); }catch(e){ errs.push("arena-duels.sql"); }
+  try{ var r3=await AUTH.rpc("ctf_t_vd_end_all",{}); if(r3&&!r3.error) n+=r3.ended||0; }catch(e){}
+  // live team battles in every class are cancelled too (no XP)
+  try{ var cl=await AUTH.rpc("ctf_t_classes")||[]; for(var i=0;i<cl.length;i++){ var s=await AUTH.rpc("ctf_t_tb_state",{p_class:cl[i].id}); if(s&&s.battle&&s.battle.status==="live"){ await AUTH.rpc("ctf_t_tb_end",{p_battle:s.battle.id,p_award:false}); n++; } } }catch(e){}
+  alert((n ? "Ended "+n+" duel"+(n===1?"":"s")+"." : "No live duels were running.")+(errs.length?"\n(Re-run supabase/"+errs.join(" and supabase/")+" to cover those too.)":""));
+  AD.cls=null; if(TAB==="gates") renderMain();
+}
+/* student flag duels (arena-duels.sql): class switch + live list, on the Locks & Guide tab */
+var AD={cls:null,data:null,err:false,at:0};
+function adLoad(){
+  if(!CUR) return; var id=CUR.id; AD.cls=id; AD.at=Date.now();
+  rpc("ctf_t_ad_live",{p_class:id}).then(function(d){ if(!CUR||CUR.id!==id) return; AD.err=!d||!!d.error; AD.data=d&&!d.error?d:null; if(TAB==="gates") renderMain(); })
+    .catch(function(){ AD.err=true; AD.data=null; if(TAB==="gates") renderMain(); });
+}
+function toggleDuels(){
+  if(!AD.data) return; var on=!AD.data.on;
+  rpc("ctf_t_ad_set",{p_class:CUR.id,p_on:on}).then(function(){ adLoad(); }).catch(function(){ adLoad(); });
+}
+function adCard(){
+  if(AD.cls!==CUR.id||Date.now()-AD.at>30000) setTimeout(adLoad,0);
+  if(AD.err) return '<div class="mono" style="font-size:11px;color:var(--warn);margin-bottom:14px;">Run supabase/arena-duels.sql to turn on student flag duels.</div>';
+  if(!AD.data) return '';
+  var D=AD.data.duels||[], live=D.filter(function(d){return d.status!=="done";}), done=D.filter(function(d){return d.status==="done";});
+  function row(d){
+    var mods=(d.modules||[]).map(function(m){return "M"+String(m).padStart(2,"0");}).join(" \u00b7 ");
+    var st=d.status==="lobby"?"LOBBY \u00b7 "+esc(d.code):d.status==="live"?"LIVE \u00b7 ends "+esc(fmtWhen(d.ends_at)):"DONE \u00b7 "+esc(fmtWhen(d.finished_at));
+    return '<div style="padding:10px 0;border-top:1px solid var(--border2);">'+
+      '<div class="mono" style="font-size:11px;color:'+(d.status==="done"?"var(--dim)":"var(--ok)")+';">'+st+' \u00b7 '+mods+' \u00b7 '+d.minutes+' min</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">'+(d.players||[]).map(function(p){
+        return '<span style="font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--border3);'+(p.forfeit?'opacity:.55;':'')+'"><b style="color:var(--bright);">'+esc(p.handle)+'</b> '+p.points+(p.won?' \u2605':'')+(p.forfeit?' (left)':'')+(d.status==="done"&&p.xp?' \u00b7 +'+p.xp+' XP':'')+'</span>';
+      }).join('')+'</div></div>';
+  }
+  return '<div class="card" style="padding:16px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">'+
+    '<div style="flex:1;min-width:220px;"><div style="font-weight:700;color:var(--bright);">Team battles</div><div style="font-size:12px;color:var(--dim);margin-top:3px;line-height:1.5;">Pit 2\u20134 squads against each other on the modules you pick. Randomize teams, start, and show the live scoreboard on the projector. Flag duels pause while it runs. A vocab battle randomly pairs students from different teams for head-to-head vocab fights.</div></div>'+
+    '<span style="display:flex;gap:8px;flex-wrap:wrap;"><a class="btn" target="_blank" rel="noopener" href="battle.html?class='+encodeURIComponent(CUR.id)+'">Flag battle \u2197</a>'+
+    '<a class="btn" target="_blank" rel="noopener" href="vocab-battle.html?class='+encodeURIComponent(CUR.id)+'">Vocab battle \u2197</a></span></div>'+
+    '<div class="card" style="padding:16px 18px;margin-bottom:20px;">'+
+    slider(!!AD.data.on,"toggleDuels()","Student flag duels",
+      "Students start a Flag Duel (up to 4 players, 2/5/10 min) or a 1v1 Vocab Duel from the arena and share a 4-letter code. Winner +10 XP, every finisher +5. Turning this off cancels open Flag Duel lobbies and blocks new duels of both kinds.","var(--amber)")+
+    '<div style="display:flex;align-items:center;gap:10px;margin-top:14px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);flex:1;">LIVE DUELS \u00b7 '+live.length+'</div>'+
+      '<button class="btn sm" onclick="adLoad()">Refresh</button>'+(live.length?'<button class="btn sm" onclick="endAllDuels()">End all duels</button>':'')+'</div>'+
+    (live.length?live.map(row).join(''):'<div style="font-size:13px;color:var(--dim);padding:8px 0;">No duels running.</div>')+
+    (done.length?'<details style="margin-top:8px;"><summary class="mono" style="font-size:11px;color:var(--dim);cursor:pointer;">Finished today \u00b7 '+done.length+'</summary>'+done.map(row).join('')+'</details>':'')+
+  '</div>';
+}
+function vqSkin(){ try{ var k=localStorage.getItem("teacher-quiz-skin"); return window.CTF_SKINS&&CTF_SKINS.has(k)?k:null; }catch(e){ return null; } }
+function vqSkinQ(){ var k=vqSkin(); return k?"&skin="+k:""; }
+function vqSetSkin(k){ try{ if(k) localStorage.setItem("teacher-quiz-skin",k); else localStorage.removeItem("teacher-quiz-skin"); }catch(e){} renderMain(); }
+function vqSkinPicker(){
+  var SK=window.CTF_SKINS; if(!SK) return "";
+  if(!VQ.skinOpen) return '<div style="margin-bottom:16px;"><button class="btn sm" onclick="VQ.skinOpen=true;renderMain()">Quiz skin: '+esc(SK.list.filter(function(x){return x.id===vqSkin();})[0].name)+' \u25be</button></div>';
+  var cur=vqSkin();
+  return '<div class="card" style="padding:16px 18px;margin-bottom:16px;">'+
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div style="font-weight:700;color:var(--bright);">Your quiz skin</div>'+
+    '<span style="font-size:12px;color:var(--dim);">All skins are free for teachers. Used for Student view demo and Preview. Students buy their own in the profile Coin Shop.</span>'+
+    '<button class="btn sm" style="margin-left:auto;" onclick="VQ.skinOpen=false;renderMain()">Close</button></div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;">'+
+    SK.list.map(function(x){ var on=x.id===cur;
+      return '<button type="button" onclick="vqSetSkin('+(x.id?"\'"+x.id+"\'":"null")+')" aria-pressed="'+on+'" style="text-align:left;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:10px;cursor:pointer;background:var(--bg2);border:2px solid '+(on?'var(--accent)':'var(--border2)')+';color:var(--text);font:inherit;">'+
+        SK.swatch(x.id)+'<span style="display:flex;justify-content:space-between;gap:6px;font-size:13px;font-weight:700;color:var(--bright);"><span>'+esc(x.name)+'</span>'+(on?'<span>\u2713 In use</span>':'')+'</span></button>';
+    }).join("")+'</div></div>';
 }
 function vqStatusPill(s){
   var m={open:["OPEN","var(--ok)"],not_yet:["SCHEDULED","var(--accent)"],past_due:["PAST DUE","var(--warn)"],closed:["CLOSED","var(--dim)"]}[s]||[s,"var(--dim)"];
@@ -4437,7 +4510,7 @@ async function vqPreview(id){
   var w=window.open("about:blank","_blank");
   try{ var r=VQ.res[id]&&VQ.res[id].pool?VQ.res[id]:await rpc("vq_t_results",{p_quiz:id});
     localStorage.setItem("vq-preview",JSON.stringify({title:q.title,pool:r.pool||[],draw:q.draw,sections:q.sections,extras:q.bank_extras,time:q.time_limit_min,attempts:q.max_attempts,due:q.due_at}));
-    if(w) w.location.href="quiz.html?demo=preview"; else location.href="quiz.html?demo=preview";
+    var u="quiz.html?demo=preview"+vqSkinQ(); if(w) w.location.href=u; else location.href=u;
   }catch(e){ if(w) w.close(); alert("Couldn't load the quiz: "+((e&&e.message)||e)); }
 }
 var PGPV=null;

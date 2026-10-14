@@ -83,12 +83,14 @@
         '<div style="display:flex;flex-direction:column;gap:10px;">' + opts + '</div>' +
         '<div class="mono" role="status" aria-live="polite" style="margin-top:16px;font-size:12px;color:' + (r.answered && !r.my_correct && !r.closed ? "var(--adv2,#ff6b7a)" : "var(--dim,#8aa0b8)") + ';">' + esc(status) + '</div>';
     }
-    ov.innerHTML = '<div class="card" style="width:100%;max-width:640px;padding:26px;border:1px solid var(--amber,#ffcf5c);border-radius:16px;background:var(--panel,#0b1220);">' + head + body + '</div>';
+    var leave = d.won_match == null ? '<div style="margin-top:18px;text-align:center;"><button type="button" id="duelLeave" class="mono" style="font-size:12px;font-weight:700;padding:10px 16px;min-height:44px;border-radius:10px;border:1px solid var(--border3,#244a6d);background:transparent;color:var(--dim,#8aa0b8);cursor:pointer;">Not in a duel? Close this</button></div>' : "";
+    ov.innerHTML = '<div class="card" style="width:100%;max-width:640px;padding:26px;border:1px solid var(--amber,#ffcf5c);border-radius:16px;background:var(--panel,#0b1220);">' + head + body + leave + '</div>';
+    var lv = ov.querySelector("#duelLeave"); if (lv) lv.onclick = function () { dismissed = d.duel_id; try { sessionStorage.setItem("duel-dismissed", d.duel_id); } catch (e) {} close(); };
     ov.querySelectorAll(".duelOpt").forEach(function (b) { b.onclick = function () { answer(r.options[+b.getAttribute("data-i")]); }; });
     var c = ov.querySelector("#duelClose"); if (c) { c.onclick = function () { dismissed = d.duel_id; close(); }; c.focus(); }
     var first = ov.querySelector(".duelOpt:not([disabled])"); if (first && document.activeElement && !ov.contains(document.activeElement)) first.focus();
   }
-  var dismissed = null;
+  var dismissed = null; try { dismissed = sessionStorage.getItem("duel-dismissed"); } catch (e) {}
   function answer(text) {
     var s = sess(); if (!s || !last || !last.round || sending) return;
     sending = true; pickedText = text;

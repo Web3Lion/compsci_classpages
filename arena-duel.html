@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=23.0.1"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Flag Duel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--amber-bd:#4a3d1a;--amber-bg:#1a150a;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--fainter:#3d5069;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--ok:#3ddc97;--bad:#ff7a85;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--panel3:#e8f1fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--border-hi:#8fabc7;--amber-bd:#e4cf95;--amber-bg:#fbf4dd;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--fainter:#a6b3c2;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--ok:#1d7a4c;--bad:#b3261e;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:980px;margin:0 auto;padding:20px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;letter-spacing:.5px;min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--amber);background:var(--amber);color:#1a1200;cursor:pointer;}
+:root[data-theme="light"] .btn:not(.ghost){background:#f3c94b;border-color:#8a6a00;color:#1a1200;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;text-align:left;}
+.chip[aria-pressed="true"]{border-color:var(--amber);background:var(--amber-bg);color:var(--bright);}
+.chip[aria-pressed="true"]::before{content:"\2713  ";}
+.chip:disabled{opacity:.4;cursor:not-allowed;}
+input.code{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;letter-spacing:8px;text-transform:uppercase;width:150px;min-height:52px;padding:8px 12px;border-radius:10px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);text-align:center;}
+input.code:focus{outline:none;border-color:var(--amber);}
+@media (max-width:640px){.wrap{padding:16px 14px 50px;}.card{padding:18px;}input,button{font-size:16px;}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap" id="main">
+  <a id="back" href="index.html" class="mono" style="display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;">&larr; Back to the arena</a>
+  <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);margin:6px 0 6px;">&#9876; FLAG DUEL</div>
+  <h1 class="mono" style="font-size:30px;font-weight:800;margin:0 0 6px;color:var(--bright);">Race your classmates</h1>
+  <p style="margin:0 0 22px;color:var(--muted);font-size:15px;line-height:1.6;max-width:680px;">Up to 4 players. Capture flags you haven&rsquo;t solved yet in the duel&rsquo;s modules before the clock runs out. Easy 1 &middot; Medium 2 &middot; Hard 3 duel points, plus your normal XP. Winner +10 XP, everyone who finishes +5. Leaving forfeits.</p>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);font-size:13px;">Loading&hellip;</div></div>
+</div>
+<script>
+(function(){
+  var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase();
+  if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { document.getElementById("view").innerHTML = '<div class="card">Open a Flag Duel from your course\u2019s CTF arena.</div>'; return; }
+  window.CTF_COURSE = C;
+  document.getElementById("back").href = C + "/ctf.html";
+  var V = "23.0.1", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "skins.js", "arena-duel.js"];
+  (function next(i){
+    if (i >= list.length) return window.__fdBoot && window.__fdBoot();
+    var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); };
+    document.head.appendChild(s);
+  })(0);
+})();
+window.__fdBoot = function(){
+  var C = window.CTF_COURSE, AUTH = window.CTF_AUTH, FD = window.FLAG_DUEL, esc = FD.esc;
+  if (window.CTF_SKINS) CTF_SKINS.apply(CTF_SKINS.forCourse(C), "profile");
+  var view = document.getElementById("view"), S = FD.sess(C);
+  var CFG = ((window.COURSE_CONFIG || {})[C] || {}).ctf || {};
+  var names = CFG.modules || [];
+  if (!AUTH || !AUTH.online || !S) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" style="display:inline-flex;align-items:center;" href="' + C + '/ctf.html">Go to the arena</a></div>'; return; }
+  var ALL = FD.flags(C), ST = null, skew = 0, busy = false, msg = "", pick = {}, mins = 5, timer = null, tick = null;
+  function modName(m){ return "Module " + String(m).padStart(2, "0") + (names[m - 1] ? " \u00b7 " + names[m - 1] : ""); }
+  function mods(){ var o = {}; ALL.forEach(function(f){ (o[f.module] = o[f.module] || []).push(f); }); return o; }
+  function myOpen(modsSel){ var sv = FD.solved(C); return ALL.filter(function(f){ return modsSel.indexOf(f.module) !== -1 && !sv[f.key]; }); }
+  function note(){ return msg ? '<div role="alert" class="mono" style="margin-top:14px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(msg) + '</div>' : ""; }
+  function rpc(fn, args){ busy = true; msg = ""; paint(); return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, args || {})).then(function(d){ busy = false; if (!d || d.error) msg = FD.err(d && d.error); return d; }).catch(function(e){ busy = false; msg = /team_battle_live/.test(String(e && e.message)) ? "A team battle is running in your class. Flag duels are paused until it ends." : /ctf_ad_|function/.test(String(e && e.message)) ? "Flag duels aren\u2019t set up yet. Ask your teacher." : FD.err(); paint(); return null; }); }
+
+  function setupView(){
+    var M = mods(), keys = Object.keys(M).map(Number).sort(function(a,b){return a-b;}), sv = FD.solved(C);
+    var sel = keys.filter(function(m){ return pick[m]; });
+    var open = myOpen(sel).length;
+    var chips = keys.map(function(m){
+      var left = M[m].filter(function(f){ return !sv[f.key]; }).length;
+      return '<button type="button" class="chip fdMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '"' + (left ? "" : " disabled") + '>' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + left + ' open</span></button>';
+    }).join("");
+    var timeBtns = [2,5,10].map(function(n){ return '<button type="button" class="chip fdMin" data-n="' + n + '" aria-pressed="' + (mins === n) + '">' + n + ' min</button>'; }).join("");
+    return '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;" id="fdGrid">' +
+      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">HOST A DUEL</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules that count</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (chips || '<span style="color:var(--dim);">No modules are open yet.</span>') + '</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Time limit</div>' +
+        '<div role="group" aria-label="Time limit" style="display:flex;gap:8px;margin-bottom:18px;">' + timeBtns + '</div>' +
+        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="fdCreate"' + (busy || !sel.length ? " disabled" : "") + '>Create duel</button>' +
+        '<span class="mono" style="font-size:12px;color:var(--dim);">' + (sel.length ? open + " flags open for you" : "Pick at least one module") + '</span></div></div>' +
+      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">JOIN A DUEL</div>' +
+        '<label for="fdCode" style="display:block;font-weight:700;color:var(--bright);margin-bottom:10px;">4-letter code</label>' +
+        '<input id="fdCode" class="code" maxlength="4" autocomplete="off" spellcheck="false" aria-describedby="fdCodeHelp">' +
+        '<div id="fdCodeHelp" style="font-size:13px;color:var(--dim);margin:10px 0 14px;">Ask the host for the code on their screen.</div>' +
+        '<button type="button" class="btn ghost" id="fdJoin"' + (busy ? " disabled" : "") + '>Join</button></div></div>' + note();
+  }
+  function board(d){
+    return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;">' + (d.players || []).map(function(p, i){
+      var mine = p.id === ST.me, host = p.id === d.host;
+      return '<div style="padding:14px 16px;border-radius:12px;background:var(--bg);border:' + (mine ? "2px solid var(--accent)" : "1px solid var(--border2)") + ';' + (p.forfeit ? "opacity:.55;" : "") + '">' +
+        '<div style="display:flex;align-items:center;gap:6px;font-weight:700;color:var(--bright);font-size:14px;"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(p.handle) + '</span>' +
+          (mine ? '<span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + (host ? '<span class="mono" style="font-size:10px;color:var(--dim);">HOST</span>' : '') + '</div>' +
+        '<div class="mono" style="font-size:34px;font-weight:800;color:var(--amber);line-height:1.1;margin-top:6px;">' + p.points + '</div>' +
+        '<div class="mono" style="font-size:11px;color:var(--dim);">' + p.caps + ' captured \u00b7 ' + p.open + ' open' +
+          (p.forfeit ? ' \u00b7 LEFT' : '') + (d.status === "done" ? (p.won ? ' \u00b7 <span style="color:var(--ok);font-weight:700;">\u2605 WINNER +' + p.xp + ' XP</span>' : p.xp ? ' \u00b7 +' + p.xp + ' XP' : '') : '') + '</div></div>';
+    }).join("") + '</div>';
+  }
+  function flagList(d){
+    var open = myOpen(d.modules || []), by = {};
+    open.forEach(function(f){ (by[f.module] = by[f.module] || []).push(f); });
+    var ks = Object.keys(by).map(Number).sort(function(a,b){return a-b;});
+    if (!ks.length) return '<div class="card" style="margin-top:18px;color:var(--dim);">You\u2019ve captured every flag in these modules.</div>';
+    return '<div class="card" style="margin-top:18px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">YOUR OPEN FLAGS \u00b7 ' + open.length + '</div>' +
+      ks.map(function(m){
+        return '<div style="margin-bottom:16px;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span style="font-weight:700;color:var(--bright);flex:1;min-width:0;">' + esc(modName(m)) + '</span>' +
+          (d.status === "live" ? '<a class="mono" href="' + C + '/ctf.html#mod=' + m + '" style="font-size:12px;font-weight:700;padding:8px 12px;border-radius:8px;border:1px solid var(--amber);color:var(--bright);">Open in arena \u2192</a>' : '') + '</div>' +
+          '<div style="display:flex;flex-direction:column;gap:6px;">' + by[m].map(function(f){
+            return '<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:var(--bg);border:1px solid var(--border2);font-size:14px;">' +
+              '<span style="flex:1;min-width:0;color:var(--text);">' + esc(f.title) + '</span>' +
+              (f.level ? '<span class="mono" style="font-size:11px;color:var(--dim);">' + f.level + '</span>' : '') +
+              '<span class="mono" style="font-size:12px;font-weight:800;color:var(--amber);min-width:42px;text-align:right;">+' + f.pts + ' pt' + (f.pts > 1 ? "s" : "") + '</span></div>';
+          }).join("") + '</div></div>';
+      }).join("") + '</div>';
+  }
+  function feed(d){
+    var f = d.feed || []; if (!f.length) return "";
+    return '<div class="card" style="margin-top:18px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">LATEST CAPTURES</div>' +
+      f.map(function(x){ return '<div style="display:flex;gap:10px;font-size:13px;padding:5px 0;"><b style="color:var(--bright);">' + esc(x.handle) + '</b><span style="flex:1;min-width:0;color:var(--muted);">' + esc(x.title) + '</span><span class="mono" style="color:var(--amber);font-weight:800;">+' + x.pts + '</span></div>'; }).join("") + '</div>';
+  }
+  function duelView(d){
+    var isHost = d.host === ST.me, n = (d.players || []).filter(function(p){ return !p.forfeit; }).length;
+    var info = '<div class="mono" style="font-size:12px;color:var(--dim);margin-top:4px;">' + (d.modules || []).map(function(m){ return "M" + String(m).padStart(2, "0"); }).join(" \u00b7 ") + ' \u00b7 ' + d.minutes + ' min</div>';
+    var head;
+    if (d.status === "lobby") {
+      head = '<div class="card" style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;border-color:var(--amber);">' +
+        '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">DUEL CODE</div><div class="mono" style="font-size:52px;font-weight:800;letter-spacing:10px;color:var(--bright);line-height:1.1;">' + esc(d.code) + '</div>' + info + '</div>' +
+        '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">' + (isHost ? "Share this code. Start when at least one classmate has joined (" + n + "/4 in)." : "You\u2019re in. Waiting for the host to start (" + n + "/4 in).") + '</div>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;">' + (isHost ? '<button type="button" class="btn" id="fdStart"' + (busy || n < 2 ? " disabled" : "") + '>Start duel</button>' : '') +
+        '<button type="button" class="btn ghost" id="fdLeave"' + (busy ? " disabled" : "") + '>' + (isHost ? "Cancel duel" : "Leave") + '</button></div></div>';
+    } else if (d.status === "live") {
+      head = '<div class="card" style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;border-color:var(--amber);">' +
+        '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">TIME LEFT</div><div class="mono" id="fdClock" style="font-size:52px;font-weight:800;color:var(--bright);line-height:1.1;"></div>' + info + '</div>' +
+        '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">Open a module below and capture flags in the arena. Points update here and on the arena\u2019s top bar.</div>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;"><a class="btn" style="display:inline-flex;align-items:center;" href="' + C + '/ctf.html#mod=' + ((d.modules || [])[0] || "") + '">Go to arena \u2192</a><button type="button" class="btn ghost" id="fdLeave"' + (busy ? " disabled" : "") + '>Forfeit</button></div></div>';
+    } else {
+      var w = (d.players || []).filter(function(p){ return p.won; }).map(function(p){ return esc(p.handle); });
+      head = '<div class="card" style="border-color:var(--amber);"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">FINAL</div>' +
+        '<div style="font-size:28px;font-weight:800;color:var(--bright);margin:6px 0;">' + (w.length > 1 ? "Tie! " + w.join(" & ") + " win" : w.length ? w[0] + " wins!" : "No one scored this time") + '</div>' + info +
+        '<div style="margin-top:14px;"><button type="button" class="btn" id="fdNew">New duel</button></div></div>';
+    }
+    return head + '<div style="margin-top:18px;">' + board(d) + '</div>' + note() + (d.status === "done" ? "" : flagList(d)) + feed(d);
+  }
+  function paint(){
+    if (!ST) return;
+    var d = ST.duel;
+    if (!ST.duels_on && !d) { view.innerHTML = '<div class="card">Your teacher has flag duels turned off for this class.</div>'; return; }
+    var codeVal = (document.getElementById("fdCode") || {}).value || "";
+    view.innerHTML = d ? duelView(d) : setupView();
+    var ci = document.getElementById("fdCode"); if (ci) ci.value = codeVal;
+    var g = document.getElementById("fdGrid"); if (g && innerWidth < 760) g.style.gridTemplateColumns = "1fr";
+    bind(); clock();
+  }
+  function bind(){
+    view.querySelectorAll(".fdMod").forEach(function(b){ b.onclick = function(){ var m = +b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
+    view.querySelectorAll(".fdMin").forEach(function(b){ b.onclick = function(){ mins = +b.getAttribute("data-n"); paint(); }; });
+    var cr = document.getElementById("fdCreate"); if (cr) cr.onclick = function(){
+      var sel = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
+      var keys = ALL.filter(function(f){ return sel.indexOf(f.module) !== -1; }).map(function(f){ return f.key; });
+      rpc("ctf_ad_create", { p_modules: sel, p_minutes: mins, p_keys: keys }).then(load);
+    };
+    var jn = document.getElementById("fdJoin"), ci = document.getElementById("fdCode");
+    if (ci) ci.onkeydown = function(e){ if (e.key === "Enter" && jn) jn.click(); };
+    if (jn) jn.onclick = function(){ var v = (ci.value || "").trim().toUpperCase(); if (v.length !== 4) { msg = "Codes are 4 letters."; paint(); return; } rpc("ctf_ad_join", { p_code: v }).then(load); };
+    var stb = document.getElementById("fdStart"); if (stb) stb.onclick = function(){ rpc("ctf_ad_start").then(load); };
+    var lv = document.getElementById("fdLeave"); if (lv) lv.onclick = function(){
+      var live = ST.duel && ST.duel.status === "live";
+      if (!confirm(live ? "Forfeit this duel? You won\u2019t get any duel XP." : "Leave this duel?")) return;
+      rpc("ctf_ad_leave").then(load);
+    };
+    var nw = document.getElementById("fdNew"); if (nw) nw.onclick = function(){ ST.duel = null; dismissed = true; paint(); };
+  }
+  var dismissed = false;
+  function clock(){
+    var el = document.getElementById("fdClock"), d = ST && ST.duel; if (!el || !d || !d.ends_at) return;
+    var left = new Date(d.ends_at).getTime() - (Date.now() + skew);
+    el.textContent = FD.mmss(left); el.style.color = left < 30000 ? "var(--amber)" : "var(--bright)";
+    if (left <= 0 && !clock._w) { clock._w = 1; setTimeout(function(){ clock._w = 0; load(); }, 1500); }
+  }
+  function load(){
+    clearTimeout(timer);
+    return AUTH.rpc("ctf_ad_state", { p_student: S.studentId }).then(function(d){
+      if (!d || d.error) { view.innerHTML = '<div class="card">' + esc(FD.err(d && d.error)) + '</div>'; return; }
+      if (dismissed && d.duel && d.duel.status === "done") d.duel = null; else if (d.duel && d.duel.status !== "done") dismissed = false;
+      ST = d; if (d.now) skew = new Date(d.now).getTime() - Date.now();
+      var typing = document.activeElement && document.activeElement.id === "fdCode";
+      if (!typing || d.duel) paint();
+      timer = setTimeout(load, d.duel && d.duel.status !== "done" ? 3000 : 10000);
+    }).catch(function(e){
+      view.innerHTML = '<div class="card">' + (/ctf_ad_|function/.test(String(e && e.message)) ? "Flag duels aren\u2019t set up yet. Ask your teacher to run supabase/arena-duels.sql." : "Couldn\u2019t reach the server. Retrying\u2026") + '</div>';
+      timer = setTimeout(load, 10000);
+    });
+  }
+  tick = setInterval(clock, 500);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) load(); });
+  load();
+};
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

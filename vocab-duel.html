@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=23.0.1"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Vocab Duel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--adv:#ff3b3b;--adv2:#ff8080;--advglow:#ff0033;--arena:#0b0306;--advtext:var(--adv2);}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--arena:#ffffff;--advtext:var(--bright);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:900px;margin:0 auto;padding:20px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:2px solid var(--adv);background:var(--adv);color:#0b0306;cursor:pointer;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;}
+.chip[aria-pressed="true"]{border-color:var(--adv);color:var(--bright);box-shadow:inset 0 0 0 1px var(--adv);}
+.chip[aria-pressed="true"]::before{content:"\2713  ";}
+input.code,input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;border-radius:10px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);}
+input.code{font-size:24px;letter-spacing:8px;text-transform:uppercase;width:150px;min-height:52px;padding:8px 12px;text-align:center;}
+input.ans{font-size:20px;letter-spacing:2px;min-height:54px;padding:8px 14px;flex:1;min-width:200px;}
+input.code:focus,input.ans:focus{outline:none;border-color:var(--adv);}
+.hp{height:18px;border-radius:999px;background:var(--bg);border:1px solid var(--border3);overflow:hidden;}
+.hp > div{height:100%;border-radius:999px;transition:width .35s ease;}
+.tile{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;min-width:44px;min-height:48px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);cursor:pointer;}
+.tile:disabled{opacity:.3;cursor:default;}
+@keyframes vdShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:vdShake .3s ease 2;}
+html[data-motion="reduce"] .shake{animation:none;}
+@media (max-width:640px){.wrap{padding:16px 14px 50px;}.card{padding:16px;}input,button{font-size:16px;}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <a id="back" href="index.html" class="mono" style="display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;">&larr; Back to the arena</a>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script>
+(function(){
+  var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase();
+  var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
+  if (!VG[C]) { document.getElementById("view").innerHTML = '<div class="card">Open a Vocab Duel from your course\u2019s CTF arena.</div>'; return; }
+  window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
+  var V = "23.0.1", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "auth.js"];
+  (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
+
+  function boot(){
+    var AUTH = window.CTF_AUTH, view = document.getElementById("view");
+    var G = (((window.COURSE_CONFIG || {})[C] || {}).ctf) || {}, ADV = G.adversary || "NEMESIS", MENTOR = !!(G.mentor || G.tone === "mentor");
+    var r = document.documentElement;
+    if (G.adversaryColor) r.style.setProperty("--adv", G.adversaryColor);
+    if (G.adversaryColor2) r.style.setProperty("--adv2", G.adversaryColor2);
+    if (G.adversaryGlow) r.style.setProperty("--advglow", G.adversaryGlow);
+    var MODN = G.modules || [], TERMS = ((window[VG[C]] || {}).terms) || [];
+    var S = null; try { S = JSON.parse(localStorage.getItem("ctf-sess-" + C)); } catch (e) {}
+    function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+    function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+    function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
+    function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+    function modName(m){ return "Module " + String(m).padStart(2,"0") + (MODN[m-1] ? " \u00b7 " + MODN[m-1] : ""); }
+    var ERR = { duels_off:"Your teacher has student duels turned off for this class.", class_battle_live:"A class vocab battle is running. 1v1 duels are paused until it ends.",
+      in_quiz:"Finish your open vocab quiz first.", already_in_duel:"You\u2019re already in a duel.", too_few_terms:"Pick modules with at least 4 vocab terms.",
+      no_duel:"No open vocab duel with that code in your class.", started:"That duel already started.", full:"That duel already has 2 players.", need_two:"Wait for your opponent to join.", not_yours:"Sign in on your CTF page first." };
+    if (!AUTH || !AUTH.online || !S) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" style="display:inline-flex;align-items:center;" href="' + C + '/ctf.html">Go to the arena</a></div>'; return; }
+
+    var MODS = {}; TERMS.forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
+    var ST = null, skew = 0, pick = {}, msg = "", busy = false, timer = null, sig = "", lastN = null, lastHp = null, note = "", noteCol = "", sending = false;
+
+    function rpc(fn, a){ return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
+    function act(fn, a){ busy = true; msg = ""; draw(true); return rpc(fn, a).then(function(d){ busy = false; if (!d || d.error) msg = ERR[d && d.error] || "Something went wrong (" + ((d && d.error) || "error") + ")."; load(); return d; })
+      .catch(function(e){ busy = false; msg = /vd_|function/.test(String(e && e.message)) ? "Vocab duels aren\u2019t set up yet. Ask your teacher." : "Couldn\u2019t reach the server."; draw(true); }); }
+    function alert_(){ return msg ? '<div role="alert" class="mono" style="margin-top:14px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(msg) + '</div>' : ""; }
+    function title(sub){ return '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--advtext);margin:6px 0 6px;">' + (MENTOR ? "\u25c6 " : "\u2620 ") + esc(ADV) + (MENTOR ? " REFEREES" : "\u2019S ARENA") + '</div>' +
+      '<h1 class="mono" style="font-size:30px;font-weight:800;margin:0 0 6px;color:var(--bright);">Vocab Duel</h1>' + (sub ? '<p style="margin:0 0 20px;color:var(--muted);font-size:15px;line-height:1.6;max-width:680px;">' + sub + '</p>' : ''); }
+
+    function setupView(){
+      var keys = Object.keys(MODS).map(Number).sort(function(a,b){return a-b;}), sel = keys.filter(function(m){ return pick[m]; });
+      var n = sel.reduce(function(a, m){ return a + MODS[m].length; }, 0), blocked = ST.class_live || !ST.duels_on;
+      return title("Face one classmate. Each round shows a definition with the term disguised as a cipher or scrambled letters. First to crack it hits for 25%. A wrong guess costs you a third of a hit. Four hits wins. Winner +10 XP, both +5 for finishing.") +
+        (blocked ? '<div class="card" style="border-color:var(--adv);margin-bottom:18px;">' + (ST.class_live ? "A class vocab battle is running. Watch for your next opponent here." : esc(ERR.duels_off)) + '</div>' : '') +
+        '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;" id="g">' +
+        '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">HOST A DUEL</div>' +
+          '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules to draw terms from</div>' +
+          '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + keys.map(function(m){ return '<button type="button" class="chip vdMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + MODS[m].length + '</span></button>'; }).join("") + '</div>' +
+          '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vdCreate"' + (busy || n < 4 || blocked ? " disabled" : "") + '>Create duel</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (sel.length ? n + " terms" : "Pick at least one module") + '</span></div></div>' +
+        '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">JOIN A DUEL</div>' +
+          '<label for="vdCode" style="display:block;font-weight:700;color:var(--bright);margin-bottom:10px;">4-letter code</label>' +
+          '<input id="vdCode" class="code" maxlength="4" autocomplete="off" spellcheck="false">' +
+          '<div style="margin-top:14px;"><button type="button" class="btn ghost" id="vdJoin"' + (busy || blocked ? " disabled" : "") + '>Join</button></div></div></div>' + alert_();
+    }
+    function lobbyView(s){
+      var host = s.host === ST.me, n = (s.players || []).length;
+      return title("") + '<div class="card" style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;border-color:var(--adv);">' +
+        '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">DUEL CODE</div><div class="mono" style="font-size:52px;font-weight:800;letter-spacing:10px;color:var(--bright);line-height:1.1;">' + esc(s.code) + '</div>' +
+        '<div class="mono" style="font-size:12px;color:var(--dim);margin-top:4px;">' + (s.modules || []).map(function(m){ return "M" + String(m).padStart(2,"0"); }).join(" \u00b7 ") + '</div></div>' +
+        '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">' + (s.players || []).map(function(p){ return '<b style="color:var(--bright);">' + esc(p.handle) + '</b>'; }).join(" vs ") + (n < 2 ? (host ? " \u00b7 share the code with your opponent." : "") : (host ? " \u00b7 ready!" : " \u00b7 waiting for the host to start.")) + '</div>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;">' + (host ? '<button type="button" class="btn" id="vdStart"' + (busy || n < 2 ? " disabled" : "") + '>Start duel</button>' : '') +
+        '<button type="button" class="btn ghost" id="vdLeave">' + (host ? "Cancel" : "Leave") + '</button></div></div>' + alert_();
+    }
+    function teamsStrip(s){
+      if (s.kind !== "class") return "";
+      var cols = ["#3a86ff","#ff5d73","#2ec27e","#f4a300"];
+      return '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;" id="vdTeams">' + (s.teams || []).map(function(t, i){
+        var mine = t.id === s.my_team;
+        return '<span style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:' + (mine ? "2px solid var(--accent)" : "1px solid var(--border3)") + ';background:var(--panel);">' +
+          '<span aria-hidden="true" style="width:10px;height:10px;border-radius:3px;background:' + esc(t.color || cols[i % 4]) + ';"></span><b style="color:var(--bright);font-size:13px;">' + esc(t.name) + '</b>' +
+          (mine ? '<span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + '<span class="mono" style="font-weight:800;color:var(--bright);">' + (+t.avg).toFixed(1) + '</span>' + (s.status === "done" && t.won ? '<span class="mono" style="font-size:10px;color:var(--ok);">\u2605 WIN</span>' : '') + '</span>';
+      }).join("") + (s.status === "live" ? '<span class="mono" id="vdClock" style="margin-left:auto;font-size:20px;font-weight:800;color:var(--bright);"></span>' : '') + '</div>';
+    }
+    function hpBar(id, who, hp, me){
+      var pct = Math.round(hp / 3), col = me ? "var(--accent)" : "var(--adv)";
+      return '<div style="flex:1;min-width:160px;"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><b style="color:var(--bright);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(who) + (me ? ' <span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + '</b>' +
+        '<span class="mono" id="' + id + 'T" style="font-weight:800;color:var(--bright);">' + pct + '%</span></div>' +
+        '<div class="hp" role="meter" aria-label="' + esc(who) + ' health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" id="' + id + 'M"><div id="' + id + '" style="width:' + pct + '%;background:' + col + ';"></div></div></div>';
+    }
+    function fightView(s, f){
+      var cipher = f.mode === "cipher";
+      var puzzle = cipher
+        ? '<div class="mono" style="font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:4px;color:var(--advtext);word-break:break-word;">' + esc(f.puzzle) + '</div>' +
+          '<div class="mono" style="font-size:13px;color:var(--muted);margin-top:6px;">CAESAR CIPHER \u00b7 shift each letter back <b style="color:var(--bright);">' + f.shift + '</b> (A\u2192' + String.fromCharCode(65 + ((26 - f.shift) % 26)) + ')</div>'
+        : '<div style="display:flex;flex-wrap:wrap;gap:6px;" id="vdTiles">' + String(f.puzzle || "").split("").map(function(ch, i){ return '<button type="button" class="tile" data-i="' + i + '" aria-label="Letter ' + esc(ch) + '">' + esc(ch) + '</button>'; }).join("") + '</div>' +
+          '<div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">SCRAMBLED \u00b7 tap the letters in order, or type the term</div>';
+      return teamsStrip(s) +
+        '<div class="card" id="vdArena" style="background:var(--arena);border-color:var(--adv);box-shadow:0 0 30px -14px var(--advglow);">' +
+        '<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;">' + hpBar("vdMe", ST.handle, f.my_hp, true) +
+          '<span class="mono" style="font-size:13px;color:var(--faint);padding-bottom:2px;">VS</span>' + hpBar("vdOpp", f.opp, f.opp_hp, false) + '</div>' +
+        '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">DEFINITION \u00b7 ' + f.len + ' letters</div>' +
+        '<div style="font-size:clamp(17px,2.6vw,21px);font-weight:600;color:var(--bright);line-height:1.5;margin-bottom:18px;">' + esc(f.def) + '</div>' +
+        '<div style="margin-bottom:18px;">' + puzzle + '</div>' +
+        '<form id="vdForm" style="display:flex;gap:10px;flex-wrap:wrap;" autocomplete="off"><label for="vdAns" class="mono" style="position:absolute;left:-9999px;">Your answer</label>' +
+          '<input id="vdAns" class="ans" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="type the term\u2026">' +
+          '<button type="button" class="btn ghost" id="vdClr" aria-label="Clear">\u232b</button><button type="submit" class="btn" id="vdGo">Strike</button></form>' +
+        '<div class="mono" id="vdNote" role="status" aria-live="assertive" style="min-height:22px;margin-top:12px;font-size:14px;font-weight:700;color:' + (noteCol || "var(--muted)") + ';">' + esc(note) + '</div></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;"><span class="mono" style="font-size:12px;color:var(--dim);">' +
+          (s.kind === "class" ? "KOs this battle: " + ((s.my || {}).wins || 0) : "First to 4 hits wins") + '</span><button type="button" class="btn ghost" id="vdLeave">' + (s.kind === "class" ? "Exit battle" : "Forfeit") + '</button></div>';
+    }
+    function koView(s, f){
+      return teamsStrip(s) + '<div class="card" style="text-align:center;padding:40px 22px;background:var(--arena);border-color:' + (f.won ? "var(--ok)" : "var(--adv)") + ';">' +
+        '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--faint);">' + (f.won === null ? "FIGHT OVER" : "KNOCKOUT") + '</div>' +
+        '<div style="font-size:clamp(30px,6vw,46px);font-weight:800;color:var(--bright);margin:8px 0;">' + (f.won ? "\u2605 You KO\u2019d " + esc(f.opp) + "!" : f.won === false ? esc(f.opp) + " wins this one" : "No winner") + '</div>' +
+        (f.last_t ? '<div class="mono" style="font-size:14px;color:var(--muted);">Last term: <b style="color:var(--bright);">' + esc(f.last_t) + '</b></div>' : '') +
+        '<div style="font-size:14px;color:var(--muted);margin-top:14px;">' + (s.kind === "class" && s.status === "live" ? "Finding your next opponent\u2026" : "") + '</div></div>';
+    }
+    function waitView(s){
+      return teamsStrip(s) + '<div class="card" style="text-align:center;padding:40px 22px;background:var(--arena);border-color:var(--adv);">' +
+        '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--advtext);">' + (MENTOR ? "\u25c6 " : "\u2620 ") + esc(ADV) + ' IS FINDING YOUR OPPONENT</div>' +
+        '<div style="font-size:26px;font-weight:800;color:var(--bright);margin:10px 0;">Stay on this page</div>' +
+        '<div style="font-size:14px;color:var(--muted);line-height:1.6;">You\u2019ll face someone from another team. If the numbers are uneven you may sit out a moment.<br>Your KOs: <b style="color:var(--bright);">' + ((s.my || {}).wins || 0) + '</b></div>' +
+        '<div style="margin-top:18px;"><button type="button" class="btn ghost" id="vdLeave">Exit battle</button></div></div>';
+    }
+    function doneView(s){
+      var my = s.my || {}, body;
+      if (s.kind === "class") {
+        var w = (s.teams || []).filter(function(t){ return t.won; }).map(function(t){ return esc(t.name); });
+        var mv = (s.mvps || []).map(function(m){ return esc(m.handle) + " (" + m.wins + ")"; });
+        body = '<div style="font-size:clamp(28px,6vw,42px);font-weight:800;color:var(--bright);">' + (w.length > 1 ? "Tie! " + w.join(" & ") : w.length ? w[0] + " wins!" : "Battle over") + '</div>' +
+          (mv.length ? '<div style="font-size:15px;color:var(--muted);margin-top:8px;">MVP' + (mv.length > 1 ? "s" : "") + ': ' + mv.join(", ") + '</div>' : '');
+      } else body = '<div style="font-size:clamp(28px,6vw,42px);font-weight:800;color:var(--bright);">' + (s.winner_handle ? esc(s.winner_handle) + " wins!" : "Duel over") + '</div>';
+      return teamsStrip(s) + '<div class="card" style="text-align:center;padding:40px 22px;border-color:var(--adv);"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--faint);">FINAL</div>' + body +
+        '<div class="mono" style="font-size:15px;color:var(--bright);margin-top:14px;font-weight:700;">' + (my.xp ? "+" + my.xp + " XP" + (my.mvp ? " \u00b7 \u2605 MVP" : "") : "No XP this time") + '</div>' +
+        (s.kind === "duel" ? '<div style="margin-top:18px;"><button type="button" class="btn" id="vdNew">New duel</button></div>' : '') + '</div>';
+    }
+
+    var dismissed = null;
+    function screen(){
+      var s = ST.session, f = ST.fight;
+      if (!s || dismissed === s.id) return ["setup"];
+      if (s.status === "lobby") return ["lobby"];
+      if (s.status === "done" || s.status === "cancelled") return ["done"];
+      if (f && f.status === "live") return ["fight", f.id, f.n];
+      if (f) return ["ko", f.id];
+      return ["wait"];
+    }
+    function draw(force){
+      if (!ST) return;
+      var sc = screen(), k = sc.join("|");
+      if (!force && k === sig) return update();
+      var keep = (document.getElementById("vdCode") || {}).value || "";
+      sig = k; var s = ST.session, f = ST.fight;
+      view.innerHTML = sc[0] === "setup" ? setupView() : sc[0] === "lobby" ? lobbyView(s) : sc[0] === "done" ? doneView(s) : sc[0] === "fight" ? fightView(s, f) : sc[0] === "ko" ? koView(s, f) : waitView(s);
+      var ci = document.getElementById("vdCode"); if (ci) ci.value = keep;
+      var g = document.getElementById("g"); if (g && innerWidth < 760) g.style.gridTemplateColumns = "1fr";
+      bind(); clock();
+      var a = document.getElementById("vdAns"); if (a) a.focus();
+    }
+    function setHp(id, hp){
+      var pct = Math.round(hp / 3), b = document.getElementById(id), t = document.getElementById(id + "T"), m = document.getElementById(id + "M");
+      if (b) b.style.width = pct + "%"; if (t) t.textContent = pct + "%"; if (m) m.setAttribute("aria-valuenow", pct);
+    }
+    function update(){
+      var f = ST.fight, s = ST.session;
+      if (f && f.status === "live") { setHp("vdMe", f.my_hp); setHp("vdOpp", f.opp_hp); }
+      var t = document.getElementById("vdTeams"); if (t && s) { var tmp = document.createElement("div"); tmp.innerHTML = teamsStrip(s); t.replaceWith(tmp.firstChild); }
+      clock();
+    }
+    function say(t, col){ note = t; noteCol = col; var n = document.getElementById("vdNote"); if (n) { n.textContent = t; n.style.color = col; } }
+    function shake(){ var a = document.getElementById("vdArena"); if (!a) return; a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); }
+    function bind(){
+      view.querySelectorAll(".vdMod").forEach(function(b){ b.onclick = function(){ var m = +b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; draw(true); }; });
+      var cr = document.getElementById("vdCreate"); if (cr) cr.onclick = function(){
+        var sel = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
+        var pool = []; sel.forEach(function(m){ MODS[m].forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
+        dismissed = null; act("ctf_vd_create", { p_modules: sel, p_pool: pool });
+      };
+      var jn = document.getElementById("vdJoin"), ci = document.getElementById("vdCode");
+      if (ci) ci.onkeydown = function(e){ if (e.key === "Enter" && jn) jn.click(); };
+      if (jn) jn.onclick = function(){ var v = (ci.value || "").trim().toUpperCase(); if (v.length !== 4) { msg = "Codes are 4 letters."; draw(true); return; } dismissed = null; act("ctf_vd_join", { p_code: v }); };
+      var st = document.getElementById("vdStart"); if (st) st.onclick = function(){ act("ctf_vd_start"); };
+      var lv = document.getElementById("vdLeave"); if (lv) lv.onclick = function(){
+        var s = ST.session, live = s && s.status === "live";
+        if (!confirm(live ? (s.kind === "class" ? "Exit the vocab battle? You stop fighting for your team and won\u2019t get battle XP." : "Forfeit this duel? Your opponent wins and you get no XP.") : "Leave this duel?")) return;
+        act("ctf_vd_leave");
+      };
+      var nw = document.getElementById("vdNew"); if (nw) nw.onclick = function(){ dismissed = ST.session && ST.session.id; draw(true); };
+      var form = document.getElementById("vdForm"), ans = document.getElementById("vdAns");
+      view.querySelectorAll(".tile").forEach(function(b){ b.onclick = function(){ if (!ans) return; ans.value += b.textContent; b.disabled = true; ans.focus(); auto(); }; });
+      var clr = document.getElementById("vdClr"); if (clr) clr.onclick = function(){ if (ans) { ans.value = ""; ans.focus(); } view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); };
+      if (ans) ans.oninput = auto;
+      if (form) form.onsubmit = function(e){ e.preventDefault(); strike(); };
+    }
+    // unscramble checks itself once every tile is used
+    function auto(){ var f = ST.fight, a = document.getElementById("vdAns"); if (f && f.mode === "unscramble" && a && norm(a.value).length === f.len) strike(); }
+    function strike(){
+      var f = ST.fight, a = document.getElementById("vdAns"); if (!f || !a || sending) return;
+      var g = a.value; if (!norm(g)) return;
+      sending = true;
+      rpc("ctf_vd_answer", { p_fight: f.id, p_n: f.n, p_guess: g }).then(function(d){
+        sending = false;
+        if (d && d.correct) say("\u2713 " + d.term + " \u2014 hit for 25%!", "var(--ok)");
+        else if (d && d.correct === false) { say("\u2717 Not it. You took a third of a hit.", "var(--bad)"); shake(); a.value = ""; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); }
+        else if (d && d.stale) say("Too slow \u2014 that term was already cracked.", "var(--muted)");
+        load();
+      }).catch(function(){ sending = false; load(); });
+    }
+    function clock(){
+      var el = document.getElementById("vdClock"), s = ST && ST.session; if (!el || !s || !s.ends_at) return;
+      var left = new Date(s.ends_at).getTime() - (Date.now() + skew); el.textContent = mmss(left);
+    }
+    function load(){
+      clearTimeout(timer);
+      return rpc("ctf_vd_state").then(function(d){
+        if (!d || d.error) { view.innerHTML = '<div class="card">' + esc(ERR[d && d.error] || "Couldn\u2019t load.") + '</div>'; return; }
+        var f = d.fight;
+        // what happened since the last poll (the opponent cracked it, or time ran out)
+        if (f && f.status === "live" && lastN != null && f.id === lastN.id && f.n !== lastN.n && !f.last_mine && f.last_t) {
+          if (lastHp != null && f.my_hp < lastHp) { say(f.opp + " cracked it first: " + f.last_t + ". You took a hit.", "var(--bad)"); setTimeout(shake, 0); }
+          else say("Time! The term was " + f.last_t + ".", "var(--muted)");
+        } else if (f && f.status === "live" && (!lastN || lastN.id !== f.id)) say("", "");
+        lastN = f ? { id: f.id, n: f.n } : null; lastHp = f ? f.my_hp : null;
+        ST = d; if (d.now) skew = new Date(d.now).getTime() - Date.now();
+        var typing = document.activeElement && document.activeElement.id === "vdCode";
+        if (!(typing && !d.session)) draw(false);
+        var live = d.session && d.session.status !== "done" && d.session.status !== "cancelled";
+        timer = setTimeout(load, f && f.status === "live" ? 1000 : live ? 2000 : 8000);
+      }).catch(function(e){
+        view.innerHTML = '<div class="card">' + (/vd_|function/.test(String(e && e.message)) ? "Vocab duels aren\u2019t set up yet. Ask your teacher to run supabase/vocab-duels.sql." : "Couldn\u2019t reach the server. Retrying\u2026") + '</div>';
+        sig = ""; timer = setTimeout(load, 8000);
+      });
+    }
+    setInterval(clock, 500);
+    document.addEventListener("visibilitychange", function(){ if (!document.hidden) load(); });
+    load();
+  }
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>
