@@ -7,6 +7,7 @@
 --    t_*  titles       shown under the handle on leaderboards / duels
 --    c_*  name colors  the handle's color on leaderboards / duels
 --    f_*  frames       a border treatment on the student's leaderboard row
+--    s_*  quiz skins   restyle quiz.html + the course profile (19.0, skins.js)
 --  Cosmetics never change XP, rank, or grades.
 --
 --  Balance = floor(xp / 250) + granted coins − coins spent. Spending never
@@ -68,12 +69,14 @@ returns int language sql immutable as $$
     when 'b_lions' then 15  when 'b_aurora' then 20
     -- 6.1: leaderboard row trails
     when 'r_neon' then 10  when 'r_scan' then 12  when 'r_comet' then 15  when 'r_flame' then 20
+    -- 19.0: quiz skins (restyle quiz.html + the course profile; skins.js)
+    when 's_arcade' then 20  when 's_quest' then 20  when 's_ops' then 20  when 's_sky' then 20  when 's_mastermind' then 20
     else null end
 $$;
 create or replace function _cosmetic_slot(p_item text)
 returns text language sql immutable as $$
   select case left(coalesce(p_item,''), 2) when 't_' then 'title' when 'c_' then 'color' when 'f_' then 'frame'
-    when 'x_' then 'fx' when 'p_' then 'pet' when 'k_' then 'celebrate' when 'b_' then 'banner' when 'r_' then 'row' else null end
+    when 'x_' then 'fx' when 'p_' then 'pet' when 'k_' then 'celebrate' when 'b_' then 'banner' when 'r_' then 'row' when 's_' then 'skin' else null end
 $$;
 
 create or replace function _coin_state(p_student uuid)
@@ -128,7 +131,7 @@ returns json language plpgsql security definer set search_path = public as $$
 begin
   if not exists (select 1 from students where id = p_student and auth_user_id = auth.uid())
     then return json_build_object('error','not_yours'); end if;
-  if p_slot not in ('title','color','frame','fx','pet','celebrate','banner','row') then return json_build_object('error','bad_slot'); end if;
+  if p_slot not in ('title','color','frame','fx','pet','celebrate','banner','row','skin') then return json_build_object('error','bad_slot'); end if;
   if p_item is null then
     update students set equipped = equipped - p_slot where id = p_student;
   else

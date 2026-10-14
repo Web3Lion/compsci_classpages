@@ -14,9 +14,10 @@
 --  student rows and progress stay in the class until you remove them.
 --
 --  RUN ORDER: after google-auth.sql, multi-domain.sql and allowed-emails.sql.
---  This file redefines _is_school() and ctf_join_google(); re-running any of
---  those three files later silently turns guest mode off — re-run this one
---  straight afterwards. check-installed.sql / install-check.html detect it.
+--  This file redefines _is_school() and ctf_join_google(). Since 19.0.1,
+--  multi-domain.sql and allowed-emails.sql keep guest mode on when re-run.
+--  Re-running google-auth.sql still turns it off (it rewrites ctf_join_google):
+--  re-run multi-domain.sql, allowed-emails.sql, then this file afterwards.
 --
 --  Google Cloud OAuth consent screen must be "External" AND published
 --  ("In production"), or Google refuses outside accounts before this runs.

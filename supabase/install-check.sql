@@ -66,7 +66,8 @@ begin
       (34, 'weekly-xp-summary.sql', 'Weekly XP summary tab in teacher.html', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_weekly_xp')),
       (35, 'tool-clicks.sql', 'Anonymous Teacher Tools card click counts', exists (select 1 from information_schema.tables where table_schema='public' and table_name='tool_clicks')),
       (36, 'vocab-quizzes.sql', 'Assigned vocab quizzes (quiz.html + teacher tab)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='vocab_quizzes')),
-      (37, 'progress-grids.sql', 'Private progress monitoring grids (profile + teacher tab)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='progress_grids'))
+      (37, 'progress-grids.sql', 'Private progress monitoring grids (profile + teacher tab)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='progress_grids')),
+      (38, 'coins-cosmetics.sql (re-run, v19)', 'Quiz skins in the Coin Shop', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_cosmetic_slot' and p.prosrc like '%skin%'))
     ) as c(step, file, feature, present)
   
     union all
@@ -93,19 +94,19 @@ begin
   
     union all
     select '—', 'run order', 'multi-domain.sql must run after google-auth.sql',
-      case when not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_school_domains') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), '_school_domains'), 0) > 0 then 'ok' else 'rerun' end,
+      case when not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_school_domains') then 'na' when coalesce(strpos(coalesce((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1),'') || coalesce((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school_member' limit 1),''), '_school_domains'), 0) > 0 then 'ok' else 'rerun' end,
       case when not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_school_domains') then 'multi-domain.sql not run yet — second-domain students CANNOT sign in — nothing to check'
-           when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), '_school_domains'), 0) > 0
-             then '✅ fine — _is_school() uses the domain list'
+           when coalesce(strpos(coalesce((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1),'') || coalesce((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school_member' limit 1),''), '_school_domains'), 0) > 0
+             then '✅ fine — the school check uses the domain list'
            else '⚠ RE-RUN multi-domain.sql, then allowed-emails.sql' end,
       2, 3
   
     union all
     select '—', 'run order', 'allowed-emails.sql must run after multi-domain.sql',
-      case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='allowed_emails') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), 'allowed_emails'), 0) > 0 then 'ok' else 'rerun' end,
+      case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='allowed_emails') then 'na' when coalesce(strpos(coalesce((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1),'') || coalesce((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school_member' limit 1),''), 'allowed_emails'), 0) > 0 then 'ok' else 'rerun' end,
       case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='allowed_emails') then 'allowed-emails.sql not run yet — nothing to check'
-           when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1), 'allowed_emails'), 0) > 0
-             then '✅ fine — _is_school() checks the allowlist'
+           when coalesce(strpos(coalesce((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school' limit 1),'') || coalesce((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_is_school_member' limit 1),''), 'allowed_emails'), 0) > 0
+             then '✅ fine — the school check includes the allowlist'
            else '⚠ RE-RUN allowed-emails.sql' end,
       2, 4
   

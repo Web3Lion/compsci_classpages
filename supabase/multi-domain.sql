@@ -71,4 +71,29 @@ end $$;
 revoke all on function ctf_whoami() from public, anon;
 grant execute on function ctf_whoami() to authenticated;
 
+-- ---- guest mode stays on (19.0.1) ---------------------------------------------
+-- If guest-mode.sql is installed, the real check lives in _is_school_member()
+-- and _is_school() is a wrapper. Re-running this file used to overwrite the
+-- wrapper and switch guest mode off. Restore it here so any run order works.
+do $$
+begin
+  if exists (select 1 from information_schema.tables where table_schema='public' and table_name='guest_mode')
+     and exists (select 1 from information_schema.tables where table_schema='public' and table_name='allowed_emails') then
+    execute $f$
+      create or replace function _is_school_member() returns boolean
+      language sql stable security definer set search_path = public as $b$
+        select auth.uid() is not null
+           and (
+             exists (select 1 from unnest(_school_domains()) d where lower(coalesce(_email(),'')) like ('%@' || d))
+             or exists (select 1 from allowed_emails a where a.email = lower(coalesce(_email(),'')))
+           );
+      $b$ $f$;
+    execute $f$
+      create or replace function _is_school() returns boolean
+      language sql stable security definer set search_path = public as $b$
+        select _is_school_member() or (auth.uid() is not null and _guest_open());
+      $b$ $f$;
+  end if;
+end $$;
+
 notify pgrst, 'reload schema';

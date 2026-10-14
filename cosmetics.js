@@ -86,7 +86,13 @@
     { id: "f_pulse",   slot: "frame", name: "Pulse",   price: 4 },
     { id: "f_glitch",  slot: "frame", name: "Glitch",  price: 4 },
     { id: "f_circuit", slot: "frame", name: "Circuit", price: 5 },
-    { id: "f_gold",    slot: "frame", name: "Gold",    price: 8 }
+    { id: "f_gold",    slot: "frame", name: "Gold",    price: 8 },
+    // 19.0: quiz skins (restyle quiz.html + this course's profile; see skins.js)
+    { id: "s_arcade",     slot: "skin", name: "Arcade Neon", price: 20 },
+    { id: "s_quest",      slot: "skin", name: "Quest / RPG", price: 20 },
+    { id: "s_ops",        slot: "skin", name: "Hacker Ops",  price: 20 },
+    { id: "s_sky",        slot: "skin", name: "Sky Sticker", price: 20 },
+    { id: "s_mastermind", slot: "skin", name: "Mastermind",  price: 20 }
   ];
   var BY = {}; CATALOG.forEach(function (c) { BY[c.id] = c; });
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -256,7 +262,9 @@
     var sess = null; try { sess = JSON.parse(localStorage.getItem("ctf-sess-" + course)); } catch (e) {}
     if (!AUTH || !AUTH.online || !sess) return;
     css();
-    var ST = null, TAB = "title", busy = false, msg = "";
+    var ST = null, TAB = "title", busy = false, msg = "", PREV = null;
+    var SK = window.CTF_SKINS;
+    function skinNow() { if (SK) SK.apply(PREV !== null ? PREV : (ST && ST.equipped && ST.equipped.skin) || null, "profile"); }
     function load() {
       AUTH.rpc("ctf_my_coins", { p_student: sess.studentId }).then(function (d) {
         if (!d || d.error) return; ST = d; setMine(d.equipped || {}); paint();
@@ -273,6 +281,7 @@
         return '<span style="font-weight:800;font-size:16px;color:var(--bright);">' + nameHtml(raw, eq) + '</span>';
       }
       if (it.slot === "celebrate") return '<button type="button" class="cosPrev mono" data-id="' + it.id + '" style="align-self:flex-start;font-size:11px;font-weight:700;padding:7px 12px;border-radius:8px;border:1px dashed var(--border3);background:transparent;color:var(--dim);cursor:pointer;">\u25b6 PREVIEW</button>';
+      if (it.slot === "skin") return SK ? SK.swatch(it.id) : "";
       if (it.slot === "banner") return '<div aria-hidden="true" style="height:40px;border-radius:8px;border:1px solid var(--border2);' + bannerStyle(eq) + '"></div>';
       if (it.slot === "row") return '<div class="' + rowClass(eq) + '" style="display:flex;justify-content:space-between;padding:8px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--panel);font-size:12px;font-weight:700;color:var(--bright);"><span>#1 ' + handle + '</span><span class="mono" style="color:var(--dim);">999 XP</span></div>';
       return '<span class="' + frameClass(eq) + '" style="display:inline-block;padding:6px 12px;border-radius:8px;border:1px solid var(--border2);font-weight:700;color:var(--bright);">' + handle + '</span>';
@@ -280,12 +289,13 @@
     function paint() {
       if (!ST) return;
       var per = ST.per || 250, into = ST.xp % per, pct = Math.round(into / per * 100);
-      var tabs = [["title", "Titles"], ["color", "Name colors"], ["fx", "Name effects"], ["pet", "Pets"], ["celebrate", "Celebrations"], ["banner", "Banners"], ["row", "Row trails"], ["frame", "Frames"]].map(function (t) {
+      var tabs = [["title", "Titles"], ["color", "Name colors"], ["fx", "Name effects"], ["pet", "Pets"], ["celebrate", "Celebrations"], ["banner", "Banners"], ["row", "Row trails"], ["frame", "Frames"]].concat(SK ? [["skin", "Quiz skins"]] : []).map(function (t) {
         var on = TAB === t[0];
         return '<button type="button" class="cosTab mono" data-t="' + t[0] + '" aria-pressed="' + on + '" style="font-size:12px;font-weight:700;padding:9px 14px;min-height:40px;border-radius:999px;cursor:pointer;border:1px solid ' + (on ? "var(--accent)" : "var(--border2)") + ';background:' + (on ? "var(--accent)" : "transparent") + ';color:' + (on ? "var(--bg)" : "var(--dim)") + ';">' + t[1] + '</button>';
       }).join("");
       var items = CATALOG.filter(function (c) { return c.slot === TAB; }).map(function (it) {
         var own = owned(it.id), on = equipped(it.slot) === it.id, afford = ST.balance >= it.price;
+        var pv = it.slot === "skin" && !on ? '<button type="button" class="cosSkinPrev mono" data-id="' + it.id + '" aria-pressed="' + (PREV === it.id) + '" style="' + btnCss("var(--dim)", PREV === it.id) + '">' + (PREV === it.id ? "PREVIEWING" : "PREVIEW") + '</button>' : "";
         var btn = on
           ? '<button type="button" class="cosAct mono" data-a="unequip" data-id="' + it.id + '" style="' + btnCss("var(--accent)", true) + '">EQUIPPED \u2713</button>'
           : own
@@ -293,8 +303,17 @@
             : '<button type="button" class="cosAct mono" data-a="buy" data-id="' + it.id + '"' + (afford ? "" : " disabled") + ' aria-label="Buy ' + esc(it.name) + ' for ' + it.price + ' coins" style="' + btnCss("var(--amber)") + (afford ? "" : "opacity:.45;cursor:not-allowed;") + '">\u25C9 ' + it.price + '</button>';
         return '<div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;border:1px solid ' + (on ? "var(--accent)" : "var(--border2)") + ';background:var(--bg);">' +
           '<div style="min-height:40px;display:flex;flex-direction:column;justify-content:center;">' + preview(it) + '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;"><span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);">' + esc(it.name) + '</span>' + btn + '</div></div>';
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);">' + esc(it.name) + '</span>' + pv + btn + '</div></div>';
       }).join("");
+      if (TAB === "skin" && SK) {
+        var cur = equipped("skin"), dflt = !cur;
+        items = '<div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;border:1px solid ' + (dflt ? "var(--accent)" : "var(--border2)") + ';background:var(--bg);">' +
+          '<div style="min-height:40px;">' + SK.swatch(null) + '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);">Default</span>' +
+          (dflt ? '<span class="mono" style="' + btnCss("var(--accent)", true) + 'cursor:default;">IN USE ✓</span>'
+                : '<button type="button" class="cosAct mono" data-a="unequip" data-id="' + cur + '" style="' + btnCss("var(--accent)") + '">USE DEFAULT</button>') +
+          '</div></div>' + items;
+      }
       box.innerHTML = '<div class="card" style="padding:22px;margin-top:20px;">' +
         '<div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:14px;">' +
           '<div style="flex:1;min-width:200px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">COIN SHOP</div>' +
@@ -307,12 +326,14 @@
         (TAB === "pet" ? toggleHtml("cos-follow", "Your equipped pet follows your mouse on the arena and profile pages") : "") +
         (TAB === "celebrate" ? '<div class="mono" style="font-size:11px;color:var(--dim);margin:-4px 0 10px;">Plays every time you capture a flag.</div>' + toggleHtml("cos-sound", "Play a short sound with the celebration") : "") +
         (TAB === "banner" ? '<div class="mono" style="font-size:11px;color:var(--dim);margin:-4px 0 10px;">Shows across the top of your profile card.</div>' : "") +
+        (TAB === "skin" ? '<div class="mono" style="font-size:11px;color:var(--dim);margin:-4px 0 10px;line-height:1.6;">Restyles your vocab quizzes and this profile page for this course. Every skin has a light and dark version. Press PREVIEW to try one on this page first' + (SK ? ', or <a href="../quiz.html?demo=1' + (PREV ? '&skin=' + PREV : '') + '" target="_blank" rel="noopener">open a sample quiz</a>' : '') + '. Default is free and always available.</div>' : "") +
         (TAB === "row" ? '<div class="mono" style="font-size:11px;color:var(--dim);margin:-4px 0 10px;">Styles your row on the class leaderboard.</div>' : "") +
         '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;">' + items + '</div>' +
         '<div class="mono" id="cosMsg" role="status" aria-live="polite" style="font-size:11px;color:var(--faint);margin-top:12px;min-height:14px;">' + esc(msg) + '</div>' +
       '</div>';
       box.querySelectorAll(".cosTab").forEach(function (b) { b.onclick = function () { TAB = b.getAttribute("data-t"); msg = ""; paint(); }; });
       box.querySelectorAll(".cosAct").forEach(function (b) { b.onclick = function () { act(b.getAttribute("data-a"), b.getAttribute("data-id")); }; });
+      box.querySelectorAll(".cosSkinPrev").forEach(function (b) { b.onclick = function () { var id = b.getAttribute("data-id"); PREV = PREV === id ? null : id; msg = PREV ? "Previewing " + BY[id].name + ". Press PREVIEW again to stop." : ""; skinNow(); paint(); }; });
       box.querySelectorAll(".cosPrev").forEach(function (b) { b.onclick = function () { var e2 = Object.assign({}, ST.equipped || {}); e2.celebrate = b.getAttribute("data-id"); celebrate(e2); }; });
       box.querySelectorAll(".cosTog").forEach(function (b) { b.onchange = function () { setPref(b.getAttribute("data-k"), b.checked); if (b.getAttribute("data-k") === "cos-follow") companion(); }; });
     }
@@ -331,8 +352,8 @@
       p.then(function (d) {
         busy = false;
         if (!d || d.error) { msg = d && d.error === "not_enough_coins" ? "Not enough coins yet." : "Couldn\u2019t do that (" + ((d && d.error) || "error") + ")."; paint(); return; }
-        ST = d; setMine(d.equipped || {}); if (window.CTF_COSMETICS_CHANGED) { try { window.CTF_COSMETICS_CHANGED(d.equipped || {}); } catch (e) {} }
-        msg = a === "buy" ? "Bought " + it.name + "." : a === "equip" ? it.name + " equipped." : it.name + " removed."; paint();
+        ST = d; setMine(d.equipped || {}); if (it.slot === "skin") { PREV = null; skinNow(); } if (window.CTF_COSMETICS_CHANGED) { try { window.CTF_COSMETICS_CHANGED(d.equipped || {}); } catch (e) {} }
+        msg = a === "buy" ? "Bought " + it.name + "." : a === "equip" ? it.name + " equipped." : it.slot === "skin" ? "Back to the Default skin." : it.name + " removed."; paint();
       }).catch(function (e) { busy = false; msg = "Couldn\u2019t reach the server."; paint(); });
     }
     load();

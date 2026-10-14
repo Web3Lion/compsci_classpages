@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=18.0.0"></script>
+<script src="site.js?v=19.0.1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -11,8 +11,9 @@
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* palettes come from skins.js (Default = Chunky Pop); this block is the fallback */
 :root{
   --q-bg:#141c1c;--q-panel:#1b2525;--q-panel2:#212d2d;--q-ink:#e9efe9;--q-ink2:#c8d3cd;--q-muted:#a4b3ad;
   --q-rule:#34433f;--q-rule2:#28332f;--q-accent:#8ccfc2;--q-accentBg:#1f3633;--q-onAccent:#0f1d1b;
@@ -27,29 +28,37 @@
 :root{--bg:var(--q-bg);--panel:var(--q-panel);--panel2:var(--q-panel2);--text:var(--q-ink2);--bright:var(--q-ink);--muted:var(--q-muted);--dim:var(--q-muted);--faint:var(--q-muted);--border:var(--q-rule);--border2:var(--q-rule2);--border3:var(--q-rule);--accent:var(--q-accent);--accent2:var(--q-accent);}
 *{box-sizing:border-box;}
 html{text-size-adjust:100%;-webkit-text-size-adjust:100%;}
-body{margin:0;background:var(--q-bg);color:var(--q-ink2);font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:18px;line-height:1.6;transition:background-color .25s ease,color .25s ease;}
+body{margin:0;background:var(--q-bg);color:var(--q-ink2);font-family:'Lexend',system-ui,sans-serif;font-size:18px;line-height:1.6;transition:background-color .25s ease,color .25s ease;}
 a{color:var(--q-accent);text-underline-offset:3px;} a:hover{color:var(--q-ink);}
 :focus-visible{outline:3px solid var(--q-accent);outline-offset:3px;border-radius:4px;}
-h1,h2,h3{font-family:'Literata',Georgia,serif;font-weight:600;color:var(--q-ink);line-height:1.25;margin:0;}
-.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'Atkinson Hyperlegible',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;padding:8px 14px;border-radius:999px;border:1px solid var(--q-rule);background:var(--q-panel);color:var(--q-accent);cursor:pointer;}
+h1,h2,h3{font-family:'Lexend',system-ui,sans-serif;font-weight:700;color:var(--q-ink);line-height:1.25;margin:0;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'Lexend',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;padding:8px 14px;border-radius:999px;border:1px solid var(--q-rule);background:var(--q-panel);color:var(--q-accent);cursor:pointer;}
+.themebtn{white-space:nowrap;}
 .themebtn:hover{border-color:var(--q-accent);}
-.btn{font:inherit;font-size:17px;font-weight:700;min-height:48px;padding:11px 22px;border-radius:10px;border:2px solid var(--q-accent);background:var(--q-accent);color:var(--q-onAccent);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;}
-.btn:hover{filter:brightness(1.06);color:var(--q-onAccent);}
-.btn.ghost{background:transparent;color:var(--q-accent);}
+.btn{font:inherit;font-size:17px;font-weight:700;min-height:48px;padding:11px 22px;border-radius:min(var(--q-optr,10px),999px);border:var(--q-bw,2px) solid var(--q-btn,var(--q-accent));background:var(--q-btn,var(--q-accent));color:var(--q-onBtn,var(--q-onAccent));box-shadow:var(--q-btnsh,none);text-transform:var(--q-upper,none);letter-spacing:var(--q-track,0);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:transform .08s ease,filter .15s ease;}
+html[data-skin="default"] .btn{border-color:var(--q-shadow);}
+.btn:hover{filter:brightness(1.06);color:var(--q-onBtn,var(--q-onAccent));}
+.btn:active{transform:translateY(2px);}
+.btn.ghost{background:transparent;color:var(--q-accent);border-color:var(--q-accent);box-shadow:none;}
 .btn.ghost:hover{background:var(--q-accentBg);color:var(--q-ink);}
 .btn[disabled]{opacity:.55;cursor:not-allowed;}
-.card{background:var(--q-panel);border:1px solid var(--q-rule);border-radius:14px;padding:28px;}
-select,input[type=text]{font:inherit;font-size:17px;color:var(--q-ink);background:var(--q-panel2);border:2px solid var(--q-rule);border-radius:9px;min-height:48px;padding:9px 12px;width:100%;max-width:420px;}
+.card{background:var(--q-hero,none) top/100% 6px no-repeat,var(--q-panel);border:var(--q-cardbw,1px) solid var(--q-rule);border-radius:var(--q-radius,14px);box-shadow:var(--q-cardsh,none);padding:28px;}
+select,input[type=text]{font:inherit;font-size:17px;color:var(--q-ink);background:var(--q-panel2);border:var(--q-bw,2px) solid var(--q-rule);border-radius:min(var(--q-optr,9px),12px);min-height:48px;padding:9px 12px;width:100%;max-width:420px;}
+select:has(option:checked:not([value=""])){border-color:var(--q-sel);box-shadow:inset 0 0 0 1px var(--q-sel);font-weight:600;}
 select:focus,input[type=text]:focus{border-color:var(--q-accent);outline:none;box-shadow:0 0 0 3px var(--q-accentBg);}
-.opt{display:flex;align-items:center;gap:12px;min-height:48px;padding:10px 14px;border:2px solid var(--q-rule2);border-radius:10px;cursor:pointer;background:var(--q-panel2);}
-.opt:hover{border-color:var(--q-rule);}
+.opt{display:flex;align-items:center;gap:12px;min-height:48px;padding:10px 16px;border:var(--q-bw,2px) solid var(--q-rule2);border-radius:var(--q-optr,10px);cursor:pointer;background:var(--q-panel2);color:var(--q-ink2);transition:transform .08s ease;}
+html[data-skin="default"] .opt{border-color:var(--q-rule);box-shadow:0 3px 0 var(--q-shadow);}
+.opt:hover{border-color:var(--q-accent);}
 .opt input{width:22px;height:22px;accent-color:var(--q-accent);flex:none;margin:0;}
-.opt:has(input:checked){border-color:var(--q-accent);background:var(--q-accentBg);color:var(--q-ink);}
+.opt:has(input:checked){border-color:var(--q-sel);background:var(--q-sel);color:var(--q-onSel);font-weight:700;box-shadow:var(--q-selsh,none);}
+.opt:has(input:checked) input{accent-color:var(--q-onSel);}
+.opt:has(input:checked)::after{content:"\2713  Selected";margin-left:auto;font-size:14px;font-weight:700;white-space:nowrap;}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 #quiz{user-select:none;-webkit-user-select:none;}
 #quiz input[type=text]{user-select:text;-webkit-user-select:text;}
 @media(max-width:640px){body{font-size:17px;}.card{padding:20px;border-radius:12px;}}
 </style>
+<script src="skins.js?v=19.0.1" data-auto="quiz"></script>
 </head>
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
@@ -63,8 +72,8 @@ select:focus,input[type=text]:focus{border-color:var(--q-accent);outline:none;bo
 <div id="srLive" class="sr" aria-live="assertive"></div>
 <div id="toast" role="status" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9000;max-width:min(560px,92vw);padding:14px 20px;border-radius:12px;background:var(--q-ink);color:var(--q-bg);font-weight:700;font-size:16px;display:none;box-shadow:0 10px 30px -10px rgba(0,0,0,.4);"></div>
 
-<script src="supabase-config.js?v=18.0.0"></script>
-<script src="auth.js?v=18.0.0"></script>
+<script src="supabase-config.js?v=19.0.1"></script>
+<script src="auth.js?v=19.0.1"></script>
 <script>
 (function(){
 var AUTH = window.CTF_AUTH;
@@ -174,7 +183,19 @@ async function loadInfo(){
     if(/function|schema|exist/i.test(m)) return errorView("Quizzes aren\u2019t set up yet","Your teacher needs to finish setting up quizzes.");
     return errorView("Something went wrong","The quiz didn\u2019t load. Refresh the page to try again.");
   }
-  S.info = r; introView();
+  S.info = r; skinFor(r.course); introView();
+}
+/* quiz skin: the student's equipped Coin Shop skin for this course (Default = Chunky Pop) */
+function skinFor(course){
+  var SK=window.CTF_SKINS; if(!SK) return;
+  if(QID==="demo"){ var q=new URLSearchParams(location.search).get("skin"); SK.apply(SK.has(q)?q:null,"quiz"); return; }
+  SK.apply(SK.forCourse(course),"quiz");
+  var sess=null; try{ sess=JSON.parse(localStorage.getItem("ctf-sess-"+course)); }catch(e){}
+  if(!sess||!sess.studentId) return;
+  Promise.resolve(AUTH.rpc("ctf_my_coins",{p_student:sess.studentId})).then(function(d){
+    if(!d||d.error) return; try{ localStorage.setItem("ctf-cos-"+course, JSON.stringify(d.equipped||{})); }catch(e){}
+    SK.apply(SK.forCourse(course),"quiz");
+  }).catch(function(){});
 }
 async function notEnrolled(){
   // vq_info returns the course on this error; rpc() throws before we see it, so ask again raw
@@ -187,10 +208,10 @@ async function notEnrolled(){
 /* ---------------- intro / results ---------------- */
 function scoreLine(a){ var pct=a.total?Math.round(a.score/a.total*100):0; return a.score+" / "+a.total+" ("+pct+"%)"; }
 function missedList(missed){
-  if(!missed || !missed.length) return '<p style="margin:10px 0 0;color:var(--q-ok);font-weight:700;">You got every question right.</p>';
+  if(!missed || !missed.length) return '<p style="margin:10px 0 0;color:var(--q-ok);font-weight:700;">\u2713 You got every question right.</p>';
   return '<ol style="margin:12px 0 0;padding-left:24px;display:flex;flex-direction:column;gap:12px;">'+missed.map(function(m){
     return '<li><div style="color:var(--q-ink);">'+esc(m.q)+'</div>'+
-      '<div style="font-size:16px;color:var(--q-muted);">Your answer: '+(m.given?'<span style="color:var(--q-bad);font-weight:700;">'+esc(m.given)+'</span>':'<i>no answer</i>')+'</div></li>';
+      '<div style="font-size:16px;color:var(--q-muted);"><span style="color:var(--q-bad);font-weight:700;">\u2717 Missed.</span> Your answer: '+(m.given?'<span style="color:var(--q-bad);font-weight:700;">'+esc(m.given)+'</span>':'<i>no answer</i>')+'</div></li>';
   }).join("")+'</ol>';
 }
 function introView(){
@@ -275,6 +296,7 @@ function quizView(){
     '<div style="position:sticky;top:0;z-index:50;margin:-72px -22px 22px;padding:14px 22px;background:color-mix(in srgb,var(--q-bg) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--q-rule2);display:flex;align-items:center;gap:16px;flex-wrap:wrap;">'+
       '<div style="min-width:0;flex:1;"><div style="font-weight:700;color:var(--q-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+esc(a.title)+'</div>'+
       '<div id="progress" style="font-size:15px;color:var(--q-muted);"></div></div>'+
+      '<div role="progressbar" id="pbarWrap" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="'+a.total+'" aria-valuenow="0" style="flex-basis:100%;order:2;height:12px;border-radius:99px;background:var(--q-rule2);overflow:hidden;"><div id="pbar" style="height:100%;width:0;border-radius:99px;background:var(--q-accent);transition:width .3s ease;"></div></div>'+
       '<div role="note" style="flex-basis:100%;order:3;font-size:15px;font-weight:700;color:var(--q-bad);">&#9888; Stay on this screen until you turn the quiz in. If it loses focus, the quiz ends.</div>'+
       (a.deadline?'<div style="text-align:right;margin-right:190px;"><div style="font-size:13px;color:var(--q-muted);">Time left</div><div id="clock" style="font-size:22px;font-weight:700;color:var(--q-ink);font-variant-numeric:tabular-nums;" aria-hidden="true">--:--</div></div>':'<div style="margin-right:190px;"></div>')+
     '</div>'+
@@ -332,7 +354,7 @@ function answered(){ return Object.keys(S.answers).filter(function(k){ return St
 function progress(){
   var t=S.att.total, a=answered(), txt=a+" of "+t+" answered";
   var p=document.getElementById("progress"), p2=document.getElementById("progress2");
-  if(p) p.textContent=txt; if(p2) p2.textContent=txt+(a<t?" \u00b7 "+(t-a)+" left blank":"");
+  if(p) p.textContent=txt; var pb=document.getElementById("pbar"), pw=document.getElementById("pbarWrap"); if(pb) pb.style.width=(t?Math.round(a/t*100):0)+"%"; if(pw) pw.setAttribute("aria-valuenow",a); if(p2) p2.textContent=txt+(a<t?" \u00b7 "+(t-a)+" left blank":"");
 }
 function onAnswer(e){
   var t=e.target; if(!t.dataset || t.dataset.i==null || !S.att) return;
@@ -374,7 +396,7 @@ function resultView(r, auto){
     (r.violation?'<div role="alert">'+note("warn","<b>Your quiz ended because the quiz screen lost focus.</b> It was turned in with the answers you had, and you got credit for those.")+'</div>':auto?note("info","Time ran out, so your answers were turned in."):"")+
     '<h1 style="font-size:28px;margin-top:'+(auto||r.violation?"18px":"0")+';">'+(r.violation?"Quiz ended":"Quiz turned in")+'</h1>'+
     '<div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:18px 0 0;">'+
-      '<span style="font-family:Literata,Georgia,serif;font-size:56px;font-weight:600;line-height:1;color:var(--q-ink);font-variant-numeric:tabular-nums;white-space:nowrap;">'+r.score+' / '+r.total+'</span>'+
+      '<span style="font-size:56px;font-weight:800;line-height:1;color:var(--q-ink);font-variant-numeric:tabular-nums;white-space:nowrap;">'+r.score+' / '+r.total+'</span>'+
       '<span style="font-size:22px;font-weight:700;color:var(--q-accent);">'+pct+'%</span></div>'+
     (r.best!=null&&r.best!==r.score?'<p style="margin:10px 0 0;">Your best score on this quiz: <b style="color:var(--q-ink);">'+r.best+' / '+r.total+'</b></p>':'')+
     '<h2 style="font-size:20px;margin-top:26px;">'+(r.missed&&r.missed.length?"Questions you missed":"Results")+'</h2>'+
