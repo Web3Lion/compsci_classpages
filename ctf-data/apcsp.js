@@ -866,6 +866,50 @@ window.COURSE_CONFIG.apcsp.ctf = {
         flagHash: "1951ea84b1ed28abee061b1bdf9b8dab9a1313c7b4018d6c91e7b6c208afeda4" }
     ] },
 
+  { id: "ap-m3-cc-pick", module: 3, title: "Pick the License", category: "Digital Media",
+    levels: [
+      { difficulty: "Easy", points: 50,
+        prompt: "Objective — Explain how the use of computing can raise legal and ethical concerns. Which Creative Commons license would be most appropriate for the following scenario?\n\nA nature photographer uploads a folder of sunrise photos and wants anyone to use them for anything, including ads and products they sell, without even needing to credit her.\n\nSubmit the license code as flag{cc-...} — e.g. flag{cc-by-nd}. Use flag{cc0} for public domain.",
+        hint: "She is giving up every right, so pick the 'no rights reserved' public-domain tool.",
+        flagHash: "7af74c271dc746389973f65ec7dec686efa94cabbdfe00960469df57cf2c1efd" },
+      { difficulty: "Medium", points: 100,
+        prompt: "Objective — Explain how the use of computing can raise legal and ethical concerns. Which Creative Commons license would be most appropriate for the following scenario?\n\nA student composer posts a beat. Anyone may remix it, even in songs they sell, as long as they credit him AND release their remix under the exact same license so others can remix it too.\n\nSubmit the license code as flag{cc-...} — e.g. flag{cc-by-nd}. Use flag{cc0} for public domain.",
+        hint: "Credit + 'share alike' means the remix keeps the same license. Commercial use is allowed, so no NC.",
+        flagHash: "7e4d5d744b1d8770c7cd75c7f2813181b99c23a6f2e4cc1d136ffd927b1c9e28" },
+      { difficulty: "Hard", points: 150,
+        prompt: "Objective — Explain how the use of computing can raise legal and ethical concerns. Which Creative Commons license would be most appropriate for the following scenario?\n\nA teacher posts a slideshow. Other teachers may copy and share it for free with credit, but they may not edit it in any way and may not sell it or put it behind a paywall.\n\nSubmit the license code as flag{cc-...} — e.g. flag{cc-by-nd}. Use flag{cc0} for public domain.",
+        hint: "Three conditions: credit (BY), no selling (NC), no changes (ND).",
+        flagHash: "39b0f54592b7101fe389c841c315c005045af5c9e3a946d8fa7569efd5cfc208" }
+    ] },
+
+  { id: "ap-m3-cc-match", module: 3, title: "License Match-Up", category: "Digital Media", type: "match", points: 150,
+    intro: "Objective — Explain how the use of computing can raise legal and ethical concerns. Which Creative Commons license would be most appropriate for each scenario? Tap the scenario, then tap the license.",
+    pairs: [
+      { left: "A blogger lets anyone reuse her travel photos for any purpose, even commercial, as long as they credit her", right: "CC BY" },
+      { left: "A student artist lets others remix his drawings with credit, but nobody may sell anything made from them", right: "CC BY-NC" },
+      { left: "A journalist lets anyone republish her article, even on paid sites, with credit, but the words may not be changed", right: "CC BY-ND" },
+      { left: "A coding club shares free lesson plans: remix them with credit, don't sell them, and share your version the same way", right: "CC BY-NC-SA" }
+    ] },
+
+  { id: "ap-m3-cc-match2", module: 3, title: "License Match-Up II", category: "Digital Media", type: "match", points: 150,
+    intro: "Objective — Explain how the use of computing can raise legal and ethical concerns. Which Creative Commons license would be most appropriate for each scenario? Tap the scenario, then tap the license.",
+    pairs: [
+      { left: "A museum releases scans of 500-year-old paintings with no conditions at all, not even credit", right: "CC0" },
+      { left: "A game developer shares sprite art: sell games that use it, credit her, and any edited sprites must use this same license", right: "CC BY-SA" },
+      { left: "A band shares a live recording: fans may pass it around with credit, but not edit it or make money from it", right: "CC BY-NC-ND" },
+      { left: "A scientist shares a chart and is happy for textbooks to sell it, edited or not, as long as she is credited", right: "CC BY" }
+    ] },
+
+  { id: "ap-m3-cc-order", module: 3, title: "Most Open to Most Restrictive", category: "Digital Media", type: "order", points: 150,
+    intro: "Objective — Explain how the use of computing can raise legal and ethical concerns. Order these Creative Commons options from the MOST freedom for the reuser to the LEAST.",
+    steps: [
+      "CC0 — no conditions",
+      "CC BY — credit only",
+      "CC BY-SA — credit + share alike",
+      "CC BY-NC — credit + no selling",
+      "CC BY-NC-ND — credit + no selling + no changes"
+    ] },
+
   { id: "ap-m3b", module: 3, title: "Representing Media", category: "Digital Media",
     levels: [
       { difficulty: "Easy", points: 50,
