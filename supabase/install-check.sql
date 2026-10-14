@@ -65,7 +65,8 @@ begin
       (33, 'guest-mode.sql', 'Guest mode — any Google account joins one class by code, for a set time', exists (select 1 from information_schema.tables where table_schema='public' and table_name='guest_mode')),
       (34, 'weekly-xp-summary.sql', 'Weekly XP summary tab in teacher.html', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_weekly_xp')),
       (35, 'tool-clicks.sql', 'Anonymous Teacher Tools card click counts', exists (select 1 from information_schema.tables where table_schema='public' and table_name='tool_clicks')),
-      (36, 'vocab-quizzes.sql', 'Assigned vocab quizzes (quiz.html + teacher tab)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='vocab_quizzes'))
+      (36, 'vocab-quizzes.sql', 'Assigned vocab quizzes (quiz.html + teacher tab)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='vocab_quizzes')),
+      (37, 'progress-grids.sql', 'Private progress monitoring grids (profile + teacher tab)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='progress_grids'))
     ) as c(step, file, feature, present)
   
     union all

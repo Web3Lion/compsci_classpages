@@ -161,6 +161,38 @@
     if (location.hash === "#pfQuizzes" && !pfRender._j) { pfRender._j = 1; window.scrollTo({ top: box.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" }); }
   }
 
+  /* ---------------- daily progress check-in reminder (progress-grids.sql) ---------------- */
+  function pgFetch() {
+    var C = window.SUPABASE_CONFIG || {}, t = token();
+    if (!C.url || !C.anonKey || !t) return Promise.resolve(null);
+    return fetch(C.url + "/rest/v1/rpc/pg_my_grids", {
+      method: "POST", headers: { apikey: C.anonKey, Authorization: "Bearer " + t, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_student: sess.studentId })
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { return Array.isArray(d) ? d : null; }).catch(function () { return null; });
+  }
+  function pgShow(list) {
+    var due = (list || []).filter(function (g) { return g.is_open && !g.checked_in_today; }), old = document.getElementById("pgNotice");
+    if (!due.length) { if (old) old.remove(); return; }
+    glowCss();
+    var g = due[0], tasks = g.tasks || [], en = g.entries || {};
+    var done = tasks.filter(function (t) { return en[t.code] && en[t.code].status === "done"; }).length;
+    var card = old || document.createElement("a");
+    card.id = "pgNotice"; card.className = "card vqGlow"; card.href = "profile.html#pfProgress";
+    card.setAttribute("style", "display:flex;align-items:center;gap:16px;flex-wrap:wrap;text-decoration:none;color:inherit;border-color:var(--vqw);background:var(--vqw-bg);animation:vqGlow 1.8s ease-in-out infinite;margin-bottom:18px;");
+    card.innerHTML =
+      '<span aria-hidden="true" style="flex:none;font-size:26px;line-height:1;color:var(--vqw);">\u25a6</span>' +
+      '<span style="min-width:0;flex:1;">' +
+        '<span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--bright);">// DAILY CHECK-IN</span>' +
+        '<span style="display:block;font-size:16px;font-weight:700;color:var(--bright);margin-top:4px;">Update your progress for today</span>' +
+        '<span style="display:block;font-size:13px;color:var(--muted);margin-top:3px;">' + esc(g.title) + ' \u00b7 ' + done + '/' + tasks.length + ' done' + (g.due_at ? ' \u00b7 due ' + esc(when(g.due_at)) : '') + (due.length > 1 ? ' \u00b7 +' + (due.length - 1) + ' more' : '') + '</span>' +
+      '</span>' +
+      '<span class="mono" style="flex:none;font-size:12px;font-weight:700;color:var(--bright);border:1px solid var(--vqw);padding:8px 12px;border-radius:999px;">CHECK IN \u2192</span>';
+    if (!old) {
+      var anchor = document.getElementById("vqNotice") || document.querySelector(".card:not(#pgNotice)");
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(card, anchor.id === "vqNotice" ? anchor.nextSibling : anchor);
+    }
+  }
+
   function start() {
     var link = homeMount(), DATA = cached(), lastBox = null;
     if (DATA) glowCss();
@@ -174,6 +206,7 @@
       if (link) homeShow(d, link);
       else { lastBox = null; tryPf(); }
     });
+    if (link) pgFetch().then(function (g) { if (g) pgShow(g); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();

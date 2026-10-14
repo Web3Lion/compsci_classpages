@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=17.0.0"></script>
+<script src="site.js?v=18.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -63,27 +63,44 @@ select:focus,input[type=text]:focus{border-color:var(--q-accent);outline:none;bo
 <div id="srLive" class="sr" aria-live="assertive"></div>
 <div id="toast" role="status" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9000;max-width:min(560px,92vw);padding:14px 20px;border-radius:12px;background:var(--q-ink);color:var(--q-bg);font-weight:700;font-size:16px;display:none;box-shadow:0 10px 30px -10px rgba(0,0,0,.4);"></div>
 
-<script src="supabase-config.js?v=17.0.0"></script>
-<script src="auth.js?v=17.0.0"></script>
+<script src="supabase-config.js?v=18.0.0"></script>
+<script src="auth.js?v=18.0.0"></script>
 <script>
 (function(){
 var AUTH = window.CTF_AUTH;
 var QID = new URLSearchParams(location.search).get("q");
-/* ?demo=1 : local sample quiz for previewing the layout. Nothing is sent or saved. */
-if(new URLSearchParams(location.search).get("demo")==="1"){ QID="demo"; AUTH=demoAuth(); }
+/* ?demo=1 : local sample quiz. ?demo=preview : the teacher's real quiz settings + pool
+   (handed over in localStorage by teacher.html → Preview). Nothing is sent or saved. */
+var DEMO=new URLSearchParams(location.search).get("demo");
+if(DEMO==="1"||DEMO==="preview"){ QID="demo"; AUTH=demoAuth(); }
+/* Quizzes are taken in Google Chrome (incl. Chromebooks). Edge, Brave, Opera etc. report a different brand. */
+function isChrome(){
+  var b=navigator.userAgentData&&navigator.userAgentData.brands;
+  if(b&&b.length) return b.some(function(x){ return /Google Chrome/i.test(x.brand); });
+  var ua=navigator.userAgent||"";
+  return (/Chrome\//.test(ua)||/CriOS\//.test(ua)) && !/Edg\/|EdgA\/|EdgiOS|OPR\/|Opera|SamsungBrowser|YaBrowser|Vivaldi|Brave/i.test(ua);
+}
 function demoAuth(){
   var T=[["Phishing","A fraudulent message that tricks people into revealing information or clicking a malicious link."],["Firewall","A device or program that filters network traffic based on a set of rules."],["Malware","Software written to damage, disrupt, or gain unauthorized access to a system."],["Encryption","Converting readable data into an unreadable form so only authorized parties can read it."],["Authentication","Verifying that a user or device is who or what it claims to be."],["Patch","An update that fixes a security flaw or bug in software."],["Tailgating","Following an authorized person through a secure door without using your own access."],["Ransomware","Malware that locks or encrypts files and demands payment to restore them."],["Botnet","A network of infected computers controlled remotely by an attacker."],["Two-Factor Authentication","A login that requires two different kinds of proof of identity."]];
   function sh(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  var PV=null; if(DEMO==="preview"){ try{ PV=JSON.parse(localStorage.getItem("vq-preview")); }catch(e){} }
+  if(PV&&PV.pool&&PV.pool.length) T=PV.pool.map(function(x){ return [x.t,x.d]; });
+  var TITLE=PV?"Preview: "+PV.title:"Demo: Module 3 Vocab Quiz", SEC=PV?PV.sections:{bank:2,match:2,mc:2,typed:2}, DRAW=PV?PV.draw:8,
+      EXTRA=PV?PV.extras:2, MINS=PV?PV.time:15, ATT=PV?PV.attempts:2;
   var att=[], cur=null, key={};
   function norm(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim(); }
-  function info(){ return {title:"Demo: Module 3 Vocab Quiz",course:"cyber1",class_name:"Demo class",name:"Demo Student",handle:"demo",status:"open",time_limit_min:15,max_attempts:2,questions:8,due_at:new Date(Date.now()+864e5*3).toISOString(),in_progress:!!cur,attempts:att}; }
+  function info(){ return {title:TITLE,course:"cyber1",class_name:PV?"Teacher preview (nothing is saved)":"Demo class",name:"Demo Student",handle:"demo",status:"open",time_limit_min:MINS,max_attempts:ATT,questions:DRAW,due_at:PV?PV.due:new Date(Date.now()+864e5*3).toISOString(),in_progress:!!cur,attempts:att}; }
   function start(){
     if(cur) return cur;
-    var p=sh(T), d=p.slice(0,8), rest=p.slice(8), idx=0; key={};
+    var p=sh(T), d=p.slice(0,DRAW), rest=p.slice(DRAW), idx=0; key={};
     function items(list,mc){ return list.map(function(x){ key[idx]=x[0]; var it={i:idx++,q:x[1]}; if(mc) it.opts=sh([x[0]].concat(sh(T.filter(function(y){return y[0]!==x[0];})).slice(0,3).map(function(y){return y[0];}))); return it; }); }
-    var b=d.slice(0,2), m=d.slice(2,4), c=d.slice(4,6), t=d.slice(6,8);
-    var paper=[{kind:"bank",items:items(b),bank:sh(b.map(function(x){return x[0];}).concat(rest.map(function(x){return x[0];})))},{kind:"match",items:items(m),choices:sh(m.map(function(x){return x[0];}))},{kind:"mc",items:items(c,true)},{kind:"typed",items:items(t)}];
-    cur={attempt_id:"demo",attempt_no:att.length+1,paper:paper,answers:{},deadline:new Date(Date.now()+15*60000).toISOString(),now:new Date().toISOString(),total:8,title:"Demo: Module 3 Vocab Quiz",max_attempts:2};
+    var paper=[], at=0;
+    ["bank","match","mc","typed"].forEach(function(k){ var n=+SEC[k]||0; if(!n) return; var part=d.slice(at,at+n); at+=n; if(!part.length) return;
+      var sec={kind:k,items:items(part,k==="mc")};
+      if(k==="bank") sec.bank=sh(part.map(function(x){return x[0];}).concat(sh(rest).slice(0,EXTRA).map(function(x){return x[0];})));
+      if(k==="match") sec.choices=sh(part.map(function(x){return x[0];}));
+      paper.push(sec); });
+    cur={attempt_id:"demo",attempt_no:att.length+1,paper:paper,answers:{},deadline:MINS?new Date(Date.now()+MINS*60000).toISOString():null,now:new Date().toISOString(),total:idx,title:TITLE,max_attempts:ATT};
     return cur;
   }
   function lev(a,b){ var p=[],i,j; for(j=0;j<=b.length;j++) p[j]=j; for(i=1;i<=a.length;i++){ var c=[i]; for(j=1;j<=b.length;j++) c[j]=Math.min(c[j-1]+1,p[j]+1,p[j-1]+(a[i-1]===b[j-1]?0:1)); p=c; } return p[b.length]; }
@@ -92,8 +109,8 @@ function demoAuth(){
     cur.paper.forEach(function(s){ s.items.forEach(function(it){ var g=ans[it.i]||"", a=key[it.i], ok;
       if(s.kind==="typed"){ var G=norm(g),A=norm(a); ok=G!==""&&(G===A||lev(G,A)<=(A.length<=4?0:A.length<=8?1:2)); } else ok=g!==""&&norm(g)===norm(a);
       if(ok) score++; else missed.push({kind:s.kind,q:it.q,given:g}); }); });
-    var r={no:cur.attempt_no,score:score,total:8,submitted_at:new Date().toISOString(),missed:missed,violation:viol||null}; att.push(r); cur=null;
-    return {score:score,total:8,attempt_no:r.no,missed:missed,violation:viol||null,best:Math.max.apply(null,att.map(function(a){return a.score;})),attempts_left:2-att.length,status:"open"};
+    var r={no:cur.attempt_no,score:score,total:cur.total,submitted_at:new Date().toISOString(),missed:missed,violation:viol||null}; att.push(r); cur=null;
+    return {score:score,total:r.total,attempt_no:r.no,missed:missed,violation:viol||null,best:Math.max.apply(null,att.map(function(a){return a.score;})),attempts_left:ATT-att.length,status:"open"};
   }
   return {online:true, requireSchool:function(){ return Promise.resolve({email:"demo@example.org"}); }, signIn:function(){},
     rpc:function(fn,a){ return new Promise(function(res){ setTimeout(function(){ res(fn==="vq_info"?info():fn==="vq_start"?start():fn==="vq_submit"?submit(a.p_answers,a.p_violation):{ok:true}); },150); }); }};
@@ -193,7 +210,9 @@ function introView(){
   if(i.status==="closed") h+=note("warn","This quiz is closed right now.");
   else if(i.status==="not_yet") h+=note("info","This quiz opens "+esc(when(i.opens_at))+".");
   else if(i.status==="past_due" && !i.in_progress) h+=note("warn","The due date has passed. This quiz is closed.");
-  var canStart = i.in_progress || (i.status==="open" && left>0);
+  var chromeOk = isChrome() || QID==="demo";
+  if(!chromeOk) h+=note("bad","<b>Open this quiz in Google Chrome.</b> This browser isn\u2019t supported for quizzes. Copy the link into Chrome (or use your Chromebook) and sign in there.");
+  var canStart = chromeOk && (i.in_progress || (i.status==="open" && left>0));
   if(canStart){
     h+='<div style="margin-top:24px;padding-top:22px;border-top:1px solid var(--q-rule2);">'+
       '<h2 style="font-size:20px;">Before you start</h2>'+
@@ -393,7 +412,10 @@ function block(e){ if(inQuiz(e)){ e.preventDefault(); } }
 function onPaste(e){ if(!S.att) return; e.preventDefault(); S.pastes++; S.dirty=true; toast("Paste is turned off during quizzes."); }
 function violate(reason){ if(!S.att || S.busy || !S.armed) return; submit(true, reason); }
 function onVis(){ if(document.hidden) violate("switched to another tab or app"); }
-function onBlur(){ violate("clicked outside the quiz window"); }
+function onBlur(){
+  var a=document.activeElement; if(a && a.tagName==="SELECT") return;
+  violate("clicked outside the quiz window");
+}
 function onFs(){ if(S.fs && !fsOn()) violate("left full screen"); }
 function sbToken(){
   try{ for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i);

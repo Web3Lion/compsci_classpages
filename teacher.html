@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=17.0.0"></script>
+<script src="site.js?v=18.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,7 +45,7 @@
   .btn.pri{background:var(--accent);border-color:var(--accent);color:#04121e;}
   .btn.pri:hover{background:var(--accent2);border-color:var(--accent2);}
   .btn.danger:hover{border-color:var(--bad);color:var(--bad);}
-  .btn.sm{padding:5px 10px;font-size:11px;border-radius:7px;}
+  .btn.sm{padding:5px 10px;font-size:11px;border-radius:7px;white-space:nowrap;}
   .in{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border3);background:var(--bg2);color:var(--bright);font-size:14px;outline:none;}
   .in:focus{border-color:var(--accent);}
   .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;text-transform:uppercase;}
@@ -260,19 +260,19 @@
   </div>
 </div>
 
-<script src="config.js?v=17.0.0"></script>
-<script src="ctf-data/cyber1.js?v=17.0.0"></script>
-<script src="ctf-data/cyber2.js?v=17.0.0"></script>
-<script src="ctf-data/cyber3.js?v=17.0.0"></script>
-<script src="ctf-data/apcsp.js?v=17.0.0"></script>
-<script src="ctf-data/web3.js?v=17.0.0"></script>
-<script src="cipher.js?v=17.0.0"></script>
-<script src="supabase-config.js?v=17.0.0"></script>
-<script src="auth.js?v=17.0.0"></script>
-<script src="name-filter.js?v=17.0.0"></script>
-<script src="objectives.js?v=17.0.0"></script>
-<script src="standards.js?v=17.0.0"></script>
-<script src="csv.js?v=17.0.0"></script>
+<script src="config.js?v=18.0.0"></script>
+<script src="ctf-data/cyber1.js?v=18.0.0"></script>
+<script src="ctf-data/cyber2.js?v=18.0.0"></script>
+<script src="ctf-data/cyber3.js?v=18.0.0"></script>
+<script src="ctf-data/apcsp.js?v=18.0.0"></script>
+<script src="ctf-data/web3.js?v=18.0.0"></script>
+<script src="cipher.js?v=18.0.0"></script>
+<script src="supabase-config.js?v=18.0.0"></script>
+<script src="auth.js?v=18.0.0"></script>
+<script src="name-filter.js?v=18.0.0"></script>
+<script src="objectives.js?v=18.0.0"></script>
+<script src="standards.js?v=18.0.0"></script>
+<script src="csv.js?v=18.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -462,7 +462,7 @@ function renderMain(){
   h+='<div class="tabs">'+
       tabBtn("summary","Summary")+tabBtn("spread","Distributions")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
       tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+tabBtn("ultimate","Ultimate Flags")+
-      tabBtn("vocab","Vocab Lab")+tabBtn("quizzes","Assigned Vocab Quizzes")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("weekxp","Weekly XP")+tabBtn("rewards","Send Rewards")+tabBtn("enroll","Enrollment")+
+      tabBtn("vocab","Vocab Lab")+tabBtn("quizzes","Assigned Vocab Quizzes")+tabBtn("pgrids","Progress Grids")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("weekxp","Weekly XP")+tabBtn("rewards","Send Rewards")+tabBtn("enroll","Enrollment")+
       tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
     '</div><div style="padding-top:16px;">';
   if(TAB==="roster") h+=rosterView();
@@ -475,6 +475,7 @@ function renderMain(){
   else if(TAB==="ultimate") h+=ultimateView();
   else if(TAB==="vocab") h+=vocabView();
   else if(TAB==="quizzes") h+=vqView();
+  else if(TAB==="pgrids") h+=pgView();
   else if(TAB==="squads") h+=squadsView();
   else if(TAB==="objectives") h+=objectivesView();
   else if(TAB==="xplog") h+=xpLogView();
@@ -555,7 +556,7 @@ function summaryView(){
           '<span style="margin-left:auto;font-size:11px;color:var(--warn);">'+why+'</span></div>';
       }).join(""):'<div class="empty" style="padding:20px;font-size:13px;color:var(--ok)">Everyone is active. \uD83C\uDF89</div>')+'</div>';
   h+='</div>';
-  return h+silentPanel()+timeOnTaskPanel();
+  return h+assignPanel()+silentPanel()+timeOnTaskPanel();
 }
 
 /* ----- time on task (#1) -----
@@ -4055,13 +4056,18 @@ async function vqLoad(){
   if(!CUR) return; VQ.cls=CUR.id; VQ.loading=true;
   try{ var r=await rpc("vq_t_list",{p_class:CUR.id}); VQ.list=Array.isArray(r)?r:[]; VQ.err=null; }
   catch(e){ VQ.list=[]; VQ.err=(e&&e.message)||"missing_rpc"; }
-  VQ.loading=false; if(TAB==="quizzes") renderMain();
+  VQ.loading=false; if(TAB==="quizzes"||TAB==="summary") renderMain();
 }
 function vqLoadVocab(course){
   if(VQV[course]) return Promise.resolve(VQV[course]);
   var src=VQSRC[course]; if(!src) return Promise.resolve({terms:[],modules:{}});
   return new Promise(function(res){
-    function done(){ var g=window[src[1]]||{}; VQV[course]={terms:(g.terms||[]).filter(function(t){return t&&t.t&&t.d;}),modules:g.modules||{}}; res(VQV[course]); }
+    function done(){
+      var g=window[src[1]]||{}, terms=(g.terms||[]).filter(function(t){return t&&t.t&&t.d;}), mods=g.modules||{};
+      // "additional" = extra-context terms: add flag, a non-focus tier in a tiered list, or an "Additional Terms" module
+      var tiered=terms.some(function(t){return !!t.tier;});
+      terms.forEach(function(t){ t._add=!!(t.add || (tiered && t.tier!=="focus") || /additional/i.test(mods[t.m]||"")); });
+      VQV[course]={terms:terms,modules:mods,addN:terms.filter(function(t){return t._add;}).length}; res(VQV[course]); }
     if(window[src[1]]) return done();
     var s=document.createElement("script"); s.src=src[0]+"?v="+(window.SITE_VERSION||""); s.onload=done; s.onerror=done; document.head.appendChild(s);
   });
@@ -4080,7 +4086,7 @@ function vqView(){
   if(!VQ.list) return h+'<div class="empty"><span class="spin"></span></div>';
   if(!VQ.list.length) return h+'<div class="empty">No quizzes for this class yet. Click <b>+ New quiz</b>.</div>';
   VQ.list.forEach(function(q){ h+=vqCard(q); });
-  return h;
+  return h+copyModal();
 }
 function vqStatusPill(s){
   var m={open:["OPEN","var(--ok)"],not_yet:["SCHEDULED","var(--accent)"],past_due:["PAST DUE","var(--warn)"],closed:["CLOSED","var(--dim)"]}[s]||[s,"var(--dim)"];
@@ -4094,6 +4100,8 @@ function vqCard(q){
       '<b style="color:var(--bright);font-size:15px;">'+esc(q.title)+'</b>'+
       '<span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;">'+
         '<button class="btn sm" onclick="vqCopy(\''+q.id+'\')">Copy link</button>'+
+        '<button class="btn sm" onclick="vqPreview(\''+q.id+'\')">Preview</button>'+
+        '<button class="btn sm" onclick="copyOpen(\'vq\',\''+q.id+'\')">Copy to\u2026</button>'+
         '<button class="btn sm" onclick="vqToggleOpen(\''+q.id+'\')">'+(q.is_open?"Close":"Open")+'</button>'+
         '<button class="btn sm" onclick="vqEdit(\''+q.id+'\')">Edit</button>'+
         '<button class="btn sm'+(open?' pri':'')+'" onclick="vqResults(\''+q.id+'\')">'+(open?"Hide results":"Results")+'</button>'+
@@ -4146,12 +4154,21 @@ function vqResultsHtml(q){
   var h='<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border2);">';
   if(!r) return h+'<div class="empty" style="padding:20px;"><span class="spin"></span></div></div>';
   if(r.error) return h+'<div style="color:var(--bad);font-size:13px;">'+esc(r.error)+'</div></div>';
-  var st=r.students||[], seen=r.seen||{};
+  var st=(r.students||[]).filter(function(s){return sgPass(s.student_id);}), seen=r.seen||{}, mm=r.most_missed||[];
+  h+=sgBar();
+  if(SGF!=="all"){ var cnt={}; st.forEach(function(s){ (s.attempts||[]).forEach(function(a){ (a.missed||[]).forEach(function(x){ cnt[x.a]=(cnt[x.a]||0)+1; }); }); });
+    mm=Object.keys(cnt).map(function(k){return {term:k,n:cnt[k]};}).sort(function(a,b){return b.n-a.n;}).slice(0,12); seen={};
+    var sc=st.filter(function(s){return s.best!=null&&s.total;}), avg=sc.length?Math.round(sc.reduce(function(a,s){return a+s.best/s.total*100;},0)/sc.length):null;
+    h+='<div class="mono" style="font-size:12px;color:var(--dim);margin-bottom:12px;">'+st.length+' students \u00b7 '+sc.length+' turned in'+(avg!=null?' \u00b7 avg best <b style="color:var(--accent);">'+avg+'%</b>':'')+'</div>'; }
+  r={students:st,most_missed:mm,seen:seen};
   if((r.most_missed||[]).length){
     h+='<div class="lbl">Most missed terms</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">'+
       r.most_missed.map(function(m){ var s=seen[m.term]||0; return '<span class="chip"><b style="color:var(--bright);">'+esc(m.term)+'</b><span class="mono" style="color:var(--bad);">'+m.n+(s?'/'+s:'')+' missed</span></span>'; }).join("")+'</div>';
   }
-  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div class="lbl" style="margin:0;">Students</div><button class="btn sm" style="margin-left:auto;" onclick="vqCsv(\''+q.id+'\')">Export CSV</button></div>';
+  var ns=st.filter(function(s){return !s.used;}).length;
+  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><div class="lbl" style="margin:0;">Students</div>'+liveNote()+
+    '<span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;">'+(ns?'<button class="btn sm" onclick="vqCopyNotStarted(\''+q.id+'\')">Copy names: not started ('+ns+')</button>':'')+
+    '<button class="btn sm" onclick="vqCsv(\''+q.id+'\')">Export CSV</button></span></div>';
   h+='<div style="overflow-x:auto;"><table><tr><th>Name</th><th>Hacker name</th><th>Status</th><th>Attempts</th><th>Best</th><th>Last turned in</th><th title="Times the student left the quiz screen / tried to paste">Left / Paste</th><th></th></tr>';
   st.forEach(function(s){
     var status=s.in_progress?'<span style="color:var(--warn);">In progress</span>':s.used?'<span style="color:var(--ok);">Turned in</span>':'<span style="color:var(--dim);">Not started</span>';
@@ -4183,6 +4200,7 @@ async function vqReset(qid,sid){
 }
 function vqCsv(id){
   var q=vqFind(id), r=VQ.res[id]; if(!q||!r||!r.students) return;
+  r={students:r.students.filter(function(s){return sgPass(s.student_id);})};
   var rows=[["Name","Email","Hacker name","Attempts used","Best score","Out of","Best %","Last turned in","Integrity violations","Violation details","Paste attempts"]];
   r.students.forEach(function(s){ var vd=(s.attempts||[]).filter(function(a){return a.violation;}).map(function(a){return "Attempt "+a.no+": "+a.violation;}).join("; ");
     rows.push([s.name,s.email||"",s.handle,s.used,s.best==null?"":s.best,s.total||"",s.best!=null&&s.total?Math.round(s.best/s.total*100):"",s.last_at?new Date(s.last_at).toLocaleString():"",s.violations||0,vd,s.pastes]); });
@@ -4194,7 +4212,7 @@ function vqCsv(id){
 /* builder */
 function vqNew(){
   VQ.msg="";
-  VQ.build={mod:"all",q:"",sel:{},title:"",draw:10,bank:5,match:5,mc:0,typed:0,extras:2,time:0,attempts:2,opens:"",due:"",open:true,ct:"",cd:""};
+  VQ.build={mod:"all",q:"",addl:false,sel:{},title:"",draw:10,bank:5,match:5,mc:0,typed:0,extras:2,time:0,attempts:2,opens:"",due:"",open:true,ct:"",cd:""};
   renderMain();
   vqLoadVocab(CUR.course).then(function(){ if(TAB==="quizzes"&&VQ.build) renderMain(); });
 }
@@ -4202,8 +4220,8 @@ function vqBuilder(){
   var b=VQ.build, V=VQV[CUR.course];
   if(!V) return '<div class="empty"><span class="spin"></span> Loading vocab\u2026</div>';
   var mods={}; V.terms.forEach(function(t){ mods[t.m]=1; });
-  var modOpts='<option value="all">All modules ('+V.terms.length+' terms)</option>'+Object.keys(mods).sort(function(a,b){return a-b;}).map(function(m){
-    var n=V.terms.filter(function(t){return String(t.m)===m;}).length;
+  var modOpts='<option value="all">All modules ('+V.terms.filter(function(t){return b.addl||!t._add;}).length+' terms)</option>'+Object.keys(mods).sort(function(a,b){return a-b;}).map(function(m){
+    var n=V.terms.filter(function(t){return String(t.m)===m&&(b.addl||!t._add);}).length;
     return '<option value="'+m+'"'+(String(b.mod)===m?' selected':'')+'>'+esc((V.modules[m]?m+". "+V.modules[m]:"Module "+m)+" ("+n+")")+'</option>'; }).join("");
   var num=function(k,lab,min,max){ return '<label><div class="lbl">'+lab+'</div><input class="in" type="number" min="'+min+'" max="'+max+'" value="'+b[k]+'" oninput="vqSet(\''+k+'\',+this.value||0)"></label>'; };
   return '<div class="card" style="padding:18px;">'+
@@ -4214,6 +4232,7 @@ function vqBuilder(){
       '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">'+
         '<select class="in" style="flex:1;min-width:180px;" onchange="vqSet(\'mod\',this.value);vqTerms()">'+modOpts+'</select>'+
         '<input class="in" style="flex:1;min-width:140px;" placeholder="Search terms" value="'+esc(b.q)+'" oninput="vqSet(\'q\',this.value);vqTerms()"></div>'+
+      (V.addN?'<button class="btn sm" style="margin-bottom:8px;'+(b.addl?'border-color:var(--warn);color:var(--warn);':'')+'" onclick="VQ.build.addl=!VQ.build.addl;renderMain()">'+(b.addl?'\u2713 Additional terms included ('+V.addN+')':'+ Include additional terms ('+V.addN+')')+'</button>':'')+
       '<div style="display:flex;gap:6px;margin-bottom:8px;"><button class="btn sm" onclick="vqAllShown(true)">Select all shown</button><button class="btn sm" onclick="vqAllShown(false)">Clear shown</button><button class="btn sm" style="margin-left:auto;" onclick="VQ.build.sel={};vqTerms();vqPlan()">Clear all</button></div>'+
       '<div id="vqTerms" style="max-height:380px;overflow:auto;border:1px solid var(--border2);border-radius:10px;background:var(--bg2);"></div>'+
       '<div class="lbl" style="margin-top:14px;">Add a custom term</div>'+
@@ -4243,7 +4262,7 @@ function vqSet(k,v){ if(VQ.build){ VQ.build[k]=v; if(k!=="q"&&k!=="mod") vqPlan(
 function vqShown(){
   var b=VQ.build, V=VQV[CUR.course], q=vqNorm(b.q);
   return V.terms.map(function(t,i){ return {t:t,i:i}; }).filter(function(x){
-    return (b.mod==="all"||String(x.t.m)===String(b.mod)) && (!q||vqNorm(x.t.t).indexOf(q)!==-1||vqNorm(x.t.d).indexOf(q)!==-1);
+    return (b.addl||!x.t._add) && (b.mod==="all"||String(x.t.m)===String(b.mod)) && (!q||vqNorm(x.t.t).indexOf(q)!==-1||vqNorm(x.t.d).indexOf(q)!==-1);
   });
 }
 function vqTerms(){
@@ -4253,7 +4272,7 @@ function vqTerms(){
     var k=vqNorm(x.t.t), on=!!b.sel[k];
     return '<label style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:9px 12px;border-bottom:1px solid var(--border2);cursor:pointer;'+(on?'background:color-mix(in srgb,var(--accent) 10%,transparent);':'')+'">'+
       '<input type="checkbox" '+(on?'checked':'')+' onchange="vqPick('+x.i+',this.checked)" style="margin-top:3px;">'+
-      '<span style="min-width:0;"><b style="color:var(--bright);font-size:13px;">'+esc(x.t.t)+'</b> <span class="mono" style="font-size:10px;color:var(--faint);">M'+esc(x.t.m)+'</span>'+
+      '<span style="min-width:0;"><b style="color:var(--bright);font-size:13px;">'+esc(x.t.t)+'</b> <span class="mono" style="font-size:10px;color:var(--faint);">M'+esc(x.t.m)+'</span>'+(x.t._add?' <span class="mono" style="font-size:9px;color:var(--warn);border:1px solid var(--warn);border-radius:4px;padding:0 4px;">ADDITIONAL</span>':'')+
       '<span style="display:block;font-size:12px;color:var(--dim);line-height:1.45;margin-top:2px;">'+esc(x.t.d.length>150?x.t.d.slice(0,150)+"\u2026":x.t.d)+'</span></span></label>';
   }).join(""):'<div class="empty" style="padding:20px;">No terms match.</div>';
   vqSelRender();
@@ -4315,6 +4334,309 @@ async function vqCreate(){
     VQ.msg='<b style="color:var(--ok);">Quiz assigned.</b> Link copied, paste it into Classroom: <span class="mono" style="font-size:12px;color:var(--accent);word-break:break-all;">'+esc(u)+'</span>';
     vqLoad();
   }catch(e){ if(btn){ btn.disabled=false; btn.textContent="Assign quiz"; } alert("Couldn't create the quiz: "+((e&&e.message)||e)); }
+}
+
+/* ----- shared by Assigned Quizzes + Progress Grids: group filter, copy-to-class, summary panel ----- */
+var LIVE_T=null, LIVE_AT=0;
+function liveBusy(){
+  var a=document.activeElement;
+  return document.hidden || PG.cell || COPYM || PGPV || VQ.build || PG.edit || VQ.edit ||
+    (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+}
+async function liveTick(){
+  if(liveBusy() || !CUR) return;
+  if(TAB==="quizzes" && VQ.open){
+    var id=VQ.open;
+    try{ var r=await rpc("vq_t_results",{p_quiz:id}); if(VQ.open===id){ VQ.res[id]=r; } }catch(e){}
+    try{ var l=await rpc("vq_t_list",{p_class:CUR.id}); if(Array.isArray(l)) VQ.list=l; }catch(e){}
+  } else if(TAB==="pgrids" && PG.open){
+    var gid=PG.open;
+    try{ var d=await rpc("pg_t_grid",{p_grid:gid,p_days:45}); if(PG.open===gid) PG.data[gid]=d; }catch(e){}
+    try{ var gl=await rpc("pg_t_list",{p_class:CUR.id}); if(Array.isArray(gl)) PG.list=gl; }catch(e){}
+  } else return;
+  if(liveBusy()) return;
+  LIVE_AT=Date.now();
+  var y=window.scrollY; renderMain(); window.scrollTo(0,y);
+}
+if(!window.__liveSet){ window.__liveSet=1; LIVE_T=setInterval(liveTick, 45000); }
+function liveNote(){ return '<span class="mono" style="font-size:10px;color:var(--faint);" title="Updates every 45 seconds while open">\u25cf LIVE'+(LIVE_AT?' \u00b7 updated '+new Date(LIVE_AT).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):'')+'</span>'; }
+document.addEventListener("keydown",function(e){
+  if(e.key!=="Escape") return;
+  if(PG.cell){ PG.cell=null; renderMain(); }
+  else if(COPYM){ COPYM=null; renderMain(); }
+  else if(PGPV){ PGPV=null; renderMain(); }
+});
+/* 2. copy names for a Classroom reminder */
+function copyNames(list, what){
+  var names=list.join(", ");
+  if(!list.length){ alert("Nobody to remind."); return; }
+  if(navigator.clipboard) navigator.clipboard.writeText(names).then(function(){ alert("Copied "+list.length+" name"+(list.length>1?"s":"")+" ("+what+")."); },function(){ prompt("Copy these names:",names); });
+  else prompt("Copy these names:",names);
+}
+function vqCopyNotStarted(id){
+  var r=VQ.res[id]; if(!r||!r.students) return;
+  copyNames(r.students.filter(function(s){return sgPass(s.student_id)&&!s.used;}).map(function(s){return s.name;}),"not started");
+}
+function pgCopyNotIn(id){
+  var d=PG.data[id]; if(!d||!d.students) return;
+  copyNames(d.students.filter(function(s){return sgPass(s.student_id)&&!s.checked_in_today;}).map(function(s){return s.name;}),"not checked in today");
+}
+var SGF="all", COPYM=null;
+function sgGroupOf(sid){ for(var i=0;i<ROSTER.length;i++) if(ROSTER[i].id===sid) return ROSTER[i].group_id||null; return null; }
+function sgPass(sid){ if(SGF==="all") return true; var g=sgGroupOf(sid); return SGF==="none"?!g:g===SGF; }
+function sgBar(){
+  var gs=(GROUPS||[]); if(!gs.length) return '';
+  var un=ROSTER.filter(function(r){return !r.group_id;}).length;
+  var chip=function(v,label,col){ var on=SGF===v; return '<button class="btn sm'+(on?' pri':'')+'" style="'+(col&&!on?'border-color:'+col+';':'')+'" onclick="SGF=\''+v+'\';renderMain()">'+esc(label)+'</button>'; };
+  return '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px;"><span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">GROUP</span>'+
+    chip("all","All")+gs.map(function(g){ return chip(g.id,g.name,g.color); }).join("")+(un?chip("none","Ungrouped"):"")+'</div>';
+}
+function copyOpen(kind,id){ COPYM={kind:kind,id:id,sel:{}}; renderMain(); }
+function copyModal(){
+  if(!COPYM) return '';
+  var others=(CLASSES||[]).filter(function(c){ return c.id!==CUR.id && c.course===CUR.course; });
+  var item=COPYM.kind==="vq"?vqFind(COPYM.id):pgFind(COPYM.id); if(!item) return '';
+  return '<div class="modal" onclick="if(event.target===this){COPYM=null;renderMain();}"><div class="card" role="dialog" aria-label="Copy to other classes" style="padding:22px;width:min(460px,100%);">'+
+    '<div style="font-size:17px;font-weight:800;color:var(--bright);">Copy \u201c'+esc(item.title)+'\u201d</div>'+
+    '<div style="font-size:13px;color:var(--dim);margin:6px 0 14px;">Same '+(COPYM.kind==="vq"?'term pool, formats, time limit, attempts and dates':'tasks and due date')+'. Each class keeps its own results.</div>'+
+    (others.length?'<div style="display:flex;flex-direction:column;gap:6px;">'+others.map(function(c){ return '<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border2);border-radius:9px;cursor:pointer;"><input type="checkbox" onchange="COPYM.sel[\''+c.id+'\']=this.checked"'+(COPYM.sel[c.id]?' checked':'')+'><b style="color:var(--bright);">'+esc(c.name)+'</b><span class="mono" style="font-size:11px;color:var(--dim);margin-left:auto;">'+esc(c.code)+'</span></label>'; }).join("")+'</div>'
+      :'<div class="empty" style="padding:16px;">No other '+esc(courseMeta(CUR.course).label)+' classes.</div>')+
+    '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;"><button class="btn" onclick="COPYM=null;renderMain()">Cancel</button>'+(others.length?'<button class="btn pri" onclick="copyGo()">Copy</button>':'')+'</div>'+
+  '</div></div>';
+}
+async function copyGo(){
+  var ids=Object.keys(COPYM.sel).filter(function(k){return COPYM.sel[k];}); if(!ids.length){ alert("Pick at least one class."); return; }
+  try{ var r=await rpc(COPYM.kind==="vq"?"vq_t_copy":"pg_t_copy",COPYM.kind==="vq"?{p_quiz:COPYM.id,p_classes:ids}:{p_grid:COPYM.id,p_classes:ids});
+    var msg="Copied to "+r.copied+" class"+(r.copied===1?"":"es")+".";
+    if(COPYM.kind==="vq") VQ.msg='<b style="color:var(--ok);">'+msg+'</b> Each copy has its own link: open that class and use Copy link.'; else alert(msg);
+  }catch(e){ alert("Couldn't copy: "+((e&&e.message)||e)); }
+  COPYM=null; renderMain();
+}
+/* Summary tab: one card with open quizzes + progress-grid alerts */
+function assignPanel(){
+  if(VQ.cls!==CUR.id && !VQ.loading){ VQ={cls:CUR.id,list:null,loading:false,err:null,open:null,res:{},exp:{},edit:null,build:null,msg:""}; vqLoad(); }
+  if(PG.cls!==CUR.id){ PG={cls:CUR.id,list:null,err:null,open:null,data:{},edit:null,cell:null,day:""}; pgLoad(); }
+  var quiz=(VQ.list||[]).filter(function(q){return q.status==="open";}), grids=(PG.list||[]).filter(function(g){return g.is_open;});
+  if(!quiz.length && !grids.length) return '';
+  pgCss();
+  var h='<div class="card" style="padding:16px 18px;margin-top:22px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">ASSIGNED WORK</div><div style="display:flex;flex-direction:column;gap:8px;">';
+  quiz.forEach(function(q){ var ns=Math.max(q.students-q.done-q.in_progress,0);
+    h+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;"><span class="pill" style="color:var(--ok);border:1px solid var(--ok);">QUIZ</span><b style="color:var(--bright);">'+esc(q.title)+'</b>'+
+      '<span class="mono" style="font-size:12px;color:var(--dim);">'+q.done+'/'+q.students+' turned in'+(q.in_progress?' \u00b7 '+q.in_progress+' in progress':'')+(ns?' \u00b7 <span style="color:var(--warn);">'+ns+' not started</span>':'')+(q.avg_pct!=null?' \u00b7 avg '+q.avg_pct+'%':'')+(q.violations?' \u00b7 <span style="color:var(--bad);">'+q.violations+' left screen</span>':'')+(q.due_at?' \u00b7 due '+esc(vqWhen(q.due_at)):'')+'</span>'+
+      '<button class="btn sm" style="margin-left:auto;" onclick="TAB=\'quizzes\';VQ.open=null;vqResults(\''+q.id+'\')">Results</button></div>'; });
+  grids.forEach(function(g){
+    h+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;"><span class="pill" style="color:var(--accent);border:1px solid var(--accent);">GRID</span><b style="color:var(--bright);">'+esc(g.title)+'</b>'+
+      '<span class="mono" style="font-size:12px;color:var(--dim);">checked in today '+g.checked_today+'/'+g.students+
+      (g.stuck?' \u00b7 <span style="color:var(--pg-stuck);font-weight:800;">'+g.stuck+' stuck</span>':'')+(g.question?' \u00b7 <span style="color:var(--pg-question);font-weight:800;">'+g.question+' questions</span>':'')+(g.need_check?' \u00b7 <span style="color:var(--pg-check);font-weight:800;">'+g.need_check+' need check</span>':'')+'</span>'+
+      '<button class="btn sm" style="margin-left:auto;" onclick="TAB=\'pgrids\';PG.open=null;pgOpen(\''+g.id+'\')">Open grid</button></div>'; });
+  return h+'</div></div>';
+}
+/* previews */
+async function vqPreview(id){
+  var q=vqFind(id); if(!q) return;
+  var w=window.open("about:blank","_blank");
+  try{ var r=VQ.res[id]&&VQ.res[id].pool?VQ.res[id]:await rpc("vq_t_results",{p_quiz:id});
+    localStorage.setItem("vq-preview",JSON.stringify({title:q.title,pool:r.pool||[],draw:q.draw,sections:q.sections,extras:q.bank_extras,time:q.time_limit_min,attempts:q.max_attempts,due:q.due_at}));
+    if(w) w.location.href="quiz.html?demo=preview"; else location.href="quiz.html?demo=preview";
+  }catch(e){ if(w) w.close(); alert("Couldn't load the quiz: "+((e&&e.message)||e)); }
+}
+var PGPV=null;
+function pgPreviewModal(){
+  if(!PGPV) return ''; var g=pgFind(PGPV); if(!g) return '';
+  var pill=function(s){ return '<span style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:5px 11px;border-radius:999px;border:1px solid var(--border2);font-size:12px;font-weight:600;color:var(--text);"><span style="width:9px;height:9px;border-radius:50%;background:var(--pg-'+s[0]+');"></span>'+s[1]+'</span>'; };
+  return '<div class="modal" onclick="if(event.target===this){PGPV=null;renderMain();}"><div class="card" role="dialog" aria-label="Student view" style="padding:22px;width:min(640px,100%);max-height:90vh;overflow:auto;">'+
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span class="pill" style="color:var(--warn);border:1px solid var(--warn);">STUDENT VIEW PREVIEW</span><button class="btn sm" style="margin-left:auto;" onclick="PGPV=null;renderMain()">Close</button></div>'+
+    '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">MY PROGRESS <span style="color:var(--dim);letter-spacing:0;">\u00b7 private \u00b7 only you and your teacher can see this</span></div>'+
+    '<div style="display:flex;align-items:center;gap:12px;margin-top:6px;"><b style="font-size:18px;color:var(--bright);">'+esc(g.title)+'</b>'+(g.due_at?'<span class="mono" style="font-size:12px;color:var(--dim);">DUE '+esc(vqWhen(g.due_at))+'</span>':'')+'<span class="mono" style="margin-left:auto;font-size:13px;font-weight:800;color:var(--pg-done);">0/'+(g.tasks||[]).length+' done</span></div>'+
+    '<div style="padding:12px 14px;border-radius:10px;border:2px solid var(--pg-question);margin:14px 0;font-size:13px;"><b style="color:var(--bright);">Daily check-in</b> <span style="color:var(--muted);">Update your tasks below, or check in if nothing changed today.</span></div>'+
+    (g.tasks||[]).map(function(t){ return '<div style="border-top:1px solid var(--border2);padding:12px 0;"><div style="margin-bottom:8px;"><b class="mono" style="color:var(--bright);">'+esc(t.code)+'</b> <span style="font-size:13px;">'+esc(t.title)+'</span></div><div style="display:flex;flex-wrap:wrap;gap:6px;">'+PGST.map(pill).join("")+'</div></div>'; }).join("")+
+  '</div></div>';
+}
+
+/* ----- Progress Grids (supabase/progress-grids.sql, student side progress-grid.js on profile) -----
+   Private self-monitoring: students see only their own row; this tab is the only class view. */
+var PG={cls:null,list:null,err:null,open:null,data:{},edit:null,cell:null,day:""};
+var PGST=[["working","Working","W"],["question","Have Question","?"],["stuck","Stuck / Need Help","!"],["check","Need Check","C"],["done","Done","\u2713"]];
+var PGL={}; PGST.forEach(function(s){ PGL[s[0]]=s; });
+function pgCss(){
+  if(el("pgCssT")) return; var st=document.createElement("style"); st.id="pgCssT";
+  st.textContent=":root{--pg-working:#5cb0ff;--pg-question:#ffd060;--pg-stuck:#ff7b7b;--pg-check:#c99bff;--pg-done:#4fd99b;}:root[data-theme=light]{--pg-working:#0a5fa8;--pg-question:#7f5a00;--pg-stuck:#b3261e;--pg-check:#6a31b0;--pg-done:#11714a;}";
+  document.head.appendChild(st);
+}
+async function pgLoad(){
+  if(!CUR) return; PG.cls=CUR.id;
+  try{ var r=await rpc("pg_t_list",{p_class:CUR.id}); PG.list=Array.isArray(r)?r:[]; PG.err=null; }
+  catch(e){ PG.list=[]; PG.err=(e&&e.message)||"missing_rpc"; }
+  if(TAB==="pgrids"||TAB==="summary") renderMain();
+}
+async function pgLoadGrid(id){
+  try{ PG.data[id]=await rpc("pg_t_grid",{p_grid:id,p_days:45}); }catch(e){ PG.data[id]={error:(e&&e.message)||"error"}; }
+  if(TAB==="pgrids") renderMain();
+}
+function pgFind(id){ return (PG.list||[]).filter(function(g){return g.id===id;})[0]; }
+function pgPill(s,big){ var m=PGL[s]; if(!m) return ''; return '<span class="mono" style="font-size:'+(big?11:10)+'px;font-weight:800;color:var(--pg-'+s+');">'+esc(m[1].toUpperCase())+'</span>'; }
+function pgView(){
+  pgCss();
+  if(PG.cls!==CUR.id){ PG={cls:CUR.id,list:null,err:null,open:null,data:{},edit:null,cell:null,day:""}; pgLoad(); }
+  var h='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">'+
+    '<div style="font-size:16px;font-weight:700;color:var(--bright);">Progress Grids</div>'+
+    (PG.edit?'':'<button class="btn pri sm" style="margin-left:auto;" onclick="pgEdit(null)">+ New grid</button>')+
+    '<button class="btn sm"'+(PG.edit?' style="margin-left:auto;"':'')+' onclick="pgLoad();if(PG.open)pgLoadGrid(PG.open)">Refresh</button></div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:16px;">Private self-monitoring. Each student updates their own tasks (and checks in daily) from their profile page and can only ever see their own row. This tab is the only place the whole class is visible.</div>';
+  if(PG.edit) return h+pgEditor();
+  if(PG.err) return h+'<div class="empty" style="color:var(--bad);">Run <span class="mono">supabase/progress-grids.sql</span> to turn on progress grids.<div class="mono" style="font-size:11px;color:var(--dim);margin-top:8px;">'+esc(PG.err)+'</div></div>';
+  if(!PG.list) return h+'<div class="empty"><span class="spin"></span></div>';
+  if(!PG.list.length) return h+'<div class="empty">No grids for this class yet. Click <b>+ New grid</b>.</div>';
+  PG.list.forEach(function(g){
+    var open=PG.open===g.id;
+    h+='<div class="card" style="padding:16px 18px;margin-bottom:12px;'+(open?'border-color:var(--accent);':'')+'">'+
+      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+
+        '<span class="pill" style="color:'+(g.is_open?'var(--ok)':'var(--dim)')+';border:1px solid '+(g.is_open?'var(--ok)':'var(--dim)')+';">'+(g.is_open?'OPEN':'CLOSED')+'</span>'+
+        '<b style="color:var(--bright);font-size:15px;">'+esc(g.title)+'</b>'+
+        '<span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;">'+
+          '<button class="btn sm'+(open?' pri':'')+'" onclick="pgOpen(\''+g.id+'\')">'+(open?'Hide grid':'Open grid')+'</button>'+
+          '<button class="btn sm" onclick="pgEdit(\''+g.id+'\')">Edit</button>'+
+          '<button class="btn sm" onclick="PGPV=\''+g.id+'\';renderMain()">View as student</button>'+
+          '<button class="btn sm" onclick="copyOpen(\'pg\',\''+g.id+'\')">Copy to\u2026</button>'+
+          '<button class="btn sm" onclick="pgToggle(\''+g.id+'\')">'+(g.is_open?'Close':'Reopen')+'</button>'+
+          '<button class="btn sm danger" onclick="pgDelete(\''+g.id+'\')">Delete</button></span></div>'+
+      '<div class="mono" style="font-size:11px;color:var(--dim);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap;">'+
+        '<span>'+(g.tasks||[]).length+' tasks</span>'+(g.due_at?'<span'+(new Date(g.due_at)<new Date()?' style="color:var(--bad);"':'')+'>due '+esc(vqWhen(g.due_at))+'</span>':'')+
+        '<span>checked in today '+g.checked_today+'/'+g.students+'</span>'+
+        (g.stuck?'<span style="color:var(--pg-stuck);font-weight:800;">'+g.stuck+' stuck</span>':'')+
+        (g.question?'<span style="color:var(--pg-question);font-weight:800;">'+g.question+' questions</span>':'')+
+        (g.need_check?'<span style="color:var(--pg-check);font-weight:800;">'+g.need_check+' need check</span>':'')+'</div>';
+    if(open) h+=pgGridHtml(g);
+    h+='</div>';
+  });
+  return h+pgCellModal()+pgPreviewModal()+copyModal();
+}
+function pgOpen(id){ if(PG.open===id){ PG.open=null; renderMain(); return; } PG.open=id; PG.day=""; PG.data[id]=null; renderMain(); pgLoadGrid(id); }
+function pgEdit(id){
+  var g=id?pgFind(id):null;
+  PG.edit={id:id,title:g?g.title:"",tasks:g?(g.tasks||[]).map(function(t){return t.code+(t.title?" | "+t.title:"");}).join("\n"):"1A | \n1B | \n1C | \n1D | \n2A | \n2B | \n2C | \n3A | \n3B | \n3C | \n4A | \n5A | ",due:g?vqLocal(g.due_at):"",open:g?g.is_open:true};
+  renderMain();
+}
+function pgEditor(){
+  var e=PG.edit;
+  return '<div class="card layout" style="padding:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;">'+
+    '<div style="display:flex;flex-direction:column;gap:12px;min-width:0;">'+
+      '<label><div class="lbl">Grid title</div><input class="in" id="pgeTitle" maxlength="120" placeholder="e.g. Module 3 Grid" value="'+esc(e.title)+'"></label>'+
+      '<label><div class="lbl">Grid due (optional)</div><input class="in" type="datetime-local" id="pgeDue" value="'+e.due+'"></label>'+
+      '<label style="display:flex;align-items:center;gap:8px;font-size:13px;"><input type="checkbox" id="pgeOpen"'+(e.open?' checked':'')+'> Open (students can update)</label>'+
+      '<div style="display:flex;gap:8px;"><button class="btn pri" onclick="pgSave()">'+(e.id?'Save grid':'Create grid')+'</button><button class="btn" onclick="PG.edit=null;renderMain()">Cancel</button></div>'+
+    '</div>'+
+    '<label style="min-width:0;"><div class="lbl">Tasks \u2014 one per line: code | short title</div>'+
+      '<textarea class="in mono" id="pgeTasks" rows="14" style="font-size:13px;line-height:1.6;resize:vertical;">'+esc(e.tasks)+'</textarea>'+
+      '<div style="font-size:12px;color:var(--dim);margin-top:6px;">Renaming a code (e.g. 1A \u2192 1E) starts it fresh. Titles can change any time.</div></label>'+
+  '</div>';
+}
+async function pgSave(){
+  var e=PG.edit, tasks=el("pgeTasks").value.split("\n").map(function(l){ var p=l.split("|"); return {code:(p[0]||"").trim(),title:p.slice(1).join("|").trim()}; }).filter(function(t){return t.code;});
+  var title=el("pgeTitle").value.trim();
+  if(!title){ alert("Give the grid a title."); return; }
+  if(!tasks.length){ alert("Add at least one task."); return; }
+  try{ var r=await rpc("pg_t_save",{p_id:e.id||null,p_class:CUR.id,p_title:title,p_tasks:tasks,p_due:vqIso(el("pgeDue").value),p_open:el("pgeOpen").checked}); PG.edit=null; if(!e.id) PG.open=r.id; await pgLoad(); if(PG.open) pgLoadGrid(PG.open); }
+  catch(err){ alert("Couldn't save: "+((err&&err.message)||err)); }
+}
+async function pgToggle(id){ var g=pgFind(id); if(!g) return; try{ await rpc("pg_t_save",{p_id:id,p_class:CUR.id,p_title:g.title,p_tasks:g.tasks,p_due:g.due_at,p_open:!g.is_open}); }catch(e){ alert(e.message||e); } pgLoad(); }
+async function pgDelete(id){ var g=pgFind(id); if(!g||!confirm('Delete "'+g.title+'" and all student progress on it?')) return; try{ await rpc("pg_t_delete",{p_id:id}); }catch(e){ alert(e.message||e); } if(PG.open===id) PG.open=null; pgLoad(); }
+function pgGridHtml(g){
+  var d=PG.data[g.id], h='<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border2);">';
+  if(!d) return h+'<div class="empty" style="padding:20px;"><span class="spin"></span></div></div>';
+  if(d.error) return h+'<div style="color:var(--bad);font-size:13px;">'+esc(d.error)+'</div></div>';
+  var tasks=g.tasks||[], st=(d.students||[]).filter(function(s){return sgPass(s.student_id);}), past=g.due_at&&new Date(g.due_at)<new Date();
+  h+=sgBar();
+  var byId={}; st.forEach(function(s){ byId[s.student_id]=s; });
+  // alerts
+  var stuck=[], q=[], chk=[];
+  st.forEach(function(s){ tasks.forEach(function(t){ var e=(s.entries||{})[t.code]; if(!e) return;
+    var it={s:s,t:t,e:e}; if(e.status==="stuck") stuck.push(it); else if(e.status==="question") q.push(it); else if(e.status==="check") chk.push(it); }); });
+  var byTime=function(a,b){ return new Date(a.e.updated_at)-new Date(b.e.updated_at); };
+  stuck.sort(byTime); q.sort(byTime); chk.sort(byTime);
+  var item=function(x){ return '<button class="chip" style="cursor:pointer;text-align:left;" onclick="pgCell(\''+x.s.student_id+'\',\''+esc(x.t.code)+'\')"><b style="color:var(--bright);">'+esc(x.s.name)+'</b><span class="mono">'+esc(x.t.code)+'</span>'+(x.e.note?'<span style="color:var(--muted);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(x.e.note)+'</span>':'')+'<span class="mono" style="color:var(--faint);font-size:10px;">'+esc(ago(x.e.updated_at))+'</span></button>'; };
+  var block=function(title,col,list){ return '<div style="padding:12px 14px;border-radius:10px;border:1px solid '+col+';background:color-mix(in srgb,'+col+' 8%,transparent);margin-bottom:10px;"><div class="mono" style="font-size:11px;letter-spacing:1px;font-weight:800;color:'+col+';margin-bottom:8px;">'+title+' \u00b7 '+list.length+'</div><div style="display:flex;flex-wrap:wrap;gap:6px;">'+list.map(item).join("")+'</div></div>'; };
+  if(stuck.length) h+=block("STUCK / NEED HELP","var(--pg-stuck)",stuck);
+  if(q.length) h+=block("HAVE QUESTION","var(--pg-question)",q);
+  if(chk.length) h+=block("NEED CHECK \u2014 READY TO GRADE","var(--pg-check)",chk);
+  if(past){
+    var od=st.map(function(s){ var left=tasks.filter(function(t){ var e=(s.entries||{})[t.code]; return !e||e.status!=="done"; }); return {s:s,left:left}; }).filter(function(x){return x.left.length;});
+    if(od.length) h+='<div style="padding:12px 14px;border-radius:10px;border:1px solid var(--bad);margin-bottom:10px;"><div class="mono" style="font-size:11px;letter-spacing:1px;font-weight:800;color:var(--bad);margin-bottom:8px;">OVERDUE \u2014 PAST '+esc(vqWhen(g.due_at).toUpperCase())+' \u00b7 '+od.length+' STUDENTS</div><div style="display:flex;flex-direction:column;gap:4px;font-size:12px;">'+
+      od.map(function(x){ return '<div><b style="color:var(--bright);">'+esc(x.s.name)+'</b> <span class="mono" style="color:var(--dim);">'+x.left.length+' not done: '+esc(x.left.map(function(t){return t.code;}).join(", "))+'</span></div>'; }).join("")+'</div></div>';
+  }
+  var notIn=st.filter(function(s){return !s.checked_in_today;});
+  h+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 10px;"><span class="mono" style="font-size:11px;color:var(--dim);">Checked in today: <b style="color:var(--bright);">'+(st.length-notIn.length)+'/'+st.length+'</b>'+(notIn.length&&notIn.length<st.length?' \u00b7 not yet: '+esc(notIn.map(function(s){return s.name;}).join(", ")):'')+'</span>'+
+    (notIn.length?'<button class="btn sm" onclick="pgCopyNotIn(\''+g.id+'\')">Copy names: not checked in ('+notIn.length+')</button>':'')+
+    '<span style="margin-left:auto;">'+liveNote()+'</span></div>';
+  // legend
+  h+='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">'+PGST.map(function(s){ return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--text);"><span style="width:16px;height:16px;border-radius:4px;background:color-mix(in srgb,var(--pg-'+s[0]+') 30%,transparent);border:1px solid var(--pg-'+s[0]+');display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--pg-'+s[0]+');">'+s[2]+'</span>'+s[1]+'</span>'; }).join("")+
+    '<span style="font-size:11px;color:var(--dim);">Click a cell to change it.</span><button class="btn sm" style="margin-left:auto;" onclick="pgCsv(\''+g.id+'\')">Export CSV</button></div>';
+  // matrix: students with stuck, then questions, then the rest
+  var rank=function(s){ var e=s.entries||{}, k=Object.keys(e); return k.some(function(c){return e[c].status==="stuck";})?0:k.some(function(c){return e[c].status==="question";})?1:2; };
+  var rows=st.slice().sort(function(a,b){ return rank(a)-rank(b)||a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
+  h+='<div style="overflow-x:auto;border:1px solid var(--border2);border-radius:10px;"><table style="min-width:'+(260+tasks.length*54)+'px;"><tr><th style="position:sticky;left:0;background:var(--panel);z-index:1;">Name</th><th title="Checked in today">Today</th>'+
+    tasks.map(function(t){ return '<th style="text-align:center;" title="'+esc(t.title)+'">'+esc(t.code)+'</th>'; }).join("")+'<th>Done</th></tr>';
+  rows.forEach(function(s){
+    var e=s.entries||{}, done=tasks.filter(function(t){return e[t.code]&&e[t.code].status==="done";}).length;
+    h+='<tr><td style="position:sticky;left:0;background:var(--panel);z-index:1;"><b style="color:var(--bright);font-size:13px;">'+esc(s.name)+'</b><div class="mono" style="font-size:10px;color:var(--faint);">'+esc(s.handle)+'</div></td>'+
+      '<td class="mono" style="color:'+(s.checked_in_today?'var(--ok)':'var(--faint)')+';font-size:12px;" title="Last check-in: '+esc(s.last_checkin||"never")+'">'+(s.checked_in_today?'\u2713':'\u2014')+'</td>';
+    tasks.forEach(function(t){
+      var c=e[t.code], m=c&&PGL[c.status];
+      h+='<td style="padding:4px;text-align:center;"><button onclick="pgCell(\''+s.student_id+'\',\''+esc(t.code)+'\')" title="'+esc(t.code+(m?": "+m[1]:": not started")+(c&&c.note?" \u2014 "+c.note:"")+(c?" ("+ago(c.updated_at)+(c.by==="teacher"?", by you":"")+")":""))+'" '+
+        'style="width:42px;height:34px;border-radius:7px;font-weight:800;font-size:13px;cursor:pointer;position:relative;'+(m?'background:color-mix(in srgb,var(--pg-'+c.status+') 26%,transparent);border:1px solid var(--pg-'+c.status+');color:var(--pg-'+c.status+');':'background:var(--bg2);border:1px dashed var(--border3);color:var(--faint);')+'">'+
+        (m?m[2]:'')+(c&&c.note?'<span style="position:absolute;top:2px;right:3px;width:6px;height:6px;border-radius:50%;background:currentColor;"></span>':'')+'</button></td>';
+    });
+    h+='<td class="mono" style="font-size:12px;color:'+(done===tasks.length?'var(--ok)':'var(--bright)')+';">'+done+'/'+tasks.length+'</td></tr>';
+  });
+  h+='</table></div>';
+  // daily history
+  var log=d.log||[], days={}; log.forEach(function(l){ days[l.day]=(days[l.day]||0)+1; });
+  var dayList=Object.keys(days).sort().reverse(), day=PG.day||dayList[0]||"";
+  h+='<div style="margin-top:18px;"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;"><div class="lbl" style="margin:0;">Daily history</div>'+
+    (dayList.length?'<select class="in" style="width:auto;padding:6px 10px;font-size:12px;" onchange="PG.day=this.value;renderMain()">'+dayList.map(function(x){ return '<option value="'+x+'"'+(x===day?' selected':'')+'>'+esc(new Date(x+"T12:00:00").toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"}))+' \u00b7 '+days[x]+' update'+(days[x]>1?'s':'')+'</option>'; }).join("")+'</select>':'')+
+    (day?'<span class="mono" style="font-size:11px;color:var(--dim);">checked in that day: '+(d.checkins||[]).filter(function(c){return c.day===day;}).length+'/'+st.length+'</span>':'')+'</div>';
+  var todays=log.filter(function(l){return l.day===day;});
+  h+=todays.length?'<div style="max-height:280px;overflow:auto;border:1px solid var(--border2);border-radius:10px;"><table><tr><th>Time</th><th>Student</th><th>Task</th><th>Status</th><th>Note</th></tr>'+todays.map(function(l){
+      var s=byId[l.student_id]||{name:"?"};
+      return '<tr><td class="mono" style="font-size:11px;white-space:nowrap;">'+esc(new Date(l.at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}))+'</td><td style="font-size:12px;color:var(--bright);">'+esc(s.name)+(l.by_who==="teacher"?' <span class="mono" style="font-size:10px;color:var(--dim);">(you)</span>':'')+'</td><td class="mono" style="font-size:12px;">'+esc(l.task_code)+'</td><td>'+(l.status?pgPill(l.status):'<span class="mono" style="font-size:10px;color:var(--faint);">CLEARED</span>')+'</td><td style="font-size:12px;color:var(--muted);">'+esc(l.note)+'</td></tr>';
+    }).join("")+'</table></div>':'<div style="font-size:12px;color:var(--dim);">No updates yet.</div>';
+  return h+'</div></div>';
+}
+function pgCell(sid,code){ PG.cell={sid:sid,code:code}; renderMain(); setTimeout(function(){ var f=el("pgcNote"); if(f) f.focus(); },30); }
+function pgCellModal(){
+  var c=PG.cell; if(!c||!PG.open) return '';
+  var d=PG.data[PG.open]; if(!d||!d.students) return '';
+  var s=d.students.filter(function(x){return x.student_id===c.sid;})[0]; if(!s) return '';
+  var g=pgFind(PG.open), t=(g.tasks||[]).filter(function(x){return x.code===c.code;})[0]||{code:c.code,title:""}, e=(s.entries||{})[c.code]||{};
+  var hist=(d.log||[]).filter(function(l){return l.student_id===c.sid&&l.task_code===c.code;}).slice(0,8);
+  return '<div class="modal" onclick="if(event.target===this){PG.cell=null;renderMain();}"><div class="card" role="dialog" aria-label="Edit status" style="padding:22px;width:min(520px,100%);max-height:90vh;overflow:auto;">'+
+    '<div class="mono" style="font-size:11px;letter-spacing:1px;color:var(--faint);">'+esc(g.title)+'</div>'+
+    '<div style="font-size:18px;font-weight:800;color:var(--bright);margin-top:4px;">'+esc(s.name)+' \u00b7 '+esc(t.code)+'</div>'+(t.title?'<div style="font-size:13px;color:var(--muted);">'+esc(t.title)+'</div>':'')+
+    '<div style="margin-top:10px;font-size:13px;">Now: '+(e.status?pgPill(e.status,1):'<span class="mono" style="font-size:11px;color:var(--faint);">NOT STARTED</span>')+(e.updated_at?' <span class="mono" style="font-size:10px;color:var(--dim);">'+esc(ago(e.updated_at))+(e.by==="teacher"?" \u00b7 by you":"")+'</span>':'')+'</div>'+
+    (e.note?'<div style="margin-top:6px;padding:10px 12px;border-radius:9px;background:var(--bg2);font-size:13px;color:var(--bright);">\u201c'+esc(e.note)+'\u201d</div>':'')+
+    '<div class="lbl" style="margin-top:14px;">Set status</div><div style="display:flex;flex-wrap:wrap;gap:6px;">'+
+      PGST.map(function(x){ return '<button class="btn sm" style="border-color:var(--pg-'+x[0]+');color:var(--pg-'+x[0]+');'+(e.status===x[0]?'background:color-mix(in srgb,var(--pg-'+x[0]+') 18%,transparent);':'')+'" onclick="pgSet(\''+x[0]+'\')">'+x[1]+'</button>'; }).join("")+
+      '<button class="btn sm" onclick="pgSet(\'\')">Clear</button></div>'+
+    '<label><div class="lbl" style="margin-top:12px;">Note (the student sees it)</div><input class="in" id="pgcNote" maxlength="500" value="'+esc(e.note||"")+'"></label>'+
+    (hist.length?'<div class="lbl" style="margin-top:14px;">History</div><div style="display:flex;flex-direction:column;gap:4px;font-size:12px;">'+hist.map(function(l){ return '<div><span class="mono" style="color:var(--dim);">'+esc(vqWhen(l.at))+'</span> '+(l.status?pgPill(l.status):'<span class="mono" style="font-size:10px;color:var(--faint);">CLEARED</span>')+(l.by_who==="teacher"?' <span class="mono" style="font-size:10px;color:var(--dim);">(you)</span>':'')+(l.note?' \u2014 '+esc(l.note):'')+'</div>'; }).join("")+'</div>':'')+
+    '<div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:16px;"><span class="mono" style="font-size:10px;color:var(--faint);white-space:nowrap;">Esc to close</span><button class="btn" onclick="PG.cell=null;renderMain()">Close</button></div>'+
+  '</div></div>';
+}
+async function pgSet(status){
+  var c=PG.cell; if(!c) return;
+  try{ await rpc("pg_t_set",{p_grid:PG.open,p_student:c.sid,p_task:c.code,p_status:status,p_note:el("pgcNote")?el("pgcNote").value:""}); }
+  catch(e){ alert("Couldn't save: "+((e&&e.message)||e)); return; }
+  PG.cell=null; await pgLoadGrid(PG.open); pgLoad();
+}
+function pgCsv(id){
+  var g=pgFind(id), d=PG.data[id]; if(!g||!d||!d.students) return;
+  d={students:d.students.filter(function(s){return sgPass(s.student_id);})};
+  var tasks=g.tasks||[], rows=[["Name","Email","Hacker name","Checked in today","Last check-in"].concat(tasks.map(function(t){return t.code+(t.title?" "+t.title:"");})).concat(["Done"])];
+  d.students.forEach(function(s){ var e=s.entries||{};
+    rows.push([s.name,s.email||"",s.handle,s.checked_in_today?"yes":"no",s.last_checkin||""].concat(tasks.map(function(t){ var c=e[t.code]; return c?PGL[c.status][1]+(c.note?" — "+c.note:""):""; })).concat([tasks.filter(function(t){return e[t.code]&&e[t.code].status==="done";}).length+"/"+tasks.length])); });
+  var csv=rows.map(function(r){ return r.map(function(v){ v=String(v==null?"":v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(","); }).join("\n");
+  var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download=(g.title||"grid").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-")+"-progress.csv"; document.body.appendChild(a); a.click(); a.remove();
 }
 
 /* ----- Teacher Tools card clicks (supabase/tool-clicks.sql) ----- */

@@ -719,7 +719,7 @@
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start;">' +
         identityCard() + xpCard() +
       '</div>' +
-      itemsCard() + '<div id="pfQuizzes"></div>' + trophyCard() + '<div id="pfShop"></div>' + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
+      itemsCard() + '<div id="pfProgress"></div><div id="pfQuizzes"></div>' + trophyCard() + '<div id="pfShop"></div>' + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
     wireIdentity();
     if (window.CTF_COSMETICS) {
       window.CTF_COSMETICS.mountShop(el("pfShop"));
