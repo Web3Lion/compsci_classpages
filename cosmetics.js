@@ -303,7 +303,9 @@
             : '<button type="button" class="cosAct mono" data-a="buy" data-id="' + it.id + '"' + (afford ? "" : " disabled") + ' aria-label="Buy ' + esc(it.name) + ' for ' + it.price + ' coins" style="' + btnCss("var(--amber)") + (afford ? "" : "opacity:.45;cursor:not-allowed;") + '">\u25C9 ' + it.price + '</button>';
         return '<div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;border:1px solid ' + (on ? "var(--accent)" : "var(--border2)") + ';background:var(--bg);">' +
           '<div style="min-height:40px;display:flex;flex-direction:column;justify-content:center;">' + preview(it) + '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);">' + esc(it.name) + '</span>' + pv + btn + '</div></div>';
+          (it.slot === "skin"
+            ? '<div style="font-size:13px;font-weight:600;color:var(--text);">' + esc(it.name) + '</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' + pv + btn + '</div></div>'
+            : '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);">' + esc(it.name) + '</span>' + pv + btn + '</div></div>');
       }).join("");
       if (TAB === "skin" && SK) {
         var cur = equipped("skin"), dflt = !cur;

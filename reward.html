@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=23.0.1"></script>
+<script src="site.js?v=23.3.1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reward Games</title>
@@ -566,6 +566,11 @@ body[data-view="student"] #bgStudent{display:block;}
       <div class="art"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="14" r="10" fill="#ffc93c"></circle><rect x="52" y="22" width="16" height="84" rx="3" fill="#fff3dc"></rect><path d="M52 40 H68 M52 56 H68 M52 72 H68 M52 88 H68" stroke="#e8243c" stroke-width="3"></path><rect x="54" y="60" width="12" height="9" rx="2" fill="#e8243c"></rect><rect x="40" y="106" width="40" height="8" rx="2" fill="#2b1408"></rect><g transform="rotate(-35 96 100)"><rect x="93" y="62" width="6" height="44" rx="2" fill="#c98b4f"></rect><rect x="84" y="54" width="24" height="14" rx="3" fill="#6b7380"></rect></g></svg></div>
       <div class="bd"><span class="tag">SKILL</span><h3>High Striker</h3><p>Swing the hammer and send the puck up the tower to ring the bell.</p><span class="play">PLAY &#9656;</span></div>
     </button>
+    <button class="booth" style="--bc:#39d98a;" onclick="openGame('soccer')">
+      <span class="newb">NEW!</span><div class="stripe"></div>
+      <div class="art"><svg viewBox="0 0 120 120" aria-hidden="true"><path d="M14 92 V26 H106 V92" fill="none" stroke="#fff3dc" stroke-width="5" stroke-linejoin="round"></path><path d="M26 30 V90 M40 30 V90 M54 30 V90 M68 30 V90 M82 30 V90 M96 30 V90 M18 44 H102 M18 58 H102 M18 72 H102" stroke="#fff3dc" stroke-width="1.2" opacity=".4"></path><rect x="8" y="92" width="104" height="6" rx="2" fill="#39d98a"></rect><circle cx="78" cy="78" r="16" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"></circle><path d="M78 70 l7 5 -3 8 h-8 l-3 -8 z" fill="#1a1a1a"></path></svg></div>
+      <div class="bd"><span class="tag">SKILL</span><h3>Free Kick</h3><p>Curl it past the wall and the keeper. Six kicks to the World Cup prize.</p><span class="play">PLAY &#9656;</span></div>
+    </button>
   </div>
   <h2 class="lobbyH">CLASS GAMES</h2>
   <div class="boothGrid">
@@ -1104,7 +1109,7 @@ function setMode(m){
   }
 }
 window.addEventListener('resize', function(){ if (MODE === 'duck') placeDucks(performance.now()); });
-(function(){ var m = 'wheel'; try{ m = localStorage.getItem('reward-games-mode') || 'wheel'; }catch(e){} setMode(['duck','fg','plinko','lockers','claw','bb','hockey','vault','gumball','bowl','stack','striker','bingo'].indexOf(m) >= 0 ? m : 'wheel'); })();
+(function(){ var m = 'wheel'; try{ m = localStorage.getItem('reward-games-mode') || 'wheel'; }catch(e){} setMode(['duck','fg','plinko','lockers','claw','bb','hockey','vault','gumball','bowl','stack','soccer','striker','bingo'].indexOf(m) >= 0 ? m : 'wheel'); })();
 </script>
 <script>
 /* ---------- FIELD GOAL ----------
@@ -2110,6 +2115,111 @@ SK.register('bowl', (function(){
   };
 })());
 
+/* ---------- FREE KICK (soccer) ---------- */
+SK.register('soccer', (function(){
+  var LV = ['ROOKIE','JUNIOR','VARSITY','COLLEGE','PRO','WORLD CUP'];
+  var KW = [.26,.29,.32,.35,.38,.42], KS = [1.2,1.5,1.8,2.1,2.5,2.9], AXS = [.65,.75,.85,.95,1.05,1.2], AYS = [.35,.45,.55,.65,.8,1.0], WALL = [0,2,3,3,4,5];
+  var st = {ax:.5, adx:1, ay:.5, ady:1, kp:0, kx:.5, kw:.3, wx:.5, wv:0, wt:0, ball:null};
+  var CROWD = []; for (var i = 0; i < 260; i++) CROWD.push([Math.random(), Math.random(), Math.floor(Math.random()*5)]);
+  function wall(l){ var n = WALL[l]; return n ? {c:st.wx, w:n*.075, n:n} : null; }
+  return {
+    levels:LV, title:'Free Kick', verb:'Kick for', meter:null,
+    lead:'Six free kicks against a keeper who gets bigger and faster and a wall that grows. At the World Cup level the wall shuffles around at random. Kick when the target is clear of both: over the wall or wide of it, and away from the keeper. A save or a block ends the run. Your last goal sets the prize tier.',
+    btn:{ready:'START', play:'KICK!', next:'NEXT KICK'},
+    hints:{ready:'Tap (or press Space) to start aiming. The keeper never stops moving.', play:'Tap to kick when the target is clear of the keeper and the wall.'},
+    tag:function(l){ return LV[l] + ' KEEPER \u00b7 KICK ' + (l+1) + ' OF 6'; },
+    logName:function(l){ return 'free kick vs ' + LV[l].toLowerCase() + ' keeper'; },
+    reset:function(){ st.ball = null; st.ax = .5; st.adx = Math.random() < .5 ? 1 : -1; st.ay = .45; st.ady = Math.random() < .5 ? 1 : -1; st.wx = .3 + Math.random()*.4; st.wv = 0; st.wt = 0; },
+    begin:function(){},
+    action:function(l, d, done){ st.ball = {t:0, tx:st.ax, ty:st.ay, done:done, fired:false, out:0, curve:Math.random() < .5 ? -1 : 1}; tone(170, .1, 'sine', .2, 0, 80); },
+    update:function(dt, ph, d, l){
+      st.kw = Math.min(.6, KW[l]/d.z);
+      st.kp += KS[l]*d.s*dt*(ph === 'play' || ph === 'anim' ? 1 : .45);
+      var r = .5 - st.kw/2; st.kx = .5 + r*Math.sin(st.kp)*(.85 + .15*Math.sin(st.kp*.61));
+      // World Cup: the wall shuffles sideways in sudden, random bursts
+      if (l === 5 && (ph === 'play' || ph === 'anim' || ph === 'ready')){
+        var hw = WALL[l]*.075/2;
+        st.wt -= dt;
+        if (st.wt <= 0){ st.wt = .15 + Math.random()*.45; st.wv = Math.random() < .2 ? 0 : (Math.random() < .5 ? -1 : 1)*(.5 + Math.random()*1.1); }
+        st.wx += st.wv*d.s*dt*(ph === 'ready' ? .4 : 1);
+        if (st.wx > 1 - hw){ st.wx = 1 - hw; st.wv = -Math.abs(st.wv); } if (st.wx < hw){ st.wx = hw; st.wv = Math.abs(st.wv); }
+      }
+      if (ph === 'play'){
+        st.ax += st.adx*AXS[l]*d.s*dt; if (st.ax >= .97){ st.ax = .97; st.adx = -1; } if (st.ax <= .03){ st.ax = .03; st.adx = 1; }
+        st.ay += st.ady*AYS[l]*d.s*dt; if (st.ay >= .9){ st.ay = .9; st.ady = -1; } if (st.ay <= .1){ st.ay = .1; st.ady = 1; }
+      }
+      var b = st.ball;
+      if (b && !b.fired){ b.t += dt/.6; if (b.t >= 1){ b.t = 1; b.fired = true;
+        var w = wall(l), blocked = !!(w && b.ty > .5 && Math.abs(b.tx - w.c) < w.w/2 + .015);
+        var reach = b.ty < .2 ? st.kw*.32 : st.kw/2, saved = !blocked && Math.abs(b.tx - st.kx) < reach + .02;
+        b.res = blocked ? 'wall' : saved ? 'save' : 'goal'; b.dir = b.tx < (blocked ? w.c : st.kx) ? -1 : 1;
+        if (b.res === 'goal') tone(140, .3, 'sine', .2, 0, 60); else tone(300, .08, 'square', .08);
+        b.done(b.res === 'goal', b.res === 'wall' ? 'OFF THE WALL!' : b.res === 'save' ? 'SAVED!' : (l === 5 ? 'TOP BINS! GOAL!' : 'GOAL!')); } }
+      else if (b && b.fired && b.res !== 'goal') b.out += dt*1.3;
+    },
+    draw:function(g, W, H, light, l, ph){
+      var gl = W*.22, gr = W*.78, gt = H*.2, gb = H*.62, gw = gr - gl, gh = gb - gt;
+      g.fillStyle = light ? '#2b4a7a' : '#0b1430'; g.fillRect(0, 0, W, H*.17);
+      CROWD.forEach(function(c){ g.fillStyle = ['#ff2d55','#ffd400','#ffffff','#00c2ff','#39d98a'][c[2]]; g.globalAlpha = .55; g.fillRect(c[0]*W, H*.015 + c[1]*H*.13, 3, 3); }); g.globalAlpha = 1;
+      g.fillStyle = '#ffc93c'; g.fillRect(0, H*.17, W, H*.01);
+      var grass = g.createLinearGradient(0, H*.18, 0, H);
+      if (light){ grass.addColorStop(0,'#5fbf5a'); grass.addColorStop(1,'#3e9a3b'); } else { grass.addColorStop(0,'#2f7d34'); grass.addColorStop(1,'#1d5a22'); }
+      g.fillStyle = grass; g.fillRect(0, H*.18, W, H);
+      g.fillStyle = 'rgba(255,255,255,.06)'; for (var s = 0; s < 7; s++) if (s % 2) g.fillRect(0, H*.18 + s*(H*.82/7), W, H*.82/7);
+      g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 2;
+      g.beginPath(); g.moveTo(0, gb); g.lineTo(W, gb); g.stroke();
+      g.beginPath(); g.moveTo(W*.1, gb); g.lineTo(W*.04, H*.8); g.lineTo(W*.96, H*.8); g.lineTo(W*.9, gb); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(gl, gt, gw, gh);
+      g.strokeStyle = 'rgba(255,255,255,.35)'; g.lineWidth = 1;
+      for (var x = gl; x <= gr; x += gw/16){ g.beginPath(); g.moveTo(x, gt); g.lineTo(x, gb); g.stroke(); }
+      for (var y = gt; y <= gb; y += gh/8){ g.beginPath(); g.moveTo(gl, y); g.lineTo(gr, y); g.stroke(); }
+      var b = st.ball;
+      // keeper (jersey yellow, arms span the reach)
+      var kx = gl + st.kx*gw, kr = st.kw*gw/2, kc = light ? '#e0a800' : '#ffd400';
+      g.fillStyle = kc; g.fillRect(kx - kr*.32, gt + gh*.28, kr*.64, gh*.55);
+      g.strokeStyle = kc; g.lineWidth = Math.max(5, gh*.07); g.lineCap = 'round'; g.beginPath(); g.moveTo(kx - kr, gt + gh*.24); g.lineTo(kx + kr, gt + gh*.24); g.stroke();
+      g.fillStyle = '#1a1a1a'; g.fillRect(kx - kr*.32, gt + gh*.83, kr*.64, gh*.17);
+      g.fillStyle = '#f0c8a0'; g.beginPath(); g.arc(kx, gt + gh*.16, gh*.085, 0, Math.PI*2); g.fill();
+      g.fillStyle = '#2ec27e'; g.beginPath(); g.arc(kx - kr, gt + gh*.24, gh*.05, 0, Math.PI*2); g.arc(kx + kr, gt + gh*.24, gh*.05, 0, Math.PI*2); g.fill();
+      // posts + bar
+      g.strokeStyle = '#ffffff'; g.lineWidth = Math.max(4, W*.009); g.lineJoin = 'round'; g.lineCap = 'butt';
+      g.beginPath(); g.moveTo(gl, gb); g.lineTo(gl, gt); g.lineTo(gr, gt); g.lineTo(gr, gb); g.stroke();
+      // wall (red shirts) in front of the goal
+      var w = wall(l);
+      if (w){
+        var pw = gw*.075, wl = gl + (w.c - w.w/2)*gw, top = gt + gh*.5, bot = gb + H*.07;
+        for (var i = 0; i < w.n; i++){
+          var px = wl + i*pw;
+          g.fillStyle = light ? '#c81e3a' : '#e8243c'; g.fillRect(px + pw*.08, top + gh*.1, pw*.84, bot - top - gh*.1 - H*.025);
+          g.fillStyle = '#ffffff'; g.fillRect(px + pw*.08, bot - H*.025, pw*.84, H*.025);
+          g.fillStyle = '#f0c8a0'; g.beginPath(); g.arc(px + pw/2, top + gh*.04, pw*.3, 0, Math.PI*2); g.fill();
+        }
+      }
+      // target reticle
+      if (ph === 'play' || ph === 'ready'){
+        var rx = gl + st.ax*gw, ry = gt + st.ay*gh, rr = Math.max(9, gh*.07);
+        g.strokeStyle = '#ffffff'; g.lineWidth = 2.5;
+        g.beginPath(); g.arc(rx, ry, rr, 0, Math.PI*2); g.stroke();
+        g.beginPath(); g.moveTo(rx - rr*1.5, ry); g.lineTo(rx - rr*.5, ry); g.moveTo(rx + rr*.5, ry); g.lineTo(rx + rr*1.5, ry); g.moveTo(rx, ry - rr*1.5); g.lineTo(rx, ry - rr*.5); g.moveTo(rx, ry + rr*.5); g.lineTo(rx, ry + rr*1.5); g.stroke();
+      }
+      // ball
+      var sx = W/2, sy = H*.9, br = H*.04, bx = sx, by = sy, sc = 1;
+      if (b){
+        var tx = gl + b.tx*gw, ty = gt + b.ty*gh, u = b.t;
+        bx = sx + (tx - sx)*u + Math.sin(Math.PI*u)*b.curve*W*.06; by = sy + (ty - sy)*u - Math.sin(Math.PI*u)*H*.05; sc = 1 - .45*u;
+        if (b.fired && b.res !== 'goal'){ var o = Math.min(1, b.out); bx += b.dir*o*W*.18; by += o*H*.25 - Math.sin(Math.PI*o)*H*.12; sc = .55 + .25*o; }
+      }
+      var R = br*sc;
+      g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(bx, (b ? Math.max(by, gb) : sy) + R*.9, R*.9, R*.3, 0, 0, Math.PI*2); g.fill();
+      g.fillStyle = '#ffffff'; g.beginPath(); g.arc(bx, by, R, 0, Math.PI*2); g.fill();
+      g.strokeStyle = '#1a1a1a'; g.lineWidth = Math.max(1, R*.08); g.stroke();
+      g.fillStyle = '#1a1a1a'; g.beginPath();
+      for (var k = 0; k < 5; k++){ var a = -Math.PI/2 + k*2*Math.PI/5; g.lineTo(bx + Math.cos(a)*R*.38, by + Math.sin(a)*R*.38); } g.closePath(); g.fill();
+      if (b && b.fired && b.res === 'goal'){ g.strokeStyle = 'rgba(255,255,255,.6)'; g.lineWidth = 1.5; g.beginPath(); g.arc(bx, by, R*2.2, 0, Math.PI*2); g.stroke(); }
+    }
+  };
+})());
+
 /* ---------- STACKER ---------- */
 SK.register('stack', (function(){
   var COLS = 9, CAP = [4,4,3,3,2,2], SPD = [5,6,7,8.5,10,12];
@@ -2564,8 +2674,8 @@ if (EXTRA_MODES[MODE]){ for (var k0 in EXTRA_MODES) if (k0 !== MODE) EXTRA_MODES
   if (art && typeof duckSVG === 'function') art.innerHTML = duckSVG('#ffd400').replace('<svg viewBox="0 0 100 100" aria-hidden="true">', '<g transform="translate(22 18) scale(.76)">').replace('</svg>', '</g>');
 })();
 var GAME_NAMES = {wheel:'PRIZE WHEEL', duck:'DUCK POND', fg:'FIELD GOAL', plinko:'PLINKO', lockers:'MYSTERY LOCKERS', claw:'CLAW MACHINE', bb:'BASKETBALL', hockey:'PENALTY SHOT', vault:'HACK THE VAULT'};
-GAME_NAMES.gumball = 'GUMBALL MACHINE'; GAME_NAMES.bowl = 'BOWLING'; GAME_NAMES.stack = 'STACKER'; GAME_NAMES.striker = 'HIGH STRIKER'; GAME_NAMES.bingo = 'VOCAB BINGO';
-var SKILL_MODES = {bb:1, hockey:1, vault:1, bowl:1, stack:1, striker:1};
+GAME_NAMES.gumball = 'GUMBALL MACHINE'; GAME_NAMES.bowl = 'BOWLING'; GAME_NAMES.stack = 'STACKER'; GAME_NAMES.striker = 'HIGH STRIKER'; GAME_NAMES.soccer = 'FREE KICK'; GAME_NAMES.bingo = 'VOCAB BINGO';
+var SKILL_MODES = {bb:1, hockey:1, vault:1, bowl:1, stack:1, striker:1, soccer:1};
 var curtainBusy = false;
 function drumroll(){ for (var i = 0; i < 14; i++) tone(90 + Math.random()*30, .05, 'triangle', .1, i*.04); }
 function tada(){ tone(523, .16, 'triangle', .12, 0); [784, 1047, 1319].forEach(function(f){ tone(f, .5, 'triangle', .09, .18); }); }

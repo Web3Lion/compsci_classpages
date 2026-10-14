@@ -69,6 +69,12 @@ checks who is asking.
    | 34 | `weekly-xp-summary.sql` | **v13.0** Weekly XP tab in teacher.html: XP per student per week, sortable by Google name or hacker name (needs teacher-xp.sql + roster-csv.sql) |
    | 35 | `tool-clicks.sql` | **v16.0** Anonymous click counts for each card on `tools/` (Teacher Tools), shown in teacher.html → Settings → Teacher Tools clicks |
    | 36 | `vocab-quizzes.sql` | **v17.0** Assigned vocab quizzes: teacher.html → Assigned Vocab Quizzes, student page `quiz.html`, glow on course home + profile (needs google-auth.sql, teachers.sql, roster-csv.sql) |
+   | 37 | `progress-grids.sql` | **v18.0** Private progress monitoring grids: student profile "My Progress" card + teacher.html → Progress Grids (needs google-auth.sql, teachers.sql, roster-csv.sql) |
+   | 38 | `coins-cosmetics.sql` (re-run) | **v19.0** Quiz skins: adds the `skin` Coin Shop slot + prices for `skins.js` (Arcade Neon, Quest / RPG, Hacker Ops, Sky Sticker, Mastermind). Re-running is safe; it only redefines functions |
+   | 39 | `teacher-mirror.sql` | **v20.0** Teacher CTF progress is copied to the teacher's row in every class they own in that course (rows are created on first sync). Teacher rows get no module clears or reward items. Uses triggers, so later files don't undo it (needs google-auth.sql, teachers.sql, teacher-xp.sql) |
+   | 40 | `arena-duels.sql` | **v21.0** Student Flag Duels (arena-duel.html): 2–4 players, host picks modules + 2/5/10 min, 4-letter join code. A trigger on `flag_events` scores Easy 1 / Medium 2 / Hard 3. Winner +10 XP, finishers +5. Per-class on/off on teacher.html → Locks & Guide (needs google-auth.sql, teacher-xp.sql, hint-log.sql) |
+   | 41 | `team-battles.sql` | **v22.0** Teacher-run Team Battles (battle.html): 2–4 squads, teacher picks modules + length, randomize teams, team score = points ÷ teammates who played, MVP per team. Pauses Flag Duels while live (needs class-groups.sql, squads.sql, teacher-xp.sql, module-clears.sql, arena-duels.sql) |
+   | 42 | `vocab-duels.sql` | **v23.0** Vocab Duels (vocab-duel.html) and teacher-run Vocab Battles (vocab-battle.html): health-bar fights on cipher/unscramble terms, answers checked server-side, random cross-team pairing with a different term per pair (needs google-auth.sql, teacher-xp.sql, class-groups.sql, squads.sql; Randomize teams uses team-battles.sql) |
 
    **Order matters in several places** (each is a case of two files redefining the
    same function, where the one that runs LAST wins):

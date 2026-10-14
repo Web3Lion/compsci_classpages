@@ -97,8 +97,7 @@ isn't filled in.
   (reduce motion, high contrast), skip link, focus styles.
   Script tags carry the release number as a cache tag (`?v=2.0.0`) — when you bump
   `SITE_VERSION`, bump the tag on every page too.
-- `styles.css` — shared base styles/tokens used site-wide.
-- `design-system/` — visual design system reference (tokens, components, guidelines).
+- `claude only/` — working files (source curriculum PDFs, extracted text, design reference). Gitignored, not deployed.
 - `supabase/` — SQL schema files for the optional backend (run in the order noted in
   `SUPABASE-SETUP.md`: schema, google-auth, teacher-reports, class-gates, answer-key,
   attempt-log, class-groups, and the rest). **Re-run order matters**: `multi-domain.sql`
