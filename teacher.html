@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=23.3.1"></script>
+<script src="site.js?v=24.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -260,20 +260,20 @@
   </div>
 </div>
 
-<script src="config.js?v=23.3.1"></script>
-<script src="ctf-data/cyber1.js?v=23.3.1"></script>
-<script src="ctf-data/cyber2.js?v=23.3.1"></script>
-<script src="ctf-data/cyber3.js?v=23.3.1"></script>
-<script src="ctf-data/apcsp.js?v=23.3.1"></script>
-<script src="ctf-data/web3.js?v=23.3.1"></script>
-<script src="cipher.js?v=23.3.1"></script>
-<script src="supabase-config.js?v=23.3.1"></script>
-<script src="auth.js?v=23.3.1"></script>
-<script src="name-filter.js?v=23.3.1"></script>
-<script src="objectives.js?v=23.3.1"></script>
-<script src="standards.js?v=23.3.1"></script>
-<script src="csv.js?v=23.3.1"></script>
-<script src="skins.js?v=23.3.1"></script>
+<script src="config.js?v=24.0.0"></script>
+<script src="ctf-data/cyber1.js?v=24.0.0"></script>
+<script src="ctf-data/cyber2.js?v=24.0.0"></script>
+<script src="ctf-data/cyber3.js?v=24.0.0"></script>
+<script src="ctf-data/apcsp.js?v=24.0.0"></script>
+<script src="ctf-data/web3.js?v=24.0.0"></script>
+<script src="cipher.js?v=24.0.0"></script>
+<script src="supabase-config.js?v=24.0.0"></script>
+<script src="auth.js?v=24.0.0"></script>
+<script src="name-filter.js?v=24.0.0"></script>
+<script src="objectives.js?v=24.0.0"></script>
+<script src="standards.js?v=24.0.0"></script>
+<script src="csv.js?v=24.0.0"></script>
+<script src="skins.js?v=24.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -3006,7 +3006,7 @@ function squadsView(){
   var NM={}; (Array.isArray(EXPECTED)?EXPECTED:[]).forEach(function(r){ if(r&&r.email) NM[String(r.email).toLowerCase()]=r.full_name||""; });
   h+='<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">MEMBERS</div>'+
     '<div class="mono" style="font-size:11px;color:var(--dim);">Drag a card onto a squad to move them. The dropdown on each card does the same without a mouse.</div></div>'+
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;">';
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;">';
   GROUPS.concat([{id:null,name:"Not on a squad",color:null}]).forEach(function(g){
     var mem=(g.id?ROSTER.filter(function(r){return r.group_id===g.id;}):ungrouped).slice().sort(function(x,y){
       var a1=(NM[String(x.email||"").toLowerCase()]||x.handle||"").toLowerCase(), b1=(NM[String(y.email||"").toLowerCase()]||y.handle||"").toLowerCase(); return a1<b1?-1:a1>b1?1:0; });
@@ -3020,11 +3020,11 @@ function squadsView(){
     else h+='<div style="display:flex;flex-direction:column;gap:7px;">'+mem.map(function(s){
       var em=String(s.email||""), real=NM[em.toLowerCase()]||"", login=em.replace(/@.*$/,"");
       return '<div class="sqCard" draggable="true" ondragstart="sqStart(event,\''+s.id+'\')" ondragend="sqEnd(event)" title="Drag to another squad" '+
-        'style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);cursor:grab;border-left:4px solid '+col+';">'+
+        'style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:9px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);cursor:grab;border-left:4px solid '+col+';">'+
         '<span aria-hidden="true" class="mono" style="color:var(--faint);font-size:14px;line-height:1;">\u2807</span>'+
-        '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;">'+
-          '<b style="color:var(--bright);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(real||login||s.handle)+'</b>'+
-          '<span class="mono" style="font-size:11px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(login||"\u2014")+' \u00b7 <span style="color:var(--accent);">'+esc(s.handle)+'</span></span></span>'+
+        '<span style="flex:1 1 150px;min-width:0;display:flex;flex-direction:column;gap:2px;">'+
+          '<b style="color:var(--bright);font-size:13px;overflow-wrap:anywhere;line-height:1.3;">'+esc(real||login||s.handle)+'</b>'+
+          '<span class="mono" style="font-size:11px;color:var(--dim);overflow-wrap:anywhere;line-height:1.35;">'+esc(login||"\u2014")+' \u00b7 <span style="color:var(--accent);">'+esc(s.handle)+'</span></span></span>'+
         '<span class="mono" style="font-size:11px;color:var(--accent);white-space:nowrap;">'+(((s.points||0)+(s.bonus||0))).toLocaleString()+'</span>'+
         squadPicker(s)+'</div>';
     }).join("")+'</div>';
