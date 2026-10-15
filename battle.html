@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=26.0.0"></script>
+<script src="site.js?v=26.0.1"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,17 +45,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=26.0.0"></script>
-<script src="ctf-data/cyber1.js?v=26.0.0"></script>
-<script src="ctf-data/cyber2.js?v=26.0.0"></script>
-<script src="ctf-data/cyber3.js?v=26.0.0"></script>
-<script src="ctf-data/apcsp.js?v=26.0.0"></script>
-<script src="ctf-data/web3.js?v=26.0.0"></script>
-<script src="supabase-config.js?v=26.0.0"></script>
-<script src="auth.js?v=26.0.0"></script>
-<script src="cosmetics.js?v=26.0.0"></script>
-<script src="battle-fx.js?v=26.0.0"></script>
-<script src="team-picker.js?v=26.0.0"></script>
+<script src="config.js?v=26.0.1"></script>
+<script src="ctf-data/cyber1.js?v=26.0.1"></script>
+<script src="ctf-data/cyber2.js?v=26.0.1"></script>
+<script src="ctf-data/cyber3.js?v=26.0.1"></script>
+<script src="ctf-data/apcsp.js?v=26.0.1"></script>
+<script src="ctf-data/web3.js?v=26.0.1"></script>
+<script src="supabase-config.js?v=26.0.1"></script>
+<script src="auth.js?v=26.0.1"></script>
+<script src="cosmetics.js?v=26.0.1"></script>
+<script src="battle-fx.js?v=26.0.1"></script>
+<script src="team-picker.js?v=26.0.1"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -126,6 +126,11 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   }
   function fail(e){ busy = false; msg = /tb_|function/.test(String(e && e.message)) ? "Run supabase/team-battles.sql first." : "Something went wrong: " + (e && e.message || e); paint(); }
 
+  // team-picker.js missing (not uploaded / cached) → plain list, every team plays
+  if (!window.TEAM_PICK) window.TEAM_PICK = { sync: function(){}, fetchSets: function(){}, bind: function(){}, note: function(){ return ""; },
+    chosen: function(T){ return (T || []).map(function(t){ return t.id; }); },
+    setsBar: function(){ return '<div style="margin-top:14px;font-size:12px;color:var(--bad);">Upload team-picker.js to pick teams and save team sets.</div>'; },
+    teams: function(T, col){ return T.length ? T.map(function(t, i){ return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);"><span style="width:14px;height:14px;border-radius:4px;background:' + esc(col(t,i)) + ';"></span><b style="flex:1;color:var(--bright);">' + esc(t.name) + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + t.members + ' students</span></div>'; }).join("") : '<div style="color:var(--dim);font-size:14px;">No teams yet.</div>'; } };
   function setupView(){
     var T = SET.teams.filter(function(t){ return t.members > 0; }), un = SET.ungrouped || [], M = SET.manifest || [];
     var selMods = Object.keys(pick).filter(function(m){ return pick[m]; });
