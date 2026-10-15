@@ -64,6 +64,15 @@
   if (!course || !AUTH || !AUTH.online) return;
   var ROOM = "../arena-duel.html?c=" + encodeURIComponent(course);
   var ST = null, skew = 0, timer = null, tick = null, hidDone = null;
+  // 24.0: hype layer (banners, lead changes, final-minute countdown) — no sound for students
+  if (!window.BATTLE_FX) { var fxs = document.createElement("script"); fxs.src = (me.src || "").replace(/arena-duel\.js.*$/, "battle-fx.js") + "?v=" + (window.SITE_VERSION || ""); document.head.appendChild(fxs); }
+  function FX() { return window.BATTLE_FX || null; }
+  var PAL = ["#3a86ff", "#ff5d73", "#2ec27e", "#f4a300"];
+  function hype(key, snap, prefix, opts) {
+    var fx = FX(); if (!fx) return;
+    var ev = fx.track(key, snap, opts || {});
+    ev.changed.forEach(function (id) { fx.shake(document.getElementById(prefix + id)); });
+  }
 
   function openMod() {
     var m = (location.hash.match(/mod=(\d+)/) || [])[1]; if (!m) return;
@@ -107,6 +116,77 @@
       '<span style="display:flex;gap:8px;flex-wrap:wrap;">' + lk(ROOM, "FLAG DUEL \u2192") + lk(VROOM, "VOCAB DUEL \u2192") + '</span>';
   }
 
+  /* 25.1 battle arena: live team battle / flag duel → focused page (scoreboard + battle flags only) */
+  function offKey(id) { return "ctf-arena-off-" + id; }
+  function arenaOff(id) { try { return sessionStorage.getItem(offKey(id)) === "1"; } catch (e) { return false; } }
+  function setOff(id, v) { try { v ? sessionStorage.setItem(offKey(id), "1") : sessionStorage.removeItem(offKey(id)); } catch (e) {} }
+  if (/arena/.test(location.hash)) { try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf("ctf-arena-off-") === 0) sessionStorage.removeItem(k); }); } catch (e) {} }
+  function liveBattle() {
+    if (!ST) return null;
+    if (ST.tb && ST.tb.status === "live") return { kind: "tb", d: ST.tb };
+    if (ST.duel && ST.duel.status === "live") return { kind: "ad", d: ST.duel };
+    return null;
+  }
+  function focus() {
+    var L = liveBattle(), on = L && !arenaOff(L.d.id) && (L.d.modules || []).length;
+    var key = on ? L.kind + L.d.id : "", was = window.CTF_FOCUS ? window.CTF_FOCUS.key : "";
+    window.CTF_FOCUS = on ? { key: key, mods: (L.d.modules || []).map(Number) } : null;
+    if (key !== was) {
+      if (window.CTF && window.CTF.render) window.CTF.render();
+      if (on) window.scrollTo(0, 0);
+    }
+    if (!on) { var p = document.getElementById("arenaHead"); if (p) p.remove(); }
+    return on ? L : null;
+  }
+  function arenaBtn(id) { return arenaOff(id) ? '<button type="button" id="fdArena" class="mono" style="font-size:11px;font-weight:700;padding:6px 10px;min-height:32px;border-radius:8px;border:1px solid var(--amber);background:transparent;color:var(--bright);cursor:pointer;">Arena view</button>' : ""; }
+  function wireArenaBtn(el, id) { var b = el.querySelector("#fdArena"); if (b) b.onclick = function () { setOff(id, false); bar(); }; }
+  function arenaPanel(L) {
+    var root = document.getElementById("ctfRoot"); if (!root) return;
+    var p = document.getElementById("arenaHead");
+    if (!p) { p = document.createElement("div"); p.id = "arenaHead"; root.parentNode.insertBefore(p, root); }
+    var d = L.d, tb = L.kind === "tb", cols = ["#3a86ff", "#ff5d73", "#2ec27e", "#f4a300"], rows, mine;
+    if (tb) {
+      rows = (d.teams || []).map(function (t, i) { return { id: t.id, name: t.name, score: +t.avg, shown: (+t.avg).toFixed(1), color: t.color || cols[i % 4], me: t.id === d.my_team }; });
+    } else {
+      var ids = (d.players || []).map(function (q) { return String(q.id); }).sort();
+      rows = (d.players || []).map(function (q) { return { id: q.id, name: q.handle, score: q.points, shown: String(q.points), color: PAL[ids.indexOf(String(q.id)) % 4], me: q.id === ST.me, left: q.forfeit }; });
+    }
+    var top = Math.max.apply(null, rows.map(function (r) { return r.score; }).concat([1]));
+    var dbl = tb && FX() && FX().inDouble(d.dbl_at && new Date(d.dbl_at).getTime(), skew);
+    var me = tb ? (d.me || {}) : ((d.players || []).filter(function (q) { return q.id === ST.me; })[0] || {});
+    p.className = "card";
+    p.setAttribute("style", "margin-bottom:18px;padding:22px 24px;border:2px solid var(--amber);box-shadow:0 0 34px -14px var(--amber);");
+    p.innerHTML =
+      '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;">' +
+        '<div style="flex:1;min-width:200px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:700;">' + (tb ? "\u2691 TEAM BATTLE ARENA" : "\u2694 FLAG DUEL ARENA") + '</div>' +
+          '<div class="mono" style="font-size:12px;color:var(--dim);margin-top:4px;">' + (d.modules || []).map(function (m) { return "Module " + m; }).join(" \u00b7 ") + (tb ? " \u00b7 team score = average per player" : "") + '</div></div>' +
+        (dbl ? '<span class="mono bfxPulse" style="font-size:12px;font-weight:800;padding:5px 11px;border-radius:999px;background:#ffcf5c;color:#1a1200;">\u2605 DOUBLE POINTS</span>' : '') +
+        '<div style="text-align:right;"><div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">TIME LEFT</div><div class="mono" id="fdClock" aria-live="off" style="font-size:40px;font-weight:800;line-height:1.05;color:var(--bright);"></div></div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:10px;">' + rows.map(function (r) {
+        var w = Math.max(3, Math.round(r.score / top * 100));
+        return '<div id="' + (tb ? "tbc-" : "adc-") + esc(r.id) + '" style="display:grid;grid-template-columns:minmax(90px,170px) minmax(0,1fr) 64px;align-items:center;gap:12px;' + (r.left ? "opacity:.5;" : "") + '">' +
+          '<span style="font-weight:700;color:var(--bright);font-size:14px;overflow-wrap:anywhere;">' + esc(r.name) + (r.me ? ' <span class="mono" style="font-size:10px;color:var(--accent);">' + (tb ? "YOUR TEAM" : "YOU") + '</span>' : '') + (r.left ? ' <span class="mono" style="font-size:10px;color:var(--dim);">LEFT</span>' : '') + '</span>' +
+          '<span style="height:22px;border-radius:999px;background:var(--bg);border:1px solid ' + (r.me ? "var(--accent)" : "var(--border2)") + ';overflow:hidden;"><span style="display:block;height:100%;width:' + w + '%;background:' + esc(r.color) + ';border-radius:999px;transition:width .6s ease;"></span></span>' +
+          '<span class="mono" style="font-size:20px;font-weight:800;color:var(--amber);text-align:right;">' + esc(r.shown) + '</span></div>';
+      }).join("") + '</div>' +
+      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid var(--border2);">' +
+        '<span class="mono" style="font-size:13px;color:var(--muted);flex:1;min-width:180px;">You: <b style="color:var(--bright);font-size:16px;">' + (me.points || 0) + '</b> pts' + (tb && me.caps != null ? ' \u00b7 ' + me.caps + ' captures' : '') + ' \u00b7 Easy 1 \u00b7 Medium 2 \u00b7 Hard 3</span>' +
+        '<button type="button" id="arFull" class="mono" style="font-size:11px;font-weight:700;padding:8px 12px;min-height:36px;border-radius:8px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;">Full CTF page</button>' +
+        (tb ? exitBtn("Exit battle") : exitBtn("Forfeit")) +
+      '</div>';
+    p.querySelector("#arFull").onclick = function () { setOff(d.id, true); bar(); };
+    var x = p.querySelector("#fdExit"); if (x) x.onclick = function () { exitNow(tb ? "tb" : "ad"); };
+    if (tb) hype("tb" + d.id, { status: d.status, teams: rows.map(function (r) { return { id: r.id, name: r.me ? r.name + " (you)" : r.name, color: r.color, score: r.score }; }), feed: [] }, "tbc-");
+    else {
+      var byH = {}; (d.players || []).forEach(function (q) { byH[q.handle] = q.id; });
+      hype("ad" + d.id, { status: "live", teams: rows.filter(function (r) { return !r.left; }).map(function (r) { return { id: r.id, name: r.me ? "YOU" : r.name, color: r.color, score: r.score }; }),
+        feed: (d.feed || []).map(function (f) { return { who: f.handle, team: byH[f.handle], at: f.at, pts: f.pts }; }) }, "adc-", { streakBy: "who" });
+    }
+    if (!tick) tick = setInterval(clock, 500);
+    clock();
+  }
+
   function exitBtn(t) { return '<button type="button" id="fdExit" class="mono" style="font-size:11px;font-weight:700;padding:6px 10px;min-height:32px;border-radius:8px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;">' + t + '</button>'; }
   function exitNow(kind) {
     var s = sess(course); if (!s) return;
@@ -120,15 +200,17 @@
     var b = ST.tb, T = b.teams || [], cols = ["#3a86ff", "#ff5d73", "#2ec27e", "#f4a300"];
     var chips = T.map(function (t, i) {
       var mine = t.id === b.my_team;
-      return '<span style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:' + (mine ? "2px solid var(--accent)" : "1px solid var(--border3)") + ';background:var(--bg);">' +
+      return '<span id="tbc-' + esc(t.id) + '" style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:' + (mine ? "2px solid var(--accent)" : "1px solid var(--border3)") + ';background:var(--bg);">' +
         '<span aria-hidden="true" style="width:10px;height:10px;border-radius:3px;background:' + esc(t.color || cols[i % 4]) + ';"></span>' +
         '<span style="font-weight:700;color:var(--bright);font-size:13px;">' + esc(t.name) + (mine ? ' <span class="mono" style="font-size:10px;color:var(--accent);">YOUR TEAM</span>' : '') + '</span>' +
         '<span class="mono" style="font-weight:800;font-size:15px;color:var(--amber);">' + (+t.avg).toFixed(1) + '</span>' +
         (b.status === "done" && t.won ? '<span class="mono" style="font-size:10px;color:var(--accent);">\u2605 WIN</span>' : '') + '</span>';
     }).join("");
     var me = b.me || {}, right;
-    if (b.status === "live") right = '<span class="mono" style="font-size:12px;color:var(--muted);">You: <b style="color:var(--bright);">' + (me.points || 0) + '</b> pts</span>' +
-      (b.ends_at ? '<span class="mono" id="fdClock" style="font-size:22px;font-weight:800;color:var(--bright);min-width:70px;text-align:right;"></span>' : '') + exitBtn("Exit battle");
+    var dbl = b.status === "live" && FX() && FX().inDouble(b.dbl_at && new Date(b.dbl_at).getTime(), skew);
+    if (b.status === "live") right = (dbl ? '<span class="mono bfxPulse" style="font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:#ffcf5c;color:#1a1200;">\u2605 DOUBLE POINTS</span>' : '') +
+      '<span class="mono" style="font-size:12px;color:var(--muted);">You: <b style="color:var(--bright);">' + (me.points || 0) + '</b> pts</span>' +
+      (b.ends_at ? '<span class="mono" id="fdClock" style="font-size:22px;font-weight:800;color:var(--bright);min-width:70px;text-align:right;"></span>' : '') + arenaBtn(b.id) + exitBtn("Exit battle");
     else {
       var mv = (b.mvps || []).filter(function (m) { return m.team === b.my_team; }).map(function (m) { return esc(m.handle); });
       right = '<span class="mono" style="font-size:12px;color:var(--bright);font-weight:700;">Battle over \u00b7 ' + (me.xp ? "+" + me.xp + " XP" : "no XP (no captures)") + (mv.length ? " \u00b7 Team MVP: " + mv.join(", ") : "") + '</span>' +
@@ -140,6 +222,8 @@
       '<span style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:0;">' + chips + '</span>' + right + '</div>';
     var c = el.querySelector("#fdClose"); if (c) c.onclick = function () { hidDone = b.id; bar(); };
     var x = el.querySelector("#fdExit"); if (x) x.onclick = function () { exitNow("tb"); };
+    wireArenaBtn(el, b.id);
+    hype("tb" + b.id, { status: b.status, teams: T.map(function (t, i) { return { id: t.id, name: t.id === b.my_team ? t.name + " (you)" : t.name, color: t.color || cols[i % 4], score: +t.avg }; }), feed: [] }, "tbc-");
     clearFixed();
     if (b.status === "live" && b.ends_at && !tick) tick = setInterval(clock, 500);
     if (b.status !== "live") { clearInterval(tick); tick = null; }
@@ -147,6 +231,8 @@
   }
   function bar() {
     var d = ST && (ST.tb || ST.duel), el = document.getElementById("fdBar");
+    var L = focus();
+    if (L) { if (el) el.remove(); document.body.style.paddingTop = ""; return arenaPanel(L); }
     if (!d || (d.status === "done" && hidDone === d.id)) { if (el) el.remove(); document.body.style.paddingTop = ""; clearInterval(tick); tick = null; return; }
     if (!el) {
       el = document.createElement("div"); el.id = "fdBar"; el.setAttribute("role", "region"); el.setAttribute("aria-label", "Flag duel scoreboard");
@@ -159,7 +245,7 @@
     var mods = (d.modules || []).map(function (m) { return "M" + String(m).padStart(2, "0"); }).join(" \u00b7 ");
     var chips = (d.players || []).map(function (p) {
       var mine = p.id === ST.me;
-      return '<span style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:' + (mine ? "2px solid var(--accent)" : "1px solid var(--border3)") + ';background:var(--bg);' + (p.forfeit ? "opacity:.55;" : "") + '">' +
+      return '<span id="adc-' + esc(p.id) + '" style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:' + (mine ? "2px solid var(--accent)" : "1px solid var(--border3)") + ';background:var(--bg);' + (p.forfeit ? "opacity:.55;" : "") + '">' +
         '<span style="font-weight:700;color:var(--bright);font-size:13px;">' + esc(p.handle) + (mine ? ' <span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + '</span>' +
         '<span class="mono" style="font-weight:800;font-size:15px;color:var(--amber);">' + p.points + '</span>' +
         (p.forfeit ? '<span class="mono" style="font-size:10px;color:var(--dim);">LEFT</span>' : '') +
@@ -173,6 +259,7 @@
       right = '<span class="mono" style="font-size:12px;color:var(--bright);font-weight:700;">Time! ' + (mine.won ? "\u2605 You won \u00b7 +" + mine.xp + " XP" : mine.xp ? "+" + mine.xp + " XP for playing" : "Duel over") + '</span>' +
         '<button type="button" id="fdClose" class="mono" style="font-size:11px;padding:6px 10px;border-radius:8px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;">Close</button>';
     }
+    if (d.status === "live") right += arenaBtn(d.id);
     if (d.status !== "done") right += exitBtn(d.status === "live" ? "Forfeit" : "Leave");
     el.innerHTML = '<div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
       '<span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--amber);font-weight:700;">\u2694 DUEL</span>' +
@@ -181,6 +268,14 @@
       '<a href="' + ROOM + '" class="mono" style="font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--amber);color:var(--bright);">Duel room</a></div>';
     var c = el.querySelector("#fdClose"); if (c) c.onclick = function () { hidDone = d.id; bar(); };
     var x = el.querySelector("#fdExit"); if (x) x.onclick = function () { exitNow("ad"); };
+    wireArenaBtn(el, d.id);
+    if (d.status !== "lobby") {
+      var ids = (d.players || []).map(function (p) { return String(p.id); }).sort(), byH = {};
+      (d.players || []).forEach(function (p) { byH[p.handle] = p.id; });
+      hype("ad" + d.id, { status: d.status === "done" ? "done" : "live",
+        teams: (d.players || []).filter(function (p) { return !p.forfeit; }).map(function (p) { return { id: p.id, name: p.id === ST.me ? "YOU" : p.handle, color: PAL[ids.indexOf(String(p.id)) % 4], score: p.points }; }),
+        feed: (d.feed || []).map(function (f) { return { who: f.handle, team: byH[f.handle], at: f.at, pts: f.pts }; }) }, "adc-", { streakBy: "who" });
+    }
     clearFixed();
     document.body.style.paddingTop = el.offsetHeight + "px";
     if (d.status === "live" && !tick) tick = setInterval(clock, 500);
@@ -201,6 +296,7 @@
     var el = document.getElementById("fdClock"), d = ST && (ST.tb || ST.duel); if (!el || !d || !d.ends_at) return;
     var left = new Date(d.ends_at).getTime() - (Date.now() + skew);
     el.textContent = mmss(left); el.style.color = left < 30000 ? "var(--amber)" : "var(--bright)";
+    if (FX() && d.status === "live") FX().clock((ST.tb ? "tb" : "ad") + d.id, left, { el: el, dblAt: ST.tb && d.dbl_at && new Date(d.dbl_at).getTime(), skew: skew });
     if (left <= 0) { clearInterval(tick); tick = null; setTimeout(poll, 1200); }
   }
   function poll() {

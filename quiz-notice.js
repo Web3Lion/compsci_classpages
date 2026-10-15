@@ -193,6 +193,36 @@
     }
   }
 
+  /* ---------------- 25.1: live battle announcement (course home) ---------------- */
+  function rpcRaw(fn) {
+    var C = window.SUPABASE_CONFIG || {}, t = token();
+    if (!C.url || !C.anonKey || !t) return Promise.resolve(null);
+    return fetch(C.url + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: C.anonKey, Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify({ p_student: sess.studentId }) })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  }
+  function battleCheck() {
+    Promise.all([rpcRaw("ctf_tb_state"), rpcRaw("ctf_vd_state"), rpcRaw("ctf_ad_state")]).then(function (r) {
+      var tb = r[0] && r[0].battle, vd = r[1], ad = r[2] && r[2].duel, b = null;
+      if (tb && tb.status === "live") b = { t: "// TEAM BATTLE LIVE", h: "Your team needs you", s: "Enter the battle arena and capture flags to raise your team\u2019s score.", go: "ENTER ARENA", href: "ctf.html#arena" };
+      else if (vd && vd.class_live && vd.session && vd.session.kind === "class" && vd.session.status === "live") b = { t: "// VOCAB BATTLE LIVE", h: "Your team needs you", s: "Open the duel room to get an opponent.", go: "FIGHT", href: "../vocab-duel.html?c=" + encodeURIComponent(course) };
+      else if (ad && ad.status === "live") b = { t: "// FLAG DUEL LIVE", h: "Your duel is on", s: "Jump back into the arena before the clock runs out.", go: "ENTER ARENA", href: "ctf.html#arena" };
+      else if (ad && ad.status === "lobby") b = { t: "// FLAG DUEL LOBBY", h: "You\u2019re in a duel lobby", s: "Waiting for the host to start.", go: "DUEL ROOM", href: "../arena-duel.html?c=" + encodeURIComponent(course) };
+      var old = document.getElementById("bnNotice");
+      if (!b) { if (old) old.remove(); setTimeout(battleCheck, 30000); return; }
+      glowCss();
+      var card = old || document.createElement("a");
+      card.id = "bnNotice"; card.className = "card vqGlow"; card.href = b.href;
+      card.setAttribute("style", "display:flex;align-items:center;gap:16px;flex-wrap:wrap;text-decoration:none;color:inherit;border:2px solid var(--vqw);background:var(--vqw-bg);animation:vqGlow 1.4s ease-in-out infinite;margin-bottom:18px;padding:20px 22px;");
+      card.innerHTML = '<span aria-hidden="true" style="flex:none;font-size:30px;line-height:1;color:var(--vqw);">\u2694</span>' +
+        '<span style="min-width:0;flex:1;"><span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--bright);font-weight:700;">' + b.t + '</span>' +
+        '<span style="display:block;font-size:18px;font-weight:700;color:var(--bright);margin-top:4px;">' + b.h + '</span>' +
+        '<span style="display:block;font-size:13px;color:var(--muted);margin-top:3px;">' + b.s + '</span></span>' +
+        '<span class="mono" style="flex:none;font-size:13px;font-weight:800;color:var(--bright);border:2px solid var(--vqw);padding:10px 16px;border-radius:999px;">' + b.go + ' \u2192</span>';
+      if (!old) { var first = document.querySelector(".card:not(#bnNotice)"); if (first && first.parentNode) first.parentNode.insertBefore(card, first); }
+      setTimeout(battleCheck, 15000);
+    });
+  }
+
   function start() {
     var link = homeMount(), DATA = cached(), lastBox = null;
     if (DATA) glowCss();
@@ -207,6 +237,7 @@
       else { lastBox = null; tryPf(); }
     });
     if (link) pgFetch().then(function (g) { if (g) pgShow(g); });
+    if (link) battleCheck();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();

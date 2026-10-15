@@ -706,7 +706,7 @@
     return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
   }
   // exposed helper for making new flag hashes from the console
-  window.CTF = { hash: async (f) => { const h = await sha256(norm(f)); console.log(h); return h; } };
+  window.CTF = { hash: async (f) => { const h = await sha256(norm(f)); console.log(h); return h; }, render: () => render() };
   // integration surface for the Supabase sync layer (sync.js). Kept minimal so the
   // engine stays backend-agnostic; sync.js reads/writes localStorage[stateKey] and
   // re-renders through here after a cross-device merge.
@@ -1723,6 +1723,17 @@
       return;
     }
 
+    // 25.1 battle arena: while a team battle / flag duel is live, arena-duel.js sets CTF_FOCUS
+    // and the page shows only that battle's modules (scoreboard sits above #ctfRoot)
+    const F = window.CTF_FOCUS;
+    if (F && F.mods && F.mods.length) {
+      const names = ctf.modules || [], byMod = {};
+      F.mods.forEach(m => openMods.add(String(m)));
+      chals.forEach(c => { const m = +(c.module || 0); if (F.mods.indexOf(m) === -1 || c.vault) return; (byMod[m] = byMod[m] || []).push(c); });
+      root.innerHTML = `<div class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--faint);margin:6px 0 12px;">FLAGS IN THIS BATTLE \u00b7 every flag you haven\u2019t captured yet scores for you</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">${Object.keys(byMod).sort((a, b) => a - b).map(m => moduleBlock(+m, names, byMod[m])).join("")}</div>`;
+      bind(); startTicks(); return;
+    }
     const cards = buildList(chals);
     root.innerHTML = banner() + statsCard(s, pct) + squadCard() + badgesCard() + unitsCard() + reviewCard() +
       `<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px;">${cards}</div>` +

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=24.0.0"></script>
+<script src="site.js?v=25.1.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -260,20 +260,20 @@
   </div>
 </div>
 
-<script src="config.js?v=24.0.0"></script>
-<script src="ctf-data/cyber1.js?v=24.0.0"></script>
-<script src="ctf-data/cyber2.js?v=24.0.0"></script>
-<script src="ctf-data/cyber3.js?v=24.0.0"></script>
-<script src="ctf-data/apcsp.js?v=24.0.0"></script>
-<script src="ctf-data/web3.js?v=24.0.0"></script>
-<script src="cipher.js?v=24.0.0"></script>
-<script src="supabase-config.js?v=24.0.0"></script>
-<script src="auth.js?v=24.0.0"></script>
-<script src="name-filter.js?v=24.0.0"></script>
-<script src="objectives.js?v=24.0.0"></script>
-<script src="standards.js?v=24.0.0"></script>
-<script src="csv.js?v=24.0.0"></script>
-<script src="skins.js?v=24.0.0"></script>
+<script src="config.js?v=25.1.0"></script>
+<script src="ctf-data/cyber1.js?v=25.1.0"></script>
+<script src="ctf-data/cyber2.js?v=25.1.0"></script>
+<script src="ctf-data/cyber3.js?v=25.1.0"></script>
+<script src="ctf-data/apcsp.js?v=25.1.0"></script>
+<script src="ctf-data/web3.js?v=25.1.0"></script>
+<script src="cipher.js?v=25.1.0"></script>
+<script src="supabase-config.js?v=25.1.0"></script>
+<script src="auth.js?v=25.1.0"></script>
+<script src="name-filter.js?v=25.1.0"></script>
+<script src="objectives.js?v=25.1.0"></script>
+<script src="standards.js?v=25.1.0"></script>
+<script src="csv.js?v=25.1.0"></script>
+<script src="skins.js?v=25.1.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -444,6 +444,7 @@ function renderMain(){
   h+='<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">'+
       '<span class="pill" style="background:color-mix(in srgb,'+m.c+' 14%,transparent);color:'+m.c+';border:1px solid color-mix(in srgb,'+m.c+' 34%,transparent);">'+esc(m.label)+'</span>'+
       '<h2 style="font-size:20px;color:var(--bright);margin:0;">'+esc(CUR.name)+'</h2>'+
+      '<button class="btn sm" type="button" onclick="renameClass()" title="Rename this class">\u270E Rename</button>'+
       '<span class="chip mono" style="font-size:12px;">code: <b style="color:var(--bright)">'+esc(CUR.code)+'</b>'+
         ' <button class="btn sm" style="padding:2px 7px;" onclick="copyCode()">copy</button></span>'+
       '<span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;">'+
@@ -4860,6 +4861,16 @@ async function saveFreeze(){
   catch(e){ el("freezeMsg").textContent="failed"; el("freezeMsg").style.color="var(--bad)"; }
   b.disabled=false; b.textContent="Save freeze days";
   setTimeout(function(){var m=el("freezeMsg"); if(m)m.textContent="";},2500);
+}
+async function renameClass(){
+  var n=prompt("New name for this class:", CUR.name); if(n==null) return; n=n.trim();
+  if(!n||n===CUR.name) return;
+  try{ var r=await rpc("ctf_t_rename_class",{p_class:CUR.id,p_name:n});
+    if(r&&r.error){ alert(r.error==="not_owner"?"Only the teacher who owns this class can rename it.":"Rename failed ("+r.error+")."); return; }
+    var id=CUR.id; await loadClasses(true);
+    var c=CLASSES.find(function(x){return x.id===id;});
+    if(c) selectClass(c); else { CUR.name=r.name||n; selectClass(CUR); }
+  }catch(e){ alert("Rename failed. Run supabase/class-rename.sql in Supabase first."); }
 }
 async function deleteClass(){
   if(!confirm('Delete "'+CUR.name+'" and ALL its data? This cannot be undone.')) return;

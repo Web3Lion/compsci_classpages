@@ -4,7 +4,7 @@
    The skin restyles quiz.html and that course's profile page. Every skin has a
    light and a dark palette and follows the site-wide course-theme toggle.
    "Default" (no skin equipped) = Chunky Pop on quizzes, the original look on
-   the profile. Prices live in cosmetics.js + _cosmetic_price() (coins-cosmetics.sql).
+   the profile. s_cyber (free) = the original cyberpunk look everywhere, quizzes included. Prices live in cosmetics.js + _cosmetic_price() (coins-cosmetics.sql).
 
    Accessibility: no skin relies on color alone — quiz.html marks the selected
    answer with a check + the word "Selected", and results use words + icons.
@@ -22,6 +22,9 @@
     pop: { name: "Chunky Pop", blurb: "Bright, tactile buttons with bold outlines.", shape: SH.pop,
       light: { bg:"#fff8ec",panel:"#ffffff",panel2:"#fffdf7",ink:"#1d1a2e",ink2:"#2e2a44",muted:"#57536b",rule:"#1d1a2e",rule2:"#d9d2c3",accent:"#3a5bd9",accentBg:"#e6ecff",onAccent:"#ffffff",sel:"#3a5bd9",onSel:"#ffffff",btn:"#2ec27e",onBtn:"#1d1a2e",ok:"#1d7a46",okBg:"#e2f5e9",bad:"#b3261e",badBg:"#fde7e4",warn:"#8a5a00",warnBg:"#fff1cc",shadow:"#1d1a2e" },
       dark:  { bg:"#17142a",panel:"#221e3a",panel2:"#2a2547",ink:"#fff8ec",ink2:"#e6e0f5",muted:"#b8b0d4",rule:"#6d64a8",rule2:"#3a3460",accent:"#8fb0ff",accentBg:"#2b2f5e",onAccent:"#10102a",sel:"#8fb0ff",onSel:"#10102a",btn:"#3ddc84",onBtn:"#0d1f14",ok:"#7ee2a8",okBg:"#173a28",bad:"#ff9b8f",badBg:"#44201d",warn:"#ffd36b",warnBg:"#3d3014",shadow:"#0b0918" } },
+    s_cyber: { name: "Cyberpunk", blurb: "The class's original neon look, on every page. Free.", native: 1, shape: { r: 8, bw: 1, card: "none", btn: "none", sel: "0 0 14px var(--q-glow)", opt: 8, up: 1 },
+      light: { bg:"#eef3f8",panel:"#ffffff",panel2:"#f6f9fc",ink:"#0b1220",ink2:"#1c2a3d",muted:"#4a5a70",rule:"#9fb3c8",rule2:"#d5dfea",accent:"#00788a",accentBg:"#dcf3f6",onAccent:"#ffffff",sel:"#a3127f",onSel:"#ffffff",btn:"#0b1220",onBtn:"#7ff7ff",ok:"#13703a",okBg:"#e1f3e7",bad:"#b3261e",badBg:"#fde7e4",warn:"#7a5200",warnBg:"#fbefd3",shadow:"transparent",glow:"rgba(163,18,127,.22)" },
+      dark:  { bg:"#0a0d14",panel:"#111724",panel2:"#151c2c",ink:"#f2f7ff",ink2:"#d6e2f2",muted:"#93a4bd",rule:"#2a3650",rule2:"#1d2638",accent:"#00f0ff",accentBg:"#0d2a33",onAccent:"#0a0d14",sel:"#ff2bd6",onSel:"#14040f",btn:"#00f0ff",onBtn:"#0a0d14",ok:"#6dffb0",okBg:"#0f3326",bad:"#ff8aa0",badBg:"#3d1228",warn:"#ffd23f",warnBg:"#3a3410",shadow:"transparent",glow:"rgba(255,43,214,.4)" } },
     s_arcade: { name: "Arcade Neon", blurb: "Retro arcade, neon glow on your pick.", shape: { r: 12, bw: 2, card: "none", btn: "none", sel: "0 0 18px var(--q-glow)", opt: 12, up: 1 },
       light: { bg:"#f4f1ff",panel:"#ffffff",panel2:"#f8f6ff",ink:"#160f3a",ink2:"#2c2360",muted:"#5a5088",rule:"#cfc6f5",rule2:"#e4def9",accent:"#0b7f8c",accentBg:"#e0f7fa",onAccent:"#ffffff",sel:"#b0168f",onSel:"#ffffff",btn:"#160f3a",onBtn:"#ffe14f",ok:"#137a3c",okBg:"#e3f5ea",bad:"#b3261e",badBg:"#fde7e4",warn:"#7a5a00",warnBg:"#fff3c4",shadow:"transparent",glow:"rgba(176,22,143,.25)",hero:"linear-gradient(90deg,#b0168f,#0b7f8c)" },
       dark:  { bg:"#0d0b1f",panel:"#17123a",panel2:"#1d1745",ink:"#ffffff",ink2:"#e6e1ff",muted:"#a89cf0",rule:"#3a2f80",rule2:"#2a2160",accent:"#3df5ff",accentBg:"#142a4a",onAccent:"#0d0b1f",sel:"#ff4fd8",onSel:"#1a0620",btn:"#ffe14f",onBtn:"#0d0b1f",ok:"#6dffb0",okBg:"#0f3326",bad:"#ff8aa0",badBg:"#3d1228",warn:"#ffe14f",warnBg:"#3a3410",shadow:"transparent",glow:"rgba(255,79,216,.4)",hero:"linear-gradient(90deg,#ff4fd8,#3df5ff)" } },
@@ -38,7 +41,7 @@
       light: { bg:"#faf5ff",panel:"#ffffff",panel2:"#fcf9ff",ink:"#1e1b4b",ink2:"#334155",muted:"#5b5778",rule:"#c4b5fd",rule2:"#ddd6fe",accent:"#6d28d9",accentBg:"#f1e9ff",onAccent:"#ffffff",sel:"#7c3aed",onSel:"#ffffff",btn:"#facc15",onBtn:"#4c1d95",ok:"#15803d",okBg:"#e6f6ea",bad:"#b91c1c",badBg:"#fde8e8",warn:"#854d0e",warnBg:"#fef3c7",shadow:"transparent",hero:"linear-gradient(135deg,#4c1d95 0%,#7c3aed 50%,#c026d3 100%)" },
       dark:  { bg:"#160f2b",panel:"#221640",panel2:"#2a1c4f",ink:"#faf5ff",ink2:"#e4dcf5",muted:"#b9acd9",rule:"#5b3fa8",rule2:"#3b2a66",accent:"#c4a5ff",accentBg:"#33215c",onAccent:"#160f2b",sel:"#a78bfa",onSel:"#160f2b",btn:"#facc15",onBtn:"#3b0f78",ok:"#86efac",okBg:"#163a26",bad:"#fca5a5",badBg:"#4a1d24",warn:"#fde68a",warnBg:"#3d3112",shadow:"transparent",hero:"linear-gradient(135deg,#4c1d95 0%,#7c3aed 50%,#c026d3 100%)" } }
   };
-  var ORDER = [null, "s_arcade", "s_quest", "s_ops", "s_sky", "s_mastermind"];
+  var ORDER = [null, "s_cyber", "s_arcade", "s_quest", "s_ops", "s_sky", "s_mastermind"];
   var FONT = "https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap";
 
   function font() {
@@ -59,6 +62,7 @@
     var k = id && SKINS[id] ? id : (mode === "quiz" ? "pop" : null);
     if (!k) return "";
     var S = SKINS[k], v = mode === "quiz" ? quizVars : profVars;
+    if (S.native && mode !== "quiz") return "";   // Cyberpunk = the course pages' own look
     var out = ":root{" + v(S.dark, S.shape) + "}:root[data-theme='light']{" + v(S.light, S.shape) + "}";
     if (mode === "profile") out += "body{font-family:'Lexend',sans-serif !important;}.card{border-radius:" + Math.max(S.shape.r, 8) + "px !important;" + (k === "pop" ? "" : "") + "}";
     return out;

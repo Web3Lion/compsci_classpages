@@ -88,6 +88,7 @@
     { id: "f_circuit", slot: "frame", name: "Circuit", price: 5 },
     { id: "f_gold",    slot: "frame", name: "Gold",    price: 8 },
     // 19.0: quiz skins (restyle quiz.html + this course's profile; see skins.js)
+    { id: "s_cyber",      slot: "skin", name: "Cyberpunk (class default)", price: 0 },
     { id: "s_arcade",     slot: "skin", name: "Arcade Neon", price: 20 },
     { id: "s_quest",      slot: "skin", name: "Quest / RPG", price: 20 },
     { id: "s_ops",        slot: "skin", name: "Hacker Ops",  price: 20 },
@@ -300,7 +301,7 @@
           ? '<button type="button" class="cosAct mono" data-a="unequip" data-id="' + it.id + '" style="' + btnCss("var(--accent)", true) + '">EQUIPPED \u2713</button>'
           : own
             ? '<button type="button" class="cosAct mono" data-a="equip" data-id="' + it.id + '" style="' + btnCss("var(--accent)") + '">EQUIP</button>'
-            : '<button type="button" class="cosAct mono" data-a="buy" data-id="' + it.id + '"' + (afford ? "" : " disabled") + ' aria-label="Buy ' + esc(it.name) + ' for ' + it.price + ' coins" style="' + btnCss("var(--amber)") + (afford ? "" : "opacity:.45;cursor:not-allowed;") + '">\u25C9 ' + it.price + '</button>';
+            : '<button type="button" class="cosAct mono" data-a="buy" data-id="' + it.id + '"' + (afford ? "" : " disabled") + ' aria-label="' + (it.price ? 'Buy ' + esc(it.name) + ' for ' + it.price + ' coins' : 'Get ' + esc(it.name) + ' for free') + '" style="' + btnCss(it.price ? "var(--amber)" : "var(--accent)") + (afford ? "" : "opacity:.45;cursor:not-allowed;") + '">' + (it.price ? '\u25C9 ' + it.price : 'FREE') + '</button>';
         return '<div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;border:1px solid ' + (on ? "var(--accent)" : "var(--border2)") + ';background:var(--bg);">' +
           '<div style="min-height:40px;display:flex;flex-direction:column;justify-content:center;">' + preview(it) + '</div>' +
           (it.slot === "skin"
@@ -311,7 +312,7 @@
         var cur = equipped("skin"), dflt = !cur;
         items = '<div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;border:1px solid ' + (dflt ? "var(--accent)" : "var(--border2)") + ';background:var(--bg);">' +
           '<div style="min-height:40px;">' + SK.swatch(null) + '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);">Default</span>' +
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);">Default (Chunky Pop)</span>' +
           (dflt ? '<span class="mono" style="' + btnCss("var(--accent)", true) + 'cursor:default;">IN USE ✓</span>'
                 : '<button type="button" class="cosAct mono" data-a="unequip" data-id="' + cur + '" style="' + btnCss("var(--accent)") + '">USE DEFAULT</button>') +
           '</div></div>' + items;

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=23.3.1"></script>
+<script src="site.js?v=25.1.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,7 +50,7 @@ input.code:focus{outline:none;border-color:var(--amber);}
   if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { document.getElementById("view").innerHTML = '<div class="card">Open a Flag Duel from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C;
   document.getElementById("back").href = C + "/ctf.html";
-  var V = "23.3.1", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "skins.js", "arena-duel.js"];
+  var V = window.SITE_VERSION || "25.1.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "skins.js", "cosmetics.js", "battle-fx.js", "arena-duel.js"];
   (function next(i){
     if (i >= list.length) return window.__fdBoot && window.__fdBoot();
     var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); };
@@ -64,7 +64,10 @@ window.__fdBoot = function(){
   var CFG = ((window.COURSE_CONFIG || {})[C] || {}).ctf || {};
   var names = CFG.modules || [];
   if (!AUTH || !AUTH.online || !S) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" style="display:inline-flex;align-items:center;" href="' + C + '/ctf.html">Go to the arena</a></div>'; return; }
-  var ALL = FD.flags(C), ST = null, skew = 0, busy = false, msg = "", pick = {}, mins = 5, timer = null, tick = null;
+  var ALL = FD.flags(C), ST = null, skew = 0, busy = false, msg = "", pick = {}, mins = 5, timer = null, tick = null, FX = window.BATTLE_FX, seenAt = 0, curD = null;
+  var PAL = ["#3a86ff", "#ff5d73", "#2ec27e", "#f4a300"];
+  function pcolId(d, id){ var i = (d.players || []).map(function(p){ return String(p.id); }).sort().indexOf(String(id)); return PAL[(i < 0 ? 0 : i) % 4]; }
+  function pcol(d, h){ var p = (d.players || []).filter(function(x){ return x.handle === h; })[0]; return p ? pcolId(d, p.id) : PAL[0]; }
   function modName(m){ return "Module " + String(m).padStart(2, "0") + (names[m - 1] ? " \u00b7 " + names[m - 1] : ""); }
   function mods(){ var o = {}; ALL.forEach(function(f){ (o[f.module] = o[f.module] || []).push(f); }); return o; }
   function myOpen(modsSel){ var sv = FD.solved(C); return ALL.filter(function(f){ return modsSel.indexOf(f.module) !== -1 && !sv[f.key]; }); }
@@ -97,8 +100,9 @@ window.__fdBoot = function(){
   function board(d){
     return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;">' + (d.players || []).map(function(p, i){
       var mine = p.id === ST.me, host = p.id === d.host;
-      return '<div style="padding:14px 16px;border-radius:12px;background:var(--bg);border:' + (mine ? "2px solid var(--accent)" : "1px solid var(--border2)") + ';' + (p.forfeit ? "opacity:.55;" : "") + '">' +
-        '<div style="display:flex;align-items:center;gap:6px;font-weight:700;color:var(--bright);font-size:14px;"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(p.handle) + '</span>' +
+      var lead = d.status === "live" && i === 0 && p.points > 0 && (!(d.players[1]) || d.players[1].points < p.points);
+      return '<div id="pl-' + esc(p.id) + '" style="padding:14px 16px;border-radius:12px;background:var(--bg);border:' + (mine ? "2px solid var(--accent)" : "1px solid var(--border2)") + ';border-top:4px solid ' + pcolId(d, p.id) + ';' + (p.forfeit ? "opacity:.55;" : "") + (lead ? "box-shadow:0 0 24px -6px " + pcolId(d, p.id) + ";" : "") + '">' +
+        '<div style="display:flex;align-items:center;gap:6px;font-weight:700;color:var(--bright);font-size:14px;">' + (lead ? '<span class="mono" style="font-size:10px;color:' + pcolId(d, p.id) + ';">▲ LEAD</span>' : '') + '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(p.handle) + '</span>' +
           (mine ? '<span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + (host ? '<span class="mono" style="font-size:10px;color:var(--dim);">HOST</span>' : '') + '</div>' +
         '<div class="mono" style="font-size:34px;font-weight:800;color:var(--amber);line-height:1.1;margin-top:6px;">' + p.points + '</div>' +
         '<div class="mono" style="font-size:11px;color:var(--dim);">' + p.caps + ' captured \u00b7 ' + p.open + ' open' +
@@ -125,7 +129,7 @@ window.__fdBoot = function(){
   function feed(d){
     var f = d.feed || []; if (!f.length) return "";
     return '<div class="card" style="margin-top:18px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">LATEST CAPTURES</div>' +
-      f.map(function(x){ return '<div style="display:flex;gap:10px;font-size:13px;padding:5px 0;"><b style="color:var(--bright);">' + esc(x.handle) + '</b><span style="flex:1;min-width:0;color:var(--muted);">' + esc(x.title) + '</span><span class="mono" style="color:var(--amber);font-weight:800;">+' + x.pts + '</span></div>'; }).join("") + '</div>';
+      f.map(function(x){ return '<div class="' + (x._new ? "bfxFeedIn" : "") + '" style="display:flex;align-items:center;gap:10px;font-size:13px;padding:5px 4px;border-radius:6px;">' + (FX ? FX.avatar(x.handle, pcol(d, x.handle), x.eq) : '') + '<b style="color:var(--bright);">' + esc(x.handle) + '</b><span style="flex:1;min-width:0;color:var(--muted);">' + esc(x.title) + '</span><span class="mono" style="color:var(--amber);font-weight:800;">+' + x.pts + '</span></div>'; }).join("") + '</div>';
   }
   function duelView(d){
     var isHost = d.host === ST.me, n = (d.players || []).filter(function(p){ return !p.forfeit; }).length;
@@ -142,6 +146,13 @@ window.__fdBoot = function(){
         '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">TIME LEFT</div><div class="mono" id="fdClock" style="font-size:52px;font-weight:800;color:var(--bright);line-height:1.1;"></div>' + info + '</div>' +
         '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">Open a module below and capture flags in the arena. Points update here and on the arena\u2019s top bar.</div>' +
         '<div style="display:flex;gap:10px;flex-wrap:wrap;"><a class="btn" style="display:inline-flex;align-items:center;" href="' + C + '/ctf.html#mod=' + ((d.modules || [])[0] || "") + '">Go to arena \u2192</a><button type="button" class="btn ghost" id="fdLeave"' + (busy ? " disabled" : "") + '>Forfeit</button></div></div>';
+    } else if (FX) {
+      var W = (d.players || []).filter(function(p){ return p.won; }), me = (d.players || []).filter(function(p){ return p.id === ST.me; })[0] || {};
+      head = FX.podium({ kicker: "FINAL · " + (d.modules || []).map(function(m){ return "M" + String(m).padStart(2, "0"); }).join(" · ") + " · " + d.minutes + " min",
+        title: W.length > 1 ? "Tie! " + W.map(function(p){ return p.handle; }).join(" & ") + " win" : W.length ? (W[0].id === ST.me ? "You win!" : W[0].handle + " wins!") : "No one scored this time",
+        rows: (d.players || []).map(function(p, i){ return { name: p.handle, color: pcolId(d, p.id), score: p.points + " pts", sub: p.caps + " captured" + (p.forfeit ? " · left" : p.xp ? " · +" + p.xp + " XP" : "") }; }),
+        awards: [me.xp ? { label: "YOUR RESULT", who: (me.won ? "★ Winner" : "Finished") + " · +" + me.xp + " XP", color: "var(--accent)" } : null],
+        actions: '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" id="fdRematch"' + (busy ? " disabled" : "") + '>Rematch</button><button type="button" class="btn ghost" id="fdNew">New duel</button></div>' });
     } else {
       var w = (d.players || []).filter(function(p){ return p.won; }).map(function(p){ return esc(p.handle); });
       head = '<div class="card" style="border-color:var(--amber);"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">FINAL</div>' +
@@ -177,6 +188,10 @@ window.__fdBoot = function(){
       if (!confirm(live ? "Forfeit this duel? You won\u2019t get any duel XP." : "Leave this duel?")) return;
       rpc("ctf_ad_leave").then(load);
     };
+    var rm = document.getElementById("fdRematch"); if (rm) rm.onclick = function(){
+      var od = ST.duel, keys = ALL.filter(function(f){ return (od.modules || []).indexOf(f.module) !== -1; }).map(function(f){ return f.key; });
+      dismissed = false; rpc("ctf_ad_create", { p_modules: od.modules, p_minutes: od.minutes, p_keys: keys }).then(function(r){ if (r && !r.error) msg = ""; load(); });
+    };
     var nw = document.getElementById("fdNew"); if (nw) nw.onclick = function(){ ST.duel = null; dismissed = true; paint(); };
   }
   var dismissed = false;
@@ -184,6 +199,7 @@ window.__fdBoot = function(){
     var el = document.getElementById("fdClock"), d = ST && ST.duel; if (!el || !d || !d.ends_at) return;
     var left = new Date(d.ends_at).getTime() - (Date.now() + skew);
     el.textContent = FD.mmss(left); el.style.color = left < 30000 ? "var(--amber)" : "var(--bright)";
+    if (FX) FX.clock("fd" + d.id, left, { el: el });
     if (left <= 0 && !clock._w) { clock._w = 1; setTimeout(function(){ clock._w = 0; load(); }, 1500); }
   }
   function load(){
@@ -192,8 +208,20 @@ window.__fdBoot = function(){
       if (!d || d.error) { view.innerHTML = '<div class="card">' + esc(FD.err(d && d.error)) + '</div>'; return; }
       if (dismissed && d.duel && d.duel.status === "done") d.duel = null; else if (d.duel && d.duel.status !== "done") dismissed = false;
       ST = d; if (d.now) skew = new Date(d.now).getTime() - Date.now();
+      var du = d.duel, mx = function(F, m){ return (F || []).reduce(function(a, f){ return Math.max(a, new Date(f.at).getTime()); }, m); };
+      if (du && du.id !== curD) { if (curD && FX) FX.reset("fd" + curD); curD = du.id; seenAt = mx(du.feed, 0); }
+      else if (du) (du.feed || []).forEach(function(f){ if (new Date(f.at).getTime() > seenAt) f._new = true; });
+      if (du) seenAt = mx(du.feed, seenAt);
       var typing = document.activeElement && document.activeElement.id === "fdCode";
       if (!typing || d.duel) paint();
+      if (du && FX && du.status !== "lobby") {
+        var ids = {}; (du.players || []).forEach(function(p){ ids[p.handle] = p.id; });
+        var ev = FX.track("fd" + du.id, { status: du.status === "done" ? "done" : "live",
+          teams: (du.players || []).filter(function(p){ return !p.forfeit; }).map(function(p, i){ return { id: p.id, name: p.id === d.me ? "YOU" : p.handle, color: pcol(du, p.handle), score: p.points }; }),
+          feed: (du.feed || []).map(function(f){ return { who: f.handle, team: ids[f.handle], at: f.at, pts: f.pts, hard: f.pts === 3 }; }) }, { streakBy: "who" });
+        ev.changed.forEach(function(id){ FX.shake(document.getElementById("pl-" + id)); });
+        (du.feed || []).forEach(function(f){ delete f._new; });
+      }
       timer = setTimeout(load, d.duel && d.duel.status !== "done" ? 3000 : 10000);
     }).catch(function(e){
       view.innerHTML = '<div class="card">' + (/ctf_ad_|function/.test(String(e && e.message)) ? "Flag duels aren\u2019t set up yet. Ask your teacher to run supabase/arena-duels.sql." : "Couldn\u2019t reach the server. Retrying\u2026") + '</div>';
