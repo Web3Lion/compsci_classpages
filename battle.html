@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=25.1.0"></script>
+<script src="site.js?v=26.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,16 +45,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=25.1.0"></script>
-<script src="ctf-data/cyber1.js?v=25.1.0"></script>
-<script src="ctf-data/cyber2.js?v=25.1.0"></script>
-<script src="ctf-data/cyber3.js?v=25.1.0"></script>
-<script src="ctf-data/apcsp.js?v=25.1.0"></script>
-<script src="ctf-data/web3.js?v=25.1.0"></script>
-<script src="supabase-config.js?v=25.1.0"></script>
-<script src="auth.js?v=25.1.0"></script>
-<script src="cosmetics.js?v=25.1.0"></script>
-<script src="battle-fx.js?v=25.1.0"></script>
+<script src="config.js?v=26.0.0"></script>
+<script src="ctf-data/cyber1.js?v=26.0.0"></script>
+<script src="ctf-data/cyber2.js?v=26.0.0"></script>
+<script src="ctf-data/cyber3.js?v=26.0.0"></script>
+<script src="ctf-data/apcsp.js?v=26.0.0"></script>
+<script src="ctf-data/web3.js?v=26.0.0"></script>
+<script src="supabase-config.js?v=26.0.0"></script>
+<script src="auth.js?v=26.0.0"></script>
+<script src="cosmetics.js?v=26.0.0"></script>
+<script src="battle-fx.js?v=26.0.0"></script>
+<script src="team-picker.js?v=26.0.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -114,6 +115,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       if (fn === "ctf_t_tb_start") { TEAMS.forEach(function(t){ t.won = false; }); reset(); return { ok: true }; }
       if (fn === "ctf_t_tb_end") { if (a.p_award) finish(); else status = "cancelled"; return { ok: true }; }
       if (fn === "ctf_t_tb_randomize") return { ok: true };
+      if (/^ctf_t_squadset_/.test(fn)) return fn === "ctf_t_squadset_list" ? [] : { ok: true };
       if (fn === "ctf_t_tb_state") {
         step();
         return { now: new Date().toISOString(), battle: { id: "demo-" + t0, status: status, modules: [1, 2], minutes: 2.5, started_at: new Date(t0).toISOString(), ends_at: new Date(ends).toISOString(), dbl_at: new Date(dbl).toISOString(),
@@ -127,17 +129,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function setupView(){
     var T = SET.teams.filter(function(t){ return t.members > 0; }), un = SET.ungrouped || [], M = SET.manifest || [];
     var selMods = Object.keys(pick).filter(function(m){ return pick[m]; });
-    var ready = T.length >= 2 && T.length <= 4 && !un.length && selMods.length && !busy;
-    var teams = T.length ? T.map(function(t, i){ return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);"><span style="width:14px;height:14px;border-radius:4px;background:' + esc(col(t,i)) + ';"></span><b style="flex:1;color:var(--bright);">' + esc(t.name) + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + t.members + ' students</span></div>'; }).join("")
-      : '<div style="color:var(--dim);font-size:14px;">No teams yet.</div>';
+    var TP = window.TEAM_PICK; TP.fetchSets(rpc, CUR.id, paint);
+    var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && selMods.length && !busy;
+    var teams = TP.teams(T, col, busy) + TP.note(T);
     return '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;" id="g">' +
-      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TEAMS (YOUR SQUADS)</div>' +
+      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TEAMS \u00b7 TICK WHO PLAYS</div>' +
         '<div style="display:flex;flex-direction:column;gap:8px;">' + teams + '</div>' +
-        (un.length ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--bad);font-weight:700;">' + un.length + ' student' + (un.length>1?"s aren\u2019t":" isn\u2019t") + ' on a team: ' + esc(un.slice(0,8).join(", ")) + (un.length > 8 ? "\u2026" : "") + '</div>' : '') +
-        (T.length > 4 ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--bad);font-weight:700;">Battles take 2\u20134 teams.</div>' : '') +
+        (un.length ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--amber);font-weight:700;">' + un.length + ' student' + (un.length>1?"s aren\u2019t":" isn\u2019t") + ' on a team and will sit out: ' + esc(un.slice(0,8).join(", ")) + (un.length > 8 ? "\u2026" : "") + '</div>' : '') +
+        
         '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;"><span style="font-size:14px;color:var(--bright);font-weight:700;">Randomize teams:</span>' +
           [2,3,4].map(function(n){ return '<button type="button" class="btn ghost tbRand" data-n="' + n + '"' + (busy ? " disabled" : "") + '>' + n + ' teams</button>'; }).join("") + '</div>' +
-        '<div style="font-size:12px;color:var(--dim);margin-top:8px;line-height:1.5;">Randomizing reshuffles every student in this class into the first squads (creates Team A\u2013D if needed). Students see squad names once the battle starts.</div></div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-top:8px;line-height:1.5;">Randomizing reshuffles every student in this class into the first squads (creates Team A\u2013D if needed). Students see squad names once the battle starts.</div>' + TP.setsBar(busy) + '</div>' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BATTLE OPTIONS</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules that count</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (M.length ? M.map(function(m){ return '<button type="button" class="chip tbMod" data-m="' + m.module + '" aria-pressed="' + !!pick[m.module] + '">' + esc(modName(m.module)) + '</button>'; }).join("") : '<span style="color:var(--dim);font-size:13px;">Open this class in teacher.html once to publish its flags.</span>') + '</div>' +
@@ -205,11 +207,12 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function paint(){
     if (!CUR) return;
     var b = ST && ST.battle;
-    view.innerHTML = (b && (b.status === "live" || !showSetup)) ? battleView(b) : SET ? setupView() : '<div class="card mono" style="color:var(--dim);">Loading&hellip;</div>';
+    view.innerHTML = (b && (b.status === "live" || !showSetup)) ? battleView(b) : SET && !SET.error ? setupView() : (msg || (SET && SET.error) ? '<div class="card" style="border-color:var(--amber);"><b style="color:var(--bright);">Couldn\u2019t load the battle setup.</b><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">' + esc(msg || ("Error: " + SET.error)) + '<br>Check that <b>supabase/team-battles.sql</b> has been run (install-check.html), then reload.</div></div>' : '<div class="card mono" style="color:var(--dim);">Loading&hellip;</div>');
     var g = document.getElementById("g"); if (g && innerWidth < 900) g.style.gridTemplateColumns = "1fr";
     bind(); clock();
   }
   function bind(){
+    if (window.TEAM_PICK) TEAM_PICK.bind(view, { rpc: rpc, reload: load, repaint: paint, err: function(m){ msg = m; paint(); } });
     view.querySelectorAll(".tbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
     view.querySelectorAll(".tbMin").forEach(function(b){ b.onclick = function(){ mins = +b.getAttribute("data-n"); paint(); }; });
     view.querySelectorAll(".tbRand").forEach(function(b){ b.onclick = function(){
@@ -221,7 +224,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var s = document.getElementById("tbStart"); if (s) s.onclick = function(){
       var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
       busy = true; msg = ""; paint();
-      rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: mods, p_minutes: mins || 15 }).then(function(r){
+      rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: mods, p_minutes: mins || 15, p_groups: TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; })) }).then(function(r){
         busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; }
         showSetup = false; load();
       }).catch(fail);
@@ -231,7 +234,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var n = document.getElementById("tbNew"); if (n) n.onclick = function(){ showSetup = true; msg = ""; paint(); };
     var rm = document.getElementById("tbRematch"); if (rm) rm.onclick = function(){
       var ob = ST.battle; if (!confirm("Start a rematch with the same teams, modules and length?")) return;
-      busy = true; rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: ob.modules, p_minutes: ob.minutes || 15 }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
+      busy = true; rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: ob.modules, p_minutes: ob.minutes || 15, p_groups: (ob.teams || []).map(function(t){ return t.id; }) }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
     };
     var fu = document.getElementById("tbFull"); if (fu) fu.onclick = function(){ FX.fullscreen(document.getElementById("bfxResults")); };
   }
@@ -248,7 +251,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     Promise.all([rpc("ctf_t_tb_state", { p_class: id }), rpc("ctf_t_tb_setup", { p_class: id })]).then(function(r){
       if (!CUR || CUR.id !== id) return;
       if (r[0] && r[0].error) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> first.</div>'; return; }
-      ST = r[0]; SET = r[1]; if (ST.now) skew = new Date(ST.now).getTime() - Date.now();
+      ST = r[0]; SET = r[1]; if (!SET) msg = msg || "No setup data came back."; if (ST.now) skew = new Date(ST.now).getTime() - Date.now();
       var b = ST.battle;
       if (b && b.id !== curBattle) { if (curBattle && FX) FX.reset(curBattle); curBattle = b.id; seenAt = (b.feed || []).reduce(function(m, f){ return Math.max(m, new Date(f.at).getTime()); }, 0); }
       else if (b) (b.feed || []).forEach(function(f){ if (new Date(f.at).getTime() > seenAt) f._new = true; });

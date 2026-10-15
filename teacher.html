@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=25.1.0"></script>
+<script src="site.js?v=26.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -260,20 +260,20 @@
   </div>
 </div>
 
-<script src="config.js?v=25.1.0"></script>
-<script src="ctf-data/cyber1.js?v=25.1.0"></script>
-<script src="ctf-data/cyber2.js?v=25.1.0"></script>
-<script src="ctf-data/cyber3.js?v=25.1.0"></script>
-<script src="ctf-data/apcsp.js?v=25.1.0"></script>
-<script src="ctf-data/web3.js?v=25.1.0"></script>
-<script src="cipher.js?v=25.1.0"></script>
-<script src="supabase-config.js?v=25.1.0"></script>
-<script src="auth.js?v=25.1.0"></script>
-<script src="name-filter.js?v=25.1.0"></script>
-<script src="objectives.js?v=25.1.0"></script>
-<script src="standards.js?v=25.1.0"></script>
-<script src="csv.js?v=25.1.0"></script>
-<script src="skins.js?v=25.1.0"></script>
+<script src="config.js?v=26.0.0"></script>
+<script src="ctf-data/cyber1.js?v=26.0.0"></script>
+<script src="ctf-data/cyber2.js?v=26.0.0"></script>
+<script src="ctf-data/cyber3.js?v=26.0.0"></script>
+<script src="ctf-data/apcsp.js?v=26.0.0"></script>
+<script src="ctf-data/web3.js?v=26.0.0"></script>
+<script src="cipher.js?v=26.0.0"></script>
+<script src="supabase-config.js?v=26.0.0"></script>
+<script src="auth.js?v=26.0.0"></script>
+<script src="name-filter.js?v=26.0.0"></script>
+<script src="objectives.js?v=26.0.0"></script>
+<script src="standards.js?v=26.0.0"></script>
+<script src="csv.js?v=26.0.0"></script>
+<script src="skins.js?v=26.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -2921,13 +2921,16 @@ async function sqDrop(e,gid){
   var s=ROSTER.filter(function(r){ return r.id===id; })[0]; if(!s) return;
   gid=gid||null; if((s.group_id||null)===gid){ renderMain(); return; }
   var prev=s.group_id; s.group_id=gid; renderMain();   // move the card right away
-  try{ await rpc("ctf_t_group_assign",{p_students:[id],p_group:gid});
+  try{ var r=await rpc("ctf_t_group_assign",{p_students:[id],p_group:gid});
+       if(!r||r.error||!r.moved) throw new Error((r&&r.error)||"nothing saved (0 rows)");
        STAND=await rpc("ctf_t_squad_standings",{p_class:CUR.id}).catch(function(){ return STAND; })||STAND; renderMain(); }
-  catch(x){ s.group_id=prev; renderMain(); alert("Couldn\u2019t move that student."); }
+  catch(x){ s.group_id=prev; renderMain(); alert("Couldn\u2019t save that squad change: "+((x&&x.message)||x)+"\n\nIf this keeps happening, re-run supabase/class-groups.sql."); }
 }
 async function moveToSquad(sid,gid){
-  try{ await rpc("ctf_t_group_assign",{p_students:[sid],p_group:gid||null}); await loadDetail(); }
-  catch(e){ alert("Couldn\u2019t move that student."); }
+  try{ var r=await rpc("ctf_t_group_assign",{p_students:[sid],p_group:gid||null});
+    if(!r||r.error||!r.moved) throw new Error((r&&r.error)||"nothing saved (0 rows)");
+    await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t save that squad change: "+((e&&e.message)||e)+"\n\nIf this keeps happening, re-run supabase/class-groups.sql."); await loadDetail(); }
 }
 function squadPicker(s){
   var opts='<option value="">\u2014 no squad \u2014</option>'+GROUPS.map(function(g){
@@ -2947,6 +2950,34 @@ function squadBalance(members){
   var maxShare=Math.max.apply(null,xps)/total, equalShare=1/n;
   var pct=Math.max(0,Math.round((1-(maxShare-equalShare)/(1-equalShare))*100));
   return { pct:pct, label: pct>=80?"balanced":pct>=55?"uneven":"lopsided" };
+}
+/* 26.0 saved team sets (supabase/squad-sets.sql) */
+var SQSETS={};
+function sqSetsCard(){
+  var L=SQSETS[CUR.id];
+  if(L===undefined){ SQSETS[CUR.id]=null; rpc("ctf_t_squadset_list",{p_class:CUR.id}).then(function(r){ SQSETS[CUR.id]=Array.isArray(r)?r:"na"; renderMain(); }).catch(function(){ SQSETS[CUR.id]="na"; renderMain(); }); }
+  var h='<div class="card" style="padding:16px 18px;margin-bottom:22px;"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+
+    '<div style="flex:1;min-width:220px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">SAVED TEAM SETS</div>'+
+    '<div style="font-size:12px;color:var(--dim);margin-top:3px;">Save these squads under a name and load them back later (for example after Randomize on a battle page).</div></div>';
+  if(L==="na") return h+'<span style="font-size:12px;color:var(--dim);">Run supabase/squad-sets.sql to turn this on.</span></div></div>';
+  if(L&&L.length) h+='<select id="sqSetSel" aria-label="Saved team set" style="min-width:180px;min-height:36px;">'+L.map(function(s){ return '<option value="'+esc(s.id)+'">'+esc(s.name)+' ('+(s.teams||[]).map(function(x){return esc(x.name)+' '+x.n;}).join(', ')+')</option>'; }).join('')+'</select>'+
+    '<button class="btn sm" type="button" onclick="sqSetLoad()">Load</button><button class="btn sm danger" type="button" onclick="sqSetDel()">Delete</button>';
+  return h+'<button class="btn sm" type="button" onclick="sqSetSave()">Save current squads\u2026</button></div></div>';
+}
+function sqSetPicked(){ var s=el("sqSetSel"); return s&&(SQSETS[CUR.id]||[]).filter(function(x){return x.id===s.value;})[0]; }
+async function sqSetSave(){
+  var n=prompt("Name this team set (an existing name is replaced):",""); if(!n||!n.trim()) return;
+  try{ var r=await rpc("ctf_t_squadset_save",{p_class:CUR.id,p_name:n.trim()}); if(r&&r.error){ alert(r.error==="no_teams"?"This class has no squads yet.":"Couldn\u2019t save ("+r.error+")."); return; } delete SQSETS[CUR.id]; renderMain(); }
+  catch(e){ alert("Couldn\u2019t save. Run supabase/squad-sets.sql first."); }
+}
+async function sqSetLoad(){
+  var s=sqSetPicked(); if(!s||!confirm('Load "'+s.name+'"? Every student goes back to the squad they had when it was saved. Students who joined since then end up with no squad.')) return;
+  try{ var r=await rpc("ctf_t_squadset_load",{p_set:s.id}); if(r&&r.error){ alert(r.error==="battle_live"?"A battle is live \u2014 end it first.":"Couldn\u2019t load ("+r.error+")."); return; } await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t load that set."); }
+}
+async function sqSetDel(){
+  var s=sqSetPicked(); if(!s||!confirm('Delete the saved set "'+s.name+'"? Your current squads don\u2019t change.')) return;
+  try{ await rpc("ctf_t_squadset_delete",{p_set:s.id}); delete SQSETS[CUR.id]; renderMain(); }catch(e){ alert("Couldn\u2019t delete."); }
 }
 function squadsView(){
   if(STAND&&STAND.error) return '<div class="empty" style="color:var(--bad)">Run supabase/class-groups.sql, then supabase/squads.sql, to enable squads.</div>';
@@ -3003,6 +3034,7 @@ function squadsView(){
   });
   h+='</div>';
 
+  h+=sqSetsCard();
   // rosters per squad: drag a student card onto a squad (or use the dropdown on the card)
   var NM={}; (Array.isArray(EXPECTED)?EXPECTED:[]).forEach(function(r){ if(r&&r.email) NM[String(r.email).toLowerCase()]=r.full_name||""; });
   h+='<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">MEMBERS</div>'+
