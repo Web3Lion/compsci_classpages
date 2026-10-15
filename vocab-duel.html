@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=23.3.1"></script>
+<script src="site.js?v=24.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,7 +54,7 @@ html[data-motion="reduce"] .shake{animation:none;}
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   if (!VG[C]) { document.getElementById("view").innerHTML = '<div class="card">Open a Vocab Duel from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
-  var V = "23.3.1", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "auth.js"];
+  var V = "24.0.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "auth.js", "battle-fx.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){
@@ -78,6 +78,7 @@ html[data-motion="reduce"] .shake{animation:none;}
 
     var MODS = {}; TERMS.forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     var ST = null, skew = 0, pick = {}, msg = "", busy = false, timer = null, sig = "", lastN = null, lastHp = null, note = "", noteCol = "", sending = false;
+    var FX = window.BATTLE_FX, streak = 0, blood = {}, endFx = {};
 
     function rpc(fn, a){ return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
     function act(fn, a){ busy = true; msg = ""; draw(true); return rpc(fn, a).then(function(d){ busy = false; if (!d || d.error) msg = ERR[d && d.error] || "Something went wrong (" + ((d && d.error) || "error") + ")."; load(); return d; })
@@ -124,7 +125,8 @@ html[data-motion="reduce"] .shake{animation:none;}
       var pct = Math.round(hp / 3), col = me ? "var(--accent)" : "var(--adv)";
       return '<div style="flex:1;min-width:160px;"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><b style="color:var(--bright);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(who) + (me ? ' <span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + '</b>' +
         '<span class="mono" id="' + id + 'T" style="font-weight:800;color:var(--bright);">' + pct + '%</span></div>' +
-        '<div class="hp" role="meter" aria-label="' + esc(who) + ' health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" id="' + id + 'M"><div id="' + id + '" style="width:' + pct + '%;background:' + col + ';"></div></div></div>';
+        (FX ? FX.bossBar(id, pct, me ? "#00b3ff" : "#ff3b3b", who + " health") :
+        '<div class="hp" role="meter" aria-label="' + esc(who) + ' health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" id="' + id + 'M"><div id="' + id + '" style="width:' + pct + '%;background:' + col + ';"></div></div>') + '</div>';
     }
     function fightView(s, f){
       var cipher = f.mode === "cipher";
@@ -189,15 +191,19 @@ html[data-motion="reduce"] .shake{animation:none;}
       var sc = screen(), k = sc.join("|");
       if (!force && k === sig) return update();
       var keep = (document.getElementById("vdCode") || {}).value || "";
-      sig = k; var s = ST.session, f = ST.fight;
+      var wasKo = /^ko/.test(sig); sig = k; var s = ST.session, f = ST.fight;
       view.innerHTML = sc[0] === "setup" ? setupView() : sc[0] === "lobby" ? lobbyView(s) : sc[0] === "done" ? doneView(s) : sc[0] === "fight" ? fightView(s, f) : sc[0] === "ko" ? koView(s, f) : waitView(s);
       var ci = document.getElementById("vdCode"); if (ci) ci.value = keep;
       var g = document.getElementById("g"); if (g && innerWidth < 760) g.style.gridTemplateColumns = "1fr";
       bind(); clock();
+      if (FX && sc[0] === "ko" && !wasKo) { FX.banner(f.won ? "K.O.!" : f.won === false ? "DOWN!" : "TIME!", f.won ? "#3ddc97" : "#ff3b3b", f.won ? "You knocked out " + f.opp : f.won === false ? f.opp + " got you this time" : ""); if (f.won) FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; }
+      if (FX && sc[0] === "done" && s && !endFx[s.id]) { endFx[s.id] = 1; var my = s.my || {}, won = s.kind === "class" ? (s.teams || []).some(function(t){ return t.won && t.id === s.my_team; }) : s.winner_handle === ST.handle;
+        FX.edge(null); FX.banner(won ? "VICTORY!" : "GAME OVER", won ? "#ffcf5c" : "#7f9cb8", my.xp ? "+" + my.xp + " XP" : ""); if (won) FX.confetti(); }
       var a = document.getElementById("vdAns"); if (a) a.focus();
     }
     function setHp(id, hp){
       var pct = Math.round(hp / 3), b = document.getElementById(id), t = document.getElementById(id + "T"), m = document.getElementById(id + "M");
+      if (FX && document.getElementById(id + "B")) { FX.setBoss(id, pct); if (t) t.textContent = pct + "%"; if (id === "vdMe") FX.edge(pct <= 25 ? "#ff3b3b" : null); return; }
       if (b) b.style.width = pct + "%"; if (t) t.textContent = pct + "%"; if (m) m.setAttribute("aria-valuenow", pct);
     }
     function update(){
@@ -239,8 +245,13 @@ html[data-motion="reduce"] .shake{animation:none;}
       sending = true;
       rpc("ctf_vd_answer", { p_fight: f.id, p_n: f.n, p_guess: g }).then(function(d){
         sending = false;
-        if (d && d.correct) say("\u2713 " + d.term + " \u2014 hit for 25%!", "var(--ok)");
-        else if (d && d.correct === false) { say("\u2717 Not it. You took a third of a hit.", "var(--bad)"); shake(); a.value = ""; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); }
+        if (d && d.correct) {
+          say("\u2713 " + d.term + " \u2014 hit for 25%!", "var(--ok)");
+          if (FX) { streak++; var sid = ST.session && ST.session.id;
+            if (sid && !blood[sid]) { blood[sid] = 1; FX.banner("FIRST BLOOD!", "#00b3ff", "You landed the first hit"); }
+            else if (streak === 3 || streak === 6) FX.banner("YOU'RE ON FIRE!", "#ff8a00", streak + " correct in a row"); }
+        }
+        else if (d && d.correct === false) { streak = 0; say("\u2717 Not it. You took a third of a hit.", "var(--bad)"); shake(); a.value = ""; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); }
         else if (d && d.stale) say("Too slow \u2014 that term was already cracked.", "var(--muted)");
         load();
       }).catch(function(){ sending = false; load(); });
@@ -248,6 +259,7 @@ html[data-motion="reduce"] .shake{animation:none;}
     function clock(){
       var el = document.getElementById("vdClock"), s = ST && ST.session; if (!el || !s || !s.ends_at) return;
       var left = new Date(s.ends_at).getTime() - (Date.now() + skew); el.textContent = mmss(left);
+      if (FX && s.status === "live") FX.clock("vd" + s.id, left, { el: el });
     }
     function load(){
       clearTimeout(timer);
@@ -256,7 +268,8 @@ html[data-motion="reduce"] .shake{animation:none;}
         var f = d.fight;
         // what happened since the last poll (the opponent cracked it, or time ran out)
         if (f && f.status === "live" && lastN != null && f.id === lastN.id && f.n !== lastN.n && !f.last_mine && f.last_t) {
-          if (lastHp != null && f.my_hp < lastHp) { say(f.opp + " cracked it first: " + f.last_t + ". You took a hit.", "var(--bad)"); setTimeout(shake, 0); }
+          if (lastHp != null && f.my_hp < lastHp) { streak = 0; say(f.opp + " cracked it first: " + f.last_t + ". You took a hit.", "var(--bad)"); setTimeout(shake, 0);
+            var sid2 = d.session && d.session.id; if (FX && sid2 && !blood[sid2]) { blood[sid2] = 1; FX.banner("FIRST BLOOD!", "#ff3b3b", f.opp + " struck first"); } }
           else say("Time! The term was " + f.last_t + ".", "var(--muted)");
         } else if (f && f.status === "live" && (!lastN || lastN.id !== f.id)) say("", "");
         lastN = f ? { id: f.id, n: f.n } : null; lastHp = f ? f.my_hp : null;

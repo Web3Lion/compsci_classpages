@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=23.3.1"></script>
+<script src="site.js?v=24.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,22 +39,27 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     <a href="teacher.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; Teacher dashboard</a>
     <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9873; TEAM BATTLE</div>
     <span style="flex:1;"></span>
+    <span id="snd" role="group" aria-label="Projector sound"></span>
     <label class="mono" for="cls" style="font-size:12px;color:var(--dim);">Class</label>
     <select id="cls"></select>
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=23.3.1"></script>
-<script src="ctf-data/cyber1.js?v=23.3.1"></script>
-<script src="ctf-data/cyber2.js?v=23.3.1"></script>
-<script src="ctf-data/cyber3.js?v=23.3.1"></script>
-<script src="ctf-data/apcsp.js?v=23.3.1"></script>
-<script src="ctf-data/web3.js?v=23.3.1"></script>
-<script src="supabase-config.js?v=23.3.1"></script>
-<script src="auth.js?v=23.3.1"></script>
+<script src="config.js?v=24.0.0"></script>
+<script src="ctf-data/cyber1.js?v=24.0.0"></script>
+<script src="ctf-data/cyber2.js?v=24.0.0"></script>
+<script src="ctf-data/cyber3.js?v=24.0.0"></script>
+<script src="ctf-data/apcsp.js?v=24.0.0"></script>
+<script src="ctf-data/web3.js?v=24.0.0"></script>
+<script src="supabase-config.js?v=24.0.0"></script>
+<script src="auth.js?v=24.0.0"></script>
+<script src="cosmetics.js?v=24.0.0"></script>
+<script src="battle-fx.js?v=24.0.0"></script>
 <script>
 (function(){
-  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls");
+  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
+  var seenAt = 0, curBattle = null;
+  if (FX) { FX.enableSound(true); FX.soundUi(document.getElementById("snd")); }
   var CLASSES = [], CUR = null, SET = null, ST = null, skew = 0, msg = "", busy = false, pick = {}, mins = 15, timer = null;
   var LENGTHS = [[5,"5 min"],[10,"10 min"],[15,"15 min (default)"],[20,"20 min"],[45,"Whole period"]];
   var FALLBACK = ["#3a86ff","#ff5d73","#2ec27e","#f4a300"];
@@ -66,7 +71,57 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function names(){ return ((((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}).modules || []; }
   function modName(m){ var n = names()[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
   function col(t, i){ return t.color || FALLBACK[i % 4]; }
-  function rpc(fn, a){ return AUTH.rpc(fn, a || {}); }
+  // ?demo=1 → a fake 2.5-minute battle with simulated captures (no backend, nothing saved)
+  var DEMO = /[?&]demo=1/.test(location.search) ? demoEngine() : null;
+  function rpc(fn, a){ return DEMO ? Promise.resolve(DEMO(fn, a || {})) : AUTH.rpc(fn, a || {}); }
+  function demoEngine(){
+    var TEAMS = [{ id:"r", name:"Red Rockets", color:"#ff5d73" }, { id:"b", name:"Blue Byte", color:"#3a86ff" }, { id:"g", name:"Green Ghosts", color:"#2ec27e" }];
+    var NAMES = { r:["maya","jordan","eli","sofia","nate"], b:["ava","liam","zoe","owen","kai"], g:["noah","ruby","finn","isla","leo"] };
+    var FLAGS = ["Phishing Spotter","Caesar Shift","Port Scan Basics","Password Entropy","CIA Triad Match","Firewall Rules","Hash It Out","Social Engineering","Packet Path","Least Privilege"];
+    var PETS = ["p_cat","p_duck","p_owl","p_robot","p_lion","p_dragon", null, null];
+    var t0, P, caps, status, ends, dbl, awards;
+    function reset(){ t0 = Date.now(); ends = t0 + 150000; dbl = t0 + 40000; status = "live"; caps = []; awards = null;
+      P = []; TEAMS.forEach(function(t){ NAMES[t.id].forEach(function(h){ P.push({ team: t.id, handle: h, points: 0, caps: 0, mvp: false, xp: 0, left: false, eq: { pet: PETS[Math.floor(Math.random() * PETS.length)] } }); }); }); }
+    reset();
+    var bias = { r: 1, b: .7, g: .5 };
+    function step(){
+      var now = Date.now();
+      if (status !== "live") { if (now - ends > 25000) { TEAMS.forEach(function(t){ t.won = false; }); reset(); } return; }   // demo loops: podium 25s, then a new battle
+      if (now >= ends) { finish(); return; }
+      var el = (now - t0) / 1000; bias.g = el > 70 ? 1.6 : .5; bias.b = el > 100 ? 1.3 : .7;   // scripted comeback + lead changes
+      var n = Math.random() < .35 ? 2 : 1;
+      for (var i = 0; i < n; i++) {
+        var tm = pickW(), pl = NAMES[tm][Math.floor(Math.random() * 5)], p = P.filter(function(x){ return x.handle === pl; })[0];
+        var lvl = Math.random() < .25 ? 3 : Math.random() < .5 ? 2 : 1, x2 = now >= dbl && now < dbl + 30000, pts = x2 ? lvl * 2 : lvl;
+        p.points += pts; p.caps++; caps.push({ team: tm, handle: pl, title: FLAGS[Math.floor(Math.random() * FLAGS.length)] + " (" + ["","Easy","Medium","Hard"][lvl] + ")", pts: pts, dbl: x2, base: lvl, at: new Date(now - i * 300).toISOString(), eq: p.eq });
+      }
+    }
+    function pickW(){ var tot = 0, k; for (k in bias) tot += bias[k]; var r = Math.random() * tot; for (k in bias) { r -= bias[k]; if (r <= 0) return k; } return "r"; }
+    function teams(){ return TEAMS.map(function(t){ var m = P.filter(function(p){ return p.team === t.id; }), pl = m.filter(function(p){ return p.caps > 0; }), tot = m.reduce(function(a, p){ return a + p.points; }, 0);
+      return { id: t.id, name: t.name, color: t.color, won: t.won || false, total: tot, members: m.length, played: pl.length, avg: pl.length ? Math.round(tot / pl.length * 100) / 100 : 0 }; }).sort(function(a, b){ return b.avg - a.avg; }); }
+    function finish(){
+      status = "done"; var T = teams(), top = T[0].avg; TEAMS.forEach(function(t){ t.won = T.some(function(x){ return x.id === t.id && x.avg === top; }); });
+      TEAMS.forEach(function(t){ var m = P.filter(function(p){ return p.team === t.id; }), mx = Math.max.apply(null, m.map(function(p){ return p.points; })); m.forEach(function(p){ p.mvp = p.points === mx && mx > 0; p.xp = p.caps ? (t.won ? 15 : 5) : 0; }); });
+      var hard = {}; caps.forEach(function(c){ if (c.base === 3) hard[c.handle] = (hard[c.handle] || 0) + 1; });
+      var hk = Object.keys(hard).sort(function(a, b){ return hard[b] - hard[a]; })[0], last = caps.filter(function(c){ return new Date(c.at).getTime() >= ends - 60000; }).pop();
+      function tOf(h){ return P.filter(function(p){ return p.handle === h; })[0].team; }
+      awards = { first: caps[0] && { handle: caps[0].handle, team: caps[0].team, secs: Math.round((new Date(caps[0].at) - t0) / 1000) },
+        hard: hk && { handle: hk, team: tOf(hk), n: hard[hk] }, clutch: last && { handle: last.handle, team: last.team, secs: Math.max(0, Math.round((ends - new Date(last.at)) / 1000)), title: last.title } };
+    }
+    return function(fn, a){
+      if (fn === "ctf_t_classes") return [{ id: "demo", name: "Demo class (preview)", course: "cyber2" }];
+      if (fn === "ctf_t_tb_setup") return { teams: TEAMS.map(function(t){ return { id: t.id, name: t.name, color: t.color, members: 5 }; }), ungrouped: [], manifest: [{ module: 1, flags: 30 }, { module: 2, flags: 28 }], battle: null };
+      if (fn === "ctf_t_tb_start") { TEAMS.forEach(function(t){ t.won = false; }); reset(); return { ok: true }; }
+      if (fn === "ctf_t_tb_end") { if (a.p_award) finish(); else status = "cancelled"; return { ok: true }; }
+      if (fn === "ctf_t_tb_randomize") return { ok: true };
+      if (fn === "ctf_t_tb_state") {
+        step();
+        return { now: new Date().toISOString(), battle: { id: "demo-" + t0, status: status, modules: [1, 2], minutes: 2.5, started_at: new Date(t0).toISOString(), ends_at: new Date(ends).toISOString(), dbl_at: new Date(dbl).toISOString(),
+          teams: teams(), players: P.slice().sort(function(a, b){ return b.points - a.points; }), feed: caps.slice(-12).reverse(), awards: status === "done" ? awards : null } };
+      }
+      return {};
+    };
+  }
   function fail(e){ busy = false; msg = /tb_|function/.test(String(e && e.message)) ? "Run supabase/team-battles.sql first." : "Something went wrong: " + (e && e.message || e); paint(); }
 
   function setupView(){
@@ -108,7 +163,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       var c = col(t, i), pct = Math.round((+t.avg) / max * 100);
       var mvp = (b.players || []).filter(function(p){ return p.team === t.id && p.mvp; }).map(function(p){ return esc(p.handle); });
       var top = (b.players || []).filter(function(p){ return p.team === t.id; })[0];
-      return '<div class="card" style="padding:18px 20px;border-color:' + (t.won ? "var(--amber)" : "var(--border)") + ';border-width:' + (t.won ? "2px" : "1px") + ';">' +
+      return '<div class="card" id="bar-' + esc(t.id) + '" style="padding:18px 20px;border-color:' + (t.won ? "var(--amber)" : "var(--border)") + ';border-width:' + (t.won ? "2px" : "1px") + ';">' +
         '<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px;"><span style="width:16px;height:16px;border-radius:4px;background:' + esc(c) + ';align-self:center;"></span>' +
           '<span style="font-size:26px;font-weight:800;color:var(--bright);flex:1;min-width:0;">' + esc(t.name) + (t.won ? ' <span class="mono" style="font-size:14px;color:var(--amber);">\u2605 WINNER</span>' : '') + '</span>' +
           '<span class="mono" style="font-size:40px;font-weight:800;color:var(--bright);">' + (+t.avg).toFixed(1) + '</span><span class="mono" style="font-size:13px;color:var(--dim);">avg</span></div>' +
@@ -116,11 +171,35 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         '<div class="mono" style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px;"><span>' + t.total + ' pts total</span><span>' + t.played + '/' + t.members + ' played</span>' +
           (b.status === "done" ? (mvp.length ? '<span style="color:var(--bright);font-weight:700;">MVP: ' + mvp.join(", ") + '</span>' : '') : (top && top.points ? '<span>Leading: ' + esc(top.handle) + ' (' + top.points + ')</span>' : '')) + '</div></div>';
     }).join("");
-    var feed = (b.feed || []).map(function(f){ var t = byId[f.team] || {}; return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border2);font-size:15px;"><span style="width:10px;height:10px;border-radius:3px;background:' + esc(t.color || "var(--dim)") + ';flex:none;"></span><b style="color:var(--bright);">' + esc(f.handle) + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + esc(t.name || "") + '</span><span style="flex:1;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(f.title) + '</span><span class="mono" style="font-weight:800;color:var(--amber);">+' + f.pts + '</span></div>'; }).join("");
-    return '<div class="card" style="margin-bottom:18px;border-color:var(--amber);">' + head + '</div>' +
+    var feed = (b.feed || []).map(function(f){ var t = byId[f.team] || {}; return '<div class="' + (f._new ? "bfxFeedIn" : "") + '" style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:1px solid var(--border2);font-size:15px;border-radius:6px;">' + (FX ? FX.avatar(f.handle, t.color, f.eq) : '') + '<b style="color:var(--bright);">' + esc(f.handle) + '</b>' + (f.dbl ? '<span class="mono" style="font-size:10px;font-weight:800;padding:2px 6px;border-radius:5px;background:#ffcf5c;color:#1a1200;">x2</span>' : '') + '<span class="mono" style="font-size:12px;color:var(--dim);">' + esc(t.name || "") + '</span><span style="flex:1;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(f.title) + '</span><span class="mono" style="font-weight:800;color:var(--amber);">+' + f.pts + '</span></div>'; }).join("");
+    var dbl = live && FX && FX.inDouble(b.dbl_at && new Date(b.dbl_at).getTime(), skew);
+    if (b.status === "done" && FX) return results(b, byId) + '<div class="card" style="margin-top:18px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">LAST CAPTURES</div>' + (feed || '<div style="color:var(--dim);font-size:14px;padding-top:6px;">No captures.</div>') + '</div>' + (msg ? '<div role="alert" class="mono" style="margin-top:14px;color:var(--bad);font-weight:700;font-size:13px;">' + esc(msg) + '</div>' : '');
+    return '<div class="card" style="margin-bottom:18px;border-color:' + (dbl ? "#ffcf5c" : "var(--amber)") + ';' + (dbl ? "box-shadow:0 0 40px -8px #ffcf5c;" : "") + '">' + head +
+        (dbl ? '<div class="mono bfxPulse" style="margin-top:12px;font-size:20px;font-weight:800;color:#ffcf5c;letter-spacing:2px;">★ DOUBLE POINTS LIVE · every capture x2</div>' : '') + '</div>' +
       '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;" id="g"><div style="display:flex;flex-direction:column;gap:14px;">' + bars + '</div>' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">LIVE CAPTURES</div>' + (feed || '<div style="color:var(--dim);font-size:14px;padding-top:6px;">No captures yet.</div>') + '</div></div>' +
       (msg ? '<div role="alert" class="mono" style="margin-top:14px;color:var(--bad);font-weight:700;font-size:13px;">' + esc(msg) + '</div>' : '');
+  }
+  function mmssS(sec){ sec = Math.max(0, sec|0); return Math.floor(sec/60) + ":" + String(sec%60).padStart(2,"0"); }
+  function results(b, byId){
+    var T = b.teams || [], P = b.players || [], A = b.awards || {}, winners = T.filter(function(t){ return t.won; }).map(function(t){ return t.name; });
+    var rows = T.map(function(t, i){
+      var mv = P.filter(function(p){ return p.team === t.id && p.mvp; }).map(function(p){ return p.handle; });
+      return { name: t.name, color: col(t, i), score: (+t.avg).toFixed(1), sub: t.total + " pts · " + t.played + "/" + t.members + " played" + (mv.length ? " · MVP " + mv.join(", ") : "") };
+    });
+    var won = {}; T.forEach(function(t){ if (t.won) won[t.id] = 1; });
+    var top = P.filter(function(p){ return p.mvp; }).sort(function(a, c){ return (c.points - a.points) || ((won[c.team] ? 1 : 0) - (won[a.team] ? 1 : 0)) || (c.caps - a.caps); })[0];
+    function tc(id){ return (byId[id] || {}).color; }
+    var awards = [
+      A.first && { label: "⚡ FASTEST CAPTURE", who: A.first.handle, detail: mmssS(A.first.secs) + " into the battle", color: tc(A.first.team) },
+      A.hard && { label: "◆ MOST HARD FLAGS", who: A.hard.handle, detail: A.hard.n + " hard flag" + (A.hard.n > 1 ? "s" : ""), color: tc(A.hard.team) },
+      A.clutch && { label: "⏱ CLUTCH CAPTURE", who: A.clutch.handle, detail: "with " + mmssS(A.clutch.secs) + " left", color: tc(A.clutch.team) }
+    ];
+    var acts = '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" id="tbRematch">Rematch</button><button type="button" class="btn ghost" id="tbFull">Full screen</button><button type="button" class="btn ghost" id="tbNew">New battle</button></div>';
+    return FX.podium({ kicker: "FINAL · " + (b.modules||[]).map(function(m){ return "M" + String(m).padStart(2,"0"); }).join(" · "),
+      title: winners.length > 1 ? "Tie! " + winners.join(" & ") : winners.length ? winners[0] + " wins!" : "No team scored",
+      rows: rows, mvp: top && { name: top.handle, detail: top.points + " pts · " + top.caps + " captures", avatar: FX.avatar(top.handle, tc(top.team), top.eq) },
+      awards: awards, actions: acts });
   }
   var showSetup = false;
   function paint(){
@@ -150,11 +229,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var e = document.getElementById("tbEnd"); if (e) e.onclick = function(){ if (!confirm("End the battle now and award XP?")) return; rpc("ctf_t_tb_end", { p_battle: ST.battle.id, p_award: true }).then(load).catch(fail); };
     var c = document.getElementById("tbCancel"); if (c) c.onclick = function(){ if (!confirm("Cancel the battle? No XP is awarded.")) return; rpc("ctf_t_tb_end", { p_battle: ST.battle.id, p_award: false }).then(load).catch(fail); };
     var n = document.getElementById("tbNew"); if (n) n.onclick = function(){ showSetup = true; msg = ""; paint(); };
+    var rm = document.getElementById("tbRematch"); if (rm) rm.onclick = function(){
+      var ob = ST.battle; if (!confirm("Start a rematch with the same teams, modules and length?")) return;
+      busy = true; rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: ob.modules, p_minutes: ob.minutes || 15 }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
+    };
+    var fu = document.getElementById("tbFull"); if (fu) fu.onclick = function(){ FX.fullscreen(document.getElementById("bfxResults")); };
   }
   function clock(){
     var el = document.getElementById("clock"), b = ST && ST.battle; if (!el || !b || !b.ends_at || b.status !== "live") return;
     var left = new Date(b.ends_at).getTime() - (Date.now() + skew);
     el.textContent = mmss(left); el.style.color = left < 60000 ? "var(--amber)" : "var(--bright)";
+    if (FX) FX.clock(b.id, left, { el: el, music: true, dblAt: b.dbl_at && new Date(b.dbl_at).getTime(), skew: skew });
     if (left <= 0 && !clock._w) { clock._w = 1; setTimeout(function(){ clock._w = 0; load(); }, 1500); }
   }
   function load(){
@@ -164,7 +249,19 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       if (!CUR || CUR.id !== id) return;
       if (r[0] && r[0].error) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> first.</div>'; return; }
       ST = r[0]; SET = r[1]; if (ST.now) skew = new Date(ST.now).getTime() - Date.now();
+      var b = ST.battle;
+      if (b && b.id !== curBattle) { if (curBattle && FX) FX.reset(curBattle); curBattle = b.id; seenAt = (b.feed || []).reduce(function(m, f){ return Math.max(m, new Date(f.at).getTime()); }, 0); }
+      else if (b) (b.feed || []).forEach(function(f){ if (new Date(f.at).getTime() > seenAt) f._new = true; });
+      if (b) seenAt = (b.feed || []).reduce(function(m, f){ return Math.max(m, new Date(f.at).getTime()); }, seenAt);
       paint();
+      if (b && FX && !(showSetup && b.status !== "live")) {
+        var T = b.teams || [];
+        var ev = FX.track(b.id, { status: b.status,
+          teams: T.map(function(t, i){ return { id: t.id, name: t.name, color: col(t, i), score: +t.avg }; }),
+          feed: (b.feed || []).map(function(f){ return { who: f.handle, team: f.team, at: f.at, pts: f.pts, hard: (f.dbl ? f.pts / 2 : f.pts) === 3 }; }) }, { streakBy: "team" });
+        ev.changed.forEach(function(id){ var el = document.getElementById("bar-" + id); if (el) FX.shake(el); });
+      }
+      if (b) (b.feed || []).forEach(function(f){ delete f._new; });
       timer = setTimeout(load, ST.battle && ST.battle.status === "live" ? 3000 : 15000);
     }).catch(function(e){ fail(e); timer = setTimeout(load, 15000); });
   }
@@ -182,7 +279,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   window.addEventListener("resize", clearFixed); setTimeout(clearFixed, 0); setTimeout(clearFixed, 600);
   setInterval(clock, 500);
   (async function(){
-    if (!AUTH || !AUTH.online) { view.innerHTML = '<div class="card">Connect the class backend (supabase-config.js) first.</div>'; return; }
+    if (DEMO) { var dn = document.createElement("div"); dn.className = "mono"; dn.setAttribute("role", "note"); dn.style.cssText = "margin:-6px 0 14px;font-size:12px;color:var(--amber);"; dn.textContent = "PREVIEW MODE · fake teams and captures, nothing is saved. A 2\u00bd-minute battle plays on a loop. Click anywhere once to turn on sound."; document.getElementById("hdr").after(dn); }
+    if (!DEMO && (!AUTH || !AUTH.online)) { view.innerHTML = '<div class="card">Connect the class backend (supabase-config.js) first.</div>'; return; }
     try { CLASSES = await rpc("ctf_t_classes") || []; } catch (e) { CLASSES = null; }
     if (!Array.isArray(CLASSES)) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> to run team battles.</div>'; return; }
     if (!CLASSES.length) { view.innerHTML = '<div class="card">No classes yet.</div>'; return; }

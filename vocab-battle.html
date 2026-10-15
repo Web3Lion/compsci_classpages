@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=23.3.1"></script>
+<script src="site.js?v=24.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,22 +40,26 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     <a href="teacher.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; Teacher dashboard</a>
     <div class="mono" id="ttl" style="font-size:12px;letter-spacing:2px;color:var(--advtext);">VOCAB BATTLE</div>
     <span style="flex:1;"></span>
+    <span id="snd" role="group" aria-label="Projector sound"></span>
     <label class="mono" for="cls" style="font-size:12px;color:var(--dim);">Class</label>
     <select id="cls"></select>
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=23.3.1"></script>
-<script src="ctf-data/cyber1.js?v=23.3.1"></script>
-<script src="ctf-data/cyber2.js?v=23.3.1"></script>
-<script src="ctf-data/cyber3.js?v=23.3.1"></script>
-<script src="ctf-data/apcsp.js?v=23.3.1"></script>
-<script src="ctf-data/web3.js?v=23.3.1"></script>
-<script src="supabase-config.js?v=23.3.1"></script>
-<script src="auth.js?v=23.3.1"></script>
+<script src="config.js?v=24.0.0"></script>
+<script src="ctf-data/cyber1.js?v=24.0.0"></script>
+<script src="ctf-data/cyber2.js?v=24.0.0"></script>
+<script src="ctf-data/cyber3.js?v=24.0.0"></script>
+<script src="ctf-data/apcsp.js?v=24.0.0"></script>
+<script src="ctf-data/web3.js?v=24.0.0"></script>
+<script src="supabase-config.js?v=24.0.0"></script>
+<script src="auth.js?v=24.0.0"></script>
+<script src="battle-fx.js?v=24.0.0"></script>
 <script>
 (function(){
-  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls");
+  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
+  var seenAt = 0, curSess = null;
+  if (FX) { FX.enableSound(true); FX.soundUi(document.getElementById("snd")); }
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   var CLASSES = [], CUR = null, SET = null, ST = null, skew = 0, msg = "", busy = false, pick = {}, mins = 15, timer = null, showSetup = false, MODS = {};
   var LENGTHS = [[5,"5 min"],[10,"10 min"],[15,"15 min (default)"],[20,"20 min"],[45,"Whole period"]], FALLBACK = ["#3a86ff","#ff5d73","#2ec27e","#f4a300"];
@@ -78,7 +82,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=23.3.1"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=24.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
@@ -120,7 +124,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var bars = T.map(function(t, i){
       var c = col(t, i), pct = Math.round((+t.avg) / max * 100);
       var mvp = (s.leaders || []).filter(function(p){ return p.team === t.id && p.mvp; }).map(function(p){ return esc(p.handle); });
-      return '<div class="card" style="padding:18px 20px;border-color:' + (t.won ? "var(--adv)" : "var(--border)") + ';border-width:' + (t.won ? "2px" : "1px") + ';">' +
+      return '<div class="card" id="bar-' + esc(t.id) + '" style="padding:18px 20px;border-color:' + (t.won ? "var(--adv)" : "var(--border)") + ';border-width:' + (t.won ? "2px" : "1px") + ';">' +
         '<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px;"><span style="width:16px;height:16px;border-radius:4px;background:' + esc(c) + ';align-self:center;"></span>' +
           '<span style="font-size:26px;font-weight:800;color:var(--bright);flex:1;min-width:0;">' + esc(t.name) + (t.won ? ' <span class="mono" style="font-size:14px;color:var(--advtext);">\u2605 WINNER</span>' : '') + '</span>' +
           '<span class="mono" style="font-size:40px;font-weight:800;color:var(--bright);">' + (+t.avg).toFixed(2) + '</span><span class="mono" style="font-size:13px;color:var(--dim);">KOs/fighter</span></div>' +
@@ -130,11 +134,23 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var fights = live ? '<div class="card" style="margin-top:18px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">LIVE FIGHTS</div>' +
       ((s.fights || []).length ? '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">' + s.fights.map(function(f){
         var A = byId[f.ta] || {}, B = byId[f.tb] || {};
-        function side(h, hp, c){ return '<div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;gap:6px;font-size:13px;"><b style="color:var(--bright);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(h) + '</b><span class="mono" style="color:var(--dim);">' + Math.round(hp/3) + '%</span></div><div class="mhp" style="margin-top:4px;"><div style="width:' + Math.round(hp/3) + '%;background:' + esc(c || "var(--dim)") + ';"></div></div></div>'; }
+        function side(h, hp, c){ return '<div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;gap:6px;font-size:13px;"><b style="color:var(--bright);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(h) + '</b><span class="mono" style="color:var(--dim);">' + Math.round(hp/3) + '%</span></div>' + (FX ? '<div style="margin-top:4px;">' + FX.bossBar("x" + Math.random().toString(36).slice(2, 8), Math.round(hp/3), esc(c || "#7f9cb8"), h + " health") + '</div>' : '<div class="mhp" style="margin-top:4px;"><div style="width:' + Math.round(hp/3) + '%;background:' + esc(c || "var(--dim)") + ';"></div></div>') + '</div>'; }
         return '<div style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);">' + side(f.a, f.hpa, A.color) + '<span class="mono" style="font-size:11px;color:var(--faint);">VS</span>' + side(f.b, f.hpb, B.color) + '</div>';
       }).join("") + '</div>' : '<div style="color:var(--dim);font-size:14px;">Waiting for students to open Vocab Duel.</div>') + '</div>' : '';
-    var feed = (s.feed || []).map(function(k){ var t = byId[k.team] || {}; return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border2);font-size:15px;"><span style="width:10px;height:10px;border-radius:3px;background:' + esc(t.color || "var(--dim)") + ';flex:none;"></span><b style="color:var(--bright);">' + esc(k.winner) + '</b><span style="color:var(--muted);">KO\u2019d</span><span style="color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(k.loser) + '</span></div>'; }).join("");
+    var feed = (s.feed || []).map(function(k){ var t = byId[k.team] || {}; return '<div class="' + (k._new ? "bfxFeedIn" : "") + '" style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:1px solid var(--border2);font-size:15px;border-radius:6px;">' + (FX ? FX.avatar(k.winner, t.color) : '<span style="width:10px;height:10px;border-radius:3px;background:' + esc(t.color || "var(--dim)") + ';flex:none;"></span>') + '<b style="color:var(--bright);">' + esc(k.winner) + '</b><span style="color:var(--muted);">KO\u2019d</span><span style="color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(k.loser) + '</span></div>'; }).join("");
     var lead = (s.leaders || []).slice(0, 8).map(function(p, i){ var t = byId[p.team] || {}; return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px;"><span class="mono" style="color:var(--faint);width:20px;">' + (i+1) + '</span><span style="width:10px;height:10px;border-radius:3px;background:' + esc(t.color || "var(--dim)") + ';"></span><b style="color:var(--bright);flex:1;min-width:0;">' + esc(p.handle) + (p.mvp ? ' \u2605' : '') + '</b><span class="mono" style="color:var(--bright);font-weight:800;">' + p.wins + '</span></div>'; }).join("");
+    if (s.status === "done" && FX) {
+      var L = s.leaders || [], won = {}; T.forEach(function(t){ if (t.won) won[t.id] = 1; });
+      var top = L.filter(function(p){ return p.mvp; }).sort(function(a, b){ return (b.wins - a.wins) || ((won[b.team] ? 1 : 0) - (won[a.team] ? 1 : 0)) || (a.fights - b.fights); })[0];
+      var grit = L.slice().sort(function(a, b){ return b.fights - a.fights; })[0];
+      var rows = T.map(function(t, i){ var mv = L.filter(function(p){ return p.team === t.id && p.mvp; }).map(function(p){ return p.handle; });
+        return { name: t.name, color: col(t, i), score: (+t.avg).toFixed(2), sub: t.kos + " KOs · " + t.fought + "/" + t.members + " fought" + (mv.length ? " · MVP " + mv.join(", ") : "") }; });
+      var acts = '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" id="vbRematch">Rematch</button><button type="button" class="btn ghost" id="vbFull">Full screen</button><button type="button" class="btn ghost" id="vbNew">New battle</button></div>';
+      return FX.podium({ kicker: "FINAL · KOs PER FIGHTER", title: winners.length > 1 ? "Tie! " + T.filter(function(t){ return t.won; }).map(function(t){ return t.name; }).join(" & ") : winners.length ? T.filter(function(t){ return t.won; })[0].name + " wins!" : "No KOs",
+        rows: rows, mvp: top && { name: top.handle, detail: top.wins + " KOs in " + top.fights + " fights", avatar: FX.avatar(top.handle, (byId[top.team] || {}).color) },
+        awards: [grit && grit.fights ? { label: "⚔ IRON WILL · MOST FIGHTS", who: grit.handle, detail: grit.fights + " fights", color: (byId[grit.team] || {}).color } : null], actions: acts }) +
+        (msg ? '<div role="alert" class="mono" style="margin-top:14px;color:var(--bad);font-weight:700;font-size:13px;">' + esc(msg) + '</div>' : '');
+    }
     return '<div class="card" style="margin-bottom:18px;border-color:var(--adv);box-shadow:0 0 30px -16px var(--advglow);">' + head + '</div>' +
       '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;" id="g"><div style="display:flex;flex-direction:column;gap:14px;">' + bars + '</div>' +
       '<div style="display:flex;flex-direction:column;gap:14px;"><div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">KNOCKOUTS</div>' + (feed || '<div style="color:var(--dim);font-size:14px;padding-top:6px;">No KOs yet.</div>') + '</div>' +
@@ -169,11 +185,18 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var e = document.getElementById("vbEnd"); if (e) e.onclick = function(){ if (!confirm("End the battle now and award XP?")) return; rpc("ctf_t_vd_end", { p_session: ST.session.id, p_award: true }).then(load).catch(fail); };
     var c = document.getElementById("vbCancel"); if (c) c.onclick = function(){ if (!confirm("Cancel the battle? No XP is awarded.")) return; rpc("ctf_t_vd_end", { p_session: ST.session.id, p_award: false }).then(load).catch(fail); };
     var n = document.getElementById("vbNew"); if (n) n.onclick = function(){ showSetup = true; msg = ""; paint(); };
+    var rm = document.getElementById("vbRematch"); if (rm) rm.onclick = function(){
+      var os = ST.session, pool = []; if (!confirm("Start a rematch with the same teams, modules and length?")) return;
+      (os.modules || []).forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
+      busy = true; rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: os.modules, p_pool: pool, p_minutes: os.minutes || 15 }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
+    };
+    var fu = document.getElementById("vbFull"); if (fu) fu.onclick = function(){ FX.fullscreen(document.getElementById("bfxResults")); };
   }
   function clock(){
     var el = document.getElementById("clock"), s = ST && ST.session; if (!el || !s || !s.ends_at || s.status !== "live") return;
     var left = new Date(s.ends_at).getTime() - (Date.now() + skew);
     el.textContent = mmss(left); el.style.color = left < 60000 ? "var(--advtext)" : "var(--bright)";
+    if (FX) FX.clock(s.id, left, { el: el, music: true });
     if (left <= 0 && !clock._w) { clock._w = 1; setTimeout(function(){ clock._w = 0; load(); }, 1500); }
   }
   function load(){
@@ -183,7 +206,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       if (!CUR || CUR.id !== id) return;
       if (r[0] && r[0].error) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> first.</div>'; return; }
       ST = r[0]; SET = r[1]; if (ST.now) skew = new Date(ST.now).getTime() - Date.now();
+      var se = ST.session, mx = function(F, m){ return (F || []).reduce(function(a, f){ return Math.max(a, new Date(f.at).getTime()); }, m); };
+      if (se && se.id !== curSess) { if (curSess && FX) FX.reset(curSess); curSess = se.id; seenAt = mx(se.feed, 0); }
+      else if (se) (se.feed || []).forEach(function(f){ if (new Date(f.at).getTime() > seenAt) f._new = true; });
+      if (se) seenAt = mx(se.feed, seenAt);
       paint();
+      if (se && FX && !(showSetup && se.status !== "live")) {
+        var ev = FX.track(se.id, { status: se.status, teams: (se.teams || []).map(function(t, i){ return { id: t.id, name: t.name, color: col(t, i), score: +t.avg }; }),
+          feed: (se.feed || []).map(function(k){ return { who: k.winner, team: k.team, at: k.at, pts: 1 }; }) }, { streakBy: "team", noun: "KO", bloodText: "FIRST KO!", capLines: ["{w} lands the knockout for {t}!", "Down goes another one! {w} scores for {t}.", "{w} wins the fight. {t} adds a KO!"] });
+        ev.changed.forEach(function(id){ var el = document.getElementById("bar-" + id); if (el) FX.shake(el); });
+        (se.feed || []).forEach(function(f){ delete f._new; });
+      }
       timer = setTimeout(load, ST.session && ST.session.status === "live" ? 2500 : 15000);
     }).catch(function(e){ fail(e); timer = setTimeout(load, 15000); });
   }
