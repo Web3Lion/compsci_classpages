@@ -1,0 +1,62 @@
+# Guard: removes files that must never be public (answer key, working files)
+# the moment they are pushed, including "Add files via upload" in the browser,
+# which ignores .gitignore. Runs on every push to main.
+#
+# The removed file still exists in the commit that added it, so if this ever
+# fires on answers.local.js, follow the steps in its summary (change the flags).
+name: Block private files
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove private files
+        id: scan
+        run: |
+          set -e
+          FOUND=""
+          for p in \
+            "answers.local.js" "answers.js" \
+            "claude only" "uploads" "scraps" "design-system" \
+            "Canvas.dc.html" "Canvas-2.dc.html" "Test Day Duck Pond.html" \
+            "styles.css" "support.js" ".thumbnail" "CLAUDE.md" "github.md"; do
+            if [ -e "$p" ]; then FOUND="$FOUND|$p"; git rm -r -q --cached -- "$p"; rm -rf -- "$p"; fi
+          done
+          # any answers file under any name or folder, plus _tmp_ working files
+          while IFS= read -r f; do
+            FOUND="$FOUND|$f"; git rm -q --cached -- "$f"; rm -f -- "$f"
+          done < <(git ls-files | grep -Ei '(^|/)answers[^/]*\.local\.js$|(^|/)_tmp_[^/]*$' || true)
+          echo "found=$FOUND" >> "$GITHUB_OUTPUT"
+
+      - name: Commit removal
+        if: steps.scan.outputs.found != ''
+        run: |
+          git config user.name "private-file-guard"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "Remove private files pushed by mistake" -q
+          git push
+
+      - name: Warn
+        if: steps.scan.outputs.found != ''
+        run: |
+          {
+            echo "## Private files were pushed and have been removed"
+            echo ""
+            echo "${{ steps.scan.outputs.found }}" | tr '|' '\n' | sed '/^$/d;s/^/- /'
+            echo ""
+            echo "They are still in this repo's history. If answers.local.js was one of them:"
+            echo "change the exposed flag answers (ask Claude), then upload the new key through answers.html."
+          } >> "$GITHUB_STEP_SUMMARY"
+          if echo "${{ steps.scan.outputs.found }}" | grep -qi 'answers'; then
+            echo "::error::The answer key was pushed. It was removed, but treat those answers as exposed."
+            exit 1
+          fi
