@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=29.0.0"></script>
+<script src="site.js?v=29.2.0"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=29.2.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=29.2.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Dashboard (new) — CTF Platform</title>
@@ -307,20 +309,20 @@
   </div>
 </div>
 
-<script src="config.js?v=29.0.0"></script>
-<script src="ctf-data/cyber1.js?v=29.0.0"></script>
-<script src="ctf-data/cyber2.js?v=29.0.0"></script>
-<script src="ctf-data/cyber3.js?v=29.0.0"></script>
-<script src="ctf-data/apcsp.js?v=29.0.0"></script>
-<script src="ctf-data/web3.js?v=29.0.0"></script>
-<script src="cipher.js?v=29.0.0"></script>
-<script src="supabase-config.js?v=29.0.0"></script>
-<script src="auth.js?v=29.0.0"></script>
-<script src="name-filter.js?v=29.0.0"></script>
-<script src="objectives.js?v=29.0.0"></script>
-<script src="standards.js?v=29.0.0"></script>
-<script src="csv.js?v=29.0.0"></script>
-<script src="skins.js?v=29.0.0"></script>
+<script src="config.js?v=29.2.0"></script>
+<script src="ctf-data/cyber1.js?v=29.2.0"></script>
+<script src="ctf-data/cyber2.js?v=29.2.0"></script>
+<script src="ctf-data/cyber3.js?v=29.2.0"></script>
+<script src="ctf-data/apcsp.js?v=29.2.0"></script>
+<script src="ctf-data/web3.js?v=29.2.0"></script>
+<script src="cipher.js?v=29.2.0"></script>
+<script src="supabase-config.js?v=29.2.0"></script>
+<script src="auth.js?v=29.2.0"></script>
+<script src="name-filter.js?v=29.2.0"></script>
+<script src="objectives.js?v=29.2.0"></script>
+<script src="standards.js?v=29.2.0"></script>
+<script src="csv.js?v=29.2.0"></script>
+<script src="skins.js?v=29.2.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -4394,7 +4396,7 @@ function adCard(){
     '<a class="btn" target="_blank" rel="noopener" href="raid.html?class='+encodeURIComponent(CUR.id)+'">Boss raid \u2197</a></span></div>'+bgCard()+
     '<div class="card" style="padding:16px 18px;margin-bottom:20px;">'+
     slider(!!AD.data.on,"toggleDuels()","Student flag duels",
-      "Students start a Flag Duel (up to 4 players, 2/5/10 min) or a 1v1 Vocab Duel from the arena and share a 4-letter code. Winner +10 XP, every finisher +5. Turning this off cancels open Flag Duel lobbies and blocks new duels of both kinds.","var(--amber)")+
+      "Students start a Flag Duel (up to 6 players, 2/5/10 min) or a Vocab Duel (1v1, or a 3\u20134 player brawl) from the arena and share a 4-letter code. Winner +10 XP, every finisher +5. Turning this off cancels open Flag Duel lobbies and blocks new duels of both kinds.","var(--amber)")+
     '<div style="display:flex;align-items:center;gap:10px;margin-top:14px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);flex:1;">LIVE DUELS \u00b7 '+live.length+'</div>'+
       '<button class="btn sm" onclick="adLoad()">Refresh</button>'+(live.length?'<button class="btn sm" onclick="endAllDuels()">End all duels</button>':'')+'</div>'+
     (live.length?live.map(row).join(''):'<div style="font-size:13px;color:var(--dim);padding:8px 0;">No duels running.</div>')+
