@@ -20,7 +20,7 @@
     var bg = getComputedStyle(document.body).backgroundColor;
     document.documentElement.style.background = bg && bg !== "rgba(0, 0, 0, 0)" ? bg : css("--bg", "#0a0e14");
     document.body.style.background = "transparent";
-    document.body.prepend(cv); cx = cv.getContext("2d"); size();
+    document.body.prepend(cv); cx = cv.getContext("2d"); size(); requestAnimationFrame(size);
     addEventListener("resize", size);
   }
   function size() { if (!cv) return; var r = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * r; cv.height = H * r; cx.setTransform(r, 0, 0, r, 0, 0); S = {}; }
@@ -102,6 +102,8 @@
   }
   function frame(t) {
     if (!cx || !DRAW[cur]) return;
+    if (!cv.width || W !== innerWidth || H !== innerHeight) size();
+    if (!W || !H) return;
     cx.save(); cx.globalAlpha = 1;
     var col = css("--accent", "#00b3ff");
     cv.style.opacity = light() ? ".45" : ".6";

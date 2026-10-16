@@ -91,6 +91,32 @@
   function card() {
     var root = document.getElementById("ctfRoot"); if (!root) return;
     var el = document.getElementById("fdCard"), vb = document.getElementById("vdLive");
+    // 29.0: class duel waiting room open → glowing call to lobby.html
+    if (ST && ST.lobby) {
+      var LBN = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid" };
+      if (el) el.remove();
+      if (!vb) { vb = document.createElement("a"); vb.id = "vdLive"; vb.className = "card"; root.parentNode.insertBefore(vb, root); }
+      vb.href = "../lobby.html?c=" + encodeURIComponent(course);
+      vb.setAttribute("style", "display:flex;align-items:center;gap:16px;flex-wrap:wrap;text-decoration:none;color:inherit;margin-bottom:18px;padding:18px 22px;border:2px solid var(--amber);box-shadow:0 0 30px -8px var(--amber);");
+      vb.innerHTML = '<span aria-hidden="true" style="flex:none;font-size:30px;line-height:1;color:var(--amber);">\u2694</span>' +
+        '<span style="min-width:0;flex:1;"><span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--amber);font-weight:700;">// CLASS DUEL \u00b7 WAITING ROOM ' + (ST.lobby.status === "counting" ? "\u00b7 STARTING NOW" : "OPEN") + '</span>' +
+        '<span style="display:block;font-size:16px;font-weight:700;color:var(--bright);margin-top:4px;">' + (LBN[ST.lobby.kind] || "Class duel") + ' starting soon. Join the waiting room to see your team.</span></span>' +
+        '<span class="mono" style="flex:none;font-size:12px;font-weight:700;color:var(--bright);border:1px solid var(--amber);padding:8px 12px;border-radius:999px;">JOIN \u2192</span>';
+      return;
+    }
+    // 28.0: class boss raid live → glowing call to the raid page
+    var rd = ST && ST.raid && ST.raid.status === "live";
+    if (rd) {
+      if (el) el.remove();
+      if (!vb) { vb = document.createElement("a"); vb.id = "vdLive"; vb.className = "card"; root.parentNode.insertBefore(vb, root); }
+      vb.href = "../raid-play.html?c=" + encodeURIComponent(course);
+      vb.setAttribute("style", "display:flex;align-items:center;gap:16px;flex-wrap:wrap;text-decoration:none;color:inherit;margin-bottom:18px;padding:18px 22px;border:2px solid var(--adv,#ff3b3b);box-shadow:0 0 30px -8px var(--advglow,#ff3b3b);");
+      vb.innerHTML = '<span aria-hidden="true" style="flex:none;font-size:30px;line-height:1;color:var(--adv,#ff3b3b);">\u2620</span>' +
+        '<span style="min-width:0;flex:1;"><span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--bright);font-weight:700;">// BOSS RAID LIVE \u00b7 ' + Math.round(ST.raid.hp / Math.max(1, ST.raid.hp_max) * 100) + '% HP LEFT</span>' +
+        '<span style="display:block;font-size:16px;font-weight:700;color:var(--bright);margin-top:4px;">The whole class is fighting the boss. Every right answer is a hit.</span></span>' +
+        '<span class="mono" style="flex:none;font-size:12px;font-weight:700;color:var(--bright);border:1px solid var(--bright);padding:8px 12px;border-radius:999px;">JOIN RAID \u2192</span>';
+      return;
+    }
     // 27.0: bracket match waiting / vocab game → glowing call to the bracket page
     var bm = ST && ST.br && ST.br.bracket && ST.br.bracket.status === "live" && ST.br.match;
     if (bm && (bm.status === "ready" || (bm.status === "live" && bm.game_kind !== "flag"))) {
@@ -359,15 +385,19 @@
     var adP = AUTH.rpc("ctf_ad_state", { p_student: s.studentId }).catch(function () { return null; });   // arena-duels.sql optional
     var vdP = AUTH.rpc("ctf_vd_state", { p_student: s.studentId }).catch(function () { return null; });   // vocab-duels.sql optional
     var brP = AUTH.rpc("ctf_br_state", { p_student: s.studentId }).catch(function () { return null; });   // brackets.sql optional
-    Promise.all([adP, tbP, vdP, brP]).then(function (r) {
+    var rdP = AUTH.rpc("ctf_raid_state", { p_student: s.studentId, p_peek: true }).catch(function () { return null; });   // raids.sql optional
+    var lbP = AUTH.rpc("ctf_lobby_state", { p_student: s.studentId }).catch(function () { return null; });   // waiting-room.sql optional
+    Promise.all([adP, tbP, vdP, brP, rdP, lbP]).then(function (r) {
       var d = (r[0] && !r[0].error) ? r[0] : { duels_on: false, duel: null }, tb = r[1] && !r[1].error ? r[1].battle : null;
-      if (!r[0] && !tb && !(r[2] && !r[2].error) && !(r[3] && !r[3].error)) { ST = null; card(); bar(); timer = setTimeout(poll, 30000); return; }
+      if (!r[0] && !tb && !(r[2] && !r[2].error) && !(r[3] && !r[3].error) && !(r[4] && r[4].raid) && !(r[5] && r[5].lobby)) { ST = null; card(); bar(); timer = setTimeout(poll, 30000); return; }
       d.tb = tb && !(tb.status === "done" && hidDone === tb.id) ? tb : null;
       d.vd = r[2] && !r[2].error ? r[2] : null;
       d.br = r[3] && !r[3].error ? r[3] : null; d.bg = d.br && d.br.bg;
+      d.raid = r[4] && !r[4].error ? r[4].raid : null;
+      d.lobby = r[5] && !r[5].error && r[5].lobby && !r[5].live ? r[5].lobby : null;
       ST = d; var now = (r[0] && r[0].now) || (r[1] && r[1].now); if (now) skew = new Date(now).getTime() - Date.now();
       card(); bar();
-      var hot = (d.tb && d.tb.status === "live") || (d.duel && d.duel.status !== "done") || (d.vd && d.vd.class_live) || (d.br && d.br.bracket && d.br.bracket.status === "live");
+      var hot = (d.tb && d.tb.status === "live") || (d.duel && d.duel.status !== "done") || (d.vd && d.vd.class_live) || (d.br && d.br.bracket && d.br.bracket.status === "live") || (d.raid && d.raid.status === "live") || !!d.lobby;
       timer = setTimeout(poll, hot ? 5000 : 20000);
     });
   }

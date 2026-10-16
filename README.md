@@ -124,7 +124,7 @@ and in the arena (bottom-left pill). New arrivals show a glowing notification.
 - **Surprise drops:** Mystery Box, Loot Drop (3% chance per capture)
 - **Vouchers** (homework pass, extension, bonus points): redeemed in person with the teacher
 
-Sources: the reward spinner, the teacher dashboard's Send Rewards tab, and loot drops.
+Sources: Reasey's Reward Rally (carnival.html), the teacher dashboard's Send Rewards tab, and loot drops.
 Backend: `supabase/reward-items.sql`.
 
 ## Arena mechanics (v2.0)

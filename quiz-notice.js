@@ -41,7 +41,7 @@
     return fetch(C.url + "/rest/v1/rpc/vq_my_quizzes", {
       method: "POST",
       headers: { apikey: C.anonKey, Authorization: "Bearer " + t, "Content-Type": "application/json" },
-      body: JSON.stringify({ p_student: sess.studentId })
+      body: JSON.stringify(fn === "ctf_raid_state" ? { p_student: sess.studentId, p_peek: true } : { p_student: sess.studentId })
     }).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { if (!Array.isArray(d)) return null; try { localStorage.setItem(CACHE, JSON.stringify(d)); } catch (e) {} return d; })
       .catch(function () { return null; });
@@ -167,7 +167,7 @@
     if (!C.url || !C.anonKey || !t) return Promise.resolve(null);
     return fetch(C.url + "/rest/v1/rpc/pg_my_grids", {
       method: "POST", headers: { apikey: C.anonKey, Authorization: "Bearer " + t, "Content-Type": "application/json" },
-      body: JSON.stringify({ p_student: sess.studentId })
+      body: JSON.stringify(fn === "ctf_raid_state" ? { p_student: sess.studentId, p_peek: true } : { p_student: sess.studentId })
     }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { return Array.isArray(d) ? d : null; }).catch(function () { return null; });
   }
   function pgShow(list) {
@@ -197,14 +197,18 @@
   function rpcRaw(fn) {
     var C = window.SUPABASE_CONFIG || {}, t = token();
     if (!C.url || !C.anonKey || !t) return Promise.resolve(null);
-    return fetch(C.url + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: C.anonKey, Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify({ p_student: sess.studentId }) })
+    return fetch(C.url + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: C.anonKey, Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify(fn === "ctf_raid_state" ? { p_student: sess.studentId, p_peek: true } : { p_student: sess.studentId }) })
       .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
   }
   function battleCheck() {
-    Promise.all([rpcRaw("ctf_tb_state"), rpcRaw("ctf_vd_state"), rpcRaw("ctf_ad_state"), rpcRaw("ctf_br_state")]).then(function (r) {
+    Promise.all([rpcRaw("ctf_tb_state"), rpcRaw("ctf_vd_state"), rpcRaw("ctf_ad_state"), rpcRaw("ctf_br_state"), rpcRaw("ctf_raid_state"), rpcRaw("ctf_lobby_state")]).then(function (r) {
+      var lb = r[5] && !r[5].error && r[5].lobby && !r[5].live ? r[5].lobby : null, LBN = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid" };
       var tb = r[0] && r[0].battle, vd = r[1], ad = r[2] && r[2].duel, br = r[3], b = null;
       var bm = br && br.bracket && br.bracket.status === "live" && br.match;
-      if (bm && (bm.status === "ready" || bm.status === "live")) b = { t: "// BRACKET MATCH " + (bm.status === "ready" ? "READY" : "LIVE"), h: "You vs " + (bm.opp || "?"), s: bm.status === "ready" ? "Open the bracket page now. Missing for 60 seconds is a forfeit." : "Your match is on.", go: "BRACKET", href: "../bracket-play.html?c=" + encodeURIComponent(course) };
+      var rd = r[4] && r[4].raid && r[4].raid.status === "live" ? r[4].raid : null;
+      if (lb) b = { t: "// CLASS DUEL \u00b7 WAITING ROOM " + (lb.status === "counting" ? "\u00b7 STARTING NOW" : "OPEN"), h: (LBN[lb.kind] || "Class duel") + " starting soon", s: "Join the waiting room to see your team. Everyone goes in together when your teacher starts.", go: "JOIN", href: "../lobby.html?c=" + encodeURIComponent(course) };
+      else if (rd) b = { t: "// BOSS RAID LIVE \u00b7 " + Math.round(rd.hp / Math.max(1, rd.hp_max) * 100) + "% HP LEFT", h: "The whole class vs the boss", s: "Every right answer is a hit. Wrong answers crack the class shield.", go: "JOIN RAID", href: "../raid-play.html?c=" + encodeURIComponent(course) };
+      else if (bm && (bm.status === "ready" || bm.status === "live")) b = { t: "// BRACKET MATCH " + (bm.status === "ready" ? "READY" : "LIVE"), h: "You vs " + (bm.opp || "?"), s: bm.status === "ready" ? "Open the bracket page now. Missing for 60 seconds is a forfeit." : "Your match is on.", go: "BRACKET", href: "../bracket-play.html?c=" + encodeURIComponent(course) };
       else if (br && br.bracket && br.bracket.status === "live") b = { t: "// DUEL BRACKET LIVE", h: "You\u2019re in the bracket", s: "Stay on the bracket page so your next match can start.", go: "BRACKET", href: "../bracket-play.html?c=" + encodeURIComponent(course) };
       else if (tb && tb.status === "live") b = { t: "// TEAM BATTLE LIVE", h: "Your team needs you", s: "Enter the battle arena and capture flags to raise your team\u2019s score.", go: "ENTER ARENA", href: "ctf.html#arena" };
       else if (vd && vd.class_live && vd.session && vd.session.kind === "class" && vd.session.status === "live") b = { t: "// VOCAB BATTLE LIVE", h: "Your team needs you", s: "Open the duel room to get an opponent.", go: "FIGHT", href: "../vocab-duel.html?c=" + encodeURIComponent(course) };
@@ -222,7 +226,7 @@
         '<span style="display:block;font-size:13px;color:var(--muted);margin-top:3px;">' + b.s + '</span></span>' +
         '<span class="mono" style="flex:none;font-size:13px;font-weight:800;color:var(--bright);border:2px solid var(--vqw);padding:10px 16px;border-radius:999px;">' + b.go + ' \u2192</span>';
       if (!old) { var first = document.querySelector(".card:not(#bnNotice)"); if (first && first.parentNode) first.parentNode.insertBefore(card, first); }
-      setTimeout(battleCheck, 15000);
+      setTimeout(battleCheck, lb ? 6000 : 15000);
     });
   }
 
@@ -240,7 +244,7 @@
       else { lastBox = null; tryPf(); }
     });
     if (link) pgFetch().then(function (g) { if (g) pgShow(g); });
-    if (link) battleCheck();
+    if (link || /\/profile\.html$/.test(location.pathname)) battleCheck();   // 29.0: profile gets the call-outs too
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();

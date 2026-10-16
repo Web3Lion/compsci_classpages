@@ -3,11 +3,11 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=27.0.0"></script>
+<script src="site.js?v=29.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reward Big Top</title>
+<title>Reasey's Reward Rally</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -467,7 +467,7 @@ body[data-view="student"] #bgStudent{display:block;}
 <section id="bigtop" aria-label="Reward games">
   <div class="beam b1"></div><div class="beam b2"></div>
   <div class="canopy"></div>
-  <div class="marquee"><div class="bulbs top"></div><div class="mqSmall">STEP RIGHT UP TO THE</div><h1 class="mqBig">REWARD BIG TOP</h1><div class="bulbs bot"></div></div>
+  <div class="marquee"><div class="bulbs top"></div><div class="mqSmall">STEP RIGHT UP TO</div><h1 class="mqBig">REASEY&rsquo;S REWARD RALLY</h1><div class="bulbs bot"></div></div>
   <p class="barker">Pick a game. Chance games draw from your odds table. Skill games let the player pick a prize from the tier they reach.</p>
   <div id="booths">
   <h2 class="lobbyH">GAMES OF CHANCE</h2>
@@ -568,7 +568,7 @@ body[data-view="student"] #bgStudent{display:block;}
   <p class="bgsNote">Tap a term when your teacher reads its definition. Five in a row across, down, or corner to corner is BINGO. Then tell your teacher your card number.</p>
 </div>
 <div class="wrap">
-  <button id="toLobby" onclick="backToLobby()">&larr; BIG TOP</button>
+  <button id="toLobby" onclick="backToLobby()">&larr; REWARD RALLY</button>
   <div class="kick mono">&gt; ./class-rewards</div>
   <h1 class="mono" id="modeTitle">Reward Spinner</h1>
   <p class="lead" id="modeLead">Spin for a class reward. Bigger prizes come up less often.</p>
@@ -2668,7 +2668,7 @@ function backToLobby(){
   if (curtainBusy || spinning || (window.PK && PK.busy()) || (window.SK && SK.animating())) return;
   if (MODE === 'duck' && picking) resetPond();
   if (document.body.classList.contains('pondFs')) togglePondFs(false);
-  curtainSwap('BIG TOP', 'BACK TO THE', function(){
+  curtainSwap('REWARD RALLY', 'BACK TO THE', function(){
     document.body.setAttribute('data-view', 'lobby'); window.scrollTo(0, 0);
     if (window.FG) FG.stop(); if (window.PK) PK.stop(); if (window.SK) SK.stop(); if (window.CL) CL.stop(); if (window.GB) GB.stop();
     if (pondRaf){ cancelAnimationFrame(pondRaf); pondRaf = 0; }
@@ -2681,8 +2681,8 @@ function backToLobby(){
   else { if (window.FG) FG.stop(); if (window.PK) PK.stop(); if (window.SK) SK.stop(); if (window.CL) CL.stop(); if (window.GB) GB.stop(); if (pondRaf){ cancelAnimationFrame(pondRaf); pondRaf = 0; } }
 })();
 </script>
-<script src="supabase-config.js?v=27.0.0"></script>
-<script src="auth.js?v=27.0.0"></script>
+<script src="supabase-config.js?v=29.0.0"></script>
+<script src="auth.js?v=29.0.0"></script>
 <script>
 /* Optional: pick a class + student before spinning and the prize can be sent
    straight to that student's profile inventory (reward-items.sql). Works only
@@ -2740,6 +2740,6 @@ function backToLobby(){
   boot();
 })();
 </script>
-<script src="nemesis-intro.js?v=27.0.0"></script>
+<script src="nemesis-intro.js?v=29.0.0"></script>
 </body>
 </html>

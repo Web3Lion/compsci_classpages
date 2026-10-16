@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=29.0.0"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Boss Raid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--ok:#3ddc97;--bad:#ff7a85;--adv:#ff3b3b;--arena:#0b0306;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--ok:#1d7a4c;--bad:#b3261e;--arena:#ffffff;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:2px solid var(--adv);background:var(--adv);color:#0b0306;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.tile{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;min-width:44px;min-height:44px;border-radius:9px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);cursor:pointer;}
+.tile:disabled{opacity:.3;}
+input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;flex:1;min-width:180px;min-height:48px;padding:10px 14px;border-radius:10px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;padding-right:210px;">
+    <a id="back" href="index.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; CTF arena</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9760; BOSS RAID</div>
+  </div>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script>
+(function(){
+  var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase();
+  if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { document.getElementById("view").innerHTML = '<div class="card">Open the raid from your course\u2019s CTF arena.</div>'; return; }
+  window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
+  var V = window.SITE_VERSION || "28.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js", "raid-fx.js"];
+  (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
+
+  function boot(){
+    var AUTH = window.CTF_AUTH, view = document.getElementById("view"), FX = window.BATTLE_FX, RF = window.RAID_FX, esc = RF.esc, g = RF.guide();
+    document.documentElement.style.setProperty("--adv", g.color);
+    var S = null; try { S = JSON.parse(localStorage.getItem("ctf-sess-" + C)); } catch (e) {}
+    if (!AUTH || !AUTH.online || !S) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" href="' + C + '/ctf.html">Go to CTF</a></div>'; return; }
+    if (window.BATTLE_BG) BATTLE_BG.use("duel", null);
+    var ST = null, skew = 0, timer = null, sig = "", sending = false, note = "", noteCol = "", streak = 0, lastN = null;
+    function rpc(fn, a){ return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
+    function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+    function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+    function maskHtml(m){ return String(m || "").split("").map(function(c){ if (c === " ") return '<span style="width:14px;"></span>'; var hid = c === "_";
+      return '<span class="mono" style="display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:48px;border-radius:9px;font-size:22px;font-weight:800;border:1px solid ' + (hid ? "var(--border3)" : "var(--adv)") + ';background:var(--bg);color:var(--bright);">' + (hid ? "" : esc(c)) + '</span>'; }).join(""); }
+    function puzzle(m){
+      if (m.mode === "decrypt") return '<div id="rpMask" style="display:flex;flex-wrap:wrap;gap:6px;">' + maskHtml(m.puzzle) + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">DECRYPT \u00b7 letters leak after 8 seconds \u00b7 type the term</div>';
+      if (m.mode === "bank") { var o = []; try { o = JSON.parse(m.puzzle || "[]"); } catch (e) {}
+        return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;">' + o.map(function(x){ return '<button type="button" class="tile rpBank" style="font-size:16px;padding:10px 12px;">' + esc(x) + '</button>'; }).join("") + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">WORD BANK \u00b7 a wrong pick damages the class shield</div>'; }
+      if (m.mode === "cipher") return '<div class="mono" style="font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:4px;color:var(--bright);word-break:break-word;">' + esc(m.puzzle) + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:6px;">CAESAR CIPHER \u00b7 shift each letter back <b style="color:var(--bright);">' + m.shift + '</b></div>';
+      return '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + String(m.puzzle || "").split("").map(function(ch){ return '<button type="button" class="tile rpTile">' + esc(ch) + '</button>'; }).join("") + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">SCRAMBLED \u00b7 tap the letters in order, or type the term</div>';
+    }
+    function fightView(r, m){
+      return '<div class="card" id="rpArena" style="margin-top:18px;background:var(--arena);border-color:var(--adv);">' +
+        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;"><span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);flex:1;">YOUR PUZZLE \u00b7 ' + m.len + ' letters</span>' +
+          '<span class="mono" id="rpTtl" style="font-size:13px;font-weight:800;color:var(--muted);"></span></div>' +
+        '<div style="font-size:clamp(17px,2.6vw,21px);font-weight:600;color:var(--bright);line-height:1.5;margin-bottom:18px;">' + esc(m.def) + '</div>' +
+        '<div style="margin-bottom:18px;">' + puzzle(m) + '</div>' +
+        '<form id="rpForm" style="display:flex;gap:10px;flex-wrap:wrap;" autocomplete="off"><label for="rpAns" style="position:absolute;left:-9999px;">Your answer</label><input id="rpAns" class="ans" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="type the term\u2026">' +
+        '<button type="button" class="btn ghost" id="rpClr" aria-label="Clear">\u232b</button><button type="submit" class="btn">Strike</button></form>' +
+        '<div class="mono" id="rpNote" role="status" aria-live="assertive" style="min-height:22px;margin-top:12px;font-size:14px;font-weight:700;color:' + (noteCol || "var(--muted)") + ';">' + esc(note) + '</div>' +
+        '<div class="mono" style="font-size:12px;color:var(--dim);margin-top:6px;">You: ' + ST.my.dmg + ' damage \u00b7 rank #' + ST.my.rank + ' \u00b7 ' + ST.my.hits + ' hits \u00b7 ' + ST.my.misses + ' misses</div></div>';
+    }
+    function endView(r){
+      var my = ST.my || {}, won = r.status === "won";
+      return '<div class="card" style="margin-top:18px;text-align:center;padding:34px;border-color:' + (won ? "var(--ok)" : "var(--adv)") + ';"><div style="font-size:clamp(28px,6vw,44px);font-weight:800;color:var(--bright);">' + (won ? "BOSS DEFEATED!" : r.status === "lost" ? "RAID FAILED" : "Raid cancelled") + '</div>' +
+        '<div class="mono" style="font-size:16px;font-weight:700;color:var(--bright);margin-top:12px;">' + (my.xp ? "+" + my.xp + " XP" + (my.mvp ? " \u00b7 \u2605 MVP" : "") : "No XP this time") + '</div>' +
+        '<div style="font-size:14px;color:var(--muted);margin-top:8px;">You did ' + (my.dmg || 0) + ' damage (rank #' + (my.rank || "-") + ').</div></div>';
+    }
+    function draw(force){
+      if (!ST) return;
+      var r = ST.raid, m = ST.my;
+      var k = !r ? "none" : [r.id, r.status, r.phase, r.weak, r.enraged, m && m.n, (r.top || []).map(function(t){ return t.dmg; }).join(","), (r.feed[0] || {}).at].join("|");
+      if (!force && k === sig) return update();
+      var keep = (document.getElementById("rpAns") || {}).value || "", sameN = m && lastN === m.n; sig = k;
+      if (!r) { view.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><div style="font-size:24px;font-weight:800;color:var(--bright);">No boss raid right now</div><div style="font-size:14px;color:var(--muted);margin-top:8px;">Your teacher starts raids. When one is on, it shows up here and on your CTF page.</div></div>'; return; }
+      view.innerHTML = RF.bossCard(r) + (r.status === "live" && m && m.def ? fightView(r, m) : r.status === "live" ? '<div class="card" style="margin-top:18px;">Teachers watch from the raid projector page.</div>' : endView(r)) +
+        '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:18px;" id="g">' + RF.board(r, ST.me) + RF.feed(r) + '</div>';
+      var gg = document.getElementById("g"); if (gg && innerWidth < 760) gg.style.gridTemplateColumns = "1fr";
+      bind(); update();
+      var a = document.getElementById("rpAns"); if (a) { if (sameN) a.value = keep; a.focus(); }
+      lastN = m && m.n;
+    }
+    function update(){
+      var r = ST && ST.raid, m = ST && ST.my; if (!r) return;
+      var el = document.getElementById("rbClock"), left = new Date(r.ends_at).getTime() - (Date.now() + skew);
+      if (el) { el.textContent = r.status === "live" ? mmss(left) : "0:00"; if (FX && r.status === "live") FX.clock("rp" + r.id, left, { el: el }); }
+      if (FX && document.getElementById("rbHpB")) FX.setBoss("rbHp", Math.round(r.hp / Math.max(1, r.hp_max) * 100));
+      if (m && m.mode === "decrypt") { var mk = document.getElementById("rpMask"); if (mk && mk._m !== m.puzzle) { mk._m = m.puzzle; mk.innerHTML = maskHtml(m.puzzle); } }
+      var tt = document.getElementById("rpTtl"); if (tt && m && m.term_at) { var s = Math.max(0, Math.ceil((new Date(m.term_at).getTime() + m.ttl * 1000 - Date.now() - skew) / 1000)); tt.textContent = s + "s"; tt.style.color = s <= 5 ? "var(--bad)" : "var(--muted)"; if (s === 0 && !update._r) { update._r = 1; setTimeout(function(){ update._r = 0; load(); }, 600); } }
+    }
+    function say(t, col){ note = t; noteCol = col; var n = document.getElementById("rpNote"); if (n) { n.textContent = t; n.style.color = col; } }
+    function strike(){
+      var r = ST.raid, m = ST.my, a = document.getElementById("rpAns"); if (!r || !m || !a || sending || !norm(a.value)) return;
+      sending = true;
+      rpc("ctf_raid_answer", { p_raid: r.id, p_n: m.n, p_guess: a.value }).then(function(d){
+        sending = false;
+        if (d && d.correct) { say("\u2713 " + d.term + " \u2014 hit for " + d.dmg + "!", "var(--ok)"); streak++; if (FX) { FX.combo(streak); var bb = document.getElementById("rbHpB"); if (bb) FX.damage(bb, "-" + d.dmg, d.weak ? "#ffcf5c" : "#3ddc97"); if (d.weak) FX.banner("WEAK POINT HIT!", "#ffcf5c", d.dmg + " damage"); } a.value = ""; }
+        else if (d && d.correct === false) { streak = 0; if (FX) { FX.combo(0); FX.shake(document.getElementById("rpArena")); } say("\u2717 Not it. " + g.name + " hits the class shield for " + d.shield_hit + ".", "var(--bad)"); a.value = ""; view.querySelectorAll(".rpTile").forEach(function(b){ b.disabled = false; }); }
+        else if (d && d.stale) say("That puzzle timed out. Here\u2019s a new one.", "var(--muted)");
+        load();
+      }).catch(function(){ sending = false; load(); });
+    }
+    function bind(){
+      var form = document.getElementById("rpForm"), ans = document.getElementById("rpAns");
+      view.querySelectorAll(".rpBank").forEach(function(b){ b.onclick = function(){ if (!ans) return; ans.value = b.textContent; strike(); }; });
+      view.querySelectorAll(".rpTile").forEach(function(b){ b.onclick = function(){ if (!ans) return; ans.value += b.textContent; b.disabled = true; ans.focus(); if (ST.my && norm(ans.value).length === ST.my.len) strike(); }; });
+      var clr = document.getElementById("rpClr"); if (clr) clr.onclick = function(){ if (ans) { ans.value = ""; ans.focus(); } view.querySelectorAll(".rpTile").forEach(function(b){ b.disabled = false; }); };
+      if (form) form.onsubmit = function(e){ e.preventDefault(); strike(); };
+    }
+    function load(){
+      clearTimeout(timer);
+      return rpc("ctf_raid_state").then(function(d){
+        if (!d || d.error) { view.innerHTML = '<div class="card">Sign in on your CTF page first.</div>'; return; }
+        if (d.now) skew = new Date(d.now).getTime() - Date.now();
+        if (window.BATTLE_BG) BATTLE_BG.use("duel", d.bg);
+        ST = d; draw(false); RF.track(d.raid, {});
+        timer = setTimeout(load, d.raid && d.raid.status === "live" ? 1500 : 10000);
+      }).catch(function(){ view.innerHTML = '<div class="card">Boss raids aren\u2019t set up yet. Ask your teacher to run supabase/raids.sql.</div>'; sig = ""; timer = setTimeout(load, 10000); });
+    }
+    setInterval(update, 500);
+    document.addEventListener("visibilitychange", function(){ if (!document.hidden) load(); });
+    load();
+  }
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=29.0.0"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Boss Raid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--amber-bg:#1a150a;--ok:#3ddc97;--bad:#ff7a85;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--amber-bg:#fbf4dd;--ok:#1d7a4c;--bad:#b3261e;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 24px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--amber);background:var(--amber);color:#1a1200;cursor:pointer;white-space:nowrap;}
+:root[data-theme="light"] .btn:not(.ghost){background:#f3c94b;border-color:#8a6a00;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;}
+.chip[aria-pressed="true"]{border-color:var(--amber);background:var(--amber-bg);color:var(--bright);}
+.chip[aria-pressed="true"]::before{content:"\2713  ";}
+select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div id="hdr" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;padding-right:210px;">
+    <a href="teacher.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; Teacher dashboard</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9760; BOSS RAID</div>
+    <span style="flex:1;"></span>
+    <span id="snd" role="group" aria-label="Projector sound"></span>
+    <label class="mono" for="cls" style="font-size:12px;color:var(--dim);">Class</label>
+    <select id="cls"></select>
+  </div>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script src="config.js?v=29.0.0"></script>
+<script src="ctf-data/cyber1.js?v=29.0.0"></script>
+<script src="ctf-data/cyber2.js?v=29.0.0"></script>
+<script src="ctf-data/cyber3.js?v=29.0.0"></script>
+<script src="ctf-data/apcsp.js?v=29.0.0"></script>
+<script src="ctf-data/web3.js?v=29.0.0"></script>
+<script src="supabase-config.js?v=29.0.0"></script>
+<script src="auth.js?v=29.0.0"></script>
+<script src="battle-fx.js?v=29.0.0"></script>
+<script src="battle-bg.js?v=29.0.0"></script>
+<script src="raid-fx.js?v=29.0.0"></script>
+<script src="waiting-room.js?v=29.0.0"></script>
+<script>
+(function(){
+  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX, RF = window.RAID_FX, esc = RF.esc;
+  if (FX) { FX.enableSound(true); FX.soundUi(document.getElementById("snd")); }
+  var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
+  var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]], HPS = [300, 500, 800, 1200, 2000];
+  var CLASSES = [], CUR = null, ST = null, MODS = {}, timer = null, tick = null, msg = "", busy = false, showSetup = false, skew = 0, sig = "";
+  var pick = {}, modes = { cipher:1, unscramble:1, decrypt:1, bank:1 }, hp = 500, mins = 5;
+  var ERR = { raid_live:"A raid is already running in this class.", too_few_terms:"Pick modules with at least 4 vocab terms." };
+  var DEMO = /[?&]demo=1/.test(location.search), D = null;
+  function rpc(fn, a){ return DEMO ? Promise.resolve(demo(fn, a || {})) : AUTH.rpc(fn, a || {}); }
+  var WR = window.WROOM ? WROOM.attach({ kind: "raid", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: DEMO }) : null;
+  function wrBtn(){ return WR && WR.isOpen() ? "Start \u00b7 10 s countdown" : null; }
+  function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
+  function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+  function names(){ return ((((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}).modules || []; }
+  function modName(m){ var n = names()[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
+  function loadVocab(c){
+    return new Promise(function(res){
+      if (window[VG[c]]) return res();
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=29.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+    }).then(function(){ MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); }); });
+  }
+  function setupView(){
+    var keys = Object.keys(MODS).map(Number).sort(function(a,b){ return a-b; }), selM = keys.filter(function(m){ return pick[m]; });
+    var n = selM.reduce(function(a, m){ return a + MODS[m].length; }, 0), nm = PMODES.filter(function(p){ return modes[p[0]]; }).length, g = RF.guide();
+    var ready = n >= 4 && nm && hp >= 50 && !busy;
+    return (WR ? WR.html() : '') + '<div class="card" style="max-width:860px;border-color:' + g.color + ';">' +
+      '<div class="mono" style="font-size:12px;letter-spacing:2px;color:' + g.color + ';font-weight:800;margin-bottom:6px;">NEW BOSS RAID</div>' +
+      '<div style="font-size:26px;font-weight:800;color:var(--bright);margin-bottom:6px;">The whole class vs ' + esc(g.name) + '</div>' +
+      '<div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px;">Every student gets their own vocab puzzle. A correct answer hits the boss for 10, and a wrong one costs the class shield 4. The boss gets harder at 66% and 33%, one random 15-second weak point does 3\u00d7, and the last minute is enraged (2\u00d7 both ways).</div>' +
+      '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab modules</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip rdM" data-m="' + m + '" aria-pressed="' + !!pick[m] + '" title="' + esc(modName(m)) + '">M' + String(m).padStart(2,"0") + '</button>'; }).join("") : '<span style="color:var(--dim);">No vocab for this course.</span>') + '</div>' +
+      '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + PMODES.map(function(p){ return '<button type="button" class="chip rdT" data-p="' + p[0] + '" aria-pressed="' + !!modes[p[0]] + '">' + p[1] + '</button>'; }).join("") + '</div>' +
+      '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Boss HP <span class="mono" style="font-size:12px;color:var(--dim);font-weight:500;">(' + Math.ceil(hp / 10) + ' correct answers to win)</span></div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px;">' + HPS.map(function(v){ return '<button type="button" class="chip rdH" data-h="' + v + '" aria-pressed="' + (hp === v) + '">' + v + '</button>'; }).join("") +
+        '<label class="mono" for="rdHp" style="font-size:12px;color:var(--dim);">or</label><input id="rdHp" type="number" min="50" step="10" value="' + hp + '" style="width:110px;min-height:44px;font:inherit;font-size:15px;padding:8px 10px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);"></div>' +
+      '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Raid clock</div>' +
+      '<div role="group" aria-label="Raid clock" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">' + [5,10,15].map(function(v){ return '<button type="button" class="chip rdL" data-n="' + v + '" aria-pressed="' + (mins === v) + '">' + v + ' min</button>'; }).join("") + '</div>' +
+      '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><button type="button" class="btn" id="rdGo" data-wr-start="Start raid"' + (ready ? "" : " disabled") + '>' + (wrBtn() || "Start raid") + '</button>' + (ST && ST.raid ? '<button type="button" class="btn ghost" id="rdBack">Back to raid</button>' : '') +
+        '<span class="mono" style="font-size:12px;color:var(--dim);">' + n + ' terms</span></div>' +
+      (msg ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(msg) + '</div>' : '') +
+      '<div style="font-size:12px;color:var(--dim);margin-top:14px;line-height:1.6;">Students join from the glowing Boss Raid call-out on their CTF page or course home. Win: everyone who hit the boss +15 XP, top damage +10 more. Loss: +5 for playing.</div></div>';
+  }
+  function liveView(){
+    var r = ST.raid, live = r.status === "live";
+    var head = live ? '' : '<div class="card" style="margin-bottom:18px;text-align:center;padding:30px;border-color:' + (r.status === "won" ? "var(--ok)" : "var(--bad)") + ';">' +
+      '<div style="font-size:44px;font-weight:800;color:var(--bright);">' + (r.status === "won" ? "BOSS DEFEATED!" : r.status === "lost" ? "RAID FAILED" : "Raid cancelled") + '</div>' +
+      (r.status === "won" ? '<div style="font-size:16px;color:var(--muted);margin-top:8px;">MVP: ' + (r.top || []).filter(function(t){ return t.mvp; }).map(function(t){ return esc(t.handle); }).join(", ") + '</div>' : '') +
+      '<div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button type="button" class="btn" id="rdNew">New raid</button></div></div>';
+    return head + RF.bossCard(r, { big: true }) +
+      '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:18px;" id="g">' + RF.board(r) + RF.feed(r) + '</div>' +
+      (live ? '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;"><button type="button" class="btn ghost" id="rdFull">Full screen</button><button type="button" class="btn ghost" id="rdEnd">Cancel raid (no XP)</button></div>' : '');
+  }
+  function paint(){
+    if (!CUR) return;
+    view.innerHTML = (showSetup || !ST || !ST.raid) ? setupView() : liveView();
+    var g = document.getElementById("g"); if (g && innerWidth < 860) g.style.gridTemplateColumns = "1fr";
+    bind(); clock();
+  }
+  function clock(){
+    var el = document.getElementById("rbClock"), r = ST && ST.raid; if (!el || !r) return;
+    var left = new Date(r.ends_at).getTime() - (Date.now() + skew);
+    el.textContent = r.status === "live" ? mmss(left) : "0:00";
+    if (FX && r.status === "live") FX.clock("rd" + r.id, left, { el: el, music: true });
+  }
+  function bind(){
+    if (WR) WR.bind(view);
+    view.querySelectorAll(".rdM").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
+    view.querySelectorAll(".rdT").forEach(function(b){ b.onclick = function(){ var p = b.getAttribute("data-p"); modes[p] = !modes[p]; paint(); }; });
+    view.querySelectorAll(".rdH").forEach(function(b){ b.onclick = function(){ hp = +b.getAttribute("data-h"); paint(); }; });
+    view.querySelectorAll(".rdL").forEach(function(b){ b.onclick = function(){ mins = +b.getAttribute("data-n"); paint(); }; });
+    var hi = document.getElementById("rdHp"); if (hi) hi.onchange = function(){ hp = Math.max(50, Math.round((+hi.value || 0) / 10) * 10); paint(); };
+    var go = document.getElementById("rdGo"); if (go) go.onclick = function(){
+      var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), pool = [];
+      mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
+      busy = true; msg = ""; paint();
+      (WR ? WR.go : function(f){ f(function(){}); })(function(done){
+      rpc("ctf_t_raid_start", { p_class: CUR.id, p_hp: hp, p_minutes: mins, p_modules: mods, p_pool: pool, p_modes: PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }) })
+        .then(function(r){ busy = false; var ok = r && !r.error; done(ok); if (!ok) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; } showSetup = false; sig = ""; load(); })
+        .catch(function(){ done(false); busy = false; msg = "Couldn\u2019t start. Check that supabase/raids.sql has been run."; paint(); });
+      });
+    };
+    var bk = document.getElementById("rdBack"); if (bk) bk.onclick = function(){ showSetup = false; paint(); };
+    var nw = document.getElementById("rdNew"); if (nw) nw.onclick = function(){ showSetup = true; msg = ""; paint(); };
+    var en = document.getElementById("rdEnd"); if (en) en.onclick = function(){ if (!confirm("Cancel this raid? Nobody gets raid XP.")) return; rpc("ctf_t_raid_end", { p_raid: ST.raid.id }).then(load); };
+    var fu = document.getElementById("rdFull"); if (fu) fu.onclick = function(){ if (FX) FX.fullscreen(document.documentElement); };
+  }
+  function load(){
+    clearTimeout(timer); if (!CUR) return; var id = CUR.id;
+    rpc("ctf_t_raid_state", { p_class: id }).then(function(d){
+      if (!CUR || CUR.id !== id) return;
+      if (!d || d.error) { view.innerHTML = '<div class="card">Couldn\u2019t load the raid. Check that supabase/raids.sql has been run (install-check.html), then reload.</div>'; return; }
+      if (d.now) skew = new Date(d.now).getTime() - Date.now();
+      if (window.BATTLE_BG) BATTLE_BG.use("projector", d.bg);
+      ST = d;
+      var typing = showSetup || !d.raid;
+      var k = d.raid ? JSON.stringify([d.raid.status, d.raid.hp, d.raid.shield, d.raid.phase, d.raid.weak, d.raid.enraged, d.raid.players, (d.raid.feed[0] || {}).at]) : "none";
+      if (!(typing && view.querySelector("#rdGo")) && k !== sig) { sig = k; paint(); }
+      RF.track(d.raid, { feed: true, dmgPop: true });
+      timer = setTimeout(load, d.raid && d.raid.status === "live" ? 1500 : 10000);
+    }).catch(function(){ view.innerHTML = '<div class="card">Couldn\u2019t load the raid. Check that supabase/raids.sql has been run (install-check.html), then reload.</div>'; timer = setTimeout(load, 10000); });
+  }
+  function pickClass(cid){
+    CUR = CLASSES.filter(function(c){ return c.id === cid; })[0] || CLASSES[0]; sel.value = CUR.id;
+    try { localStorage.setItem("battle-class", CUR.id); } catch (e) {}
+    ST = null; sig = ""; pick = {}; showSetup = false; window.CTF_COURSE = CUR.course; if (WR) WR.reload(); if (FX) FX.setGuide(null);
+    loadVocab(CUR.course).then(load);
+  }
+  function demo(fn){
+    if (fn === "ctf_t_classes") return [{ id: "demo", name: "Demo class", course: "cyber1" }];
+    var H = ["Byte Knight","Null Pointer","Zero Day","Packet Pal","Cipher Sam","Root Ruth","Hex Hero"];
+    if (!D) D = { id: "r", hp: 600, hp_max: 600, shield: 100, t0: Date.now(), feed: [], dmg: {} };
+    var el = Date.now() - D.t0, ends = D.t0 + 180000, weak = el > 50000 && el < 65000, enr = ends - Date.now() < 60000 && ends > Date.now();
+    if (Date.now() < ends && D.hp > 0) {
+      if (Math.random() < .7) { var w = H[Math.floor(Math.random() * H.length)], a = 10 * (weak ? 3 : 1) * (enr ? 2 : 1); D.hp = Math.max(0, D.hp - a); D.dmg[w] = (D.dmg[w] || 0) + a; D.feed.unshift({ who: w, kind: "hit", amount: a, weak: weak, at: new Date().toISOString() }); }
+      if (Math.random() < .25) { var m = H[Math.floor(Math.random() * H.length)], s = 4 * (enr ? 2 : 1); D.shield = Math.max(4, D.shield - s); D.feed.unshift({ who: m, kind: "miss", amount: s, at: new Date().toISOString() }); }
+    }
+    if (Date.now() > ends + 20000) D = null;
+    var r = D || { hp: 0, hp_max: 600, shield: 50, dmg: {}, feed: [], t0: Date.now() - 200000 };
+    var phase = r.hp * 3 > r.hp_max * 2 ? 1 : r.hp * 3 > r.hp_max ? 2 : 3;
+    var top = Object.keys(r.dmg).map(function(h, i){ return { id: "s" + i, handle: h, dmg: r.dmg[h], hits: r.dmg[h] / 10 }; }).sort(function(a, b){ return b.dmg - a.dmg; });
+    var status = r.hp <= 0 ? "won" : Date.now() >= ends ? "lost" : "live"; if (status === "won" && top[0]) top[0].mvp = true;
+    return { now: new Date().toISOString(), bg: {}, raid: { id: "r", status: status, hp: r.hp, hp_max: r.hp_max, shield: r.shield, phase: phase, weak: weak, enraged: enr, started_at: new Date(r.t0).toISOString(), ends_at: new Date(ends).toISOString(), players: 7, top: top.slice(0, 10), feed: r.feed.slice(0, 10) } };
+  }
+  setInterval(clock, 500);
+  (async function(){
+    if (DEMO) { var dn = document.createElement("div"); dn.className = "mono"; dn.setAttribute("role", "note"); dn.style.cssText = "margin:-6px 0 14px;font-size:12px;color:var(--amber);"; dn.textContent = "PREVIEW MODE \u00b7 a fake 3-minute raid on a loop, nothing is saved. Click once to turn on sound."; document.getElementById("hdr").after(dn); }
+    if (!DEMO && (!AUTH || !AUTH.online)) { view.innerHTML = '<div class="card">Connect the class backend (supabase-config.js) first.</div>'; return; }
+    try { CLASSES = await rpc("ctf_t_classes") || []; } catch (e) { CLASSES = null; }
+    if (!Array.isArray(CLASSES)) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> to run raids.</div>'; return; }
+    if (!CLASSES.length) { view.innerHTML = '<div class="card">No classes yet.</div>'; return; }
+    sel.innerHTML = CLASSES.map(function(c){ return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join("");
+    sel.onchange = function(){ pickClass(sel.value); };
+    var want = new URLSearchParams(location.search).get("class"); try { want = want || localStorage.getItem("battle-class"); } catch (e) {}
+    pickClass(want);
+  })();
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

@@ -3,11 +3,11 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=27.0.0"></script>
+<script src="site.js?v=29.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teacher Dashboard — CTF Platform</title>
+<title>Teacher Dashboard (new) — CTF Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -65,6 +65,52 @@
   .tab{padding:11px 16px;font-size:13px;font-weight:600;color:var(--dim);border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;}
   .tab:hover{color:var(--muted);}
   .tab.on{color:var(--bright);border-bottom-color:var(--accent);}
+  .tg,.tab,.tmenu>summary,.btn,.pill,.chip{white-space:nowrap;}
+  /* teacher2: sidebar nav, class switcher, jump search, run tiles */
+  .nv{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;padding:7px 10px;border-radius:8px;font:inherit;font-size:13px;color:var(--muted);background:transparent;border:0;cursor:pointer;text-decoration:none;}
+  .nv:hover{background:var(--panel2,var(--bg2));color:var(--bright);}
+  .nv.on{background:var(--panel3);color:var(--bright);font-weight:700;}
+  .nv .bdg{font:700 10px 'JetBrains Mono',monospace;padding:2px 6px;border-radius:5px;background:color-mix(in srgb,var(--bad) 13%,transparent);color:var(--bad);}
+  .nvh{font:600 10px 'JetBrains Mono',monospace;letter-spacing:1.5px;color:var(--faint);padding:0 8px 4px;}
+  .nvg{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:7px 8px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;font:700 11px 'JetBrains Mono',monospace;letter-spacing:1.5px;color:var(--dim);}
+  .nvg:hover{background:var(--panel2,var(--bg2));color:var(--bright);}
+  .nvg[aria-expanded="true"]{color:var(--bright);}
+  .nvg .chev{display:inline-block;width:10px;transition:transform .15s ease;color:var(--faint);}
+  .nvg[aria-expanded="true"] .chev{transform:rotate(90deg);}
+  .nvg .cnt{margin-left:auto;font-weight:500;letter-spacing:0;color:var(--faint);}
+  .nvg .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .nvitems{display:flex;flex-direction:column;gap:2px;margin:2px 0 6px 13px;padding-left:10px;border-left:1px solid var(--border3);}
+  .cswitch{border:1px solid var(--border3);background:var(--panel2,var(--bg2));border-radius:10px;padding:10px 12px;}
+  .cswitch>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;}
+  .cswitch>summary::-webkit-details-marker{display:none;}
+  .jump{position:relative;width:min(380px,100%);}
+  .jump input{width:100%;padding:9px 34px 9px 32px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);font:14px 'Inter',sans-serif;}
+  .jump input:focus{outline:none;border-color:var(--accent);}
+  .jump .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;}
+  .jump .k{position:absolute;right:9px;top:50%;transform:translateY(-50%);font:11px 'JetBrains Mono',monospace;color:var(--dim);border:1px solid var(--border3);border-radius:5px;padding:0 6px;}
+  .jres{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:450;background:var(--bg);border:1px solid var(--border3);border-radius:12px;padding:6px;max-height:380px;overflow:auto;box-shadow:0 18px 40px -12px rgba(0,0,0,.6);}
+  .jres button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:8px;border:0;background:none;color:var(--text);font:inherit;font-size:13px;cursor:pointer;}
+  .jres button:hover,.jres button.on{background:var(--bg2);color:var(--bright);}
+  .jres small{font:10px 'JetBrains Mono',monospace;letter-spacing:1px;color:var(--dim);}
+  .rtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;}
+  .rtile{display:flex;flex-direction:column;gap:10px;min-height:84px;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--bright);text-decoration:none;font-size:13px;font-weight:700;}
+  .rtile:hover{border-color:var(--accent);color:var(--bright);}
+  .rtile b{font:700 11px 'JetBrains Mono',monospace;}
+  .rtile span{margin-top:auto;}
+  /* 28.1 grouped navigation + launch menus */
+  .tgroups{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .tg{padding:9px 16px;min-height:40px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--dim);font-weight:700;font-size:13px;cursor:pointer;}
+  .tg:hover{color:var(--bright);border-color:var(--muted);}
+  .tg.on{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--bright);border-color:var(--accent);}
+  .tmenu{position:relative;}
+  .tmenu>summary{list-style:none;cursor:pointer;}
+  .tmenu>summary::-webkit-details-marker{display:none;}
+  .tmenu-p{position:absolute;right:0;top:calc(100% + 6px);z-index:400;width:300px;max-width:86vw;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:6px;box-shadow:0 18px 40px -12px rgba(0,0,0,.6);}
+  .tmenu-p a,.tmenu-p button{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:8px;color:var(--bright);background:none;border:0;font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;}
+  .tmenu-p a:hover,.tmenu-p button:hover{background:var(--bg2);}
+  .tmenu-p small{display:block;font-weight:500;font-size:11.5px;color:var(--dim);margin-top:2px;}
+  .tmenu-p .sep{height:1px;background:var(--border);margin:6px 4px;}
+  .tmenu-p .danger{color:var(--bad,#ff7a85);}
   .modal{position:fixed;inset:0;z-index:500;background:rgba(4,6,10,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;}
   .empty{padding:48px 20px;text-align:center;color:var(--dim);font-size:14px;}
   .stat{background:var(--bg2);border:1px solid var(--border2);border-radius:11px;padding:14px 16px;}
@@ -195,36 +241,37 @@
 <!-- ============ APP ============ -->
 <div id="app" style="display:none;">
   <div style="max-width:1240px;margin:0 auto;padding:20px 22px 60px;">
-    <!-- header -->
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap;">
-      <div>
-        <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--faint);">CTF PLATFORM // TEACHER</div>
-        <h1 style="font-size:22px;color:var(--bright);margin:2px 0 0;">Class Dashboard</h1>
-      </div>
-      <div style="margin-left:auto;display:flex;gap:8px;">
-        <button class="btn" onclick="openAnswerKey()" title="Opens the answer key for the selected class">🔑 Answer key</button>
-        <button class="btn" onclick="openWarmupReview()" title="Opens Day 0 warmup / student info responses for the selected class's course">📋 Day 0 responses</button>
-        <button class="btn" onclick="openPracticeGuide()" title="Opens the AP CSP practice quiz \u2192 module map, for assigning practice by unit">📘 Practice guide</button>
-        <button class="btn" onclick="snapshotWeek()" title="Freezes last week's top 3 into the Hall of Fame for the selected class">🏆 Snapshot week</button>
-        <button class="btn" onclick="window.open('../carnival','_blank')" title="Opens the class reward spinner">🎡 Reward spinner</button>
-        <button class="btn" onclick="window.open('../directory','_blank')" title="Opens the site directory: every main page, searchable">🗂 Directory</button>
-        <button class="btn" onclick="loadClasses(true)">↻ Refresh</button>
-        <button class="btn danger" onclick="signOut()">Sign out</button>
-      </div>
-    </div>
-
     <!-- minmax(0,…) overrides the grid item's default min-width:auto, so the
          main column can shrink to the container and the roster table scrolls
          inside its own overflow:auto wrapper instead of the whole page. -->
-    <div class="layout" style="display:grid;grid-template-columns:280px minmax(0,1fr);gap:22px;align-items:start;">
-      <!-- sidebar: classes -->
-      <div class="side card" style="padding:16px;position:sticky;top:20px;max-height:calc(100vh - 40px);overflow:auto;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">CLASSES</div>
-          <button class="btn sm pri" onclick="openCreate()">+ New</button>
+    <div class="layout" style="display:grid;grid-template-columns:256px minmax(0,1fr);gap:22px;align-items:start;">
+      <!-- sidebar: brand, class switcher, sectioned nav, resources -->
+      <aside class="side card" style="padding:16px 12px;position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:14px;">
+        <div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--faint);padding:0 6px;">CTF PLATFORM // TEACHER</div>
+        <details id="clsSwitch" class="cswitch">
+          <summary><span id="csDot" style="width:9px;height:9px;border-radius:50%;background:var(--faint);flex:none;"></span>
+            <span style="flex:1;min-width:0;"><span id="csName" style="display:block;font-weight:700;color:var(--bright);font-size:14px;overflow-wrap:anywhere;">Pick a class</span><span id="csMeta" class="mono" style="display:block;font-size:11px;color:var(--dim);"></span></span>
+            <span style="color:var(--muted);font-size:11px;">▾</span></summary>
+          <div style="padding:8px 2px 2px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin:2px 4px 4px;"><div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">ALL CLASSES</div><button class="btn sm pri" onclick="openCreate()">+ New</button></div>
+            <div id="classList"><div class="empty"><span class="spin"></span></div></div>
+          </div>
+        </details>
+        <nav id="navGroups" aria-label="Dashboard sections" style="display:flex;flex-direction:column;gap:14px;flex:1;"></nav>
+        <div style="border-top:1px solid var(--border2);padding-top:12px;display:flex;flex-direction:column;gap:2px;">
+          <div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);padding:0 8px 4px;">RESOURCES</div>
+          <button type="button" class="nv" onclick="window.open('../directory','_blank')">Directory ↗</button>
+          <button type="button" class="nv" id="nvPractice" onclick="openPracticeGuide()">Practice guide ↗</button>
+          <a class="nv" href="teacher_cyber_tools/">Teacher Resources</a>
+          <a class="nv" href="install-check.html" target="_blank" rel="noopener">Install Check ↗</a>
+          <a class="nv" href="teacher.html">Classic dashboard</a>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 8px 0;margin-top:6px;border-top:1px solid var(--border2);">
+            <div id="meIni" class="mono" style="width:28px;height:28px;border-radius:50%;background:var(--panel3);color:var(--muted);display:grid;place-items:center;font-size:11px;font-weight:700;flex:none;">•</div>
+            <div id="meName" style="flex:1;min-width:0;font-size:12px;color:var(--text);overflow-wrap:anywhere;"></div>
+            <button type="button" class="nv" style="width:auto;padding:4px 6px;color:var(--dim);" onclick="signOut()">Sign out</button>
+          </div>
         </div>
-        <div id="classList"><div class="empty"><span class="spin"></span></div></div>
-      </div>
+      </aside>
 
       <!-- main -->
       <div id="main" class="card" style="padding:22px;min-height:420px;">
@@ -260,20 +307,20 @@
   </div>
 </div>
 
-<script src="config.js?v=27.0.0"></script>
-<script src="ctf-data/cyber1.js?v=27.0.0"></script>
-<script src="ctf-data/cyber2.js?v=27.0.0"></script>
-<script src="ctf-data/cyber3.js?v=27.0.0"></script>
-<script src="ctf-data/apcsp.js?v=27.0.0"></script>
-<script src="ctf-data/web3.js?v=27.0.0"></script>
-<script src="cipher.js?v=27.0.0"></script>
-<script src="supabase-config.js?v=27.0.0"></script>
-<script src="auth.js?v=27.0.0"></script>
-<script src="name-filter.js?v=27.0.0"></script>
-<script src="objectives.js?v=27.0.0"></script>
-<script src="standards.js?v=27.0.0"></script>
-<script src="csv.js?v=27.0.0"></script>
-<script src="skins.js?v=27.0.0"></script>
+<script src="config.js?v=29.0.0"></script>
+<script src="ctf-data/cyber1.js?v=29.0.0"></script>
+<script src="ctf-data/cyber2.js?v=29.0.0"></script>
+<script src="ctf-data/cyber3.js?v=29.0.0"></script>
+<script src="ctf-data/apcsp.js?v=29.0.0"></script>
+<script src="ctf-data/web3.js?v=29.0.0"></script>
+<script src="cipher.js?v=29.0.0"></script>
+<script src="supabase-config.js?v=29.0.0"></script>
+<script src="auth.js?v=29.0.0"></script>
+<script src="name-filter.js?v=29.0.0"></script>
+<script src="objectives.js?v=29.0.0"></script>
+<script src="standards.js?v=29.0.0"></script>
+<script src="csv.js?v=29.0.0"></script>
+<script src="skins.js?v=29.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -287,7 +334,17 @@ function courseMeta(c){ return COURSES[c] || {label:c,c:"var(--dim)"}; }
 
 var AUTH = window.CTF_AUTH;
 var ME = null;                                   // signed-in google user
-async function rpc(fn,args){ return AUTH.rpc(fn, args||{}); }
+// ?demo=1: navigation preview with fake classes, no sign-in, nothing saved (tab contents show their "not available" states)
+var DEMO=/[?&]demo=1/.test(location.search);
+async function rpc(fn,args){
+  if(DEMO){
+    if(fn==="ctf_t_classes") return [{id:"d1",name:"Period 1",course:"cyber1",code:"CY1-P1-7QX2",student_count:22},{id:"d3",name:"Period 3",course:"apcsp",code:"CSP-P3-2K8R",student_count:24},{id:"d5",name:"Period 5",course:"cyber2",code:"CY2-P5-9MZT",student_count:19}];
+    if(fn==="ctf_t_roster") return [{id:"s1",handle:"null_byte",google_name:"Ava Chen",points:5800,bonus:320,cheat_count:0},{id:"s2",handle:"r00tkit",google_name:"Marcus Lee",points:5500,bonus:390,cheat_count:2},{id:"s3",handle:"ghost_shell",google_name:"Priya Patel",points:5100,bonus:310,cheat_count:1},{id:"s4",handle:"hexwitch",google_name:"Sofia Ramos",points:4700,bonus:270,cheat_count:0}];
+    if(/^ctf_t_(flags|cheats|flag_stats|groups)$/.test(fn)) return [];
+    throw new Error("demo mode: no data");
+  }
+  return AUTH.rpc(fn, args||{});
+}
 
 /* ---------------- helpers ---------------- */
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
@@ -327,7 +384,13 @@ async function loadClasses(refresh){
     if(refresh&&CUR){ var again=CLASSES.filter(function(c){return c.id===CUR.id;})[0]; if(again) selectClass(again); }
   }catch(e){ el("classList").innerHTML='<div class="empty" style="color:var(--bad)">Failed to load.</div>'; }
 }
+function renderSwitch(){
+  var n=el("csName"), mt=el("csMeta"), d=el("csDot"); if(!n) return;
+  if(!CUR){ n.textContent="Pick a class"; mt.textContent=CLASSES.length+" classes"; return; }
+  var m=courseMeta(CUR.course); n.textContent=CUR.name; mt.textContent=m.label+" \u00b7 "+(CUR.student_count==null?0:CUR.student_count)+" students"; d.style.background=m.c;
+}
 function renderClassList(){
+  setTimeout(renderSwitch,0);
   if(!CLASSES.length){ el("classList").innerHTML='<div class="empty" style="font-size:13px;">No classes yet.<br>Click <b>+ New</b> to make one.</div>'; return; }
   var order=["cyber1","cyber2","apcsp","web3"], html="";
   order.forEach(function(co){
@@ -363,7 +426,7 @@ var GRANTS=[];
 var HRUNS=[];
 // Per-flag attempt roll-up for abandonment (supabase/item-analysis.sql).
 var ATTEMPTS=[];
-function selectClass(c){ CUR=c; TAB="summary"; syncGateFromClass(); renderClassList(); renderMain(); loadDetail(); }
+function selectClass(c){ var sw=el("clsSwitch"); if(sw) sw.removeAttribute("open"); CUR=c; TAB="summary"; syncGateFromClass(); renderClassList(); renderMain(); loadDetail(); }
 
 /* Module clears are checked against the server's capture log (module-clears.sql).
    The server learns which flags each module has from here: every dashboard load
@@ -440,38 +503,29 @@ function renderMain(){
   var capTotal=(haveSum&&SUMMARY.captures!=null)?Number(SUMMARY.captures):(FLAGS.length||0);
   var avg=ROSTER.length?Math.round(ROSTER.reduce(function(a,s){return a+(s.points||0)+(s.bonus||0);},0)/ROSTER.length):0;
   var h='<div class="fade">';
-  // header
-  h+='<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">'+
-      '<span class="pill" style="background:color-mix(in srgb,'+m.c+' 14%,transparent);color:'+m.c+';border:1px solid color-mix(in srgb,'+m.c+' 34%,transparent);">'+esc(m.label)+'</span>'+
-      '<h2 style="font-size:20px;color:var(--bright);margin:0;">'+esc(CUR.name)+'</h2>'+
-      '<button class="btn sm" type="button" onclick="renameClass()" title="Rename this class">\u270E Rename</button>'+
-      '<span class="chip mono" style="font-size:12px;">code: <b style="color:var(--bright)">'+esc(CUR.code)+'</b>'+
-        ' <button class="btn sm" style="padding:2px 7px;" onclick="copyCode()">copy</button></span>'+
-      '<span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;">'+
-        '<a class="btn sm" target="_blank" rel="noopener" href="pulse.html?class='+encodeURIComponent(CUR.id)+'">Live Pulse \u2197</a>'+
-        '<a class="btn sm" target="_blank" rel="noopener" href="duel.html?class='+encodeURIComponent(CUR.id)+'">Duel Arena \u2197</a>'+
-        '<a class="btn sm" target="_blank" rel="noopener" href="battle.html?class='+encodeURIComponent(CUR.id)+'">Team Battle \u2197</a>'+
-        '<a class="btn sm" target="_blank" rel="noopener" href="vocab-battle.html?class='+encodeURIComponent(CUR.id)+'">Vocab Battle \u2197</a>'+
-        '<a class="btn sm" target="_blank" rel="noopener" href="duel-watch.html?class='+encodeURIComponent(CUR.id)+'">Duel Spectator \u2197</a>'+
-        '<a class="btn sm" target="_blank" rel="noopener" href="bracket.html?class='+encodeURIComponent(CUR.id)+'">Bracket \u2197</a>'+
-        '<button class="btn sm" type="button" onclick="endAllDuels()" title="Cancel every live duel in all your classes">End all duels</button>'+
-        '<a class="btn sm" target="_blank" rel="noopener" href="certificates.html?class='+encodeURIComponent(CUR.id)+'">Certificates \u2197</a>'+
-        '<a class="btn sm" target="_blank" rel="noopener" href="install-check.html">Install Check \u2197</a>'+
-        '<a class="btn sm" href="teacher_cyber_tools/">Teacher Resources \u2192</a>'+
-      '</span>'+
-    '</div>';
+  // header (teacher2): section label + tab title, class identity, jump search, launch
+  var curItem=NAV_FLAT().filter(function(x){ return x.tab===TAB; })[0]||{name:"Settings",group:"CLASS SETUP"};
+  h+='<div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px;">'+
+      '<div style="min-width:0;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">'+curItem.group+'</div>'+
+        '<h1 style="font-size:22px;color:var(--bright);margin:2px 0 0;">'+curItem.name+'</h1></div>'+
+      '<span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px;">'+
+        '<span class="pill" style="background:color-mix(in srgb,'+m.c+' 14%,transparent);color:'+m.c+';border:1px solid color-mix(in srgb,'+m.c+' 34%,transparent);">'+esc(m.label)+'</span>'+
+        '<b style="color:var(--bright);font-size:14px;">'+esc(CUR.name)+'</b>'+
+        '<button class="btn sm" type="button" onclick="renameClass()" title="Rename this class">\u270E</button>'+
+        '<span class="chip mono" style="font-size:12px;">code <b style="color:var(--bright)">'+esc(CUR.code)+'</b> <button class="btn sm" style="padding:2px 7px;" onclick="copyCode()">copy</button></span></span>'+
+      '<span style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'+
+        '<div class="jump"><span class="ic">\u2315</span><input id="jumpQ" type="search" autocomplete="off" placeholder="Jump to a page, tool or student\u2026" aria-label="Jump to a page, tool or student" oninput="jumpInput()" onkeydown="jumpKey(event)"><span class="k">/</span><div id="jumpRes" class="jres" style="display:none;"></div></div>'+
+        '<button class="btn sm" type="button" title="Refresh" onclick="loadClasses(true)">\u21bb</button>'+
+        launchMenus()+
+      '</span></div>';
   // stat strip
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-bottom:18px;">'+
       stat(ROSTER.length,"STUDENTS")+stat(avg.toLocaleString(),"AVG XP")+
       stat(capTotal?capTotal.toLocaleString():"—","FLAG CAPTURES")+stat(cheatTotal,"INTEGRITY FLAGS")+
     '</div>';
   // tabs
-  h+='<div class="tabs">'+
-      tabBtn("summary","Summary")+tabBtn("spread","Distributions")+tabBtn("roster","Roster")+tabBtn("attend","Login Report")+
-      tabBtn("gates","Locks &amp; Guide")+tabBtn("flagstats","Flag Analytics")+tabBtn("flags","Flag Captures")+tabBtn("ultimate","Ultimate Flags")+
-      tabBtn("vocab","Vocab Lab")+tabBtn("quizzes","Assigned Vocab Quizzes")+tabBtn("pgrids","Progress Grids")+tabBtn("squads","Squads")+tabBtn("objectives","Objectives")+tabBtn("xplog","XP Log")+tabBtn("weekxp","Weekly XP")+tabBtn("rewards","Send Rewards")+tabBtn("enroll","Enrollment")+
-      tabBtn("cheats","Integrity")+tabBtn("settings","Settings")+
-    '</div><div style="padding-top:16px;">';
+  h+='<div style="padding-top:4px;">'+(TAB==="summary"?runTiles():"");
+  INTEG=cheatTotal;
   if(TAB==="roster") h+=rosterView();
   else if(TAB==="summary") h+=summaryView();
   else if(TAB==="spread") h+=spreadView();
@@ -493,10 +547,12 @@ function renderMain(){
   else h+=settingsView();
   h+='</div></div>';
   el("main").innerHTML=h;
+  renderNav();
   if(TAB==="quizzes"&&VQ.build&&VQV[CUR.course]){ vqTerms(); vqPlan(); }
 }
 function stat(n,k){ return '<div class="stat"><div class="n">'+n+'</div><div class="k">'+k+'</div></div>'; }
 function tabBtn(id,label){ return '<button class="tab '+(TAB===id?"on":"")+'" onclick="setTab(\''+id+'\')">'+label+'</button>'; }
+function openCerts(){ window.open("certificates.html"+(CUR?"?class="+encodeURIComponent(CUR.id):""),"_blank"); }
 function openAnswerKey(){
   var url = "answers.html" + (CUR ? "?class="+encodeURIComponent(CUR.id) : "");
   window.open(url, "_blank");
@@ -514,7 +570,119 @@ function openPracticeGuide(){
   if(CUR.course !== "apcsp"){ alert("The practice module map is for AP CSP only."); return; }
   window.open("practice/teacher-guide.html", "_blank");
 }
-function setTab(t){ TAB=t; if(t==="weekxp"&&!WEEKXP) loadWeekXp(); renderMain(); }
+/* 28.1: tabs grouped into sections; links grouped into two menus */
+var TGROUPS=[
+  ["overview","Overview",[["summary","Summary"],["spread","Distributions"],["weekxp","Weekly XP"],["attend","Login Report"]]],
+  ["students","Students",[["roster","Roster"],["squads","Squads"],["enroll","Enrollment"],["pgrids","Progress Grids"],["cheats","Integrity"]]],
+  ["ctf","CTF",[["flagstats","Flag Analytics"],["flags","Flag Captures"],["ultimate","Ultimate Flags"],["objectives","Objectives"],["gates","Locks, Guide &amp; Duels"]]],
+  ["vocab","Vocab",[["vocab","Vocab Lab"],["quizzes","Assigned Quizzes"]]],
+  ["xp","XP &amp; Rewards",[["rewards","Send Rewards"],["xplog","XP Log"]]],
+  ["settings","Settings",[["settings","Settings"]]]
+];
+var LASTTAB={}, INTEG=0;
+/* teacher2: sectioned sidebar (tab = opens a tab, act = runs a tool) */
+var NAV=[
+  ["OVERVIEW",[["Summary","summary"],["Distributions","spread"],["Login report","attend"],["Day 0 responses",null,"openWarmupReview()"]]],
+  ["STUDENTS",[["Roster","roster"],["Squads","squads"],["Enrollment","enroll"]]],
+  ["PROGRESS",[["Flag analytics","flagstats"],["Flag captures","flags"],["Ultimate flags","ultimate"],["Progress grids","pgrids"],["Objectives","objectives"]]],
+  ["VOCAB",[["Vocab lab","vocab"],["Assigned quizzes","quizzes"]]],
+  ["XP & REWARDS",[["XP log","xplog"],["Weekly XP","weekxp"],["Send rewards","rewards"],["Snapshot week",null,"snapshotWeek()"],["Certificates",null,"openCerts()"]]],
+  ["CLASS SETUP",[["Locks, guide & duels","gates"],["Answer key",null,"openAnswerKey()"],["Integrity","cheats"],["Settings","settings"]]]
+];
+function NAV_FLAT(){ var o=[]; NAV.forEach(function(g){ g[1].forEach(function(x){ o.push({name:x[0],tab:x[1],act:x[2],group:g[0]}); }); }); return o; }
+/* 28.2 collapsible sidebar groups: only the group holding the open tab starts expanded; clicks toggle (remembered) */
+var NAVOPEN=(function(){ try{ return JSON.parse(localStorage.getItem("t-nav-open")||"null"); }catch(e){ return null; } })(), NAVTAB=null;
+function navToggle(i){
+  var g=NAV[i][0]; NAVOPEN=NAVOPEN||{}; NAVOPEN[g]=!navIsOpen(i);
+  try{ localStorage.setItem("t-nav-open",JSON.stringify(NAVOPEN)); }catch(e){}
+  renderNav();
+}
+function navIsOpen(i){
+  var g=NAV[i], has=g[1].some(function(x){ return x[1]&&x[1]===TAB; });
+  if(NAVOPEN&&g[0] in NAVOPEN) return NAVOPEN[g[0]]||has;
+  return has;
+}
+function renderNav(){
+  var box=el("navGroups"); if(!box) return;
+  if(!CUR){ box.innerHTML='<div style="font-size:12px;color:var(--dim);padding:0 8px;">Pick a class above.</div>'; return; }
+  if(NAVTAB!==TAB){ NAVTAB=TAB; NAV.forEach(function(g){ if(NAVOPEN&&g[1].some(function(x){ return x[1]&&x[1]===TAB; })) NAVOPEN[g[0]]=true; }); }
+  box.innerHTML=NAV.map(function(g,i){
+    var open=navIsOpen(i), has=g[1].some(function(x){ return x[1]&&x[1]===TAB; }), id="nvg"+i;
+    var bad=g[1].some(function(x){ return x[1]==="cheats"; })&&INTEG>0?'<span class="bdg" style="font:700 10px \'JetBrains Mono\',monospace;padding:2px 6px;border-radius:5px;background:color-mix(in srgb,var(--bad) 13%,transparent);color:var(--bad);letter-spacing:0;">'+INTEG+'</span>':'';
+    return '<div><button type="button" class="nvg" aria-expanded="'+open+'" aria-controls="'+id+'" onclick="navToggle('+i+')"><span class="chev" aria-hidden="true">\u25b8</span>'+esc(g[0])+
+      (has&&!open?'<span class="dot" aria-label="current section"></span>':'')+(open?'':bad)+'<span class="cnt">'+g[1].length+'</span></button>'+
+      (open?'<div class="nvitems" id="'+id+'">'+g[1].map(function(x){
+        var on=x[1]&&x[1]===TAB, badge=x[1]==="cheats"&&INTEG>0?'<span class="bdg">'+INTEG+'</span>':'';
+        return '<button type="button" class="nv'+(on?" on":"")+'"'+(on?' aria-current="page"':'')+' onclick="'+(x[1]?"setTab(\'"+x[1]+"\')":x[2])+'"><span>'+esc(x[0])+(x[2]?' \u2197':'')+'</span>'+badge+'</button>';
+      }).join("")+'</div>':'')+'</div>';
+  }).join("");
+  var pr=el("nvPractice"); if(pr) pr.style.display=CUR.course==="apcsp"?"":"none";
+}
+function runTiles(){
+  var q='?class='+encodeURIComponent(CUR.id);
+  var T=[["PULSE","Live Pulse","pulse.html"+q,"var(--ok)"],["TEAM","Team Battle","battle.html"+q,"var(--accent)"],["VOCAB","Vocab Battle","vocab-battle.html"+q,"var(--accent)"],
+    ["RAID","Boss Raid","raid.html"+q,"var(--bad)"],["BRKT","Duel Bracket","bracket.html"+q,"var(--accent)"],["1V1","Duel Arena","duel.html"+q,"var(--accent)"],["WATCH","Duel Spectator","duel-watch.html"+q,"var(--muted)"],["RALLY","Reward Rally","../carnival","var(--warn,#ffcf5c)"]];
+  return '<div class="card" style="padding:16px;margin-bottom:18px;background:var(--bg);">'+
+    '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px;"><div style="font-size:15px;font-weight:700;color:var(--bright);">Run class</div>'+
+    '<div style="font-size:12px;color:var(--dim);">Opens in a new tab for the projector</div>'+
+    '<button type="button" class="btn sm" style="margin-left:auto;color:var(--bad);" onclick="endAllDuels()">End all duels</button></div>'+
+    '<div class="rtiles">'+T.map(function(x){ return '<a class="rtile" href="'+x[2]+'" target="_blank" rel="noopener"><b style="color:'+x[3]+';">'+x[0]+'</b><span>'+x[1]+' \u2197</span></a>'; }).join("")+'</div></div>';
+}
+var JUMP=[], JSEL=0;
+function jumpItems(){
+  var o=NAV_FLAT().map(function(x){ return {name:x.name,group:x.group,go:x.tab?"setTab('"+x.tab+"')":x.act}; });
+  var q='?class='+encodeURIComponent(CUR.id);
+  [["Live Pulse","pulse.html"],["Team Battle","battle.html"],["Vocab Battle","vocab-battle.html"],["Boss Raid","raid.html"],["Duel Bracket","bracket.html"],["Duel Arena","duel.html"],["Duel Spectator","duel-watch.html"]].forEach(function(x){ o.push({name:x[0],group:"RUN CLASS",go:"window.open('"+x[1]+q+"','_blank')"}); });
+  o.push({name:"Reasey's Reward Rally",group:"RUN CLASS",go:"window.open('../carnival','_blank')"},{name:"End all duels",group:"RUN CLASS",go:"endAllDuels()"});
+  [["Directory","window.open('../directory','_blank')"],["Teacher Resources","location.href='teacher_cyber_tools/'"],["Install Check","window.open('install-check.html','_blank')"]].forEach(function(x){ o.push({name:x[0],group:"RESOURCES",go:x[1]}); });
+  (ROSTER||[]).forEach(function(s){ var nm=s.google_name||s.name||s.email||""; o.push({name:(s.handle||"?")+(nm?" \u00b7 "+nm:""),group:"STUDENT",go:"openStudent('"+s.id+"')"}); });
+  return o;
+}
+function jumpInput(){
+  var i=el("jumpQ"), r=el("jumpRes"); if(!i||!r) return;
+  var q=i.value.trim().toLowerCase(); JSEL=0;
+  if(!q){ r.style.display="none"; JUMP=[]; return; }
+  JUMP=jumpItems().filter(function(x){ return x.name.toLowerCase().indexOf(q)!==-1; }).slice(0,12);
+  r.style.display="block";
+  r.innerHTML=JUMP.length?JUMP.map(function(x,k){ return '<button type="button" class="'+(k===JSEL?"on":"")+'" onmousedown="event.preventDefault();jumpGo('+k+')"><span>'+esc(x.name)+'</span><small>'+esc(x.group)+'</small></button>'; }).join(""):'<div style="padding:10px;font-size:13px;color:var(--dim);">No matches</div>';
+}
+function jumpGo(k){ var x=JUMP[k]; if(!x) return; var i=el("jumpQ"); if(i){ i.value=""; i.blur(); } var r=el("jumpRes"); if(r) r.style.display="none"; (new Function(x.go))(); }
+function jumpKey(e){
+  var r=el("jumpRes");
+  if(e.key==="Escape"){ e.target.value=""; jumpInput(); e.target.blur(); return; }
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault(); if(!JUMP.length) return; JSEL=(JSEL+(e.key==="ArrowDown"?1:JUMP.length-1))%JUMP.length; r.querySelectorAll("button").forEach(function(b,k){ b.classList.toggle("on",k===JSEL); }); }
+  if(e.key==="Enter"){ e.preventDefault(); jumpGo(JSEL); }
+}
+document.addEventListener("keydown",function(e){
+  if(e.key!=="/"||e.ctrlKey||e.metaKey) return;
+  var a=document.activeElement; if(a&&(/INPUT|TEXTAREA|SELECT/.test(a.tagName)||a.isContentEditable)) return;
+  var i=el("jumpQ"); if(i){ e.preventDefault(); i.focus(); }
+});
+document.addEventListener("focusout",function(e){ if(e.target&&e.target.id==="jumpQ") setTimeout(function(){ var r=el("jumpRes"); if(r) r.style.display="none"; },120); });
+function tabGroup(t){ return TGROUPS.filter(function(g){ return g[2].some(function(x){ return x[0]===t; }); })[0]||TGROUPS[TGROUPS.length-1]; }
+function setGroup(g){ var G=TGROUPS.filter(function(x){ return x[0]===g; })[0]; if(!G) return; setTab(LASTTAB[g]||G[2][0][0]); }
+function launchMenus(){
+  var q='?class='+encodeURIComponent(CUR.id);
+  function it(href,t,d,same){ return '<a href="'+href+'"'+(same?'':' target="_blank" rel="noopener"')+'>'+t+(same?'':' \u2197')+'<small>'+d+'</small></a>'; }
+  return '<details class="tmenu"><summary class="btn sm pri">\u25b6 Launch \u25be</summary><div class="tmenu-p">'+
+      '<div class="nvh" style="padding:6px 10px 2px;">IN CLASS</div>'+
+      it('pulse.html'+q,'Live Pulse','Who is working right now')+
+      '<button type="button" onclick="window.open(\'../carnival\',\'_blank\')">Reasey\u2019s Reward Rally \u2197<small>Spinner, Plinko, Duck Pond and more</small></button>'+
+      '<div class="nvh" style="padding:8px 10px 2px;">COMPETE</div>'+
+      it('battle.html'+q,'Team Battle','Squads race on flags')+
+      it('vocab-battle.html'+q,'Vocab Battle','Squads fight 1v1 on vocab')+
+      it('raid.html'+q,'Boss Raid','Whole class vs the course guide')+
+      it('bracket.html'+q,'Duel Bracket','Best-of-3 knockout, seeded by XP')+
+      it('duel.html'+q,'Duel Arena','Projector quiz duel')+
+      it('duel-watch.html'+q,'Duel Spectator','Every live student duel')+
+      '<div class="sep"></div>'+
+      '<button type="button" class="danger" onclick="endAllDuels()">End all duels<small>Cancels every live duel in all your classes</small></button>'+
+    '</div></details>';
+
+}
+document.addEventListener("click",function(e){ document.querySelectorAll("details.tmenu[open]").forEach(function(d){ if(!d.contains(e.target)) d.removeAttribute("open"); }); });
+document.addEventListener("keydown",function(e){ if(e.key==="Escape") document.querySelectorAll("details.tmenu[open]").forEach(function(d){ d.removeAttribute("open"); }); });
+function setTab(t){ LASTTAB[tabGroup(t)[0]]=t; TAB=t; if(t==="weekxp"&&!WEEKXP) loadWeekXp(); renderMain(); }
 function copyCode(){ navigator.clipboard&&navigator.clipboard.writeText(CUR.code); }
 
 /* ----- class summary ----- */
@@ -1706,7 +1874,7 @@ function rewardsView(){
   var ids=Object.keys(RSEL), n=ids.length, all=ROSTER.length&&n===ROSTER.length;
   var h='<div class="mono" style="font-size:11px;color:var(--faint);margin-bottom:14px;line-height:1.6;max-width:720px;">'+
     'Items go to each student\u2019s profile inventory. Students choose when to use them; timed items start counting down on use. '+
-    'Everything on the Reward Spinner can also be sent from here.</div>';
+    'Everything in Reasey\u2019s Reward Rally can also be sent from here.</div>';
   h+='<div class="card" style="padding:18px;margin-bottom:22px;">'+
     '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">1 \u00b7 ITEM</div>'+
     RGROUPS.map(function(G){
@@ -4222,7 +4390,8 @@ function adCard(){
     '<span style="display:flex;gap:8px;flex-wrap:wrap;"><a class="btn" target="_blank" rel="noopener" href="battle.html?class='+encodeURIComponent(CUR.id)+'">Flag battle \u2197</a>'+
     '<a class="btn" target="_blank" rel="noopener" href="vocab-battle.html?class='+encodeURIComponent(CUR.id)+'">Vocab battle \u2197</a>'+
     '<a class="btn" target="_blank" rel="noopener" href="duel-watch.html?class='+encodeURIComponent(CUR.id)+'">Duel spectator \u2197</a>'+
-    '<a class="btn" target="_blank" rel="noopener" href="bracket.html?class='+encodeURIComponent(CUR.id)+'">Duel bracket \u2197</a></span></div>'+bgCard()+
+    '<a class="btn" target="_blank" rel="noopener" href="bracket.html?class='+encodeURIComponent(CUR.id)+'">Duel bracket \u2197</a>'+
+    '<a class="btn" target="_blank" rel="noopener" href="raid.html?class='+encodeURIComponent(CUR.id)+'">Boss raid \u2197</a></span></div>'+bgCard()+
     '<div class="card" style="padding:16px 18px;margin-bottom:20px;">'+
     slider(!!AD.data.on,"toggleDuels()","Student flag duels",
       "Students start a Flag Duel (up to 4 players, 2/5/10 min) or a 1v1 Vocab Duel from the arena and share a 4-letter code. Winner +10 XP, every finisher +5. Turning this off cancels open Flag Duel lobbies and blocks new duels of both kinds.","var(--amber)")+
@@ -5100,6 +5269,9 @@ async function createClass(){
 
 /* ---------------- init ---------------- */
 (async function(){
+  if(DEMO){ el("app").style.display="block"; if(el("meName")) el("meName").textContent="Demo teacher"; if(el("meIni")) el("meIni").textContent="DT";
+    var dn=document.createElement("div"); dn.className="mono"; dn.style.cssText="max-width:1240px;margin:12px auto -8px;padding:0 230px 0 22px;font-size:12px;color:var(--warn,#ffcf5c);"; dn.textContent="PREVIEW MODE \u00b7 fake classes, no sign-in, nothing loads or saves. Tabs show their empty / not-installed states.";
+    el("app").prepend(dn); renderNav(); await loadClasses(); if(CLASSES[1]) selectClass(CLASSES[1]); return; }
   if(!AUTH || !AUTH.online){ el("noConfig").style.display="block"; return; }
   var u=null;
   try{ u=await AUTH.user(); }catch(e){}
@@ -5110,6 +5282,9 @@ async function createClass(){
   if(!AUTH.isTeacher(u) && !addedTeacher){ AUTH.logReject&&AUTH.logReject("not_teacher"); return denied(AUTH.emailOf(u)); }
   if(whoami && !whoami.error) ME=whoami;
   el("app").style.display="block";
+  (function(){ var em=AUTH.emailOf(u)||"", nm=(u&&u.user_metadata&&(u.user_metadata.full_name||u.user_metadata.name))||em.split("@")[0];
+    if(el("meName")) el("meName").textContent=nm; if(el("meIni")) el("meIni").textContent=(nm.split(/[\s._]+/).map(function(w){ return w.charAt(0); }).join("").slice(0,2)||"?").toUpperCase();
+    var sw=el("clsSwitch"); if(sw&&!CUR) sw.setAttribute("open",""); renderNav(); })();
   loadClasses();
 })();
 </script>

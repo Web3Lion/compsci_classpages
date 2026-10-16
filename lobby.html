@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=29.0.0"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Class Duel · Waiting Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--ok:#3ddc97;--bad:#ff7a85;--adv:#ff3b3b;--arena:#0b0306;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--ok:#1d7a4c;--bad:#b3261e;--arena:#ffffff;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:2px solid var(--adv);background:var(--adv);color:#0b0306;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.tile{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;min-width:44px;min-height:44px;border-radius:9px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);cursor:pointer;}
+.tile:disabled{opacity:.3;}
+input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;flex:1;min-width:180px;min-height:48px;padding:10px 14px;border-radius:10px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);}
+#lbOver{position:fixed;inset:0;z-index:9990;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(5,8,14,.88);color:#fff;font-family:'JetBrains Mono',monospace;text-align:center;padding:20px;}
+#lbOver b{font-size:min(40vw,300px);line-height:1;font-weight:800;}
+@keyframes lbPop{0%{transform:scale(1.35);opacity:.2}100%{transform:scale(1);opacity:1}}
+#lbOver b.p{animation:lbPop .45s ease-out;}
+@keyframes lbPulse{0%,100%{opacity:1}50%{opacity:.45}}
+.lbDot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ok);animation:lbPulse 1.6s ease-in-out infinite;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;padding-right:210px;">
+    <a id="back" href="index.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; CTF arena</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9876; CLASS DUEL · WAITING ROOM</div>
+  </div>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<div id="lbOver" role="status" aria-live="assertive"><span id="lbOverK" style="font-size:20px;letter-spacing:3px;"></span><b id="lbNum">10</b><span id="lbOverS" style="font-size:15px;opacity:.8;"></span></div>
+<script>
+(function(){
+  var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase(), DEMO = q.get("demo") === "1";
+  if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { if (DEMO) C = "cyber1"; else { document.getElementById("view").innerHTML = '<div class="card">Open the waiting room from your course home page.</div>'; return; } }
+  window.CTF_COURSE = C; document.getElementById("back").href = C + "/index.html"; document.getElementById("back").innerHTML = "&larr; Course home";
+  var V = window.SITE_VERSION || "29.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js"];
+  (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
+
+  function boot(){
+    var AUTH = window.CTF_AUTH, view = document.getElementById("view"), FX = window.BATTLE_FX;
+    var G = (((window.COURSE_CONFIG || {})[C] || {}).ctf) || {}, GN = G.adversary || "NEMESIS";
+    var LBL = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid" };
+    var HOW = { team: "Capture flags in the arena. Each capture adds to your team\u2019s average.", vocab: "You\u2019ll be paired with someone from another team. Crack the term first to hit them.", raid: "The whole class fights " + GN + ". Every right answer is a hit; wrong ones crack the class shield." };
+    var GO = { team: C + "/ctf.html#arena", vocab: "vocab-duel.html?c=" + C, raid: "raid-play.html?c=" + C };
+    function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+    var S = null; try { S = JSON.parse(localStorage.getItem("ctf-sess-" + C)); } catch (e) {}
+    if (!DEMO && (!AUTH || !AUTH.online || !S)) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" href="' + C + '/ctf.html">Go to CTF</a></div>'; return; }
+    if (window.BATTLE_BG) BATTLE_BG.use("duel", null);
+    if (FX) { FX.enableSound(true); }
+    var ST = null, skew = 0, timer = null, sig = "", leaving = false, last = -1, D = null;
+    function rpc(fn, a){ return DEMO ? Promise.resolve(demo()) : AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
+    function demo(){
+      if (!D) D = { t0: Date.now() };
+      var el = (Date.now() - D.t0) / 1000, n = Math.min(10, Math.floor(el / 1.2) + 2);
+      var T = [["Red Rockets","#ff5d73",["you","zero_day","packet_pal","nullptr"]],["Blue Byte","#3a86ff",["cipher_sam","root_ruth","hex_hero","bitwise"]],["Green Ghosts","#2ec27e",["sudo_sue","pingu","lambda_lu"]]], k = 0;
+      var t0 = D.t0, status = el < 14 ? "open" : el < 26 ? "counting" : "started";
+      if (el > 32) { D = null; }
+      return { now: new Date().toISOString(), me: "you", handle: "you", live: status === "started" ? "team" : null,
+        lobby: { kind: "team", status: status, start_at: new Date(t0 + 24000).toISOString() },
+        team: { id: "g0", name: "Red Rockets", color: "#ff5d73" },
+        room: { here: n, ungrouped: 0, teams: T.map(function(t, i){ return { id: "g" + i, name: t[0], color: t[1], members: t[2].map(function(h){ return { id: h, handle: h, me: h === "you", here: h === "you" || k++ < n }; }) }; }) } };
+    }
+    function teamsHtml(R, myTeam){
+      return '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;">' + (R.teams || []).map(function(t){
+        var mine = myTeam && t.id === myTeam.id, h = (t.members || []).filter(function(m){ return m.here; }).length;
+        return '<div class="card" style="padding:14px 16px;border:' + (mine ? "2px solid " + esc(t.color || "var(--accent)") : "1px solid var(--border)") + ';border-left:6px solid ' + esc(t.color || "var(--border3)") + ';">' +
+          '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;"><b style="flex:1;color:var(--bright);font-size:16px;">' + esc(t.name) + (mine ? ' <span class="mono" style="font-size:10px;color:var(--accent);">YOUR TEAM</span>' : '') + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + h + '/' + (t.members || []).length + ' here</span></div>' +
+          '<div style="display:flex;flex-direction:column;gap:3px;">' + (t.members || []).map(function(m){ return '<span style="font-size:14px;color:' + (m.here ? "var(--bright)" : "var(--faint)") + ';' + (m.me ? "font-weight:800;" : "") + '">' + (m.here ? '<span style="color:var(--ok);">\u25cf</span> ' : '\u25cb ') + esc(m.handle) + (m.me ? " (you)" : "") + '</span>'; }).join("") + '</div></div>';
+      }).join("") + '</div>';
+    }
+    function draw(){
+      if (!ST) return;
+      var L = ST.lobby, R = ST.room || { teams: [] }, T = ST.team;
+      var k = JSON.stringify([L && L.kind, L && L.status, ST.live, T && T.id, R.here, (R.teams || []).map(function(t){ return (t.members || []).map(function(m){ return m.here ? 1 : 0; }).join(""); })]);
+      if (k === sig) return; sig = k;
+      var myCol = (T && T.color) || "var(--accent)";
+      var hero = '<div class="card" style="padding:26px 28px;margin-bottom:18px;border:2px solid ' + esc(myCol) + ';box-shadow:0 0 40px -16px ' + esc(myCol) + ';">' +
+        '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--faint);">' + (L ? "UP NEXT \u00b7 " + esc(LBL[L.kind]).toUpperCase() : "NO CLASS DUEL OPEN") + '</div>' +
+        '<div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:10px;">' +
+          '<span aria-hidden="true" style="width:56px;height:56px;border-radius:14px;background:' + esc(myCol) + ';flex:none;"></span>' +
+          '<div style="flex:1;min-width:220px;"><div style="font-size:14px;color:var(--muted);">You\u2019re on</div><div style="font-size:clamp(28px,6vw,44px);font-weight:800;color:var(--bright);line-height:1.1;">' + (T ? esc(T.name) : "No squad yet") + '</div></div>' +
+          (L ? '<div style="text-align:right;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">IN THE ROOM</div><div class="mono" style="font-size:40px;font-weight:800;color:var(--bright);line-height:1;">' + R.here + '</div></div>' : '') + '</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-top:16px;font-size:15px;color:var(--bright);">' + (L ? '<span class="lbDot" aria-hidden="true"></span>' + (L.status === "counting" ? "Starting\u2026" : "Waiting for your teacher to start. Keep this page open.") : "Your teacher hasn\u2019t opened a class duel yet. This page checks every few seconds.") + '</div>' +
+        (L && HOW[L.kind] ? '<div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5;">' + HOW[L.kind] + (L.kind === "team" && !T ? " You need a squad to score in a team battle; ask your teacher." : "") + '</div>' : '') + '</div>';
+      view.innerHTML = hero + (L ? teamsHtml(R, T) : '');
+    }
+    function countdown(){
+      var o = document.getElementById("lbOver"), L = ST && ST.lobby;
+      if (!L || L.status !== "counting" || !L.start_at) { if (o.style.display === "flex" && !leaving) o.style.display = "none"; last = -1; return; }
+      var left = Math.ceil((new Date(L.start_at).getTime() - (Date.now() + skew)) / 1000);
+      o.style.display = "flex";
+      document.getElementById("lbOverK").textContent = (LBL[L.kind] || "Duel").toUpperCase() + (left > 0 ? " STARTS IN" : "");
+      document.getElementById("lbOverS").textContent = ST.team ? "Team " + ST.team.name + ", get ready" : "Get ready";
+      if (left !== last) { last = left; var b = document.getElementById("lbNum"); b.textContent = left > 0 ? left : "GO!"; b.classList.remove("p"); void b.offsetWidth; b.classList.add("p");
+        if (FX) FX.sfx(left > 0 ? (left <= 3 ? "blood" : "tick") : "horn"); }
+    }
+    function enter(kind){
+      if (leaving || !GO[kind]) return; leaving = true;
+      var o = document.getElementById("lbOver"); o.style.display = "flex";
+      document.getElementById("lbOverK").textContent = "ENTERING"; document.getElementById("lbNum").textContent = "\u2192"; document.getElementById("lbOverS").textContent = LBL[kind];
+      setTimeout(function(){ if (DEMO) { setTimeout(function(){ leaving = false; o.style.display = "none"; sig = ""; }, 6000); return; } location.href = GO[kind]; }, 600);
+    }
+    function load(){
+      clearTimeout(timer);
+      rpc("ctf_lobby_state", { p_here: true }).then(function(d){
+        if (!d || d.error) { view.innerHTML = '<div class="card">Sign in on your CTF page first.</div>'; return; }
+        if (d.now) skew = new Date(d.now).getTime() - Date.now();
+        if (window.BATTLE_BG && d.bg) BATTLE_BG.use("duel", d.bg);
+        ST = d; draw(); countdown();
+        if (d.live) enter(d.live);
+        timer = setTimeout(load, d.lobby && d.lobby.status === "counting" ? 700 : d.lobby ? 1500 : 5000);
+      }).catch(function(){ view.innerHTML = '<div class="card">The waiting room isn\u2019t set up yet. Ask your teacher to run supabase/waiting-room.sql.</div>'; timer = setTimeout(load, 10000); });
+    }
+    if (DEMO) { var dn = document.createElement("div"); dn.className = "mono"; dn.setAttribute("role", "note"); dn.style.cssText = "margin:-6px 0 14px;font-size:12px;color:var(--amber);"; dn.textContent = "PREVIEW MODE \u00b7 fake class, loops every 32 seconds. Click once to turn on sound."; view.before(dn); }
+    setInterval(countdown, 150);
+    document.addEventListener("visibilitychange", function(){ if (!document.hidden) load(); });
+    load();
+  }
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

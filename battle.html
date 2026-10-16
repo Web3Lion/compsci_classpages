@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=27.0.0"></script>
+<script src="site.js?v=29.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,18 +45,19 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=27.0.0"></script>
-<script src="ctf-data/cyber1.js?v=27.0.0"></script>
-<script src="ctf-data/cyber2.js?v=27.0.0"></script>
-<script src="ctf-data/cyber3.js?v=27.0.0"></script>
-<script src="ctf-data/apcsp.js?v=27.0.0"></script>
-<script src="ctf-data/web3.js?v=27.0.0"></script>
-<script src="supabase-config.js?v=27.0.0"></script>
-<script src="auth.js?v=27.0.0"></script>
-<script src="cosmetics.js?v=27.0.0"></script>
-<script src="battle-fx.js?v=27.0.0"></script>
-<script src="battle-bg.js?v=27.0.0"></script>
-<script src="team-picker.js?v=27.0.0"></script>
+<script src="config.js?v=29.0.0"></script>
+<script src="ctf-data/cyber1.js?v=29.0.0"></script>
+<script src="ctf-data/cyber2.js?v=29.0.0"></script>
+<script src="ctf-data/cyber3.js?v=29.0.0"></script>
+<script src="ctf-data/apcsp.js?v=29.0.0"></script>
+<script src="ctf-data/web3.js?v=29.0.0"></script>
+<script src="supabase-config.js?v=29.0.0"></script>
+<script src="auth.js?v=29.0.0"></script>
+<script src="cosmetics.js?v=29.0.0"></script>
+<script src="battle-fx.js?v=29.0.0"></script>
+<script src="battle-bg.js?v=29.0.0"></script>
+<script src="team-picker.js?v=29.0.0"></script>
+<script src="waiting-room.js?v=29.0.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -125,6 +126,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       return {};
     };
   }
+  var WR = window.WROOM ? WROOM.attach({ kind: "team", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: !!DEMO }) : null;
+  function wrBtn(){ return WR && WR.isOpen() ? "Start \u00b7 10 s countdown" : null; }
   function fail(e){ busy = false; msg = /tb_|function/.test(String(e && e.message)) ? "Run supabase/team-battles.sql first." : "Something went wrong: " + (e && e.message || e); paint(); }
 
   // team-picker.js missing (not uploaded / cached) → plain list, every team plays
@@ -138,7 +141,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var TP = window.TEAM_PICK; TP.fetchSets(rpc, CUR.id, paint);
     var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && selMods.length && !busy;
     var teams = TP.teams(T, col, busy) + TP.note(T);
-    return '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;" id="g">' +
+    return (WR ? WR.html() : '') + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;" id="g">' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TEAMS \u00b7 TICK WHO PLAYS</div>' +
         '<div style="display:flex;flex-direction:column;gap:8px;">' + teams + '</div>' +
         (un.length ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--amber);font-weight:700;">' + un.length + ' student' + (un.length>1?"s aren\u2019t":" isn\u2019t") + ' on a team and will sit out: ' + esc(un.slice(0,8).join(", ")) + (un.length > 8 ? "\u2026" : "") + '</div>' : '') +
@@ -151,7 +154,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (M.length ? M.map(function(m){ return '<button type="button" class="chip tbMod" data-m="' + m.module + '" aria-pressed="' + !!pick[m.module] + '">' + esc(modName(m.module)) + '</button>'; }).join("") : '<span style="color:var(--dim);font-size:13px;">Open this class in teacher.html once to publish its flags.</span>') + '</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Length</div>' +
         '<div role="group" aria-label="Length" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + LENGTHS.map(function(l){ return '<button type="button" class="chip tbMin" data-n="' + l[0] + '" aria-pressed="' + (mins === l[0]) + '">' + l[1] + '</button>'; }).join("") + '</div>' +
-        '<button type="button" class="btn" id="tbStart"' + (ready ? "" : " disabled") + '>Start battle</button>' +
+        '<button type="button" class="btn" id="tbStart" data-wr-start="Start battle"' + (ready ? "" : " disabled") + '>' + (wrBtn() || "Start battle") + '</button>' +
         '<div style="font-size:12px;color:var(--dim);margin-top:10px;line-height:1.5;">Starting turns Squads on, ends any student flag duels in this class, and pauses new ones until the battle ends. Every battle has a clock (15 min if you don\u2019t pick). Students can exit any time; they stop scoring and get no XP. Score = team duel points \u00f7 teammates who captured a flag. Winners +10 XP, everyone who played +5.</div></div></div>' +
       (msg ? '<div role="alert" class="mono" style="margin-top:14px;color:var(--bad);font-weight:700;font-size:13px;">' + esc(msg) + '</div>' : '');
   }
@@ -219,6 +222,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   }
   function bind(){
     if (window.TEAM_PICK) TEAM_PICK.bind(view, { rpc: rpc, reload: load, repaint: paint, err: function(m){ msg = m; paint(); } });
+    if (WR) WR.bind(view);
     view.querySelectorAll(".tbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
     view.querySelectorAll(".tbMin").forEach(function(b){ b.onclick = function(){ mins = +b.getAttribute("data-n"); paint(); }; });
     view.querySelectorAll(".tbRand").forEach(function(b){ b.onclick = function(){
@@ -229,11 +233,14 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     }; });
     var s = document.getElementById("tbStart"); if (s) s.onclick = function(){
       var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
+      var groups = TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; }));
       busy = true; msg = ""; paint();
-      rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: mods, p_minutes: mins || 15, p_groups: TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; })) }).then(function(r){
-        busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; }
-        showSetup = false; load();
-      }).catch(fail);
+      (WR ? WR.go : function(f){ f(function(){}); })(function(done){
+        rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: mods, p_minutes: mins || 15, p_groups: groups }).then(function(r){
+          busy = false; var ok = r && !r.error; done(ok); if (!ok) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; }
+          showSetup = false; load();
+        }).catch(function(e){ done(false); fail(e); });
+      });
     };
     var e = document.getElementById("tbEnd"); if (e) e.onclick = function(){ if (!confirm("End the battle now and award XP?")) return; rpc("ctf_t_tb_end", { p_battle: ST.battle.id, p_award: true }).then(load).catch(fail); };
     var c = document.getElementById("tbCancel"); if (c) c.onclick = function(){ if (!confirm("Cancel the battle? No XP is awarded.")) return; rpc("ctf_t_tb_end", { p_battle: ST.battle.id, p_award: false }).then(load).catch(fail); };
@@ -277,7 +284,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function pickClass(id){
     CUR = CLASSES.filter(function(c){ return c.id === id; })[0] || CLASSES[0]; if (!CUR) return;
     try { localStorage.setItem("battle-class", CUR.id); } catch (e) {}
-    sel.value = CUR.id; pick = {}; ST = null; SET = null; showSetup = false; msg = "";
+    sel.value = CUR.id; pick = {}; ST = null; SET = null; showSetup = false; msg = ""; if (WR) WR.reload();
     if (FX && FX.setGuide) { var gc = (((window.COURSE_CONFIG || {})[CUR.course] || {}).ctf) || {}; FX.setGuide({ name: gc.adversary || "NEMESIS", color: gc.adversaryColor || "#ff4d6d", mentor: !!gc.mentor }); }
     load();
   }
