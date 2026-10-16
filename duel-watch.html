@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=27.0.0"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Duel Spectator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--amber-bg:#1a150a;--ok:#3ddc97;--bad:#ff7a85;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--amber-bg:#fbf4dd;--ok:#1d7a4c;--bad:#b3261e;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 24px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--border3);background:transparent;color:var(--bright);cursor:pointer;}
+select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div id="hdr" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;padding-right:210px;">
+    <a href="teacher.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; Teacher dashboard</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#128065; DUEL SPECTATOR</div>
+    <span style="flex:1;"></span>
+    <span id="snd" role="group" aria-label="Projector sound"></span>
+    <button type="button" class="btn" id="full" style="white-space:nowrap;">Full screen</button>
+    <label class="mono" for="cls" style="font-size:12px;color:var(--dim);">Class</label>
+    <select id="cls"></select>
+  </div>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script src="supabase-config.js?v=27.0.0"></script>
+<script src="auth.js?v=27.0.0"></script>
+<script src="battle-fx.js?v=27.0.0"></script>
+<script src="battle-bg.js?v=27.0.0"></script>
+<script>
+(function(){
+  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
+  var CLASSES = [], CUR = null, ST = null, skew = 0, timer = null, PAL = ["#3a86ff","#ff5d73","#2ec27e","#f4a300","#b06cff","#18c2c2"];
+  if (FX) { FX.enableSound(true); FX.soundUi(document.getElementById("snd")); FX.setGuide({ name: "NEMESIS", color: "#ff4d6d" }); }
+  document.getElementById("full").onclick = function(){ if (FX) FX.fullscreen(document.documentElement); };
+  var DEMO = /[?&]demo=1/.test(location.search) ? demo() : null;
+  function rpc(fn, a){ return DEMO ? Promise.resolve(DEMO(fn)) : AUTH.rpc(fn, a || {}); }
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+  function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+  function colOf(list, id){ var i = list.map(function(p){ return String(p.id); }).indexOf(String(id)); return PAL[(i < 0 ? 0 : i) % 6]; }
+  function mods(m){ return (m || []).map(function(x){ return "M" + String(x).padStart(2,"0"); }).join(" \u00b7 "); }
+  function head(kind, d, sub){
+    return '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px;">' +
+      '<span class="mono" style="font-size:12px;letter-spacing:1.5px;font-weight:800;color:var(--amber);">' + kind + '</span>' +
+      '<span class="mono" style="font-size:12px;color:var(--dim);flex:1;">' + esc(d.code || "") + (sub ? " \u00b7 " + esc(sub) : "") + '</span>' +
+      (d.ends_at ? '<span class="mono wclk" data-end="' + esc(d.ends_at) + '" style="font-size:26px;font-weight:800;color:var(--bright);"></span>' : '') + '</div>';
+  }
+  function bar(id, name, score, top, color, extra){
+    var w = Math.max(3, Math.round(score / Math.max(1, top) * 100));
+    return '<div id="' + id + '" style="display:grid;grid-template-columns:minmax(80px,150px) minmax(0,1fr) 56px;align-items:center;gap:10px;">' +
+      '<span style="font-weight:700;color:var(--bright);font-size:15px;overflow-wrap:anywhere;">' + esc(name) + (extra || "") + '</span>' +
+      '<span style="height:20px;border-radius:999px;background:var(--bg);border:1px solid var(--border2);overflow:hidden;"><span style="display:block;height:100%;width:' + w + '%;background:' + color + ';border-radius:999px;transition:width .6s ease;"></span></span>' +
+      '<span class="mono" style="font-size:22px;font-weight:800;color:var(--amber);text-align:right;">' + score + '</span></div>';
+  }
+  function hp(name, v, color){
+    var pct = Math.round(v / 3);
+    return '<div style="flex:1;min-width:120px;"><div style="display:flex;justify-content:space-between;gap:6px;font-size:14px;margin-bottom:4px;"><b style="color:var(--bright);overflow-wrap:anywhere;">' + esc(name) + '</b><span class="mono" style="color:var(--bright);font-weight:800;">' + pct + '%</span></div>' +
+      '<div style="height:16px;border-radius:999px;background:var(--bg);border:1px solid var(--border2);overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + (pct <= 25 ? "#ff3b3b" : color) + ';transition:width .4s ease;"></div></div></div>';
+  }
+  function flagCard(d){
+    var P = (d.players || []).filter(function(p){ return !p.forfeit; }), top = Math.max.apply(null, P.map(function(p){ return p.points; }).concat([1]));
+    var feed = (d.feed || []).slice(0, 4).map(function(f){ return '<div class="mono" style="font-size:12px;color:var(--muted);">' + esc(f.handle) + ' +' + f.pts + (f.bounty ? ' <b style="color:var(--amber);">BOUNTY</b>' : '') + '</div>'; }).join("");
+    return '<div class="card" style="border-color:var(--amber);">' + head("\u2694 FLAG DUEL", d, mods(d.modules)) +
+      '<div style="display:flex;flex-direction:column;gap:10px;">' + P.slice().sort(function(a, b){ return b.points - a.points; }).map(function(p){ return bar("w-" + d.id + "-" + p.id, p.handle, p.points, top, colOf(d.players, p.id)); }).join("") + '</div>' +
+      (feed ? '<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border2);display:flex;flex-direction:column;gap:3px;">' + feed + '</div>' : '') + '</div>';
+  }
+  function vocabCard(d){
+    var P = d.players || [], body;
+    var fights = (d.fights || []).map(function(f){ return '<div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">' + hp(f.a, f.hp1, colOf(P, (P.filter(function(p){ return p.handle === f.a; })[0] || {}).id)) + '<span class="mono" style="font-size:12px;color:var(--faint);">VS</span>' + hp(f.b, f.hp2, colOf(P, (P.filter(function(p){ return p.handle === f.b; })[0] || {}).id)) + '</div>'; }).join("");
+    if (d.brawl) {
+      var top = Math.max.apply(null, P.map(function(p){ return p.wins; }).concat([1]));
+      body = '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">' + P.slice().sort(function(a, b){ return b.wins - a.wins; }).map(function(p){ return bar("w-" + d.id + "-" + p.id, p.handle, p.wins, top, colOf(P, p.id)); }).join("") + '</div>' +
+        (fights ? '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">LIVE FIGHTS</div><div style="display:flex;flex-direction:column;gap:12px;">' + fights + '</div>' : '<div class="mono" style="font-size:13px;color:var(--dim);">Pairing the next fight\u2026</div>');
+    } else body = fights || '<div class="mono" style="font-size:13px;color:var(--dim);">Fight over</div>';
+    var kos = (d.kos || []).slice(0, 3).map(function(k){ return '<div class="mono" style="font-size:12px;color:var(--muted);">' + esc(k.who) + ' KO\u2019d ' + esc(k.loser) + (k.revenge ? ' <b style="color:#ff5d73;">REVENGE</b>' : '') + (k.bounty ? ' <b style="color:var(--amber);">BOUNTY</b>' : '') + '</div>'; }).join("");
+    return '<div class="card" style="border-color:#ff4d6d;">' + head(d.brawl ? "\u2620 VOCAB BRAWL" : "\u2620 VOCAB DUEL", d, mods(d.modules)) + body +
+      (kos ? '<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border2);display:flex;flex-direction:column;gap:3px;">' + kos + '</div>' : '') + '</div>';
+  }
+  function hype(){
+    if (!FX || !ST) return;
+    (ST.flag || []).forEach(function(d){
+      var ev = FX.track("wf" + d.id, { status: "live", teams: (d.players || []).filter(function(p){ return !p.forfeit; }).map(function(p){ return { id: p.id, name: p.handle, color: colOf(d.players, p.id), score: p.points }; }),
+        feed: (d.feed || []).map(function(f){ var p = (d.players || []).filter(function(x){ return x.handle === f.handle; })[0] || {}; return { who: f.handle, team: p.id, at: f.at, pts: f.pts, hard: f.pts >= 3, bounty: f.bounty }; }) }, { streakBy: "who" });
+      ev.changed.forEach(function(id){ FX.shake(document.getElementById("w-" + d.id + "-" + id)); });
+    });
+    (ST.vocab || []).forEach(function(d){
+      var P = d.players || [];
+      var ev = FX.track("wv" + d.id, { status: "live", teams: P.map(function(p){ return { id: p.id, name: p.handle, color: colOf(P, p.id), score: p.wins }; }),
+        feed: (d.kos || []).map(function(k){ var p = P.filter(function(x){ return x.handle === k.who; })[0] || {}; return { who: k.who, loser: k.loser, team: p.id, at: k.at, pts: 1, revenge: k.revenge, bounty: k.bounty }; }) }, { streakBy: "who", noun: "KO", bloodText: "FIRST KO!" });
+      ev.changed.forEach(function(id){ FX.shake(document.getElementById("w-" + d.id + "-" + id)); });
+    });
+  }
+  function paint(){
+    if (!ST) return;
+    var F = ST.flag || [], V = ST.vocab || [];
+    if (!F.length && !V.length) { view.innerHTML = '<div class="card" style="text-align:center;padding:60px 22px;"><div style="font-size:30px;font-weight:800;color:var(--bright);">No student duels right now</div><div style="font-size:15px;color:var(--muted);margin-top:10px;line-height:1.6;">Live Flag Duels and Vocab Duels in this class show up here as soon as a host presses Start.</div></div>'; return; }
+    view.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:18px;">' + F.map(flagCard).join("") + V.map(vocabCard).join("") + '</div>';
+    clocks(); hype();
+  }
+  function clocks(){ view.querySelectorAll(".wclk").forEach(function(c){ var left = new Date(c.getAttribute("data-end")).getTime() - (Date.now() + skew); c.textContent = mmss(left); c.style.color = left <= 30000 ? "#ff5d73" : "var(--bright)"; }); }
+  setInterval(clocks, 500);
+  function load(){
+    clearTimeout(timer); if (!CUR) return;
+    rpc("ctf_t_duels_watch", { p_class: CUR.id }).then(function(d){
+      if (!d || d.error) { view.innerHTML = '<div class="card">' + (d && d.error === "not_teacher" ? "Teacher sign-in required." : "Couldn\u2019t load duels. Check that supabase/duel-record.sql has been run.") + '</div>'; }
+      else { ST = d; if (d.now) skew = new Date(d.now).getTime() - Date.now(); paint(); }
+      timer = setTimeout(load, 2000);
+    }).catch(function(){ view.innerHTML = '<div class="card">Couldn\u2019t load duels. Check that supabase/duel-record.sql has been run, then reload.</div>'; timer = setTimeout(load, 8000); });
+  }
+  function pickClass(id){
+    CUR = CLASSES.filter(function(c){ return c.id === id; })[0] || CLASSES[0]; sel.value = CUR.id;
+    try { localStorage.setItem("battle-class", CUR.id); } catch (e) {}
+    ST = null; load();
+  }
+  function demo(){
+    var t0 = Date.now(), ends = new Date(t0 + 240000).toISOString(), A = [{ id:"a", handle:"Byte Knight", points:0, forfeit:false }, { id:"b", handle:"Null Pointer", points:0, forfeit:false }, { id:"c", handle:"Zero Day", points:0, forfeit:false }], feed = [];
+    var B = [{ id:"x", handle:"Packet Pal", wins:0 }, { id:"y", handle:"Cipher Sam", wins:0 }, { id:"z", handle:"Root Ruth", wins:0 }], kos = [], hpA = 300, hpB = 300, pair = ["x","y"];
+    return function(fn){
+      if (fn === "ctf_t_classes") return [{ id:"demo", name:"Demo class" }];
+      if (Math.random() < .45) { var p = A[Math.floor(Math.random() * 3)], pts = 1 + Math.floor(Math.random() * 3); p.points += pts; feed.unshift({ handle: p.handle, pts: pts, at: new Date().toISOString(), bounty: false }); }
+      if (Math.random() < .5) { if (Math.random() < .5) hpB -= 75; else hpA -= 75;
+        if (hpA <= 0 || hpB <= 0) { var w = hpA > 0 ? pair[0] : pair[1], l = hpA > 0 ? pair[1] : pair[0], W = B.filter(function(q){ return q.id === w; })[0], L = B.filter(function(q){ return q.id === l; })[0];
+          W.wins++; kos.unshift({ who: W.handle, loser: L.handle, at: new Date().toISOString(), revenge: Math.random() < .3, bounty: false }); hpA = hpB = 300; var ids = ["x","y","z"].sort(function(){ return Math.random() - .5; }); pair = [ids[0], ids[1]]; } }
+      var h = function(id){ return B.filter(function(q){ return q.id === id; })[0].handle; };
+      return { now: new Date().toISOString(),
+        flag: [{ id:"f1", code:"QXRT", modules:[2,3], ends_at: ends, players: A, feed: feed.slice(0, 8) }],
+        vocab: [{ id:"v1", code:"MPLK", modules:[1], ends_at: ends, brawl: true, players: B, fights: [{ a: h(pair[0]), b: h(pair[1]), hp1: hpA, hp2: hpB }], kos: kos.slice(0, 8) }] };
+    };
+  }
+  (async function(){
+    if (DEMO) { var dn = document.createElement("div"); dn.className = "mono"; dn.setAttribute("role", "note"); dn.style.cssText = "margin:-6px 0 14px;font-size:12px;color:var(--amber);"; dn.textContent = "PREVIEW MODE \u00b7 fake duels, nothing is saved."; document.getElementById("hdr").after(dn); }
+    if (!DEMO && (!AUTH || !AUTH.online)) { view.innerHTML = '<div class="card">Connect the class backend (supabase-config.js) first.</div>'; return; }
+    try { CLASSES = await rpc("ctf_t_classes") || []; } catch (e) { CLASSES = null; }
+    if (!Array.isArray(CLASSES)) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> to watch duels.</div>'; return; }
+    if (!CLASSES.length) { view.innerHTML = '<div class="card">No classes yet.</div>'; return; }
+    sel.innerHTML = CLASSES.map(function(c){ return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join("");
+    function bgAuto(){ if (!window.BATTLE_BG) return; if (CUR && !(typeof DEMO !== "undefined" && DEMO)) BATTLE_BG.auto("spectator", { cls: CUR.id }); else BATTLE_BG.use("spectator", null); }
+    sel.onchange = function(){ pickClass(sel.value); bgAuto(); };
+    var want = new URLSearchParams(location.search).get("class"); try { want = want || localStorage.getItem("battle-class"); } catch (e) {}
+    pickClass(want); bgAuto();
+  })();
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=27.0.0"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Duel Bracket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--ok:#3ddc97;--bad:#ff7a85;--adv:#ff3b3b;--arena:#0b0306;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--ok:#1d7a4c;--bad:#b3261e;--arena:#ffffff;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:2px solid var(--adv);background:var(--adv);color:#0b0306;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.tile{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;min-width:44px;min-height:44px;border-radius:9px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);cursor:pointer;}
+.tile:disabled{opacity:.3;}
+input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;flex:1;min-width:180px;min-height:48px;padding:10px 14px;border-radius:10px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;padding-right:210px;">
+    <a id="back" href="index.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; CTF arena</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9876; DUEL BRACKET</div>
+  </div>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script>
+(function(){
+  var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase();
+  if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { document.getElementById("view").innerHTML = '<div class="card">Open the bracket from your course\u2019s CTF arena.</div>'; return; }
+  window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
+  var V = window.SITE_VERSION || "27.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js", "bracket-tree.js"];
+  (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
+
+  function boot(){
+    var AUTH = window.CTF_AUTH, view = document.getElementById("view"), FX = window.BATTLE_FX, BT = window.BRACKET_TREE, esc = BT.esc;
+    var G = (((window.COURSE_CONFIG || {})[C] || {}).ctf) || {};
+    if (G.adversaryColor) document.documentElement.style.setProperty("--adv", G.adversaryColor);
+    var S = null; try { S = JSON.parse(localStorage.getItem("ctf-sess-" + C)); } catch (e) {}
+    if (!AUTH || !AUTH.online || !S) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" href="' + C + '/ctf.html">Go to CTF</a></div>'; return; }
+    if (window.BATTLE_BG) BATTLE_BG.use("bracket", null);
+    var ST = null, skew = 0, timer = null, sig = "", sending = false, note = "", noteCol = "", streak = 0, prevM = null, lastHp = null, lastN = null;
+    function rpc(fn, a){ return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
+    function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+    function maskHtml(m){ return String(m || "").split("").map(function(c){ if (c === " ") return '<span style="width:14px;"></span>'; var hid = c === "_";
+      return '<span class="mono" style="display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:48px;border-radius:9px;font-size:22px;font-weight:800;border:1px solid ' + (hid ? "var(--border3)" : "var(--adv)") + ';background:var(--bg);color:var(--bright);">' + (hid ? "" : esc(c)) + '</span>'; }).join(""); }
+    function hp(id, who, v, me){ var pct = Math.round(v / 3);
+      return '<div style="flex:1;min-width:150px;"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><b style="color:var(--bright);">' + esc(who) + (me ? ' <span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + '</b><span class="mono" style="font-weight:800;color:var(--bright);">' + pct + '%</span></div>' +
+        (FX ? FX.bossBar(id, pct, me ? "#00b3ff" : "#ff3b3b", who + " health") : '') + '</div>'; }
+    function games(m){ return '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;">' +
+      '<span class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--faint);">' + (m.side === "cons" ? "CONSOLATION \u00b7 " : "") + 'ROUND ' + m.round + ' \u00b7 BEST OF 3</span>' +
+      '<span class="mono" style="font-size:22px;font-weight:800;color:var(--bright);margin-left:auto;">You ' + m.my_games + ' \u2013 ' + m.opp_games + ' ' + esc(m.opp || "") + '</span></div>'; }
+    function puzzle(m){
+      if (m.mode === "decrypt") return '<div id="brMask" style="display:flex;flex-wrap:wrap;gap:6px;">' + maskHtml(m.puzzle) + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">DECRYPT \u00b7 letters leak after 8 seconds \u00b7 type the term</div>';
+      if (m.mode === "bank") { var o = []; try { o = JSON.parse(m.puzzle || "[]"); } catch (e) {}
+        return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;">' + o.map(function(x){ return '<button type="button" class="tile brBank" style="font-size:16px;padding:10px 12px;">' + esc(x) + '</button>'; }).join("") + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">WORD BANK \u00b7 a wrong pick costs a third of a hit</div>'; }
+      if (m.mode === "cipher") return '<div class="mono" style="font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:4px;color:var(--bright);word-break:break-word;">' + esc(m.puzzle) + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:6px;">CAESAR CIPHER \u00b7 shift each letter back <b style="color:var(--bright);">' + m.shift + '</b></div>';
+      return '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + String(m.puzzle || "").split("").map(function(ch){ return '<button type="button" class="tile brTile">' + esc(ch) + '</button>'; }).join("") + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">SCRAMBLED \u00b7 tap the letters in order, or type the term</div>';
+    }
+    function matchView(b, m){
+      if (!m) return '<div class="card" style="text-align:center;padding:34px;">You\u2019re in this bracket. Your first match will show here.</div>';
+      if (m.status === "done") return '<div class="card" style="text-align:center;padding:34px;border-color:' + (m.won ? "var(--ok)" : "var(--adv)") + ';"><div style="font-size:clamp(26px,5vw,40px);font-weight:800;color:var(--bright);">' +
+        (m.won ? "\u2605 You beat " + esc(m.opp) + "!" : "Knocked out by " + esc(m.opp)) + '</div><div style="font-size:14px;color:var(--muted);margin-top:10px;">' +
+        (b.status !== "live" ? "The bracket is over." : m.won ? "Waiting for your next opponent\u2026 stay on this page." : m.side === "main" && m.round === 1 ? "Stay here: first-round losers play the consolation bracket." : "Watch the rest of the bracket below.") + '</div></div>';
+      if (m.status === "wait") return '<div class="card" style="text-align:center;padding:34px;"><div style="font-size:26px;font-weight:800;color:var(--bright);">Waiting for your opponent</div><div style="font-size:14px;color:var(--muted);margin-top:8px;">Their match is still going. Stay on this page.</div></div>';
+      if (m.status === "ready") return '<div class="card" style="text-align:center;padding:34px;border-color:var(--amber);"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">MATCH FOUND</div><div style="font-size:30px;font-weight:800;color:var(--bright);margin:8px 0;">You vs ' + esc(m.opp) + '</div><div style="font-size:14px;color:var(--muted);">Starts as soon as you\u2019re both on this page. Missing for 60 seconds = forfeit.</div></div>';
+      if (!m.game_kind) return '<div class="card" style="text-align:center;padding:34px;border-color:var(--amber);">' + games(m) + '<div style="font-size:26px;font-weight:800;color:var(--bright);">' + (m.last_game_mine ? "You won game " + m.game_no + "!" : esc(m.opp) + " took game " + m.game_no) + '</div><div class="mono" id="brNext" style="font-size:14px;color:var(--muted);margin-top:8px;">Next game\u2026</div></div>';
+      if (m.game_kind === "flag") return '<div class="card" style="border-color:var(--amber);">' + games(m) +
+        '<div class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">GAME ' + m.game_no + ' \u00b7 RACE TO 3 FLAG POINTS</div>' +
+        '<div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:16px;"><div style="flex:1;min-width:150px;"><b style="color:var(--bright);">You</b><div class="mono" style="font-size:44px;font-weight:800;color:var(--accent);">' + m.my_pts + '<span style="font-size:18px;color:var(--faint);">/3</span></div></div>' +
+          '<div style="flex:1;min-width:150px;text-align:right;"><b style="color:var(--bright);">' + esc(m.opp) + '</b><div class="mono" style="font-size:44px;font-weight:800;color:var(--adv);">' + m.opp_pts + '<span style="font-size:18px;color:var(--faint);">/3</span></div></div></div>' +
+        '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><a class="btn" href="' + C + '/ctf.html#arena">OPEN ARENA \u2192</a><span style="font-size:13px;color:var(--muted);">Easy 1 \u00b7 Medium 2 \u00b7 Hard 3 \u00b7 ' + (m.open || 0) + ' open flags left. Out of flags? The game turns into a vocab fight.</span></div></div>';
+      return '<div class="card" id="brArena" style="background:var(--arena);border-color:var(--adv);">' + games(m) +
+        '<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;">' + hp("brMe", S.handle || "You", m.my_hp, true) + '<span class="mono" style="font-size:13px;color:var(--faint);">VS</span>' + hp("brOpp", m.opp, m.opp_hp, false) + '</div>' +
+        '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">GAME ' + m.game_no + (b.kind === "flag" ? " \u00b7 VOCAB TIEBREAK" : "") + ' \u00b7 DEFINITION \u00b7 ' + m.len + ' letters</div>' +
+        '<div style="font-size:clamp(17px,2.6vw,21px);font-weight:600;color:var(--bright);line-height:1.5;margin-bottom:18px;">' + esc(m.def) + '</div>' +
+        '<div style="margin-bottom:18px;">' + puzzle(m) + '</div>' +
+        '<form id="brForm" style="display:flex;gap:10px;flex-wrap:wrap;" autocomplete="off"><label for="brAns" style="position:absolute;left:-9999px;">Your answer</label><input id="brAns" class="ans" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="type the term\u2026">' +
+        '<button type="button" class="btn ghost" id="brClr" aria-label="Clear">\u232b</button><button type="submit" class="btn">Strike</button></form>' +
+        '<div class="mono" id="brNote" role="status" aria-live="assertive" style="min-height:22px;margin-top:12px;font-size:14px;font-weight:700;color:' + (noteCol || "var(--muted)") + ';">' + esc(note) + '</div></div>';
+    }
+    function draw(force){
+      if (!ST) return;
+      var b = ST.bracket, m = ST.match;
+      var k = !b ? "none" : [b.id, b.status, m && m.id, m && m.status, m && m.game_no, m && m.game_kind, m && m.game_kind === "vocab" ? m.n : "", m && m.game_kind === "flag" ? m.my_pts + ":" + m.opp_pts : "", m && m.my_games, m && m.opp_games].join("|");
+      if (!force && k === sig) return update();
+      sig = k;
+      if (!b) { view.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><div style="font-size:24px;font-weight:800;color:var(--bright);">No bracket for you right now</div><div style="font-size:14px;color:var(--muted);margin-top:8px;">Your teacher starts brackets. When you\u2019re in one, it shows up here and on your CTF page.</div></div>'; return; }
+      view.innerHTML = (b.status === "done" ? '<div class="card" style="margin-bottom:18px;display:flex;flex-direction:column;gap:10px;border-color:#ffcf5c;">' + BT.podium(ST.tree) + '</div>' : matchView(b, m) ) +
+        '<div class="card" style="margin-top:18px;">' + BT.html(ST.tree, { me: ST.me, kind: b.kind }) + '</div>';
+      bind(); update();
+      var a = document.getElementById("brAns"); if (a) a.focus();
+    }
+    function update(){
+      var m = ST && ST.match; if (!m) return;
+      if (m.game_kind === "vocab") {
+        if (FX) { FX.setBoss("brMe", Math.round(m.my_hp / 3)); FX.setBoss("brOpp", Math.round(m.opp_hp / 3)); }
+        var mk = document.getElementById("brMask"); if (mk && mk._m !== m.puzzle) { mk._m = m.puzzle; mk.innerHTML = maskHtml(m.puzzle); }
+      }
+      var nx = document.getElementById("brNext"); if (nx && m.next_at) { var s = Math.max(0, Math.ceil((new Date(m.next_at).getTime() - Date.now() - skew) / 1000)); nx.textContent = s ? "Next game in " + s + "\u2026" : "Starting\u2026"; }
+    }
+    function say(t, col){ note = t; noteCol = col; var n = document.getElementById("brNote"); if (n) { n.textContent = t; n.style.color = col; } }
+    function strike(){
+      var m = ST.match, a = document.getElementById("brAns"); if (!m || !a || sending || !norm(a.value)) return;
+      sending = true;
+      rpc("ctf_br_answer", { p_match: m.id, p_n: m.n, p_guess: a.value }).then(function(d){
+        sending = false;
+        if (d && d.correct) { say("\u2713 " + d.term + " \u2014 hit!", "var(--ok)"); streak++; if (FX) FX.combo(streak); }
+        else if (d && d.correct === false) { streak = 0; if (FX) FX.combo(0); say("\u2717 Not it. You took a third of a hit.", "var(--bad)"); if (FX) FX.shake(document.getElementById("brArena")); a.value = ""; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); }
+        else if (d && d.stale) say("Too slow \u2014 that term was already cracked.", "var(--muted)");
+        load();
+      }).catch(function(){ sending = false; load(); });
+    }
+    function bind(){
+      var form = document.getElementById("brForm"), ans = document.getElementById("brAns");
+      view.querySelectorAll(".brBank").forEach(function(b){ b.onclick = function(){ if (!ans) return; ans.value = b.textContent; strike(); }; });
+      view.querySelectorAll(".brTile").forEach(function(b){ b.onclick = function(){ if (!ans) return; ans.value += b.textContent; b.disabled = true; ans.focus(); if (ST.match && norm(ans.value).length === ST.match.len) strike(); }; });
+      var clr = document.getElementById("brClr"); if (clr) clr.onclick = function(){ if (ans) { ans.value = ""; ans.focus(); } view.querySelectorAll(".brTile").forEach(function(b){ b.disabled = false; }); };
+      if (form) form.onsubmit = function(e){ e.preventDefault(); strike(); };
+    }
+    function moments(d){
+      if (!FX) return;
+      var m = d.match, p = prevM;
+      if (m && p && p.id === m.id) {
+        if (m.my_games > p.my_games) { FX.banner(m.status === "done" ? "MATCH WON!" : "GAME " + p.game_no + " IS YOURS!", "#3ddc97", m.my_games + "\u2013" + m.opp_games); FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; FX.combo(0); }
+        if (m.opp_games > p.opp_games) { FX.banner(m.status === "done" ? "ELIMINATED" : "GAME TO " + String(m.opp || "").toUpperCase(), "#ff3b3b", m.my_games + "\u2013" + m.opp_games); streak = 0; FX.combo(0); }
+        if (p.status === "ready" && m.status === "live") { FX.banner("FIGHT!", "#ff3b3b", "You vs " + m.opp); FX.sfx("blood"); }
+        if (m.game_kind === "vocab" && p.game_kind === "flag") FX.banner("VOCAB TIEBREAK!", "#ffcf5c", "Out of open flags \u2014 settle it with words");
+        if (m.game_kind === "vocab" && lastN === m.n - 1 && lastHp != null && m.my_hp < lastHp && !m.last_mine && m.last_t) { say(m.opp + " cracked it first: " + m.last_t + ".", "var(--bad)"); streak = 0; FX.combo(0); }
+        if (m.game_kind === "flag" && m.my_pts > p.my_pts) FX.banner("+" + (m.my_pts - p.my_pts) + " FLAG POINTS", "#00b3ff", m.my_pts + "/3");
+        if (m.game_kind === "flag" && m.opp_pts > p.opp_pts) FX.caster(m.opp + " captures! " + m.opp_pts + "/3", "#ff3b3b");
+      } else if (m && m.status === "ready") FX.sfx("lead");
+      if (d.bracket && d.bracket.status === "done" && !moments.done) { moments.done = 1; var champ = (d.tree.entrants || []).filter(function(e){ return e.place === "champion"; })[0];
+        FX.banner(champ && champ.id === d.me ? "\u2655 BRACKET CHAMPION!" : "BRACKET OVER", "#ffcf5c", champ ? champ.handle + " wins it all" : ""); if (champ && champ.id === d.me) FX.confetti(); }
+      prevM = m ? { id: m.id, status: m.status, game_no: m.game_no, game_kind: m.game_kind, my_games: m.my_games, opp_games: m.opp_games, my_pts: m.my_pts, opp_pts: m.opp_pts } : null;
+      lastN = m && m.n; lastHp = m && m.my_hp;
+    }
+    function load(){
+      clearTimeout(timer);
+      return rpc("ctf_br_state").then(function(d){
+        if (!d || d.error) { view.innerHTML = '<div class="card">Sign in on your CTF page first.</div>'; return; }
+        if (d.now) skew = new Date(d.now).getTime() - Date.now();
+        if (window.BATTLE_BG) BATTLE_BG.use("bracket", d.bg);
+        moments(d); ST = d; draw(false);
+        var live = d.bracket && d.bracket.status === "live", m = d.match;
+        timer = setTimeout(load, live && m && m.status === "live" ? 1000 : live ? 2000 : 10000);
+      }).catch(function(){ view.innerHTML = '<div class="card">Brackets aren\u2019t set up yet. Ask your teacher to run supabase/brackets.sql.</div>'; sig = ""; timer = setTimeout(load, 10000); });
+    }
+    setInterval(update, 500);
+    document.addEventListener("visibilitychange", function(){ if (!document.hidden) load(); });
+    load();
+  }
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

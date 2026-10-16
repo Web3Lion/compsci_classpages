@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=27.0.0"></script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Duel Bracket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--amber-bg:#1a150a;--ok:#3ddc97;--bad:#ff7a85;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--amber-bg:#fbf4dd;--ok:#1d7a4c;--bad:#b3261e;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 24px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--amber);background:var(--amber);color:#1a1200;cursor:pointer;white-space:nowrap;}
+:root[data-theme="light"] .btn:not(.ghost){background:#f3c94b;border-color:#8a6a00;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;}
+.chip[aria-pressed="true"]{border-color:var(--amber);background:var(--amber-bg);color:var(--bright);}
+.chip[aria-pressed="true"]::before{content:"\2713  ";}
+select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);}
+.pl{display:flex;align-items:center;gap:10px;padding:8px 10px;min-height:44px;border-radius:9px;cursor:pointer;}
+.pl:hover{background:var(--panel2);}
+.pl input{width:18px;height:18px;accent-color:var(--amber);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div id="hdr" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;padding-right:210px;">
+    <a href="teacher.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; Teacher dashboard</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9876; DUEL BRACKET</div>
+    <span style="flex:1;"></span>
+    <span id="snd" role="group" aria-label="Projector sound"></span>
+    <label class="mono" for="cls" style="font-size:12px;color:var(--dim);">Class</label>
+    <select id="cls"></select>
+  </div>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script src="config.js?v=27.0.0"></script>
+<script src="ctf-data/cyber1.js?v=27.0.0"></script>
+<script src="ctf-data/cyber2.js?v=27.0.0"></script>
+<script src="ctf-data/cyber3.js?v=27.0.0"></script>
+<script src="ctf-data/apcsp.js?v=27.0.0"></script>
+<script src="ctf-data/web3.js?v=27.0.0"></script>
+<script src="supabase-config.js?v=27.0.0"></script>
+<script src="auth.js?v=27.0.0"></script>
+<script src="battle-fx.js?v=27.0.0"></script>
+<script src="battle-bg.js?v=27.0.0"></script>
+<script src="bracket-tree.js?v=27.0.0"></script>
+<script>
+(function(){
+  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX, BT = window.BRACKET_TREE, esc = BT.esc;
+  if (FX) { FX.enableSound(true); FX.soundUi(document.getElementById("snd")); }
+  var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
+  var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]];
+  var CLASSES = [], CUR = null, SET = null, ST = null, MODS = {}, timer = null, msg = "", busy = false, showSetup = false;
+  var kind = "vocab", pick = {}, modes = { cipher:1, unscramble:1, decrypt:1, bank:1 }, chosen = {}, prev = {};
+  var ERR = { bracket_live:"A bracket is already running in this class.", no_modules:"Pick at least one module.", too_few_terms:"Those modules need at least 4 vocab terms (used for vocab games and flag tiebreaks).",
+    no_manifest:"Open this class once in teacher.html so its flag list is published, then try again.", need_two:"Pick at least 2 students.", too_many:"Brackets hold up to 32 students." };
+  var DEMO = /[?&]demo=1/.test(location.search);
+  function rpc(fn, a){ return DEMO ? Promise.resolve(demo(fn)) : AUTH.rpc(fn, a || {}); }
+  function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
+  function names(){ return ((((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}).modules || []; }
+  function modName(m){ var n = names()[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
+  function loadVocab(c){
+    return new Promise(function(res){
+      if (window[VG[c]]) return res();
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=27.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+    }).then(function(){
+      MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
+    });
+  }
+  function pool(mods){ var p = []; mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ p.push({ t: disp(t.t), d: t.d }); }); });
+    if (p.length < 4) Object.keys(MODS).forEach(function(m){ if (mods.indexOf(+m) === -1) MODS[m].forEach(function(t){ p.push({ t: disp(t.t), d: t.d }); }); }); return p; }
+  function allPlayers(){ var L = []; (SET.squads || []).forEach(function(g){ (g.members || []).forEach(function(p){ L.push(p); }); }); (SET.ungrouped || []).forEach(function(p){ L.push(p); }); return L; }
+  function picked(){ return allPlayers().filter(function(p){ return chosen[p.id]; }); }
+  function pow2(n){ var s = 2; while (s < n) s *= 2; return s; }
+  function plRow(p){
+    return '<label class="pl"><input type="checkbox" class="brP" data-id="' + esc(p.id) + '"' + (chosen[p.id] ? " checked" : "") + '>' +
+      '<span style="flex:1;min-width:0;"><b style="color:var(--bright);overflow-wrap:anywhere;">' + esc(p.handle) + '</b>' + (p.login ? '<span class="mono" style="display:block;font-size:11px;color:var(--dim);overflow-wrap:anywhere;">' + esc(p.login) + '</span>' : '') + '</span>' +
+      '<span class="mono" style="font-size:12px;color:var(--amber);">' + p.xp + ' XP</span></label>';
+  }
+  function group(id, name, color, members){
+    var on = members.length && members.every(function(p){ return chosen[p.id]; });
+    return '<div style="border:1px solid var(--border2);border-radius:12px;padding:10px;background:var(--bg);">' +
+      '<label class="pl" style="font-weight:800;"><input type="checkbox" class="brG" data-g="' + esc(id) + '"' + (on ? " checked" : "") + '><span style="width:12px;height:12px;border-radius:3px;background:' + esc(color || "var(--faint)") + ';"></span>' +
+      '<span style="flex:1;color:var(--bright);">' + esc(name) + '</span><span class="mono" style="font-size:11px;color:var(--dim);">' + members.filter(function(p){ return chosen[p.id]; }).length + '/' + members.length + '</span></label>' +
+      members.map(plRow).join("") + '</div>';
+  }
+  function setupView(){
+    var man = (SET.manifest || []).map(function(m){ return m.module; }), keys = kind === "flag" ? man : Object.keys(MODS).map(Number).sort(function(a,b){ return a-b; });
+    var selM = keys.filter(function(m){ return pick[m]; }), P = picked(), n = P.length, size = pow2(n), nm = PMODES.filter(function(p){ return modes[p[0]]; }).length;
+    var ready = n >= 2 && n <= 32 && selM.length && nm && !busy;
+    var groups = (SET.squads || []).filter(function(g){ return (g.members || []).length; }).map(function(g){ return group(g.id, g.name, g.color, g.members); }).join("") +
+      ((SET.ungrouped || []).length ? group("_none", "No squad", "", SET.ungrouped) : "");
+    return '<div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;" id="g">' +
+      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">PLAYERS \u00b7 TICK SQUADS OR STUDENTS</div>' +
+        '<div style="font-size:13px;color:var(--dim);margin-bottom:12px;">Everyone ticked plays as an individual. Seeds come from current XP.</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">' + (groups || '<div style="color:var(--dim);">No students yet.</div>') + '</div></div>' +
+      '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BRACKET OPTIONS</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Game</div>' +
+        '<div role="group" aria-label="Game" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
+          '<button type="button" class="chip brK" data-k="vocab" aria-pressed="' + (kind === "vocab") + '">Vocab</button><button type="button" class="chip brK" data-k="flag" aria-pressed="' + (kind === "flag") + '">Flags</button></div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">' + (kind === "flag" ? "Best of 3. A game is a race to 3 flag points (Easy 1, Medium 2, Hard 3) on flags the player hasn\u2019t captured. Out of open flags? That game becomes a vocab fight." : "Best of 3. A game is a normal vocab fight: 4 hits to KO.") + '</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip brM" data-m="' + m + '" aria-pressed="' + !!pick[m] + '" title="' + esc(modName(m)) + '">M' + String(m).padStart(2,"0") + '</button>'; }).join("") : '<span style="font-size:13px;color:var(--dim);">' + (kind === "flag" ? "No published flag list. Open this class in teacher.html once." : "No vocab for this course.") + '</span>') + '</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab puzzle types</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + PMODES.map(function(p){ return '<button type="button" class="chip brT" data-p="' + p[0] + '" aria-pressed="' + !!modes[p[0]] + '">' + p[1] + '</button>'; }).join("") + '</div>' +
+        '<div class="mono" style="font-size:13px;color:var(--muted);margin-bottom:14px;">' + (n >= 2 ? n + " players \u00b7 " + size + "-slot bracket" + (size - n ? " \u00b7 " + (size - n) + " bye" + (size - n > 1 ? "s" : "") + " for the top seed" + (size - n > 1 ? "s" : "") : "") : "Pick at least 2 players") + '</div>' +
+        '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><button type="button" class="btn" id="brGo"' + (ready ? "" : " disabled") + '>Start bracket</button>' + (ST && ST.bracket ? '<button type="button" class="btn ghost" id="brBack">Back to bracket</button>' : '') + '</div>' +
+        (msg ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(msg) + '</div>' : '') +
+        '<div style="font-size:12px;color:var(--dim);margin-top:14px;line-height:1.6;">Students open <b>Bracket</b> from the Duels card on their CTF page. A match starts by itself once both players are on the page; 60 seconds missing = forfeit. First-round losers play a consolation bracket.<br>Rewards: champion +25, runner-up +15, semifinals +10, consolation champion +10, everyone else who played +5.</div></div></div>';
+  }
+  function liveView(){
+    var b = ST.bracket, done = b.status !== "live";
+    var top = '<div class="card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px;border-color:var(--amber);">' +
+      '<div style="flex:1;min-width:240px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:800;">' + (b.kind === "flag" ? "\u2691 FLAG BRACKET" : "\u2620 VOCAB BRACKET") + ' \u00b7 ' + (done ? (b.status === "done" ? "FINISHED" : "CANCELLED") : "LIVE") + '</div>' +
+      '<div class="mono" style="font-size:13px;color:var(--dim);margin-top:4px;">' + (b.modules || []).map(modName).map(esc).join(" \u00b7 ") + ' \u00b7 best of 3</div></div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;">' + '<button type="button" class="btn ghost" id="brFull">Full screen</button>' +
+      (done ? '<button type="button" class="btn" id="brNew">New bracket</button>' : '<button type="button" class="btn ghost" id="brCancel">Cancel (no XP)</button>') + '</div></div>';
+    var pod = b.status === "done" ? '<div class="card" style="margin-bottom:18px;display:flex;flex-direction:column;gap:10px;border-color:#ffcf5c;">' + BT.podium(ST.tree) + '</div>' : "";
+    return top + pod + '<div class="card" id="brTree">' + BT.html(ST.tree, { showHere: true, kind: b.kind }) + '</div>';
+  }
+  function paint(){
+    if (!CUR) return;
+    view.innerHTML = (showSetup || !ST || !ST.bracket) ? (SET ? setupView() : '<div class="card mono" style="color:var(--dim);">Loading&hellip;</div>') : liveView();
+    var g = document.getElementById("g"); if (g && innerWidth < 900) g.style.gridTemplateColumns = "1fr";
+    bind();
+  }
+  function fx(){
+    if (!FX || !ST || !ST.tree) return;
+    var E = {}; (ST.tree.entrants || []).forEach(function(e){ E[e.id] = e; });
+    (ST.tree.matches || []).forEach(function(m){
+      var p = prev[m.id];
+      if (p && p.status !== "done" && m.status === "done" && m.winner && !m.bye) { var w = E[m.winner] || {}; FX.banner((w.handle || "Winner") + " ADVANCES!", "#ffcf5c", m.forfeit ? "by forfeit" : m.wa + "\u2013" + m.wb); FX.sfx("lead"); FX.pop(document.getElementById("bm-" + m.id)); }
+      if (p && p.status === "ready" && m.status === "live") { FX.caster("Match on: " + ((E[m.a] || {}).handle || "?") + " vs " + ((E[m.b] || {}).handle || "?")); FX.sfx("blood"); }
+      if (p && m.status === "live" && (p.wa !== m.wa || p.wb !== m.wb)) FX.shake(document.getElementById("bm-" + m.id));
+      prev[m.id] = { status: m.status, wa: m.wa, wb: m.wb };
+    });
+    if (ST.bracket.status === "done" && !fx.done) { fx.done = ST.bracket.id; var ch = (ST.tree.entrants || []).filter(function(e){ return e.place === "champion"; })[0]; FX.banner("\u2655 " + (ch ? ch.handle : "CHAMPION") + " WINS THE BRACKET!", "#ffcf5c", "", 3600); FX.confetti(); FX.sfx("horn"); }
+  }
+  function bind(){
+    view.querySelectorAll(".brK").forEach(function(b){ b.onclick = function(){ kind = b.getAttribute("data-k"); pick = {}; paint(); }; });
+    view.querySelectorAll(".brM").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
+    view.querySelectorAll(".brT").forEach(function(b){ b.onclick = function(){ var p = b.getAttribute("data-p"); modes[p] = !modes[p]; paint(); }; });
+    view.querySelectorAll(".brP").forEach(function(b){ b.onchange = function(){ chosen[b.getAttribute("data-id")] = b.checked; paint(); }; });
+    view.querySelectorAll(".brG").forEach(function(b){ b.onchange = function(){
+      var g = b.getAttribute("data-g"), L = g === "_none" ? SET.ungrouped : ((SET.squads || []).filter(function(x){ return x.id === g; })[0] || {}).members || [];
+      L.forEach(function(p){ chosen[p.id] = b.checked; }); paint(); }; });
+    var go = document.getElementById("brGo"); if (go) go.onclick = function(){
+      var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
+      busy = true; msg = ""; paint();
+      rpc("ctf_t_br_create", { p_class: CUR.id, p_kind: kind, p_modules: mods, p_pool: pool(mods), p_modes: PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }), p_students: picked().map(function(p){ return p.id; }) })
+        .then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; } showSetup = false; prev = {}; load(); })
+        .catch(function(e){ busy = false; msg = "Couldn\u2019t start. Check that supabase/brackets.sql has been run."; paint(); });
+    };
+    var bk = document.getElementById("brBack"); if (bk) bk.onclick = function(){ showSetup = false; paint(); };
+    var nw = document.getElementById("brNew"); if (nw) nw.onclick = function(){ showSetup = true; msg = ""; paint(); };
+    var cc = document.getElementById("brCancel"); if (cc) cc.onclick = function(){ if (!confirm("Cancel this bracket? Nobody gets bracket XP.")) return; rpc("ctf_t_br_cancel", { p_bracket: ST.bracket.id }).then(load); };
+    var fu = document.getElementById("brFull"); if (fu) fu.onclick = function(){ if (FX) FX.fullscreen(document.documentElement); };
+  }
+  function load(){
+    clearTimeout(timer); if (!CUR) return;
+    var id = CUR.id;
+    Promise.all([rpc("ctf_t_br_state", { p_class: id }), SET ? Promise.resolve(SET) : rpc("ctf_t_br_setup", { p_class: id })]).then(function(r){
+      if (!CUR || CUR.id !== id) return;
+      if (!r[0] || r[0].error) { view.innerHTML = '<div class="card">Couldn\u2019t load the bracket. Check that supabase/brackets.sql has been run (install-check.html), then reload.</div>'; return; }
+      ST = r[0]; SET = r[1] && !r[1].error ? r[1] : null;
+      if (window.BATTLE_BG) BATTLE_BG.use("bracket", ST.bg);
+      var typing = document.activeElement && view.contains(document.activeElement) && (showSetup || !ST.bracket);
+      if (!typing || !SET) paint();
+      fx();
+      timer = setTimeout(load, ST.bracket && ST.bracket.status === "live" ? 2000 : 10000);
+    }).catch(function(){ view.innerHTML = '<div class="card">Couldn\u2019t load the bracket. Check that supabase/brackets.sql has been run (install-check.html), then reload.</div>'; timer = setTimeout(load, 10000); });
+  }
+  function pickClass(cid){
+    CUR = CLASSES.filter(function(c){ return c.id === cid; })[0] || CLASSES[0]; sel.value = CUR.id;
+    try { localStorage.setItem("battle-class", CUR.id); } catch (e) {}
+    SET = null; ST = null; pick = {}; chosen = {}; prev = {}; showSetup = false; window.CTF_COURSE = CUR.course;
+    loadVocab(CUR.course).then(load);
+  }
+  function demo(fn){
+    var H = ["Byte Knight","Null Pointer","Zero Day","Packet Pal","Cipher Sam","Root Ruth"], E = H.map(function(h, i){ return { id: "s" + i, handle: h, seed: i + 1, xp: 900 - i * 110, here: i !== 4, place: null, xp_paid: 0 }; });
+    if (fn === "ctf_t_classes") return [{ id: "demo", name: "Demo class", course: "cyber1" }];
+    if (fn === "ctf_t_br_setup") return { squads: [{ id: "g1", name: "Blue", color: "#3a86ff", members: E.slice(0, 3).map(function(e){ return { id: e.id, handle: e.handle, login: e.handle.toLowerCase().replace(/ /g, ".") + "@school.org", xp: e.xp }; }) },
+      { id: "g2", name: "Green", color: "#2ec27e", members: E.slice(3).map(function(e){ return { id: e.id, handle: e.handle, login: e.handle.toLowerCase().replace(/ /g, ".") + "@school.org", xp: e.xp }; }) }], ungrouped: [], manifest: [{ module: 1, flags: 9 }, { module: 2, flags: 8 }], live: "b" };
+    var t = Math.floor((Date.now() / 1000) % 60), M = [
+      { id:"m1", side:"main", round:1, slot:1, a:"s0", b:null, wa:0, wb:0, status:"done", winner:"s0", bye:true },
+      { id:"m2", side:"main", round:1, slot:2, a:"s3", b:"s4", wa:2, wb:1, status:"done", winner:"s3" },
+      { id:"m3", side:"main", round:1, slot:3, a:"s2", b:"s5", wa:2, wb:0, status:"done", winner:"s2" },
+      { id:"m4", side:"main", round:1, slot:4, a:"s1", b:null, wa:0, wb:0, status:"done", winner:"s1", bye:true },
+      { id:"m5", side:"main", round:2, slot:1, a:"s0", b:"s3", wa:1, wb: t > 30 ? 1 : 0, status:"live", game_no: t > 30 ? 3 : 2, game_kind:"vocab", hp_a: 300 - (t % 30) * 8, hp_b: 225, ga:0, gb:0 },
+      { id:"m6", side:"main", round:2, slot:2, a:"s2", b:"s1", wa:0, wb:0, status:"ready" },
+      { id:"m7", side:"main", round:3, slot:1, a:null, b:null, wa:0, wb:0, status:"wait" },
+      { id:"c1", side:"cons", round:1, slot:1, a:"s4", b:"s5", wa:1, wb:0, status:"live", game_no:2, game_kind:"vocab", hp_a:150, hp_b:75 } ];
+    return { now: new Date().toISOString(), bg: {}, bracket: { id:"b", kind:"vocab", status:"live", modules:[1,2], size:8, cons_size:2 }, tree: { entrants: E, matches: M } };
+  }
+  (async function(){
+    if (DEMO) { var dn = document.createElement("div"); dn.className = "mono"; dn.setAttribute("role", "note"); dn.style.cssText = "margin:-6px 0 14px;font-size:12px;color:var(--amber);"; dn.textContent = "PREVIEW MODE \u00b7 a fake bracket, nothing is saved."; document.getElementById("hdr").after(dn); }
+    if (!DEMO && (!AUTH || !AUTH.online)) { view.innerHTML = '<div class="card">Connect the class backend (supabase-config.js) first.</div>'; return; }
+    try { CLASSES = await rpc("ctf_t_classes") || []; } catch (e) { CLASSES = null; }
+    if (!Array.isArray(CLASSES)) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> to run brackets.</div>'; return; }
+    if (!CLASSES.length) { view.innerHTML = '<div class="card">No classes yet.</div>'; return; }
+    sel.innerHTML = CLASSES.map(function(c){ return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join("");
+    sel.onchange = function(){ pickClass(sel.value); };
+    var want = new URLSearchParams(location.search).get("class"); try { want = want || localStorage.getItem("battle-class"); } catch (e) {}
+    pickClass(want);
+  })();
+})();
+</script>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+</body>
+</html>

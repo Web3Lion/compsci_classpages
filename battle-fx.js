@@ -66,6 +66,10 @@
     "html.bfxRM .bfxBan.in,html.bfxRM .bfxBig.in,html.bfxRM .bfxPop,html.bfxRM .bfxFeedIn,html.bfxRM .bfxPulse,html.bfxRM #bfxEdge.on{animation:none!important;}" +
     "html.bfxRM .bfxBig{opacity:.85;}" +
     ".bfxGold{color:#ffcf5c;}:root[data-theme='light'] .bfxGold{color:#7a5a00;}" +
+    "@keyframes bfxHb{0%,40%,100%{box-shadow:inset 0 0 0 0 rgba(255,59,59,0);}12%{box-shadow:inset 0 0 70px -6px rgba(255,59,59,.55);}26%{box-shadow:inset 0 0 40px -12px rgba(255,59,59,.35);}}" +
+    "html.bfxHeart:not(.bfxRM) body{animation:bfxHb 1s ease-in-out infinite;}" +
+    "#bfxCombo{position:fixed;left:16px;bottom:16px;z-index:9998;font-family:'JetBrains Mono',monospace;font-weight:800;border-radius:14px;padding:10px 16px;background:#0b1220;color:#fff;border:2px solid #ff8a00;box-shadow:0 0 24px -6px #ff8a00;display:none;align-items:baseline;gap:8px;}" +
+    "#bfxCombo b{font-size:30px;line-height:1;}#bfxCombo span{font-size:11px;letter-spacing:1.5px;}#bfxCombo.t2{border-color:#ff3b3b;box-shadow:0 0 30px -4px #ff3b3b;}#bfxCombo.t3{border-color:#ffcf5c;box-shadow:0 0 38px -2px #ffcf5c;}" +
     ".bfxAct{flex-basis:100%;display:flex;gap:10px;flex-wrap:wrap;}.bfxAct>div{flex:1 1 100%;}.bfxAct button,.bfxAct a{white-space:nowrap;}";
   function css() {
     if (document.getElementById("bfxCss")) return;
@@ -191,6 +195,7 @@
     dbl: function () { [784, 988, 1175, 1568].forEach(function (f, i) { tone(f, .12, "square", .08, i * .07); }); },
     hit: function () { noise(.12, .12, 0, 800); tone(180, .15, "square", .1, 0, 60); },
     miss: function () { tone(200, .25, "sawtooth", .07, 0, 90); },
+    beat: function () { tone(62, .11, "sine", .38); tone(54, .13, "sine", .32, .17); },
     ko: function () { tone(330, .6, "sawtooth", .1, 0, 55); noise(.5, .1, 0, 400); }
   };
   function sfx(n) { if (SND && prefs.sfx && SFX[n]) try { SFX[n](); } catch (e) {} }
@@ -235,12 +240,40 @@
   document.addEventListener("pointerdown", function () { if (SND) { ac(); if (musicWanted.on) music(true, musicWanted.fast); } }, { passive: true });
 
   /* ---- clock: final minute, double points warnings, big last-10 countdown ---- */
+  /* ---- 26.1 guide call-out (NEMESIS / SPECTER / ADA / ORACLE) for double points ---- */
+  var GUIDE = null;
+  function setGuide(g) { GUIDE = g || null; }
+  function guide() {
+    if (GUIDE) return GUIDE;
+    var c = window.CTF_COURSE, cfg = c && (((window.COURSE_CONFIG || {})[c] || {}).ctf || {});
+    return { name: (cfg && cfg.adversary) || "NEMESIS", color: (cfg && cfg.adversaryColor) || "#ff4d6d", mentor: !!(cfg && cfg.mentor) };
+  }
+  function say(t) {
+    if (!SND || !window.speechSynthesis) return;
+    try { var u = new SpeechSynthesisUtterance(t); u.rate = 1.05; u.pitch = guide().mentor ? 1.1 : 0.7; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+  }
+  function guideCard(big, sub, ms) {
+    css();
+    var g = guide(), d = document.getElementById("bfxGuide");
+    if (!d) { d = document.createElement("div"); d.id = "bfxGuide"; d.setAttribute("role", "status"); d.setAttribute("aria-live", "assertive"); document.body.appendChild(d); }
+    d.style.cssText = "position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:9550;pointer-events:none;min-width:min(520px,90vw);max-width:92vw;box-sizing:border-box;padding:16px 26px;border-radius:14px;background:rgba(6,10,18,.94);border:2px solid " + g.color + ";box-shadow:0 0 40px -8px " + g.color + ";text-align:center;font-family:'JetBrains Mono',monospace;color:#fff;";
+    d.innerHTML = '<div style="font-size:13px;letter-spacing:2px;font-weight:800;color:' + g.color + ';">' + (g.mentor ? "\u25c6 " : "\u2620 ") + esc(g.name) + ' // ONLINE</div>' +
+      '<div style="font-size:clamp(28px,5vw,54px);font-weight:800;line-height:1.1;margin-top:6px;color:#ffcf5c;">' + esc(big) + '</div>' +
+      (sub ? '<div style="font-size:14px;margin-top:6px;color:#e6edf6;">' + esc(sub) + '</div>' : '');
+    d.style.display = "block"; clearTimeout(guideCard._t);
+    if (ms) guideCard._t = setTimeout(function () { d.style.display = "none"; }, ms);
+  }
   var CK = {};
   function clock(key, left, o) {
     o = o || {}; var k = CK[key] || (CK[key] = { min: false, sec: null, dbl: 0 }), s = Math.ceil(left / 1000);
     if (o.el) o.el.classList.toggle("bfxPulse", left > 0 && left <= 60000);
     if (left > 0 && left <= 60000 && !k.min && left > 50000) { k.min = true; banner("FINAL MINUTE!", "#ff3b3b", "Every capture counts"); sfx("horn"); }
     if (left > 60000) k.min = false;
+    // 26.3 final 30 seconds: guide call-out + heartbeat until the 10-second countdown takes over
+    if (left > 0 && left <= 30000 && left > 25000 && !k.h30) { k.h30 = true; var g30 = guide(); banner("30 SECONDS!", "#ff3b3b", "Final push"); caster(g30.name + ": thirty seconds left. Make them count.", g30.color); say("Thirty seconds."); }
+    if (left > 30000) k.h30 = false;
+    document.documentElement.classList.toggle("bfxHeart", left > 0 && left <= 30000);
+    if (left > 10000 && left <= 30000 && s !== k.hb) { k.hb = s; sfx("beat"); }
     if (o.music) { musicWanted = { on: left > 0, fast: left <= 60000 }; music(musicWanted.on, musicWanted.fast); }
     if (left > 0 && s <= 10 && s !== k.sec) {
       k.sec = s; var l = layer(), d = document.createElement("div"); d.className = "bfxBig in"; d.textContent = s; l.appendChild(d);
@@ -248,12 +281,33 @@
     }
     if (o.dblAt) {
       var until = o.dblAt - (Date.now() + (o.skew || 0));
-      if (until <= 10000 && until > 0 && k.dbl < 1) { k.dbl = 1; banner("DOUBLE POINTS IN 10", "#ffcf5c", "Get ready to capture"); caster("Heads up! Double points is about to drop!", "#ffcf5c"); sfx("dbl"); }
-      if (until <= 0 && until > -30000 && k.dbl < 2) { k.dbl = 2; banner("DOUBLE POINTS!", "#ffcf5c", "30 seconds \u00b7 every capture x2"); sfx("dbl"); }
-      if (until <= -30000 && k.dbl === 2) { k.dbl = 3; caster("Double points is over. Back to normal scoring.", "#ffcf5c"); }
+      var gn = guide().name;
+      if (until <= 10000 && until > 5000 && k.dbl < 1) { k.dbl = 1; guideCard("DOUBLE POINTS INCOMING", "Get ready to capture"); caster(gn + ": double points is about to drop!", "#ffcf5c"); say(gn + " online. Double points incoming."); sfx("dbl"); }
+      if (until <= 5000 && until > 0) {
+        var n = Math.ceil(until / 1000);
+        if (k.dblS !== n) { k.dbl = Math.max(k.dbl, 1); k.dblS = n; guideCard("DOUBLE POINTS IN " + n, "Every capture counts x2 for 30 seconds"); say(n === 5 ? "Double points in 5" : String(n)); sfx("tick"); }
+      }
+      if (until <= 0 && until > -30000 && k.dbl < 2) { k.dbl = 2; guideCard("ACTIVATED", "Double points \u00b7 30 seconds \u00b7 every capture x2", 2600); caster(gn + ": double points ACTIVATED!", "#ffcf5c"); say("Activated."); sfx("dbl"); }
+      if (until <= -30000 && until > -60000 && k.dbl === 2) { k.dbl = 3; guideCard("DOUBLE POINTS OVER", "Back to normal scoring", 3000); caster(gn + ": double points is over. Back to normal scoring.", "#ffcf5c"); say("Double points is over."); }
     }
-    if (left <= 0 && !k.end) { k.end = true; music(false); }
+    if (left <= 0 && !k.end) { k.end = true; music(false); document.documentElement.classList.remove("bfxHeart"); }
     if (left > 0) k.end = false;
+  }
+  /* 26.3 combo meter (your own streak): x3 / x5 / x10 milestones */
+  var CB = 0;
+  function combo(n) {
+    css(); var c = document.getElementById("bfxCombo");
+    if (!c) { c = document.createElement("div"); c.id = "bfxCombo"; c.setAttribute("aria-hidden", "true"); document.body.appendChild(c); }
+    var was = CB; CB = n || 0;
+    if (CB < 2) { c.style.display = "none"; return; }
+    c.className = CB >= 10 ? "t3" : CB >= 5 ? "t2" : "";
+    c.innerHTML = '<b>\u00d7' + CB + '</b><span>' + (CB >= 10 ? "UNSTOPPABLE" : CB >= 5 ? "ON FIRE" : "COMBO") + '</span>';
+    c.style.display = "flex"; if (CB > was) pop(c);
+    if (CB > was && (CB === 3 || CB === 5 || CB === 10)) {
+      var g = guide();
+      banner(CB === 10 ? "\u00d710 UNSTOPPABLE!" : CB === 5 ? "\u00d75 COMBO \u00b7 ON FIRE!" : "\u00d73 COMBO!", CB >= 10 ? "#ffcf5c" : CB >= 5 ? "#ff3b3b" : "#ff8a00", CB + " in a row");
+      sfx("fire"); if (CB >= 5) caster(g.name + ": " + (CB >= 10 ? "ten in a row?! Somebody stop them." : "five straight. You're making this look easy."), g.color);
+    }
   }
   function inDouble(dblAt, skew) { if (!dblAt) return false; var u = dblAt - (Date.now() + (skew || 0)); return u <= 0 && u > -30000; }
 
@@ -294,7 +348,10 @@
       }
       var sk = o.streakBy === "who" ? f.who : f.team;
       if (p.run.k === sk) p.run.n++; else p.run = { k: sk, n: 1 };
-      if (p.run.n === 3 || p.run.n === 6) { var nm = o.streakBy === "who" ? f.who : tn; banner((nm === "YOU" ? "YOU'RE" : nm + " IS") + " ON FIRE!", t.color || "#ff8a00", p.run.n + " " + noun + "s in a row"); sfx("fire"); caster(fill(pickOne(LINES.fire), { t: nm }), t.color); }
+      if (f.bounty) { banner("BOUNTY CLAIMED!", t.color || "#ffcf5c", f.who + " knocked the leader off the top \u00b7 +1"); sfx("lead"); caster(guide().name + ": " + f.who + " cashes in the bounty on the leader!", guide().color); }
+      if (f.revenge) { banner("REVENGE!", t.color || "#ff3b3b", f.who + " paid back " + (f.loser || "their rival") + " \u00b7 +1"); sfx("fire"); }
+      if (o.streakBy === "who") combo(p.run.k === "YOU" ? p.run.n : 0);
+      if (o.streakBy !== "who" && (p.run.n === 3 || p.run.n === 6)) { var nm = o.streakBy === "who" ? f.who : tn; banner((nm === "YOU" ? "YOU'RE" : nm + " IS") + " ON FIRE!", t.color || "#ff8a00", p.run.n + " " + noun + "s in a row"); sfx("fire"); caster(fill(pickOne(LINES.fire), { t: nm }), t.color); }
       out.changed.push(f.team);
     });
     if (fresh.length) { p.seen = new Date(F[F.length - 1].at).getTime(); }
@@ -311,7 +368,8 @@
         if (!lead || t.id === lead.id) return;
         var gap = lead.score > 0 ? (lead.score - t.score) / lead.score : 0;
         p.gap[t.id] = Math.max(p.gap[t.id] || 0, gap);
-        if (p.gap[t.id] >= .4 && gap <= .1) { p.gap[t.id] = 0; banner("COMEBACK ALERT!", t.color, t.name + " is right on their heels"); sfx("fire"); caster(fill(pickOne(LINES.back), { t: t.name }), t.color); }
+        if (p.gap[t.id] >= .4 && gap <= .1) { p.gap[t.id] = 0; var gb = guide(); banner("COMEBACK ALERT!", t.color, t.name + " is right on their heels"); sfx("fire");
+          caster(gb.name + ": " + (lead.name === "YOU" ? "they're catching up to you\u2026" : t.name === "YOU" ? "you're catching up\u2026 keep going." : t.name + " is catching up\u2026"), gb.color); }
       });
     } else edge(null);
     if (p.status === "live" && snap.status !== "live" && !p.endFx) {
@@ -323,7 +381,7 @@
     return out;
   }
   function scoreMap(T) { var m = {}; T.forEach(function (t) { m[t.id] = t.score; }); return m; }
-  function reset(key) { delete TR[key]; delete CK[key]; edge(null); music(false); }
+  function reset(key) { delete TR[key]; delete CK[key]; edge(null); music(false); combo(0); document.documentElement.classList.remove("bfxHeart"); }
 
   /* ---- results card ---- */
   function podium(o) {
@@ -360,7 +418,7 @@
   function fullscreen(el) { try { if (document.fullscreenElement) document.exitFullscreen(); else (el || document.documentElement).requestFullscreen(); } catch (e) {} }
 
   window.BATTLE_FX = { banner: banner, caster: caster, edge: edge, shake: shake, pop: pop, confetti: confetti, damage: damage,
-    bossBar: bossBar, setBoss: setBoss, avatar: avatar, clock: clock, inDouble: inDouble, track: track, reset: reset, sfx: sfx, music: music,
-    soundUi: soundUi, podium: podium, fullscreen: fullscreen, esc: esc,
+    bossBar: bossBar, setBoss: setBoss, combo: combo, avatar: avatar, clock: clock, inDouble: inDouble, track: track, reset: reset, sfx: sfx, music: music,
+    soundUi: soundUi, podium: podium, setGuide: setGuide, fullscreen: fullscreen, esc: esc,
     enableSound: function (on) { SND = !!on; if (!on) music(false); }, reduced: RM };
 })();

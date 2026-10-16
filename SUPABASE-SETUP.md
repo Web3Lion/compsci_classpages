@@ -75,6 +75,10 @@ checks who is asking.
    | 40 | `arena-duels.sql` | **v21.0** Student Flag Duels (arena-duel.html): 2–4 players, host picks modules + 2/5/10 min, 4-letter join code. A trigger on `flag_events` scores Easy 1 / Medium 2 / Hard 3. Winner +10 XP, finishers +5. Per-class on/off on teacher.html → Locks & Guide (needs google-auth.sql, teacher-xp.sql, hint-log.sql) |
    | 41 | `team-battles.sql` | **v22.0** Teacher-run Team Battles (battle.html): 2–4 squads, teacher picks modules + length, randomize teams, team score = points ÷ teammates who played, MVP per team. Pauses Flag Duels while live (needs class-groups.sql, squads.sql, teacher-xp.sql, module-clears.sql, arena-duels.sql) |
    | 42 | `vocab-duels.sql` | **v23.0** Vocab Duels (vocab-duel.html) and teacher-run Vocab Battles (vocab-battle.html): health-bar fights on cipher/unscramble terms, answers checked server-side, random cross-team pairing with a different term per pair (needs google-auth.sql, teacher-xp.sql, class-groups.sql, squads.sql; Randomize teams uses team-battles.sql) |
+   | 43 | `class-rename.sql` | **v25.0** Rename a class from teacher.html (✎ Rename next to the class name). Run after google-auth.sql. |
+   | 46 | `brackets.sql` | **v27.0** Duel brackets (bracket.html teacher / bracket-play.html students, best of 3, XP seeding, consolation bracket) + per-class animated battle backgrounds. Run after vocab-duels.sql and module-clears.sql. |
+   | 45 | `duel-record.sql` | **v26.3** Duel record + Weekly Duel Champion on profiles, and the projector Duel Spectator (duel-watch.html). Run after arena-duels.sql + vocab-duels.sql. Also **re-run arena-duels.sql and vocab-duels.sql** (26.3: 6-player flag duels, bounty, 3–4 player vocab brawls, revenge). |
+   | 44 | `squad-sets.sql` | **v26.0** Saved team sets: save the class's squads under a name and load them back (battle pages + Squads tab). Run after squads.sql. Also **re-run team-battles.sql and vocab-duels.sql** (26.0) so a battle can use only the teams you pick. |
 
    **Order matters in several places** (each is a case of two files redefining the
    same function, where the one that runs LAST wins):

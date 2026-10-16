@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=26.0.0"></script>
+<script src="site.js?v=27.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,7 +54,7 @@ html[data-motion="reduce"] .shake{animation:none;}
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   if (!VG[C]) { document.getElementById("view").innerHTML = '<div class="card">Open a Vocab Duel from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
-  var V = "24.0.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "auth.js", "battle-fx.js"];
+  var V = window.SITE_VERSION || "26.2.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){
@@ -73,11 +73,14 @@ html[data-motion="reduce"] .shake{animation:none;}
     function modName(m){ return "Module " + String(m).padStart(2,"0") + (MODN[m-1] ? " \u00b7 " + MODN[m-1] : ""); }
     var ERR = { duels_off:"Your teacher has student duels turned off for this class.", class_battle_live:"A class vocab battle is running. 1v1 duels are paused until it ends.",
       in_quiz:"Finish your open vocab quiz first.", already_in_duel:"You\u2019re already in a duel.", too_few_terms:"Pick modules with at least 4 vocab terms.",
-      no_duel:"No open vocab duel with that code in your class.", started:"That duel already started.", full:"That duel already has 2 players.", need_two:"Wait for your opponent to join.", not_yours:"Sign in on your CTF page first." };
+      no_duel:"No open vocab duel with that code in your class.", started:"That duel already started.", full:"That duel is full (4 players).", need_two:"Wait for your opponent to join.", not_yours:"Sign in on your CTF page first." };
     if (!AUTH || !AUTH.online || !S) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" style="display:inline-flex;align-items:center;" href="' + C + '/ctf.html">Go to the arena</a></div>'; return; }
 
     var MODS = {}; TERMS.forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     var ST = null, skew = 0, pick = {}, msg = "", busy = false, timer = null, sig = "", lastN = null, lastHp = null, note = "", noteCol = "", sending = false;
+    var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]], modes = { cipher: true, unscramble: true, decrypt: true, bank: true };
+  function nModes(){ return PMODES.filter(function(p){ return modes[p[0]]; }).length; }
+  function modeList(){ return PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }); }
     var FX = window.BATTLE_FX, streak = 0, blood = {}, endFx = {};
 
     function rpc(fn, a){ return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
@@ -90,13 +93,16 @@ html[data-motion="reduce"] .shake{animation:none;}
     function setupView(){
       var keys = Object.keys(MODS).map(Number).sort(function(a,b){return a-b;}), sel = keys.filter(function(m){ return pick[m]; });
       var n = sel.reduce(function(a, m){ return a + MODS[m].length; }, 0), blocked = ST.class_live || !ST.duels_on;
-      return title("Face one classmate. Each round shows a definition with the term disguised as a cipher or scrambled letters. First to crack it hits for 25%. A wrong guess costs you a third of a hit. Four hits wins. Winner +10 XP, both +5 for finishing.") +
+      return title("Face 1\u20133 classmates. Two players fight one classic duel; 3\u20134 players start a 5-minute brawl of rotating 1v1s where the most KO points wins. Each round shows a definition with the term disguised as a Caesar cipher, scrambled letters, a decrypt board that leaks letters, or a word bank (the host picks which). First to crack it hits for 25%. A wrong guess costs you a third of a hit. Four hits wins. Winner +10 XP, both +5 for finishing.") +
         (blocked ? '<div class="card" style="border-color:var(--adv);margin-bottom:18px;">' + (ST.class_live ? "A class vocab battle is running. Watch for your next opponent here." : esc(ERR.duels_off)) + '</div>' : '') +
         '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;" id="g">' +
         '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">HOST A DUEL</div>' +
           '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules to draw terms from</div>' +
           '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + keys.map(function(m){ return '<button type="button" class="chip vdMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + MODS[m].length + '</span></button>'; }).join("") + '</div>' +
-          '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vdCreate"' + (busy || n < 4 || blocked ? " disabled" : "") + '>Create duel</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (sel.length ? n + " terms" : "Pick at least one module") + '</span></div></div>' +
+          '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +
+        '<div role="group" aria-label="Puzzle types" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">' + PMODES.map(function(p){ var on = !!modes[p[0]]; return '<button type="button" class="chip vdPm" data-p="' + p[0] + '" aria-pressed="' + on + '">' + (on ? "\u2713 " : "") + p[1] + '</button>'; }).join("") + '</div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;">Each term uses one of the ticked types at random.' + (nModes() ? '' : ' <b style="color:var(--bad);">Pick at least one.</b>') + '</div>' +
+          '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vdCreate"' + (busy || n < 4 || !nModes() || blocked ? " disabled" : "") + '>Create duel</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (sel.length ? n + " terms" : "Pick at least one module") + '</span></div></div>' +
         '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">JOIN A DUEL</div>' +
           '<label for="vdCode" style="display:block;font-weight:700;color:var(--bright);margin-bottom:10px;">4-letter code</label>' +
           '<input id="vdCode" class="code" maxlength="4" autocomplete="off" spellcheck="false">' +
@@ -107,11 +113,22 @@ html[data-motion="reduce"] .shake{animation:none;}
       return title("") + '<div class="card" style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;border-color:var(--adv);">' +
         '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">DUEL CODE</div><div class="mono" style="font-size:52px;font-weight:800;letter-spacing:10px;color:var(--bright);line-height:1.1;">' + esc(s.code) + '</div>' +
         '<div class="mono" style="font-size:12px;color:var(--dim);margin-top:4px;">' + (s.modules || []).map(function(m){ return "M" + String(m).padStart(2,"0"); }).join(" \u00b7 ") + '</div></div>' +
-        '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">' + (s.players || []).map(function(p){ return '<b style="color:var(--bright);">' + esc(p.handle) + '</b>'; }).join(" vs ") + (n < 2 ? (host ? " \u00b7 share the code with your opponent." : "") : (host ? " \u00b7 ready!" : " \u00b7 waiting for the host to start.")) + '</div>' +
+        '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">' + (s.players || []).map(function(p){ return '<b style="color:var(--bright);">' + esc(p.handle) + '</b>'; }).join(" vs ") + ' <span class="mono" style="font-size:12px;color:var(--dim);">(' + n + '/4)</span>' + (n < 2 ? (host ? " \u00b7 share the code (up to 4 players)." : "") : (host ? " \u00b7 ready! " + (n >= 3 ? "Starts a 5-minute brawl." : "Starts a 1v1, or wait for more for a brawl.") : " \u00b7 waiting for the host to start.")) + '</div>' +
         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' + (host ? '<button type="button" class="btn" id="vdStart"' + (busy || n < 2 ? " disabled" : "") + '>Start duel</button>' : '') +
         '<button type="button" class="btn ghost" id="vdLeave">' + (host ? "Cancel" : "Leave") + '</button></div></div>' + alert_();
     }
+    var BPAL = ["#3a86ff","#ff5d73","#2ec27e","#f4a300"];
+    function bcol(s, id){ var i = (s.players || []).map(function(p){ return String(p.id); }).indexOf(String(id)); return BPAL[(i < 0 ? 0 : i) % 4]; }
     function teamsStrip(s){
+      if (s.kind === "duel" && s.brawl) {
+        var P = (s.players || []).slice().sort(function(a, b){ return b.wins - a.wins; });
+        return '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;" id="vdTeams">' + P.map(function(p){
+          var me = p.id === ST.me;
+          return '<span id="vb-' + esc(p.id) + '" style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:' + (me ? "2px solid var(--accent)" : "1px solid var(--border3)") + ';background:var(--panel);">' +
+            '<span aria-hidden="true" style="width:10px;height:10px;border-radius:3px;background:' + bcol(s, p.id) + ';"></span><b style="color:var(--bright);font-size:13px;">' + esc(p.handle) + '</b>' +
+            (me ? '<span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + '<span class="mono" style="font-weight:800;color:var(--bright);">' + p.wins + '</span>' + (s.status === "done" && p.mvp ? '<span class="mono" style="font-size:10px;color:var(--ok);">\u2605 WIN</span>' : '') + '</span>';
+        }).join("") + (s.status === "live" ? '<span class="mono" id="vdClock" style="margin-left:auto;font-size:20px;font-weight:800;color:var(--bright);"></span>' : '') + '</div>';
+      }
       if (s.kind !== "class") return "";
       var cols = ["#3a86ff","#ff5d73","#2ec27e","#f4a300"];
       return '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;" id="vdTeams">' + (s.teams || []).map(function(t, i){
@@ -128,9 +145,24 @@ html[data-motion="reduce"] .shake{animation:none;}
         (FX ? FX.bossBar(id, pct, me ? "#00b3ff" : "#ff3b3b", who + " health") :
         '<div class="hp" role="meter" aria-label="' + esc(who) + ' health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" id="' + id + 'M"><div id="' + id + '" style="width:' + pct + '%;background:' + col + ';"></div></div>') + '</div>';
     }
+    function maskHtml(m){
+      return String(m || "").split("").map(function(c){
+        if (c === " ") return '<span style="width:14px;"></span>';
+        var hid = c === "_", al = /[A-Z0-9_]/.test(c);
+        return '<span class="mono" style="display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:48px;border-radius:9px;font-size:22px;font-weight:800;border:1px solid ' + (hid ? "var(--border3)" : "var(--adv)") + ';background:' + (hid ? "var(--bg)" : "color-mix(in srgb, var(--adv) 16%, var(--bg))") + ';color:' + (al ? "var(--bright)" : "var(--faint)") + ';">' + (hid ? "" : esc(c)) + '</span>';
+      }).join("");
+    }
     function fightView(s, f){
       var cipher = f.mode === "cipher";
-      var puzzle = cipher
+      var bank = f.mode === "bank", dec = f.mode === "decrypt", opts = [];
+      if (bank) { try { opts = JSON.parse(f.puzzle || "[]"); } catch (e) {} }
+      var puzzle = dec
+        ? '<div id="vdMask" style="display:flex;flex-wrap:wrap;gap:6px;">' + maskHtml(f.puzzle) + '</div>' +
+          '<div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">DECRYPT \u00b7 letters start leaking after 8 seconds \u00b7 type the term</div>'
+        : bank
+        ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;">' + opts.map(function(o){ return '<button type="button" class="tile vdBank" style="font-size:16px;padding:10px 12px;text-align:center;">' + esc(o) + '</button>'; }).join("") + '</div>' +
+          '<div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">WORD BANK \u00b7 pick the term that matches \u00b7 a wrong pick still costs you a third of a hit</div>'
+        : cipher
         ? '<div class="mono" style="font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:4px;color:var(--advtext);word-break:break-word;">' + esc(f.puzzle) + '</div>' +
           '<div class="mono" style="font-size:13px;color:var(--muted);margin-top:6px;">CAESAR CIPHER \u00b7 shift each letter back <b style="color:var(--bright);">' + f.shift + '</b> (A\u2192' + String.fromCharCode(65 + ((26 - f.shift) % 26)) + ')</div>'
         : '<div style="display:flex;flex-wrap:wrap;gap:6px;" id="vdTiles">' + String(f.puzzle || "").split("").map(function(ch, i){ return '<button type="button" class="tile" data-i="' + i + '" aria-label="Letter ' + esc(ch) + '">' + esc(ch) + '</button>'; }).join("") + '</div>' +
@@ -147,21 +179,23 @@ html[data-motion="reduce"] .shake{animation:none;}
           '<button type="button" class="btn ghost" id="vdClr" aria-label="Clear">\u232b</button><button type="submit" class="btn" id="vdGo">Strike</button></form>' +
         '<div class="mono" id="vdNote" role="status" aria-live="assertive" style="min-height:22px;margin-top:12px;font-size:14px;font-weight:700;color:' + (noteCol || "var(--muted)") + ';">' + esc(note) + '</div></div>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;"><span class="mono" style="font-size:12px;color:var(--dim);">' +
-          (s.kind === "class" ? "KOs this battle: " + ((s.my || {}).wins || 0) : "First to 4 hits wins") + '</span><button type="button" class="btn ghost" id="vdLeave">' + (s.kind === "class" ? "Exit battle" : "Forfeit") + '</button></div>';
+          (s.kind === "class" || s.brawl ? "KO points: " + ((s.my || {}).wins || 0) + " \u00b7 revenge or bounty KO = +1" : "First to 4 hits wins") + '</span><button type="button" class="btn ghost" id="vdLeave">' + (s.kind === "class" ? "Exit battle" : "Forfeit") + '</button></div>';
     }
     function koView(s, f){
       return teamsStrip(s) + '<div class="card" style="text-align:center;padding:40px 22px;background:var(--arena);border-color:' + (f.won ? "var(--ok)" : "var(--adv)") + ';">' +
         '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--faint);">' + (f.won === null ? "FIGHT OVER" : "KNOCKOUT") + '</div>' +
         '<div style="font-size:clamp(30px,6vw,46px);font-weight:800;color:var(--bright);margin:8px 0;">' + (f.won ? "\u2605 You KO\u2019d " + esc(f.opp) + "!" : f.won === false ? esc(f.opp) + " wins this one" : "No winner") + '</div>' +
+        (f.won && (f.revenge || f.bounty) ? '<div class="mono" style="font-size:15px;font-weight:800;color:var(--amber, #ffcf5c);margin-bottom:8px;">' + [f.revenge ? "REVENGE +1" : "", f.bounty ? "BOUNTY +1" : ""].filter(Boolean).join(" \u00b7 ") + '</div>' : '') +
+        (f.won === false && f.bounty ? '<div class="mono" style="font-size:13px;color:var(--muted);margin-bottom:8px;">You had the bounty on your head.</div>' : '') +
         (f.last_t ? '<div class="mono" style="font-size:14px;color:var(--muted);">Last term: <b style="color:var(--bright);">' + esc(f.last_t) + '</b></div>' : '') +
-        '<div style="font-size:14px;color:var(--muted);margin-top:14px;">' + (s.kind === "class" && s.status === "live" ? "Finding your next opponent\u2026" : "") + '</div></div>';
+        '<div style="font-size:14px;color:var(--muted);margin-top:14px;">' + ((s.kind === "class" || s.brawl) && s.status === "live" ? "Finding your next opponent\u2026" : "") + '</div></div>';
     }
     function waitView(s){
       return teamsStrip(s) + '<div class="card" style="text-align:center;padding:40px 22px;background:var(--arena);border-color:var(--adv);">' +
         '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--advtext);">' + (MENTOR ? "\u25c6 " : "\u2620 ") + esc(ADV) + ' IS FINDING YOUR OPPONENT</div>' +
         '<div style="font-size:26px;font-weight:800;color:var(--bright);margin:10px 0;">Stay on this page</div>' +
-        '<div style="font-size:14px;color:var(--muted);line-height:1.6;">You\u2019ll face someone from another team. If the numbers are uneven you may sit out a moment.<br>Your KOs: <b style="color:var(--bright);">' + ((s.my || {}).wins || 0) + '</b></div>' +
-        '<div style="margin-top:18px;"><button type="button" class="btn ghost" id="vdLeave">Exit battle</button></div></div>';
+        '<div style="font-size:14px;color:var(--muted);line-height:1.6;">' + (s.brawl ? "Next opponent loading. With 3 players one sits out each round." : "You\u2019ll face someone from another team. If the numbers are uneven you may sit out a moment.") + '<br>Your KO points: <b style="color:var(--bright);">' + ((s.my || {}).wins || 0) + '</b></div>' +
+        '<div style="margin-top:18px;"><button type="button" class="btn ghost" id="vdLeave">' + (s.brawl ? "Forfeit" : "Exit battle") + '</button></div></div>';
     }
     function doneView(s){
       var my = s.my || {}, body;
@@ -195,9 +229,11 @@ html[data-motion="reduce"] .shake{animation:none;}
       view.innerHTML = sc[0] === "setup" ? setupView() : sc[0] === "lobby" ? lobbyView(s) : sc[0] === "done" ? doneView(s) : sc[0] === "fight" ? fightView(s, f) : sc[0] === "ko" ? koView(s, f) : waitView(s);
       var ci = document.getElementById("vdCode"); if (ci) ci.value = keep;
       var g = document.getElementById("g"); if (g && innerWidth < 760) g.style.gridTemplateColumns = "1fr";
-      bind(); clock();
-      if (FX && sc[0] === "ko" && !wasKo) { FX.banner(f.won ? "K.O.!" : f.won === false ? "DOWN!" : "TIME!", f.won ? "#3ddc97" : "#ff3b3b", f.won ? "You knocked out " + f.opp : f.won === false ? f.opp + " got you this time" : ""); if (f.won) FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; }
-      if (FX && sc[0] === "done" && s && !endFx[s.id]) { endFx[s.id] = 1; var my = s.my || {}, won = s.kind === "class" ? (s.teams || []).some(function(t){ return t.won && t.id === s.my_team; }) : s.winner_handle === ST.handle;
+      bind(); clock(); brawlFx(s);
+      if (FX && sc[0] === "ko" && !wasKo) { FX.banner(f.won ? "K.O.!" : f.won === false ? "DOWN!" : "TIME!", f.won ? "#3ddc97" : "#ff3b3b", f.won ? "You knocked out " + f.opp : f.won === false ? f.opp + " got you this time" : ""); if (f.won) FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; FX.combo(0);
+        if (f.won && f.revenge) FX.banner("REVENGE!", "#ff3b3b", "You paid back " + f.opp + " \u00b7 +1 KO point");
+        if (f.won && f.bounty) FX.banner("BOUNTY CLAIMED!", "#ffcf5c", "You took down the leader \u00b7 +1 KO point"); }
+      if (FX && sc[0] === "done" && s && !endFx[s.id]) { endFx[s.id] = 1; var my = s.my || {}, won = s.kind === "class" ? (s.teams || []).some(function(t){ return t.won && t.id === s.my_team; }) : s.brawl ? !!(s.my || {}).mvp : s.winner_handle === ST.handle;
         FX.edge(null); FX.banner(won ? "VICTORY!" : "GAME OVER", won ? "#ffcf5c" : "#7f9cb8", my.xp ? "+" + my.xp + " XP" : ""); if (won) FX.confetti(); }
       var a = document.getElementById("vdAns"); if (a) a.focus();
     }
@@ -208,18 +244,25 @@ html[data-motion="reduce"] .shake{animation:none;}
     }
     function update(){
       var f = ST.fight, s = ST.session;
+      if (f && f.status === "live" && f.mode === "decrypt") { var mk = document.getElementById("vdMask"); if (mk && mk._m !== f.puzzle) { mk._m = f.puzzle; mk.innerHTML = maskHtml(f.puzzle); } }
       if (f && f.status === "live") { setHp("vdMe", f.my_hp); setHp("vdOpp", f.opp_hp); }
+      brawlFx(s);
       var t = document.getElementById("vdTeams"); if (t && s) { var tmp = document.createElement("div"); tmp.innerHTML = teamsStrip(s); t.replaceWith(tmp.firstChild); }
       clock();
+    }
+    function brawlFx(s){
+      if (!FX || !s || !s.brawl || s.status === "lobby") return;
+      FX.track("vdb" + s.id, { status: s.status === "live" ? "live" : s.status, teams: (s.players || []).map(function(p){ return { id: p.id, name: p.id === ST.me ? "YOU" : p.handle, color: bcol(s, p.id), score: p.wins }; }), feed: [] }, {});
     }
     function say(t, col){ note = t; noteCol = col; var n = document.getElementById("vdNote"); if (n) { n.textContent = t; n.style.color = col; } }
     function shake(){ var a = document.getElementById("vdArena"); if (!a) return; a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); }
     function bind(){
       view.querySelectorAll(".vdMod").forEach(function(b){ b.onclick = function(){ var m = +b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; draw(true); }; });
+      view.querySelectorAll(".vdPm").forEach(function(x){ x.onclick = function(){ var p = x.getAttribute("data-p"); modes[p] = !modes[p]; draw(true); }; });
       var cr = document.getElementById("vdCreate"); if (cr) cr.onclick = function(){
         var sel = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
         var pool = []; sel.forEach(function(m){ MODS[m].forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
-        dismissed = null; act("ctf_vd_create", { p_modules: sel, p_pool: pool });
+        dismissed = null; act("ctf_vd_create", { p_modules: sel, p_pool: pool, p_modes: modeList() });
       };
       var jn = document.getElementById("vdJoin"), ci = document.getElementById("vdCode");
       if (ci) ci.onkeydown = function(e){ if (e.key === "Enter" && jn) jn.click(); };
@@ -227,12 +270,13 @@ html[data-motion="reduce"] .shake{animation:none;}
       var st = document.getElementById("vdStart"); if (st) st.onclick = function(){ act("ctf_vd_start"); };
       var lv = document.getElementById("vdLeave"); if (lv) lv.onclick = function(){
         var s = ST.session, live = s && s.status === "live";
-        if (!confirm(live ? (s.kind === "class" ? "Exit the vocab battle? You stop fighting for your team and won\u2019t get battle XP." : "Forfeit this duel? Your opponent wins and you get no XP.") : "Leave this duel?")) return;
+        if (!confirm(live ? (s.kind === "class" ? "Exit the vocab battle? You stop fighting for your team and won\u2019t get battle XP." : s.brawl ? "Forfeit this brawl? You get no XP." : "Forfeit this duel? Your opponent wins and you get no XP.") : "Leave this duel?")) return;
         act("ctf_vd_leave");
       };
       var nw = document.getElementById("vdNew"); if (nw) nw.onclick = function(){ dismissed = ST.session && ST.session.id; draw(true); };
       var form = document.getElementById("vdForm"), ans = document.getElementById("vdAns");
-      view.querySelectorAll(".tile").forEach(function(b){ b.onclick = function(){ if (!ans) return; ans.value += b.textContent; b.disabled = true; ans.focus(); auto(); }; });
+      view.querySelectorAll(".vdBank").forEach(function(b){ b.onclick = function(){ if (!ans || sending) return; ans.value = b.textContent; strike(); }; });
+      view.querySelectorAll(".tile:not(.vdBank)").forEach(function(b){ b.onclick = function(){ if (!ans) return; ans.value += b.textContent; b.disabled = true; ans.focus(); auto(); }; });
       var clr = document.getElementById("vdClr"); if (clr) clr.onclick = function(){ if (ans) { ans.value = ""; ans.focus(); } view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); };
       if (ans) ans.oninput = auto;
       if (form) form.onsubmit = function(e){ e.preventDefault(); strike(); };
@@ -249,9 +293,9 @@ html[data-motion="reduce"] .shake{animation:none;}
           say("\u2713 " + d.term + " \u2014 hit for 25%!", "var(--ok)");
           if (FX) { streak++; var sid = ST.session && ST.session.id;
             if (sid && !blood[sid]) { blood[sid] = 1; FX.banner("FIRST BLOOD!", "#00b3ff", "You landed the first hit"); }
-            else if (streak === 3 || streak === 6) FX.banner("YOU'RE ON FIRE!", "#ff8a00", streak + " correct in a row"); }
+            FX.combo(streak); }
         }
-        else if (d && d.correct === false) { streak = 0; say("\u2717 Not it. You took a third of a hit.", "var(--bad)"); shake(); a.value = ""; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); }
+        else if (d && d.correct === false) { streak = 0; if (FX) FX.combo(0); say("\u2717 Not it. You took a third of a hit.", "var(--bad)"); shake(); a.value = ""; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); }
         else if (d && d.stale) say("Too slow \u2014 that term was already cracked.", "var(--muted)");
         load();
       }).catch(function(){ sending = false; load(); });
@@ -268,12 +312,13 @@ html[data-motion="reduce"] .shake{animation:none;}
         var f = d.fight;
         // what happened since the last poll (the opponent cracked it, or time ran out)
         if (f && f.status === "live" && lastN != null && f.id === lastN.id && f.n !== lastN.n && !f.last_mine && f.last_t) {
-          if (lastHp != null && f.my_hp < lastHp) { streak = 0; say(f.opp + " cracked it first: " + f.last_t + ". You took a hit.", "var(--bad)"); setTimeout(shake, 0);
+          if (lastHp != null && f.my_hp < lastHp) { streak = 0; if (FX) FX.combo(0); say(f.opp + " cracked it first: " + f.last_t + ". You took a hit.", "var(--bad)"); setTimeout(shake, 0);
             var sid2 = d.session && d.session.id; if (FX && sid2 && !blood[sid2]) { blood[sid2] = 1; FX.banner("FIRST BLOOD!", "#ff3b3b", f.opp + " struck first"); } }
           else say("Time! The term was " + f.last_t + ".", "var(--muted)");
         } else if (f && f.status === "live" && (!lastN || lastN.id !== f.id)) say("", "");
         lastN = f ? { id: f.id, n: f.n } : null; lastHp = f ? f.my_hp : null;
         ST = d; if (d.now) skew = new Date(d.now).getTime() - Date.now();
+        if (window.BATTLE_BG && !BATTLE_BG._vd) { BATTLE_BG._vd = 1; BATTLE_BG.auto("duel", { student: S.studentId }); }
         var typing = document.activeElement && document.activeElement.id === "vdCode";
         if (!(typing && !d.session)) draw(false);
         var live = d.session && d.session.status !== "done" && d.session.status !== "cancelled";

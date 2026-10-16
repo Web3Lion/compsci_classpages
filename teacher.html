@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=26.0.0"></script>
+<script src="site.js?v=27.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -260,20 +260,20 @@
   </div>
 </div>
 
-<script src="config.js?v=26.0.0"></script>
-<script src="ctf-data/cyber1.js?v=26.0.0"></script>
-<script src="ctf-data/cyber2.js?v=26.0.0"></script>
-<script src="ctf-data/cyber3.js?v=26.0.0"></script>
-<script src="ctf-data/apcsp.js?v=26.0.0"></script>
-<script src="ctf-data/web3.js?v=26.0.0"></script>
-<script src="cipher.js?v=26.0.0"></script>
-<script src="supabase-config.js?v=26.0.0"></script>
-<script src="auth.js?v=26.0.0"></script>
-<script src="name-filter.js?v=26.0.0"></script>
-<script src="objectives.js?v=26.0.0"></script>
-<script src="standards.js?v=26.0.0"></script>
-<script src="csv.js?v=26.0.0"></script>
-<script src="skins.js?v=26.0.0"></script>
+<script src="config.js?v=27.0.0"></script>
+<script src="ctf-data/cyber1.js?v=27.0.0"></script>
+<script src="ctf-data/cyber2.js?v=27.0.0"></script>
+<script src="ctf-data/cyber3.js?v=27.0.0"></script>
+<script src="ctf-data/apcsp.js?v=27.0.0"></script>
+<script src="ctf-data/web3.js?v=27.0.0"></script>
+<script src="cipher.js?v=27.0.0"></script>
+<script src="supabase-config.js?v=27.0.0"></script>
+<script src="auth.js?v=27.0.0"></script>
+<script src="name-filter.js?v=27.0.0"></script>
+<script src="objectives.js?v=27.0.0"></script>
+<script src="standards.js?v=27.0.0"></script>
+<script src="csv.js?v=27.0.0"></script>
+<script src="skins.js?v=27.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -452,6 +452,8 @@ function renderMain(){
         '<a class="btn sm" target="_blank" rel="noopener" href="duel.html?class='+encodeURIComponent(CUR.id)+'">Duel Arena \u2197</a>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="battle.html?class='+encodeURIComponent(CUR.id)+'">Team Battle \u2197</a>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="vocab-battle.html?class='+encodeURIComponent(CUR.id)+'">Vocab Battle \u2197</a>'+
+        '<a class="btn sm" target="_blank" rel="noopener" href="duel-watch.html?class='+encodeURIComponent(CUR.id)+'">Duel Spectator \u2197</a>'+
+        '<a class="btn sm" target="_blank" rel="noopener" href="bracket.html?class='+encodeURIComponent(CUR.id)+'">Bracket \u2197</a>'+
         '<button class="btn sm" type="button" onclick="endAllDuels()" title="Cancel every live duel in all your classes">End all duels</button>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="certificates.html?class='+encodeURIComponent(CUR.id)+'">Certificates \u2197</a>'+
         '<a class="btn sm" target="_blank" rel="noopener" href="install-check.html">Install Check \u2197</a>'+
@@ -2729,7 +2731,7 @@ async function removeSelected(){
   var ids=Object.keys(GSEL).filter(function(k){return GSEL[k];});
   if(!ids.length) return;
   if(!confirm("Remove "+ids.length+" student"+(ids.length==1?"":"s")+" from this class?\n\nTheir progress, captures, and integrity logs are deleted. This cannot be undone.")) return;
-  try{ await rpc("ctf_t_remove_students",{p_students:ids}); GSEL={}; await loadClasses(true); }
+  try{ var r=await rpc("ctf_t_remove_students",{p_students:ids}); if(r&&r.error) throw new Error(r.error); GSEL={}; await loadClasses(true); if(typeof loadDetail==="function") await loadDetail(); }
   catch(e){ alert("Couldn\u2019t remove those students \u2014 run supabase/roster-csv.sql."); }
 }
 /* move one student to another class, keeping every bit of their work */
@@ -2923,13 +2925,20 @@ async function sqDrop(e,gid){
   var prev=s.group_id; s.group_id=gid; renderMain();   // move the card right away
   try{ var r=await rpc("ctf_t_group_assign",{p_students:[id],p_group:gid});
        if(!r||r.error||!r.moved) throw new Error((r&&r.error)||"nothing saved (0 rows)");
+       sqSaved((s.handle||"student")+" \u2192 "+sqName(gid));
        STAND=await rpc("ctf_t_squad_standings",{p_class:CUR.id}).catch(function(){ return STAND; })||STAND; renderMain(); }
   catch(x){ s.group_id=prev; renderMain(); alert("Couldn\u2019t save that squad change: "+((x&&x.message)||x)+"\n\nIf this keeps happening, re-run supabase/class-groups.sql."); }
 }
+function sqSaved(txt){
+  var d=el("sqToast"); if(!d){ d=document.createElement("div"); d.id="sqToast"; d.setAttribute("role","status"); d.className="mono";
+    d.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;padding:10px 16px;border-radius:10px;background:var(--panel);border:1px solid var(--accent);color:var(--bright);font-size:13px;font-weight:700;box-shadow:0 10px 30px -12px #000;"; document.body.appendChild(d); }
+  d.textContent="\u2713 Saved \u00b7 "+txt; d.style.display="block"; clearTimeout(sqSaved._t); sqSaved._t=setTimeout(function(){ d.style.display="none"; },2200);
+}
+function sqName(gid){ var g=(STAND||[]).filter(function(x){return x.id===gid;})[0]; return gid?(g&&g.name||"squad"):"no squad"; }
 async function moveToSquad(sid,gid){
   try{ var r=await rpc("ctf_t_group_assign",{p_students:[sid],p_group:gid||null});
     if(!r||r.error||!r.moved) throw new Error((r&&r.error)||"nothing saved (0 rows)");
-    await loadDetail(); }
+    sqSaved("moved to "+sqName(gid||null)); await loadDetail(); }
   catch(e){ alert("Couldn\u2019t save that squad change: "+((e&&e.message)||e)+"\n\nIf this keeps happening, re-run supabase/class-groups.sql."); await loadDetail(); }
 }
 function squadPicker(s){
@@ -4163,6 +4172,28 @@ async function endAllDuels(){
 }
 /* student flag duels (arena-duels.sql): class switch + live list, on the Locks & Guide tab */
 var AD={cls:null,data:null,err:false,at:0};
+/* 27.0 battle backgrounds (battle-bg.js; supabase/brackets.sql) */
+var BGS={};
+var BG_PAGES=[["bracket","Bracket pages"],["duel","Duel rooms (flag + vocab)"],["projector","Team / vocab battle projector"],["spectator","Duel spectator"],["arena","CTF arena view during battles"]];
+var BG_STYLES=[["","Default"],["rain","Code rain"],["grid","Neon grid"],["hex","Hex circuits"],["aurora","Aurora"],["course","Course themed"],["off","Off"]];
+var BG_DEF={bracket:"grid",duel:"rain",projector:"aurora",spectator:"hex",arena:"course"};
+function bgCard(){
+  var id=CUR.id, v=BGS[id];
+  if(v===undefined){ BGS[id]=null; rpc("ctf_t_bg",{p_class:id}).then(function(r){ BGS[id]=r&&!r.error?r:"na"; if(TAB==="gates") renderMain(); }).catch(function(){ BGS[id]="na"; if(TAB==="gates") renderMain(); }); }
+  var h='<div class="card" style="padding:16px 18px;margin-bottom:20px;"><div style="font-weight:700;color:var(--bright);">Battle backgrounds</div>'+
+    '<div style="font-size:12px;color:var(--dim);margin-top:3px;margin-bottom:12px;line-height:1.5;">Animated background for each kind of page in this class. Students with Reduce motion on see a still frame.</div>';
+  if(v==="na") return h+'<div style="font-size:12px;color:var(--dim);">Run supabase/brackets.sql to turn this on.</div></div>';
+  v=v||{};
+  return h+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;">'+BG_PAGES.map(function(p){
+    return '<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);">'+p[1]+
+      '<select onchange="bgSet(\''+p[0]+'\',this.value)" style="min-height:40px;">'+BG_STYLES.map(function(s){ return '<option value="'+s[0]+'"'+((v[p[0]]||"")===s[0]?" selected":"")+'>'+(s[0]?s[1]:"Default ("+BG_STYLES.filter(function(x){return x[0]===BG_DEF[p[0]];})[0][1]+")")+'</option>'; }).join("")+'</select></label>';
+  }).join("")+'</div></div>';
+}
+async function bgSet(page,val){
+  var id=CUR.id, v=Object.assign({}, BGS[id]&&BGS[id]!=="na"?BGS[id]:{});
+  if(val) v[page]=val; else delete v[page];
+  try{ var r=await rpc("ctf_t_bg_set",{p_class:id,p_bg:v}); if(r&&r.bg) BGS[id]=r.bg; }catch(e){ alert("Couldn\u2019t save. Run supabase/brackets.sql first."); }
+}
 function adLoad(){
   if(!CUR) return; var id=CUR.id; AD.cls=id; AD.at=Date.now();
   rpc("ctf_t_ad_live",{p_class:id}).then(function(d){ if(!CUR||CUR.id!==id) return; AD.err=!d||!!d.error; AD.data=d&&!d.error?d:null; if(TAB==="gates") renderMain(); })
@@ -4189,7 +4220,9 @@ function adCard(){
   return '<div class="card" style="padding:16px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">'+
     '<div style="flex:1;min-width:220px;"><div style="font-weight:700;color:var(--bright);">Team battles</div><div style="font-size:12px;color:var(--dim);margin-top:3px;line-height:1.5;">Pit 2\u20134 squads against each other on the modules you pick. Randomize teams, start, and show the live scoreboard on the projector. Flag duels pause while it runs. A vocab battle randomly pairs students from different teams for head-to-head vocab fights.</div></div>'+
     '<span style="display:flex;gap:8px;flex-wrap:wrap;"><a class="btn" target="_blank" rel="noopener" href="battle.html?class='+encodeURIComponent(CUR.id)+'">Flag battle \u2197</a>'+
-    '<a class="btn" target="_blank" rel="noopener" href="vocab-battle.html?class='+encodeURIComponent(CUR.id)+'">Vocab battle \u2197</a></span></div>'+
+    '<a class="btn" target="_blank" rel="noopener" href="vocab-battle.html?class='+encodeURIComponent(CUR.id)+'">Vocab battle \u2197</a>'+
+    '<a class="btn" target="_blank" rel="noopener" href="duel-watch.html?class='+encodeURIComponent(CUR.id)+'">Duel spectator \u2197</a>'+
+    '<a class="btn" target="_blank" rel="noopener" href="bracket.html?class='+encodeURIComponent(CUR.id)+'">Duel bracket \u2197</a></span></div>'+bgCard()+
     '<div class="card" style="padding:16px 18px;margin-bottom:20px;">'+
     slider(!!AD.data.on,"toggleDuels()","Student flag duels",
       "Students start a Flag Duel (up to 4 players, 2/5/10 min) or a 1v1 Vocab Duel from the arena and share a 4-letter code. Winner +10 XP, every finisher +5. Turning this off cancels open Flag Duel lobbies and blocks new duels of both kinds.","var(--amber)")+
@@ -4943,8 +4976,10 @@ function resetHandle(sid,handle){
 
 async function removeStudent(sid,handle){
   if(!confirm('Remove "'+handle+'" from this class?\n\nTheir progress, captures, and integrity log are deleted. They can rejoin with the class code.')) return;
-  try{ await rpc("ctf_t_remove_student",{p_student:sid}); await loadClasses(true); }
-  catch(e){ alert("Couldn't remove that student."); }
+  try{ var r=await rpc("ctf_t_remove_student",{p_student:sid});
+    if(r&&r.error) throw new Error(r.error);
+    await loadClasses(true); if(typeof loadDetail==="function") await loadDetail(); }
+  catch(e){ alert("Couldn\u2019t remove that student: "+((e&&e.message)||e)); }
 }
 
 /* ---------------- one flag, one student ----------------

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=26.0.1"></script>
+<script src="site.js?v=27.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,16 +46,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=26.0.1"></script>
-<script src="ctf-data/cyber1.js?v=26.0.1"></script>
-<script src="ctf-data/cyber2.js?v=26.0.1"></script>
-<script src="ctf-data/cyber3.js?v=26.0.1"></script>
-<script src="ctf-data/apcsp.js?v=26.0.1"></script>
-<script src="ctf-data/web3.js?v=26.0.1"></script>
-<script src="supabase-config.js?v=26.0.1"></script>
-<script src="auth.js?v=26.0.1"></script>
-<script src="battle-fx.js?v=26.0.1"></script>
-<script src="team-picker.js?v=26.0.1"></script>
+<script src="config.js?v=27.0.0"></script>
+<script src="ctf-data/cyber1.js?v=27.0.0"></script>
+<script src="ctf-data/cyber2.js?v=27.0.0"></script>
+<script src="ctf-data/cyber3.js?v=27.0.0"></script>
+<script src="ctf-data/apcsp.js?v=27.0.0"></script>
+<script src="ctf-data/web3.js?v=27.0.0"></script>
+<script src="supabase-config.js?v=27.0.0"></script>
+<script src="auth.js?v=27.0.0"></script>
+<script src="battle-fx.js?v=27.0.0"></script>
+<script src="battle-bg.js?v=27.0.0"></script>
+<script src="team-picker.js?v=27.0.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -63,6 +64,9 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   if (FX) { FX.enableSound(true); FX.soundUi(document.getElementById("snd")); }
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   var CLASSES = [], CUR = null, SET = null, ST = null, skew = 0, msg = "", busy = false, pick = {}, mins = 15, timer = null, showSetup = false, MODS = {};
+  var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]], modes = { cipher: true, unscramble: true, decrypt: true, bank: true };
+  function nModes(){ return PMODES.filter(function(p){ return modes[p[0]]; }).length; }
+  function modeList(){ return PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }); }
   var LENGTHS = [[5,"5 min"],[10,"10 min"],[15,"15 min (default)"],[20,"20 min"],[45,"Whole period"]], FALLBACK = ["#3a86ff","#ff5d73","#2ec27e","#f4a300"];
   var ERR = { ungrouped:"Every student needs a team first. Use Randomize teams, or put them in a squad on the teacher dashboard.", need_two_teams:"You need at least 2 teams with students in them.",
     too_many_teams:"Battles take 2\u20134 teams. Use Randomize teams.", too_few_terms:"Pick modules with at least 4 vocab terms.", battle_live:"A vocab battle is already running in this class." };
@@ -83,7 +87,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=26.0.1"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=27.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
@@ -99,7 +103,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var keys = Object.keys(MODS).map(Number).sort(function(a,b){return a-b;}), selM = keys.filter(function(m){ return pick[m]; });
     var n = selM.reduce(function(a, m){ return a + MODS[m].length; }, 0);
     var TP = window.TEAM_PICK; TP.fetchSets(rpc, CUR.id, paint);
-    var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && n >= 4 && !busy;
+    var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && n >= 4 && nModes() && !busy;
     var teams = TP.teams(T, col, busy) + TP.note(T);
     return '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;" id="g">' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TEAMS \u00b7 TICK WHO PLAYS</div>' +
@@ -111,6 +115,9 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BATTLE OPTIONS</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab modules</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip vbMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + MODS[m].length + '</span></button>'; }).join("") : '<span style="color:var(--dim);">No vocab list found for this course.</span>') + '</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +
+        '<div role="group" aria-label="Puzzle types" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">' + PMODES.map(function(p){ var on = !!modes[p[0]]; return '<button type="button" class="chip vbPm" data-p="' + p[0] + '" aria-pressed="' + on + '">' + (on ? "\u2713 " : "") + p[1] + '</button>'; }).join("") + '</div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;">Each term uses one of the ticked types at random.' + (nModes() ? '' : ' <b style="color:var(--bad);">Pick at least one.</b>') + '</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Length</div>' +
         '<div role="group" aria-label="Length" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + LENGTHS.map(function(l){ return '<button type="button" class="chip vbMin" data-n="' + l[0] + '" aria-pressed="' + (mins === l[0]) + '">' + l[1] + '</button>'; }).join("") + '</div>' +
         '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vbStart"' + (ready ? "" : " disabled") + '>Start battle</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (n ? n + " terms" : "Pick at least one module") + '</span></div>' +
@@ -174,6 +181,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function bind(){
     if (window.TEAM_PICK) TEAM_PICK.bind(view, { rpc: rpc, reload: load, repaint: paint, err: function(m){ msg = m; paint(); } });
     view.querySelectorAll(".vbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
+    view.querySelectorAll(".vbPm").forEach(function(x){ x.onclick = function(){ var p = x.getAttribute("data-p"); modes[p] = !modes[p]; paint(); }; });
     view.querySelectorAll(".vbMin").forEach(function(b){ b.onclick = function(){ mins = +b.getAttribute("data-n"); paint(); }; });
     view.querySelectorAll(".vbRand").forEach(function(b){ b.onclick = function(){
       var n = +b.getAttribute("data-n");
@@ -185,7 +193,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), pool = [];
       mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
       busy = true; msg = ""; paint();
-      rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: mods, p_pool: pool, p_minutes: mins || 15, p_groups: TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; })) }).then(function(r){
+      rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: mods, p_pool: pool, p_minutes: mins || 15, p_modes: modeList(), p_groups: TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; })) }).then(function(r){
         busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; }
         showSetup = false; load();
       }).catch(fail);
@@ -196,7 +204,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var rm = document.getElementById("vbRematch"); if (rm) rm.onclick = function(){
       var os = ST.session, pool = []; if (!confirm("Start a rematch with the same teams, modules and length?")) return;
       (os.modules || []).forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
-      busy = true; rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: os.modules, p_pool: pool, p_minutes: os.minutes || 15, p_groups: ((ST && ST.teams) || os.teams || []).map(function(t){ return t.id; }).filter(Boolean) }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
+      busy = true; rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: os.modules, p_pool: pool, p_minutes: os.minutes || 15, p_modes: os.modes && os.modes.length ? os.modes : modeList(), p_groups: ((ST && ST.teams) || os.teams || []).map(function(t){ return t.id; }).filter(Boolean) }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
     };
     var fu = document.getElementById("vbFull"); if (fu) fu.onclick = function(){ FX.fullscreen(document.getElementById("bfxResults")); };
   }
@@ -247,9 +255,10 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     if (!Array.isArray(CLASSES)) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> to run vocab battles.</div>'; return; }
     if (!CLASSES.length) { view.innerHTML = '<div class="card">No classes yet.</div>'; return; }
     sel.innerHTML = CLASSES.map(function(c){ return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join("");
-    sel.onchange = function(){ pickClass(sel.value); };
+    function bgAuto(){ if (!window.BATTLE_BG) return; if (CUR && !(typeof DEMO !== "undefined" && DEMO)) BATTLE_BG.auto("projector", { cls: CUR.id }); else BATTLE_BG.use("projector", null); }
+    sel.onchange = function(){ pickClass(sel.value); bgAuto(); };
     var want = new URLSearchParams(location.search).get("class"); try { want = want || localStorage.getItem("vbattle-class"); } catch (e) {}
-    pickClass(want);
+    pickClass(want); bgAuto();
   })();
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) load(); });
 })();

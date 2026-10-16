@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=26.0.0"></script>
+<script src="site.js?v=27.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +41,7 @@ input.code:focus{outline:none;border-color:var(--amber);}
   <a id="back" href="index.html" class="mono" style="display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;">&larr; Back to the arena</a>
   <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);margin:6px 0 6px;">&#9876; FLAG DUEL</div>
   <h1 class="mono" style="font-size:30px;font-weight:800;margin:0 0 6px;color:var(--bright);">Race your classmates</h1>
-  <p style="margin:0 0 22px;color:var(--muted);font-size:15px;line-height:1.6;max-width:680px;">Up to 4 players. Capture flags you haven&rsquo;t solved yet in the duel&rsquo;s modules before the clock runs out. Easy 1 &middot; Medium 2 &middot; Hard 3 duel points, plus your normal XP. Winner +10 XP, everyone who finishes +5. Leaving forfeits.</p>
+  <p style="margin:0 0 22px;color:var(--muted);font-size:15px;line-height:1.6;max-width:680px;">Up to 6 players. Capture flags you haven&rsquo;t solved yet in the duel&rsquo;s modules before the clock runs out. Easy 1 &middot; Medium 2 &middot; Hard 3 duel points, plus your normal XP. Winner +10 XP, everyone who finishes +5. Leaving forfeits.</p>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);font-size:13px;">Loading&hellip;</div></div>
 </div>
 <script>
@@ -50,7 +50,7 @@ input.code:focus{outline:none;border-color:var(--amber);}
   if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { document.getElementById("view").innerHTML = '<div class="card">Open a Flag Duel from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C;
   document.getElementById("back").href = C + "/ctf.html";
-  var V = window.SITE_VERSION || "25.1.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "skins.js", "cosmetics.js", "battle-fx.js", "arena-duel.js"];
+  var V = window.SITE_VERSION || "27.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "skins.js", "cosmetics.js", "battle-fx.js", "battle-bg.js", "arena-duel.js"];
   (function next(i){
     if (i >= list.length) return window.__fdBoot && window.__fdBoot();
     var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); };
@@ -65,8 +65,8 @@ window.__fdBoot = function(){
   var names = CFG.modules || [];
   if (!AUTH || !AUTH.online || !S) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" style="display:inline-flex;align-items:center;" href="' + C + '/ctf.html">Go to the arena</a></div>'; return; }
   var ALL = FD.flags(C), ST = null, skew = 0, busy = false, msg = "", pick = {}, mins = 5, timer = null, tick = null, FX = window.BATTLE_FX, seenAt = 0, curD = null;
-  var PAL = ["#3a86ff", "#ff5d73", "#2ec27e", "#f4a300"];
-  function pcolId(d, id){ var i = (d.players || []).map(function(p){ return String(p.id); }).sort().indexOf(String(id)); return PAL[(i < 0 ? 0 : i) % 4]; }
+  var PAL = ["#3a86ff", "#ff5d73", "#2ec27e", "#f4a300", "#b06cff", "#18c2c2"];
+  function pcolId(d, id){ var i = (d.players || []).map(function(p){ return String(p.id); }).sort().indexOf(String(id)); return PAL[(i < 0 ? 0 : i) % 6]; }
   function pcol(d, h){ var p = (d.players || []).filter(function(x){ return x.handle === h; })[0]; return p ? pcolId(d, p.id) : PAL[0]; }
   function modName(m){ return "Module " + String(m).padStart(2, "0") + (names[m - 1] ? " \u00b7 " + names[m - 1] : ""); }
   function mods(){ var o = {}; ALL.forEach(function(f){ (o[f.module] = o[f.module] || []).push(f); }); return o; }
@@ -138,7 +138,7 @@ window.__fdBoot = function(){
     if (d.status === "lobby") {
       head = '<div class="card" style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;border-color:var(--amber);">' +
         '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">DUEL CODE</div><div class="mono" style="font-size:52px;font-weight:800;letter-spacing:10px;color:var(--bright);line-height:1.1;">' + esc(d.code) + '</div>' + info + '</div>' +
-        '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">' + (isHost ? "Share this code. Start when at least one classmate has joined (" + n + "/4 in)." : "You\u2019re in. Waiting for the host to start (" + n + "/4 in).") + '</div>' +
+        '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">' + (isHost ? "Share this code. Start when at least one classmate has joined (" + n + "/6 in)." : "You\u2019re in. Waiting for the host to start (" + n + "/6 in).") + '</div>' +
         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' + (isHost ? '<button type="button" class="btn" id="fdStart"' + (busy || n < 2 ? " disabled" : "") + '>Start duel</button>' : '') +
         '<button type="button" class="btn ghost" id="fdLeave"' + (busy ? " disabled" : "") + '>' + (isHost ? "Cancel duel" : "Leave") + '</button></div></div>';
     } else if (d.status === "live") {
@@ -204,6 +204,7 @@ window.__fdBoot = function(){
   }
   function load(){
     clearTimeout(timer);
+    if (window.BATTLE_BG && !window.BATTLE_BG._ad) { window.BATTLE_BG._ad = 1; window.BATTLE_BG.auto("duel", { student: S.studentId }); }
     return AUTH.rpc("ctf_ad_state", { p_student: S.studentId }).then(function(d){
       if (!d || d.error) { view.innerHTML = '<div class="card">' + esc(FD.err(d && d.error)) + '</div>'; return; }
       if (dismissed && d.duel && d.duel.status === "done") d.duel = null; else if (d.duel && d.duel.status !== "done") dismissed = false;
@@ -218,7 +219,7 @@ window.__fdBoot = function(){
         var ids = {}; (du.players || []).forEach(function(p){ ids[p.handle] = p.id; });
         var ev = FX.track("fd" + du.id, { status: du.status === "done" ? "done" : "live",
           teams: (du.players || []).filter(function(p){ return !p.forfeit; }).map(function(p, i){ return { id: p.id, name: p.id === d.me ? "YOU" : p.handle, color: pcol(du, p.handle), score: p.points }; }),
-          feed: (du.feed || []).map(function(f){ return { who: f.handle, team: ids[f.handle], at: f.at, pts: f.pts, hard: f.pts === 3 }; }) }, { streakBy: "who" });
+          feed: (du.feed || []).map(function(f){ return { who: f.handle, team: ids[f.handle], at: f.at, pts: f.pts, hard: f.pts === 3, bounty: f.bounty }; }) }, { streakBy: "who" });
         ev.changed.forEach(function(id){ FX.shake(document.getElementById("pl-" + id)); });
         (du.feed || []).forEach(function(f){ delete f._new; });
       }

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=26.0.1"></script>
+<script src="site.js?v=27.0.0"></script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,17 +45,18 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=26.0.1"></script>
-<script src="ctf-data/cyber1.js?v=26.0.1"></script>
-<script src="ctf-data/cyber2.js?v=26.0.1"></script>
-<script src="ctf-data/cyber3.js?v=26.0.1"></script>
-<script src="ctf-data/apcsp.js?v=26.0.1"></script>
-<script src="ctf-data/web3.js?v=26.0.1"></script>
-<script src="supabase-config.js?v=26.0.1"></script>
-<script src="auth.js?v=26.0.1"></script>
-<script src="cosmetics.js?v=26.0.1"></script>
-<script src="battle-fx.js?v=26.0.1"></script>
-<script src="team-picker.js?v=26.0.1"></script>
+<script src="config.js?v=27.0.0"></script>
+<script src="ctf-data/cyber1.js?v=27.0.0"></script>
+<script src="ctf-data/cyber2.js?v=27.0.0"></script>
+<script src="ctf-data/cyber3.js?v=27.0.0"></script>
+<script src="ctf-data/apcsp.js?v=27.0.0"></script>
+<script src="ctf-data/web3.js?v=27.0.0"></script>
+<script src="supabase-config.js?v=27.0.0"></script>
+<script src="auth.js?v=27.0.0"></script>
+<script src="cosmetics.js?v=27.0.0"></script>
+<script src="battle-fx.js?v=27.0.0"></script>
+<script src="battle-bg.js?v=27.0.0"></script>
+<script src="team-picker.js?v=27.0.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -276,7 +277,9 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function pickClass(id){
     CUR = CLASSES.filter(function(c){ return c.id === id; })[0] || CLASSES[0]; if (!CUR) return;
     try { localStorage.setItem("battle-class", CUR.id); } catch (e) {}
-    sel.value = CUR.id; pick = {}; ST = null; SET = null; showSetup = false; msg = ""; load();
+    sel.value = CUR.id; pick = {}; ST = null; SET = null; showSetup = false; msg = "";
+    if (FX && FX.setGuide) { var gc = (((window.COURSE_CONFIG || {})[CUR.course] || {}).ctf) || {}; FX.setGuide({ name: gc.adversary || "NEMESIS", color: gc.adversaryColor || "#ff4d6d", mentor: !!gc.mentor }); }
+    load();
   }
   // keep the header clear of the fixed theme + A11Y buttons (site.js places A11Y left of the toggle)
   function clearFixed(){
@@ -293,9 +296,10 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     if (!Array.isArray(CLASSES)) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> to run team battles.</div>'; return; }
     if (!CLASSES.length) { view.innerHTML = '<div class="card">No classes yet.</div>'; return; }
     sel.innerHTML = CLASSES.map(function(c){ return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join("");
-    sel.onchange = function(){ pickClass(sel.value); };
+    function bgAuto(){ if (!window.BATTLE_BG) return; if (CUR && !(typeof DEMO !== "undefined" && DEMO)) BATTLE_BG.auto("projector", { cls: CUR.id }); else BATTLE_BG.use("projector", null); }
+    sel.onchange = function(){ pickClass(sel.value); bgAuto(); };
     var want = new URLSearchParams(location.search).get("class"); try { want = want || localStorage.getItem("battle-class"); } catch (e) {}
-    pickClass(want);
+    pickClass(want); bgAuto();
   })();
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) load(); });
 })();

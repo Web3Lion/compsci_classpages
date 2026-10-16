@@ -201,9 +201,12 @@
       .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
   }
   function battleCheck() {
-    Promise.all([rpcRaw("ctf_tb_state"), rpcRaw("ctf_vd_state"), rpcRaw("ctf_ad_state")]).then(function (r) {
-      var tb = r[0] && r[0].battle, vd = r[1], ad = r[2] && r[2].duel, b = null;
-      if (tb && tb.status === "live") b = { t: "// TEAM BATTLE LIVE", h: "Your team needs you", s: "Enter the battle arena and capture flags to raise your team\u2019s score.", go: "ENTER ARENA", href: "ctf.html#arena" };
+    Promise.all([rpcRaw("ctf_tb_state"), rpcRaw("ctf_vd_state"), rpcRaw("ctf_ad_state"), rpcRaw("ctf_br_state")]).then(function (r) {
+      var tb = r[0] && r[0].battle, vd = r[1], ad = r[2] && r[2].duel, br = r[3], b = null;
+      var bm = br && br.bracket && br.bracket.status === "live" && br.match;
+      if (bm && (bm.status === "ready" || bm.status === "live")) b = { t: "// BRACKET MATCH " + (bm.status === "ready" ? "READY" : "LIVE"), h: "You vs " + (bm.opp || "?"), s: bm.status === "ready" ? "Open the bracket page now. Missing for 60 seconds is a forfeit." : "Your match is on.", go: "BRACKET", href: "../bracket-play.html?c=" + encodeURIComponent(course) };
+      else if (br && br.bracket && br.bracket.status === "live") b = { t: "// DUEL BRACKET LIVE", h: "You\u2019re in the bracket", s: "Stay on the bracket page so your next match can start.", go: "BRACKET", href: "../bracket-play.html?c=" + encodeURIComponent(course) };
+      else if (tb && tb.status === "live") b = { t: "// TEAM BATTLE LIVE", h: "Your team needs you", s: "Enter the battle arena and capture flags to raise your team\u2019s score.", go: "ENTER ARENA", href: "ctf.html#arena" };
       else if (vd && vd.class_live && vd.session && vd.session.kind === "class" && vd.session.status === "live") b = { t: "// VOCAB BATTLE LIVE", h: "Your team needs you", s: "Open the duel room to get an opponent.", go: "FIGHT", href: "../vocab-duel.html?c=" + encodeURIComponent(course) };
       else if (ad && ad.status === "live") b = { t: "// FLAG DUEL LIVE", h: "Your duel is on", s: "Jump back into the arena before the clock runs out.", go: "ENTER ARENA", href: "ctf.html#arena" };
       else if (ad && ad.status === "lobby") b = { t: "// FLAG DUEL LOBBY", h: "You\u2019re in a duel lobby", s: "Waiting for the host to start.", go: "DUEL ROOM", href: "../arena-duel.html?c=" + encodeURIComponent(course) };

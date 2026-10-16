@@ -1,0 +1,11 @@
+# The answer key must never be deployed to GitHub Pages.
+# It is a local-only seed file: open answers.html, sign in as the teacher, and
+# use "Upload answer file" to push it into Supabase (sealed behind RLS + an
+# _is_teacher() gated RPC). After uploading you can delete your local copy.
+answers.js
+answers.local.js
+
+# Working files for Claude (source PDFs, extracted text, design scratch). Not part of the site.
+claude only/
+support.js
+.thumbnail

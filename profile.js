@@ -698,6 +698,36 @@
     try { var d = await AUTH.rpc("ctf_my_clears", { p_student: s.studentId }); if (Array.isArray(d)) { CLEARS = d; renderTrophies(); } } catch (e) {}
   }
 
+  /* ---- 26.3 duel record (supabase/duel-record.sql) ---- */
+  async function loadDuels() {
+    var s = sess(), box = el("pfDuels"); if (!ONLINE || !s || !box) return;
+    var d; try { d = await AUTH.rpc("ctf_duel_record", { p_student: s.studentId }); } catch (e) { return; }
+    if (!d || d.error) return;
+    var F = d.flag || {}, V = d.vocab || {}, played = (F.played || 0) + (V.played || 0);
+    if (!played && !d.champ_weeks) { var bt0 = null; try { bt0 = await AUTH.rpc("ctf_br_titles", { p_student: s.studentId }); } catch (e) {} if (!bt0 || !bt0.titles) return; }
+    function e(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+    function stat(lbl, w, n) { return '<div style="flex:1;min-width:140px;padding:14px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border2);">' +
+      '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">' + lbl + '</div>' +
+      '<div class="mono" style="font-size:26px;font-weight:800;color:var(--bright);margin-top:4px;">' + (w || 0) + '\u2013' + Math.max(0, (n || 0) - (w || 0)) + '</div>' +
+      '<div class="mono" style="font-size:11px;color:var(--dim);">wins\u2013losses \u00b7 ' + (n ? Math.round(100 * (w || 0) / n) : 0) + '%</div></div>'; }
+    var bt = null; try { bt = await AUTH.rpc("ctf_br_titles", { p_student: s.studentId }); } catch (e) {}
+    var titles = bt && !bt.error && bt.titles ? '<span class="mono" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:6px 12px;border-radius:999px;background:#b06cff;color:#12061f;">\u2694 BRACKET CHAMPION' + (bt.titles > 1 ? " \u00d7" + bt.titles : "") + '</span>' : '';
+    var champ = d.champ_weeks ? '<span class="mono" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:6px 12px;border-radius:999px;background:#ffcf5c;color:#1a1200;">\u2655 WEEKLY DUEL CHAMPION' + (d.champ_weeks > 1 ? " \u00d7" + d.champ_weeks : "") + '</span>' : '';
+    var lead = d.leading_now ? '<span class="mono" style="font-size:12px;color:var(--accent);font-weight:700;">Leading this week with ' + d.week_wins + ' win' + (d.week_wins === 1 ? "" : "s") + '</span>' : '';
+    var rec = (d.recent || []).map(function (r) {
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border2);font-size:13px;">' +
+        '<span class="mono" style="width:44px;font-weight:800;color:' + (r.won ? "var(--ok, #3ddc97)" : "var(--dim)") + ';">' + (r.won ? "WIN" : "LOSS") + '</span>' +
+        '<span class="mono" style="width:54px;font-size:11px;color:var(--faint);">' + (r.kind === "flag" ? "FLAG" : "VOCAB") + '</span>' +
+        '<span style="flex:1;min-width:0;color:var(--text);overflow-wrap:anywhere;">' + (r.vs ? "vs " + e(r.vs) : "") + '</span>' +
+        '<span class="mono" style="font-size:11px;color:var(--faint);">' + (r.at ? new Date(r.at).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "") + '</span></div>';
+    }).join("");
+    box.innerHTML = '<div class="card" style="padding:22px;margin-top:20px;">' +
+      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;"><span class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);flex:1;">DUEL RECORD</span>' + lead + champ + titles + '</div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">' + stat("FLAG DUELS", F.wins, F.played) + stat("VOCAB DUELS", V.wins, V.played) + '</div>' +
+      (rec ? '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin:6px 0 2px;">RECENT</div>' + rec : '') +
+      '<div class="mono" style="font-size:11px;color:var(--faint);margin-top:12px;line-height:1.6;">Most duel wins in your class in a week earns Weekly Duel Champion (ties share it).</div></div>';
+  }
+
   /* ---- boot -------------------------------------------------------------- */
   function css() {
     if (document.getElementById("pfCss")) return;
@@ -719,7 +749,7 @@
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start;">' +
         identityCard() + xpCard() +
       '</div>' +
-      itemsCard() + '<div id="pfProgress"></div><div id="pfQuizzes"></div>' + trophyCard() + '<div id="pfShop"></div>' + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
+      itemsCard() + '<div id="pfProgress"></div><div id="pfQuizzes"></div><div id="pfDuels"></div>' + trophyCard() + '<div id="pfShop"></div>' + badgeCase() + objectiveCard() + xpLogCard() + leaderboardCard();
     wireIdentity();
     if (window.CTF_COSMETICS) {
       window.CTF_COSMETICS.mountShop(el("pfShop"));
@@ -733,6 +763,7 @@
     if (ITEMS.length) renderItems();
     loadItems();
     loadClears();
+    loadDuels();
     loadObjectives();
     loadLb();
   }

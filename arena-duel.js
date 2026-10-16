@@ -48,7 +48,7 @@
     no_modules: "Pick at least one module.",
     no_duel: "No open duel with that code in your class.",
     started: "That duel already started.",
-    full: "That duel is full (4 players).",
+    full: "That duel is full (6 players).",
     need_two: "You need at least one other player to start.",
     not_yours: "Sign in on your CTF page first."
   };
@@ -67,7 +67,7 @@
   // 24.0: hype layer (banners, lead changes, final-minute countdown) — no sound for students
   if (!window.BATTLE_FX) { var fxs = document.createElement("script"); fxs.src = (me.src || "").replace(/arena-duel\.js.*$/, "battle-fx.js") + "?v=" + (window.SITE_VERSION || ""); document.head.appendChild(fxs); }
   function FX() { return window.BATTLE_FX || null; }
-  var PAL = ["#3a86ff", "#ff5d73", "#2ec27e", "#f4a300"];
+  var PAL = ["#3a86ff", "#ff5d73", "#2ec27e", "#f4a300", "#b06cff", "#18c2c2"];
   function hype(key, snap, prefix, opts) {
     var fx = FX(); if (!fx) return;
     var ev = fx.track(key, snap, opts || {});
@@ -87,10 +87,23 @@
   }
   window.addEventListener("hashchange", openMod);
 
-  var VROOM = "../vocab-duel.html?c=" + encodeURIComponent(course);
+  var VROOM = "../vocab-duel.html?c=" + encodeURIComponent(course), BROOM = "../bracket-play.html?c=" + encodeURIComponent(course);
   function card() {
     var root = document.getElementById("ctfRoot"); if (!root) return;
     var el = document.getElementById("fdCard"), vb = document.getElementById("vdLive");
+    // 27.0: bracket match waiting / vocab game → glowing call to the bracket page
+    var bm = ST && ST.br && ST.br.bracket && ST.br.bracket.status === "live" && ST.br.match;
+    if (bm && (bm.status === "ready" || (bm.status === "live" && bm.game_kind !== "flag"))) {
+      if (el) el.remove();
+      if (!vb) { vb = document.createElement("a"); vb.id = "vdLive"; vb.className = "card"; root.parentNode.insertBefore(vb, root); }
+      vb.href = BROOM;
+      vb.setAttribute("style", "display:flex;align-items:center;gap:16px;flex-wrap:wrap;text-decoration:none;color:inherit;margin-bottom:18px;padding:18px 22px;border:2px solid var(--amber);box-shadow:0 0 26px -10px var(--amber);");
+      vb.innerHTML = '<span aria-hidden="true" style="flex:none;font-size:26px;line-height:1;color:var(--amber);">\u2694</span>' +
+        '<span style="min-width:0;flex:1;"><span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--amber);font-weight:700;">// BRACKET MATCH ' + (bm.status === "ready" ? "READY" : "LIVE") + '</span>' +
+        '<span style="display:block;font-size:16px;font-weight:700;color:var(--bright);margin-top:4px;">You vs ' + esc(bm.opp || "?") + (bm.status === "ready" ? ". Open the bracket page to start (60 s or you forfeit)." : ". Your game is on the bracket page.") + '</span></span>' +
+        '<span class="mono" style="flex:none;font-size:12px;font-weight:700;color:var(--bright);border:1px solid var(--amber);padding:8px 12px;border-radius:999px;">GO \u2192</span>';
+      return;
+    }
     // a class vocab battle is live: one glowing call to the duel room, nothing else
     if (ST && ST.vd && ST.vd.class_live && ST.vd.session && ST.vd.session.kind === "class" && ST.vd.session.status === "live") {
       if (el) el.remove();
@@ -112,8 +125,8 @@
     el.innerHTML = '<span aria-hidden="true" style="flex:none;font-size:26px;line-height:1;color:var(--amber);">\u2694</span>' +
       '<span style="min-width:0;flex:1;"><span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--amber);">// DUELS</span>' +
       '<span style="display:block;font-size:16px;font-weight:700;color:var(--bright);margin-top:4px;">Challenge your classmates</span>' +
-      '<span style="display:block;font-size:13px;color:var(--muted);margin-top:3px;"><b>Flag Duel:</b> race up to 3 classmates on flags you haven\u2019t captured. <b>Vocab Duel:</b> 1v1, crack disguised terms to knock out your opponent\u2019s health. Winner +10 XP, everyone who finishes +5.</span></span>' +
-      '<span style="display:flex;gap:8px;flex-wrap:wrap;">' + lk(ROOM, "FLAG DUEL \u2192") + lk(VROOM, "VOCAB DUEL \u2192") + '</span>';
+      '<span style="display:block;font-size:13px;color:var(--muted);margin-top:3px;"><b>Flag Duel:</b> race up to 5 classmates on flags you haven\u2019t captured. <b>Vocab Duel:</b> 1v1 or a 3\u20134 player brawl, crack disguised terms to knock out your opponent\u2019s health. Winner +10 XP, everyone who finishes +5.</span></span>' +
+      '<span style="display:flex;gap:8px;flex-wrap:wrap;">' + lk(ROOM, "FLAG DUEL \u2192") + lk(VROOM, "VOCAB DUEL \u2192") + (ST && ST.br && ST.br.bracket && ST.br.bracket.status === "live" ? lk(BROOM, "BRACKET \u2192") : "") + '</span>';
   }
 
   /* 25.1 battle arena: live team battle / flag duel → focused page (scoreboard + battle flags only) */
@@ -125,6 +138,8 @@
     if (!ST) return null;
     if (ST.tb && ST.tb.status === "live") return { kind: "tb", d: ST.tb };
     if (ST.duel && ST.duel.status === "live") return { kind: "ad", d: ST.duel };
+    var bm = ST.br && ST.br.match, bb = ST.br && ST.br.bracket;   // 27.0 bracket flag game
+    if (bb && bb.status === "live" && bm && bm.status === "live" && bm.game_kind === "flag") return { kind: "br", d: { id: bm.id, modules: bb.modules } };
     return null;
   }
   function focus() {
@@ -136,6 +151,7 @@
       if (on) window.scrollTo(0, 0);
     }
     if (!on) { var p = document.getElementById("arenaHead"); if (p) p.remove(); }
+    bgArena(on);
     return on ? L : null;
   }
   function arenaBtn(id) { return arenaOff(id) ? '<button type="button" id="fdArena" class="mono" style="font-size:11px;font-weight:700;padding:6px 10px;min-height:32px;border-radius:8px;border:1px solid var(--amber);background:transparent;color:var(--bright);cursor:pointer;">Arena view</button>' : ""; }
@@ -149,7 +165,7 @@
       rows = (d.teams || []).map(function (t, i) { return { id: t.id, name: t.name, score: +t.avg, shown: (+t.avg).toFixed(1), color: t.color || cols[i % 4], me: t.id === d.my_team }; });
     } else {
       var ids = (d.players || []).map(function (q) { return String(q.id); }).sort();
-      rows = (d.players || []).map(function (q) { return { id: q.id, name: q.handle, score: q.points, shown: String(q.points), color: PAL[ids.indexOf(String(q.id)) % 4], me: q.id === ST.me, left: q.forfeit }; });
+      rows = (d.players || []).map(function (q) { return { id: q.id, name: q.handle, score: q.points, shown: String(q.points), color: PAL[ids.indexOf(String(q.id)) % 6], me: q.id === ST.me, left: q.forfeit }; });
     }
     var top = Math.max.apply(null, rows.map(function (r) { return r.score; }).concat([1]));
     var dbl = tb && FX() && FX().inDouble(d.dbl_at && new Date(d.dbl_at).getTime(), skew);
@@ -181,10 +197,47 @@
     else {
       var byH = {}; (d.players || []).forEach(function (q) { byH[q.handle] = q.id; });
       hype("ad" + d.id, { status: "live", teams: rows.filter(function (r) { return !r.left; }).map(function (r) { return { id: r.id, name: r.me ? "YOU" : r.name, color: r.color, score: r.score }; }),
-        feed: (d.feed || []).map(function (f) { return { who: f.handle, team: byH[f.handle], at: f.at, pts: f.pts }; }) }, "adc-", { streakBy: "who" });
+        feed: (d.feed || []).map(function (f) { return { who: f.handle, team: byH[f.handle], at: f.at, pts: f.pts, bounty: f.bounty }; }) }, "adc-", { streakBy: "who" });
     }
     if (!tick) tick = setInterval(clock, 500);
     clock();
+  }
+
+  /* 27.0: animated background in arena view (battle-bg.js; teacher picks the style) */
+  function bgArena(on) {
+    if (!document.getElementById("ctfRoot")) return;   // duel room pages use their own "duel" background
+    if (!on) { if (window.BATTLE_BG) window.BATTLE_BG.set("off"); return; }
+    if (!window.BATTLE_BG) {
+      if (!bgArena.loading) { bgArena.loading = 1; var s = document.createElement("script"); s.src = (me.src || "").replace(/arena-duel\.js.*$/, "battle-bg.js") + "?v=" + (window.SITE_VERSION || ""); s.onload = function () { bgArena(!!window.CTF_FOCUS); }; document.head.appendChild(s); }
+      return;
+    }
+    window.BATTLE_BG.use("arena", ST && ST.bg);
+  }
+  function brPanel(L) {
+    var root = document.getElementById("ctfRoot"); if (!root) return;
+    var p = document.getElementById("arenaHead");
+    if (!p) { p = document.createElement("div"); p.id = "arenaHead"; root.parentNode.insertBefore(p, root); }
+    var m = ST.br.match, pv = brPanel.prev, fx = FX();
+    p.className = "card";
+    p.setAttribute("style", "margin-bottom:18px;padding:22px 24px;border:2px solid var(--amber);box-shadow:0 0 34px -14px var(--amber);");
+    function side(lbl, pts, col) { return '<div style="flex:1;min-width:140px;"><div style="font-weight:700;color:var(--bright);font-size:15px;overflow-wrap:anywhere;">' + esc(lbl) + '</div>' +
+      '<div class="mono" style="font-size:44px;font-weight:800;color:' + col + ';line-height:1.1;">' + pts + '<span style="font-size:18px;color:var(--faint);">/3</span></div>' +
+      '<div style="height:12px;border-radius:999px;background:var(--bg);border:1px solid var(--border2);overflow:hidden;margin-top:6px;"><div style="height:100%;width:' + Math.min(100, Math.round(pts / 3 * 100)) + '%;background:' + col + ';transition:width .5s ease;"></div></div></div>'; }
+    p.innerHTML =
+      '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;"><div style="flex:1;min-width:200px;">' +
+        '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:700;">\u2694 BRACKET MATCH \u00b7 ' + (m.side === "cons" ? "CONSOLATION \u00b7 " : "") + 'ROUND ' + m.round + ' \u00b7 GAME ' + m.game_no + '</div>' +
+        '<div class="mono" style="font-size:12px;color:var(--dim);margin-top:4px;">Race to 3 flag points \u00b7 Easy 1 \u00b7 Medium 2 \u00b7 Hard 3 \u00b7 ' + (m.open || 0) + ' open flags left</div></div>' +
+        '<div class="mono" style="font-size:22px;font-weight:800;color:var(--bright);">Games ' + m.my_games + '\u2013' + m.opp_games + '</div></div>' +
+      '<div style="display:flex;gap:22px;flex-wrap:wrap;">' + side("You", m.my_pts, "#00b3ff") + side(m.opp || "Opponent", m.opp_pts, "#ff5d73") + '</div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--border2);">' +
+        '<a href="' + BROOM + '" class="mono" style="font-size:11px;font-weight:700;padding:8px 12px;min-height:36px;display:inline-flex;align-items:center;border-radius:8px;border:1px solid var(--amber);color:var(--bright);">Bracket page</a>' +
+        '<button type="button" id="arFull" class="mono" style="font-size:11px;font-weight:700;padding:8px 12px;min-height:36px;border-radius:8px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;">Full CTF page</button></div>';
+    p.querySelector("#arFull").onclick = function () { setOff(m.id, true); bar(); };
+    if (fx && pv && pv.id === m.id) {
+      if (m.my_pts > pv.my) fx.banner("+" + (m.my_pts - pv.my) + " FLAG POINTS", "#00b3ff", m.my_pts + "/3 \u00b7 first to 3 wins the game");
+      if (m.opp_pts > pv.opp) fx.caster((m.opp || "Your opponent") + " captures! " + m.opp_pts + "/3", "#ff5d73");
+    }
+    brPanel.prev = { id: m.id, my: m.my_pts, opp: m.opp_pts };
   }
 
   function exitBtn(t) { return '<button type="button" id="fdExit" class="mono" style="font-size:11px;font-weight:700;padding:6px 10px;min-height:32px;border-radius:8px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;">' + t + '</button>'; }
@@ -232,7 +285,7 @@
   function bar() {
     var d = ST && (ST.tb || ST.duel), el = document.getElementById("fdBar");
     var L = focus();
-    if (L) { if (el) el.remove(); document.body.style.paddingTop = ""; return arenaPanel(L); }
+    if (L) { if (el) el.remove(); document.body.style.paddingTop = ""; return L.kind === "br" ? brPanel(L) : arenaPanel(L); }
     if (!d || (d.status === "done" && hidDone === d.id)) { if (el) el.remove(); document.body.style.paddingTop = ""; clearInterval(tick); tick = null; return; }
     if (!el) {
       el = document.createElement("div"); el.id = "fdBar"; el.setAttribute("role", "region"); el.setAttribute("aria-label", "Flag duel scoreboard");
@@ -273,8 +326,8 @@
       var ids = (d.players || []).map(function (p) { return String(p.id); }).sort(), byH = {};
       (d.players || []).forEach(function (p) { byH[p.handle] = p.id; });
       hype("ad" + d.id, { status: d.status === "done" ? "done" : "live",
-        teams: (d.players || []).filter(function (p) { return !p.forfeit; }).map(function (p) { return { id: p.id, name: p.id === ST.me ? "YOU" : p.handle, color: PAL[ids.indexOf(String(p.id)) % 4], score: p.points }; }),
-        feed: (d.feed || []).map(function (f) { return { who: f.handle, team: byH[f.handle], at: f.at, pts: f.pts }; }) }, "adc-", { streakBy: "who" });
+        teams: (d.players || []).filter(function (p) { return !p.forfeit; }).map(function (p) { return { id: p.id, name: p.id === ST.me ? "YOU" : p.handle, color: PAL[ids.indexOf(String(p.id)) % 6], score: p.points }; }),
+        feed: (d.feed || []).map(function (f) { return { who: f.handle, team: byH[f.handle], at: f.at, pts: f.pts, bounty: f.bounty }; }) }, "adc-", { streakBy: "who" });
     }
     clearFixed();
     document.body.style.paddingTop = el.offsetHeight + "px";
@@ -305,14 +358,16 @@
     var tbP = AUTH.rpc("ctf_tb_state", { p_student: s.studentId }).catch(function () { return null; });   // team-battles.sql optional
     var adP = AUTH.rpc("ctf_ad_state", { p_student: s.studentId }).catch(function () { return null; });   // arena-duels.sql optional
     var vdP = AUTH.rpc("ctf_vd_state", { p_student: s.studentId }).catch(function () { return null; });   // vocab-duels.sql optional
-    Promise.all([adP, tbP, vdP]).then(function (r) {
+    var brP = AUTH.rpc("ctf_br_state", { p_student: s.studentId }).catch(function () { return null; });   // brackets.sql optional
+    Promise.all([adP, tbP, vdP, brP]).then(function (r) {
       var d = (r[0] && !r[0].error) ? r[0] : { duels_on: false, duel: null }, tb = r[1] && !r[1].error ? r[1].battle : null;
-      if (!r[0] && !tb && !(r[2] && !r[2].error)) { ST = null; card(); bar(); timer = setTimeout(poll, 30000); return; }
+      if (!r[0] && !tb && !(r[2] && !r[2].error) && !(r[3] && !r[3].error)) { ST = null; card(); bar(); timer = setTimeout(poll, 30000); return; }
       d.tb = tb && !(tb.status === "done" && hidDone === tb.id) ? tb : null;
       d.vd = r[2] && !r[2].error ? r[2] : null;
+      d.br = r[3] && !r[3].error ? r[3] : null; d.bg = d.br && d.br.bg;
       ST = d; var now = (r[0] && r[0].now) || (r[1] && r[1].now); if (now) skew = new Date(now).getTime() - Date.now();
       card(); bar();
-      var hot = (d.tb && d.tb.status === "live") || (d.duel && d.duel.status !== "done") || (d.vd && d.vd.class_live);
+      var hot = (d.tb && d.tb.status === "live") || (d.duel && d.duel.status !== "done") || (d.vd && d.vd.class_live) || (d.br && d.br.bracket && d.br.bracket.status === "live");
       timer = setTimeout(poll, hot ? 5000 : 20000);
     });
   }

@@ -18,7 +18,7 @@
   Do NOT create single-`difficulty` text flags — always author all three tiers.
 - Flag hashes: `sha256(answer.trim().toLowerCase())`. Answers are wrapped `flag{...}`
   unless the prompt says otherwise. Console helper: `CTF.hash("flag{...}")`.
-- **ALWAYS update `answers.local.js` in the same pass as any flag change** — adding,
+- **ALWAYS update `claude only/answers.local.js` in the same pass as any flag change** — adding,
   editing, or removing a flag in `config.js` must update the matching entry under
   that course's key. Keys are `"<id>"` or `"<id>#0|#1|#2"` (Easy/Medium/Hard);
   values are the exact typed answer. Interactive (`match`/`order`/`spot`/`phish`)
@@ -92,6 +92,45 @@
   is loaded on that course's ctf.html + index/vocab/syllabus/news (formal pages).
 - Vocab pool: `cyber2/vocab-data.js` (shared by vocab.html + ctf.html).
 
+## Quiz skins (skins.js, v19)
+- Coin Shop slot `skin` (`s_*` ids). One per course (the student row is per class). Prices in
+  cosmetics.js CATALOG and `_cosmetic_price()` in coins-cosmetics.sql must match.
+- `skins.js` holds each skin's light + dark palette and maps it onto quiz.html `--q-*` vars and
+  profile vars. Default (no skin) = Chunky Pop on quiz.html, original look on profiles.
+- Since 20.1 the skin also loads on each course's index/ctf/vocab/syllabus/news (`skins.js data-auto="profile"`),
+  read from that course's `ctf-cos-<course>` cache only. Don't add it to secret/flag pages, site-wide pages or simulators.
+- Never let a skin rely on color alone: the selected answer keeps its check + "Selected" label.
+
+## Teacher mirror (teacher-mirror.sql, v20)
+- A trigger on `progress` copies a teacher account's row to their row in every class of the
+  same course they own (creating rows on first sync). Teacher rows are deliberately NOT labeled
+  anywhere students can see — never add a "teacher" tag to leaderboards, duels, or pulse.
+- `module_clears` and `reward_items` inserts for teacher rows are dropped by a trigger.
+
+## Flag Duels (arena-duels.sql + arena-duel.html/js, v21)
+- Student-run duels, separate from the projector Duel Arena (duels.sql / duel.html / duel-client.js).
+- The host's page sends the duel's flag keys (same key rules as `flagsOf`, built in arena-duel.js `flags()`);
+  scoring is a trigger on `flag_events` insert, so only first-time captures count. Points by `level`.
+- XP is paid through `teacher_bonus` + an `xp_grants` row with teacher_email `'flag-duel'`.
+- `ctf_ad_state` is the heartbeat; 90s without it during a live duel = forfeit.
+
+## Team Battles (team-battles.sql + battle.html, v22)
+- Teacher-only. Teams are the class's `class_groups` (2–4 with members); starting turns `squads_on` on.
+- Flag keys come from `module_manifest` (server side). Scoring is a trigger on `flag_events`, same points as Flag Duels.
+- Every battle has a clock (default 15 min). Players can exit any time (`ctf_tb_leave` → `left_at`); exited players
+  stop scoring, leave the average and get no XP.
+- Team score = points ÷ teammates with ≥1 capture. Teacher rows (teacher-mirror) are never on a team.
+- While a battle is live, inserts into `arena_duels` are blocked by a trigger (`team_battle_live`).
+- The arena bar for both lives in arena-duel.js (ctf_ad_state + ctf_tb_state).
+
+## Vocab Duels (vocab-duels.sql + vocab-duel.html / vocab-battle.html, v23)
+- Health is stored ×3 (300 hp): correct = 75 to the opponent, wrong = 25 to yourself. Same term for both players;
+  first correct hits, then `_vd_new_term`. The term (`term_t`) is never returned to students while live.
+- Answer check is `_vd_norm` (lowercase alphanumerics) — text, never index. Pool = client-sent `{t,d}` cleaned by `_vd_pool`
+  (display term = strip parentheses, first `/` alternative, 3–24 chars).
+- Class battles: teacher-only, squads 2–4, `_vd_pair` pairs present players (seen < 20s) across teams; each live
+  pair gets a different term. 1v1 duels obey `classes.duels_on` and pause while a class vocab battle is live.
+
 ## Versioning
 - The site version lives in `site.js` (`SITE_VERSION`) and `CHANGELOG.md`. Every
   release: bump `SITE_VERSION`, add a CHANGELOG entry, and replace the `?v=x.y.z`
@@ -107,3 +146,20 @@
 - `scheduled-unlocks.sql` must stay the last file to define `ctf_gates` /
   `ctf_t_gates` / `ctf_t_classes`; if you change those in another file, mirror the
   change there.
+
+## `claude only/` — working files, never deployed (gitignored)
+- `claude only/uploads/` — the teacher's curriculum PDFs/DOCX/TXT (Paradigm lesson materials,
+  vocab sheets, unit overviews). Source material for vocab-data.js, ctf-data/*.js, syllabi.
+  Copyrighted: never link to or serve these from the site.
+- `claude only/scraps/` — text extracted from those files (unit*-*.txt, cyber1-vocab-*.txt),
+  plus `web3lion.github.io/` (old Web3 site copy).
+- `claude only/design-system/` + `claude only/styles.css` — visual reference (tokens, components,
+  guidelines cards). No live page loads them.
+- `claude only/answers.local.js` — the answer key (plaintext flag answers). Lives here so it is never
+  uploaded; the teacher picks it with the file chooser on answers.html.
+- `claude only/Canvas.dc.html`, `Canvas-2.dc.html` — design scratch.
+- `claude only/Test Day Duck Pond.html` — old bundled copy; the live page is `rewards/testday/index.html`.
+New uploads land in `uploads/` at the root — move them into `claude only/uploads/` after use.
+- `.github/workflows/block-private-files.yml` deletes answers.local.js, `claude only/`, uploads/, scraps/,
+  _tmp_* etc. on every push to main (GitHub web uploads ignore .gitignore). Keep its list in sync
+  with .gitignore when adding new private paths.
