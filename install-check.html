@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=29.0.0"></script>
+<script src="site.js?v=29.2.0"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=29.2.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=29.2.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -72,14 +74,14 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--pane
   <section class="panel" aria-labelledby="h-content"><h2 id="h-content">Course content <span class="cnt" id="c-content"></span></h2><div id="content"></div></section>
 </main>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="config.js?v=29.0.0"></script>
-<script src="ctf-data/cyber1.js?v=29.0.0"></script>
-<script src="ctf-data/cyber2.js?v=29.0.0"></script>
-<script src="ctf-data/cyber3.js?v=29.0.0"></script>
-<script src="ctf-data/apcsp.js?v=29.0.0"></script>
-<script src="ctf-data/web3.js?v=29.0.0"></script>
-<script src="supabase-config.js?v=29.0.0"></script>
-<script src="auth.js?v=29.0.0"></script>
+<script src="config.js?v=29.2.0"></script>
+<script src="ctf-data/cyber1.js?v=29.2.0"></script>
+<script src="ctf-data/cyber2.js?v=29.2.0"></script>
+<script src="ctf-data/cyber3.js?v=29.2.0"></script>
+<script src="ctf-data/apcsp.js?v=29.2.0"></script>
+<script src="ctf-data/web3.js?v=29.2.0"></script>
+<script src="supabase-config.js?v=29.2.0"></script>
+<script src="auth.js?v=29.2.0"></script>
 <script>
 (function(){
   var COURSES = [["cyber1","Cyber 1"],["cyber2","AP Cyber 2"],["cyber3","Cyber 3"],["apcsp","AP CSP"],["web3","Web3"]];
@@ -177,9 +179,10 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--pane
     if (!d.last_snapshot){ snapState = files.some(function(r){ return r.file === 'weekly-winners.sql' && r.state === 'ok'; }) ? 'warn' : 'na'; snapTxt = snapState === 'na' ? 'weekly-winners.sql not installed.' : 'No weekly snapshot has been saved yet. The GitHub Action runs every Monday; you can also run it by hand from the repo\u2019s Actions tab.'; }
     else {
       var age = Math.floor((Date.now() - Date.parse(d.last_snapshot + 'T12:00:00')) / 864e5);
-      snapState = age <= 8 ? 'ok' : 'warn';
+      // the newest snapshot is always LAST week, so its start date is 7–13 days old; past 14 a Monday run was missed
+      snapState = age <= 14 ? 'ok' : 'warn';
       snapTxt = 'Latest Hall of Fame week: ' + esc(d.last_snapshot) + ' (' + d.snapshot_classes + ' class' + (d.snapshot_classes===1?'':'es') + ').' +
-        (age > 8 ? ' That\u2019s ' + age + ' days ago, so the Monday GitHub Action may not be running. Check the repo\u2019s Actions tab and the SUPABASE_URL / SUPABASE_SERVICE_KEY secrets.' : '');
+        (age > 14 ? ' That\u2019s ' + age + ' days ago, so the Monday GitHub Action may not be running. Check the repo\u2019s Actions tab and the SUPABASE_URL / SUPABASE_SERVICE_KEY secrets.' : '');
     }
     el('order').innerHTML += row(snapState, 'Weekly snapshot is running', snapTxt, '.github/workflows');
     var c3 = count([snapState]); tally(c3);
