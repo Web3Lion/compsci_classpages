@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=25.1.0"></script>
+<script src="../site.js?v=30.4.2"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="../assets/logo/icon-site-64.png?v=30.4.2">
+<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=30.4.2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Tools — Mr. Reasey</title>
 <meta name="description" content="Free classroom tools: reward games, countdown timers, and a Google Drive document translator.">
@@ -118,6 +120,8 @@ button.btn{cursor:pointer;}
 .card .btn.pri:active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in oklab,var(--ac) 55%,#000);}
 .foot{position:relative;z-index:1;margin-top:44px;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--dim);}
 .foot a{color:var(--cy);}
+.steps a,.notes a{color:var(--cy);text-decoration:underline;text-underline-offset:2px;}
+.steps a:hover,.notes a:hover{color:var(--bright);}
 html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-motion="reduce"] *::after{animation:none !important;transition:none !important;}
 </style>
 </head>
@@ -201,13 +205,13 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
       <div class="wr">
         <div class="wrh mono">GET THE CSV INTO YOUR COPY</div>
         <ol class="steps">
-      <li><div class="hex">1</div>Paste the prompt into Claude, ChatGPT, or Gemini. Copy the CSV it returns and save it as a file ending in <b>.csv</b>.</li>
-      <li><div class="hex">2</div>In your copy, open the <b>Jeopardy</b> tab and put your cursor in cell <b>C1</b>. Columns A and B hold the game's labels; leave them alone. If the board already has questions, select them from C1 to row 11 and press <b>Delete</b> first so no old columns are left over.</li>
-      <li><div class="hex">3</div>With <b>C1</b> still selected, choose <b>File → Import → Upload</b>, pick the CSV, set Import location to <b>Replace data at selected cell</b> and Separator to <b>Comma</b>.</li>
+      <li><div class="hex">1</div>Paste the prompt into <a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a>, <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a>, or <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a>. Copy the CSV it returns and save it as a file ending in <b>.csv</b>.</li>
+      <li><div class="hex">2</div>In your copy, open the <b>Jeopardy</b> tab and put your cursor in cell <b>B1</b>. Column A holds the game's labels; leave it alone. If the board already has questions, select them from B1 to row 11 and press <b>Delete</b> first so no old columns are left over.</li>
+      <li><div class="hex">3</div>With <b>B1</b> still selected, choose <b>File → Import → Upload</b>, pick the CSV, set Import location to <b>Replace data at selected cell</b> and Separator to <b>Comma</b>.</li>
       <li><div class="hex">4</div>Read every question before class. AI can get facts wrong.</li>
     </ol>
     <div class="notes">
-      <p><b>No file?</b> Paste the CSV into C1, then use <b>Data → Split text to columns</b>.</p>
+      <p><b>No file?</b> Paste the CSV into B1, then use <b>Data → Split text to columns</b>.</p>
       <p><b>Why quotes everywhere?</b> The prompt has the AI quote every cell so commas inside a question don't split it into two columns.</p>
     </div>
         <details class="peek"><summary>Preview the full prompt</summary><pre id="jpPeek"></pre></details>
@@ -258,7 +262,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
         <div class="wrh mono">HOW IT WORKS · ABOUT 5 MINUTES PER PAGE</div>
         <ol class="steps">
       <li><div class="hex">1</div>Pick your <b>Subject</b>, a <b>Theme</b>, and <b>Colors</b>, or leave any on <b>Ask me</b> and the AI will offer choices first. Then click <b>Copy prompt</b>.</li>
-      <li><div class="hex">2</div>Paste it into Claude, ChatGPT, or Gemini. Replace the last line with your <b>lesson directions, links, and instructions</b>, or with your <b>current Canvas page content</b>. To keep its links and embeds, copy it from the page's <b>&lt;/&gt; HTML editor</b>.</li>
+      <li><div class="hex">2</div>Paste it into <a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a>, <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a>, or <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a>. Replace the last line with your <b>lesson directions, links, and instructions</b>, or with your <b>current Canvas page content</b>. To keep its links and embeds, copy it from the page's <b>&lt;/&gt; HTML editor</b>.</li>
       <li><div class="hex">3</div>Copy the HTML it writes. In Canvas, edit the page and click the <b>&lt;/&gt; HTML editor</b> button under the editor.</li>
       <li><div class="hex">4</div>Paste the HTML, switch back to the normal editor to preview, and <b>Save</b>. Ask the AI for changes if anything looks off.</li>
     </ol>
@@ -473,7 +477,7 @@ LESSON CONTENT TO CONVERT:
   });
 })();
 </script>
-<script src="../supabase-config.js?v=25.1.0"></script>
-<script src="../click-log.js?v=25.1.0"></script>
+<script src="../supabase-config.js?v=30.4.2"></script>
+<script src="../click-log.js?v=30.4.2"></script>
 </body>
 </html>
