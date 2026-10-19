@@ -7,12 +7,13 @@
    2. Accessibility preferences, shared site-wide like the theme toggle:
         localStorage['course-motion']   'reduce' | 'full'   (default: follow the OS)
         localStorage['course-contrast'] 'high'   | 'normal'
+        localStorage['course-transitions'] 'off' | 'on'   (30.4: skip page intros only)
       Applied as data-motion / data-contrast on <html> before first paint.
    3. An "A11Y" button beside the theme toggle to change them, a skip link,
       visible keyboard focus, and names for icon-only controls.
    ========================================================================== */
 (function () {
-  var VERSION = "29.0.0";
+  var VERSION = "30.4.1";
   window.SITE_VERSION = VERSION;
   var r = document.documentElement;
   function osReduce() { try { return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } }
@@ -21,9 +22,12 @@
     var m = pref("course-motion"), c = pref("course-contrast");
     r.setAttribute("data-motion", m === "reduce" || (m !== "full" && osReduce()) ? "reduce" : "full");
     r.setAttribute("data-contrast", c === "high" ? "high" : "normal");
+    r.setAttribute("data-transitions", pref("course-transitions") === "off" ? "off" : "on");
   }
   apply();
   window.SITE_REDUCED_MOTION = function () { return r.getAttribute("data-motion") === "reduce"; };
+  /* 30.4: page-load intros (nemesis-intro / packet-intro / consensus-intro) skip when either is on */
+  window.SITE_SKIP_TRANSITIONS = function () { return window.SITE_REDUCED_MOTION() || r.getAttribute("data-transitions") === "off"; };
 
   var css =
     ":focus-visible{outline:3px solid var(--amber,#ffcf5c) !important;outline-offset:2px !important;}" +
@@ -32,6 +36,9 @@
     ".srOnly{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}" +
     "html[data-motion='reduce'] *,html[data-motion='reduce'] *::before,html[data-motion='reduce'] *::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}" +
     "html[data-motion='reduce'] .confetti,html[data-motion='reduce'] #confettiWrap,html[data-motion='reduce'] #bgfx,html[data-motion='reduce'] #spotlight{display:none !important;}" +
+    /* 30.3: reduce motion = no decorative backgrounds, just the page's solid color */
+    "html[data-motion='reduce'] #battleBg,html[data-motion='reduce'] #binBg,html[data-motion='reduce'] canvas#rain,html[data-motion='reduce'] #nemRain,html[data-motion='reduce'] #bossRain,html[data-motion='reduce'] .siteDecor{display:none !important;}" +
+    "html[data-motion='reduce'] body{background-image:none !important;}" +
     "html[data-contrast='high']{--faint:#a9bfd6 !important;--dim:#c3d3e4 !important;--muted:#dbe7f3 !important;--border:#4d6f94 !important;--border2:#3f5f82 !important;--border3:#6f93ba !important;}" +
     "html[data-contrast='high'][data-theme='light']{--faint:#3c4b5e !important;--dim:#2e3b4b !important;--muted:#1f2935 !important;--border:#8196ad !important;--border2:#93a6bb !important;--border3:#6d839c !important;}" +
     "html[data-contrast='high'] a{text-decoration:underline;}" +
@@ -93,6 +100,7 @@
       var pop = document.createElement("div"); pop.id = "siteA11yPop"; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-label", "Accessibility settings");
       pop.innerHTML =
         '<label><input type="checkbox" id="siteMotion"> Reduce motion</label>' +
+        '<label><input type="checkbox" id="siteTrans"> Skip page transitions</label>' +
         '<label><input type="checkbox" id="siteContrast"> High contrast text</label>' +
         '<div class="v">Saved on this device for every course page \u00b7 v' + VERSION + '</div>';
       document.body.appendChild(b); document.body.appendChild(pop);
@@ -139,10 +147,11 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
       if (window.ResizeObserver) { var ro = new ResizeObserver(function () { place(); }); [].slice.call(document.querySelectorAll("#themeToggle, .themebtn")).forEach(function (e) { if (e !== b) ro.observe(e); }); }
       if (theme) theme.addEventListener("click", function () { setTimeout(place, 0); });
-      var mo = pop.querySelector("#siteMotion"), co = pop.querySelector("#siteContrast");
-      var sync = function () { mo.checked = r.getAttribute("data-motion") === "reduce"; co.checked = r.getAttribute("data-contrast") === "high"; };
+      var mo = pop.querySelector("#siteMotion"), co = pop.querySelector("#siteContrast"), tr = pop.querySelector("#siteTrans");
+      var sync = function () { mo.checked = r.getAttribute("data-motion") === "reduce"; co.checked = r.getAttribute("data-contrast") === "high"; tr.checked = window.SITE_SKIP_TRANSITIONS(); tr.disabled = mo.checked; };
       sync();
-      mo.onchange = function () { set("course-motion", mo.checked ? "reduce" : "full"); };
+      mo.onchange = function () { set("course-motion", mo.checked ? "reduce" : "full"); sync(); };
+      tr.onchange = function () { set("course-transitions", tr.checked ? "off" : "on"); sync(); };
       co.onchange = function () { set("course-contrast", co.checked ? "high" : "normal"); };
       b.onclick = function () { var open = !pop.classList.contains("open"); pop.classList.toggle("open", open); b.setAttribute("aria-expanded", String(open)); if (open) { sync(); mo.focus(); } };
       document.addEventListener("keydown", function (e) { if (e.key === "Escape" && pop.classList.contains("open")) { pop.classList.remove("open"); b.setAttribute("aria-expanded", "false"); b.focus(); } });

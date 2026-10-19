@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=29.0.0"></script>
+<script src="site.js?v=30.4.1"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.1">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.1">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -70,7 +72,7 @@ html[data-motion="reduce"] .shake{animation:none;}
     function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
     function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
     function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
-    function modName(m){ return "Module " + String(m).padStart(2,"0") + (MODN[m-1] ? " \u00b7 " + MODN[m-1] : ""); }
+    function modName(m){ if (+m === 0) return "Binary conversion"; return "Module " + String(m).padStart(2,"0") + (MODN[m-1] ? " \u00b7 " + MODN[m-1] : ""); }
     var ERR = { duels_off:"Your teacher has student duels turned off for this class.", class_battle_live:"A class vocab battle is running. 1v1 duels are paused until it ends.",
       in_quiz:"Finish your open vocab quiz first.", already_in_duel:"You\u2019re already in a duel.", too_few_terms:"Pick modules with at least 4 vocab terms.",
       no_duel:"No open vocab duel with that code in your class.", started:"That duel already started.", full:"That duel is full (4 players).", need_two:"Wait for your opponent to join.", not_yours:"Sign in on your CTF page first." };
@@ -153,10 +155,11 @@ html[data-motion="reduce"] .shake{animation:none;}
       }).join("");
     }
     function fightView(s, f){
-      var cipher = f.mode === "cipher";
+      var cipher = f.mode === "cipher", plain = f.mode === "plain";
       var bank = f.mode === "bank", dec = f.mode === "decrypt", opts = [];
       if (bank) { try { opts = JSON.parse(f.puzzle || "[]"); } catch (e) {} }
-      var puzzle = dec
+      var puzzle = plain ? ''
+        : dec
         ? '<div id="vdMask" style="display:flex;flex-wrap:wrap;gap:6px;">' + maskHtml(f.puzzle) + '</div>' +
           '<div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">DECRYPT \u00b7 letters start leaking after 8 seconds \u00b7 type the term</div>'
         : bank
@@ -171,7 +174,7 @@ html[data-motion="reduce"] .shake{animation:none;}
         '<div class="card" id="vdArena" style="background:var(--arena);border-color:var(--adv);box-shadow:0 0 30px -14px var(--advglow);">' +
         '<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;">' + hpBar("vdMe", ST.handle, f.my_hp, true) +
           '<span class="mono" style="font-size:13px;color:var(--faint);padding-bottom:2px;">VS</span>' + hpBar("vdOpp", f.opp, f.opp_hp, false) + '</div>' +
-        '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">DEFINITION \u00b7 ' + f.len + ' letters</div>' +
+        '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">' + (plain ? 'QUESTION \u00b7 type the answer' : 'DEFINITION \u00b7 ' + f.len + ' letters') + '</div>' +
         '<div style="font-size:clamp(17px,2.6vw,21px);font-weight:600;color:var(--bright);line-height:1.5;margin-bottom:18px;">' + esc(f.def) + '</div>' +
         '<div style="margin-bottom:18px;">' + puzzle + '</div>' +
         '<form id="vdForm" style="display:flex;gap:10px;flex-wrap:wrap;" autocomplete="off"><label for="vdAns" class="mono" style="position:absolute;left:-9999px;">Your answer</label>' +

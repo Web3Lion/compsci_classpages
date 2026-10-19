@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=29.0.0"></script>
+<script src="site.js?v=30.4.1"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.1">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.1">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -45,19 +47,19 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=29.0.0"></script>
-<script src="ctf-data/cyber1.js?v=29.0.0"></script>
-<script src="ctf-data/cyber2.js?v=29.0.0"></script>
-<script src="ctf-data/cyber3.js?v=29.0.0"></script>
-<script src="ctf-data/apcsp.js?v=29.0.0"></script>
-<script src="ctf-data/web3.js?v=29.0.0"></script>
-<script src="supabase-config.js?v=29.0.0"></script>
-<script src="auth.js?v=29.0.0"></script>
-<script src="cosmetics.js?v=29.0.0"></script>
-<script src="battle-fx.js?v=29.0.0"></script>
-<script src="battle-bg.js?v=29.0.0"></script>
-<script src="team-picker.js?v=29.0.0"></script>
-<script src="waiting-room.js?v=29.0.0"></script>
+<script src="config.js?v=30.4.1"></script>
+<script src="ctf-data/cyber1.js?v=30.4.1"></script>
+<script src="ctf-data/cyber2.js?v=30.4.1"></script>
+<script src="ctf-data/cyber3.js?v=30.4.1"></script>
+<script src="ctf-data/apcsp.js?v=30.4.1"></script>
+<script src="ctf-data/web3.js?v=30.4.1"></script>
+<script src="supabase-config.js?v=30.4.1"></script>
+<script src="auth.js?v=30.4.1"></script>
+<script src="cosmetics.js?v=30.4.1"></script>
+<script src="battle-fx.js?v=30.4.1"></script>
+<script src="battle-bg.js?v=30.4.1"></script>
+<script src="team-picker.js?v=30.4.1"></script>
+<script src="waiting-room.js?v=30.4.1"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -127,7 +129,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     };
   }
   var WR = window.WROOM ? WROOM.attach({ kind: "team", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: !!DEMO }) : null;
-  function wrBtn(){ return WR && WR.isOpen() ? "Start \u00b7 10 s countdown" : null; }
+  function wrBtn(){ return WR ? WR.label() : null; }
   function fail(e){ busy = false; msg = /tb_|function/.test(String(e && e.message)) ? "Run supabase/team-battles.sql first." : "Something went wrong: " + (e && e.message || e); paint(); }
 
   // team-picker.js missing (not uploaded / cached) → plain list, every team plays
@@ -234,6 +236,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var s = document.getElementById("tbStart"); if (s) s.onclick = function(){
       var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
       var groups = TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; }));
+      if (WR && WR.needsRoom()) { WR.openRoom(); return; }   // 29.2: class duels always go through the waiting room
       busy = true; msg = ""; paint();
       (WR ? WR.go : function(f){ f(function(){}); })(function(done){
         rpc("ctf_t_tb_start", { p_class: CUR.id, p_modules: mods, p_minutes: mins || 15, p_groups: groups }).then(function(r){

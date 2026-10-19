@@ -1,14 +1,15 @@
 repo: Web3Lion/compsci_classpages
 branch: main
 ## Last sync
-date: 2026-10-12T01:56:19Z
+date: 2026-10-16T23:15:31Z
 
 ### Updated in this project
-- Slide deck QR (top-right, every slide but 1) now shows at ≥900px and when embedded/full-screen on the summit page — summit/FFL-summit-2026-deck.html
-- Root redirect stubs deleted locally (FFL-summit-mainpage, FFL-summit-2026-deck, sru-summit, summit .html) — still present on GitHub, delete them there
-- Live check: summit/ pages, screenshots and directory.html are on GitHub and serving correctly
+- Live check: GitHub main is at site version 27.0.0; project is at 29.0.0
+- Not yet on GitHub: raid.html, raid-play.html, raid-fx.js, lobby.html, waiting-room.js
+- SQL not in repo: class-rename, squad-sets, duel-record, brackets, raids, waiting-room
 
 ## Sync history
+- 2026-10-12 — summit deck QR fix, root redirect stubs deleted locally, summit/ + directory.html verified live
 - 2026-08-27 — user manually pushed all prior changes (Day-0 gating, VECTOR rename, AP CSP Module 1 flags, allowed-emails RPC)
 
 ## Screen map

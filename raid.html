@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=29.0.0"></script>
+<script src="site.js?v=30.4.1"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.1">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.1">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -45,18 +47,18 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=29.0.0"></script>
-<script src="ctf-data/cyber1.js?v=29.0.0"></script>
-<script src="ctf-data/cyber2.js?v=29.0.0"></script>
-<script src="ctf-data/cyber3.js?v=29.0.0"></script>
-<script src="ctf-data/apcsp.js?v=29.0.0"></script>
-<script src="ctf-data/web3.js?v=29.0.0"></script>
-<script src="supabase-config.js?v=29.0.0"></script>
-<script src="auth.js?v=29.0.0"></script>
-<script src="battle-fx.js?v=29.0.0"></script>
-<script src="battle-bg.js?v=29.0.0"></script>
-<script src="raid-fx.js?v=29.0.0"></script>
-<script src="waiting-room.js?v=29.0.0"></script>
+<script src="config.js?v=30.4.1"></script>
+<script src="ctf-data/cyber1.js?v=30.4.1"></script>
+<script src="ctf-data/cyber2.js?v=30.4.1"></script>
+<script src="ctf-data/cyber3.js?v=30.4.1"></script>
+<script src="ctf-data/apcsp.js?v=30.4.1"></script>
+<script src="ctf-data/web3.js?v=30.4.1"></script>
+<script src="supabase-config.js?v=30.4.1"></script>
+<script src="auth.js?v=30.4.1"></script>
+<script src="battle-fx.js?v=30.4.1"></script>
+<script src="battle-bg.js?v=30.4.1"></script>
+<script src="raid-fx.js?v=30.4.1"></script>
+<script src="waiting-room.js?v=30.4.1"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX, RF = window.RAID_FX, esc = RF.esc;
@@ -69,7 +71,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   var DEMO = /[?&]demo=1/.test(location.search), D = null;
   function rpc(fn, a){ return DEMO ? Promise.resolve(demo(fn, a || {})) : AUTH.rpc(fn, a || {}); }
   var WR = window.WROOM ? WROOM.attach({ kind: "raid", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: DEMO }) : null;
-  function wrBtn(){ return WR && WR.isOpen() ? "Start \u00b7 10 s countdown" : null; }
+  function wrBtn(){ return WR ? WR.label() : null; }
   function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
   function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
@@ -78,7 +80,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=29.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=30.4.1"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){ MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); }); });
   }
   function setupView(){
@@ -135,6 +137,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var go = document.getElementById("rdGo"); if (go) go.onclick = function(){
       var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), pool = [];
       mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
+      if (WR && WR.needsRoom()) { WR.openRoom(); return; }   // 29.2: class duels always go through the waiting room
       busy = true; msg = ""; paint();
       (WR ? WR.go : function(f){ f(function(){}); })(function(done){
       rpc("ctf_t_raid_start", { p_class: CUR.id, p_hp: hp, p_minutes: mins, p_modules: mods, p_pool: pool, p_modes: PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }) })

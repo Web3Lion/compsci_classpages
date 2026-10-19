@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=29.0.0"></script>
+<script src="site.js?v=30.4.1"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.1">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.1">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -65,6 +67,7 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
       '<span class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--faint);">' + (m.side === "cons" ? "CONSOLATION \u00b7 " : "") + 'ROUND ' + m.round + ' \u00b7 BEST OF 3</span>' +
       '<span class="mono" style="font-size:22px;font-weight:800;color:var(--bright);margin-left:auto;">You ' + m.my_games + ' \u2013 ' + m.opp_games + ' ' + esc(m.opp || "") + '</span></div>'; }
     function puzzle(m){
+      if (m.mode === "plain") return '';
       if (m.mode === "decrypt") return '<div id="brMask" style="display:flex;flex-wrap:wrap;gap:6px;">' + maskHtml(m.puzzle) + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">DECRYPT \u00b7 letters leak after 8 seconds \u00b7 type the term</div>';
       if (m.mode === "bank") { var o = []; try { o = JSON.parse(m.puzzle || "[]"); } catch (e) {}
         return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;">' + o.map(function(x){ return '<button type="button" class="tile brBank" style="font-size:16px;padding:10px 12px;">' + esc(x) + '</button>'; }).join("") + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">WORD BANK \u00b7 a wrong pick costs a third of a hit</div>'; }
@@ -86,7 +89,7 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
         '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><a class="btn" href="' + C + '/ctf.html#arena">OPEN ARENA \u2192</a><span style="font-size:13px;color:var(--muted);">Easy 1 \u00b7 Medium 2 \u00b7 Hard 3 \u00b7 ' + (m.open || 0) + ' open flags left. Out of flags? The game turns into a vocab fight.</span></div></div>';
       return '<div class="card" id="brArena" style="background:var(--arena);border-color:var(--adv);">' + games(m) +
         '<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;">' + hp("brMe", S.handle || "You", m.my_hp, true) + '<span class="mono" style="font-size:13px;color:var(--faint);">VS</span>' + hp("brOpp", m.opp, m.opp_hp, false) + '</div>' +
-        '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">GAME ' + m.game_no + (b.kind === "flag" ? " \u00b7 VOCAB TIEBREAK" : "") + ' \u00b7 DEFINITION \u00b7 ' + m.len + ' letters</div>' +
+        '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">GAME ' + m.game_no + (b.kind === "flag" ? " \u00b7 VOCAB TIEBREAK" : "") + (m.mode === "plain" ? ' \u00b7 QUESTION \u00b7 type the answer' : ' \u00b7 DEFINITION \u00b7 ' + m.len + ' letters') + '</div>' +
         '<div style="font-size:clamp(17px,2.6vw,21px);font-weight:600;color:var(--bright);line-height:1.5;margin-bottom:18px;">' + esc(m.def) + '</div>' +
         '<div style="margin-bottom:18px;">' + puzzle(m) + '</div>' +
         '<form id="brForm" style="display:flex;gap:10px;flex-wrap:wrap;" autocomplete="off"><label for="brAns" style="position:absolute;left:-9999px;">Your answer</label><input id="brAns" class="ans" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="type the term\u2026">' +

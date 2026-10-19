@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=30.2.0"></script>
+<script src="../site.js?v=30.4.1"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="../assets/logo/icon-site-64.png?v=30.2.0">
-<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=30.2.0">
+<link rel="icon" type="image/png" href="../assets/logo/icon-site-64.png?v=30.4.1">
+<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=30.4.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Binary Conversion — Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +22,8 @@ body,.panel,.btn,.ex{transition:background-color .25s ease,border-color .25s eas
 body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
 .mono{font-family:'JetBrains Mono',monospace;}
 a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
-.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;position:relative;z-index:1;}
+#binBg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;-webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.35) 30%,#000 75%);mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.35) 30%,#000 75%);}
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;padding-right:110px;}
 .brand{display:flex;align-items:center;gap:10px;}
 .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
@@ -82,6 +83,7 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<canvas id="binBg" aria-hidden="true"></canvas>
 <div class="wrap">
   <div class="top">
     <div class="brand"><span class="dot"></span><h1>BINARY CONVERSION</h1></div>
@@ -221,6 +223,27 @@ function showResults(){
   document.getElementById('quizPanel').innerHTML=html;
 }
 renderStart();
+/* binary rain background: slow columns of 0/1, bits flip now and then; static when motion is reduced */
+(function(){
+  var c=document.getElementById('binBg'),x=c.getContext('2d'),r=document.documentElement,W=0,H=0,cols=[],CW=24,FS=15,last=0;
+  function rm(){try{return window.SITE_REDUCED_MOTION?SITE_REDUCED_MOTION():matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}}
+  function size(){var d=window.devicePixelRatio||1;W=innerWidth;H=innerHeight;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);
+    var n=Math.ceil(W/CW),rows=Math.ceil(H/FS)+2;cols=[];
+    for(var i=0;i<n;i++){var b=[];for(var j=0;j<rows;j++)b.push(Math.random()<.5?'0':'1');cols.push({off:Math.random()*rows*FS,sp:5+Math.random()*16,bits:b,a:.3+Math.random()*.7});}}
+  function draw(dt){
+    var lt=r.getAttribute('data-theme')==='light',rgb=lt?'23,138,82':'79,214,138',base=lt?.16:.13;
+    x.clearRect(0,0,W,H);x.font='700 '+FS+'px "JetBrains Mono",monospace';x.textAlign='center';x.textBaseline='top';
+    cols.forEach(function(k,i){
+      var len=k.bits.length*FS;k.off=(k.off+k.sp*dt)%len;
+      if(dt&&Math.random()<dt*1.5){var q=Math.floor(Math.random()*k.bits.length);k.bits[q]=k.bits[q]==='0'?'1':'0';}
+      x.fillStyle='rgba('+rgb+','+(base*k.a).toFixed(3)+')';
+      for(var j=0;j<k.bits.length;j++){var y=(j*FS+k.off)%len-FS;x.fillText(k.bits[j],i*CW+CW/2,y);}
+    });
+  }
+  function loop(t){var dt=last?Math.min(.1,(t-last)/1000):0;last=t;if(!document.hidden)draw(rm()?0:dt);requestAnimationFrame(loop);}
+  size();addEventListener('resize',function(){size();draw(0);});
+  requestAnimationFrame(loop);
+})();
 </script>
 </body>
 </html>

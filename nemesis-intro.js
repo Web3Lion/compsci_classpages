@@ -5,7 +5,7 @@
    ctf_gates, so the cached flag sync.js writes on the arena page is the only
    signal available — and unknown counts as OFF. */
 (function () {
-  if (window.SITE_REDUCED_MOTION && window.SITE_REDUCED_MOTION()) return;   // A11Y: reduce motion skips the intro
+  if ((window.SITE_SKIP_TRANSITIONS || window.SITE_REDUCED_MOTION) && (window.SITE_SKIP_TRANSITIONS || window.SITE_REDUCED_MOTION)()) return;   // A11Y: reduce motion or skip transitions skips the intro
   function courseId() {
     if (window.CTF_COURSE) return window.CTF_COURSE;
     var m = location.pathname.match(/\/(cyber1|cyber2|cyber3|apcsp|web3)\//);

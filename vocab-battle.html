@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=29.0.0"></script>
+<script src="site.js?v=30.4.1"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.1">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.1">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -46,25 +48,27 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=29.0.0"></script>
-<script src="ctf-data/cyber1.js?v=29.0.0"></script>
-<script src="ctf-data/cyber2.js?v=29.0.0"></script>
-<script src="ctf-data/cyber3.js?v=29.0.0"></script>
-<script src="ctf-data/apcsp.js?v=29.0.0"></script>
-<script src="ctf-data/web3.js?v=29.0.0"></script>
-<script src="supabase-config.js?v=29.0.0"></script>
-<script src="auth.js?v=29.0.0"></script>
-<script src="battle-fx.js?v=29.0.0"></script>
-<script src="battle-bg.js?v=29.0.0"></script>
-<script src="team-picker.js?v=29.0.0"></script>
-<script src="waiting-room.js?v=29.0.0"></script>
+<script src="config.js?v=30.4.1"></script>
+<script src="ctf-data/cyber1.js?v=30.4.1"></script>
+<script src="ctf-data/cyber2.js?v=30.4.1"></script>
+<script src="ctf-data/cyber3.js?v=30.4.1"></script>
+<script src="ctf-data/apcsp.js?v=30.4.1"></script>
+<script src="ctf-data/web3.js?v=30.4.1"></script>
+<script src="supabase-config.js?v=30.4.1"></script>
+<script src="auth.js?v=30.4.1"></script>
+<script src="battle-fx.js?v=30.4.1"></script>
+<script src="battle-bg.js?v=30.4.1"></script>
+<script src="team-picker.js?v=30.4.1"></script>
+<script src="waiting-room.js?v=30.4.1"></script>
+<script src="binary-pool.js?v=30.4.1"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
   var seenAt = 0, curSess = null;
   if (FX) { FX.enableSound(true); FX.soundUi(document.getElementById("snd")); }
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
-  var CLASSES = [], CUR = null, SET = null, ST = null, skew = 0, msg = "", busy = false, pick = {}, mins = 15, timer = null, showSetup = false, MODS = {};
+  var CLASSES = [], CUR = null, SET = null, ST = null, skew = 0, msg = "", busy = false, pick = {}, mins = 15, timer = null, showSetup = false, MODS = {}, qset = "vocab";
+  var BIN = window.BINARY_SET;
   var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]], modes = { cipher: true, unscramble: true, decrypt: true, bank: true };
   function nModes(){ return PMODES.filter(function(p){ return modes[p[0]]; }).length; }
   function modeList(){ return PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }); }
@@ -76,11 +80,11 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
   function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
   function guide(){ return (((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}; }
-  function modName(m){ var n = (guide().modules || [])[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
+  function modName(m){ if (+m === 0) return "Binary conversion"; var n = (guide().modules || [])[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
   function col(t, i){ return (t && t.color) || FALLBACK[i % 4]; }
   function rpc(fn, a){ return AUTH.rpc(fn, a || {}); }
   var WR = window.WROOM ? WROOM.attach({ kind: "vocab", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: false }) : null;
-  function wrBtn(){ return WR && WR.isOpen() ? "Start \u00b7 10 s countdown" : null; }
+  function wrBtn(){ return WR ? WR.label() : null; }
   function fail(e){ busy = false; msg = /vd_|function/.test(String(e && e.message)) ? "Run supabase/vocab-duels.sql first." : /tb_randomize/.test(String(e && e.message)) ? "Randomize needs supabase/team-battles.sql." : "Something went wrong: " + (e && e.message || e); paint(); }
   function theme(){
     var g = guide(), r = document.documentElement;
@@ -90,7 +94,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=29.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=30.4.1"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
@@ -104,9 +108,10 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function setupView(){
     var T = SET.teams.filter(function(t){ return t.members > 0; }), un = SET.ungrouped || [];
     var keys = Object.keys(MODS).map(Number).sort(function(a,b){return a-b;}), selM = keys.filter(function(m){ return pick[m]; });
-    var n = selM.reduce(function(a, m){ return a + MODS[m].length; }, 0);
+    var n = selM.reduce(function(a, m){ return a + MODS[m].length; }, 0), bin = qset === "binary" && BIN;
+    if (bin) n = 510;
     var TP = window.TEAM_PICK; TP.fetchSets(rpc, CUR.id, paint);
-    var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && n >= 4 && nModes() && !busy;
+    var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && n >= 4 && (bin || nModes()) && !busy;
     var teams = TP.teams(T, col, busy) + TP.note(T);
     return (WR ? WR.html() : '') + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;" id="g">' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TEAMS \u00b7 TICK WHO PLAYS</div>' +
@@ -116,14 +121,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;"><span style="font-size:14px;color:var(--bright);font-weight:700;">Randomize teams:</span>' +
           [2,3,4].map(function(k){ return '<button type="button" class="btn ghost vbRand" data-n="' + k + '"' + (busy ? " disabled" : "") + '>' + k + ' teams</button>'; }).join("") + '</div>' + TP.setsBar(busy) + '</div>' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BATTLE OPTIONS</div>' +
+        (BIN ? '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Question set</div>' +
+          '<div role="group" aria-label="Question set" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + [["vocab","Vocab"],["binary","Binary conversion"]].map(function(q){ return '<button type="button" class="chip vbQs" data-q="' + q[0] + '" aria-pressed="' + (qset === q[0]) + '">' + q[1] + '</button>'; }).join("") + '</div>' : '') +
+        (bin ? '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Each fight question is a random 8-bit conversion: decimal \u2192 binary (students type all 8 bits) or binary \u2192 decimal. No puzzle disguise; students just type the answer.</div>' :
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab modules</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip vbMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + MODS[m].length + '</span></button>'; }).join("") : '<span style="color:var(--dim);">No vocab list found for this course.</span>') + '</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +
         '<div role="group" aria-label="Puzzle types" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">' + PMODES.map(function(p){ var on = !!modes[p[0]]; return '<button type="button" class="chip vbPm" data-p="' + p[0] + '" aria-pressed="' + on + '">' + (on ? "\u2713 " : "") + p[1] + '</button>'; }).join("") + '</div>' +
-        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;">Each term uses one of the ticked types at random.' + (nModes() ? '' : ' <b style="color:var(--bad);">Pick at least one.</b>') + '</div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;">Each term uses one of the ticked types at random.' + (nModes() ? '' : ' <b style="color:var(--bad);">Pick at least one.</b>') + '</div>') +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Length</div>' +
         '<div role="group" aria-label="Length" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + LENGTHS.map(function(l){ return '<button type="button" class="chip vbMin" data-n="' + l[0] + '" aria-pressed="' + (mins === l[0]) + '">' + l[1] + '</button>'; }).join("") + '</div>' +
-        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vbStart" data-wr-start="Start battle"' + (ready ? "" : " disabled") + '>' + (wrBtn() || "Start battle") + '</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (n ? n + " terms" : "Pick at least one module") + '</span></div>' +
+        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vbStart" data-wr-start="Start battle"' + (ready ? "" : " disabled") + '>' + (wrBtn() || "Start battle") + '</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (bin ? "Random binary questions" : n ? n + " terms" : "Pick at least one module") + '</span></div>' +
         '<div style="font-size:12px;color:var(--dim);margin-top:10px;line-height:1.6;">Students open <b>Vocab Duel</b> from their arena. Everyone on the page is paired with someone from another team; after each KO they get a new opponent. Each pair gets a different term. Correct = 25% hit, wrong = a third of a hit to yourself. Score = team KOs \u00f7 teammates who fought. Winners +10 XP, every fighter +5. Starting turns Squads on and ends 1v1 vocab duels in this class.</div></div></div>' +
       (msg ? '<div role="alert" class="mono" style="margin-top:14px;color:var(--bad);font-weight:700;font-size:13px;">' + esc(msg) + '</div>' : '');
   }
@@ -185,6 +193,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     if (WR) WR.bind(view);
     if (window.TEAM_PICK) TEAM_PICK.bind(view, { rpc: rpc, reload: load, repaint: paint, err: function(m){ msg = m; paint(); } });
     view.querySelectorAll(".vbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
+    view.querySelectorAll(".vbQs").forEach(function(b){ b.onclick = function(){ qset = b.getAttribute("data-q"); msg = ""; paint(); }; });
     view.querySelectorAll(".vbPm").forEach(function(x){ x.onclick = function(){ var p = x.getAttribute("data-p"); modes[p] = !modes[p]; paint(); }; });
     view.querySelectorAll(".vbMin").forEach(function(b){ b.onclick = function(){ mins = +b.getAttribute("data-n"); paint(); }; });
     view.querySelectorAll(".vbRand").forEach(function(b){ b.onclick = function(){
@@ -196,10 +205,13 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var s = document.getElementById("vbStart"); if (s) s.onclick = function(){
       var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), pool = [];
       mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
+      var pm = modeList();
+      if (qset === "binary" && BIN) { mods = [BIN.module]; pool = BIN.pool(); pm = BIN.modes; }
       var groups = TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; }));
+      if (WR && WR.needsRoom()) { WR.openRoom(); return; }   // 29.2: class duels always go through the waiting room
       busy = true; msg = ""; paint();
       (WR ? WR.go : function(f){ f(function(){}); })(function(done){
-        rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: mods, p_pool: pool, p_minutes: mins || 15, p_modes: modeList(), p_groups: groups }).then(function(r){
+        rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: mods, p_pool: pool, p_minutes: mins || 15, p_modes: pm, p_groups: groups }).then(function(r){
           busy = false; var ok = r && !r.error; done(ok); if (!ok) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; }
           showSetup = false; load();
         }).catch(function(e){ done(false); fail(e); });
@@ -211,7 +223,9 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var rm = document.getElementById("vbRematch"); if (rm) rm.onclick = function(){
       var os = ST.session, pool = []; if (!confirm("Start a rematch with the same teams, modules and length?")) return;
       (os.modules || []).forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
-      busy = true; rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: os.modules, p_pool: pool, p_minutes: os.minutes || 15, p_modes: os.modes && os.modes.length ? os.modes : modeList(), p_groups: ((ST && ST.teams) || os.teams || []).map(function(t){ return t.id; }).filter(Boolean) }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
+      if (BIN && BIN.is(os.modules)) pool = BIN.pool();
+      var rpm = BIN && BIN.is(os.modules) ? BIN.modes : (os.modes && os.modes.length ? os.modes : modeList());
+      busy = true; rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: os.modules, p_pool: pool, p_minutes: os.minutes || 15, p_modes: rpm, p_groups: ((ST && ST.teams) || os.teams || []).map(function(t){ return t.id; }).filter(Boolean) }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
     };
     var fu = document.getElementById("vbFull"); if (fu) fu.onclick = function(){ FX.fullscreen(document.getElementById("bfxResults")); };
   }

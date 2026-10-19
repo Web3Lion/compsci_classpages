@@ -3,13 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=29.0.0"></script>
+<script src="site.js?v=30.4.1"></script>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.1">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mr. Reasey — Course Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0e141d;--panel2:#121a26;--border:#20304a;--text:#c6d4e6;--bright:#eef4ff;--muted:#9db0cc;--dim:#6f88a8;--faint:#4c627e;}
 :root[data-theme="light"]{--bg:#eaeef4;--panel:#ffffff;--panel2:#f3f6fb;--border:#d3dce8;--text:#2a3646;--bright:#0d1826;--muted:#4a5a70;--dim:#6a7c93;--faint:#93a3b8;}
@@ -30,12 +32,17 @@ a{text-decoration:none;color:inherit;}
 .tex{position:absolute;inset:0;opacity:.5;pointer-events:none;}
 .card:hover .chip{box-shadow:0 0 16px -2px var(--ac);}
 .popout{position:absolute;top:14px;right:14px;z-index:2;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:9px;border:1px solid var(--border);background:var(--panel2);color:var(--dim);transition:.15s;cursor:pointer;padding:0;font:inherit;}
+.ce{display:flex;align-items:center;gap:16px;margin-bottom:26px;font-family:'VT323',monospace;color:var(--bright);}
+.ce-mon{width:72px;height:58px;border-radius:16px / 13px;border:3px solid currentColor;display:flex;align-items:center;justify-content:center;flex:none;font-size:40px;line-height:1;background:repeating-linear-gradient(0deg,color-mix(in srgb,currentColor 9%,transparent) 0 2px,transparent 2px 4px);box-shadow:0 0 16px -4px color-mix(in srgb,currentColor 55%,transparent);text-shadow:0 0 8px color-mix(in srgb,currentColor 60%,transparent);}
+.ce-name{font-size:34px;line-height:.82;letter-spacing:2px;text-shadow:0 0 10px color-mix(in srgb,currentColor 40%,transparent);}
+:root[data-theme="light"] .ce-mon,:root[data-theme="light"] .ce-name{box-shadow:none;text-shadow:none;}
 .popout:hover{border-color:var(--ac);color:var(--ac);}
 </style>
 </head>
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
+  <div class="ce" role="img" aria-label="Cyber Engagement"><span class="ce-mon" aria-hidden="true">CE</span><span class="ce-name" aria-hidden="true">CYBER<br>ENGAGEMENT</span></div>
   <div class="mono" style="font-size:13px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;">South Fayette High School</div>
   <h1 style="font-weight:800;font-size:clamp(34px,5vw,52px);letter-spacing:-1px;margin:12px 0 10px;color:var(--bright);">Mr. Reasey&rsquo;s Courses</h1>
   <p style="font-size:17px;line-height:1.6;max-width:620px;margin:0;color:var(--muted);">Pick a course to open its live home page &mdash; weekly schedule, syllabus, and study tools, all updated automatically.</p>

@@ -45,7 +45,7 @@
       if (!L || L.status === "started" || other) {
         return '<div class="card" id="wrCard" style="margin-bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">' +
           '<div style="flex:1;min-width:240px;"><div style="font-weight:800;color:var(--bright);font-size:16px;">Waiting room</div>' +
-          '<div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5;">Open it first. Students tap <b>Class Duel</b> on their course home, see their team, and get a 10-second countdown when you press Start.' +
+          '<div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5;">Every class duel starts here. Open it, then students tap <b>Class Duel</b> on their course home, see their team, and get a 10-second countdown when you press Start.' +
           (other ? ' <b style="color:var(--amber);">The room is open for a ' + esc(LBL[L.kind]) + ' right now. Opening it here switches it.</b>' : '') + '</div></div>' +
           '<button type="button" class="btn" id="wrOpen">Open waiting room</button></div>';
       }
@@ -72,10 +72,14 @@
       c.replaceWith(n); bind(n.parentNode);
       if (f && document.getElementById(f)) document.getElementById(f).focus();
       var st = document.querySelector("[data-wr-start]");
-      if (st) st.textContent = open() ? "Start \u00b7 10 s countdown" : st.getAttribute("data-wr-start");
+      if (st) st.textContent = label() || st.getAttribute("data-wr-start");
     }
+    // 29.2: every class duel goes through the room. Without waiting-room.sql ("na") the page starts directly.
+    function needsRoom() { return !!ST && ST !== "na" && !open(); }
+    function label() { return open() ? "Start \u00b7 10 s countdown" : needsRoom() ? "Open waiting room" : null; }
+    function openRoom() { err = ""; return rpc("ctf_t_lobby_open", { p_class: o.classId(), p_kind: o.kind }).then(load).catch(function () { err = "Couldn\u2019t open. Run supabase/waiting-room.sql."; ST = "na"; paint(); }); }
     function bind(root) {
-      var op = (root || document).querySelector("#wrOpen"); if (op) op.onclick = function () { err = ""; rpc("ctf_t_lobby_open", { p_class: o.classId(), p_kind: o.kind }).then(load).catch(function () { err = "Couldn\u2019t open. Run supabase/waiting-room.sql."; ST = "na"; paint(); }); };
+      var op = (root || document).querySelector("#wrOpen"); if (op) op.onclick = openRoom;
       var cl = (root || document).querySelector("#wrClose"); if (cl) cl.onclick = function () { rpc("ctf_t_lobby_set", { p_class: o.classId(), p_status: "closed" }).then(load); };
     }
     function overlay(endAt, done) {
@@ -104,7 +108,7 @@
       }).catch(function () { counting = false; startFn(function () {}); });
     }
     load();
-    return { html: html, bind: bind, go: go, reload: load, isOpen: open };
+    return { html: html, bind: bind, go: go, reload: load, isOpen: open, needsRoom: needsRoom, openRoom: openRoom, label: label };
   }
   window.WROOM = { attach: attach };
 })();
