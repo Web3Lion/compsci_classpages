@@ -76,6 +76,18 @@ window.CY1_VOCAB = (function () {
   {m:3,t:"Smishing",d:"Phishing carried out through SMS text messages."},
   {m:3,t:"Whaling",d:"A phishing attack that targets high-profile individuals like executives."},
   {m:3,t:"Shouldering",d:"Watching a user enter sensitive information, like a password or PIN, so it can be used later."},
+  /* added 30.4.1 from the Phishing Pre-Assessment */
+  {m:3,t:"Tailgating",d:"A physical security risk where an unauthorized person closely follows an authorized employee into a secured building or area."},
+  {m:3,t:"Piggybacking",d:"Getting into a secured area by following an authorized person through the door, often with their knowledge or permission."},
+  {m:3,t:"Dumpster Diving",d:"Searching through discarded trash or recycling bins to find sensitive documents, passwords, or employee directories."},
+  {m:3,t:"Authority",d:"A psychological principle attackers use by posing as an executive or IT technician so the victim obeys without questioning."},
+  {m:3,t:"Urgency",d:"Pressure to act right away, used by attackers to make victims react without thinking critically."},
+  {m:3,t:"Curiosity",d:"The urge to find out more, exploited by attackers with tempting links, attachments, or found USB drives."},
+  {m:3,t:"Red Flag",d:"A warning sign of a scam, such as a mismatched sender domain or an urgent request to bypass normal procedures."},
+  {m:3,t:"Link Hovering",d:"Pointing at a link without clicking to reveal its real URL, which may differ from the text shown in the message."},
+  {m:3,t:"Multi-Factor Authentication (MFA)",d:"Requiring a second form of verification beyond a password, so stolen credentials alone cannot be used to log in."},
+  {m:3,t:"Awareness Training",d:"Security awareness training that teaches people to spot social engineering, since firewalls cannot stop someone from handing over credentials."},
+  {m:3,t:"Healthy Skepticism",d:"The habit of questioning unverified messages or requests and confirming them independently through an official phone number or website."},
 
   /* ---- UNIT 4: Computer Number Systems ---- */
   {m:4,t:"Computer Networks",d:"A group of connected devices that share data and resources."},
