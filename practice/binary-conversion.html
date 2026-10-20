@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=30.4.1"></script>
+<script src="../site.js?v=30.5.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="../assets/logo/icon-site-64.png?v=30.4.1">
-<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=30.4.1">
+<link rel="icon" type="image/png" href="../assets/logo/icon-site-64.png?v=30.5.0">
+<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=30.5.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Binary Conversion — Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,6 +78,26 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
 .bigScore{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:800;margin:6px 0;}
 .reviewRow{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-radius:10px;background:var(--panel2);border:1px solid var(--border2);margin-bottom:8px;text-align:left;font-size:13.5px;}
 .reviewRow .mark{flex:none;width:20px;}
+.secHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:34px 0 6px;}
+.secHead h2{font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:1px;color:var(--bright);margin:0;}
+.asTa{width:100%;min-height:76px;resize:vertical;padding:12px 14px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:1px;line-height:1.5;}
+.asTa:focus{outline:none;border-color:var(--accent);}
+.asLbl{display:block;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:1px;color:var(--faint);margin:14px 0 6px;}
+.asOut{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--bright);padding:12px 14px;border-radius:10px;background:var(--panel2);border:1px solid var(--border2);word-break:break-all;min-height:48px;white-space:pre-wrap;}
+.asErr{color:var(--bad);font-family:'JetBrains Mono',monospace;font-size:12.5px;margin-top:8px;min-height:16px;}
+.stepRow{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;align-items:center;padding:12px 0;border-top:1px solid var(--border2);}
+.stepRow:first-child{border-top:0;}
+.stepChar{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:800;color:var(--accent2);text-align:center;border:1px solid var(--border3);border-radius:10px;background:var(--panel2);padding:8px 0;}
+.stepChar.sm{font-size:12px;padding:17px 0;letter-spacing:1px;}
+.stepTxt{font-size:13.5px;color:var(--muted);line-height:1.6;}
+.stepTxt b{color:var(--bright);font-family:'JetBrains Mono',monospace;}
+.stepRow .pv{margin:6px 0 0;}
+.asciiGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+.asciiGrid div{display:flex;gap:8px;padding:5px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);}
+.asciiGrid .c{color:var(--accent2);font-weight:800;min-width:30px;}
+.asciiGrid .d{color:var(--dim);min-width:26px;text-align:right;}
+.asciiGrid .bn{color:var(--text);}
+details summary{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);min-height:32px;display:flex;align-items:center;}
 </style>
 </head>
 <body>
@@ -89,7 +109,7 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
     <div class="brand"><span class="dot"></span><h1>BINARY CONVERSION</h1></div>
     <a class="backLink mono" href="index.html">&larr; practice</a>
   </div>
-  <p class="lead">Convert between decimal (base 10) and binary (base 2) using 8-bit place values. Practice as long as you like, then take the 10-question quiz.</p>
+  <p class="lead">Convert between decimal (base 10) and binary (base 2) using 8-bit place values. Practice as long as you like, then take the 10-question quiz. Below the quiz, <a href="#ascii">convert text to binary with ASCII</a>.</p>
 
   <div class="exGrid">
     <div class="ex">
@@ -116,6 +136,33 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
   </div>
 
   <div class="panel" id="quizPanel"></div>
+
+  <div class="secHead" id="ascii"><h2>TEXT &harr; BINARY (ASCII)</h2></div>
+  <p class="lead" style="margin-top:4px;">Computers store each letter as a number. ASCII gives every character a code from 0 to 127, and each code fits in one 8-bit byte. Type text or binary below to see every character converted step by step.</p>
+  <div class="panel">
+    <div class="seg" id="asSeg" role="group" aria-label="Direction">
+      <button class="act" data-d="t2b" onclick="asSetDir('t2b')">TEXT &rarr; BINARY</button>
+      <button data-d="b2t" onclick="asSetDir('b2t')">BINARY &rarr; TEXT</button>
+    </div>
+    <label class="asLbl" for="asIn" id="asInLbl">TEXT</label>
+    <textarea class="asTa" id="asIn" spellcheck="false" oninput="asRun()">Hi!</textarea>
+    <div class="asErr" id="asErr" role="status"></div>
+    <span class="asLbl" id="asOutLbl">BINARY</span>
+    <div class="asOut" id="asOut" aria-live="polite"></div>
+    <div class="controls" style="margin-top:12px;">
+      <button class="btn" onclick="asSwap()">USE OUTPUT AS INPUT &#8645;</button>
+    </div>
+    <span class="asLbl">STEPS</span>
+    <div id="asSteps"></div>
+  </div>
+
+  <div class="panel" style="margin-top:14px;">
+    <details>
+      <summary>ASCII TABLE (printable characters 32&ndash;126)</summary>
+      <p class="stepTxt" style="margin:10px 0 0;">Uppercase letters start at <b>A = 65</b> (<b>01000001</b>) and lowercase at <b>a = 97</b> (<b>01100001</b>). The two cases are always 32 apart, so only the 32s bit changes. Digits start at <b>0 = 48</b>.</p>
+      <div class="asciiGrid" id="asTable"></div>
+    </details>
+  </div>
 </div>
 <script>
 var PV=[128,64,32,16,8,4,2,1];
@@ -127,6 +174,39 @@ function bits8(n){return ('00000000'+n.toString(2)).slice(-8);}
 function pvHtml(n){var b=bits8(n);return PV.map(function(p,i){return '<div class="'+(b[i]==='1'?'on':'')+'"><span class="p">'+p+'</span><span class="b">'+b[i]+'</span></div>';}).join('');}
 document.getElementById('exA').innerHTML=pvHtml(45);
 document.getElementById('exB').innerHTML=pvHtml(150);
+
+/* ---------- text <-> binary (ASCII) ---------- */
+var asDir='t2b', AS_MAX=40, AS_NAMES={0:'NUL',9:'TAB',10:'LF',13:'CR',32:'SPACE',127:'DEL'};
+function asName(n){return AS_NAMES[n]||(n<32?'CTRL':null);}
+function asCharCell(n){var nm=asName(n);return nm?'<div class="stepChar sm">'+nm+'</div>':'<div class="stepChar">'+escHtml(String.fromCharCode(n))+'</div>';}
+function asSum(n){var b=bits8(n),on=PV.filter(function(x,i){return b[i]==='1';});return on.length?on.join(' + '):'0';}
+function asSetDir(d){if(d===asDir)return;asDir=d;document.querySelectorAll('#asSeg button').forEach(function(b){b.classList.toggle('act',b.getAttribute('data-d')===d);});
+  document.getElementById('asInLbl').textContent=d==='t2b'?'TEXT':'BINARY (8 bits per character)';document.getElementById('asOutLbl').textContent=d==='t2b'?'BINARY':'TEXT';
+  var i=document.getElementById('asIn');i.value=d==='t2b'?'Hi!':'01001000 01101001 00100001';asRun();}
+function asSwap(){var o=document.getElementById('asOut').getAttribute('data-raw')||'';asSetDir(asDir==='t2b'?'b2t':'t2b');document.getElementById('asIn').value=o;asRun();}
+function asRun(){
+  var raw=document.getElementById('asIn').value, err='', codes=[], out='';
+  if(asDir==='t2b'){
+    for(var i=0;i<raw.length;i++){var c=raw.charCodeAt(i);if(c>127){err='"'+raw[i]+'" is not an ASCII character (code '+c+'). ASCII only covers 0–127.';continue;}codes.push(c);}
+    out=codes.map(bits8).join(' ');
+  }else{
+    var s=raw.replace(/[^01\s]/g,function(){err='Binary can only contain 0s and 1s. Other characters were ignored.';return '';}).trim(), groups=[];
+    if(s){groups=/\s/.test(s)?s.split(/\s+/):s.match(/.{1,8}/g);}
+    groups.forEach(function(g){if(g.length>8){err='"'+g+'" is longer than 8 bits. Each character is one byte (8 bits).';return;}var n=parseInt(g,2);if(n>127){err=g+' = '+n+', which is past the end of ASCII (127).';return;}if(g.length<8&&!err)err='Tip: write each byte as 8 bits. '+g+' was read as '+bits8(n)+'.';codes.push(n);});
+    out=codes.map(function(n){return asName(n)&&n!==32?'['+asName(n)+']':String.fromCharCode(n);}).join('');
+  }
+  document.getElementById('asErr').textContent=err;
+  var o=document.getElementById('asOut');o.textContent=out||' ';o.setAttribute('data-raw',asDir==='t2b'?out:codes.map(function(n){return String.fromCharCode(n);}).join(''));
+  var rows=codes.slice(0,AS_MAX).map(function(n){
+    var b=bits8(n), ch=asName(n)?asName(n):'"'+escHtml(String.fromCharCode(n))+'"', txt=asDir==='t2b'
+      ? '1. Look up '+ch+' in the ASCII table: <b>'+n+'</b><br>2. Break '+n+' into place values: <b>'+asSum(n)+'</b><br>3. Put a 1 in those places, 0 everywhere else: <b>'+b+'</b>'
+      : '1. Add the place values with a 1: <b>'+asSum(n)+' = '+n+'</b><br>2. Look up <b>'+n+'</b> in the ASCII table: <b>'+ch+'</b>';
+    return '<div class="stepRow">'+asCharCell(n)+'<div><div class="stepTxt">'+(asDir==='b2t'?'<b>'+b+'</b><br>':'')+txt+'</div><div class="pv">'+pvHtml(n)+'</div></div></div>';
+  });
+  if(codes.length>AS_MAX)rows.push('<div class="stepTxt" style="padding-top:10px;">Steps shown for the first '+AS_MAX+' characters. The full result is above.</div>');
+  document.getElementById('asSteps').innerHTML=rows.join('')||'<div class="stepTxt">Type something above to see the steps.</div>';
+}
+(function(){var h='';for(var n=32;n<127;n++)h+='<div><span class="c">'+(n===32?'SP':escHtml(String.fromCharCode(n)))+'</span><span class="d">'+n+'</span><span class="bn">'+bits8(n)+'</span></div>';document.getElementById('asTable').innerHTML=h;asRun();})();
 
 function rnd(){return 1+Math.floor(Math.random()*255);}
 function makeProblem(k,avoid){
