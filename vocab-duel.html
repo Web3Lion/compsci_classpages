@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=30.4.2"></script>
+<script src="site.js?v=31.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.2">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.2">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -72,7 +72,7 @@ html[data-motion="reduce"] .shake{animation:none;}
     function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
     function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
     function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
-    function modName(m){ if (+m === 0) return "Binary conversion"; return "Module " + String(m).padStart(2,"0") + (MODN[m-1] ? " \u00b7 " + MODN[m-1] : ""); }
+    function modName(m){ if (+m === 0) return "Binary"; return "Module " + String(m).padStart(2,"0") + (MODN[m-1] ? " \u00b7 " + MODN[m-1] : ""); }
     var ERR = { duels_off:"Your teacher has student duels turned off for this class.", class_battle_live:"A class vocab battle is running. 1v1 duels are paused until it ends.",
       in_quiz:"Finish your open vocab quiz first.", already_in_duel:"You\u2019re already in a duel.", too_few_terms:"Pick modules with at least 4 vocab terms.",
       no_duel:"No open vocab duel with that code in your class.", started:"That duel already started.", full:"That duel is full (4 players).", need_two:"Wait for your opponent to join.", not_yours:"Sign in on your CTF page first." };

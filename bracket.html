@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=30.4.2"></script>
+<script src="site.js?v=31.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.2">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.2">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -50,18 +50,18 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=30.4.2"></script>
-<script src="ctf-data/cyber1.js?v=30.4.2"></script>
-<script src="ctf-data/cyber2.js?v=30.4.2"></script>
-<script src="ctf-data/cyber3.js?v=30.4.2"></script>
-<script src="ctf-data/apcsp.js?v=30.4.2"></script>
-<script src="ctf-data/web3.js?v=30.4.2"></script>
-<script src="supabase-config.js?v=30.4.2"></script>
-<script src="auth.js?v=30.4.2"></script>
-<script src="battle-fx.js?v=30.4.2"></script>
-<script src="battle-bg.js?v=30.4.2"></script>
-<script src="bracket-tree.js?v=30.4.2"></script>
-<script src="binary-pool.js?v=30.4.2"></script>
+<script src="config.js?v=31.1.0"></script>
+<script src="ctf-data/cyber1.js?v=31.1.0"></script>
+<script src="ctf-data/cyber2.js?v=31.1.0"></script>
+<script src="ctf-data/cyber3.js?v=31.1.0"></script>
+<script src="ctf-data/apcsp.js?v=31.1.0"></script>
+<script src="ctf-data/web3.js?v=31.1.0"></script>
+<script src="supabase-config.js?v=31.1.0"></script>
+<script src="auth.js?v=31.1.0"></script>
+<script src="battle-fx.js?v=31.1.0"></script>
+<script src="battle-bg.js?v=31.1.0"></script>
+<script src="bracket-tree.js?v=31.1.0"></script>
+<script src="binary-pool.js?v=31.1.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX, BT = window.BRACKET_TREE, esc = BT.esc;
@@ -77,11 +77,11 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
   function names(){ return ((((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}).modules || []; }
-  function modName(m){ if (+m === 0) return "Binary conversion"; var n = names()[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
+  function modName(m){ if (+m === 0) return "Binary"; var n = names()[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=30.4.2"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=31.1.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
@@ -117,7 +117,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Game</div>' +
         '<div role="group" aria-label="Game" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
           '<button type="button" class="chip brK" data-k="vocab" aria-pressed="' + (kind === "vocab") + '">Vocab</button><button type="button" class="chip brK" data-k="flag" aria-pressed="' + (kind === "flag") + '">Flags</button>' + (BIN ? '<button type="button" class="chip brK" data-k="binary" aria-pressed="' + bin + '">Binary</button>' : '') + '</div>' +
-        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">' + (bin ? "Best of 3. A game is a fight on random 8-bit conversions (decimal \u2192 binary or binary \u2192 decimal), typed answers, 4 hits to KO." : kind === "flag" ? "Best of 3. A game is a race to 3 flag points (Easy 1, Medium 2, Hard 3) on flags the player hasn\u2019t captured. Out of open flags? That game becomes a vocab fight." : "Best of 3. A game is a normal vocab fight: 4 hits to KO.") + '</div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">' + (bin ? "Best of 3. A game is a fight on random binary questions: 8-bit conversions plus concepts (largest value / how many values for N bits or bytes, even or odd, the number before or after, fewest bits needed), typed answers, 4 hits to KO." : kind === "flag" ? "Best of 3. A game is a race to 3 flag points (Easy 1, Medium 2, Hard 3) on flags the player hasn\u2019t captured. Out of open flags? That game becomes a vocab fight." : "Best of 3. A game is a normal vocab fight: 4 hits to KO.") + '</div>' +
         (bin ? '' : '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip brM" data-m="' + m + '" aria-pressed="' + !!pick[m] + '" title="' + esc(modName(m)) + '">M' + String(m).padStart(2,"0") + '</button>'; }).join("") : '<span style="font-size:13px;color:var(--dim);">' + (kind === "flag" ? "No published flag list. Open this class in teacher.html once." : "No vocab for this course.") + '</span>') + '</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab puzzle types</div>' +

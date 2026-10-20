@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=30.4.2"></script>
+<script src="site.js?v=31.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.2">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.2">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Duel Arena — Classroom Display</title>
@@ -188,15 +188,16 @@ select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bo
 </div>
 
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="config.js?v=30.4.2"></script>
-<script src="ctf-data/cyber1.js?v=30.4.2"></script>
-<script src="ctf-data/cyber2.js?v=30.4.2"></script>
-<script src="ctf-data/cyber3.js?v=30.4.2"></script>
-<script src="ctf-data/apcsp.js?v=30.4.2"></script>
-<script src="ctf-data/web3.js?v=30.4.2"></script>
-<script src="supabase-config.js?v=30.4.2"></script>
-<script src="auth.js?v=30.4.2"></script>
-<script src="cosmetics.js?v=30.4.2"></script>
+<script src="config.js?v=31.1.0"></script>
+<script src="ctf-data/cyber1.js?v=31.1.0"></script>
+<script src="ctf-data/cyber2.js?v=31.1.0"></script>
+<script src="ctf-data/cyber3.js?v=31.1.0"></script>
+<script src="binary-pool.js?v=31.1.0"></script>
+<script src="ctf-data/apcsp.js?v=31.1.0"></script>
+<script src="ctf-data/web3.js?v=31.1.0"></script>
+<script src="supabase-config.js?v=31.1.0"></script>
+<script src="auth.js?v=31.1.0"></script>
+<script src="cosmetics.js?v=31.1.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH;
@@ -263,7 +264,7 @@ select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bo
     el("qMod").disabled = OPT.src === "binary";
     if (OPT.src === "binary"){
       POOL = [{ id:"binary" }];
-      el("poolNote").textContent = "Random decimal \u2194 binary conversions (8-bit, unlimited) \u2014 module ignored";
+      el("poolNote").textContent = "Random binary questions: 8-bit conversions + concepts (largest value, how many values, even/odd, before/after, bits needed) \u2014 unlimited, module ignored";
       return;
     }
     if (OPT.src !== "vocab"){
@@ -290,16 +291,7 @@ select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bo
     POOL = out;
     el("poolNote").textContent = out.length + " question" + (out.length===1?"":"s") + " available" + (out.length ? "" : " \u2014 pick another module or type");
   }
-  function binQ(){
-    var n = 1 + Math.floor(Math.random()*255), d2b = Math.random() < .5, set = {}, wrong = [];
-    function b8(x){ return ("00000000" + x.toString(2)).slice(-8); }
-    set[n] = 1;
-    var cands = [n ^ 1, n ^ 2, n ^ 4, n ^ 8, n ^ 16, n ^ 32, n ^ 64, n ^ 128, n + 1, n - 1, parseInt(b8(n).split("").reverse().join(""), 2)];
-    shuffle(cands).forEach(function(x){ if (wrong.length < 3 && x >= 0 && x <= 255 && !set[x]){ set[x] = 1; wrong.push(x); } });
-    var fmt = d2b ? b8 : String;
-    return { question: d2b ? "Convert " + n + " (decimal) to binary." : "Convert " + b8(n) + " (binary) to decimal.",
-      options: shuffle([fmt(n)].concat(wrong.map(fmt))), answer: fmt(n) };
-  }
+  function binQ(){ return window.BINARY_SET.mc(); }
   function drawQ(){
     if (OPT.src === "binary") return binQ();
     var fresh = POOL.filter(function(q){ return !USED[q.id]; });

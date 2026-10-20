@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=30.4.2"></script>
+<script src="site.js?v=31.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.2">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.2">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -48,19 +48,19 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=30.4.2"></script>
-<script src="ctf-data/cyber1.js?v=30.4.2"></script>
-<script src="ctf-data/cyber2.js?v=30.4.2"></script>
-<script src="ctf-data/cyber3.js?v=30.4.2"></script>
-<script src="ctf-data/apcsp.js?v=30.4.2"></script>
-<script src="ctf-data/web3.js?v=30.4.2"></script>
-<script src="supabase-config.js?v=30.4.2"></script>
-<script src="auth.js?v=30.4.2"></script>
-<script src="battle-fx.js?v=30.4.2"></script>
-<script src="battle-bg.js?v=30.4.2"></script>
-<script src="team-picker.js?v=30.4.2"></script>
-<script src="waiting-room.js?v=30.4.2"></script>
-<script src="binary-pool.js?v=30.4.2"></script>
+<script src="config.js?v=31.1.0"></script>
+<script src="ctf-data/cyber1.js?v=31.1.0"></script>
+<script src="ctf-data/cyber2.js?v=31.1.0"></script>
+<script src="ctf-data/cyber3.js?v=31.1.0"></script>
+<script src="ctf-data/apcsp.js?v=31.1.0"></script>
+<script src="ctf-data/web3.js?v=31.1.0"></script>
+<script src="supabase-config.js?v=31.1.0"></script>
+<script src="auth.js?v=31.1.0"></script>
+<script src="battle-fx.js?v=31.1.0"></script>
+<script src="battle-bg.js?v=31.1.0"></script>
+<script src="team-picker.js?v=31.1.0"></script>
+<script src="waiting-room.js?v=31.1.0"></script>
+<script src="binary-pool.js?v=31.1.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -80,7 +80,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
   function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
   function guide(){ return (((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}; }
-  function modName(m){ if (+m === 0) return "Binary conversion"; var n = (guide().modules || [])[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
+  function modName(m){ if (+m === 0) return "Binary"; var n = (guide().modules || [])[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
   function col(t, i){ return (t && t.color) || FALLBACK[i % 4]; }
   function rpc(fn, a){ return AUTH.rpc(fn, a || {}); }
   var WR = window.WROOM ? WROOM.attach({ kind: "vocab", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: false }) : null;
@@ -94,7 +94,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=30.4.2"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=31.1.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
@@ -122,8 +122,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
           [2,3,4].map(function(k){ return '<button type="button" class="btn ghost vbRand" data-n="' + k + '"' + (busy ? " disabled" : "") + '>' + k + ' teams</button>'; }).join("") + '</div>' + TP.setsBar(busy) + '</div>' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BATTLE OPTIONS</div>' +
         (BIN ? '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Question set</div>' +
-          '<div role="group" aria-label="Question set" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + [["vocab","Vocab"],["binary","Binary conversion"]].map(function(q){ return '<button type="button" class="chip vbQs" data-q="' + q[0] + '" aria-pressed="' + (qset === q[0]) + '">' + q[1] + '</button>'; }).join("") + '</div>' : '') +
-        (bin ? '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Each fight question is a random 8-bit conversion: decimal \u2192 binary (students type all 8 bits) or binary \u2192 decimal. No puzzle disguise; students just type the answer.</div>' :
+          '<div role="group" aria-label="Question set" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + [["vocab","Vocab"],["binary","Binary"]].map(function(q){ return '<button type="button" class="chip vbQs" data-q="' + q[0] + '" aria-pressed="' + (qset === q[0]) + '">' + q[1] + '</button>'; }).join("") + '</div>' : '') +
+        (bin ? '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Each fight question is random: 8-bit conversions (decimal \u2192 binary, students type all 8 bits, or binary \u2192 decimal) mixed with binary concepts \u2014 the largest value or number of values for N bits/bytes, even or odd from a partial pattern like ? ? ? 1, the number before or after a binary value, and the fewest bits needed for a number. Fresh numbers every battle. No puzzle disguise; students just type the answer.</div>' :
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab modules</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip vbMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + MODS[m].length + '</span></button>'; }).join("") : '<span style="color:var(--dim);">No vocab list found for this course.</span>') + '</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +

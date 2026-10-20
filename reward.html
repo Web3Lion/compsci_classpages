@@ -3,12 +3,12 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=30.4.2"></script>
+<script src="site.js?v=31.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=30.4.2">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=30.4.2">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reasey's Reward Rally</title>
+<title>Reward Big Top</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -494,7 +494,7 @@ body[data-view="student"] #bgStudent{display:block;}
 <section id="bigtop" aria-label="Reward games">
   <div class="beam b1"></div><div class="beam b2"></div>
   <div class="canopy"></div>
-  <div class="marquee"><div class="bulbs top"></div><div class="mqSmall">STEP RIGHT UP TO</div><h1 class="mqBig">REASEY&rsquo;S REWARD RALLY</h1><div class="bulbs bot"></div></div>
+  <div class="marquee"><div class="bulbs top"></div><div class="mqSmall">STEP RIGHT UP TO</div><h1 class="mqBig">REWARD BIG TOP</h1><div class="bulbs bot"></div></div>
   <p class="barker">Pick a game. Chance games draw from your rewards table. Skill games let the player pick a prize from the tier they reach. Set up your rewards and chances in the table on any game screen.</p>
   <div id="booths">
   <h2 class="lobbyH">GAMES OF CHANCE</h2>
@@ -594,7 +594,7 @@ body[data-view="student"] #bgStudent{display:block;}
   <p class="bgsNote">Tap a term when your teacher reads its definition. Five in a row across, down, or corner to corner is BINGO. Then tell your teacher your card number.</p>
 </div>
 <div class="wrap">
-  <button id="toLobby" onclick="backToLobby()">&larr; REWARD RALLY</button>
+  <button id="toLobby" onclick="backToLobby()">&larr; REWARD BIG TOP</button>
   <div class="kick mono">&gt; ./reward-games</div>
   <h1 class="mono" id="modeTitle">Reward Spinner</h1>
   <p class="lead" id="modeLead">Spin for a class reward. Bigger prizes come up less often.</p>
@@ -2523,7 +2523,7 @@ window.BG = (function(){
     G.called = []; G.cur = -1; G.shown = false; G.awarded = []; store(KEY, G); $('bgCheckOut').innerHTML = ''; render(); tone(520, .1, 'triangle', .08);
   }
   function end(){
-    if (G && !confirm('End this game and go back to the Reward Rally? The student link stops matching once you start a new game.')) return;
+    if (G && !confirm('End this game and go back to the Reward Big Top? The student link stops matching once you start a new game.')) return;
     G = null; store(KEY, 'null'); $('bgCheckOut').innerHTML = ''; $('bgSetup').open = true; render();
     if (typeof backToLobby === 'function') backToLobby();
   }
@@ -2708,7 +2708,7 @@ function backToLobby(){
   if (curtainBusy || spinning || (window.PK && PK.busy()) || (window.SK && SK.animating())) return;
   if (MODE === 'duck' && picking) resetPond();
   if (document.body.classList.contains('pondFs')) togglePondFs(false);
-  curtainSwap('REWARD RALLY', 'BACK TO THE', function(){
+  curtainSwap('REWARD BIG TOP', 'BACK TO THE', function(){
     document.body.setAttribute('data-view', 'lobby'); window.scrollTo(0, 0);
     if (window.FG) FG.stop(); if (window.PK) PK.stop(); if (window.SK) SK.stop(); if (window.CL) CL.stop(); if (window.GB) GB.stop();
     if (pondRaf){ cancelAnimationFrame(pondRaf); pondRaf = 0; }
