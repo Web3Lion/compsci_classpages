@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=31.1.0"></script>
+<script src="site.js?v=31.3.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.3.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.3.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reasey's Reward Rally</title>
@@ -756,6 +756,19 @@ var NEON = ["#ff00c8","#00f0ff","#b026ff","#fff500","#39ff14","#ff4d6d","#05d9e8
 REWARDS.forEach(function(r){ r.def = r.weight; });
 (function(){ try{ var sw = JSON.parse(localStorage.getItem('spinner-weights')||'null');
   if (sw) REWARDS.forEach(function(r){ if (typeof sw[r.label] === 'number' && sw[r.label] >= 0) r.weight = sw[r.label]; }); }catch(e){} })();
+/* 31.3: award mode (?award=1, opened by prize-roll.js on a victory screen). The prize pool is
+   restricted for that roll only; the saved odds are not changed. */
+(function(){ if (/[?&]award=1/.test(location.search)) window.__nemIntroDone = true; })();
+var AWARD = (function(){ try{ var p = new URLSearchParams(location.search); if (p.get('award') !== '1') return null;
+  return { cls:p.get('cls')||'', ids:(p.get('ids')||'').split(',').filter(Boolean), who:p.get('who')||'', pool:p.get('pool')||'all', title:p.get('title')||'' }; }catch(e){ return null; } })();
+function awardAllowed(r, pool){
+  var L = String(r.label||'');
+  if (pool === 'game') return r.kind !== 'voucher';
+  if (pool === 'nobonus') return !/test|quiz/i.test(L);
+  if (pool === 'squad') return !/test|quiz|graded assignment|homework pass/i.test(L);
+  return true;
+}
+if (AWARD) REWARDS.forEach(function(r){ if (!awardAllowed(r, AWARD.pool)) r.weight = 0; });
 var TOTAL_WEIGHT = 0, segs = [];
 function buildSegs(){
   segs = [];
@@ -2683,52 +2696,89 @@ function backToLobby(){
   else { if (window.FG) FG.stop(); if (window.PK) PK.stop(); if (window.SK) SK.stop(); if (window.CL) CL.stop(); if (window.GB) GB.stop(); if (pondRaf){ cancelAnimationFrame(pondRaf); pondRaf = 0; } }
 })();
 </script>
-<script src="supabase-config.js?v=31.1.0"></script>
-<script src="auth.js?v=31.1.0"></script>
+<script src="supabase-config.js?v=31.3.0"></script>
+<script src="auth.js?v=31.3.0"></script>
 <script>
-/* Optional: pick a class + student before spinning and the prize can be sent
-   straight to that student's profile inventory (reward-items.sql). Works only
-   for the signed-in teacher; otherwise the spinner is purely a class display. */
+/* Optional: pick a class + student (or squad, 31.3) before spinning and the prize can be sent
+   straight to their profile inventory (reward-items.sql). Works only for the signed-in teacher;
+   otherwise the spinner is purely a class display. Award mode (?award=1) sends to the ids in the URL. */
 (function(){
-  var AUTH = window.CTF_AUTH, CLASSES = [], ROSTER = [], last = null;
+  var AUTH = window.CTF_AUTH, CLASSES = [], ROSTER = [], last = null, AW = window.AWARD, awSent = false;
   var body = document.getElementById('awardBody');
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function note(t){ body.innerHTML = t; }
-  function pick(){ var s = document.getElementById('aStudent'); return s && s.value ? ROSTER.filter(function(r){return r.id===s.value;})[0] : null; }
+  function tell(o){ try{ if (window.parent && window.parent !== window) window.parent.postMessage(Object.assign({prizeRoll:1}, o), location.origin); }catch(e){} }
+  if (AW){
+    var st = document.createElement('style');
+    st.textContent = 'body[data-award] #toLobby,body[data-award] #modeRow,body[data-award] #history,body[data-award] .back,body[data-award] #award,body[data-award] #editOddsBtn,body[data-award] #themeToggle,body[data-award] .kick,body[data-award] #forRow,body[data-award] #skForRow{display:none !important;}' +
+      '#awBlock{position:fixed;inset:0;z-index:99990;}';
+    document.head.appendChild(st);
+    document.body.setAttribute('data-award', '1');
+    var lead = document.getElementById('modeLead'); if (lead) lead.textContent = 'Playing for ' + AW.who + '. The prize goes straight to ' + (AW.ids.length > 1 ? 'every player\u2019s' : 'their') + ' profile.';
+  }
+  function target(){
+    var s = document.getElementById('aStudent'), v = s && s.value; if (!v) return null;
+    if (v.indexOf('g:') === 0){
+      var g = v.slice(2), m = ROSTER.filter(function(r){ return r.group_id === g; });
+      return m.length ? { ids: m.map(function(r){ return r.id; }), name: String(m[0].group_name || 'Squad').toUpperCase() + ' (' + m.length + ')', squad: true } : null;
+    }
+    var r = ROSTER.filter(function(x){ return x.id === v; })[0];
+    return r ? { ids: [r.id], name: String(r.handle).toUpperCase() } : null;
+  }
   function syncBtn(){
-    var row = document.getElementById('sendRow'), who = pick();
+    if (AW) return;
+    var row = document.getElementById('sendRow'), who = target();
     if (!last || !(last.all ? ROSTER.length : who)){ row.style.display = 'none'; return; }
     row.style.display = 'block';
-    var b = document.getElementById('sendBtn'); b.disabled = false; b.textContent = last.all ? 'SEND TO WHOLE CLASS (' + ROSTER.length + ')' : 'SEND TO ' + who.handle.toUpperCase();
-    document.getElementById('sendMsg').textContent = last.all ? 'Lands in every student\u2019s profile in this class.' : last.kind === 'voucher' ? 'Lands in their profile to redeem with you.' : 'Lands in their profile, ready to use.';
+    var b = document.getElementById('sendBtn'); b.disabled = false; b.textContent = last.all ? 'SEND TO WHOLE CLASS (' + ROSTER.length + ')' : 'SEND TO ' + who.name;
+    document.getElementById('sendMsg').textContent = last.all ? 'Lands in every student\u2019s profile in this class.' : who.squad ? 'Lands in every squad member\u2019s profile.' : last.kind === 'voucher' ? 'Lands in their profile to redeem with you.' : 'Lands in their profile, ready to use.';
   }
   async function loadRoster(id){
     ROSTER = []; var s = document.getElementById('aStudent');
     s.innerHTML = '<option value="">Loading\u2026</option>';
     try { ROSTER = await AUTH.rpc('ctf_t_roster',{p_class:id}) || []; } catch(e){}
+    if (!Array.isArray(ROSTER)) ROSTER = [];
     ROSTER.sort(function(a,b){ return String(a.handle).localeCompare(String(b.handle)); });
-    s.innerHTML = '<option value="">Whole class (display only)</option>' + ROSTER.map(function(r){ return '<option value="'+esc(r.id)+'">'+esc(r.handle)+'</option>'; }).join('');
+    var G = {}, order = [];
+    ROSTER.forEach(function(r){ if (r.group_id){ if (!G[r.group_id]){ G[r.group_id] = { name: r.group_name || 'Squad', n: 0 }; order.push(r.group_id); } G[r.group_id].n++; } });
+    order.sort(function(a,b){ return String(G[a].name).localeCompare(String(G[b].name)); });
+    s.innerHTML = '<option value="">Whole class (display only)</option>' +
+      (order.length ? '<optgroup label="Squads">' + order.map(function(g){ return '<option value="g:'+esc(g)+'">'+esc(G[g].name)+' ('+G[g].n+')</option>'; }).join('') + '</optgroup>' : '') +
+      '<optgroup label="Students">' + ROSTER.map(function(r){ return '<option value="'+esc(r.id)+'">'+esc(r.handle)+'</option>'; }).join('') + '</optgroup>';
     syncBtn();
   }
   async function boot(){
-    if (!AUTH || !AUTH.online){ note('Connect the class backend to send prizes to student profiles.'); return; }
+    if (!AUTH || !AUTH.online){ note('Connect the class backend to send prizes to student profiles.'); if (AW) tell({status:'error', msg:'Not connected to the class backend.'}); return; }
     try { CLASSES = await AUTH.rpc('ctf_t_classes') || []; }
-    catch(e){ note('Sign in on the <a href="teacher.html" style="color:var(--accent)">teacher dashboard</a> to send prizes to student profiles.'); return; }
+    catch(e){ note('Sign in on the <a href="teacher.html" style="color:var(--accent)">teacher dashboard</a> to send prizes to student profiles.'); if (AW) tell({status:'error', msg:'Sign in on the teacher dashboard first.'}); return; }
     document.body.removeAttribute('data-lock');
+    if (AW) return;
     if (!CLASSES.length){ note('No classes yet.'); return; }
     body.innerHTML = '<select id="aClass">' + CLASSES.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>'; }).join('') + '</select>' +
-      '<select id="aStudent"></select>' +
-      '<div style="font-size:11px;color:var(--faint);line-height:1.5;">Pick a student and the prize goes straight to their profile when the wheel stops.</div>';
+      '<select id="aStudent" aria-label="Student or squad"></select>' +
+      '<div style="font-size:11px;color:var(--faint);line-height:1.5;">Pick a student or a squad and the prize goes straight to their profile when the game ends.</div>';
     var c = document.getElementById('aClass');
     try { var k = localStorage.getItem('spinner-class'); if (k && CLASSES.some(function(x){return x.id===k;})) c.value = k; } catch(e){}
     c.onchange = function(){ try { localStorage.setItem('spinner-class', c.value); } catch(e){} loadRoster(c.value); };
     document.getElementById('aStudent').onchange = syncBtn;
     loadRoster(c.value);
   }
-  window.__awardReady = function(r){ last = r; syncBtn(); if (r.all ? ROSTER.length : pick()) window.sendPrize(); };
+  async function awardSend(r){
+    if (awSent) return; awSent = true;
+    var bl = document.createElement('div'); bl.id = 'awBlock'; document.body.appendChild(bl);
+    try {
+      var res = await AUTH.rpc('ctf_t_send_items',{ p_students:AW.ids, p_kind:r.kind, p_label: r.kind === 'voucher' ? r.label : null, p_note: AW.title ? AW.title + ' prize' : null, p_source:'spinner' });
+      if (res && res.error) throw new Error(res.error);
+      tell({status:'sent', label:r.label, kind:r.kind, n:(res && res.students) || AW.ids.length});
+    } catch(e){
+      awSent = false; bl.remove();
+      tell({status:'error', msg: /send_items|function/.test((e&&e.message)||'') ? 'Run supabase/reward-items.sql first.' : 'Couldn\u2019t send: ' + ((e&&e.message)||e)});
+    }
+  }
+  window.__awardReady = function(r){ if (AW){ awardSend(r); return; } last = r; syncBtn(); if (r.all ? ROSTER.length : target()) window.sendPrize(); };
   window.sendPrize = async function(){
-    var who = pick(); if (!last || !(last.all ? ROSTER.length : who)) return;
-    var ids = last.all ? ROSTER.map(function(r){ return r.id; }) : [who.id], name = last.all ? 'WHOLE CLASS' : who.handle.toUpperCase();
+    var who = target(); if (!last || !(last.all ? ROSTER.length : who)) return;
+    var ids = last.all ? ROSTER.map(function(r){ return r.id; }) : who.ids, name = last.all ? 'WHOLE CLASS' : who.name;
     var b = document.getElementById('sendBtn'), m = document.getElementById('sendMsg');
     b.disabled = true; b.textContent = 'SENDING\u2026';
     try {
@@ -2742,6 +2792,6 @@ function backToLobby(){
   boot();
 })();
 </script>
-<script src="nemesis-intro.js?v=31.1.0"></script>
+<script src="nemesis-intro.js?v=31.3.0"></script>
 </body>
 </html>

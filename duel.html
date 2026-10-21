@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=31.1.0"></script>
+<script src="site.js?v=31.3.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.3.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.3.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Duel Arena — Classroom Display</title>
@@ -188,16 +188,17 @@ select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bo
 </div>
 
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="config.js?v=31.1.0"></script>
-<script src="ctf-data/cyber1.js?v=31.1.0"></script>
-<script src="ctf-data/cyber2.js?v=31.1.0"></script>
-<script src="ctf-data/cyber3.js?v=31.1.0"></script>
-<script src="binary-pool.js?v=31.1.0"></script>
-<script src="ctf-data/apcsp.js?v=31.1.0"></script>
-<script src="ctf-data/web3.js?v=31.1.0"></script>
-<script src="supabase-config.js?v=31.1.0"></script>
-<script src="auth.js?v=31.1.0"></script>
-<script src="cosmetics.js?v=31.1.0"></script>
+<script src="config.js?v=31.3.0"></script>
+<script src="ctf-data/cyber1.js?v=31.3.0"></script>
+<script src="ctf-data/cyber2.js?v=31.3.0"></script>
+<script src="ctf-data/cyber3.js?v=31.3.0"></script>
+<script src="binary-pool.js?v=31.3.1"></script>
+<script src="ctf-data/apcsp.js?v=31.3.0"></script>
+<script src="ctf-data/web3.js?v=31.3.0"></script>
+<script src="supabase-config.js?v=31.3.0"></script>
+<script src="auth.js?v=31.3.0"></script>
+<script src="cosmetics.js?v=31.3.0"></script>
+<script src="prize-roll.js?v=31.3.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH;
@@ -264,7 +265,7 @@ select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bo
     el("qMod").disabled = OPT.src === "binary";
     if (OPT.src === "binary"){
       POOL = [{ id:"binary" }];
-      el("poolNote").textContent = "Random binary questions: 8-bit conversions + concepts (largest value, how many values, even/odd, before/after, bits needed) \u2014 unlimited, module ignored";
+      el("poolNote").textContent = "Random binary questions: 8-bit conversions + concepts (largest value, how many values, even/odd, before/after, bits \u2194 bytes, bits needed) \u2014 unlimited, module ignored";
       return;
     }
     if (OPT.src !== "vocab"){
@@ -408,7 +409,7 @@ select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bo
     var nx = nextMatch();
     if (!nx){
       var champ = BR.rounds[BR.rounds.length-1][0].w;
-      paintBracket(); showWinner(champ, "Bracket champion", "Takes the whole bracket.", true); BR = null; return;
+      paintBracket(); showWinner(champ, "Bracket champion", "Takes the whole bracket.", true); bracketPrizes(BR); BR = null; return;
     }
     BR.r = nx.r; BR.m = nx.i;
     var m = BR.rounds[nx.r][nx.i];
@@ -453,8 +454,19 @@ select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bo
     var w = r && r.winner;
     stop();
     if (BR && w){ advance(BR.r, BR.m, w); paintBracket(); showWinner(w, BR.rounds.length - 1 === BR.r ? "Bracket champion" : "Advances", OPT.pot ? "+" + OPT.pot + " XP" : "", BR.rounds.length - 1 === BR.r); if (BR.rounds.length - 1 === BR.r) BR = null; }
-    else if (w) showWinner(w, "Winner", OPT.pot ? "+" + OPT.pot + " XP" : "", true);
+    else if (w){ showWinner(w, "Winner", OPT.pot ? "+" + OPT.pot + " XP" : "", true);
+      if (window.PRIZE_ROLL) PRIZE_ROLL.auto("da:" + DUEL, [{ key: "da:" + DUEL, cls: CUR.id, ids: [w], who: handleOf(w), pool: "game", title: "Duel winner" }]); }
     else showWinner(null, "Draw", "No winner this time.", false);
+  }
+  // 31.3: projector bracket \u2014 champion = every prize, runner-up = no test bonus, semifinal losers = in-game items
+  function bracketPrizes(br){
+    if (!window.PRIZE_ROLL || !CUR) return;
+    var R = br.rounds, F = R[R.length-1][0], L = [], tag = "dab:" + Date.now();
+    function lose(m){ return m && m.w && m.a && m.b ? (m.w === m.a ? m.b : m.a) : null; }
+    if (R.length > 1) R[R.length-2].forEach(function(m){ var x = lose(m); if (x) L.push({ key: tag + ":" + x, cls: CUR.id, ids: [x], who: handleOf(x), pool: "game", title: "3rd place" }); });
+    var ru = lose(F); if (ru) L.push({ key: tag + ":" + ru, cls: CUR.id, ids: [ru], who: handleOf(ru), pool: "nobonus", title: "Runner-up" });
+    if (F.w) L.push({ key: tag + ":" + F.w, cls: CUR.id, ids: [F.w], who: handleOf(F.w), pool: "all", title: "\u2655 Bracket champion" });
+    PRIZE_ROLL.auto(tag, L);
   }
   function showWinner(id, kick, sub, big){
     el("winKick").textContent = kick; el("winName").innerHTML = id ? nameHtml(id) : "\u2014"; el("winSub").textContent = sub || "";

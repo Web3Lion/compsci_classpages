@@ -1,7 +1,8 @@
 // © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* waiting-room.js (v29.0) — teacher side of the class duel waiting room (supabase/waiting-room.sql).
    Used by battle.html (kind "team"), vocab-battle.html ("vocab") and raid.html ("raid").
-   WROOM.attach({ kind, rpc, classId(), demo }) → { html(), bind(root), go(startFn) }
+   WROOM.attach({ kind, rpc, classId(), demo, teams() }) → { html(), bind(root), go(startFn) }
+     teams() — optional: ids of the ticked teams (31.2). Unticked teams are left out of the room card and the count.
      html()  — the waiting-room card for the setup screen
      go(fn)  — if the room is open: 10 s countdown on every student's screen, then fn(); else fn() now.
                Call this from the page's Start button; when fn's battle is live the room flips to "started". */
@@ -49,19 +50,23 @@
           (other ? ' <b style="color:var(--amber);">The room is open for a ' + esc(LBL[L.kind]) + ' right now. Opening it here switches it.</b>' : '') + '</div></div>' +
           '<button type="button" class="btn" id="wrOpen">Open waiting room</button></div>';
       }
-      var tot = 0; (R.teams || []).forEach(function (t) { tot += (t.members || []).length; });
+      var pickIds = o.teams ? o.teams() : null, RT = R.teams || [], out = [];
+      if (pickIds) { RT = RT.filter(function (t) { if (pickIds.indexOf(t.id) >= 0) return true; out.push(t.name); return false; }); }
+      var tot = 0, here = 0; RT.forEach(function (t) { tot += (t.members || []).length; here += (t.members || []).filter(function (m) { return m.here; }).length; });
+      if (!pickIds) here = R.here;
       return '<div class="card" id="wrCard" style="margin-bottom:18px;border:2px solid var(--amber);box-shadow:0 0 26px -12px var(--amber);">' +
         '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;">' +
           '<div style="flex:1;min-width:220px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:800;">WAITING ROOM OPEN \u00b7 ' + esc(LBL[o.kind]).toUpperCase() + '</div>' +
           '<div style="font-size:13px;color:var(--muted);margin-top:4px;">Students join from <b>Class Duel</b> on their course home. Start runs a 10-second countdown on every screen.</div></div>' +
-          '<div class="mono" style="font-size:40px;font-weight:800;color:var(--bright);line-height:1;">' + R.here + '<span style="font-size:18px;color:var(--dim);"> / ' + tot + ' here</span></div>' +
+          '<div class="mono" style="font-size:40px;font-weight:800;color:var(--bright);line-height:1;">' + here + '<span style="font-size:18px;color:var(--dim);"> / ' + tot + ' here</span></div>' +
           '<button type="button" class="btn ghost" id="wrClose">Close room</button></div>' +
-        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;">' + (R.teams || []).map(function (t) {
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;">' + RT.map(function (t) {
           var h = (t.members || []).filter(function (m) { return m.here; }).length;
           return '<div style="border:1px solid var(--border2);border-left:4px solid ' + esc(t.color || "var(--border3)") + ';border-radius:10px;padding:10px 12px;background:var(--bg);">' +
             '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><b style="flex:1;color:var(--bright);">' + esc(t.name) + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + h + '/' + (t.members || []).length + '</span></div>' +
             '<div style="display:flex;flex-wrap:wrap;gap:4px 10px;">' + (t.members || []).map(function (m) { return '<span style="font-size:12px;color:' + (m.here ? "var(--bright)" : "var(--faint)") + ';">' + (m.here ? '<span style="color:var(--ok);">\u25cf</span> ' : '\u25cb ') + esc(m.handle) + '</span>'; }).join("") + '</div></div>';
         }).join("") + '</div>' +
+        (out.length ? '<div style="margin-top:10px;font-size:12px;color:var(--dim);">Sitting out (not ticked): ' + out.map(esc).join(', ') + '. They are not in this battle or its results.</div>' : '') +
         (R.ungrouped ? '<div style="margin-top:10px;font-size:12px;color:var(--amber);">' + R.ungrouped + ' student' + (R.ungrouped > 1 ? "s have" : " has") + ' no squad. They can still open the room but sit out a team battle.</div>' : '') +
         (err ? '<div role="alert" style="margin-top:10px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(err) + '</div>' : '') + '</div>';
     }

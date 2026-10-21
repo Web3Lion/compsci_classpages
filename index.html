@@ -1,920 +1,176 @@
 <!DOCTYPE html>
-<html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=31.3.0"></script>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.3.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.3.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Reasey — Course Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0e141d;--panel2:#121a26;--border:#20304a;--text:#c6d4e6;--bright:#eef4ff;--muted:#9db0cc;--dim:#6f88a8;--faint:#4c627e;}
+:root[data-theme="light"]{--bg:#eaeef4;--panel:#ffffff;--panel2:#f3f6fb;--border:#d3dce8;--text:#2a3646;--bright:#0d1826;--muted:#4a5a70;--dim:#6a7c93;--faint:#93a3b8;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{text-decoration:none;color:inherit;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:100;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--muted);cursor:pointer;transition:.2s;}
+.themebtn:hover{border-color:var(--dim);color:var(--bright);}
+.wrap{max-width:1120px;margin:0 auto;padding:72px 24px 80px;}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:44px;}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr) !important;}}
+@media(max-width:640px){.grid{grid-template-columns:1fr;}}
+.card{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:340px;border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:28px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.card:hover{transform:translateY(-4px);border-color:var(--ac);box-shadow:0 24px 60px -34px var(--ac);}
+.chip{align-self:flex-start;max-width:100%;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;padding:6px 12px;border-radius:999px;border:1px solid var(--ac);color:var(--ac);white-space:nowrap;}
+.enter{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--ac);}
+.tex{position:absolute;inset:0;opacity:.5;pointer-events:none;}
+.card:hover .chip{box-shadow:0 0 16px -2px var(--ac);}
+.popout{position:absolute;top:14px;right:14px;z-index:2;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:9px;border:1px solid var(--border);background:var(--panel2);color:var(--dim);transition:.15s;cursor:pointer;padding:0;font:inherit;}
+.ce{display:flex;align-items:center;gap:16px;margin-bottom:26px;font-family:'VT323',monospace;color:var(--bright);}
+.ce-mon{width:72px;height:58px;border-radius:16px / 13px;border:3px solid currentColor;display:flex;align-items:center;justify-content:center;flex:none;font-size:40px;line-height:1;background:repeating-linear-gradient(0deg,color-mix(in srgb,currentColor 9%,transparent) 0 2px,transparent 2px 4px);box-shadow:0 0 16px -4px color-mix(in srgb,currentColor 55%,transparent);text-shadow:0 0 8px color-mix(in srgb,currentColor 60%,transparent);}
+.ce-name{font-size:34px;line-height:.82;letter-spacing:2px;text-shadow:0 0 10px color-mix(in srgb,currentColor 40%,transparent);}
+:root[data-theme="light"] .ce-mon,:root[data-theme="light"] .ce-name{box-shadow:none;text-shadow:none;}
+.popout:hover{border-color:var(--ac);color:var(--ac);}
+</style>
 </head>
 <body>
-<x-dc>
-<helmet data-dc-atomics><style>@keyframes sfGlow{0%,100%{box-shadow:0 0 0 2px rgba(0,133,57,.7),0 0 14px 3px rgba(0,133,57,.35)}50%{box-shadow:0 0 0 2px rgba(0,133,57,1),0 0 32px 10px rgba(0,133,57,.6)}}</style><script src="https://accounts.google.com/gsi/client" async></script><title>SFHS Staff Hub</title><link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&family=Neuton:wght@400;700&display=swap" rel="stylesheet"><style>:root{--bg:#f2f3f3;--panel:#ffffff;--panel2:#f7f8f8;--panel3:#e8f3ec;--border:#e0e2e2;--border2:#e9ebeb;--border3:#c9cccc;--text:#222222;--bright:#000000;--muted:#444546;--dim:#5c5c5d;--faint:#666667;--fainter:#7c7c7d;--accent:#008539;--accent2:#006b2e;--via:rgba(0,133,57,.08)}body{margin:0;background:#e6e8ec;font-family:'Lato',sans-serif}*{box-sizing:border-box}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent2)}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 16px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.4 system-ui,sans-serif;color:rgba(0,0,0,.6);max-width:640px}.dv-card{max-width:100%;background:var(--bg);border:1px solid rgba(0,0,0,.12);border-radius:10px;overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-notes{max-width:900px;font:13px/1.6 system-ui,sans-serif;color:#333;margin:0 0 24px}.dv-notes b{color:#111}</style></helmet>
-{{ revealEl }}
-<sc-if value="{{ showIntro }}" hint-placeholder-val="{{ false }}">
-<div style="min-height:100vh;background:#f2f3f3;display:flex;flex-direction:column;font-family:'Lato',sans-serif;color:#222222">
-<header style="display:flex;align-items:center;gap:14px;padding:14px clamp(16px,4vw,48px);background:#ffffff;border-bottom:1px solid #e0e2e2">
-<img src="assets/sf-logo.png" alt="South Fayette SF logo" style="height:46px;width:auto;display:block"></img>
-<div style="display:flex;flex-direction:column;gap:3px"><div style="font:700 17px 'Neuton','Times New Roman',serif;letter-spacing:1.6px;color:#008539;line-height:1">SOUTH FAYETTE</div><div style="font:400 12px 'Lato',sans-serif;color:#5c5c5d">High School · Staff Hub</div></div>
-</header>
-<main style="width:100%;max-width:1160px;margin:0 auto;padding:clamp(24px,5vw,56px) clamp(16px,4vw,32px) 40px;display:flex;flex-direction:column;gap:28px">
-<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:28px;align-items:stretch">
-<div style="display:flex;flex-direction:column;justify-content:center;gap:16px">
-<div style="font:700 12px 'Lato',sans-serif;letter-spacing:2px;color:#008539">{{ introDate }}</div>
-<h1 style="margin:0;font:700 clamp(38px,5.4vw,60px)/1.04 'Neuton','Times New Roman',serif;color:#000000;text-wrap:balance">{{ greet }}</h1>
-<p style="margin:0;font:400 17px/1.6 'Lato',sans-serif;color:#444546;max-width:520px;text-wrap:pretty">Sign in with your South Fayette Google account to see today's schedule, coverage, field trips and announcements.</p>
-<div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding-top:4px">
-<div ref="{{ gBtn }}" style="min-height:44px"></div>
-<div style="font-size:13px;color:#5c5c5d">{{ introNote }}</div>
-</div>
-</div>
-<div style="background:#008539;color:#ffffff;border-radius:18px;padding:clamp(24px,3vw,36px);display:flex;flex-direction:column;justify-content:space-between;gap:20px;min-height:260px">
-<div style="font:700 12px 'Lato',sans-serif;letter-spacing:2px">WORDS TO LIVE BY</div>
-<div style="display:flex;flex-direction:column;gap:12px;opacity:{{ qOp }};transition:opacity .45s ease">
-<div style="font:700 clamp(24px,2.8vw,34px)/1.25 'Neuton','Times New Roman',serif;text-wrap:pretty">“{{ quote }}”</div>
-<div style="font:400 14px 'Lato',sans-serif">{{ quoteNote }}</div>
-</div>
-<div style="display:flex;align-items:center;gap:6px">
-<sc-for list="{{ qDots }}" as="d" hint-placeholder-count="6"><button onClick="{{ d.go }}" aria-label="{{ d.label }}" style="width:{{ d.w }};height:6px;border-radius:3px;border:0;padding:0;background:{{ d.bg }};transition:width .3s ease,background .3s ease;cursor:pointer"></button></sc-for>
-</div>
-</div>
-</section>
-<section style="background:#ffffff;border:1px solid #e0e2e2;border-radius:18px;overflow:hidden;display:flex;flex-wrap:wrap">
-<div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column">
-<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;padding:18px 22px 6px">
-<div style="display:flex;align-items:baseline;gap:10px"><div style="font:700 22px 'Neuton','Times New Roman',serif;color:#000000">Lion Run</div><div style="font:700 11px 'Lato',sans-serif;letter-spacing:1.6px;color:#008539">WHILE YOU WAIT</div></div>
-<div style="font-size:13px;color:#5c5c5d">Space, ↑ or tap to jump the book stacks</div>
-</div>
-<canvas ref="{{ gameRef }}" onPointerDown="{{ gameTap }}" aria-label="Lion Run game. Press space or tap to jump." style="width:100%;height:230px;display:block;cursor:pointer;touch-action:manipulation"></canvas>
-</div>
-<div style="flex:1 1 240px;min-width:0;background:#f7f8f8;border-left:1px solid #e9ebeb;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;flex-direction:column;gap:2px"><div style="font:700 11px 'Lato',sans-serif;letter-spacing:1.6px;color:#008539">SCOREBOARD</div><div style="font-size:12px;color:#5c5c5d">{{ boardSub }}</div></div>
-<div style="display:flex;gap:4px;padding:3px;background:#e9ebeb;border-radius:999px;align-self:flex-start">
-<sc-for list="{{ boardTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.go }}" style="padding:6px 14px;border:0;border-radius:999px;background:{{ t.bg }};color:{{ t.fg }};font:700 12px 'Lato',sans-serif;cursor:pointer">{{ t.label }}</button></sc-for>
-</div>
-<sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
-<div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #008539;border-radius:10px;background:#e8f3ec">
-<div style="font-size:13px;color:#000000"><b>{{ pendingScore }}</b> makes the board. Your initials:</div>
-<div style="display:flex;gap:8px"><input value="{{ initials }}" onChange="{{ setInitials }}" onKeyDown="{{ initialsKey }}" maxLength="3" placeholder="ABC" aria-label="Your initials" style="width:76px;padding:8px 10px;border:1px solid #c9cccc;border-radius:8px;font:700 15px 'Lato',sans-serif;letter-spacing:2px;text-transform:uppercase"></input><button onClick="{{ saveScore }}" style="padding:8px 14px;border:0;border-radius:8px;background:#008539;color:#ffffff;font:700 13px 'Lato',sans-serif;cursor:pointer">Save</button></div>
-</div>
-</sc-if>
-<div style="display:flex;flex-direction:column;gap:4px">
-<sc-for list="{{ board }}" as="r" hint-placeholder-count="3">
-<div style="display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:{{ r.bg }}">
-<div style="font:700 13px 'Lato',sans-serif;color:#008539">{{ r.rank }}</div>
-<div style="font:700 14px 'Lato',sans-serif;letter-spacing:1.5px;color:#000000">{{ r.i }}</div>
-<div style="font:700 14px 'Lato',sans-serif;font-variant-numeric:tabular-nums;color:#222222">{{ r.s }}</div>
-</div>
-</sc-for>
-<sc-if value="{{ boardEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#5c5c5d;padding:8px 0">{{ boardEmptyText }}</div></sc-if>
-</div>
-</div>
-</section>
-<section style="display:flex;flex-direction:column;gap:14px">
-<div style="font:700 12px 'Lato',sans-serif;letter-spacing:2px;color:#5c5c5d">WHAT YOU'LL SEE AFTER YOU SIGN IN</div>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px">
-<div style="background:#ffffff;border:1px solid #e0e2e2;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:6px"><div style="font:700 17px 'Neuton','Times New Roman',serif;color:#000000">Today's schedule</div><div style="font-size:14px;line-height:1.55;color:#444546">Bell times for regular, Flex, delay and early-dismissal days, with a heads-up the day before a change.</div></div>
-<div style="background:#ffffff;border:1px solid #e0e2e2;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:6px"><div style="font:700 17px 'Neuton','Times New Roman',serif;color:#000000">Coverage</div><div style="font-size:14px;line-height:1.55;color:#444546">Who is covering each period. If you're pulled from a duty, you also get an email.</div></div>
-<div style="background:#ffffff;border:1px solid #e0e2e2;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:6px"><div style="font:700 17px 'Neuton','Times New Roman',serif;color:#000000">Students out</div><div style="font-size:14px;line-height:1.55;color:#444546">Field trips and early dismissals, with rosters you can search by student name.</div></div>
-<div style="background:#ffffff;border:1px solid #e0e2e2;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:6px"><div style="font:700 17px 'Neuton','Times New Roman',serif;color:#000000">Testing and news</div><div style="font-size:14px;line-height:1.55;color:#444546">Quiet-hallway testing periods, office announcements and answers to common questions.</div></div>
-</div>
-</section>
-</main>
-<footer style="margin-top:auto;padding:18px clamp(16px,4vw,48px);border-top:1px solid #e0e2e2;background:#ffffff;font-size:13px;color:#5c5c5d">Trouble signing in? Contact the Main Office.</footer>
-</div>
-</sc-if>
-<sc-if value="{{ showHub }}" hint-placeholder-val="{{ false }}">
-<div style="position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:10px 20px;background:#ffffff;border-bottom:1px solid #d9d9d9;font:400 13px 'Lato',sans-serif;color:#1d1d1d">
-<span style="width:9px;height:9px;border-radius:50%;flex:none;background:{{ dot }}"></span>
-<span style="text-wrap:pretty">{{ authMsg }}</span>
-<sc-if value="{{ isStale }}" hint-placeholder-val="{{ false }}"><button onClick="{{ reSign }}" style="margin-left:auto;padding:6px 14px;border:0;border-radius:999px;background:#008539;font:700 12px 'Lato',sans-serif;color:#ffffff;cursor:pointer">Sign in again</button></sc-if>
-<sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ signOut }}" style="margin-left:auto;padding:6px 14px;border:1px solid #d9d9d9;border-radius:999px;background:#ffffff;font:700 12px 'Lato',sans-serif;color:#1d1d1d;cursor:pointer">Sign out</button></sc-if>
-</div>
-<main style="display:flex;flex-direction:column;align-items:center;gap:28px;padding:24px 16px 48px">
-<sc-if value="{{ isWide }}" hint-placeholder-val="{{ true }}"><div id="desktop" style="width:100%;max-width:1280px">
-<div class="dv-card" style="width:100%">
-<div style="display:flex;align-items:center;gap:16px;padding:14px 28px;background:var(--panel);border-bottom:1px solid var(--border)">
-<img src="assets/sf-logo.png" alt="South Fayette SF logo" style="height:46px;width:auto;display:block"></img>
-<div style="display:flex;flex-direction:column;gap:2px"><div style="font:700 17px 'Neuton','Times New Roman',serif;letter-spacing:1.6px;color:var(--accent);line-height:1;white-space:nowrap">SOUTH FAYETTE</div><div style="font:400 11.4px 'Neuton','Times New Roman',serif;letter-spacing:.6px;color:var(--dim);line-height:1;white-space:nowrap">TOWNSHIP SCHOOL DISTRICT</div></div>
-<div style="width:1px;height:30px;background:var(--border);margin:0 4px"></div>
-<div style="display:flex;flex-direction:column"><div style="font:700 15px 'Lato',sans-serif;color:var(--bright)">Staff Hub</div><div style="font-size:12px;color:var(--dim)">South Fayette High School</div></div>
-<div style="margin-left:auto;display:flex;align-items:center;gap:14px"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><div style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:26px;color:var(--bright);line-height:1;white-space:nowrap">{{ dateLong }}</div><div style="font:12px 'Lato',sans-serif;color:var(--dim);white-space:nowrap">{{ dateSub }}</div></div><div style="display:flex;gap:4px"><div onClick="{{ prevDay }}" title="Previous day" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border3);display:grid;place-items:center;cursor:pointer;color:var(--muted);font-size:18px" style-hover="border-color:var(--accent);color:var(--accent)">‹</div><div onClick="{{ nextDay }}" title="Next day" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border3);display:grid;place-items:center;cursor:pointer;color:var(--muted);font-size:18px" style-hover="border-color:var(--accent);color:var(--accent)">›</div></div></div>
-</div>
-<div style="margin:18px 28px 0;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:var(--accent);border:1px solid var(--accent)">
-<span style="font:900 10px 'Lato',sans-serif;letter-spacing:1.5px;color:#ffffff;white-space:nowrap">UPDATED 7:05 AM</span>
-<span style="font-size:15px;color:#ffffff">Coverage updated: <b>Dorsey</b> now covers Rogowicz, Period 3 (AC203).</span>
-<span style="margin-left:auto;font-size:12px;color:#ffffff;white-space:nowrap">Main Office</span>
-</div>
-<div style="margin:18px 28px 0;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:stretch">
-<div style="background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:22px 26px;display:flex;flex-direction:column;gap:14px">
-<div style="display:flex;align-items:center;gap:12px"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">COUNTDOWN TO END OF QUARTER</span><div style="margin-left:auto"><div style="display:flex;border:1px solid var(--border3);border-radius:999px;padding:2px;background:var(--panel)"><sc-for list="{{ cdModes }}" as="m" hint-placeholder-count="2"><div onClick="{{ m.go }}" style="padding:5px 12px;border-radius:999px;font:700 12px 'Lato',sans-serif;cursor:pointer;white-space:nowrap;background:{{ m.bg }};color:{{ m.fg }}">{{ m.label }}</div></sc-for></div></div></div>
-<div style="display:flex;align-items:flex-end;gap:22px">
-<div style="display:flex;flex-direction:column"><span style="font:900 112px/1 'Lato',sans-serif;color:var(--accent);letter-spacing:-3px">{{ cdQ.n }}</span><span style="font:700 12px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--dim);margin-top:4px;white-space:nowrap">{{ cdQ.unit }}</span></div>
-<div style="padding-bottom:20px;min-width:0"><div style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:30px;color:var(--bright);line-height:1.1">{{ cdQ.title }}</div><div style="font-size:14px;color:var(--muted);margin-top:4px">Ends at the end of {{ cdQ.date }} · counts include today</div></div>
-</div>
-<div style="display:flex;flex-direction:column;gap:6px"><div style="height:8px;border-radius:999px;background:var(--border2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:{{ cdQ.pct }}"></div></div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--dim)"><span>{{ cdQ.progress }}</span><span>{{ cdQ.range }}</span></div></div>
-<div style="display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--border2);font-size:13px;color:var(--text)"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">INTERIM</span><span>{{ cdInterim }}</span></div>
-</div>
-<div style="display:grid;grid-template-rows:1fr 1fr;gap:12px">
-<sc-for list="{{ cdSmall }}" as="c" hint-placeholder-count="2">
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center">
-<div style="display:flex;flex-direction:column;align-items:center;min-width:70px"><span style="font:900 40px/1 'Lato',sans-serif;color:var(--bright)">{{ c.n }}</span><span style="font:700 9px 'Lato',sans-serif;letter-spacing:1.2px;color:var(--dim);margin-top:4px;white-space:nowrap">{{ c.unit }}</span></div>
-<div style="min-width:0"><div style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">{{ c.kicker }}</div><div style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:20px;color:var(--bright);line-height:1.15">{{ c.title }}</div><div style="font-size:12px;color:var(--dim);margin-top:2px">{{ c.date }} · {{ c.sub }}</div></div>
-</div>
-</sc-for>
-</div>
-</div>
-<div style="margin:12px 28px 0;display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap;padding:11px 16px;background:var(--panel);border:1px solid var(--border);border-radius:10px"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">DUE THIS WEEK</span><sc-for list="{{ dueWeek }}" as="d" hint-placeholder-count="2"><span style="font-size:13px;color:var(--text)"><b style="color:var(--bright)">{{ d.text }}</b> · {{ d.when }}</span></sc-for><sc-if value="{{ dueNone }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:var(--dim)">Nothing due on the calendar this week.</span></sc-if></div>
-<div style="padding:18px 28px 18px;display:grid;grid-template-columns:360px minmax(0,1fr);gap:22px;align-items:start">
-<div style="display:flex;flex-direction:column;gap:12px">
-<sc-if value="{{ heads.show }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 16px;border-radius:12px;background:var(--bright);display:flex;flex-direction:column;gap:4px"><span style="font:900 10px 'Lato',sans-serif;letter-spacing:1.5px;color:#ffffff">{{ heads.kicker }}</span><span style="font-size:17px;font-weight:700;color:#ffffff">{{ heads.title }}</span><span style="font-size:13px;color:#ffffff;line-height:1.45">{{ heads.sub }}</span></div></sc-if>
-<sc-if value="{{ heads.quiet }}" hint-placeholder-val="{{ true }}"><div style="padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:var(--panel);display:flex;flex-direction:column;gap:2px"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">NEXT SCHEDULE CHANGE</span><span style="font-size:13px;color:var(--text)">{{ heads.next }}</span></div></sc-if>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px">
-<div><div style="font:11px 'Lato',sans-serif;letter-spacing:2px;color:var(--faint)">MY DAY · {{ dayLabel }}</div><h1 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:30px;letter-spacing:-.2px;color:var(--bright);margin:4px 0 0">{{ sched.name }}</h1><sc-if value="{{ sched.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.45">{{ sched.note }}</div></sc-if></div>
-<sc-if value="{{ isOff }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;border:1px dashed var(--border3);border-radius:10px;font-size:14px;color:var(--muted)">No classes today.</div></sc-if>
-<div style="display:flex;flex-direction:column;gap:4px">
-<sc-for list="{{ myDay }}" as="p" hint-placeholder-count="8">
-<div style="padding:9px 12px;border-radius:9px;border:1px solid {{ p.bd }};background:{{ p.bg }};display:flex;flex-direction:column;gap:6px">
-<div style="display:grid;grid-template-columns:76px minmax(0,1fr) auto;align-items:center;gap:10px"><div style="display:flex;flex-direction:column"><span style="font:700 12px 'Lato',sans-serif;color:{{ p.lc }}">{{ p.label }}</span><sc-if value="{{ p.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font:11px 'Lato',sans-serif;color:var(--dim);white-space:nowrap">{{ p.sub }}</span></sc-if></div><span style="font:13px 'Lato',sans-serif;color:{{ p.tc }}">{{ p.time }} <span style="font-size:11px;color:var(--faint)">· {{ p.mins }}</span></span><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--accent)">{{ p.tag }}</span></div>
-<sc-if value="{{ p.hasMeet }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ p.meets }}" as="m" hint-placeholder-count="1"><div style="display:flex;align-items:center;gap:8px;padding-left:86px;font-size:12px;font-weight:700;color:var(--accent)"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none"></span>{{ m }}</div></sc-for></sc-if>
-</div>
-</sc-for>
-<sc-if value="{{ hasAfter }}" hint-placeholder-val="{{ true }}">
-<div style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint);padding:10px 2px 2px">AFTER SCHOOL</div>
-<sc-for list="{{ afterMeets }}" as="m" hint-placeholder-count="1"><div style="display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:center;padding:9px 12px;border-radius:9px;border:1px solid var(--accent);background:var(--panel3)"><span style="font:700 12px 'Lato',sans-serif;color:var(--accent);white-space:nowrap">{{ m.time }}</span><span style="font-size:13px;font-weight:700;color:var(--bright)">{{ m.name }}</span></div></sc-for>
-</sc-if>
-</div>
-<div style="font-size:11px;color:var(--dim);line-height:1.5">Green = staff meeting, from the district calendar. Wednesdays are Flex automatically unless listed No Flex. 1:00 and 1:15 early-dismissal bell times are placeholders.</div>
-</div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;align-items:baseline;gap:4px 10px;flex-wrap:wrap"><h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:22px;letter-spacing:-.2px;color:var(--bright);margin:0">Early dismissals</h2><span style="font:700 11px 'Lato',sans-serif;letter-spacing:1px;color:var(--dim)">FROM THE ATHLETIC OFFICE</span></div>
-<div style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px">
-<sc-for list="{{ early }}" as="e" hint-placeholder-count="2">
-<div style="background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px">
-<div><div style="font-size:14px;font-weight:700;color:var(--bright)">{{ e.team }}</div><div style="font-size:12px;color:var(--dim)">{{ e.where }} · {{ e.coach }}</div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">DISMISSED</div><div style="font:700 15px 'Lato',sans-serif;color:var(--bright)">{{ e.dismiss }}</div></div><div><div style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">BUS LEAVES</div><div style="font:700 15px 'Lato',sans-serif;color:var(--bright)">{{ e.leaves }}</div></div></div>
-<div onClick="{{ e.toggle }}" style="display:flex;justify-content:space-between;align-items:center;font-size:12px;cursor:pointer;color:var(--accent)"><span>{{ e.count }} students</span><span>{{ e.caret }}</span></div>
-<sc-if value="{{ e.open }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:5px"><sc-for list="{{ e.students }}" as="s" hint-placeholder-count="4"><span style="font-size:12px;padding:3px 8px;border-radius:999px;background:var(--panel3);border:1px solid var(--border2);color:var(--text)">{{ s }}</span></sc-for></div></sc-if>
-</div>
-</sc-for>
-</div>
-</div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;align-items:baseline;gap:4px 10px;flex-wrap:wrap"><h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:22px;letter-spacing:-.2px;color:var(--bright);margin:0">Tonight at SFHS</h2><span style="font:11px 'Lato',sans-serif;color:var(--dim)">EVENTS + BOARD MEETINGS</span></div>
-<sc-if value="{{ tonightNone }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--dim)">Nothing on the calendar tonight.</div></sc-if>
-<sc-for list="{{ tonight }}" as="t" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;padding:10px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:10px"><div style="grid-column:1/-1;font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:{{ t.c }}">{{ t.tag }}</div><div><div style="font-size:14px;font-weight:700;color:var(--bright)">{{ t.title }}</div><sc-if value="{{ t.hasWhere }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:var(--dim);margin-top:2px">{{ t.where }}</div></sc-if></div><span style="font:700 13px 'Lato',sans-serif;color:var(--bright);white-space:nowrap">{{ t.time }}</span></div></sc-for>
-</div>
-</div>
-<div style="display:flex;flex-direction:column;gap:18px">
-<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px">
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:14px 16px"><div style="font-size:26px;font-weight:800;color:var(--bright);line-height:1">{{ covOutN }} out</div><div style="font:11px 'Lato',sans-serif;letter-spacing:.5px;color:var(--dim);margin-top:6px">COVERAGE · {{ covPulledN }} PULLED</div></div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:14px 16px"><div style="font-size:26px;font-weight:800;color:var(--bright);line-height:1">{{ nowTile.n }}</div><div style="font:11px 'Lato',sans-serif;letter-spacing:.5px;color:var(--dim);margin-top:6px">{{ nowTile.s }}</div></div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:14px 16px"><div style="font-size:26px;font-weight:800;color:var(--bright);line-height:1">{{ tileTest.n }}</div><div style="font:11px 'Lato',sans-serif;letter-spacing:.5px;color:var(--dim);margin-top:6px">TESTING TODAY</div></div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:14px 16px"><div style="font-size:26px;font-weight:800;color:var(--bright);line-height:1">{{ tileTrip.n }}</div><div style="font:11px 'Lato',sans-serif;letter-spacing:.5px;color:var(--dim);margin-top:6px">{{ tileTrip.s }}</div></div>
-</div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;align-items:baseline;gap:10px"><h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:24px;letter-spacing:-.2px;color:var(--bright);margin:0">Affects my class today</h2><span style="font:11px 'Lato',sans-serif;color:var(--dim)">FROM THE SCHOOL CALENDAR</span></div>
-<sc-if value="{{ affNone }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--dim)">Nothing on the school calendar affects classes today.</div></sc-if>
-<sc-for list="{{ affects }}" as="a" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:100px minmax(0,1fr);gap:14px;align-items:baseline;padding:11px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:10px"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:{{ a.c }}">{{ a.tag }}</span><span style="font-size:14px;color:var(--bright);line-height:1.45;text-wrap:pretty">{{ a.text }}</span></div></sc-for>
-</div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;align-items:baseline;gap:10px"><h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:24px;letter-spacing:-.2px;color:var(--bright);margin:0">Announcements</h2><span style="font:11px 'Lato',sans-serif;color:var(--dim)">{{ annCount }} TODAY</span></div>
-<sc-for list="{{ announcements }}" as="a" hint-placeholder-count="4">
-<div style="display:grid;grid-template-columns:110px minmax(0,1fr) 120px;gap:14px;padding:12px 14px;background:{{ a.bg }};border:1px solid {{ a.bd }};border-radius:10px;align-items:start;animation:{{ a.anim }}">
-<div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding-top:3px"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1px;color:var(--accent)">{{ a.cat }}</span><sc-if value="{{ a.pri }}" hint-placeholder-val="{{ false }}"><span style="font:700 9px 'Lato',sans-serif;letter-spacing:1.2px;color:#ffffff;background:#008539;padding:3px 7px;border-radius:999px">FROM ADMIN</span></sc-if></div>
-<div><sc-if value="{{ a.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ a.link }}" target="_blank" rel="noopener" style="font-size:14px;font-weight:700;color:var(--bright);text-decoration:underline;text-decoration-color:#008539;text-decoration-thickness:2px;text-underline-offset:3px">{{ a.title }} ↗</a></sc-if><sc-if value="{{ a.noLink }}" hint-placeholder-val="{{ true }}"><div style="font-size:14px;font-weight:600;color:var(--bright)">{{ a.title }}</div></sc-if><div style="font-size:13px;color:var(--muted);margin-top:3px;line-height:1.5;text-wrap:pretty"><sc-for list="{{ a.bodySegs }}" as="g" hint-placeholder-count="1"><sc-if value="{{ g.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ g.u }}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px;word-break:break-word">{{ g.t }}</a></sc-if><sc-if value="{{ g.isText }}" hint-placeholder-val="{{ true }}"><span>{{ g.t }}</span></sc-if></sc-for></div></div>
-<span style="font-size:12px;color:var(--dim);text-align:right">{{ a.by }}</span>
-</div>
-</sc-for>
-</div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:24px;letter-spacing:-.2px;color:var(--bright);margin:0">Chill Room</h2><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.2px;padding:4px 9px;border-radius:999px;background:{{ chill.pillBg }};color:{{ chill.pillFg }}">{{ chill.pill }}</span><span style="margin-left:auto;font-size:13px;color:var(--muted)">{{ chill.who }}</span></div>
-<div style="display:flex;gap:10px;align-items:baseline;padding:10px 14px;border-radius:10px;background:{{ chill.annBg }};border:1px solid {{ chill.annBd }}"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.2px;color:var(--accent);flex:none">ANNOUNCEMENT</span><span style="font-size:14px;color:{{ chill.annFg }};line-height:1.5;text-wrap:pretty"><sc-for list="{{ chill.annSegs }}" as="g" hint-placeholder-count="1"><sc-if value="{{ g.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ g.u }}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px;word-break:break-word">{{ g.t }}</a></sc-if><sc-if value="{{ g.isText }}" hint-placeholder-val="{{ true }}"><span>{{ g.t }}</span></sc-if></sc-for></span></div>
-<div style="display:flex;flex-direction:column;border:1px solid var(--border2);border-radius:10px;overflow:hidden">
-<sc-for list="{{ chill.days }}" as="d" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:9px 14px;border-top:1px solid var(--border2);background:{{ d.bg }};align-items:baseline"><span style="font-size:13px;font-weight:{{ d.fw }};color:var(--bright)">{{ d.day }}</span><span style="font-size:13px;color:{{ d.fg }};font-weight:{{ d.fw }}">{{ d.status }}<span style="color:var(--dim);font-weight:400"><sc-for list="{{ d.detSegs }}" as="g" hint-placeholder-count="0"><sc-if value="{{ g.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ g.u }}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px;word-break:break-word">{{ g.t }}</a></sc-if><sc-if value="{{ g.isText }}" hint-placeholder-val="{{ true }}"><span>{{ g.t }}</span></sc-if></sc-for></span></span></div></sc-for>
-<sc-if value="{{ chill.noDays }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 14px;font-size:13px;color:var(--dim)">No days posted yet.</div></sc-if>
-</div>
-</div>
-<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start">
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px">
-<div><h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:24px;letter-spacing:-.2px;color:var(--bright);margin:0">Testing</h2><div style="font-size:13px;color:var(--dim);margin-top:2px">Keep hallways quiet near these rooms.</div></div>
-<div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(8,22px);gap:4px 4px;align-items:center">
-<span></span><sc-for list="{{ pnums }}" as="n" hint-placeholder-count="8"><span style="font:600 10px 'Lato',sans-serif;color:var(--faint);text-align:center">{{ n }}</span></sc-for>
-</div>
-<sc-for list="{{ tests }}" as="t" hint-placeholder-count="4">
-<div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(8,22px);gap:4px;align-items:center;padding:6px 0;border-top:1px solid var(--border2)">
-<div><div style="font-size:13px;font-weight:600;color:var(--bright)">{{ t.who }}</div><div style="font-size:12px;color:var(--dim)">{{ t.room }} · {{ t.what }}</div></div>
-<sc-for list="{{ t.cells }}" as="c" hint-placeholder-count="8"><span style="height:22px;border-radius:5px;background:{{ c.bg }};border:1px solid {{ c.bd }}"></span></sc-for>
-</div>
-</sc-for>
-</div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:24px;letter-spacing:-.2px;color:var(--bright);margin:0">Field trips</h2><a href="https://docs.google.com/forms/d/e/1FAIpQLSewiPdoGpwP0-wW0BogMyWi7TdhA19laWTcnTVUomh5DotWZw/viewform" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid #008539;border-radius:9px;color:#008539;font:700 13px 'Lato',sans-serif;text-decoration:none" style-hover="background:#008539;color:#ffffff">Field trip form ↗</a></div>
-<div style="display:flex;gap:4px;padding:3px;background:var(--bg);border:1px solid var(--border2);border-radius:9px;align-self:flex-start"><sc-for list="{{ tripTabs }}" as="t" hint-placeholder-count="2"><div onClick="{{ t.go }}" style="padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</div></sc-for></div>
-<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border3);border-radius:9px;background:var(--panel)"><span style="color:var(--dim);font-size:14px">⌕</span><input value="{{ tripQ }}" onInput="{{ setTripQ }}" placeholder="Search students by first or last name" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:14px 'Lato',sans-serif;color:var(--bright)"></input></div>
-<sc-if value="{{ tripNoMatch }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--dim)">No students on today's trips match that name.</div></sc-if>
-<sc-if value="{{ tripByTrip }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ trips }}" as="f" hint-placeholder-count="2">
-<div style="background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px">
-<div style="display:flex;justify-content:space-between;gap:10px"><div><div style="font-size:14px;font-weight:600;color:var(--bright)">{{ f.name }}</div><div style="font-size:12px;color:var(--dim)">{{ f.where }}</div></div><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1px;color:var(--accent);white-space:nowrap">{{ f.status }}</span></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<div><div style="font:10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">LEAVES</div><div style="font:600 15px 'Lato',sans-serif;color:var(--bright)">{{ f.out }}</div></div>
-<div><div style="font:10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">BACK</div><div style="font:600 15px 'Lato',sans-serif;color:var(--bright)">{{ f.back }}</div></div>
-</div>
-<div style="font-size:12px;color:var(--muted)"><b style="color:var(--text)">Teachers:</b> {{ f.teachers }}</div>
-<div onClick="{{ f.toggle }}" style="display:flex;justify-content:space-between;align-items:center;font-size:12px;cursor:pointer;color:var(--accent)"><span>{{ f.count }} students</span><span>{{ f.caret }}</span></div>
-<sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:5px"><sc-for list="{{ f.students }}" as="s" hint-placeholder-count="6"><span style="font-size:12px;padding:3px 8px;border-radius:999px;background:var(--panel3);border:1px solid var(--border2);color:var(--text)">{{ s }}</span></sc-for></div></sc-if>
-</div>
-</sc-for></sc-if>
-<sc-if value="{{ tripByStudent }}" hint-placeholder-val="{{ false }}">
-<div style="border:1px solid var(--border2);border-radius:10px;overflow:hidden">
-<div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 40px minmax(0,1.5fr) 50px;background:var(--panel2);border-bottom:1px solid var(--border)"><sc-for list="{{ stuHead }}" as="c" hint-placeholder-count="5"><div onClick="{{ c.go }}" style="padding:8px 10px;font:900 10px 'Lato',sans-serif;letter-spacing:1px;color:{{ c.fg }};cursor:pointer;user-select:none;white-space:nowrap" style-hover="color:var(--accent)">{{ c.label }} {{ c.arrow }}</div></sc-for></div>
-<div style="max-height:320px;overflow:auto"><sc-for list="{{ stuRows }}" as="r" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 40px minmax(0,1.5fr) 50px;border-bottom:1px solid var(--border2);font-size:13px;color:var(--text)"><span style="padding:8px 10px;font-weight:700;color:var(--bright)">{{ r.last }}</span><span style="padding:8px 10px">{{ r.first }}</span><span style="padding:8px 10px">{{ r.grade }}</span><span style="padding:8px 10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.trip }}</span><span style="padding:8px 10px;color:var(--muted)">{{ r.back }}</span></div></sc-for></div>
-<div style="padding:8px 10px;font-size:12px;color:var(--dim);background:var(--bg)">{{ stuCount }}</div>
-</div>
-</sc-if>
-</div>
-</div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:6px">
-<h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:24px;letter-spacing:-.2px;color:var(--bright);margin:0 0 6px">Today's FAQ</h2>
-<sc-for list="{{ faq }}" as="q" hint-placeholder-count="3">
-<div style="border-top:1px solid var(--border2)">
-<div onClick="{{ q.toggle }}" style="display:flex;justify-content:space-between;padding:11px 2px;cursor:pointer;font-size:14px;font-weight:600;color:var(--bright)"><span>{{ q.q }}</span><span style="color:var(--dim)">{{ q.caret }}</span></div>
-<sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--muted);line-height:1.55;padding:0 2px 12px;max-width:720px"><sc-for list="{{ q.aSegs }}" as="g" hint-placeholder-count="1"><sc-if value="{{ g.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ g.u }}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px;word-break:break-word">{{ g.t }}</a></sc-if><sc-if value="{{ g.isText }}" hint-placeholder-val="{{ true }}"><span>{{ g.t }}</span></sc-if></sc-for></div></sc-if>
-</div>
-</sc-for>
-</div>
-</div>
-</div>
-<div style="margin:0 28px 28px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px">
-<div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
-<div><div style="display:flex;align-items:baseline;gap:10px"><h2 style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:24px;letter-spacing:-.2px;color:var(--bright);margin:0">Coverage</h2><span style="font:700 11px 'Lato',sans-serif;letter-spacing:1px;color:var(--dim)">{{ dayABu }} · {{ covOutN }} OUT · {{ covSummary }}</span></div><div style="font-size:13px;color:var(--dim);margin-top:2px">Entered by the main office on the Coverage tab. Replaces the morning coverage email.</div></div>
-<div style="margin-left:auto;width:400px;display:flex;flex-direction:column;gap:8px">
-<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--accent);border-radius:9px;background:var(--panel)"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint);white-space:nowrap">FIND MY NAME</span><input value="{{ covQ }}" onInput="{{ setCovQ }}" placeholder="Type your last name" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:14px 'Lato',sans-serif;color:var(--bright)"></input></div>
-<sc-if value="{{ covPulled }}" hint-placeholder-val="{{ false }}"><div style="font:900 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--accent)">YOU'RE PULLED FROM A DUTY TODAY</div></sc-if>
-<sc-for list="{{ covHits }}" as="c" hint-placeholder-count="1"><div style="display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-radius:9px;background:var(--panel3);border:1px solid var(--accent)"><span style="font:700 13px 'Lato',sans-serif;color:var(--bright)">{{ c.p }}</span><span style="font-size:13px;color:var(--text)">{{ c.what }} <span style="color:var(--dim)">· {{ c.time }}</span></span><span style="font:700 13px 'Lato',sans-serif;color:var(--accent)">{{ c.room }}</span></div></sc-for>
-<sc-if value="{{ covNoHits }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--dim)">No coverage for that name today.</div></sc-if>
-</div>
-</div>
-<div style="display:flex;flex-direction:column;border:1px solid var(--border2);border-radius:10px;overflow:hidden">
-<div style="display:grid;grid-template-columns:190px 72px repeat(8,minmax(0,1fr));background:var(--panel2);border-bottom:1px solid var(--border)">
-<span style="padding:10px 12px;font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">TEACHER OUT</span><span style="padding:10px 8px;font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">ROOM</span>
-<sc-for list="{{ covHead }}" as="c" hint-placeholder-count="8"><div style="padding:7px 8px;display:flex;flex-direction:column;background:{{ c.bg }}"><span style="font:900 11px 'Lato',sans-serif;color:{{ c.fg }}">{{ c.n }}</span><span style="font:10px 'Lato',sans-serif;color:var(--faint);white-space:nowrap">{{ c.t }}</span></div></sc-for>
-</div>
-<sc-for list="{{ covGroups }}" as="g" hint-placeholder-count="3">
-<div style="padding:7px 12px;font:900 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--dim);background:var(--bg);border-bottom:1px solid var(--border2)">{{ g.label }}</div>
-<sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
-<div style="display:grid;grid-template-columns:190px 72px repeat(8,minmax(0,1fr));border-bottom:1px solid var(--border2)">
-<div style="padding:8px 12px"><div style="font-size:13px;font-weight:700;color:var(--bright)">{{ r.who }}</div><sc-if value="{{ r.note }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:var(--dim)">{{ r.note }}</div></sc-if></div>
-<div style="padding:8px;font-size:12px;color:var(--muted);display:flex;align-items:center">{{ r.room }}</div>
-<sc-if value="{{ r.span }}" hint-placeholder-val="{{ false }}"><div style="grid-column:3 / span 8;padding:8px;font-size:12px;color:var(--dim);display:flex;align-items:center">{{ r.spanText }}</div></sc-if>
-<sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="8"><div style="padding:8px;font-size:12px;display:flex;align-items:center;background:{{ c.bg }};color:{{ c.fg }};font-weight:{{ c.fw }};font-style:{{ c.fs }}">{{ c.v }}</div></sc-for>
-</div>
-</sc-for>
-</sc-for>
-</div>
-<div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--dim)"><span><b style="color:var(--accent)">Green</b> = pulled from a duty, Engagement or SAP (from the master schedule)</span><span>CT = co-teacher covers their shared class</span><span><b style="color:var(--bright)">!</b> = check: that teacher has a class, prep or lunch then</span><span>NA = no class that period</span><span><i>Lunch</i> = covering person's lunch</span><span>Duty = lunch duty</span><span style="margin-left:auto">No coverage needed: <b style="color:var(--text)">Quirk</b></span></div>
-</div>
-</div></div></sc-if>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div class="ce" role="img" aria-label="Cyber Engagement"><span class="ce-mon" aria-hidden="true">CE</span><span class="ce-name" aria-hidden="true">CYBER<br>ENGAGEMENT</span></div>
+  <div class="mono" style="font-size:13px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;">South Fayette High School</div>
+  <h1 style="font-weight:800;font-size:clamp(34px,5vw,52px);letter-spacing:-1px;margin:12px 0 10px;color:var(--bright);">Mr. Reasey&rsquo;s Courses</h1>
+  <p style="font-size:17px;line-height:1.6;max-width:620px;margin:0;color:var(--muted);">Pick a course to open its live home page &mdash; weekly schedule, syllabus, and study tools, all updated automatically.</p>
 
-<sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}"><div id="phone" style="width:100%;max-width:560px">
-<div class="dv-card" style="width:100%;border-radius:16px">
-<div style="padding:18px 16px 24px;display:flex;flex-direction:column;gap:12px;min-height:780px">
-<div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;flex-direction:column;gap:2px"><div style="font:600 10px 'Lato',sans-serif;letter-spacing:2px;color:var(--faint)">SOUTH FAYETTE STAFF HUB</div><div style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:20px;color:var(--bright);line-height:1.1">{{ dateShort }}</div></div><div style="font:10px 'Lato',sans-serif;color:var(--dim)">9:30</div></div>
-<div style="padding:12px 14px;border-radius:10px;background:var(--accent)"><div style="font:900 10px 'Lato',sans-serif;letter-spacing:1.5px;color:#ffffff">UPDATED 7:05 AM</div><div style="font-size:14px;color:#ffffff;margin-top:4px"><b>Coverage updated.</b> Dorsey covers Rogowicz P3.</div></div>
-<div style="background:var(--panel3);border:1px solid var(--accent);border-radius:14px;padding:14px 16px"><div style="font:900 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--accent)">CO-TEACHER OUT · SIGNED IN AS DORSEY</div><div style="font-size:17px;font-weight:700;color:var(--bright);margin-top:6px">Period 3 · CT Geometry</div><div style="font-size:13px;color:var(--text);margin-top:2px">Rogowicz is out. No sub. You have your shared class on your own.</div></div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-<div><div style="font:10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--accent)">NOW</div><div style="font-size:22px;font-weight:800;color:var(--bright)">Period 3</div><div style="font:12px 'Lato',sans-serif;color:var(--dim)">until 9:53</div></div>
-<div><div style="font:10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">NEXT</div><div style="font-size:22px;font-weight:800;color:var(--muted)">Period 3</div><div style="font:12px 'Lato',sans-serif;color:var(--dim)">9:56 – 10:42</div></div>
+  <div class="mono" style="margin-top:44px;font-size:12px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;">Cybersecurity Pathway</div>
+  <div class="grid" style="margin-top:14px;grid-template-columns:repeat(3,1fr);">
+    <!-- CYBER 1 -->
+    <a class="card" href="cyber1/index.html" style="--ac:#00b3ff;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(0,179,255,.14), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('cyber1/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip" style="letter-spacing:1px;">CHS · ROBERT MORRIS</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#00b3ff;margin-bottom:6px;">01 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cybersecurity 1</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">College-credit foundations: networks, systems, threats, and defense.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- CYBER 2 -->
+    <a class="card" href="cyber2/index.html" style="--ac:#39ff88;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(57,255,136,.14), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('cyber2/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ADVANCED PLACEMENT</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#39ff88;margin-bottom:6px;">02 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">AP Cybersecurity 2</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">Think like an attacker, defend like a pro &mdash; the advanced, hands-on course.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- CYBER 3 -->
+    <a class="card" href="cyber3/index.html" style="--ac:#d4af37;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(212,175,55,.16), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('cyber3/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">GOLD STANDARD</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#d4af37;margin-bottom:6px;">03 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Cybersecurity 3</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">The gold standard in cybersecurity practice &mdash; precision, discipline, and mastery.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="mono" style="margin-top:44px;font-size:12px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;">Other Courses</div>
+  <div class="grid" style="margin-top:14px;grid-template-columns:repeat(2,1fr);">
+    <!-- WEB 3.0 -->
+    <a class="card" href="web3/index.html" style="--ac:#f7a01f;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(247,160,31,.16), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('web3/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ELECTIVE · BLOCKCHAIN</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#f7a01f;margin-bottom:6px;">00 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Intro to Web 3.0</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">Blockchain, crypto &amp; smart contracts &mdash; how the decentralized web is built.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+    <!-- AP CSP -->
+    <a class="card" href="apcsp/index.html" style="--ac:#a855f7;">
+      <div class="tex" style="background:radial-gradient(120% 90% at 100% 0%, rgba(168,85,247,.18), transparent 60%);opacity:.7;"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('apcsp/index.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">ADVANCED PLACEMENT</span>
+        <div>
+          <div class="mono" style="font-size:12px;color:#a855f7;margin-bottom:6px;">03 //</div>
+          <h2 style="margin:0;font-size:26px;color:var(--bright);">Computer Science Principles</h2>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:var(--dim);">The big ideas of computing &mdash; create, analyze data, and explore algorithms.</p>
+        <span class="enter">ENTER &rarr;</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="mono" style="margin-top:44px;font-size:12px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;">Tools</div>
+  <div class="grid" style="margin-top:14px;grid-template-columns:1fr;">
+    <!-- COUNTDOWN -->
+    <a class="card" href="countdown.html" style="--ac:#14c46f;min-height:0;">
+      <div class="tex" style="background:radial-gradient(120% 140% at 100% 0%, rgba(20,196,111,.14), transparent 60%);"></div>
+      <button class="popout" title="Open in new window" onclick="event.preventDefault();event.stopPropagation();window.open('countdown.html','_blank');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;gap:16px;">
+        <span class="chip">SCHOOL DAY</span>
+        <h2 style="margin:0;font-size:26px;color:var(--bright);">Countdown Timers</h2>
+        <span class="enter">OPEN &rarr;</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="mono" style="margin-top:40px;font-size:12px;color:var(--faint);display:flex;gap:14px;flex-wrap:wrap;"><span>rnreasey@southfayette.org &middot; Room AB212</span><a href="privacy.html" style="color:var(--faint);">Privacy Policy</a><a href="terms.html" style="color:var(--faint);">Terms of Use</a></div>
 </div>
-<sc-if value="{{ heads.show }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:10px;background:var(--bright)"><div style="font:900 10px 'Lato',sans-serif;letter-spacing:1.5px;color:#ffffff">{{ heads.kicker }}</div><div style="font-size:15px;font-weight:700;color:#ffffff;margin-top:3px">{{ heads.title }}</div></div></sc-if>
-<div style="background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">END OF QUARTER</span><div style="display:flex;border:1px solid var(--border3);border-radius:999px;padding:2px;background:var(--panel)"><sc-for list="{{ cdModes }}" as="m" hint-placeholder-count="2"><div onClick="{{ m.go }}" style="padding:5px 12px;border-radius:999px;font:700 12px 'Lato',sans-serif;cursor:pointer;white-space:nowrap;background:{{ m.bg }};color:{{ m.fg }}">{{ m.label }}</div></sc-for></div></div>
-<div style="display:flex;align-items:flex-end;gap:14px"><span style="font:900 64px/0.9 'Lato',sans-serif;color:var(--accent);letter-spacing:-2px">{{ cdQ.n }}</span><div style="padding-bottom:4px"><div style="font:700 10px 'Lato',sans-serif;letter-spacing:1.2px;color:var(--dim)">{{ cdQ.unit }}</div><div style="font-size:14px;font-weight:700;color:var(--bright)">{{ cdQ.date }}</div></div></div>
-<div style="height:6px;border-radius:999px;background:var(--border2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:{{ cdQ.pct }}"></div></div>
-<div style="font-size:12px;color:var(--muted)"><b style="color:var(--text)">Interim:</b> {{ cdInterim }}</div>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+
+<div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><path d="M8.6 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M14.1 12a3.4 3.4 0 1 1 1.15 2.55" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" font-family="sans-serif">BY</text></svg>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="sans-serif">NC</text></svg>
+  </a>
+  <span style="font-size:13px;color:var(--faint);font-weight:500;">CC BY-NC 4.0 &mdash; free to share &amp; adapt with attribution, non-commercial only &middot; github.com/Web3Lion</span>
+  <a href="#" onclick="document.getElementById('staffPortalModal').style.display='flex';return false;" style="margin-left:auto;font-size:11px;color:var(--faint);text-decoration:none;">Staff Portal</a>
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<sc-for list="{{ cdSmall }}" as="c" hint-placeholder-count="2"><div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 14px"><div style="font:900 28px/1 'Lato',sans-serif;color:var(--bright)">{{ c.n }}</div><div style="font:700 9px 'Lato',sans-serif;letter-spacing:1px;color:var(--dim);margin-top:4px">{{ c.unit }}</div><div style="font-size:13px;font-weight:700;color:var(--bright);margin-top:6px">{{ c.short }}</div><div style="font-size:11px;color:var(--dim)">{{ c.date }}</div></div></sc-for>
+<div id="staffPortalModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:340px;width:100%;background:#15181c;border:1px solid #333;border-radius:14px;padding:28px;font-family:'JetBrains Mono',monospace;color:#eee;">
+    <div style="font-size:11px;letter-spacing:2px;color:#888;margin-bottom:14px;">STAFF / ADMIN LOGIN</div>
+    <input id="spUser" placeholder="Username" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #444;background:#0c0f13;color:#eee;">
+    <input id="spPass" type="password" placeholder="Password" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #444;background:#0c0f13;color:#eee;">
+    <button id="spSubmit" style="width:100%;font-family:inherit;font-size:13px;font-weight:700;padding:11px;border-radius:8px;border:none;background:#3ecf8e;color:#06140a;cursor:pointer;">Log in</button>
+    <button onclick="document.getElementById('staffPortalModal').style.display='none';" style="width:100%;margin-top:8px;font-family:inherit;font-size:12px;padding:9px;border-radius:8px;border:1px solid #333;background:transparent;color:#999;cursor:pointer;">Cancel</button>
+  </div>
 </div>
-<sc-for list="{{ mobileSections }}" as="m" hint-placeholder-count="5">
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden">
-<div onClick="{{ m.toggle }}" style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;min-height:52px"><span style="font-size:15px;font-weight:600;color:var(--bright);flex:1">{{ m.title }}</span><span style="font:11px 'Lato',sans-serif;color:var(--dim)">{{ m.meta }}</span><span style="color:var(--dim)">{{ m.caret }}</span></div>
-<sc-if value="{{ m.open }}" hint-placeholder-val="{{ false }}"><div style="padding:0 16px 14px;display:flex;flex-direction:column;gap:8px"><sc-for list="{{ m.rows }}" as="r" hint-placeholder-count="3"><div style="padding:10px 12px;background:{{ r.bg }};border:1px solid {{ r.bd }};border-radius:9px;animation:{{ r.anim }}"><div style="font-size:13px;font-weight:600;color:var(--bright)">{{ r.a }}</div><div style="font-size:12px;color:var(--dim);margin-top:2px">{{ r.b }}</div></div></sc-for></div></sc-if>
-</div>
-</sc-for>
-</div>
-</div></div></sc-if>
-<sc-if value="{{ showOffice }}" hint-placeholder-val="{{ false }}"><div id="office" style="width:100%;max-width:1280px;display:flex;flex-direction:column;gap:10px"><div style="font:700 12px 'Lato',sans-serif;letter-spacing:1.6px;color:var(--dim)">OFFICE PREVIEW · OFFICE STAFF ONLY</div>
-<div class="dv-card" style="width:100%">
-<div style="display:flex;align-items:center;gap:14px;padding:14px 24px;background:var(--panel);border-bottom:1px solid var(--border)">
-<img src="assets/sf-logo.png" alt="SF" style="height:40px;width:auto"></img>
-<div style="display:flex;flex-direction:column"><div style="font:700 15px 'Lato',sans-serif;color:var(--bright)">Office preview</div><div style="font-size:12px;color:var(--dim)">Main Office · Attendance · Athletic Office</div></div>
-<div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-<sc-for list="{{ pvChips }}" as="c" hint-placeholder-count="3"><div onClick="{{ c.go }}" style="padding:7px 12px;border-radius:999px;font:700 12px 'Lato',sans-serif;cursor:pointer;white-space:nowrap;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</div></sc-for>
-<input type="date" value="{{ pvISO }}" onChange="{{ pvPick }}" style="padding:7px 10px;border:1px solid var(--border3);border-radius:9px;font:13px 'Lato',sans-serif;color:var(--bright);background:var(--panel)"></input>
-</div>
-</div>
-<div style="padding:20px 24px 24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start">
-<div style="display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;align-items:center;gap:10px"><div onClick="{{ pvPrev }}" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border3);display:grid;place-items:center;cursor:pointer;color:var(--muted);font-size:17px">‹</div><div style="min-width:0"><div style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:26px;color:var(--bright);line-height:1.05">{{ pv.dateLong }}</div><div style="font-size:12px;color:var(--dim);margin-top:2px">{{ pv.sub }}</div></div><div onClick="{{ pvNext }}" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border3);display:grid;place-items:center;cursor:pointer;color:var(--muted);font-size:17px">›</div><div onClick="{{ pvOpen }}" style="margin-left:auto;padding:9px 14px;border-radius:9px;background:var(--accent);color:#ffffff;font:700 13px 'Lato',sans-serif;cursor:pointer;white-space:nowrap">Open in hub ↗</div></div>
-<div style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint);padding-top:4px">WHAT TEACHERS WILL SEE</div>
-<sc-if value="{{ pv.hasBanner }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:10px;background:var(--bright);display:flex;flex-direction:column;gap:3px"><span style="font:900 10px 'Lato',sans-serif;letter-spacing:1.5px;color:#ffffff">SHOWN THE DAY BEFORE · {{ pv.bannerOn }}</span><span style="font-size:15px;font-weight:700;color:#ffffff">{{ pv.bannerTitle }}</span><span style="font-size:12px;color:#ffffff">{{ pv.bannerSub }}</span></div></sc-if>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px">
-<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><div style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:22px;color:var(--bright)">{{ pv.schedName }}</div><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--dim)">{{ pv.schedSrc }}</span></div>
-<sc-if value="{{ pv.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--muted)">{{ pv.note }}</div></sc-if>
-<sc-if value="{{ pv.hasMeet }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:6px"><sc-for list="{{ pv.meets }}" as="m" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:8px 12px;border-radius:9px;border:1px solid var(--accent);background:var(--panel3)"><span style="font:700 12px 'Lato',sans-serif;color:var(--accent);white-space:nowrap">{{ m.when }}</span><span style="font-size:13px;font-weight:700;color:var(--bright)">{{ m.name }}</span></div></sc-for></div></sc-if>
-<sc-if value="{{ pv.noMeet }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--dim)">No staff meetings.</div></sc-if>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><div style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">AFFECTS CLASSES</div><sc-for list="{{ pv.aff }}" as="a" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:1px"><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:{{ a.c }}">{{ a.tag }}</span><span style="font-size:13px;color:var(--bright);line-height:1.4">{{ a.text }}</span></div></sc-for><sc-if value="{{ pv.affNone }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:var(--dim)">Nothing</span></sc-if></div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><div style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:var(--faint)">TONIGHT</div><sc-for list="{{ pv.ton }}" as="t" hint-placeholder-count="2"><div style="display:flex;justify-content:space-between;gap:10px"><span style="font-size:13px;color:var(--bright);line-height:1.4">{{ t.title }}</span><span style="font:700 12px 'Lato',sans-serif;color:var(--bright);white-space:nowrap">{{ t.time }}</span></div></sc-for><sc-if value="{{ pv.tonNone }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:var(--dim)">Nothing</span></sc-if></div>
-</div>
-</div>
-<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;padding:20px">
-<div style="display:flex;align-items:baseline;justify-content:space-between"><div style="font-family:'Neuton','Times New Roman',serif;font-weight:700;font-size:22px;color:var(--bright)">Checklist</div><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.5px;color:{{ pv.readyC }}">{{ pv.ready }}</span></div>
-<div style="padding:14px;border:1px solid {{ pv.ovBd }};border-radius:10px;background:{{ pv.ovBg }};display:flex;flex-direction:column;gap:8px">
-<label style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--bright);cursor:pointer"><input type="checkbox" checked="{{ pv.ovOn }}" onChange="{{ pvOvToggle }}" style="width:18px;height:18px;accent-color:#008539"></input>Override the automatic schedule</label>
-<div style="font-size:12px;color:var(--dim);padding-left:28px">Automatic: <b style="color:var(--text)">{{ pv.autoName }}</b> ({{ pv.autoWhy }})</div>
-<sc-if value="{{ pv.ovOn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px;padding-left:28px"><select value="{{ pv.ovVal }}" onChange="{{ pvOvSet }}" style="padding:8px 10px;border:1px solid var(--border3);border-radius:8px;font:13px 'Lato',sans-serif;color:var(--bright);background:var(--panel)"><sc-for list="{{ ovOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select><sc-if value="{{ pv.isDelay }}" hint-placeholder-val="{{ false }}"><label style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--bright);cursor:pointer"><input type="checkbox" checked="{{ pv.swap3 }}" onChange="{{ pvSwap }}" style="width:16px;height:16px;accent-color:#008539"></input>Period 3 first (order 1, 3, 4, 2)</label><div style="font-size:12px;color:var(--dim)">Unchecked = schedule v1 (1, 2, 4, 3). {{ pv.sugg }}</div></sc-if>
-<div style="font-size:12px;color:var(--muted)">The hub switches right away and shows "Set by the Main Office." Uncheck to go back to automatic.</div></div></sc-if>
-</div>
-<sc-for list="{{ pv.checks }}" as="c" hint-placeholder-count="7">
-<div style="display:grid;grid-template-columns:24px minmax(0,1fr);gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--border2)">
-<span style="width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:900 12px 'Lato',sans-serif;background:{{ c.bg }};color:#ffffff">{{ c.icon }}</span>
-<div><div style="font-size:14px;font-weight:700;color:var(--bright)">{{ c.label }}</div><div style="font-size:13px;color:var(--muted);margin-top:2px;line-height:1.45">{{ c.val }}</div><sc-if value="{{ c.hasFix }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;font-weight:700;color:var(--accent);margin-top:4px">{{ c.fix }}</div></sc-if></div>
-</div>
-</sc-for>
-</div>
-</div>
-</div></div></sc-if>
-</main>
-</sc-if>
-</x-dc>
-<script type="text/x-dc" data-dc-script>
-class Component extends DCLogic {
-  state = { day: '10/20/2026', pvDay: '10/21/2026', sched: 'regular', open: {}, faq: { 0: true }, mob: { cov: true }, tab: 'coverage', covQ: 'Dorsey', cdMode: 'school' };
-  build(start, lens, extras) {
-    const toM = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
-    const fmt = m => { let h = Math.floor(m / 60), mm = m % 60; h = h > 12 ? h - 12 : h; return h + ':' + String(mm).padStart(2, '0'); };
-    let t = toM(start); const out = [];
-    lens.forEach((len, i) => {
-      if (extras && extras[i]) { out.push({ label: extras[i][0], s: t, e: t + extras[i][1], x: true }); t += extras[i][1] + 4; }
-      out.push({ label: 'P' + (i + 1), s: t, e: t + len }); t += len + 4;
-    });
-    return out.map(p => ({ ...p, time: fmt(p.s) + ' – ' + fmt(p.e) }));
+<script>
+document.getElementById('spSubmit').onclick = function(){
+  var courses = ['cyber1','cyber3'];
+  var found = null;
+  for (var i=0;i<courses.length;i++){
+    try { if (JSON.parse(localStorage.getItem('ctf-sess-'+courses[i]))) { found = courses[i]; break; } } catch(e){}
   }
-  /* Live connection: paste the Google OAuth Client ID and the Apps Script web-app URL (ends in /exec). Leave blank for demo data. */
-  cfg = { clientId: '862223526242-tr3b0ieoq73nkt92la6ouksjeq3sp5g4.apps.googleusercontent.com', api: 'https://script.google.com/macros/s/AKfycbwMYGoFTNLJUM2Lvne3SbKLXIQMykDSagh0nSH9752yE-0sjaY7-r2bQHtMAaxZuLdKsw/exec' };
-  gBtn = React.createRef();
-  initAuth() {
-    if (!this.cfg.clientId || !this.cfg.api) return;
-    const go = () => {
-      if (!window.google || !window.google.accounts) return setTimeout(go, 200);
-      google.accounts.id.initialize({ client_id: this.cfg.clientId, hd: 'southfayette.org', auto_select: true, use_fedcm_for_prompt: true, callback: r => { this.token = r.credential; this.keepToken(r.credential); this.setState({ signing: true, authErr: '' }); this.loadLive(); } });
-      this._gis = true; this.renderGBtn();
-      if (!this.token) google.accounts.id.prompt();
-    };
-    const kept = this.keptToken(); if (kept) { this.token = kept; let last = null; try { last = JSON.parse(localStorage.getItem('sfhub_last') || 'null'); } catch (e) {} const tk = new Date(); const today = tk.getFullYear() + '-' + String(tk.getMonth() + 1).padStart(2, '0') + '-' + String(tk.getDate()).padStart(2, '0'); if (last && last.date === today && !new URLSearchParams(location.search).get('date')) this.setState({ L: last, signing: false }); else this.setState({ signing: true }); this.loadLive(); }   // show the last copy instantly, then refresh   // signed in on another tab within the hour: reuse it
-    go();
-    this._lv = setInterval(() => { if (this.token) this.loadLive(); else if (this.state.L && window.google) google.accounts.id.prompt(); }, 120000);
-    this._vis = () => { if (document.visibilityState === 'visible' && this.token) this.loadLive(); };
-    document.addEventListener('visibilitychange', this._vis);
-  }
-  keepToken(t) { try { const exp = JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).exp * 1000; localStorage.setItem('sfhub_tok', JSON.stringify({ t, exp })); } catch (e) {} }
-  keptToken() { try { const o = JSON.parse(localStorage.getItem('sfhub_tok') || 'null'); if (o && o.exp - Date.now() > 120000) return o.t; localStorage.removeItem('sfhub_tok'); } catch (e) {} return null; }
-  loadLive(tries = 0) {
-    const qd = this._want || new URLSearchParams(location.search).get('date');
-    fetch(this.cfg.api + '?token=' + encodeURIComponent(this.token) + (qd ? '&date=' + encodeURIComponent(qd) : ''))
-      .then(r => r.json()).then(d => {
-        if (d.error) { this.token = null; if (this.state.L) { this.setState({ stale: true }); } else try { localStorage.removeItem('sfhub_tok'); } catch (e) {} this.token = null; this.setState({ authErr: d.reason, signing: false }); if (window.google) google.accounts.id.prompt(); return; }
-        const [y, m, dd] = d.date.split('-').map(Number), first = !this.state.L || this.state.L.date !== d.date, n = d.schedule || '';
-        const sk = /delay/i.test(n) ? 'delay' : /early/i.test(n) ? 'early' : /assembly/i.test(n) ? 'assembly' : /activity/i.test(n) ? 'activity' : 'regular';
-        if (!this._want && !new URLSearchParams(location.search).get('date')) { try { localStorage.setItem('sfhub_last', JSON.stringify(d)); } catch (e) {} }
-        this.setState({ L: d, authErr: '', signing: false, stale: false, staffSched: d.staffSched || [], ...(first ? { day: m + '/' + dd + '/' + y, sched: sk } : {}) });
-        if (first && d.user && d.user.admin) { let seen = '1'; try { seen = localStorage.getItem('sfhub_reveal_' + d.user.email); } catch (e) {} if (!seen) this.startReveal(d.user.email); }
-      }).catch(() => { if (tries < 2) setTimeout(() => this.loadLive(tries + 1), 1500); else this.setState({ authErr: 'could not reach the Office Sheet', signing: false }); });   // Apps Script can be slow to wake: retry quietly
-  }
-  renderGBtn() { const el = this.gBtn.current; if (el && el !== this._btnEl && this._gis && window.google) { google.accounts.id.renderButton(el, { theme: 'filled_black', size: 'large', shape: 'pill', text: 'signin_with', width: 280 }); this._btnEl = el; } }
-  componentDidUpdate() { this.renderGBtn(); }
-  introOn() { return !!this.cfg.api && !this.state.L && !this.demo; }
-  QUOTES = [
-    ['Believe.', 'Ted Lasso', 'The sign above the locker room door.'],
-    ['Be curious, not judgmental.', 'Ted Lasso', ''],
-    ['Be a goldfish.', 'Ted Lasso', 'The happiest animal on earth has a ten-second memory.'],
-    ['I believe in hope. I believe in Believe.', 'Ted Lasso', ''],
-    ['Taking on a challenge is a lot like riding a horse. If you\'re comfortable while you\'re doing it, you\'re probably doing it wrong.', 'Ted Lasso', ''],
-    ['Doing the right thing is never the wrong thing.', 'Ted Lasso', '']
-  ];
-  qList() { return (this.state.quotes && this.state.quotes.length) ? this.state.quotes : this.QUOTES; }
-  loadQuotes() { if (!this.cfg.api) return; fetch(this.cfg.api + '?action=quotes').then(r => r.json()).then(d => { if (d && d.quotes && d.quotes.length) this.setState({ quotes: d.quotes, qi: Math.floor(Math.random() * d.quotes.length) }); }).catch(() => {}); }
-  gameRef = React.createRef();
-  setQ(i) { this.setState({ qOp: 0 }); clearTimeout(this._qt); this._qt = setTimeout(() => this.setState({ qi: (i + this.qList().length) % this.qList().length, qOp: 1 }), 450); }
-  gameInit() {
-    let sc = []; try { sc = JSON.parse(localStorage.getItem('sfhub_lionrun') || '[]'); } catch (e) {}
-    this.loadQuotes(); this.loadBoards(); this._lb = setInterval(() => { if (this.introOn()) this.loadBoards(); }, 60000);
-    this.setState({ scores: sc, qi: Math.floor(Math.random() * this.qList().length), qOp: 1 });
-    this._qi = setInterval(() => { if (this.introOn()) this.setQ((this.state.qi || 0) + 1); }, 8000);
-    this.G = { st: 'ready', last: 0, y: 0, vy: 0, obs: [], next: 420, sp: 0.34, dist: 0, score: 0, frame: 0, cl: [[90, 46], [380, 78], [700, 36], [1020, 64]] };
-    const loop = ts => { this._raf = requestAnimationFrame(loop); try { this.gameStep(ts); } catch (e) {} };
-    this._raf = requestAnimationFrame(loop);
-    this._key = e => { if (!this.introOn()) return; if ((e.code === 'Space' || e.code === 'ArrowUp') && !/INPUT|TEXTAREA|BUTTON|SELECT/.test(e.target.tagName)) { e.preventDefault(); this.jump(); } };
-    window.addEventListener('keydown', this._key);
-  }
-  jump() {
-    const g = this.G; if (!g) return;
-    if (g.st !== 'run') { if (g.st === 'over' && performance.now() - g.overAt < 450) return; Object.assign(g, { st: 'run', obs: [], next: 520, sp: 0.34, dist: 0, score: 0, y: 0, vy: 0.72, rt: 0, lvl: 1, flash: 0 }); return; }
-    if (g.y === 0) g.vy = 0.72;
-  }
-  loadBoards(tries = 0) { if (!this.cfg.api) return; fetch(this.cfg.api + '?action=scores').then(r => r.json()).then(d => { if (d && d.all) this.setState({ boards: d }); else throw 0; }).catch(() => { if (tries < 3) setTimeout(() => this.loadBoards(tries + 1), 2000 * (tries + 1)); }); }
-  gameOver(score) {
-    const B = this.state.boards, fits = a => a.length < 10 || score > a[a.length - 1].s, sc = this.state.scores || [];
-    const qual = score > 0 && (B ? fits(B.today) || fits(B.all) : sc.length < 5 || score > sc[sc.length - 1].s);
-    this.setState({ pending: qual ? score : null, lastRun: score });
-  }
-  gameStep(ts) {
-    const c = this.gameRef.current, g = this.G; if (!c || !g) { if (g) g.last = 0; return; }
-    const dt = g.last ? Math.min(40, ts - g.last) : 16; g.last = ts;
-    const dpr = window.devicePixelRatio || 1, W = c.clientWidth, H = c.clientHeight;
-    if (!W || !H) return;
-    if (c.width !== Math.round(W * dpr) || c.height !== Math.round(H * dpr)) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
-    const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
-    const gy = H - 36, LX = Math.min(70, W * 0.1);
-    g.frame += dt;
-    const mv = g.st === 'run' ? g.sp * dt : g.st === 'ready' ? 0.06 * dt : 0;
-    if (g.st === 'run') {
-      g.rt += dt;
-      const lvl = 1 + Math.floor(g.rt / 15000);
-      if (lvl !== g.lvl) { g.lvl = lvl; g.flash = 1800; }
-      const target = Math.min(1.1, 0.34 + (lvl - 1) * 0.075);
-      g.sp += (target - g.sp) * Math.min(1, dt / 700);
-      g.dist += mv; g.score = Math.floor(g.dist / 12);
-      g.vy -= 0.0024 * dt; g.y += g.vy * dt; if (g.y <= 0) { g.y = 0; g.vy = 0; }
-      g.next -= mv;
-      if (g.next <= 0) {
-        const r = Math.random(), L = g.lvl, t = L < 2 ? 'books' : L < 3 ? (r < 0.6 ? 'books' : 'cone') : (r < 0.45 ? 'books' : r < 0.72 ? 'cone' : 'double');
-        if (t === 'cone') g.obs.push({ t, x: W + 20, w: 24, h: 32 });
-        else { const n = 2 + Math.floor(Math.random() * (g.lvl >= 5 ? 4 : 3)), books = []; for (let i = 0; i < n; i++) books.push({ h: 9 + Math.floor(Math.random() * 4), w: 26 + Math.floor(Math.random() * 8), c: ['#008539', '#1d1d1d', '#5c5c5d', '#7cc49a'][Math.floor(Math.random() * 4)] });
-          const w = Math.max(...books.map(b => b.w)), hh = books.reduce((s, b) => s + b.h, 0);
-          g.obs.push({ t: 'books', x: W + 20, w, h: hh, books });
-          if (t === 'double') { const b2 = books.slice(0, 2).map(b => ({ ...b })); g.obs.push({ t: 'books', x: W + 20 + w + 6, w: Math.max(...b2.map(b => b.w)), h: b2.reduce((s, b) => s + b.h, 0), books: b2 }); }
-        }
-        g.next = (380 + Math.random() * 560) * (0.75 + g.sp) * Math.max(0.62, 1 - (g.lvl - 1) * 0.06);
-      }
-      g.obs.forEach(o => { o.x -= mv; }); g.obs = g.obs.filter(o => o.x + o.w > -20);
-      const lb = gy - g.y, L1 = LX + 4, R1 = LX + 50, T1 = lb - 34;
-      for (const o of g.obs) { if (R1 > o.x + 4 && L1 < o.x + o.w - 4 && lb > gy - o.h + 4 && T1 < gy) { g.st = 'over'; g.overAt = performance.now(); this.gameOver(g.score); break; } }
-    }
-    x.fillStyle = '#e8f3ec';
-    g.cl.forEach(cl => { cl[0] -= mv * 0.2; if (cl[0] < -80) cl[0] += W + 160; x.beginPath(); x.ellipse(cl[0], cl[1], 34, 11, 0, 0, Math.PI * 2); x.ellipse(cl[0] + 22, cl[1] - 6, 20, 10, 0, 0, Math.PI * 2); x.fill(); });
-    x.fillStyle = '#c9cccc'; x.fillRect(0, gy, W, 2);
-    const off = (g.dist || g.frame * 0.06) % 46; x.fillStyle = '#e0e2e2'; for (let i = -1; i < W / 46 + 1; i++) { x.fillRect(i * 46 - off, gy + 10, 14, 2); x.fillRect(i * 46 + 22 - off, gy + 20, 8, 2); }
-    for (const o of g.obs) {
-      if (o.t === 'cone') { x.fillStyle = '#1d1d1d'; x.fillRect(o.x - 2, gy - 4, o.w + 4, 4); x.beginPath(); x.moveTo(o.x + 3, gy - 4); x.lineTo(o.x + o.w / 2, gy - o.h); x.lineTo(o.x + o.w - 3, gy - 4); x.closePath(); x.fill(); x.fillStyle = '#ffffff'; x.fillRect(o.x + 7, gy - 16, o.w - 14, 4); x.fillRect(o.x + 9, gy - 24, o.w - 18, 3); }
-      else { let yy = gy; o.books.forEach((b, i) => { yy -= b.h; const bx = o.x + (o.w - b.w) / 2 + (i % 2 ? 2 : -1); x.fillStyle = b.c; x.fillRect(bx, yy, b.w, b.h - 1); x.fillStyle = 'rgba(255,255,255,.55)'; x.fillRect(bx + 3, yy + 3, b.w - 6, 1.5); }); }
-    }
-    const b = gy - g.y, run = g.st !== 'over', ph = Math.sin(g.frame / 55), air = g.y > 0;
-    x.strokeStyle = '#1d1d1d'; x.lineWidth = 3; x.lineCap = 'round'; x.beginPath(); x.moveTo(LX + 6, b - 24); x.quadraticCurveTo(LX - 8, b - 26 + (run ? ph * 3 : 0), LX - 6, b - 38); x.stroke();
-    x.fillStyle = '#008539'; x.beginPath(); x.arc(LX - 6, b - 39, 4.5, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#1d1d1d';
-    const legs = [[LX + 8, 1], [LX + 15, -1], [LX + 28, -1], [LX + 35, 1]];
-    legs.forEach(([lx, s]) => { const lift = air ? 3 : run ? Math.max(0, ph * s) * 5 : 0; x.fillRect(lx, b - 12, 6, 12 - lift); });
-    x.beginPath(); x.roundRect ? x.roundRect(LX + 4, b - 32, 40, 22, 10) : x.rect(LX + 4, b - 32, 40, 22); x.fill();
-    const hx = LX + 46, hy = b - 34;
-    x.fillStyle = '#008539'; for (let k = 0; k < 12; k++) { const a = k / 12 * Math.PI * 2; x.beginPath(); x.arc(hx + Math.cos(a) * 12, hy + Math.sin(a) * 12, 6.5, 0, Math.PI * 2); x.fill(); }
-    x.beginPath(); x.arc(hx, hy, 13, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#f7f8f8'; x.beginPath(); x.arc(hx + 2, hy + 1, 9, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#1d1d1d'; x.beginPath(); x.arc(hx + 5, hy - 2, g.st === 'over' ? 0.1 : 1.8, 0, Math.PI * 2); x.fill();
-    if (g.st === 'over') { x.lineWidth = 1.6; x.beginPath(); x.moveTo(hx + 3, hy - 4); x.lineTo(hx + 7, hy); x.moveTo(hx + 7, hy - 4); x.lineTo(hx + 3, hy); x.stroke(); }
-    x.beginPath(); x.moveTo(hx + 9, hy + 2); x.lineTo(hx + 12, hy + 3); x.lineTo(hx + 9, hy + 5); x.closePath(); x.fill();
-    const hi = ((this.state.boards ? this.state.boards.all : this.state.scores || [])[0] || {}).s || 0, pad = n => String(n).padStart(5, '0');
-    x.font = "700 14px Lato, sans-serif"; x.textAlign = 'right'; x.fillStyle = '#7c7c7d'; x.fillText('HI ' + pad(Math.max(hi, g.st === 'run' ? 0 : 0)), W - 92, 26); x.fillStyle = '#000000'; x.fillText(pad(g.score), W - 22, 26);
-    if (g.st !== 'ready') { x.textAlign = 'left'; x.fillStyle = '#008539'; x.font = "700 13px Lato, sans-serif"; x.fillText('LEVEL ' + (g.lvl || 1), 22, 26);
-      const left = g.st === 'run' ? Math.ceil((15000 - g.rt % 15000) / 1000) : 0; if (g.st === 'run') { x.fillStyle = '#e9ebeb'; x.fillRect(22, 34, 90, 4); x.fillStyle = '#008539'; x.fillRect(22, 34, 90 * (g.rt % 15000) / 15000, 4); } }
-    x.textAlign = 'center';
-    if (g.st === 'run' && g.flash > 0) { g.flash -= dt; const a = Math.min(1, g.flash / 500); x.globalAlpha = a; x.fillStyle = '#008539'; x.font = "700 30px Neuton, 'Times New Roman', serif"; x.fillText('Level ' + g.lvl, W / 2, H / 2 - 20); x.font = "700 12px Lato, sans-serif"; x.fillText('FASTER', W / 2, H / 2); x.globalAlpha = 1; }
-    if (g.st === 'ready') { x.fillStyle = '#000000'; x.font = "700 18px Lato, sans-serif"; x.fillText('Press Space or tap to run', W / 2, H / 2 - 18); x.font = "400 14px Lato, sans-serif"; x.fillStyle = '#444546'; x.fillText('Jump the book stacks and cones. New level every 15 seconds.', W / 2, H / 2 + 6); }
-    if (g.st === 'over') { x.fillStyle = '#000000'; x.font = "700 20px Neuton, 'Times New Roman', serif"; x.fillText('Nice run! ' + g.score + ' points · Level ' + (g.lvl || 1), W / 2, H / 2 - 18); x.font = "400 14px Lato, sans-serif"; x.fillStyle = '#444546'; x.fillText('Space or tap to go again', W / 2, H / 2 + 6); }
-  }
-  startReveal(email) {
-    (this._rvT || []).forEach(clearTimeout); this._rvEmail = email;
-    this.setState({ rvOn: true, rv: 0 });
-    this._rvT = [[1, 900], [2.5, 3400], [3, 4100], [4, 5400], [5, 6700], [6, 8000], [7, 9300]].map(([p, t]) => setTimeout(() => this.setState({ rv: p }), t));
-    this._rvT.push(setTimeout(() => this.startConfetti(), 8500));
-    this._rvT.push(setTimeout(() => this.endReveal(), 13600));
-  }
-  cfRef = React.createRef();
-  startConfetti() {
-    const c = this.cfRef.current; if (!c) return;
-    const dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight; c.width = W * dpr; c.height = H * dpr;
-    const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const cols = ['#008539', '#008539', '#008539', '#00a347', '#008539', '#ffffff', '#ffffff', '#ffffff', '#008539', '#ffffff', '#1d1d1d', '#d9dbdb'], P = [], rnd = (a, b) => a + Math.random() * (b - a);
-    const add = (n, ox, oy, a0, a1, s0, s1) => { for (let i = 0; i < n; i++) { const a = rnd(a0, a1), s = rnd(s0, s1);
-      P.push({ x: ox, y: oy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, r: rnd(0, 6.28), vr: rnd(-0.3, 0.3), w: rnd(6, 12), h: rnd(9, 18), c: cols[i % cols.length], t: Math.random() < 0.22 ? 'o' : 'r', wob: rnd(0, 6.28) }); } };
-    add(170, W / 2, H * 0.48, 0, Math.PI * 2, 6, 19);                       // burst from where the countdown was
-    add(90, -10, H * 0.95, -Math.PI * 0.42, -Math.PI * 0.2, 16, 27);        // cannon, bottom left
-    add(90, W + 10, H * 0.95, -Math.PI * 0.8, -Math.PI * 0.58, 16, 27);     // cannon, bottom right
-    this._rvT.push(setTimeout(() => add(140, W / 2, -20, Math.PI * 0.25, Math.PI * 0.75, 2, 6), 700));   // second wave rains from the top
-    const t0 = performance.now();
-    const step = now => {
-      const el = now - t0; x.clearRect(0, 0, W, H); let alive = 0;
-      for (const q of P) {
-        q.vx *= 0.985; q.vy = q.vy * 0.985 + 0.32; q.x += q.vx + Math.sin(q.wob += 0.08) * 0.6; q.y += q.vy; q.r += q.vr;
-        if (q.y > H + 30) continue; alive++;
-        x.save(); x.globalAlpha = el > 3800 ? Math.max(0, 1 - (el - 3800) / 1200) : 1; x.translate(q.x, q.y); x.rotate(q.r); x.fillStyle = q.c;
-        if (q.t === 'o') { x.beginPath(); x.arc(0, 0, q.w / 2, 0, 6.28); x.fill(); } else { x.scale(1, Math.cos(q.wob)); x.fillRect(-q.w / 2, -q.h / 2, q.w, q.h); if (q.c === '#ffffff') { x.strokeStyle = '#b5b9b9'; x.lineWidth = 1; x.strokeRect(-q.w / 2, -q.h / 2, q.w, q.h); } }
-        x.restore();
-      }
-      if ((alive || el < 900) && el < 5000) this._cf = requestAnimationFrame(step); else x.clearRect(0, 0, W, H);
-    };
-    cancelAnimationFrame(this._cf); this._cf = requestAnimationFrame(step);
-  }
-  endReveal() {
-    cancelAnimationFrame(this._cf);
-    (this._rvT || []).forEach(clearTimeout); this._rvT = [];
-    if (this._rvEmail) try { localStorage.setItem('sfhub_reveal_' + this._rvEmail, '1'); } catch (e) {}
-    this.setState({ rvOn: false, rv: 0 });
-  }
-  revealTree(p) {
-    const e = React.createElement, open = p >= 6, fade = p >= 7, talk = p >= 1 && p < 2.5;
-    const folds = 'repeating-linear-gradient(90deg, #003d1a 0px, #006b2e 18px, #008539 30px, #006b2e 42px, #003d1a 60px)';
-    const curtain = side => e('div', { key: side, style: { position: 'absolute', top: 0, bottom: 0, [side === 'l' ? 'left' : 'right']: 0, width: '50.5%', background: folds,
-      boxShadow: side === 'l' ? 'inset -30px 0 40px rgba(0,0,0,.45)' : 'inset 30px 0 40px rgba(0,0,0,.45)', transformOrigin: side === 'l' ? 'left center' : 'right center',
-      transform: open ? 'scaleX(0.1)' : 'scaleX(1)', opacity: fade ? 0 : 1, transition: 'transform 2s cubic-bezier(.72,0,.24,1), opacity 1.6s ease' } });
-    const n = p >= 3 && p <= 5 ? 6 - p : null, ring = 'min(62vw, 62vh)', onCurtain = { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' };
-    return e('div', { role: 'dialog', 'aria-label': 'Welcome introduction', style: { position: 'fixed', inset: 0, zIndex: 9999, overflow: 'hidden', pointerEvents: fade ? 'none' : 'auto', fontFamily: "'Lato',sans-serif" } },
-      e('style', null, '@keyframes sfCount{0%{opacity:0;transform:scale(1.7)}14%{opacity:1;transform:scale(1)}82%{opacity:1;transform:scale(.97)}100%{opacity:0;transform:scale(.9)}}@keyframes sfRing{0%{opacity:.9;transform:scale(.55)}100%{opacity:0;transform:scale(1.5)}}'),
-      e('div', { style: { position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, #ffffff 0%, #ffffff 55%, #f4fbf6 100%)', opacity: fade ? 0 : 1, transition: 'opacity 3s cubic-bezier(.25,.6,.3,1)' } }),
-      curtain('l'), curtain('r'),
-      e('div', { style: { position: 'absolute', left: 0, right: 0, top: 0, height: '12vh', minHeight: 70, background: 'linear-gradient(#002912, #004d21)', boxShadow: '0 10px 30px rgba(0,0,0,.45)',
-        transform: open ? 'translateY(-110%)' : 'none', transition: 'transform 1.7s cubic-bezier(.72,0,.24,1) .1s' } }),
-      e('div', { style: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', padding: '18px 22px', background: '#ffffff', borderRadius: 18, boxShadow: '0 16px 50px rgba(0,0,0,.45)',
-        opacity: p >= 1 ? 0 : 1, transition: 'opacity .6s ease' } }, e('img', { src: 'assets/sf-logo.png', alt: 'South Fayette', style: { height: 'clamp(60px,9vw,96px)', display: 'block' } })),
-      e('div', { style: { ...onCurtain, padding: '0 8vw', textAlign: 'center', color: '#ffffff', font: "700 clamp(40px,6.4vw,92px)/1.08 'Neuton','Times New Roman',serif", textWrap: 'balance',
-        textShadow: '0 4px 30px rgba(0,0,0,.5)', opacity: talk ? 1 : 0, transform: talk ? 'translateY(0)' : 'translateY(14px)', transition: 'opacity 1s ease, transform 1.2s ease' } }, 'Are you ready for the future?'),
-      n ? e('div', { key: 'n' + n, style: { ...onCurtain, color: '#ffffff', font: "700 clamp(140px,24vw,320px)/1 'Neuton','Times New Roman',serif", textShadow: '0 8px 50px rgba(0,0,0,.45)', animation: 'sfCount 1.3s ease-out forwards' } }, String(n)) : null,
-      n ? e('div', { key: 'r' + n, style: { position: 'absolute', left: '50%', top: '50%', width: ring, height: ring, marginLeft: 'calc(' + ring + ' / -2)', marginTop: 'calc(' + ring + ' / -2)', borderRadius: '50%', border: '8px solid rgba(255,255,255,.85)', animation: 'sfRing 1.3s ease-out forwards', pointerEvents: 'none' } }) : null,
-      n ? e('div', { key: 'k', style: { position: 'absolute', left: 0, right: 0, bottom: '14vh', textAlign: 'center', font: "700 13px 'Lato',sans-serif", letterSpacing: '3px', color: '#ffffff', pointerEvents: 'none' } }, 'GET READY') : null,
-      e('canvas', { ref: this.cfRef, style: { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' } }),
-      p < 6 ? e('button', { onClick: () => this.endReveal(), style: { position: 'absolute', right: 22, bottom: 20, padding: '8px 16px', border: '1px solid rgba(255,255,255,.7)', borderRadius: 999,
-        background: 'rgba(0,0,0,.3)', color: '#ffffff', font: "700 13px 'Lato',sans-serif", cursor: 'pointer' } }, 'Skip intro') : null);
-  }
-  componentWillUnmount() { cancelAnimationFrame(this._cf); (this._rvT || []).forEach(clearTimeout); window.removeEventListener('keydown', this._esc); cancelAnimationFrame(this._raf); clearInterval(this._lb); clearInterval(this._qi); clearTimeout(this._qt); window.removeEventListener('keydown', this._key); clearInterval(this._lv); document.removeEventListener('visibilitychange', this._vis); window.removeEventListener('resize', this._rs); }
-  componentDidMount() { const hs = location.hash || ''; if (new URLSearchParams(location.search).has('reveal') || /reveal/.test(hs)) setTimeout(() => this.startReveal(null), 300);
-    window.__sfReveal = () => { this.demo = true; this.setState({}); this.startReveal(null); }; this._esc = e => { if (e.key === 'Escape' && this.state.rvOn) this.endReveal(); }; window.addEventListener('keydown', this._esc); this.demo = new URLSearchParams(location.search).has('demo') || /demo|reveal/.test(location.hash || ''); this.gameInit(); this._rs = () => this.setState({ vw: window.innerWidth }); window.addEventListener('resize', this._rs); this._rs(); if (!this.cfg.api) fetch('data/staff-schedules.json').then(r => r.json()).then(d => this.setState({ staffSched: d })).catch(() => {}); this.initAuth(); fetch('data/sfhs-calendar-2026-27.json').then(r => r.json()).then(d => this.setState({ calData: d })).catch(() => {}); }
-  renderVals() {
-    const S = this.state;
-    const tog = (k, i) => () => this.setState(s => ({ [k]: { ...s[k], [i]: !s[k][i] } }));
-    const lib = {
-      regular: ['Regular', [['7:20','8:06'],['8:09','9:04'],['9:07','9:53'],['9:56','10:42'],['10:45','11:31'],['11:34','12:20'],['12:23','1:09'],['1:12','1:58']].map((r, i) => { const m = t => { let [hh, mm] = t.split(':').map(Number); if (hh < 7) hh += 12; return hh * 60 + mm; }; return { label: 'P' + (i + 1), s: m(r[0]), e: m(r[1]), time: r[0] + ' – ' + r[1] }; })],
-      delay: ['2-Hour Delay', this.build('9:40', [30, 30, 30, 48, 30, 30, 30, 30])],
-      early: ['Early Dismissal', this.build('7:40', [28, 28, 28, 28, 28, 28, 28, 28])],
-      assembly: ['Assembly', this.build('7:40', [40, 40, 40, 40, 48, 40, 40, 40], { 3: ['Assembly', 50] })],
-      activity: ['Activity Period', this.build('7:40', [44, 44, 44, 44, 48, 44, 44, 44], { 4: ['Activity', 30] })]
-    };
-    const cur = lib[S.sched];
-    const now = S.L ? new Date().getHours() * 60 + new Date().getMinutes() : 9 * 60 + 30;
-    const live = S.sched === 'regular';
-    const nextIdx = live ? cur[1].findIndex(p => p.s > now) : -1;
-    const periods = cur[1].map((p, i) => {
-      const isNow = live && p.s <= now && p.e > now, past = live && p.e <= now, next = i === nextIdx;
-      return { label: p.x ? p.label : 'Period ' + p.label.slice(1), time: p.time, tag: isNow ? 'NOW' : next ? 'NEXT' : '',
-        bg: isNow ? 'var(--via)' : p.x ? 'var(--panel3)' : 'var(--bg)', bd: isNow ? 'var(--accent)' : 'var(--border2)',
-        lc: past ? 'var(--fainter)' : 'var(--bright)', tc: past ? 'var(--fainter)' : 'var(--muted)' };
-    });
-    const schedTabs = Object.keys(lib).map(k => ({ name: lib[k][0], go: () => this.setState({ sched: k }),
-      bg: k === S.sched ? 'var(--accent)' : 'var(--panel)', fg: k === S.sched ? 'var(--panel)' : 'var(--muted)', bd: k === S.sched ? 'var(--accent)' : 'var(--border3)' }));
-    const annRaw = S.L ? S.L.announcements : [
-      { cat: 'BUILDING', title: 'Front lot closed until 1:00', body: 'Paving crew in the front lot. Staff park in the stadium lot and enter through Door 14.', by: 'Mr. Alvarez · 7:20', pri: true, link: 'https://www.southfayette.org' },
-      { cat: 'ATTENDANCE', title: 'Bus 12 running 15 minutes late', body: 'Students on Bus 12 are excused. Mark them tardy-excused, not absent.', by: 'Attendance · 7:15' },
-      { cat: 'EVENTS', title: 'Picture retakes moved to Monday', body: 'Students who missed photos will be called down by last name during Period 2 on Monday.', by: 'Main Office · 8:02' },
-      { cat: 'STAFF', title: 'Faculty meeting moved to the LGI', body: 'Today\'s 2:15 meeting is in the LGI room instead of the library.', by: 'Dr. Whitman · 8:30' }
-    ];
-    const segs = (text, L) => { const mk = (t, u) => ({ t, u: u || '', isLink: !!u, isText: !u });
-      if (L && L.length) return L.map(([t, u]) => mk(t, u && !/^(https?:|mailto:|tel:)/i.test(u) ? 'https://' + u : u));
-      const out = []; String(text || '').split(/((?:https?:\/\/|www\.)[^\s<>"]+[^\s<>".,;:!?)])/i).forEach((p, i) => { if (!p) return; out.push(i % 2 ? mk(p, /^www\./i.test(p) ? 'https://' + p : p) : mk(p)); }); return out; };
-    const announcements = annRaw.map((a, i) => ({ ...a, i, bodySegs: segs(a.body, a.bodyL), pri: !!a.pri, hasLink: !!a.link, noLink: !a.link, link: a.link || '',
-      bg: a.pri ? '#f1faf4' : 'var(--bg)', bd: a.pri ? '#008539' : 'var(--border2)', anim: a.pri ? 'sfGlow 2.6s ease-in-out infinite' : 'none' }))
-      .sort((x, y) => (y.pri - x.pri) || (x.i - y.i));
-    const testsRaw = S.L ? S.L.tests : [['Ms. Patel', 'Rm 204', 'Chem unit test', [1, 2, 6]], ['Mr. Okafor', 'Rm 118', 'AP US History DBQ', [3, 4]], ['Mrs. Lindqvist', 'Library B', 'Keystone retake', [2, 3, 4, 5]], ['Mr. Haas', 'Rm 311', 'Spanish III oral', [7, 8]]];
-    const tests = testsRaw.map(([who, room, what, ps]) => ({ who, room, what, cells: [1, 2, 3, 4, 5, 6, 7, 8].map(n => ({ bg: ps.includes(n) ? 'var(--accent)' : 'var(--bg)', bd: ps.includes(n) ? 'var(--accent)' : 'var(--border2)' })) }));
-    const roster = S.L ? S.L.roster : [
-      ['Carnegie Science Center', 'Mr. Brooks', 'Chen', 'Ava', 11], ['Carnegie Science Center', 'Mr. Brooks', 'Kim', 'Jonah', 11], ['Carnegie Science Center', 'Mr. Brooks', 'Lee', 'Marcus', 11],
-      ['Carnegie Science Center', 'Ms. Tran', 'Nguyen', 'Lily', 10], ['Carnegie Science Center', 'Ms. Tran', 'Ortiz', 'Sam', 10], ['Carnegie Science Center', 'Ms. Tran', 'Patel', 'Priya', 11],
-      ['Model UN at Pitt', 'Mrs. Duda', 'Fisher', 'Noah', 12], ['Model UN at Pitt', 'Mrs. Duda', 'Moore', 'Ethan', 9], ['Model UN at Pitt', 'Mrs. Duda', 'Ramos', 'Sofia', 12]
-    ];
-    const tripsRaw = S.L ? S.L.trips : [
-      ['Carnegie Science Center', 'Physics 1 · Pittsburgh', '9:15', '1:45', 'Mr. Brooks, Ms. Tran', 'Left 9:20'],
-      ['Model UN at Pitt', 'Social Studies club', '10:30', '3:15', 'Mrs. Duda', 'LEAVES 10:30']
-    ];
-    const tripsAll = tripsRaw.map(([name, where, out, back, teachers, status], i) => { const st = roster.filter(r => r[0] === name); return { name, where, out, back, teachers, status: status.toUpperCase(), students: st.map(r => r[2] + ', ' + r[3] + ' · Gr ' + r[4] + ' · ' + r[1]), count: st.length, open: !!S.open[i], caret: S.open[i] ? '▴' : '▾', toggle: tog('open', i) }; });
-    const tq = (S.tripQ || '').trim().toLowerCase();
-    const trips = !tq ? tripsAll : tripsAll.map(f => { const m = f.students.filter(s => s.split(' · ')[0].toLowerCase().split(/[ ,]+/).some(w => w.startsWith(tq)) || s.toLowerCase().startsWith(tq)); return { ...f, students: m, open: true, caret: '▴', count: m.length + ' of ' + f.count }; }).filter(f => f.students.length);
-    const tripNoMatch = !!tq && !trips.length;
-    const tv = S.tripView || 'trip';
-    const tripTabs = [['trip', 'By trip'], ['students', 'All students']].map(([k, label]) => ({ label, go: () => this.setState({ tripView: k }), bg: k === tv ? 'var(--panel)' : 'transparent', fg: k === tv ? 'var(--accent)' : 'var(--dim)' }));
-    const backOf = Object.fromEntries(tripsRaw.map(t => [t[0], t[3]]));
-    let stuRows = roster.map(r => ({ trip: r[0], last: r[2], first: r[3], grade: r[4], back: backOf[r[0]] }));
-    if (tq) stuRows = stuRows.filter(s => s.last.toLowerCase().startsWith(tq) || s.first.toLowerCase().startsWith(tq));
-    const sk = S.sortKey || 'last', sd = S.sortDir || 1;
-    const toMin = t => { let [hh, mm] = t.split(':').map(Number); if (hh < 7) hh += 12; return hh * 60 + mm; };
-    const val = (s, k) => k === 'back' ? toMin(s.back) : s[k];
-    stuRows.sort((x, y) => { const a = val(x, sk), b = val(y, sk); return (a > b ? 1 : a < b ? -1 : x.last.localeCompare(y.last)) * sd; });
-    const stuHead = [['last', 'LAST'], ['first', 'FIRST'], ['grade', 'GR'], ['trip', 'TRIP'], ['back', 'BACK']].map(([k, label]) => ({ label, arrow: k === sk ? (sd > 0 ? '▲' : '▼') : '', fg: k === sk ? 'var(--accent)' : 'var(--faint)', go: () => this.setState(s => ({ sortKey: k, sortDir: (s.sortKey || 'last') === k ? -(s.sortDir || 1) : 1 })) }));
-    const stuCount = stuRows.length + (tq ? ' matching students' : ' students on trips today') + ' · click a column to sort';
-    const faqRaw = S.L ? S.L.faq : [
-      ['Do clubs still meet after school today?', 'Yes. All after-school activities run on their normal times. Only the faculty meeting location has changed.'],
-      ['What if my coverage assignment looks wrong?', 'Call the main office before first period. The office fixes the Coverage tab and the hub updates within a minute.'],
-      ['Where do I send students for picture retakes?', 'Nowhere today. Retakes are Monday; the office will call students down.']
-    ];
-    const faq = faqRaw.map(([q, a, aL], i) => ({ q, a, aSegs: segs(a, aL), open: !!S.faq[i], caret: S.faq[i] ? '−' : '+', toggle: tog('faq', i) }));
-    const CAL = (() => {
-      const D = s => { const [m, d, y] = s.split('/').map(Number); return new Date(y, m - 1, d); };
-      const off = new Set();
-      const range = (a, b) => { for (let t = D(a); t <= D(b); t.setDate(t.getDate() + 1)) off.add(t.toDateString()); };
-      ['9/7/2026', '10/12/2026', '10/30/2026', '1/18/2027', '2/15/2027', '5/31/2027'].forEach(s => off.add(D(s).toDateString()));
-      (this.state.calData || []).filter(e => e.kind === 'noschool').forEach(e => { const [yy, mo, dd] = e.date.split('-').map(Number); off.add(new Date(yy, mo - 1, dd).toDateString()); });
-      range('11/23/2026', '11/30/2026'); range('12/23/2026', '1/1/2027'); range('3/24/2027', '3/30/2027');
-      const isSchool = t => t.getDay() % 6 !== 0 && !off.has(t.toDateString()) && t >= D('8/26/2026') && t <= D('6/9/2027');
-      const between = (a, b) => { let n = 0; const t = new Date(a); t.setDate(t.getDate() + 1); for (; t <= b; t.setDate(t.getDate() + 1)) if (isSchool(t)) n++; return n; };
-      const marks = [['9/30/2026', 'Interim report cards', 'interim'], ['10/29/2026', 'End of 1st grading period', 'q', '8/26/2026'], ['12/3/2026', 'Interim report cards', 'interim'], ['1/15/2027', 'End of 2nd grading period', 'q', '10/30/2026'], ['2/19/2027', 'Interim report cards', 'interim'], ['3/23/2027', 'End of 3rd grading period', 'q', '1/16/2027'], ['4/27/2027', 'Interim report cards', 'interim'], ['6/9/2027', 'End of 4th grading period · last day', 'q', '3/24/2027']];
-      const breaks = [['11/23/2026', '11/30/2026', 'Thanksgiving Break', 'Conferences 11/23–25, back Tue 12/1', '9/8/2026'], ['12/23/2026', '1/1/2027', 'Winter Break', 'Back Mon 1/4', '12/1/2026'], ['3/24/2027', '3/30/2027', 'Spring Break', 'Back Wed 3/31', '1/4/2027'], ['6/10/2027', '8/20/2027', 'Summer', 'Last student day Wed 6/9', '3/31/2027']];
-      return { D, isSchool, between, marks, breaks };
-    })();
-    const calToday = CAL.D(S.day || '10/20/2026');
-    const fmtD = t => t.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    const school = S.cdMode === 'school';
-    const nextQ = CAL.marks.find(m => m[2] === 'q' && CAL.D(m[0]) >= calToday);
-    const nextI = CAL.marks.find(m => m[2] === 'interim' && CAL.D(m[0]) >= calToday);
-    const qEnd = CAL.D(nextQ[0]), qStart = CAL.D(nextQ[3]);
-    const nb = CAL.breaks.find(b => CAL.D(b[0]) > calToday), bStart = CAL.D(nb[0]), bFrom = CAL.D(nb[4]);
-    const lastBefore = new Date(bStart); do lastBefore.setDate(lastBefore.getDate() - 1); while (!CAL.isSchool(lastBefore));
-    const cal = (a, b) => Math.round((b - a) / 864e5);
-    const pct = (a, b) => Math.max(0, Math.min(100, Math.round(100 * cal(a, calToday) / Math.max(1, cal(a, b))))) + '%';
-    const inc = CAL.isSchool(calToday) ? 1 : 0;
-    const qN = school ? CAL.between(calToday, qEnd) + inc : cal(calToday, qEnd) + 1;
-    const bN = school ? CAL.between(calToday, lastBefore) + inc : cal(calToday, bStart);
-    const unit = school ? 'SCHOOL DAYS' : 'DAYS';
-    const qTotal = CAL.between(qStart, qEnd) + 1, qDone = CAL.between(qStart, calToday) + 1;
-    const cdQ = { n: qN, unit: school ? 'SCHOOL DAYS LEFT' : 'DAYS LEFT', title: nextQ[1], date: fmtD(qEnd), pct: Math.round(100 * qDone / qTotal) + '%', progress: 'School day ' + qDone + ' of ' + qTotal, range: fmtD(qStart) + ' – ' + fmtD(qEnd) };
-    const iD = CAL.D(nextI[0]);
-    const cdInterim = 'Report cards ' + fmtD(iD) + ' · ' + (school ? (CAL.between(calToday, iD) + inc) + ' school days left' : (cal(calToday, iD) + 1) + ' days left') + ', including today';
-    const apD = CAL.D('5/3/2027'), apLast = CAL.D('4/30/2027');
-    const cdSmall = [
-      { n: bN, unit: school ? 'SCHOOL DAYS LEFT' : 'DAYS', kicker: 'NEXT BREAK', title: nb[2], short: nb[2], date: fmtD(bStart) + ' – ' + fmtD(CAL.D(nb[1])).replace(/^\w+, /, ''), sub: nb[3] },
-      { n: school ? CAL.between(calToday, apLast) + inc : cal(calToday, apD), unit: school ? 'SCHOOL DAYS LEFT' : 'DAYS', kicker: 'AP TESTING', title: 'AP Exams begin', short: 'AP Exams', date: 'Mon, May 3 – Fri, May 14', sub: 'late testing May 17–21' }
-    ];
-    const cdModes = [['school', 'School days'], ['cal', 'Calendar days']].map(([k, label]) => ({ label, go: () => this.setState({ cdMode: k }), bg: S.cdMode === k ? 'var(--accent)' : 'transparent', fg: S.cdMode === k ? '#ffffff' : 'var(--muted)' }));
-    const regT = lib.regular[1];
-    const SS = S.staffSched || [];
-    const covStatus = (v, i, absent) => { const nm = String(v || '').replace(/^Duty:\s*/, '').trim(); if (!nm || nm === 'NA' || nm === 'Lunch' || nm.startsWith('→')) return 'none';
-      const s = SS.find(x => x.NAME === nm.toUpperCase()); if (!s) return 'sub'; const c = s.per[i] || { kd: 'EMPTY', v: '' };
-      if (absent && new RegExp('w\\/\\s*' + absent, 'i').test(c.v)) return 'coteach'; if (['DUTY', 'ENGAGEMENT', 'SAP'].includes(c.kd)) return 'pulled'; return 'conflict'; };
-    const pulled = [];
-    const C = (g, who, room, type, cells, x) => ({ g, who, room, type, cells, ...(x || {}) });
-    const E = Array(8).fill('');
-    const covRaw = S.L ? S.L.coverage : [
-      C('FULL DAY', 'Endy', 'AC103', 'Full day', E, { span: 'Full-day sub: Phhoennik', sub: 'Phhoennik' }),
-      C('FULL DAY', 'Mannarino', 'FA205', 'Full day', ['Yeaman', 'Yeaman', 'Yeaman', 'Lunch', 'Yeaman', 'Yeaman', 'Yeaman', 'NA']),
-      C('FULL DAY', 'Pappas', 'AB205', 'Full day', ['Pervez', 'NA', 'Pervez', 'Pervez', 'Lunch', 'Pervez', 'Pervez', 'Pervez']),
-      C('FULL DAY', 'Rogowicz', 'AC203', 'Full day', ['Medich', 'Medich', 'Dorsey', 'Duty: Medich', 'Lunch', 'Duty: Medich', 'Stewart', 'Medich']),
-      C('FULL DAY', 'Salvucci', 'AC209', 'Full day', ['NA', 'Humlan', 'Humlan', 'Humlan', 'Humlan', 'Lunch', 'Humlan', 'Humlan']),
-      C('FULL DAY', 'Pfeifer', '', 'Full day', E, { span: 'Absent all day' }),
-      C('FULL DAY', 'Mayo', '', 'Full day', E, { span: 'Absent all day' }),
-      C('HALF DAY / MEETING', 'Smyczek', 'AC211', 'Meeting', ['', 'Syeda', '', '', '', '', '', ''], { note: 'Out 8:15 – 9:00', out: '8:15 – 9:00' }),
-      C('HALF DAY / MEETING', 'Popeck', 'AA111', 'Half day', ['Pedzwater', 'NA', 'Pedzwater', 'Pedzwater', 'Pedzwater', '', '', '']),
-      C('HALF DAY / MEETING', 'Winans', 'FA107', 'Meeting', ['', '', '', '', '', '', 'Syeda', '']),
-      C('HALF DAY / MEETING', 'Hobbs', 'AA117', 'Half day', ['', '', '', 'Simonette', 'Simonette', 'Lunch', 'Simonette', 'Simonette']),
-      C('HALF DAY / MEETING', 'Rudy', 'AA112', 'Meeting', ['', '', '', '', '', '', 'Kennedy', ''], { note: 'Out 11:55 – 1:00', out: '11:55 – 1:00' }),
-      C('BUILDING SUBS', 'Kennedy', '', 'Building sub', ['', '', '', 'Conf. Center', 'Lunch', 'Conf. Center', '→ Rudy AA112', '']),
-      C('BUILDING SUBS', 'Syeda', '', 'Building sub', ['', '→ Smyczek AC211', '', '', '', 'Lunch', '→ Winans FA107', ''])
-    ];
-    const nowIdx = live ? regT.findIndex(x => x.s <= now && x.e > now) : -1;
-    const cellStyle = (v, i, absent) => { const st = covStatus(v, i, absent); const isP = st === 'pulled', ct = st === 'coteach', cf = st === 'conflict';
-      return { v: ct ? v + ' · CT' : cf ? v + ' · !' : v, bg: isP ? 'var(--panel3)' : cf ? 'var(--bright)' : i === nowIdx ? 'var(--via)' : 'transparent', fg: cf ? '#ffffff' : isP ? 'var(--accent)' : (v === 'NA' || v === 'Lunch') ? 'var(--fainter)' : v.startsWith('→') || ct ? 'var(--muted)' : 'var(--text)', fw: isP || cf ? 700 : 400, fs: v === 'Lunch' ? 'italic' : 'normal' }; };
-    const covGroups = ['FULL DAY', 'HALF DAY / MEETING', 'BUILDING SUBS'].map(g => ({ label: g, rows: covRaw.filter(r => r.g === g).map(r => ({ who: r.who, room: r.room || '—', note: r.note || (r.g === 'BUILDING SUBS' ? 'Building sub' : ''), span: !!r.span, spanText: r.span || '', cells: r.span ? [] : r.cells.map((v, i) => cellStyle(v, i, r.who)) })) }));
-    const covHead = regT.map((x, i) => ({ n: 'P' + (i + 1), t: x.time, fg: i === nowIdx ? 'var(--accent)' : 'var(--faint)', bg: i === nowIdx ? 'var(--via)' : 'transparent' }));
-    const cq = (S.covQ || '').trim().toLowerCase();
-    const covHits = [];
-    if (cq.length >= 2) covRaw.forEach(r => { if (r.span) return; r.cells.forEach((v, i) => {
-      if (!v || v === 'NA' || v === 'Lunch' || v.startsWith('→')) return;
-      if (r.g === 'BUILDING SUBS') { if (r.who.toLowerCase().startsWith(cq)) covHits.push({ i, p: 'Period ' + (i + 1), time: regT[i].time, what: v, room: '' }); return; }
-      const nm = v.replace('Duty: ', '');
-      if (nm.toLowerCase().startsWith(cq)) covHits.push({ i, p: 'Period ' + (i + 1), time: regT[i].time, what: covStatus(v, i, r.who) === 'coteach' ? 'Co-teacher ' + r.who + ' is out. Teach your shared class on your own' : (v.startsWith('Duty') ? 'Lunch duty for ' : 'Cover ') + r.who, room: r.room });
-    }); });
-    covHits.sort((a, b) => a.i - b.i);
-    const covTally = { pulled: new Set(), coteach: 0 }; covRaw.forEach(r => { if (r.span || r.g === 'BUILDING SUBS') return; r.cells.forEach((v, i) => { const st = covStatus(v, i, r.who); if (st === 'pulled') covTally.pulled.add(v.replace(/^Duty:\s*/, '')); if (st === 'coteach') covTally.coteach++; }); });
-    const covPulled = cq.length >= 2 && [...covTally.pulled].some(n => n.toLowerCase().startsWith(cq));
-    const covSummary = covTally.pulled.size + ' PULLED FROM DUTY · ' + covTally.coteach + ' CO-TEACHER';
-    const teams = S.L ? S.L.teams : { 'Girls Volleyball': [['Alvarez', 'Mia', 11], ['Brennan', 'Kate', 12], ['Cho', 'Hannah', 10], ['Davis', 'Rory', 11], ['Evans', 'Lena', 9], ['Ferraro', 'Gia', 12]], 'Boys Golf': [['Grant', 'Luke', 12], ['Hughes', 'Owen', 11], ['Iyer', 'Dev', 10], ['Jansen', 'Cole', 12]] };
-    const earlyRaw = S.L ? S.L.early : [['Girls Volleyball', 'at Peters Township', '1:05', '1:15', 'Ms. Kerr'], ['Boys Golf', 'WPIAL qualifier · Southpointe', '11:31', '11:40', 'Mr. Hall']];
-    const early = earlyRaw.map(([team, where, dismiss, leaves, coach], i) => { const st = teams[team] || []; return { team, where, dismiss, leaves, coach, count: st.length, students: st.map(s => s[0] + ', ' + s[1] + ' · Gr ' + s[2]), open: !!S.open['ed' + i], caret: S.open['ed' + i] ? '▴' : '▾', toggle: tog('open', 'ed' + i) }; });
-    const covMobile = covRaw.filter(r => r.g !== 'BUILDING SUBS').map(r => ({ a: r.who + (r.room ? ' · ' + r.room : ''), b: r.span ? r.span : [...new Set(r.cells.filter(v => v && v !== 'NA' && v !== 'Lunch').map(v => v.replace('Duty: ', '')))].join(', ') + (r.note ? ' · ' + r.note : '') }));
-    const msRowDefaults = { bg: 'var(--bg)', bd: 'var(--border2)', anim: 'none' };
-    const chRaw = S.L ? (S.L.chill || { by: '', ext: '', ann: '', days: [] }) : { by: 'Ms. Rivera', ext: '4127', room: 'AB210', ann: '', days: [['2026-10-19', 'Monday 10/19', 'Open to faculty only', ''], ['2026-10-20', 'Tuesday 10/20', 'Open', ''], ['2026-10-21', 'Wednesday 10/21', 'Open with a substitute chill educator', ''], ['2026-10-22', 'Thursday 10/22', 'Open', ''], ['2026-10-23', 'Friday 10/23', 'Closed', ''], ['2026-10-26', 'Monday 10/26', 'Closed', '']] };
-    const chT = new Date(), chKey = S.L && S.L.date ? S.L.date : chT.getFullYear() + '-' + String(chT.getMonth() + 1).padStart(2, '0') + '-' + String(chT.getDate()).padStart(2, '0');
-    const chDays = (chRaw.days || []).map(([k, day, status, det, detL]) => { const today = k === chKey, closed = /closed/i.test(status);
-      return { day: today ? day + ' · Today' : day, status, details: det ? ' · ' + det : '', detSegs: det ? [{ t: ' · ', u: '', isLink: false, isText: true }].concat(segs(det, detL)) : [], today, closed, bg: today ? 'var(--panel3)' : 'transparent', fg: closed ? 'var(--dim)' : today ? 'var(--accent)' : 'var(--bright)', fw: today ? '700' : '400' }; });
-    const chToday = chDays.find(d => d.today);
-    const chill = { days: chDays, noDays: !chDays.length, who: [chRaw.by ? 'Run by ' + chRaw.by : '', chRaw.room ? 'Room ' + chRaw.room : '', chRaw.ext ? 'Ext. ' + chRaw.ext : ''].filter(Boolean).join(' · '),
-      ann: chRaw.ann || 'None today', annSegs: chRaw.ann ? segs(chRaw.ann, chRaw.annL) : [{ t: 'None today', u: '', isLink: false, isText: true }], annBg: chRaw.ann ? 'var(--panel3)' : 'var(--bg)', annBd: chRaw.ann ? 'var(--accent)' : 'var(--border2)', annFg: chRaw.ann ? 'var(--bright)' : 'var(--dim)',
-      pill: chToday ? chToday.status.toUpperCase() : 'NOT POSTED', pillBg: !chToday ? 'var(--bg)' : chToday.closed ? '#1d1d1d' : '#008539', pillFg: chToday ? '#ffffff' : 'var(--dim)' };
-    const ms = [
-      ['cov', 'Coverage', covRaw.filter(r => r.g !== 'BUILDING SUBS').length + ' OUT', covMobile],
-      ['chill', 'Chill Room', chill.pill, (chRaw.ann ? [{ a: 'Announcement', b: chRaw.ann }] : []).concat(chDays.map(d => ({ a: d.day, b: d.status + d.details })), chill.who ? [{ a: chill.who, b: '' }] : [])],
-      ['ann', 'Announcements', String(announcements.length), announcements.map(a => ({ a: (a.pri ? '★ ' : '') + a.title, b: a.by, bg: a.bg, bd: a.bd, anim: a.anim }))],
-      ['sched', 'Full schedule', 'REGULAR · DAY B', lib.regular[1].map(p => ({ a: 'Period ' + p.label.slice(1), b: p.time }))],
-      ['test', 'Testing', '4 ROOMS', testsRaw.map(t => ({ a: t.room + ' · ' + t[0], b: 'Periods ' + t[3].join(', ') + ' · ' + t[2] }))],
-      ['trip', 'Field trips', '2', tripsRaw.map(t => ({ a: t[0], b: t[2] + ' → ' + t[3] + ' · ' + t[4] + ' · ' + roster.filter(r => r[0] === t[0]).length + ' students' }))],
-      ['ed', 'Early dismissals', '2', early.map(e => ({ a: e.team + ' · ' + e.count + ' students', b: 'Dismissed ' + e.dismiss + ' · bus ' + e.leaves + ' · ' + e.where }))],
-      ['faq', 'FAQ', '3', faqRaw.map(f => ({ a: f[0], b: f[1] }))]
-    ];
-    const mobileSections = ms.map(([k, title, meta, rows]) => ({ title, meta, rows, open: !!S.mob[k], caret: S.mob[k] ? '▴' : '▾', toggle: tog('mob', k) }));
-    const sheets = {
-      schedule: ['Schedule Days', 'List only the days that are NOT the default. Any date missing from this tab uses the default schedule from the Settings tab. Enter days weeks ahead; for a same-morning change (snow delay), add or edit today\'s row.', ['Date', 'Schedule ▾', 'Note shown in banner', 'Changed at', 'Changed by'], '110px 160px 1fr 110px 140px',
-        [['10/16/2026', 'Assembly', 'Homecoming pep rally, Period 4', '9/28 2:10 PM', 'Activities'], ['10/23/2026', 'Early Dismissal', 'Parent-teacher conferences', '8/20 9:00 AM', 'Main Office'], ['11/03/2026', 'No School', 'Election Day', '8/20 9:00 AM', 'Main Office'], ['11/25/2026', 'Early Dismissal', 'Thanksgiving break', '8/20 9:00 AM', 'Main Office']]],
-      ann: ['Announcements', 'Add a row for each announcement. "Show until" lets an item stay up for several days.', ['Date', 'Show until', 'Category ▾', 'Title', 'Details', 'Posted by', 'Link', 'Highlight Post'], '100px 100px 120px 230px 1fr 120px 150px 90px',
-        announcements.map(a => ['10/15/2026', '10/15/2026', a.cat[0] + a.cat.slice(1).toLowerCase(), a.title, a.body, a.by.split(' · ')[0], a.link, a.pri ? '☑' : '☐'])],
-      testing: ['Testing', 'Teachers or the testing coordinator add a row. Periods are checkboxes so the page can draw the grid.', ['Date', 'Teacher', 'Room', 'Test', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8'], '100px 140px 100px 1fr repeat(8,44px)',
-        testsRaw.map(([w, r, t, ps]) => ['10/15/2026', w, r, t, ...[1, 2, 3, 4, 5, 6, 7, 8].map(n => ps.includes(n) ? '☑' : '☐')])],
-      trips: ['Field Trips', 'One row per trip. Students can be a list or a link to a roster sheet.', ['Date', 'Trip', 'Destination', 'Teachers', 'Students', 'Leaves', 'Returns', 'Bus'], '100px 190px 170px 160px 1fr 70px 70px 60px',
-        tripsRaw.map(t => ['10/15/2026', t[0], t[1].split(' · ')[1] || 'Pittsburgh', t[4], 'See Trip Rosters tab (' + roster.filter(r => r[0] === t[0]).length + ')', t[2], t[3], 'Bus ' + (t[0].length % 9 + 1)])],
-      rosters: ['Trip Rosters', 'One row per student. Trip leaders export their class list from the SIS (or a Google Form sign-up) and paste the name columns here. Trip is a dropdown that reads the Field Trips tab, so names always match.', ['Trip ▾', 'Trip teacher ▾', 'Last name', 'First name', 'Grade ▾'], '240px 160px 160px 160px 90px',
-        roster.map(r => [r[0], r[1], r[2], r[3], String(r[4])])],
-      faq: ['FAQ', 'Questions the office expects that day. Leave dates blank to keep one up permanently.', ['Show from', 'Show until', 'Question', 'Answer'], '100px 100px 300px 1fr',
-        faqRaw.map(f => ['10/15/2026', '10/15/2026', f[0], f[1]])],
-      lib: ['Schedules', 'Set up once. Bell times for each of the 5 schedules; the Daily Schedule tab refers to these by name.', ['Schedule', 'Block', 'Start', 'End'], '180px 120px 100px 100px 1fr',
-        lib.regular[1].slice(0, 5).map(p => ['Regular', 'Period ' + p.label.slice(1), ...p.time.split(' – '), '']).concat([['2-Hour Delay', 'Period 1', '9:40', '10:10', ''], ['…', '', '', '', '']])],
-      settings: ['Settings', 'Admin sets these once a year. The default schedule applies to every school day unless Schedule Days lists something else.', ['Setting', 'Value', 'What it does'], '220px 220px 1fr',
-        [['Default schedule', 'Regular ▾', 'Used on any date not listed on Schedule Days'], ['A Day anchor', '10/14/2026 (an A Day)', 'Office sets one known date; every school day after alternates A/B. Change it anytime the rotation shifts.'], ['Weekends', 'No School', 'Saturdays and Sundays are skipped automatically'], ['School year', '8/24/2026 – 6/9/2027', 'Page shows "No school" outside these dates'], ['Editors', 'Main Office, Attendance, Counseling', 'Everyone else can view only']]]
-    };
-    Object.assign(sheets, {
-      coverage: ['Coverage', 'Main office. One row per teacher out, one column per period: type who covers. NA = no class, Lunch = the coverer\'s lunch, "Duty: Name" = lunch duty. Building subs get their own rows. Replaces the morning coverage email.', ['Date', 'Teacher out', 'Room', 'Type ▾', 'Time out', 'Full-day sub', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8'], '96px 110px 70px 110px 100px 110px repeat(8,96px)',
-        covRaw.map(r => ['10/15/2026', r.who, r.room, r.type, r.out || '', r.sub || '', ...(r.span ? E : r.cells)]).concat([['10/15/2026', 'Quirk', '', 'No coverage', '', '', ...E]])],
-      early: ['Early Dismissals', 'Athletic office. One row per event. Team is a dropdown from Team Rosters, so rosters are entered once per season.', ['Date', 'Team ▾', 'Event / opponent', 'Dismissed', 'Bus leaves', 'Coach', 'Notes'], '100px 160px 260px 90px 90px 110px 1fr',
-        earlyRaw.map(e => ['10/15/2026', e[0], e[1], e[2], e[3], e[4], ''])],
-      teams: ['Team Rosters', 'Athletic office pastes each team roster once per season. Early dismissals list students from here automatically.', ['Team', 'Last name', 'First name', 'Grade'], '180px 160px 160px 80px 1fr',
-        Object.entries(teams).flatMap(([t, st]) => st.map(s => [t, s[0], s[1], String(s[2])]))],
-      staff: ['Staff', 'One row per staff member. P1–P8 from the master schedule. Coverage comes only from a duty, Engagement or SAP period; prep and lunch are protected.', ['Name', 'Room', 'Role ▾', 'Email'], '160px 90px 140px 1fr',
-        [['Dorsey', 'AC201', 'Teacher', 'dorsey@southfayette.org'], ['Stewart', 'AB110', 'Teacher', 'stewart@southfayette.org'], ['Rogowicz', 'AC203', 'Teacher', 'rogowicz@southfayette.org'], ['Kennedy', '—', 'Building sub', 'kennedy@southfayette.org'], ['Syeda', '—', 'Building sub', 'syeda@southfayette.org']]]
-    });
-    sheets.calendar = ['Calendar', 'The whole 2026–27 HS calendar, converted from the Word file (581 items). Type comes from the font color: green = staff meeting, red = district, blue = HS activity. The office edits here when something moves; the hub reads today\'s rows.', ['Date', 'Item', 'Type ▾', 'Period', 'Time'], '100px 1fr 130px 70px 120px',
-      (S.calData || []).filter(e => { const t = CAL.D(S.day || '10/20/2026'); const a = new Date(t); a.setDate(a.getDate() - t.getDay() + 1); const b = new Date(a); b.setDate(b.getDate() + 4); const ds = e.date; const f = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); return ds >= f(a) && ds <= f(b) && e.cat !== 'observance'; })
-        .map(e => { const [y, m, d] = e.date.split('-'); return [+m + '/' + +d + '/' + y, e.text, e.cat === 'meeting' ? 'Staff meeting' : ['schedule', 'district', 'milestone', 'testing'].includes(e.cat) || e.board ? 'District' : ['today', 'tonight', 'flex'].includes(e.cat) ? 'HS activity' : 'Deadline', e.period ? 'P' + e.period : (e.when === 'after' ? 'After' : ''), e.when === 'after' ? '2:00–2:40 PM' : (e.time || '')]; })];
-    const sh = sheets[S.tab];
-    const today = r => r[0] === '10/15/2026' || (S.tab === 'settings' && r[0] === 'Default schedule');
-    const sheetCells = [];
-    sh[4].forEach(r => { const row = r.concat(Array(Math.max(0, sh[2].length - r.length)).fill('')); const extra = sh[3].split(' ').length > sh[2].length && !sh[3].includes('repeat'); (extra ? row.concat(['']) : row).slice(0, sh[3].includes('repeat') ? sh[2].length : sh[3].split(' ').length).forEach(v => sheetCells.push({ v, bg: today(r) && S.tab !== 'lib' ? '#e8f0fe' : '#ffffff', fg: '#202124' })); });
-    const colsCount = sh[3].includes('repeat') ? sh[2].length : sh[3].split(' ').length;
-    const sheetHead = sh[2].concat(Array(Math.max(0, colsCount - sh[2].length)).fill(''));
-    const sheetTabs = ['schedule', 'calendar', 'coverage', 'ann', 'testing', 'trips', 'rosters', 'early', 'teams', 'faq', 'lib', 'settings', 'staff'].map(k => ({ name: sheets[k][0], go: () => this.setState({ tab: k }), bg: k === S.tab ? '#ffffff' : 'transparent', fg: k === S.tab ? '#188038' : '#3c4043', fw: k === S.tab ? 700 : 400 }));
-    const CDx = S.calData || [];
-    const iso = t => t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
-    const on = t => CDx.filter(e => e.date === iso(t));
-    const addD = (t, n) => { const x = new Date(t); x.setDate(x.getDate() + n); return x; };
-    const f12 = m => { let hh = Math.floor(m / 60), mm = m % 60; hh = hh > 12 ? hh - 12 : hh; return hh + ':' + String(mm).padStart(2, '0'); };
-    const pT = s => { const m = String(s || '').match(/(\d{1,2}):(\d\d)\s*(AM|PM)?/i); if (!m) return null; let hh = +m[1]; if (/pm/i.test(m[3] || '') && hh < 12) hh += 12; if (!m[3] && hh < 7) hh += 12; return hh * 60 + +m[2]; };
-    const FLEX_EXC = { '2026-08-26': 'no', '2026-09-02': 'home', '2026-09-09': 'no', '2026-10-14': 'no', '2027-01-06': 'home', '2027-01-20': 'no', '2027-02-17': 'no', '2027-03-31': 'no', '2027-05-19': 'no', '2027-06-02': 'no' };
-    const OV = { 'Regular': { k: 'reg', name: 'Regular' }, 'Flex Day': { k: 'flex', name: 'Flex Day' }, 'Flex Day · Home Base': { k: 'flex', name: 'Flex Day · Home Base' }, '2-Hour Delay · schedule v1': { k: 'late', name: '2-Hour Delay · schedule v1', order: [1, 2, 4, 3] }, '2-Hour Delay · schedule v2': { k: 'late', name: '2-Hour Delay · schedule v2', order: [1, 3, 4, 2] }, 'Early Dismissal 10:30 (No Lunch)': { k: 'early', name: 'Early Dismissal · No Lunch', time: '10:30 AM' }, 'School Closed': { k: 'off', name: 'School Closed' } };
-    const autoSched = (t, items) => {
-      if (t.getDay() % 6 === 0) return { k: 'off', name: 'Weekend', note: '', why: 'weekend' };
-      const l = items.find(e => e.kind === 'late'); if (l) { const o = l.order || [1, 2, 4, 3]; const f = o[1] === 3 ? 'schedule v2' : 'schedule v1'; return { k: 'late', name: '2-Hour Delay · ' + f, order: o, note: 'Staff Dev./ACT 80 first. Classes start 9:20 · order ' + o.join(', ') + '.', why: 'school calendar' }; }
-      const n = items.find(e => e.kind === 'noschool'); if (n || !CAL.isSchool(t)) return { k: 'off', name: 'No School for Students', note: n ? n.text : '', why: 'school calendar' };
-      const e = items.find(x => x.kind === 'early'); if (e) return { k: 'early', name: 'Early Dismissal', time: e.time || '1:15 PM', note: e.text, why: 'school calendar' };
-      const adj = items.find(x => x.note === 'schedule'); if (adj) return { k: 'reg', name: 'Adjusted Bell', note: adj.text, notable: true, why: 'school calendar' };
-      if (t.getDay() === 3) { const x = FLEX_EXC[iso(t)];
-        if (x === 'no') return { k: 'reg', name: 'Regular', note: 'No Flex this Wednesday. Regular bell schedule.', notable: true, nf: true, why: 'No Flex date' };
-        if (iso(t) === '2027-06-09') return { k: 'flex', name: 'Flex Day · Last Day 26/27', note: 'Last day for students.', notable: true, why: 'Flex list' };
-        if (x === 'home') return { k: 'flex', name: 'Flex Day · Home Base', note: 'Students report to Home Base during Flex.', notable: true, why: 'Flex list' };
-        return { k: 'flex', name: 'Flex Day', note: '', routine: true, why: 'every Wednesday' }; }
-      return { k: 'reg', name: 'Regular', note: '', why: 'default' };
-    };
-    const schedOf = (t, items) => { const ov = (S.ovr || {})[iso(t)]; if (ov && OV[ov]) { const o = OV[ov]; return { ...o, note: 'Set by the Main Office (override).' + (o.order ? ' Classes start 9:20 · order ' + o.order.join(', ') + '.' : ''), ovr: true, notable: true }; } return autoSched(t, items); };
-    const notable = s2 => (s2.k !== 'reg' && !s2.routine) || !!s2.notable;
-    const tItems = on(calToday), sc = schedOf(calToday, tItems);
-    const mkB = (start, len, order, flexAfter) => { let t = start; const out = []; order.forEach(pp => { out.push({ p: pp, s: t, e: t + len }); t += len + 3; if (pp === flexAfter) { out.push({ p: 'Flex', s: t, e: t + 46, flex: true }); t += 49; } }); return out; };
-    let blocks = [];
-    if (sc.k === 'reg') blocks = lib.regular[1].map(x => ({ p: +x.label.slice(1), s: x.s, e: x.e }));
-    if (sc.k === 'late') { const o = sc.order[1] === 3 ? [1, 3, 4, 2] : [1, 2, 4, 3]; blocks = mkB(560, 32, [o[0], o[1], o[2], o[3], 5, 6, 7, 8]); blocks[7].e = 838; }
-    if (sc.k === 'flex') blocks = mkB(440, 41, [1, 2, 3, 4, 5, 6, 7, 8], 3);
-    if (sc.k === 'early' && pT(sc.time) === 630) { blocks = mkB(440, 21, [1, 2, 3, 4, 5, 6, 7, 8]); blocks[7].e = 630; sc.noLunch = true; }
-    else if (sc.k === 'early') { const end = pT(sc.time) || 795; blocks = mkB(440, Math.floor((end - 440 - 21) / 8), [1, 2, 3, 4, 5, 6, 7, 8]); }
-    const meets = tItems.filter(e => e.cat === 'meeting');
-    const clean = s => s.replace(/\s*-\s*Per\.?\s*\d\s*$/i, '').replace(/-Per\.\s*\d/i, '').trim();
-    const nowB = blocks.find(b => b.s <= now && b.e > now), nextB = blocks.find(b => b.s > now);
-    const myDay = blocks.map(b => { const isNow = b === nowB, past = b.e <= now; const ms2 = meets.filter(m => m.period === b.p).map(m => clean(m.text));
-      const BN = { 2: 'AM Announcements', 4: 'A Lunch', 5: 'B Lunch', 6: 'C Lunch' };
-      const mins = b.e - b.s;
-      return { label: b.flex ? 'FLEX Period' : 'Period ' + b.p, time: f12(b.s) + ' – ' + f12(b.e), mins: mins + ' min', sub: b.flex || sc.noLunch ? '' : (sc.k === 'flex' && b.p === 2 ? '' : (BN[b.p] || '')), hasSub: !b.flex && !sc.noLunch && !!BN[b.p] && !(sc.k === 'flex' && b.p === 2), tag: isNow ? 'NOW' : b === nextB ? 'NEXT' : '', meets: ms2, hasMeet: ms2.length > 0,
-        bg: isNow ? 'var(--via)' : ms2.length ? 'var(--panel3)' : 'var(--bg)', bd: isNow || ms2.length ? 'var(--accent)' : 'var(--border2)', lc: past ? 'var(--fainter)' : 'var(--bright)', tc: past ? 'var(--fainter)' : 'var(--muted)' }; });
-    const afterMeets = sc.k === 'off' ? [] : meets.filter(m => m.when === 'after').map(m => ({ name: clean(m.text), time: '2:00 – 2:40' }));
-    const nowTile = sc.k === 'off' ? { n: 'No classes', s: sc.name.toUpperCase() } : nowB ? { n: nowB.flex ? 'Flex' : 'Period ' + nowB.p, s: 'NOW · ENDS ' + f12(nowB.e) } : { n: 'Before P1', s: 'FIRST BELL ' + (blocks[0] ? f12(blocks[0].s) : '') };
-    const AB = { date: CAL.D(S.L && S.L.abAnchor ? S.L.abAnchor : '10/14/2026'), day: 'A' };
-    const abOf = t => { if (!CAL.isSchool(t)) return ''; const n = t >= AB.date ? CAL.between(AB.date, t) : -CAL.between(t, AB.date); const same = n % 2 === 0; return 'Day ' + (same ? AB.day : (AB.day === 'A' ? 'B' : 'A')); };
-    const liveDay = S.L && S.L.date ? CAL.D(S.L.date.split('-').map(Number).join('/').replace(/^(\d+)\/(\d+)\/(\d+)$/, '$2/$3/$1')) : null;
-    const ab = liveDay && S.L.abDay != null && +liveDay === +calToday ? S.L.abDay : abOf(calToday);
-    { const ms0 = mobileSections.find(m => m.title === 'Full schedule'); if (ms0) ms0.meta = (sc.name + (ab ? ' · ' + ab : '')).toUpperCase(); }
-    const obs = tItems.filter(e => e.cat === 'observance').map(e => e.text);
-    const describe = (s2) => s2.nf ? ['No Flex · Regular schedule', 'This Wednesday follows the regular bell schedule.'] : s2.k === 'flex' ? [s2.name, s2.note || 'FLEX Period 9:32 – 10:18 after Period 3.'] : s2.k === 'late' ? [s2.name, 'Classes start 9:20 · order ' + s2.order.join(', ') + (s2.ovr ? '.' : ' · Staff Dev./ACT 80 first.')] : s2.k === 'early' ? ['Early Dismissal @ ' + s2.time, s2.note] : s2.k === 'off' ? ['No school for students', s2.note] : [s2.name, s2.note];
-    let nd = addD(calToday, 1); while (nd.getDay() % 6 === 0) nd = addD(nd, 1);
-    const ns = schedOf(nd, on(nd));
-    const heads = { show: false, quiet: false };
-    if (notable(ns)) { const [tt, sub] = describe(ns); Object.assign(heads, { show: true, kicker: (Math.round((nd - calToday) / 864e5) === 1 ? 'TOMORROW' : 'NEXT SCHOOL DAY') + ' · ' + fmtD(nd).toUpperCase(), title: tt, sub: sub || '' }); }
-    else { let d2 = addD(nd, 1), found = null; for (let i = 0; i < 60 && !found; i++, d2 = addD(d2, 1)) { if (d2.getDay() % 6 === 0) continue; const s2 = schedOf(d2, on(d2)); if (notable(s2) && CDx.length) found = [d2, s2]; }
-      if (found) Object.assign(heads, { quiet: true, next: fmtD(found[0]) + ' · ' + describe(found[1])[0] }); }
-    const tagC = { testing: 'var(--bright)', district: 'var(--bright)', milestone: 'var(--bright)', today: 'var(--accent)', flex: 'var(--accent)' };
-    const tagL = e => e.cat === 'testing' ? 'TESTING' : e.cat === 'milestone' ? 'GRADES' : e.cat === 'district' ? 'DISTRICT' : e.cat === 'flex' ? 'FLEX' : e.parkway || /^PARKWAY/i.test(e.text) ? 'PARKWAY' : 'ACTIVITY';
-    const ord = { testing: 0, milestone: 1, district: 2, today: 3 };
-    const affects = tItems.filter(e => ord[e.cat] !== undefined && e.note !== 'schedule').sort((a, b) => ord[a.cat] - ord[b.cat]).map(e => ({ tag: tagL(e), c: tagC[e.cat], text: e.text.replace(/^PARKWAY\s*-\s*/i, '') }));
-    const tonMap = e => { const m = e.text.match(/,?\s*(\d{1,2}:\d\d\s*(?:AM|PM|p\.m)(?:\s*-\s*\d{1,2}:\d\d\s*(?:AM|PM))?)/i); const time = m ? m[1].replace('p.m', 'PM') : 'TBA'; let rest = e.text.replace(m ? m[0] : '', '').replace(/[,\s]+$/, ''); let title = rest, where = '';
-      if (e.board) { title = 'School Board Meeting'; where = rest.replace(/^School Board (Mtg\.?|Meeting|Reorganization Mtg\.?),?\s*/i, '').replace(/,\s*$/, ''); }
-      else { const parts = rest.split(/,\s*/); if (parts.length > 1) { title = parts[0]; where = parts.slice(1).join(', '); } }
-      return { tag: e.board ? 'BOARD' : /Varsity|Football|Game/i.test(e.text) ? 'ATHLETICS' : 'EVENT', c: e.board ? 'var(--bright)' : 'var(--accent)', title, where, hasWhere: !!where, time }; };
-    const tonight = tItems.filter(e => e.cat === 'tonight').map(tonMap);
-    const wkEnd = addD(calToday, 5 - calToday.getDay());
-    const dueWeek = CDx.filter(e => e.cat === 'deadline' && e.date >= iso(calToday) && e.date <= iso(wkEnd)).map(e => { const [yy, mo, dd] = e.date.split('-').map(Number); const t = new Date(yy, mo - 1, dd); return { text: e.text.replace(/\*/g, '').replace(/^PAY\//, '').replace(/^Payday$/, 'Payday'), when: e.date === iso(calToday) ? 'today' : fmtD(t) }; });
-    const stepDay = dir => () => { let t = addD(calToday, dir); while (t.getDay() % 6 === 0) t = addD(t, dir); this.setState({ day: (t.getMonth() + 1) + '/' + t.getDate() + '/' + t.getFullYear() }); if (this.token) { this._want = (t.getMonth() + 1) + '/' + t.getDate() + '/' + t.getFullYear(); this.loadLive(); } };
-    const calTag = e => e.cat === 'meeting' ? 'Staff meeting' : ['schedule', 'district', 'milestone', 'testing'].includes(e.cat) || e.board ? 'District' : ['today', 'tonight', 'flex'].includes(e.cat) ? 'HS activity' : e.cat === 'deadline' ? 'Deadline' : 'Observance';
-    const calColor = e => e.cat === 'meeting' ? '#00b050' : ['schedule', 'district', 'milestone', 'testing'].includes(e.cat) || e.board ? '#a50021' : ['today', 'tonight', 'flex'].includes(e.cat) ? '#31849b' : '#202124';
-    const wkStart = addD(calToday, 1 - calToday.getDay());
-    const calRows = CDx.filter(e => e.date >= iso(wkStart) && e.date <= iso(wkEnd) && e.cat !== 'observance');
-    const mobAff = { title: 'Affects today', meta: String(affects.length), rows: affects.map(a => ({ a: a.text, b: a.tag })), open: !!S.mob.aff, caret: S.mob.aff ? '▴' : '▾', toggle: tog('mob', 'aff') };
-    const mobDay = { title: 'My day', meta: sc.name.toUpperCase(), rows: myDay.map(x => ({ a: x.label + ' · ' + x.time, b: x.meets.join(', ') || ' ' })).concat(afterMeets.map(m => ({ a: 'After school · ' + m.time, b: m.name }))), open: !!S.mob.day, caret: S.mob.day ? '▴' : '▾', toggle: tog('mob', 'day') };
-    const mobTon = { title: 'Tonight at SFHS', meta: String(tonight.length), rows: tonight.map(t => ({ a: t.title, b: t.time + (t.where ? ' · ' + t.where : '') })), open: !!S.mob.ton, caret: S.mob.ton ? '▴' : '▾', toggle: tog('mob', 'ton') };
-    const mobileSecs = [mobDay, mobAff].concat(mobileSections.filter(m => m.title !== 'Full schedule'), [mobTon]).map(m => ({ ...m, rows: (m.rows || []).map(r => ({ ...msRowDefaults, ...r })) }));
-    const fmtS = t => (t.getMonth() + 1) + '/' + t.getDate() + '/' + t.getFullYear();
-    const pvT = CAL.D(S.pvDay || '10/21/2026'), pvI = on(pvT), pvS = schedOf(pvT, pvI), pvAuto = autoSched(pvT, pvI), pvToday = iso(pvT) === iso(calToday);
-    const nextSchool = (t, dir) => { let x = addD(t, dir); for (let i = 0; i < 30 && (x.getDay() % 6 === 0); i++) x = addD(x, dir); return x; };
-    const pvPrevDay = nextSchool(pvT, -1);
-    const pvMeets = pvS.k === 'off' ? [] : pvI.filter(e => e.cat === 'meeting').map(m => ({ when: m.period ? 'Period ' + m.period : '2:00 – 2:40', name: clean(m.text) }));
-    const pvAff = pvI.filter(e => ord[e.cat] !== undefined && e.note !== 'schedule').sort((a, b) => ord[a.cat] - ord[b.cat]).map(e => ({ tag: tagL(e), c: tagC[e.cat], text: e.text.replace(/^PARKWAY\s*-\s*/i, '') }));
-    const pvTon = pvI.filter(e => e.cat === 'tonight').map(tonMap);
-    const pvDue = pvI.filter(e => e.cat === 'deadline').map(e => e.text.replace(/\*/g, ''));
-    const pvAB = abOf(pvT), [bt, bs] = describe(pvS);
-    const off = pvS.k === 'off', future = pvT > calToday;
-    const ck = (ok, label, val, fix) => ({ icon: ok ? '✓' : '!', bg: ok ? 'var(--accent)' : 'var(--bright)', label, val, fix: fix || '', hasFix: !!fix, ok });
-    const checks = [
-      ck(true, 'Schedule', pvS.name + (pvS.ovr ? ' (override by office)' : ' (automatic: ' + pvAuto.why + ')'), ''),
-      ck(true, 'Day A/B', pvAB || 'No school, rotation skips this day', ''),
-      notable(pvS) ? ck(true, 'Heads-up banner', 'Teachers see it on ' + fmtD(pvPrevDay) + ', the school day before.', '') : null,
-      off ? ck(true, 'Coverage', 'Not needed. No classes.', '') : ck(pvToday, 'Coverage', pvToday ? covRaw.filter(r => r.g !== 'BUILDING SUBS').length + ' teachers out entered. Pulled and co-teaching teachers emailed.' : 'Not entered yet.', pvToday ? '' : 'Usually entered the morning of. Add known absences early on the Coverage tab.'),
-      ck(pvToday || off, 'Announcements', pvToday ? announcements.length + ' posted' : off ? 'Not needed' : 'None scheduled yet', pvToday || off ? '' : 'Optional. Add rows dated ' + fmtS(pvT) + ' on Announcements.'),
-      ck(true, 'Staff meetings', pvMeets.length ? pvMeets.map(m => m.name + ' (' + m.when + ')').join(', ') : 'None on the calendar', ''),
-      ck(true, 'Calendar items', (pvAff.length + pvTon.length) ? pvAff.length + ' during school, ' + pvTon.length + ' tonight' : 'None', ''),
-      pvDue.length ? ck(true, 'Deadlines shown', pvDue.join(', '), '') : null
-    ].filter(Boolean);
-    const todo = checks.filter(c => !c.ok).length;
-    const lastLate = CDx.filter(e => e.kind === 'late' && e.date < iso(pvT)).slice(-1)[0];
-    const suggV = lastLate && lastLate.order && lastLate.order[1] === 2 ? '2-Hour Delay · schedule v2' : '2-Hour Delay · schedule v1';
-    const suggTxt = lastLate ? 'Last delay (' + fmtD(CAL.D(lastLate.date.split('-').map(Number).slice(1).concat([lastLate.date.slice(0, 4)]).join('/'))) + ') was ' + (lastLate.order && lastLate.order[1] === 3 ? 'schedule v2' : 'schedule v1') + ', so ' + suggV.split('· ')[1] + ' is suggested.' : '';
-    const pv = { dateLong: pvT.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }), sub: [pvAB, pvToday ? 'Today' : future ? Math.round((pvT - calToday) / 864e5) + ' days from today' : 'Past day'].filter(Boolean).join(' · '),
-      hasBanner: notable(pvS), bannerOn: fmtD(pvPrevDay).toUpperCase(), bannerTitle: bt, bannerSub: bs || '',
-      schedName: pvS.name, schedSrc: pvS.ovr ? 'OVERRIDE' : 'AUTOMATIC · ' + (pvAuto.why || '').toUpperCase(), note: pvS.note, hasNote: !!pvS.note,
-      ovOn: !!pvS.ovr, ovVal: (() => { const v = (S.ovr || {})[iso(pvT)] || ''; return v.startsWith('2-Hour Delay') ? '2-Hour Delay' : v; })(), isDelay: ((S.ovr || {})[iso(pvT)] || '').startsWith('2-Hour Delay'), swap3: ((S.ovr || {})[iso(pvT)] || '').endsWith('schedule v2'), sugg: suggTxt, autoName: pvAuto.name, autoWhy: pvAuto.why, ovBd: pvS.ovr ? 'var(--bright)' : 'var(--border)', ovBg: pvS.ovr ? 'var(--bg)' : 'var(--panel)',
-      meets: pvMeets, hasMeet: pvMeets.length > 0, noMeet: !pvMeets.length && !off, aff: pvAff, affNone: !pvAff.length, ton: pvTon, tonNone: !pvTon.length,
-      checks, ready: todo ? todo + ' TO DO' : 'READY', readyC: todo ? 'var(--bright)' : 'var(--accent)' };
-    const tmr = nextSchool(calToday, 1), nMon = (() => { let x = addD(calToday, 1); while (x.getDay() !== 1) x = addD(x, 1); return x; })(), wk = nextSchool(addD(calToday, 6), 1);
-    const pvChips = [['Tomorrow', tmr], ['Next Monday', nMon], ['In a week', wk]].map(([label, t]) => { const on2 = iso(t) === iso(pvT); return { label, go: () => this.setState({ pvDay: fmtS(t) }), bg: on2 ? 'var(--accent)' : 'var(--panel)', fg: on2 ? '#ffffff' : 'var(--muted)', bd: on2 ? 'var(--accent)' : 'var(--border3)' }; });
-    const ovKey = iso(pvT);
-    const pvExtra = { pv, pvChips, ovOpts: ['Regular', 'Flex Day', 'Flex Day · Home Base', '2-Hour Delay', 'Early Dismissal 10:30 (No Lunch)', 'School Closed'],
-      pvOvToggle: () => this.setState(s => { const o = { ...(s.ovr || {}) }; if (o[ovKey]) delete o[ovKey]; else o[ovKey] = suggV; return { ovr: o }; }),
-      pvSwap: () => this.setState(s => { const o = { ...(s.ovr || {}) }; o[ovKey] = (o[ovKey] || '').endsWith('schedule v2') ? '2-Hour Delay · schedule v1' : '2-Hour Delay · schedule v2'; return { ovr: o }; }),
-      pvOvSet: e => { const v = e.target.value === '2-Hour Delay' ? suggV : e.target.value; this.setState(s => ({ ovr: { ...(s.ovr || {}), [ovKey]: v } })); }, pvISO: iso(pvT), pvPick: e => { const v = e.target.value; if (!v) return; const [y, m, d] = v.split('-').map(Number); this.setState({ pvDay: m + '/' + d + '/' + y }); },
-      pvPrev: () => this.setState({ pvDay: fmtS(nextSchool(pvT, -1)) }), pvNext: () => this.setState({ pvDay: fmtS(nextSchool(pvT, 1)) }), pvOpen: () => this.setState({ day: fmtS(pvT) }) };
-    const lrTab = S.lrTab || 'today', lrList = S.boards ? (S.boards[lrTab] || []) : (S.scores || []);
-    const QQ = this.qList(), qi = (S.qi || 0) % QQ.length, hour = new Date().getHours();
-    const introVals = { showIntro: this.introOn(), showHub: !this.introOn(), isStale: !!S.stale,
-      reSign: () => { this.token = null; this._btnEl = null; this.setState({ L: null, stale: false }); },
-      greet: hour < 12 ? 'Good morning, Lions.' : hour < 17 ? 'Good afternoon, Lions.' : 'Good evening, Lions.',
-      introDate: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase(),
-      introNote: S.signing ? 'Signing you in… loading today\'s hub. This can take a few seconds.' : S.authErr ? 'Could not sign in: ' + S.authErr + '.' : 'Real school information only appears after you sign in.',
-      quote: QQ[qi][0], quoteNote: [QQ[qi][1], QQ[qi][2]].filter(Boolean).join(' · '), qOp: S.qOp == null ? 1 : S.qOp,
-      qDots: QQ.length > 15 ? [] : QQ.map((q, i) => ({ go: () => { this.setQ(i); clearInterval(this._qi); this._qi = setInterval(() => { if (this.introOn()) this.setQ((this.state.qi || 0) + 1); }, 8000); }, label: 'Quote ' + (i + 1), w: i === qi ? '24px' : '8px', bg: i === qi ? '#ffffff' : 'rgba(255,255,255,.5)' })),
-      gameRef: this.gameRef, gameTap: e => { e.preventDefault(); this.jump(); },
-      board: lrList.map((r, i) => ({ rank: i + 1, i: r.i, s: r.s, bg: S.justSaved && r.i === S.justSaved.i && r.s === S.justSaved.s ? '#e8f3ec' : 'transparent' })), boardEmpty: !lrList.length,
-      boardSub: S.boards ? 'Top 10 · all staff' : 'Top 5 on this device', boardEmptyText: lrTab === 'today' && S.boards ? 'No runs yet today. Be the first on the board.' : 'No runs yet. Be the first on the board.',
-      boardTabs: S.boards ? [['today', 'Today'], ['all', 'All time']].map(([k, label]) => ({ label, go: () => this.setState({ lrTab: k }), bg: lrTab === k ? '#ffffff' : 'transparent', fg: lrTab === k ? '#008539' : '#5c5c5d' })) : [],
-      hasPending: S.pending != null, pendingScore: S.pending, initials: S.initials || '',
-      setInitials: e => this.setState({ initials: e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) }),
-      initialsKey: e => { if (e.key === 'Enter') introSave(); },
-      saveScore: () => introSave() };
-    const introSave = () => { const ini = this.state.initials || 'SF', sco = this.state.pending;
-      if (this.cfg.api) fetch(this.cfg.api + '?action=score&i=' + encodeURIComponent(ini) + '&s=' + sco).then(r => r.json()).then(d => { if (d && d.all) this.setState({ boards: d }); }).catch(() => {});   // always send to the sheet
-      if (this.state.boards && this.cfg.api) { this.setState({ pending: null, justSaved: { i: ini, s: sco } }); return; }
-      const at = Date.now(); const list = [...(this.state.scores || []), { i: this.state.initials || '???', s: this.state.pending, at }].sort((a, b) => b.s - a.s).slice(0, 5);
-      try { localStorage.setItem('sfhub_lionrun', JSON.stringify(list)); } catch (e) {} this.setState({ scores: list, pending: null, justSaved: at }); };
-    return { revealEl: S.rvOn ? this.revealTree(S.rv || 0) : null, ...introVals, isWide: (S.vw || 1400) >= 1000, isNarrow: (S.vw || 1400) < 1000, showOffice: this.cfg.api ? !!(S.L && S.L.user && S.L.user.office) : false, gBtn: this.gBtn, signedIn: !!S.L && !S.stale, dot: S.L ? (S.stale ? '#c98a00' : '#008539') : '#8a8a8a',
-      authMsg: !this.cfg.api ? 'Demo data. The Office Sheet is not connected yet.' : S.L ? (S.stale ? 'Sign-in expired. Showing data from ' + S.L.updated + '. Click Sign in to refresh.' : 'Live from the Office Sheet · ' + S.L.user.email + ' · updated ' + S.L.updated) : S.authErr ? 'Not loaded: ' + S.authErr + '. Sign in with your South Fayette Google account.' : 'Sign in with your South Fayette Google account to load today\'s information.',
-      signOut: () => { if (window.google) google.accounts.id.disableAutoSelect(); try { localStorage.removeItem('sfhub_tok'); localStorage.removeItem('sfhub_last'); } catch (e) {} this.token = null; this.setState({ L: null, authErr: '' }); }, ...pvExtra, dateLong: calToday.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }), dateSub: [ab, sc.name + (sc.k === 'off' ? '' : ' schedule')].concat(obs).filter(Boolean).join(' · '), dateShort: calToday.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) + (ab ? ' · ' + ab : ''),
-      prevDay: stepDay(-1), nextDay: stepDay(1), dayLabel: fmtD(calToday).toUpperCase() + (ab ? ' · ' + ab.toUpperCase() : ''), dayABu: (ab || 'NO SCHOOL').toUpperCase(),
-      sched: { name: sc.name, note: sc.note, hasNote: !!sc.note }, isOff: sc.k === 'off', myDay, afterMeets, hasAfter: afterMeets.length > 0, nowTile, heads,
-      affects, affNone: CDx.length > 0 && !affects.length, tonight, tonightNone: CDx.length > 0 && !tonight.length, dueWeek, dueNone: CDx.length > 0 && !dueWeek.length,
-      calRows, calTag, calColor, mobileSecs,
-      schedName: cur[0], schedTabs, previewing: !live, periods, pnums: [1, 2, 3, 4, 5, 6, 7, 8], announcements, tests, trips, faq, mobileSections: mobileSecs,
-      sheetHelp: sh[1], sheetCols: sh[3], sheetHead, sheetCells, sheetTabs,
-      tripQ: S.tripQ || '', setTripQ: e => this.setState({ tripQ: e.target.value }), tripNoMatch, tripTabs, tripByTrip: tv === 'trip', tripByStudent: tv === 'students', stuHead, stuRows, stuCount,
-      tileTest: (() => { const rooms = new Set((tests || []).map(t => String(t.room || t.who || '').trim().toUpperCase()).filter(Boolean)); const n = rooms.size || (tests || []).length; return { n: n ? n + (n === 1 ? ' room' : ' rooms') : 'None' }; })(),
-      tileTrip: (() => { const n = tripsAll.length, k = tripsAll.reduce((a, f) => a + (f.students || []).length, 0); return { n: n ? n + (n === 1 ? ' trip' : ' trips') : 'No trips', s: n ? k + (k === 1 ? ' STUDENT' : ' STUDENTS') + ' OUT' : 'FIELD TRIPS TODAY' }; })(),
-      chill, annCount: announcements.length, covHead, covGroups, covOutN: covRaw.filter(r => r.g !== 'BUILDING SUBS').length, covQ: S.covQ, setCovQ: e => this.setState({ covQ: e.target.value }), covHits, covPulled, covSummary, covPulledN: covTally.pulled.size, covNoHits: cq.length >= 2 && !covHits.length, early, cdQ, cdSmall, cdInterim, cdModes };
-  }
-}
+  if (found) { location.href = found + '/honeypot.html?trap=adminlogin'; }
+  else { alert('Access denied.'); }
+};
 </script>
 </body>
 </html>

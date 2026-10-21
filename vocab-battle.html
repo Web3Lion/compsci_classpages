@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=31.1.0"></script>
+<script src="site.js?v=31.3.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.3.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.3.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -48,19 +48,20 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=31.1.0"></script>
-<script src="ctf-data/cyber1.js?v=31.1.0"></script>
-<script src="ctf-data/cyber2.js?v=31.1.0"></script>
-<script src="ctf-data/cyber3.js?v=31.1.0"></script>
-<script src="ctf-data/apcsp.js?v=31.1.0"></script>
-<script src="ctf-data/web3.js?v=31.1.0"></script>
-<script src="supabase-config.js?v=31.1.0"></script>
-<script src="auth.js?v=31.1.0"></script>
-<script src="battle-fx.js?v=31.1.0"></script>
-<script src="battle-bg.js?v=31.1.0"></script>
-<script src="team-picker.js?v=31.1.0"></script>
-<script src="waiting-room.js?v=31.1.0"></script>
-<script src="binary-pool.js?v=31.1.0"></script>
+<script src="config.js?v=31.3.0"></script>
+<script src="ctf-data/cyber1.js?v=31.3.0"></script>
+<script src="ctf-data/cyber2.js?v=31.3.0"></script>
+<script src="ctf-data/cyber3.js?v=31.3.0"></script>
+<script src="ctf-data/apcsp.js?v=31.3.0"></script>
+<script src="ctf-data/web3.js?v=31.3.0"></script>
+<script src="supabase-config.js?v=31.3.0"></script>
+<script src="auth.js?v=31.3.0"></script>
+<script src="battle-fx.js?v=31.3.0"></script>
+<script src="battle-bg.js?v=31.3.0"></script>
+<script src="team-picker.js?v=31.3.0"></script>
+<script src="waiting-room.js?v=31.3.0"></script>
+<script src="binary-pool.js?v=31.3.1"></script>
+<script src="prize-roll.js?v=31.3.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -83,7 +84,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function modName(m){ if (+m === 0) return "Binary"; var n = (guide().modules || [])[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
   function col(t, i){ return (t && t.color) || FALLBACK[i % 4]; }
   function rpc(fn, a){ return AUTH.rpc(fn, a || {}); }
-  var WR = window.WROOM ? WROOM.attach({ kind: "vocab", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: false }) : null;
+  var WR = window.WROOM ? WROOM.attach({ kind: "vocab", teams: function(){ return SET && window.TEAM_PICK ? TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; })) : null; }, rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: false }) : null;
   function wrBtn(){ return WR ? WR.label() : null; }
   function fail(e){ busy = false; msg = /vd_|function/.test(String(e && e.message)) ? "Run supabase/vocab-duels.sql first." : /tb_randomize/.test(String(e && e.message)) ? "Randomize needs supabase/team-battles.sql." : "Something went wrong: " + (e && e.message || e); paint(); }
   function theme(){
@@ -94,7 +95,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=31.1.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=31.3.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
@@ -123,7 +124,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BATTLE OPTIONS</div>' +
         (BIN ? '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Question set</div>' +
           '<div role="group" aria-label="Question set" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + [["vocab","Vocab"],["binary","Binary"]].map(function(q){ return '<button type="button" class="chip vbQs" data-q="' + q[0] + '" aria-pressed="' + (qset === q[0]) + '">' + q[1] + '</button>'; }).join("") + '</div>' : '') +
-        (bin ? '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Each fight question is random: 8-bit conversions (decimal \u2192 binary, students type all 8 bits, or binary \u2192 decimal) mixed with binary concepts \u2014 the largest value or number of values for N bits/bytes, even or odd from a partial pattern like ? ? ? 1, the number before or after a binary value, and the fewest bits needed for a number. Fresh numbers every battle. No puzzle disguise; students just type the answer.</div>' :
+        (bin ? '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Each fight question is random: 8-bit conversions (decimal \u2192 binary, students type all 8 bits, or binary \u2192 decimal) mixed with binary concepts \u2014 the largest value or number of values for N bits/bytes, even or odd from a partial pattern like ? ? ? 1, the number before or after a binary value, bits \u2194 bytes, and the fewest bits needed for a number. Fresh numbers every battle. No puzzle disguise; students just type the answer.</div>' :
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab modules</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip vbMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + MODS[m].length + '</span></button>'; }).join("") : '<span style="color:var(--dim);">No vocab list found for this course.</span>') + '</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +
@@ -170,7 +171,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       var grit = L.slice().sort(function(a, b){ return b.fights - a.fights; })[0];
       var rows = T.map(function(t, i){ var mv = L.filter(function(p){ return p.team === t.id && p.mvp; }).map(function(p){ return p.handle; });
         return { name: t.name, color: col(t, i), score: (+t.avg).toFixed(2), sub: t.kos + " KOs · " + t.fought + "/" + t.members + " fought" + (mv.length ? " · MVP " + mv.join(", ") : "") }; });
-      var acts = '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" id="vbRematch">Rematch</button><button type="button" class="btn ghost" id="vbFull">Full screen</button><button type="button" class="btn ghost" id="vbNew">New battle</button></div>';
+      var acts = '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" id="vbRematch">Rematch</button>' + (window.PRIZE_ROLL && T.some(function(t){ return t.won; }) ? '<button type="button" class="btn ghost" id="vbPrize">\u2605 Prize roll</button>' : '') + '<button type="button" class="btn ghost" id="vbFull">Full screen</button><button type="button" class="btn ghost" id="vbNew">New battle</button></div>';
       return FX.podium({ kicker: "FINAL · KOs PER FIGHTER", title: winners.length > 1 ? "Tie! " + T.filter(function(t){ return t.won; }).map(function(t){ return t.name; }).join(" & ") : winners.length ? T.filter(function(t){ return t.won; })[0].name + " wins!" : "No KOs",
         rows: rows, mvp: top && { name: top.handle, detail: top.wins + " KOs in " + top.fights + " fights", avatar: FX.avatar(top.handle, (byId[top.team] || {}).color) },
         awards: [grit && grit.fights ? { label: "⚔ IRON WILL · MOST FIGHTS", who: grit.handle, detail: grit.fights + " fights", color: (byId[grit.team] || {}).color } : null], actions: acts }) +
@@ -187,10 +188,22 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var s = ST && ST.session;
     view.innerHTML = (s && (s.status === "live" || !showSetup)) ? battleView(s) : SET && !SET.error ? setupView() : (msg || (SET && SET.error) ? '<div class="card" style="border-color:var(--amber);"><b style="color:var(--bright);">Couldn\u2019t load the battle setup.</b><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">' + esc(msg || ("Error: " + SET.error)) + '<br>Check that <b>supabase/vocab-duels.sql</b> has been run (install-check.html), then reload.</div></div>' : '<div class="card mono" style="color:var(--dim);">Loading&hellip;</div>');
     var g = document.getElementById("g"); if (g && innerWidth < 900) g.style.gridTemplateColumns = "1fr";
-    bind(); clock();
+    bind(); clock(); prizeAuto();
+  }
+  // 31.3: winning squad rolls a class prize (no test bonus / graded bonus / homework pass)
+  function prizeList(s){
+    var W = (s.teams || []).filter(function(t){ return t.won; });
+    return Promise.all(W.map(function(t){ return PRIZE_ROLL.squadIds(rpc, CUR.id, t.id).then(function(ids){
+      return { key: "vd:" + s.id + ":" + t.id, cls: CUR.id, ids: ids, who: t.name, pool: "squad", title: "Vocab Battle winners" }; }); }));
+  }
+  function prizeAuto(){
+    var s = ST && ST.session; if (!window.PRIZE_ROLL || !s || s.status !== "done" || !(s.teams || []).some(function(t){ return t.won; })) return;
+    if (prizeAuto.k === s.id) return; prizeAuto.k = s.id;
+    prizeList(s).then(function(L){ PRIZE_ROLL.auto("vd:" + s.id, L, s.finished_at); });
   }
   function bind(){
     if (WR) WR.bind(view);
+    var pz = document.getElementById("vbPrize"); if (pz) pz.onclick = function(){ prizeList(ST.session).then(function(L){ if (!PRIZE_ROLL.open(L)) { msg = "Every prize for this battle has been rolled."; paint(); } }); };
     if (window.TEAM_PICK) TEAM_PICK.bind(view, { rpc: rpc, reload: load, repaint: paint, err: function(m){ msg = m; paint(); } });
     view.querySelectorAll(".vbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
     view.querySelectorAll(".vbQs").forEach(function(b){ b.onclick = function(){ qset = b.getAttribute("data-q"); msg = ""; paint(); }; });

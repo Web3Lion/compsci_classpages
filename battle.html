@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=31.1.0"></script>
+<script src="site.js?v=31.3.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.1.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.1.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.3.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.3.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -47,19 +47,20 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=31.1.0"></script>
-<script src="ctf-data/cyber1.js?v=31.1.0"></script>
-<script src="ctf-data/cyber2.js?v=31.1.0"></script>
-<script src="ctf-data/cyber3.js?v=31.1.0"></script>
-<script src="ctf-data/apcsp.js?v=31.1.0"></script>
-<script src="ctf-data/web3.js?v=31.1.0"></script>
-<script src="supabase-config.js?v=31.1.0"></script>
-<script src="auth.js?v=31.1.0"></script>
-<script src="cosmetics.js?v=31.1.0"></script>
-<script src="battle-fx.js?v=31.1.0"></script>
-<script src="battle-bg.js?v=31.1.0"></script>
-<script src="team-picker.js?v=31.1.0"></script>
-<script src="waiting-room.js?v=31.1.0"></script>
+<script src="config.js?v=31.3.0"></script>
+<script src="ctf-data/cyber1.js?v=31.3.0"></script>
+<script src="ctf-data/cyber2.js?v=31.3.0"></script>
+<script src="ctf-data/cyber3.js?v=31.3.0"></script>
+<script src="ctf-data/apcsp.js?v=31.3.0"></script>
+<script src="ctf-data/web3.js?v=31.3.0"></script>
+<script src="supabase-config.js?v=31.3.0"></script>
+<script src="auth.js?v=31.3.0"></script>
+<script src="cosmetics.js?v=31.3.0"></script>
+<script src="battle-fx.js?v=31.3.0"></script>
+<script src="battle-bg.js?v=31.3.0"></script>
+<script src="team-picker.js?v=31.3.0"></script>
+<script src="waiting-room.js?v=31.3.0"></script>
+<script src="prize-roll.js?v=31.3.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -128,7 +129,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       return {};
     };
   }
-  var WR = window.WROOM ? WROOM.attach({ kind: "team", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: !!DEMO }) : null;
+  var WR = window.WROOM ? WROOM.attach({ kind: "team", teams: function(){ return SET && window.TEAM_PICK ? TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; })) : null; }, rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: !!DEMO }) : null;
   function wrBtn(){ return WR ? WR.label() : null; }
   function fail(e){ busy = false; msg = /tb_|function/.test(String(e && e.message)) ? "Run supabase/team-battles.sql first." : "Something went wrong: " + (e && e.message || e); paint(); }
 
@@ -208,7 +209,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       A.hard && { label: "◆ MOST HARD FLAGS", who: A.hard.handle, detail: A.hard.n + " hard flag" + (A.hard.n > 1 ? "s" : ""), color: tc(A.hard.team) },
       A.clutch && { label: "⏱ CLUTCH CAPTURE", who: A.clutch.handle, detail: "with " + mmssS(A.clutch.secs) + " left", color: tc(A.clutch.team) }
     ];
-    var acts = '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" id="tbRematch">Rematch</button><button type="button" class="btn ghost" id="tbFull">Full screen</button><button type="button" class="btn ghost" id="tbNew">New battle</button></div>';
+    var acts = '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" id="tbRematch">Rematch</button>' + (window.PRIZE_ROLL && !DEMO && T.some(function(t){ return t.won; }) ? '<button type="button" class="btn ghost" id="tbPrize">\u2605 Prize roll</button>' : '') + '<button type="button" class="btn ghost" id="tbFull">Full screen</button><button type="button" class="btn ghost" id="tbNew">New battle</button></div>';
     return FX.podium({ kicker: "FINAL · " + (b.modules||[]).map(function(m){ return "M" + String(m).padStart(2,"0"); }).join(" · "),
       title: winners.length > 1 ? "Tie! " + winners.join(" & ") : winners.length ? winners[0] + " wins!" : "No team scored",
       rows: rows, mvp: top && { name: top.handle, detail: top.points + " pts · " + top.caps + " captures", avatar: FX.avatar(top.handle, tc(top.team), top.eq) },
@@ -220,9 +221,21 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var b = ST && ST.battle;
     view.innerHTML = (b && (b.status === "live" || !showSetup)) ? battleView(b) : SET && !SET.error ? setupView() : (msg || (SET && SET.error) ? '<div class="card" style="border-color:var(--amber);"><b style="color:var(--bright);">Couldn\u2019t load the battle setup.</b><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">' + esc(msg || ("Error: " + SET.error)) + '<br>Check that <b>supabase/team-battles.sql</b> has been run (install-check.html), then reload.</div></div>' : '<div class="card mono" style="color:var(--dim);">Loading&hellip;</div>');
     var g = document.getElementById("g"); if (g && innerWidth < 900) g.style.gridTemplateColumns = "1fr";
-    bind(); clock();
+    bind(); clock(); prizeAuto();
+  }
+  // 31.3: winning squad rolls a class prize (no test bonus / graded bonus / homework pass)
+  function prizeList(b){
+    var W = (b.teams || []).filter(function(t){ return t.won; });
+    return Promise.all(W.map(function(t){ return PRIZE_ROLL.squadIds(rpc, CUR.id, t.id).then(function(ids){
+      return { key: "tb:" + b.id + ":" + t.id, cls: CUR.id, ids: ids, who: t.name, pool: "squad", title: "Team Battle winners" }; }); }));
+  }
+  function prizeAuto(){
+    var b = ST && ST.battle; if (DEMO || !window.PRIZE_ROLL || !b || b.status !== "done" || !(b.teams || []).some(function(t){ return t.won; })) return;
+    if (prizeAuto.k === b.id) return; prizeAuto.k = b.id;
+    prizeList(b).then(function(L){ PRIZE_ROLL.auto("tb:" + b.id, L, b.finished_at || b.ends_at); });
   }
   function bind(){
+    var pz = document.getElementById("tbPrize"); if (pz) pz.onclick = function(){ prizeList(ST.battle).then(function(L){ if (!PRIZE_ROLL.open(L)) { msg = "Every prize for this battle has been rolled."; paint(); } }); };
     if (window.TEAM_PICK) TEAM_PICK.bind(view, { rpc: rpc, reload: load, repaint: paint, err: function(m){ msg = m; paint(); } });
     if (WR) WR.bind(view);
     view.querySelectorAll(".tbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });

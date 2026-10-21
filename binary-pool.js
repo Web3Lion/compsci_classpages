@@ -1,5 +1,5 @@
 /* © 2026 Robert Reasey, South Fayette School District. CC BY-NC 4.0.
-   Binary question set (30.2; concept questions 31.1).
+   Binary question set (30.2; concept questions 31.1; bits ↔ bytes 31.2).
    - pool(): typed set for class Vocab Battles + Brackets. Module 0 marks a binary session;
      mode "plain" = no disguise. Terms are the answers; checked server-side by _vd_norm
      (lowercase alphanumerics, so "4,294,967,295" matches "4294967295"). _vd_pool keeps one
@@ -17,6 +17,7 @@
     if (b % 8 === 0 && Math.random() < 0.6) { var by = b / 8; return by + "-byte"; }
     return b + "-bit";
   }
+  function plural(s) { var n = parseInt(s, 10), u = s.indexOf("byte") > 0 ? "byte" : "bit"; return n + " " + u + (n === 1 ? "" : "s"); }
   function bitsFor(level) { return level === "bytes" ? 8 * rnd(1, 4) : rnd(2, 16); }
 
   /* Each maker returns { kind, diff, q, a (typed answer), show (display answer), wrong:[display] } */
@@ -26,6 +27,7 @@
       var s = size(b), q = pick([
         "With a " + s + " number, what is the highest decimal number that can be represented?",
         "What is the largest decimal value a " + s + " unsigned binary number can hold?",
+        "What is the largest number that can be represented with " + plural(s) + "?",
         "A counter uses " + (s.indexOf("byte") > 0 ? (b / 8) + " byte" + (b > 8 ? "s" : "") : b + " bits") + ". Starting at 0, what is the biggest number it can reach before it overflows?"
       ]);
       var a = p2(b) - 1;
@@ -36,7 +38,9 @@
       var s = size(b), q = pick([
         "With a " + s + " number, how many different decimal numbers can be represented?",
         "How many unique values can be stored in a " + s + " binary number?",
-        "A " + s + " ID number counts up from 0. How many different IDs can it hand out?"
+        "A " + s + " ID number counts up from 0. How many different IDs can it hand out?",
+        "How many numbers can be represented with " + plural(s) + "?",
+        "How many different numbers can you represent using " + plural(s) + "?"
       ]);
       var a = p2(b);
       return { kind: "count", diff: b > 16 ? "Hard" : "Medium", q: q, a: String(a), show: big(a), wrong: [big(a - 1), big(p2(b + 1)), big(b * 2), big(p2(b - 1))] };
@@ -69,6 +73,17 @@
       });
       return { kind: "step", diff: bin.length > 6 ? "Medium" : "Easy", q: q + " Type it in binary, no leading zeros.", mcq: q, a: ans, show: ans, wrong: wrong };
     },
+    units: function () {
+      var toBytes = Math.random() < 0.5, by = pick([1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 32, 64]), bi = by * 8, q, a, wrong;
+      if (toBytes) {
+        q = pick(["How many bytes is " + bi + " bits?", bi + " bits is how many bytes?", "A file is " + bi + " bits. How many bytes is that?"]);
+        a = by; wrong = [bi * 8, by * 2, bi / 4, by + 8, by * 4, bi, by + 1];
+      } else {
+        q = pick(["How many bits are in " + by + " byte" + (by > 1 ? "s" : "") + "?", by + " byte" + (by > 1 ? "s" : "") + " is how many bits?", "A value takes up " + by + " byte" + (by > 1 ? "s" : "") + ". How many bits is that?"]);
+        a = bi; wrong = [by * 4, bi * 2, by * 10, bi + 8, by, bi * 4, bi - 8];
+      }
+      return { kind: "units", diff: by > 8 ? "Medium" : "Easy", q: q, a: String(a), show: big(a), wrong: wrong.map(big) };
+    },
     bits: function () {
       var n = rnd(2, 1000), a = n.toString(2).length;
       var q = pick([
@@ -78,7 +93,7 @@
       return { kind: "bits", diff: n > 255 ? "Hard" : "Medium", q: q, a: String(a), show: String(a), wrong: [String(a - 1), String(a + 1), String(a === 8 ? 10 : 8), String(a + 2)] };
     }
   };
-  var KINDS = ["max", "count", "parity", "step", "bits"];
+  var KINDS = ["max", "count", "parity", "step", "units", "units", "bits"];
   function uniq(arr, show) { var seen = {}, out = []; arr.forEach(function (x) { if (x !== show && !seen[x]) { seen[x] = 1; out.push(x); } }); return out.slice(0, 3); }
   function asMC(c) {
     var wrong = uniq(c.wrong, c.show);
@@ -104,6 +119,7 @@
       for (var i = 0; i < 60; i++) p.push(MAKERS.step());
       for (i = 0; i < 6; i++) p.push(MAKERS.parity());
       for (i = 0; i < 20; i++) p.push(MAKERS.bits());
+      for (i = 0; i < 30; i++) p.push(MAKERS.units());
       p = p.map(function (c) { return { t: c.a, d: c.q }; });
       var conv = [];
       for (var n = 1; n <= 255; n++) {
@@ -118,7 +134,7 @@
     mc: function () { return Math.random() < 0.4 ? conversion() : asMC(MAKERS[pick(KINDS)]()); },
     boss: function (module) {
       var list = [MAKERS.max(8 * rnd(2, 4)), MAKERS.max(rnd(3, 12)), MAKERS.count(8 * rnd(1, 4)), MAKERS.count(rnd(3, 12)),
-        MAKERS.parity(), MAKERS.parity(), MAKERS.step(), MAKERS.step(), MAKERS.step(), MAKERS.bits()];
+        MAKERS.parity(), MAKERS.parity(), MAKERS.step(), MAKERS.step(), MAKERS.units(), MAKERS.units(), MAKERS.bits()];
       return list.map(function (c) { var m = asMC(c); return { module: module, topic: "M" + module, diff: m.diff, kind: "mc", prompt: m.question, choices: m.options, answer: m.answer }; });
     },
     is: function (mods) { return !!mods && mods.length === 1 && +mods[0] === 0; }
