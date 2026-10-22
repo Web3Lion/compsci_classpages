@@ -11,6 +11,183 @@ a cache tag (`?v=9.0.0`) — bump both together on every release.
 
 ---
 
+## 32.0.0 — 2026-10-21
+- New page **practice/text-binary.html** (Text ↔ Binary): worked examples, unlimited practice and a 15-question quiz, 5 each from text → binary (ASCII), binary → text (ASCII), and Unicode (UTF-8: bytes per character, lead byte → byte count, bytes in a word, 2-byte encode and decode). Linked from the Practice index, teacher guide and Binary Conversion.
+- Brackets: **Big screen** projector mode (live matches only in large type, question number / overtime, health or points, the last answer, up next, players left). Esc or "Exit big screen" to leave; remembered per browser.
+- Brackets: students now see the answer after every question ("Nobody got it. The answer was …" / "… got it first"), plus LAST ANSWER on the between-games and match-over cards.
+- Brackets: no-show and gone-missing forfeit is now **30 seconds** (was 60). **Re-run `supabase/brackets.sql`.**
+- Binary set: new "fewest bits for N unique codes" question (students, songs, lockers…) in Duel Arena MC, vocab battles, brackets and the Byte Bounty boss (now 12 questions).
+- Practice index: Binary Conversion card now says 15-question quiz and bit capacity.
+
+## 31.7.0 — 2026-10-21
+- Brackets: **Sudden death** option (Match length: Best of 3 / Sudden death). Every match is one game. Vocab and binary games are 5 questions: the first correct answer scores, and a wrong answer locks that player out of the question. Most points wins; tied after 5 = next point wins. A match ends early once it can't be caught. Flag brackets: first to 3 flag points. Rematch-pool games are unchanged. **Re-run `supabase/brackets.sql`.**
+
+## 31.6.0 — 2026-10-21
+- Brackets: **rematch pool**. Anyone knocked out (and not headed to the consolation bracket) is paired at random with another knocked-out player on the page for 1-game, no-XP rematches until the bracket ends. Opponents rotate (fewest past rematches first). Students see their rematch record; the tree shows live rematches. **Re-run `supabase/brackets.sql`.**
+- install-check / check-installed: guard for the 31.6 brackets.sql.
+
+## 31.5.0 — 2026-10-21
+- Binary Conversion practice: new **Bit Capacity** section (largest N-bit number, how many numbers N bits hold, fewest bits for a number or a set of items, bits ↔ bytes) with a worked example and its own practice tab.
+- Quiz is now 15 questions: 5 decimal → binary, 5 binary → decimal, 5 bit capacity.
+- Byte Message simulator: new **Unicode (UTF-8)** mode. Text → binary shows the code point, how many bytes it needs, and the filled UTF-8 pattern; binary → text decodes 1–4 byte sequences with marker bits highlighted and clear errors for bad bytes.
+
+## 31.4.0 — Schedule links + line breaks
+
+- New `sheet-rows.js`: the Tentative Schedule on every course home page (cyber1/2/3, apcsp, web3) now reads the sheet's web view instead of the CSV, so links in cells (Ctrl+K links and HYPERLINK formulas) stay clickable and open in a new tab. Pasted URLs are clickable too. Falls back to the CSV if the web view can't be read.
+- Hard returns inside a cell now show as separate lines instead of being joined with " · ".
+
+---
+
+## 31.3.1 — Binary question wording
+
+- binary-pool.js: new wordings "How many numbers can be represented with 4 bits / 2 bytes?" and "What is the largest number that can be represented with N bits / bytes?" mixed in with the existing versions.
+
+---
+
+## 31.3.0 — Squad prizes + victory-screen prize rolls
+
+- Carnival (Reward Rally): the "Spin for" list now has a **Squads** group. Pick a squad and the prize goes to every member's profile.
+- New `prize-roll.js`: when a battle, bracket or duel ends, a random chance game (wheel, duck pond, Plinko, lockers, claw, gumball) opens on the victory screen and the prize is sent automatically. Opens once per result (only if it ended in the last 15 minutes); a **Prize roll** button on the results reopens anything not yet rolled. Skip / Close on the bar.
+  - Vocab Battle + Team Battle: each winning squad rolls a class prize — no test bonus, graded-assignment bonus or homework pass. Every squad member gets it.
+  - Bracket (bracket.html) and Duel Arena brackets: 3rd place (both semifinalists) = in-game items, runner-up = every prize except test bonuses, champion = every prize. Rolled 3rd → 1st.
+  - Duel Arena single duels: the winner rolls in-game items only.
+- carnival.html award mode (`?award=1`): pool limited for that roll only (saved odds untouched), lobby/odds editing hidden, one roll per prize. No new SQL (uses `ctf_t_send_items`).
+
+---
+
+## 31.2.0 — Bits ↔ bytes questions, waiting room shows only ticked teams
+
+- binary-pool.js: new bits ↔ bytes questions ("How many bytes is 32 bits?", "How many bits are in 4 bytes?", several wordings, 1–64 bytes). They appear in the Duel Arena BINARY type, Binary vocab battles and brackets, and the Byte Bounty Module 3 boss (now 11 random binary questions per load).
+- waiting-room.js: in Team Battles and Vocab Battles the waiting room lists only the teams ticked to play, and the "here" count leaves the others out. Unticked teams are named under "Sitting out". The battle and its final results already used only ticked teams.
+
+---
+
+## 31.1.0 — Binary concept questions
+
+- binary-pool.js: the Binary set now mixes 8-bit conversions with concept questions, each with several wordings and fresh random numbers every load: highest value and how many values for N bits or N bytes (e.g. 4-byte), even or odd from a pattern like ? ? ? 1, the number before or after a binary value (rollovers like 111 → 1000 included), and fewest bits needed for a number.
+- duel.html (Duel Arena BINARY type), vocab-battle.html and bracket.html (Binary set) use the new mix. Labels now read "Binary" instead of "Binary conversion".
+- Byte Bounty (AP CSP): the Module 3 boss gets 10 new random binary-concept multiple-choice questions each time the page loads. No new flags, so no answer-key or manifest changes.
+
+---
+
+## 31.0.0 — Byte Message simulator
+
+- New page simulators/bytemessage.html: the Text ↔ Binary (ASCII) converter as its own simulator (step-by-step per character, flip output to input, ASCII table, binary rain background). Free play, no XP.
+- simulators/index.html: Byte Message card under Data Representation, after Code Points.
+
+---
+
+## 30.5.0 — Text ↔ Binary (ASCII) converter
+
+- practice/binary-conversion.html: new Text ↔ Binary (ASCII) section below the quiz. Type text or binary and each character is shown step by step (ASCII code, place-value sum, 8-bit grid), with a button to flip the output back into the input. Flags non-ASCII characters, bytes over 8 bits, and codes past 127. Includes a collapsible ASCII table (32–126).
+- practice/index.html: Binary Conversion card mentions the converter.
+
+---
+
+## 30.4.2 — Jeopardy import cell
+
+- Tools page, Jeopardy Question Builder: import (and the paste fallback) now starts at cell **B1**, not C1. Only column A holds the game's labels.
+
+---
+
+## 30.4.1 — Cyber 1 Unit 3 vocab from the Phishing Pre-Assessment
+
+- cyber1/vocab-data.js Unit 3 (Social Engineering): +11 terms: Tailgating, Piggybacking, Dumpster Diving, Authority, Urgency, Curiosity, Red Flag, Link Hovering, Multi-Factor Authentication (MFA), Awareness Training, Healthy Skepticism. They flow into the Vocabulary Lab, the Unit 3 vocab flag, and vocab duels/battles/brackets. (Phishing through Shouldering were already on the list.)
+
+---
+
+## 30.4.0 — Skip page transitions
+
+- A11Y panel: new **Skip page transitions** checkbox. It turns off the page-load intros (NEMESIS glitch, ADA packet screen, ORACLE consensus screen) for that student on this device, without hiding backgrounds or other animation. Reduce motion still skips them too (the box shows ticked and locked while Reduce motion is on).
+- New `window.SITE_SKIP_TRANSITIONS()`; stored as `localStorage['course-transitions']`.
+
+---
+
+## 30.3.0 — Reduce motion turns off backgrounds
+
+- With Reduce motion on (A11Y panel or the OS setting), every decorative background is hidden and pages show their plain solid color: battle/bracket/raid backgrounds, the binary rain on the Binary Conversion page, the code rain on secret/honeypot pages and buttons, the leaderboard and summit effects, and the NEMESIS takeover rain. Body background images are dropped too. Toggling it applies right away.
+- New `siteDecor` class: any future background layer with it is hidden the same way.
+
+---
+
+## 30.2.1 — Binary page background
+
+- practice/binary-conversion.html: slow "binary rain" background (columns of 0s and 1s that drift and flip), faded behind the content, green in both themes. Holds still with reduce-motion on.
+
+---
+
+## 30.2.0 — Binary team battles + brackets
+
+- vocab-battle.html: new **Question set** pick, Vocab or **Binary conversion**. Binary battles use the same teams, pairing, health and KOs; every question is a random 8-bit decimal→binary or binary→decimal conversion and students type the answer (no puzzle disguise). Rematch keeps the set.
+- bracket.html: new **Binary** game next to Vocab / Flags (best of 3, typed conversions, 4 hits to KO).
+- vocab-duel.html + bracket-play.html show binary questions as "QUESTION · type the answer".
+- New `binary-pool.js` (the question set).
+- SQL: **re-run `vocab-duels.sql`**: `_vd_modes` accepts `plain`, `_vd_pool` accepts 1–2 digit answers, `ctf_t_vd_state` returns the session's puzzle types (so Rematch keeps them for vocab battles too). New install-check run-order row.
+
+---
+
+## 30.1.0 — Binary questions in the Duel Arena
+
+- duel.html: new BINARY question type next to MIX / SCENARIOS / VOCAB. Each round is a random 8-bit decimal→binary or binary→decimal conversion with four choices (wrong answers are one-bit flips, ±1, or reversed bits). The module picker is ignored for this type. Works for any course.
+
+---
+
+## 30.0.0 — Binary Conversion practice
+
+- New page practice/binary-conversion.html: worked decimal→binary and binary→decimal examples, unlimited random practice (mixed or one direction, work shown after each check), and a 10-question quiz (5 each direction, shuffled, random 8-bit values) that requires the student's name and shows it on the results.
+- Linked from the Practice index.
+
+---
+
+## 29.2.0 — Class duels always use the waiting room
+
+- battle.html, vocab-battle.html, raid.html: Start reads "Open waiting room" until the room is open, then "Start · 10 s countdown". Without waiting-room.sql the pages still start directly.
+
+---
+
+## 29.1.0 — Cyber Engagement logo
+
+- New site logo (CRT monitor "CE" + CYBER ENGAGEMENT pixel wordmark) on the portal home, drawn in HTML so it follows light/dark.
+- Browser-tab icons on every page: the site mark on site-wide pages, a per-course monitor badge (C1 / C2 / C3 / CSP / W3 in the course color) on course pages. Files in `assets/logo/`.
+- `assets/logo/`: google-oauth-120.png (Google sign-in consent screen), ce-logo-dark.png / ce-logo-light.png (2560 px, certificates and posters), icon-site-256.png.
+
+---
+
+## 29.0.0 — Class duel waiting room
+
+- **lobby.html** (students): "Class Duel" link on every course home. Shows your squad, every team with who's in the room, and what's coming up. When the teacher presses Start, a 10-second countdown runs on every screen, then everyone is sent into the battle (Team Battle → arena, Vocab Battle → duel room, Boss Raid → raid page). `lobby.html?demo=1` previews it.
+- **Teacher:** battle.html, vocab-battle.html and raid.html get a Waiting room card (open / close, live head count per team). With the room open, Start becomes "Start · 10 s countdown" (shared `waiting-room.js`).
+- Glowing "WAITING ROOM OPEN · JOIN" call-out on course home, CTF page and profile. Latecomers still get the "Your team needs you" call-outs; those now show on the profile too.
+- SQL: new `supabase/waiting-room.sql` (step 48).
+
+---
+
+## 28.2.0 — Teacher dashboard redesign
+
+- **teacher.html rebuilt** with the new layout: grouped sidebar, header with jump-to box and Launch menu, Run class tiles on Summary, student search, Integrity badge. Every link, RPC and tab from the old page carried over (audited by script).
+- `teacher.html?demo=1` previews the dashboard with sample data, no sign-in.
+- Old version kept in `claude only/teacher-old-28.0.html`; `teacher2.html` removed.
+
+---
+
+## 28.1.0 — Teacher dashboard navigation
+
+- teacher.html: the 19 tabs are grouped into six sections (Overview, Students, CTF, Vocab, XP & Rewards, Settings) with sub-tabs; each section remembers its last tab.
+- The 11 header links are now two menus: **Live games** (Team Battle, Vocab Battle, Boss Raid, Duel Bracket, Duel Arena, Live Pulse, Duel Spectator, End all duels) and **Tools** (Certificates, Install Check, Teacher Resources).
+- "Locks & Guide" is now "Locks, Guide & Duels" under CTF.
+
+---
+
+## 28.0.0 — Class boss raid
+
+- **Boss raid** (raid.html, teacher projector): the whole class vs the course guide (NEMESIS / SPECTER / ADA / ORACLE). Teacher sets HP, modules, puzzle types and a 5/10/15-minute clock.
+- **raid-play.html** (students): everyone gets their own vocab puzzle. Correct = 10 damage; wrong = 4 off the shared class shield. Phase 2 at 66% (30 s terms), phase 3 at 33% (decrypt only, 20 s). One random 15 s weak point (3×). Enraged in the last minute (2× both ways). Guide taunts, damage leaderboard, live feed, combo meter.
+- Win: everyone who hit +15 XP, top damage +10 more. Loss: +5 for playing.
+- Glowing JOIN RAID call-out on the CTF page and course home. `raid.html?demo=1` previews a raid.
+- SQL: new `supabase/raids.sql` (step 47).
+
+---
+
 ## 27.0.0 — Duel brackets + animated backgrounds
 
 - **Duel brackets** (bracket.html, teacher): tick squads or individual students; everyone plays as an individual, seeded by current XP, top seeds get byes up to 4/8/16/32. Flag or Vocab, best of 3. Flag game = race to 3 flag points on flags you haven't captured (out of open flags → vocab tiebreak). Vocab game = normal 4-hit fight. Matches start when both players are on the page; 60 s no-show = forfeit. First-round losers play a consolation bracket. Rewards: champion +25, runner-up +15, semis +10, consolation champ +10, everyone else who played +5. Bracket Champion badge on profiles.

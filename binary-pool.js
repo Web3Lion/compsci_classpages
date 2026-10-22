@@ -1,5 +1,5 @@
 /* © 2026 Robert Reasey, South Fayette School District. CC BY-NC 4.0.
-   Binary question set (30.2; concept questions 31.1; bits ↔ bytes 31.2).
+   Binary question set (30.2; concept questions 31.1; bits ↔ bytes 31.2; unique codes for N items 31.8).
    - pool(): typed set for class Vocab Battles + Brackets. Module 0 marks a binary session;
      mode "plain" = no disguise. Terms are the answers; checked server-side by _vd_norm
      (lowercase alphanumerics, so "4,294,967,295" matches "4294967295"). _vd_pool keeps one
@@ -84,6 +84,15 @@
       }
       return { kind: "units", diff: by > 8 ? "Medium" : "Easy", q: q, a: String(a), show: big(a), wrong: wrong.map(big) };
     },
+    items: function () {
+      var k = rnd(2, 10), x = rnd(p2(k - 1) + 1, p2(k)), what = pick(["students", "songs", "colors", "players", "products", "lockers", "photos", "emoji"]);
+      var q = pick([
+        "Each of " + x + " " + what + " needs its own unique binary code. What is the fewest bits needed?",
+        "You want a different binary ID for each of " + x + " " + what + ". What is the fewest bits each ID needs?",
+        "How many bits are needed to give " + x + " " + what + " each a unique binary code?"
+      ]);
+      return { kind: "items", diff: k > 6 ? "Medium" : "Easy", q: q, a: String(k), show: String(k), wrong: [String(k - 1), String(k + 1), String(x.toString(2).length + 1), String(k + 2), "8"] };
+    },
     bits: function () {
       var n = rnd(2, 1000), a = n.toString(2).length;
       var q = pick([
@@ -93,7 +102,7 @@
       return { kind: "bits", diff: n > 255 ? "Hard" : "Medium", q: q, a: String(a), show: String(a), wrong: [String(a - 1), String(a + 1), String(a === 8 ? 10 : 8), String(a + 2)] };
     }
   };
-  var KINDS = ["max", "count", "parity", "step", "units", "units", "bits"];
+  var KINDS = ["max", "count", "parity", "step", "units", "units", "bits", "items"];
   function uniq(arr, show) { var seen = {}, out = []; arr.forEach(function (x) { if (x !== show && !seen[x]) { seen[x] = 1; out.push(x); } }); return out.slice(0, 3); }
   function asMC(c) {
     var wrong = uniq(c.wrong, c.show);
@@ -119,6 +128,7 @@
       for (var i = 0; i < 60; i++) p.push(MAKERS.step());
       for (i = 0; i < 6; i++) p.push(MAKERS.parity());
       for (i = 0; i < 20; i++) p.push(MAKERS.bits());
+      for (i = 0; i < 20; i++) p.push(MAKERS.items());
       for (i = 0; i < 30; i++) p.push(MAKERS.units());
       p = p.map(function (c) { return { t: c.a, d: c.q }; });
       var conv = [];
@@ -134,7 +144,7 @@
     mc: function () { return Math.random() < 0.4 ? conversion() : asMC(MAKERS[pick(KINDS)]()); },
     boss: function (module) {
       var list = [MAKERS.max(8 * rnd(2, 4)), MAKERS.max(rnd(3, 12)), MAKERS.count(8 * rnd(1, 4)), MAKERS.count(rnd(3, 12)),
-        MAKERS.parity(), MAKERS.parity(), MAKERS.step(), MAKERS.step(), MAKERS.units(), MAKERS.units(), MAKERS.bits()];
+        MAKERS.parity(), MAKERS.parity(), MAKERS.step(), MAKERS.step(), MAKERS.units(), MAKERS.units(), MAKERS.bits(), MAKERS.items()];
       return list.map(function (c) { var m = asMC(c); return { module: module, topic: "M" + module, diff: m.diff, kind: "mc", prompt: m.question, choices: m.options, answer: m.answer }; });
     },
     is: function (mods) { return !!mods && mods.length === 1 && +mods[0] === 0; }

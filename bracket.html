@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=31.3.0"></script>
+<script src="site.js?v=32.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.3.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.3.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=32.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=32.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -50,19 +50,19 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=31.3.0"></script>
-<script src="ctf-data/cyber1.js?v=31.3.0"></script>
-<script src="ctf-data/cyber2.js?v=31.3.0"></script>
-<script src="ctf-data/cyber3.js?v=31.3.0"></script>
-<script src="ctf-data/apcsp.js?v=31.3.0"></script>
-<script src="ctf-data/web3.js?v=31.3.0"></script>
-<script src="supabase-config.js?v=31.3.0"></script>
-<script src="auth.js?v=31.3.0"></script>
-<script src="battle-fx.js?v=31.3.0"></script>
-<script src="battle-bg.js?v=31.3.0"></script>
-<script src="bracket-tree.js?v=31.3.0"></script>
-<script src="binary-pool.js?v=31.3.1"></script>
-<script src="prize-roll.js?v=31.3.0"></script>
+<script src="config.js?v=32.0.0"></script>
+<script src="ctf-data/cyber1.js?v=32.0.0"></script>
+<script src="ctf-data/cyber2.js?v=32.0.0"></script>
+<script src="ctf-data/cyber3.js?v=32.0.0"></script>
+<script src="ctf-data/apcsp.js?v=32.0.0"></script>
+<script src="ctf-data/web3.js?v=32.0.0"></script>
+<script src="supabase-config.js?v=32.0.0"></script>
+<script src="auth.js?v=32.0.0"></script>
+<script src="battle-fx.js?v=32.0.0"></script>
+<script src="battle-bg.js?v=32.0.0"></script>
+<script src="bracket-tree.js?v=32.0.0"></script>
+<script src="binary-pool.js?v=32.0.0"></script>
+<script src="prize-roll.js?v=32.0.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX, BT = window.BRACKET_TREE, esc = BT.esc;
@@ -70,7 +70,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]];
   var CLASSES = [], CUR = null, SET = null, ST = null, MODS = {}, timer = null, msg = "", busy = false, showSetup = false;
-  var kind = "vocab", pick = {}, modes = { cipher:1, unscramble:1, decrypt:1, bank:1 }, chosen = {}, prev = {}, BIN = window.BINARY_SET;
+  var big = false; try { big = localStorage.getItem("bracket-big") === "1"; } catch (e) {}
+  var kind = "vocab", sudden = false, pick = {}, modes = { cipher:1, unscramble:1, decrypt:1, bank:1 }, chosen = {}, prev = {}, BIN = window.BINARY_SET;
   var ERR = { bracket_live:"A bracket is already running in this class.", no_modules:"Pick at least one module.", too_few_terms:"Those modules need at least 4 vocab terms (used for vocab games and flag tiebreaks).",
     no_manifest:"Open this class once in teacher.html so its flag list is published, then try again.", need_two:"Pick at least 2 students.", too_many:"Brackets hold up to 32 students." };
   var DEMO = /[?&]demo=1/.test(location.search);
@@ -82,7 +83,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=31.3.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=32.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
@@ -118,7 +119,10 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Game</div>' +
         '<div role="group" aria-label="Game" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
           '<button type="button" class="chip brK" data-k="vocab" aria-pressed="' + (kind === "vocab") + '">Vocab</button><button type="button" class="chip brK" data-k="flag" aria-pressed="' + (kind === "flag") + '">Flags</button>' + (BIN ? '<button type="button" class="chip brK" data-k="binary" aria-pressed="' + bin + '">Binary</button>' : '') + '</div>' +
-        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">' + (bin ? "Best of 3. A game is a fight on random binary questions: 8-bit conversions plus concepts (largest value / how many values for N bits or bytes, even or odd, the number before or after, bits \u2194 bytes, fewest bits needed), typed answers, 4 hits to KO." : kind === "flag" ? "Best of 3. A game is a race to 3 flag points (Easy 1, Medium 2, Hard 3) on flags the player hasn\u2019t captured. Out of open flags? That game becomes a vocab fight." : "Best of 3. A game is a normal vocab fight: 4 hits to KO.") + '</div>' +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Match length</div>' +
+        '<div role="group" aria-label="Match length" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;"><button type="button" class="chip brS" data-s="0" aria-pressed="' + !sudden + '">Best of 3</button><button type="button" class="chip brS" data-s="1" aria-pressed="' + sudden + '">\u2620 Sudden death</button></div>' +
+        (sudden ? '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">One game per match. ' + (kind === "flag" ? "First to 3 flag points wins the match. Out of open flags? It becomes a 5-question vocab game." : "5 questions: the first correct answer scores the point, and a wrong answer locks you out of that question. Most points wins; tied after 5 = next point wins.") + ' Brackets finish in about half the time.</div>' : '') +
+        (sudden ? '' : '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">' + (bin ? "Best of 3. A game is a fight on random binary questions: 8-bit conversions plus concepts (largest value / how many values for N bits or bytes, even or odd, the number before or after, bits \u2194 bytes, fewest bits for a number or a set of items), typed answers, 4 hits to KO." : kind === "flag" ? "Best of 3. A game is a race to 3 flag points (Easy 1, Medium 2, Hard 3) on flags the player hasn\u2019t captured. Out of open flags? That game becomes a vocab fight." : "Best of 3. A game is a normal vocab fight: 4 hits to KO.") + '</div>') +
         (bin ? '' : '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip brM" data-m="' + m + '" aria-pressed="' + !!pick[m] + '" title="' + esc(modName(m)) + '">M' + String(m).padStart(2,"0") + '</button>'; }).join("") : '<span style="font-size:13px;color:var(--dim);">' + (kind === "flag" ? "No published flag list. Open this class in teacher.html once." : "No vocab for this course.") + '</span>') + '</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab puzzle types</div>' +
@@ -126,21 +130,63 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         '<div class="mono" style="font-size:13px;color:var(--muted);margin-bottom:14px;">' + (n >= 2 ? n + " players \u00b7 " + size + "-slot bracket" + (size - n ? " \u00b7 " + (size - n) + " bye" + (size - n > 1 ? "s" : "") + " for the top seed" + (size - n > 1 ? "s" : "") : "") : "Pick at least 2 players") + '</div>' +
         '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><button type="button" class="btn" id="brGo"' + (ready ? "" : " disabled") + '>Start bracket</button>' + (ST && ST.bracket ? '<button type="button" class="btn ghost" id="brBack">Back to bracket</button>' : '') + '</div>' +
         (msg ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(msg) + '</div>' : '') +
-        '<div style="font-size:12px;color:var(--dim);margin-top:14px;line-height:1.6;">Students open <b>Bracket</b> from the Duels card on their CTF page. A match starts by itself once both players are on the page; 60 seconds missing = forfeit. First-round losers play a consolation bracket.<br>Rewards: champion +25, runner-up +15, semifinals +10, consolation champion +10, everyone else who played +5.</div></div></div>';
+        '<div style="font-size:12px;color:var(--dim);margin-top:14px;line-height:1.6;">Students open <b>Bracket</b> from the Duels card on their CTF page. A match starts by itself once both players are on the page; 30 seconds missing = forfeit. First-round losers play a consolation bracket. Anyone knocked out after that joins the rematch pool: random 1-game matches against other knocked-out players until the bracket ends (no XP).<br>Rewards: champion +25, runner-up +15, semifinals +10, consolation champion +10, everyone else who played +5.</div></div></div>';
   }
   function liveView(){
     var b = ST.bracket, done = b.status !== "live";
     var top = '<div class="card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px;border-color:var(--amber);">' +
       '<div style="flex:1;min-width:240px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:800;">' + (b.kind === "flag" ? "\u2691 FLAG BRACKET" : BIN && BIN.is(b.modules) ? "01 BINARY BRACKET" : "\u2620 VOCAB BRACKET") + ' \u00b7 ' + (done ? (b.status === "done" ? "FINISHED" : "CANCELLED") : "LIVE") + '</div>' +
-      '<div class="mono" style="font-size:13px;color:var(--dim);margin-top:4px;">' + (b.modules || []).map(modName).map(esc).join(" \u00b7 ") + ' \u00b7 best of 3</div></div>' +
-      '<div style="display:flex;gap:10px;flex-wrap:wrap;">' + '<button type="button" class="btn ghost" id="brFull">Full screen</button>' +
+      '<div class="mono" style="font-size:13px;color:var(--dim);margin-top:4px;">' + (b.modules || []).map(modName).map(esc).join(" \u00b7 ") + ' \u00b7 ' + (b.sudden ? "\u2620 sudden death" : "best of 3") + '</div></div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;">' + '<button type="button" class="btn" id="brBig">\u25a3 Big screen</button><button type="button" class="btn ghost" id="brFull">Full screen</button>' +
       (done ? (b.status === "done" && window.PRIZE_ROLL && !DEMO ? '<button type="button" class="btn ghost" id="brPrize">\u2605 Prize rolls</button>' : '') + '<button type="button" class="btn" id="brNew">New bracket</button>' : '<button type="button" class="btn ghost" id="brCancel">Cancel (no XP)</button>') + '</div></div>';
     var pod = b.status === "done" ? '<div class="card" style="margin-bottom:18px;display:flex;flex-direction:column;gap:10px;border-color:#ffcf5c;">' + BT.podium(ST.tree) + '</div>' : "";
-    return top + pod + '<div class="card" id="brTree">' + BT.html(ST.tree, { showHere: true, kind: b.kind }) + '</div>';
+    return top + pod + '<div class="card" id="brTree">' + BT.html(ST.tree, { showHere: true, kind: b.kind, sudden: b.sudden }) + '</div>';
+  }
+  // 31.8: projector big screen — live matches only, large type
+  function bigView(){
+    var b = ST.bracket, T = ST.tree || {}, E = {}, M = T.matches || [], maxR = { main: 0, cons: 0 }, lost = {};
+    (T.entrants || []).forEach(function(e){ E[e.id] = e; });
+    M.forEach(function(m){ if (maxR[m.side] != null && m.round > maxR[m.side]) maxR[m.side] = m.round;
+      if (m.side === "main" && m.status === "done" && !m.bye && m.winner) { var l = m.winner === m.a ? m.b : m.a; if (l) lost[l] = 1; } });
+    var live = M.filter(function(m){ return m.side !== "pool" && m.status === "live"; }), ready = M.filter(function(m){ return m.side !== "pool" && m.status === "ready"; });
+    var poolLive = M.filter(function(m){ return m.side === "pool" && m.status !== "done"; }).length, left = (T.entrants || []).filter(function(e){ return !lost[e.id]; }).length;
+    function rn(m){ var k = maxR[m.side] - m.round; return (m.side === "cons" ? "CONSOLATION \u00b7 " : "") + (k === 0 ? "FINAL" : k === 1 ? "SEMIFINALS" : k === 2 ? "QUARTERFINALS" : "ROUND " + m.round); }
+    function who(id){ return esc((E[id] || {}).handle || "TBD"); }
+    function half(m, isA){
+      var sd = b.sudden && m.game_kind === "vocab", hp = Math.round((isA ? m.hp_a : m.hp_b) / 3), pts = isA ? m.ga : m.gb, id = isA ? m.a : m.b;
+      var sub = !m.game_kind ? "" : m.game_kind === "flag" ? pts + "/3 flag pts" : sd ? pts + " pt" + (pts === 1 ? "" : "s") : hp + "%";
+      var bar = m.game_kind === "vocab" && !sd ? '<div style="height:16px;border-radius:99px;background:var(--panel2);border:1px solid var(--border2);overflow:hidden;margin-top:12px;"><div style="height:100%;width:' + hp + '%;margin-left:' + (isA ? 0 : 100 - hp) + '%;background:' + (isA ? "var(--accent)" : "var(--bad)") + ';transition:width .4s,margin .4s;"></div></div>' : '';
+      return '<div style="flex:1;min-width:0;text-align:' + (isA ? "left" : "right") + ';"><div style="font-size:clamp(26px,2.8vw,48px);font-weight:800;color:var(--bright);overflow-wrap:anywhere;line-height:1.1;">' + who(id) + '</div>' +
+        '<div class="mono" style="font-size:clamp(15px,1.3vw,22px);color:var(--muted);margin-top:8px;">SEED ' + ((E[id] || {}).seed || "") + (sub ? ' \u00b7 <b style="color:var(--bright);">' + sub + '</b>' : '') + '</div>' + bar + '</div>';
+    }
+    function card(m){
+      var sd = b.sudden && m.game_kind === "vocab";
+      var st = !m.game_kind ? "NEXT GAME\u2026" : sd ? (m.q >= 5 ? "OVERTIME \u00b7 NEXT POINT WINS" : "QUESTION " + Math.min(5, (m.q || 0) + 1) + " OF 5") : m.game_kind === "flag" ? "GAME " + m.game_no + " \u00b7 FLAG RACE" : "GAME " + m.game_no + (b.sudden ? "" : " OF 3");
+      var sc = b.sudden ? m.ga + "\u2013" + m.gb : m.wa + "\u2013" + m.wb;
+      return '<div id="bm-' + esc(m.id) + '" class="card" style="border:2px solid var(--amber);padding:26px 28px;">' +
+        '<div class="mono" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:clamp(13px,1.1vw,17px);letter-spacing:2px;color:var(--amber);font-weight:800;margin-bottom:18px;"><span>' + rn(m) + '</span><span>' + st + '</span></div>' +
+        '<div style="display:flex;align-items:center;gap:22px;">' + half(m, true) + '<div class="mono" style="font-size:clamp(34px,3.6vw,64px);font-weight:800;color:var(--bright);white-space:nowrap;">' + sc + '</div>' + half(m, false) + '</div>' +
+        (m.last_t ? '<div class="mono" style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border2);font-size:clamp(15px,1.3vw,22px);color:var(--dim);">LAST ANSWER \u00b7 <b style="color:var(--ok);">' + esc(m.last_t) + '</b></div>' : '') + '</div>';
+    }
+    var label = (b.kind === "flag" ? "\u2691 FLAG BRACKET" : BIN && BIN.is(b.modules) ? "01 BINARY BRACKET" : "\u2620 VOCAB BRACKET");
+    var head = '<div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:24px;padding-right:110px;">' +
+      '<div class="mono" style="font-size:clamp(22px,2.2vw,34px);letter-spacing:3px;color:var(--amber);font-weight:800;">' + label + '</div>' +
+      '<div class="mono" style="font-size:clamp(16px,1.5vw,24px);color:var(--muted);">' + (b.status === "live" ? left + " player" + (left === 1 ? "" : "s") + " left \u00b7 " + live.length + " live" : b.status === "done" ? "FINISHED" : "CANCELLED") + ' \u00b7 ' + (b.sudden ? "\u2620 sudden death" : "best of 3") + '</div>' +
+      '<span style="flex:1;"></span><button type="button" class="btn ghost" id="brFull">Full screen</button><button type="button" class="btn ghost" id="brBigX">Exit big screen</button></div>';
+    if (b.status !== "live") return head + (b.status === "done" ? '<div class="card" style="zoom:1.6;display:flex;flex-direction:column;gap:10px;border-color:#ffcf5c;">' + BT.podium(T) + '</div>' : '');
+    var grid = live.length ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,560px),1fr));gap:20px;">' + live.map(card).join("") + '</div>'
+      : '<div class="card mono" style="text-align:center;padding:50px;font-size:clamp(20px,2vw,30px);color:var(--muted);">Waiting for the next matches\u2026</div>';
+    var next = ready.length ? '<div style="margin-top:26px;"><div class="mono" style="font-size:clamp(14px,1.2vw,18px);letter-spacing:2px;color:var(--dim);font-weight:800;margin-bottom:12px;">UP NEXT \u00b7 WAITING FOR PLAYERS</div><div style="display:flex;flex-wrap:wrap;gap:12px;">' +
+      ready.map(function(m){ return '<div class="card" style="padding:14px 20px;font-size:clamp(17px,1.5vw,24px);font-weight:700;color:var(--bright);">' + who(m.a) + ' <span class="mono" style="color:var(--faint);font-size:.75em;">vs</span> ' + who(m.b) + ' <span class="mono" style="color:var(--dim);font-size:.6em;margin-left:8px;">' + rn(m) + '</span></div>'; }).join("") + '</div></div>' : '';
+    var pl = poolLive ? '<div class="mono" style="margin-top:22px;font-size:clamp(14px,1.2vw,18px);letter-spacing:2px;color:var(--dim);">\u27f3 REMATCH POOL \u00b7 ' + poolLive + ' match' + (poolLive === 1 ? "" : "es") + ' going</div>' : '';
+    return head + grid + next + pl;
   }
   function paint(){
     if (!CUR) return;
-    view.innerHTML = (showSetup || !ST || !ST.bracket) ? (SET ? setupView() : '<div class="card mono" style="color:var(--dim);">Loading&hellip;</div>') : liveView();
+    var isBig = big && !showSetup && ST && ST.bracket;
+    document.getElementById("hdr").style.display = isBig ? "none" : "";
+    document.querySelector(".wrap").style.maxWidth = isBig ? "none" : "";
+    view.innerHTML = (showSetup || !ST || !ST.bracket) ? (SET ? setupView() : '<div class="card mono" style="color:var(--dim);">Loading&hellip;</div>') : isBig ? bigView() : liveView();
     var g = document.getElementById("g"); if (g && innerWidth < 900) g.style.gridTemplateColumns = "1fr";
     bind();
   }
@@ -149,6 +195,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var E = {}; (ST.tree.entrants || []).forEach(function(e){ E[e.id] = e; });
     (ST.tree.matches || []).forEach(function(m){
       var p = prev[m.id];
+      if (m.side === "pool") { if (p && p.status !== "done" && m.status === "done" && m.winner) FX.caster(((E[m.winner] || {}).handle || "?") + " wins a rematch"); prev[m.id] = { status: m.status }; return; }
       if (p && p.status !== "done" && m.status === "done" && m.winner && !m.bye) { var w = E[m.winner] || {}; FX.banner((w.handle || "Winner") + " ADVANCES!", "#ffcf5c", m.forfeit ? "by forfeit" : m.wa + "\u2013" + m.wb); FX.sfx("lead"); FX.pop(document.getElementById("bm-" + m.id)); }
       if (p && p.status === "ready" && m.status === "live") { FX.caster("Match on: " + ((E[m.a] || {}).handle || "?") + " vs " + ((E[m.b] || {}).handle || "?")); FX.sfx("blood"); }
       if (p && m.status === "live" && (p.wa !== m.wa || p.wb !== m.wb)) FX.shake(document.getElementById("bm-" + m.id));
@@ -173,6 +220,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var pz = document.getElementById("brPrize"); if (pz) pz.onclick = function(){ if (!PRIZE_ROLL.open(prizeList())) { msg = "Every bracket prize has been rolled."; paint(); } };
     view.querySelectorAll(".brK").forEach(function(b){ b.onclick = function(){ kind = b.getAttribute("data-k"); pick = {}; paint(); }; });
     view.querySelectorAll(".brM").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
+    view.querySelectorAll(".brS").forEach(function(b){ b.onclick = function(){ sudden = b.getAttribute("data-s") === "1"; paint(); }; });
     view.querySelectorAll(".brT").forEach(function(b){ b.onclick = function(){ var p = b.getAttribute("data-p"); modes[p] = !modes[p]; paint(); }; });
     view.querySelectorAll(".brP").forEach(function(b){ b.onchange = function(){ chosen[b.getAttribute("data-id")] = b.checked; paint(); }; });
     view.querySelectorAll(".brG").forEach(function(b){ b.onchange = function(){
@@ -181,15 +229,19 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var go = document.getElementById("brGo"); if (go) go.onclick = function(){
       var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), bin = kind === "binary" && BIN;
       busy = true; msg = ""; paint();
-      rpc("ctf_t_br_create", { p_class: CUR.id, p_kind: bin ? "vocab" : kind, p_modules: bin ? [BIN.module] : mods, p_pool: bin ? BIN.pool() : pool(mods), p_modes: bin ? BIN.modes : PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }), p_students: picked().map(function(p){ return p.id; }) })
+      rpc("ctf_t_br_create", { p_class: CUR.id, p_kind: bin ? "vocab" : kind, p_modules: bin ? [BIN.module] : mods, p_pool: bin ? BIN.pool() : pool(mods), p_modes: bin ? BIN.modes : PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }), p_students: picked().map(function(p){ return p.id; }), p_sudden: sudden })
         .then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; } showSetup = false; prev = {}; load(); })
         .catch(function(e){ busy = false; msg = "Couldn\u2019t start. Check that supabase/brackets.sql has been run."; paint(); });
     };
     var bk = document.getElementById("brBack"); if (bk) bk.onclick = function(){ showSetup = false; paint(); };
     var nw = document.getElementById("brNew"); if (nw) nw.onclick = function(){ showSetup = true; msg = ""; paint(); };
     var cc = document.getElementById("brCancel"); if (cc) cc.onclick = function(){ if (!confirm("Cancel this bracket? Nobody gets bracket XP.")) return; rpc("ctf_t_br_cancel", { p_bracket: ST.bracket.id }).then(load); };
+    var bg = document.getElementById("brBig"); if (bg) bg.onclick = function(){ setBig(true); };
+    var bx = document.getElementById("brBigX"); if (bx) bx.onclick = function(){ setBig(false); };
     var fu = document.getElementById("brFull"); if (fu) fu.onclick = function(){ if (FX) FX.fullscreen(document.documentElement); };
   }
+  function setBig(v){ big = v; try { localStorage.setItem("bracket-big", v ? "1" : "0"); } catch (e) {} paint(); }
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && big && !document.fullscreenElement) setBig(false); });
   function load(){
     clearTimeout(timer); if (!CUR) return;
     var id = CUR.id;
@@ -220,7 +272,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       { id:"m2", side:"main", round:1, slot:2, a:"s3", b:"s4", wa:2, wb:1, status:"done", winner:"s3" },
       { id:"m3", side:"main", round:1, slot:3, a:"s2", b:"s5", wa:2, wb:0, status:"done", winner:"s2" },
       { id:"m4", side:"main", round:1, slot:4, a:"s1", b:null, wa:0, wb:0, status:"done", winner:"s1", bye:true },
-      { id:"m5", side:"main", round:2, slot:1, a:"s0", b:"s3", wa:1, wb: t > 30 ? 1 : 0, status:"live", game_no: t > 30 ? 3 : 2, game_kind:"vocab", hp_a: 300 - (t % 30) * 8, hp_b: 225, ga:0, gb:0 },
+      { id:"m5", side:"main", round:2, slot:1, a:"s0", b:"s3", wa:1, wb: t > 30 ? 1 : 0, status:"live", game_no: t > 30 ? 3 : 2, game_kind:"vocab", hp_a: 300 - (t % 30) * 8, hp_b: 225, ga:0, gb:0, last_t:"Firewall" },
       { id:"m6", side:"main", round:2, slot:2, a:"s2", b:"s1", wa:0, wb:0, status:"ready" },
       { id:"m7", side:"main", round:3, slot:1, a:null, b:null, wa:0, wb:0, status:"wait" },
       { id:"c1", side:"cons", round:1, slot:1, a:"s4", b:"s5", wa:1, wb:0, status:"live", game_no:2, game_kind:"vocab", hp_a:150, hp_b:75 } ];

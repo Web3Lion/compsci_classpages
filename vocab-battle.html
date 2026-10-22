@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=31.3.0"></script>
+<script src="site.js?v=32.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.3.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.3.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=32.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=32.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -48,20 +48,20 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=31.3.0"></script>
-<script src="ctf-data/cyber1.js?v=31.3.0"></script>
-<script src="ctf-data/cyber2.js?v=31.3.0"></script>
-<script src="ctf-data/cyber3.js?v=31.3.0"></script>
-<script src="ctf-data/apcsp.js?v=31.3.0"></script>
-<script src="ctf-data/web3.js?v=31.3.0"></script>
-<script src="supabase-config.js?v=31.3.0"></script>
-<script src="auth.js?v=31.3.0"></script>
-<script src="battle-fx.js?v=31.3.0"></script>
-<script src="battle-bg.js?v=31.3.0"></script>
-<script src="team-picker.js?v=31.3.0"></script>
-<script src="waiting-room.js?v=31.3.0"></script>
-<script src="binary-pool.js?v=31.3.1"></script>
-<script src="prize-roll.js?v=31.3.0"></script>
+<script src="config.js?v=32.0.0"></script>
+<script src="ctf-data/cyber1.js?v=32.0.0"></script>
+<script src="ctf-data/cyber2.js?v=32.0.0"></script>
+<script src="ctf-data/cyber3.js?v=32.0.0"></script>
+<script src="ctf-data/apcsp.js?v=32.0.0"></script>
+<script src="ctf-data/web3.js?v=32.0.0"></script>
+<script src="supabase-config.js?v=32.0.0"></script>
+<script src="auth.js?v=32.0.0"></script>
+<script src="battle-fx.js?v=32.0.0"></script>
+<script src="battle-bg.js?v=32.0.0"></script>
+<script src="team-picker.js?v=32.0.0"></script>
+<script src="waiting-room.js?v=32.0.0"></script>
+<script src="binary-pool.js?v=32.0.0"></script>
+<script src="prize-roll.js?v=32.0.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -95,7 +95,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=31.3.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=32.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });

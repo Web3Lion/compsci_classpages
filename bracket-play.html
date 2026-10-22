@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=31.3.0"></script>
+<script src="site.js?v=32.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=31.3.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=31.3.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=32.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=32.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -63,25 +63,30 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
     function hp(id, who, v, me){ var pct = Math.round(v / 3);
       return '<div style="flex:1;min-width:150px;"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><b style="color:var(--bright);">' + esc(who) + (me ? ' <span class="mono" style="font-size:10px;color:var(--accent);">YOU</span>' : '') + '</b><span class="mono" style="font-weight:800;color:var(--bright);">' + pct + '%</span></div>' +
         (FX ? FX.bossBar(id, pct, me ? "#00b3ff" : "#ff3b3b", who + " health") : '') + '</div>'; }
-    function games(m){ return '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;">' +
-      '<span class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--faint);">' + (m.side === "cons" ? "CONSOLATION \u00b7 " : "") + 'ROUND ' + m.round + ' \u00b7 BEST OF 3</span>' +
-      '<span class="mono" style="font-size:22px;font-weight:800;color:var(--bright);margin-left:auto;">You ' + m.my_games + ' \u2013 ' + m.opp_games + ' ' + esc(m.opp || "") + '</span></div>'; }
+    function games(m){ var sd = ST.bracket && ST.bracket.sudden && m.side !== "pool", qv = sd && m.game_kind === "vocab";
+      return '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;">' +
+      '<span class="mono" style="font-size:12px;letter-spacing:1.5px;color:' + (sd ? "var(--adv)" : "var(--faint)") + ';">' + (m.side === "pool" ? "REMATCH POOL \u00b7 1 GAME \u00b7 JUST FOR FUN" : (m.side === "cons" ? "CONSOLATION \u00b7 " : "") + 'ROUND ' + m.round + (sd ? ' \u00b7 \u2620 SUDDEN DEATH' + (qv ? (m.q >= 5 ? ' \u00b7 OVERTIME: NEXT POINT WINS' : ' \u00b7 QUESTION ' + (m.q + 1) + ' OF 5') : '') : ' \u00b7 BEST OF 3')) + '</span>' +
+      '<span class="mono" style="font-size:22px;font-weight:800;color:var(--bright);margin-left:auto;">You ' + (qv ? m.my_pts : m.my_games) + ' \u2013 ' + (qv ? m.opp_pts : m.opp_games) + ' ' + esc(m.opp || "") + '</span></div>'; }
     function puzzle(m){
       if (m.mode === "plain") return '';
       if (m.mode === "decrypt") return '<div id="brMask" style="display:flex;flex-wrap:wrap;gap:6px;">' + maskHtml(m.puzzle) + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">DECRYPT \u00b7 letters leak after 8 seconds \u00b7 type the term</div>';
       if (m.mode === "bank") { var o = []; try { o = JSON.parse(m.puzzle || "[]"); } catch (e) {}
-        return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;">' + o.map(function(x){ return '<button type="button" class="tile brBank" style="font-size:16px;padding:10px 12px;">' + esc(x) + '</button>'; }).join("") + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">WORD BANK \u00b7 a wrong pick costs a third of a hit</div>'; }
+        return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;">' + o.map(function(x){ return '<button type="button" class="tile brBank" style="font-size:16px;padding:10px 12px;">' + esc(x) + '</button>'; }).join("") + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">WORD BANK \u00b7 ' + (ST.bracket && ST.bracket.sudden && m.side !== "pool" ? "a wrong pick locks you out of this question" : "a wrong pick costs a third of a hit") + '</div>'; }
       if (m.mode === "cipher") return '<div class="mono" style="font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:4px;color:var(--bright);word-break:break-word;">' + esc(m.puzzle) + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:6px;">CAESAR CIPHER \u00b7 shift each letter back <b style="color:var(--bright);">' + m.shift + '</b></div>';
       return '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + String(m.puzzle || "").split("").map(function(ch){ return '<button type="button" class="tile brTile">' + esc(ch) + '</button>'; }).join("") + '</div><div class="mono" style="font-size:13px;color:var(--muted);margin-top:8px;">SCRAMBLED \u00b7 tap the letters in order, or type the term</div>';
     }
     function matchView(b, m){
       if (!m) return '<div class="card" style="text-align:center;padding:34px;">You\u2019re in this bracket. Your first match will show here.</div>';
-      if (m.status === "done") return '<div class="card" style="text-align:center;padding:34px;border-color:' + (m.won ? "var(--ok)" : "var(--adv)") + ';"><div style="font-size:clamp(26px,5vw,40px);font-weight:800;color:var(--bright);">' +
-        (m.won ? "\u2605 You beat " + esc(m.opp) + "!" : "Knocked out by " + esc(m.opp)) + '</div><div style="font-size:14px;color:var(--muted);margin-top:10px;">' +
-        (b.status !== "live" ? "The bracket is over." : m.won ? "Waiting for your next opponent\u2026 stay on this page." : m.side === "main" && m.round === 1 ? "Stay here: first-round losers play the consolation bracket." : "Watch the rest of the bracket below.") + '</div></div>';
+      if (m.status === "done") {
+        var pw = ST.pool_w || 0, pl = ST.pool_l || 0, rec = pw + pl ? '<div class="mono" style="font-size:13px;color:var(--dim);margin-top:10px;">REMATCH POOL RECORD ' + pw + '\u2013' + pl + '</div>' : '';
+        var poolMsg = "You\u2019re in the rematch pool: you\u2019ll be paired with another knocked-out player for just-for-fun games until the bracket ends. Stay on this page.";
+        var head = m.side === "pool" ? (m.won ? "\u2605 You won the rematch vs " + esc(m.opp) + "!" : esc(m.opp) + " won the rematch") : m.won ? "\u2605 You beat " + esc(m.opp) + "!" : "Knocked out by " + esc(m.opp);
+        var sub = b.status !== "live" ? "The bracket is over." : m.side === "pool" ? "Finding your next rematch\u2026 stay on this page." : m.won ? "Waiting for your next opponent\u2026 stay on this page." : ST.out ? poolMsg : m.side === "main" && m.round === 1 ? "Stay here: first-round losers play the consolation bracket." : "Watch the rest of the bracket below.";
+        return '<div class="card" style="text-align:center;padding:34px;border-color:' + (m.won ? "var(--ok)" : "var(--adv)") + ';"><div style="font-size:clamp(26px,5vw,40px);font-weight:800;color:var(--bright);">' + head + '</div>' + (m.last_t && !m.forfeit ? '<div class="mono" style="font-size:15px;color:var(--muted);margin-top:10px;">LAST ANSWER \u00b7 <b style="color:var(--ok);">' + esc(m.last_t) + '</b></div>' : '') + '<div style="font-size:14px;color:var(--muted);margin-top:10px;max-width:60ch;margin-left:auto;margin-right:auto;">' + sub + '</div>' + rec + '</div>';
+      }
       if (m.status === "wait") return '<div class="card" style="text-align:center;padding:34px;"><div style="font-size:26px;font-weight:800;color:var(--bright);">Waiting for your opponent</div><div style="font-size:14px;color:var(--muted);margin-top:8px;">Their match is still going. Stay on this page.</div></div>';
-      if (m.status === "ready") return '<div class="card" style="text-align:center;padding:34px;border-color:var(--amber);"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">MATCH FOUND</div><div style="font-size:30px;font-weight:800;color:var(--bright);margin:8px 0;">You vs ' + esc(m.opp) + '</div><div style="font-size:14px;color:var(--muted);">Starts as soon as you\u2019re both on this page. Missing for 60 seconds = forfeit.</div></div>';
-      if (!m.game_kind) return '<div class="card" style="text-align:center;padding:34px;border-color:var(--amber);">' + games(m) + '<div style="font-size:26px;font-weight:800;color:var(--bright);">' + (m.last_game_mine ? "You won game " + m.game_no + "!" : esc(m.opp) + " took game " + m.game_no) + '</div><div class="mono" id="brNext" style="font-size:14px;color:var(--muted);margin-top:8px;">Next game\u2026</div></div>';
+      if (m.status === "ready") return '<div class="card" style="text-align:center;padding:34px;border-color:var(--amber);"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">' + (m.side === "pool" ? "REMATCH FOUND \u00b7 JUST FOR FUN" : "MATCH FOUND") + '</div><div style="font-size:30px;font-weight:800;color:var(--bright);margin:8px 0;">You vs ' + esc(m.opp) + '</div><div style="font-size:14px;color:var(--muted);">Starts as soon as you\u2019re both on this page. Missing for 30 seconds = forfeit.</div></div>';
+      if (!m.game_kind) return '<div class="card" style="text-align:center;padding:34px;border-color:var(--amber);">' + games(m) + '<div style="font-size:26px;font-weight:800;color:var(--bright);">' + (m.last_game_mine ? "You won game " + m.game_no + "!" : esc(m.opp) + " took game " + m.game_no) + '</div>' + (m.last_t ? '<div class="mono" style="font-size:15px;color:var(--muted);margin-top:10px;">LAST ANSWER \u00b7 <b style="color:var(--ok);">' + esc(m.last_t) + '</b></div>' : '') + '<div class="mono" id="brNext" style="font-size:14px;color:var(--muted);margin-top:8px;">Next game\u2026</div></div>';
       if (m.game_kind === "flag") return '<div class="card" style="border-color:var(--amber);">' + games(m) +
         '<div class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">GAME ' + m.game_no + ' \u00b7 RACE TO 3 FLAG POINTS</div>' +
         '<div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:16px;"><div style="flex:1;min-width:150px;"><b style="color:var(--bright);">You</b><div class="mono" style="font-size:44px;font-weight:800;color:var(--accent);">' + m.my_pts + '<span style="font-size:18px;color:var(--faint);">/3</span></div></div>' +
@@ -92,6 +97,7 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
         '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:8px;">GAME ' + m.game_no + (b.kind === "flag" ? " \u00b7 VOCAB TIEBREAK" : "") + (m.mode === "plain" ? ' \u00b7 QUESTION \u00b7 type the answer' : ' \u00b7 DEFINITION \u00b7 ' + m.len + ' letters') + '</div>' +
         '<div style="font-size:clamp(17px,2.6vw,21px);font-weight:600;color:var(--bright);line-height:1.5;margin-bottom:18px;">' + esc(m.def) + '</div>' +
         '<div style="margin-bottom:18px;">' + puzzle(m) + '</div>' +
+        (m.locked ? '<div class="mono" style="font-size:14px;font-weight:700;color:var(--bad);margin-bottom:10px;">\u2717 Locked out of this question. Wait for the next one.</div>' : '') +
         '<form id="brForm" style="display:flex;gap:10px;flex-wrap:wrap;" autocomplete="off"><label for="brAns" style="position:absolute;left:-9999px;">Your answer</label><input id="brAns" class="ans" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="type the term\u2026">' +
         '<button type="button" class="btn ghost" id="brClr" aria-label="Clear">\u232b</button><button type="submit" class="btn">Strike</button></form>' +
         '<div class="mono" id="brNote" role="status" aria-live="assertive" style="min-height:22px;margin-top:12px;font-size:14px;font-weight:700;color:' + (noteCol || "var(--muted)") + ';">' + esc(note) + '</div></div>';
@@ -99,12 +105,12 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
     function draw(force){
       if (!ST) return;
       var b = ST.bracket, m = ST.match;
-      var k = !b ? "none" : [b.id, b.status, m && m.id, m && m.status, m && m.game_no, m && m.game_kind, m && m.game_kind === "vocab" ? m.n : "", m && m.game_kind === "flag" ? m.my_pts + ":" + m.opp_pts : "", m && m.my_games, m && m.opp_games].join("|");
+      var k = !b ? "none" : [b.id, b.status, ST.out, m && m.id, m && m.status, m && m.game_no, m && m.game_kind, m && m.game_kind === "vocab" ? m.n + ":" + !!m.locked : "", m && m.game_kind === "flag" ? m.my_pts + ":" + m.opp_pts : "", m && m.my_games, m && m.opp_games].join("|");
       if (!force && k === sig) return update();
       sig = k;
       if (!b) { view.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><div style="font-size:24px;font-weight:800;color:var(--bright);">No bracket for you right now</div><div style="font-size:14px;color:var(--muted);margin-top:8px;">Your teacher starts brackets. When you\u2019re in one, it shows up here and on your CTF page.</div></div>'; return; }
       view.innerHTML = (b.status === "done" ? '<div class="card" style="margin-bottom:18px;display:flex;flex-direction:column;gap:10px;border-color:#ffcf5c;">' + BT.podium(ST.tree) + '</div>' : matchView(b, m) ) +
-        '<div class="card" style="margin-top:18px;">' + BT.html(ST.tree, { me: ST.me, kind: b.kind }) + '</div>';
+        '<div class="card" style="margin-top:18px;">' + BT.html(ST.tree, { me: ST.me, kind: b.kind, sudden: b.sudden }) + '</div>';
       bind(); update();
       var a = document.getElementById("brAns"); if (a) a.focus();
     }
@@ -122,8 +128,9 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
       sending = true;
       rpc("ctf_br_answer", { p_match: m.id, p_n: m.n, p_guess: a.value }).then(function(d){
         sending = false;
-        if (d && d.correct) { say("\u2713 " + d.term + " \u2014 hit!", "var(--ok)"); streak++; if (FX) FX.combo(streak); }
-        else if (d && d.correct === false) { streak = 0; if (FX) FX.combo(0); say("\u2717 Not it. You took a third of a hit.", "var(--bad)"); if (FX) FX.shake(document.getElementById("brArena")); a.value = ""; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); }
+        if (d && d.correct) { say("\u2713 " + d.term + (d.sd ? " \u2014 point!" : " \u2014 hit!"), "var(--ok)"); streak++; if (FX) FX.combo(streak); }
+        else if (d && d.locked) say("Locked out of this question. Wait for the next one.", "var(--bad)");
+        else if (d && d.correct === false) { streak = 0; if (FX) FX.combo(0); say(d.sd ? (d.both ? "\u2717 Not it. Nobody scores this question." : "\u2717 Not it. You\u2019re locked out of this question.") : "\u2717 Not it. You took a third of a hit.", "var(--bad)"); if (FX) FX.shake(document.getElementById("brArena")); a.value = ""; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); }
         else if (d && d.stale) say("Too slow \u2014 that term was already cracked.", "var(--muted)");
         load();
       }).catch(function(){ sending = false; load(); });
@@ -139,11 +146,16 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
       if (!FX) return;
       var m = d.match, p = prevM;
       if (m && p && p.id === m.id) {
-        if (m.my_games > p.my_games) { FX.banner(m.status === "done" ? "MATCH WON!" : "GAME " + p.game_no + " IS YOURS!", "#3ddc97", m.my_games + "\u2013" + m.opp_games); FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; FX.combo(0); }
-        if (m.opp_games > p.opp_games) { FX.banner(m.status === "done" ? "ELIMINATED" : "GAME TO " + String(m.opp || "").toUpperCase(), "#ff3b3b", m.my_games + "\u2013" + m.opp_games); streak = 0; FX.combo(0); }
+        var pool = m.side === "pool";
+        if (m.my_games > p.my_games) { FX.banner(pool ? "REMATCH WON!" : m.status === "done" ? "MATCH WON!" : "GAME " + p.game_no + " IS YOURS!", "#3ddc97", m.my_games + "\u2013" + m.opp_games); FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; FX.combo(0); }
+        if (m.opp_games > p.opp_games) { FX.banner(pool ? "REMATCH LOST" : m.status === "done" ? "ELIMINATED" : "GAME TO " + String(m.opp || "").toUpperCase(), "#ff3b3b", m.my_games + "\u2013" + m.opp_games); streak = 0; FX.combo(0); }
         if (p.status === "ready" && m.status === "live") { FX.banner("FIGHT!", "#ff3b3b", "You vs " + m.opp); FX.sfx("blood"); }
         if (m.game_kind === "vocab" && p.game_kind === "flag") FX.banner("VOCAB TIEBREAK!", "#ffcf5c", "Out of open flags \u2014 settle it with words");
-        if (m.game_kind === "vocab" && lastN === m.n - 1 && lastHp != null && m.my_hp < lastHp && !m.last_mine && m.last_t) { say(m.opp + " cracked it first: " + m.last_t + ".", "var(--bad)"); streak = 0; FX.combo(0); }
+        var settled = (m.game_kind === "vocab" && lastN != null && m.n > lastN) || (p.game_kind === "vocab" && !m.game_kind);
+        if (settled && m.last_t && !m.last_mine) {
+          if (m.last_opp) { say(m.opp + " got it first. The answer was " + m.last_t + ".", "var(--bad)"); streak = 0; FX.combo(0); }
+          else say("Nobody got it. The answer was " + m.last_t + ".", "var(--amber, #ffcf5c)");
+        }
         if (m.game_kind === "flag" && m.my_pts > p.my_pts) FX.banner("+" + (m.my_pts - p.my_pts) + " FLAG POINTS", "#00b3ff", m.my_pts + "/3");
         if (m.game_kind === "flag" && m.opp_pts > p.opp_pts) FX.caster(m.opp + " captures! " + m.opp_pts + "/3", "#ff3b3b");
       } else if (m && m.status === "ready") FX.sfx("lead");

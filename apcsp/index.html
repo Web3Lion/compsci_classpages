@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=31.3.0"></script>
+<script src="../site.js?v=32.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="../assets/logo/icon-apcsp-64.png?v=31.3.0">
-<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=31.3.0">
+<link rel="icon" type="image/png" href="../assets/logo/icon-apcsp-64.png?v=32.0.0">
+<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=32.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AP Computer Science Principles — Course Home</title>
@@ -81,7 +81,7 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
   }
 </style>
 <script>window.CTF_COURSE=window.CTF_COURSE||"apcsp";</script>
-<script src="../skins.js?v=31.3.0" data-auto="profile"></script>
+<script src="../skins.js?v=32.0.0" data-auto="profile"></script>
 </head>
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
@@ -349,7 +349,8 @@ body,.card,.chip,.mcard,.btn{transition:background-color .25s ease,border-color 
   <div class="mono" style="margin-top: 28px; text-align: center; font-size: 12px; color: var(--fainter);">&gt; power_good // build, iterate, ship_</div>
 </div>
 
-<script src="../config.js?v=31.3.0"></script>
+<script src="../config.js?v=32.0.0"></script>
+<script src="../sheet-rows.js?v=32.0.0"></script>
 <script src="../resources.js"></script>
 <script>
 const CFG = (window.COURSE_CONFIG && window.COURSE_CONFIG.apcsp) || {};
@@ -369,18 +370,18 @@ function parseCSV(text){
   return rows;
 }
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function fmt(s){const d=new Date((s||'').trim());return isNaN(d)?'':d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function fmt(s){const d=new Date(SHEET_ROWS.plain(s||'').trim());return isNaN(d)?'':d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
 function stateInto(id,msg){document.getElementById(id).innerHTML='<div style="padding:16px;font-size:14px;color:var(--muted);background:var(--bg);border:1px solid var(--border2);border-radius:10px;line-height:1.5;">'+msg+'</div>';}
 function badge(label,val,color,bg,bd){
   if(!val||val==='—') return '';
-  return `<div style="display:flex;flex-direction:column;gap:2px;padding:8px 10px;background:${bg};border:1px solid ${bd};border-radius:8px;min-width:0;"><span class="mono" style="font-size:10px;letter-spacing:1px;color:${color};">${label}</span><span style="font-size:13px;color:var(--text);line-height:1.4;word-break:break-word;">${esc(val)}</span></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:2px;padding:8px 10px;background:${bg};border:1px solid ${bd};border-radius:8px;min-width:0;"><span class="mono" style="font-size:10px;letter-spacing:1px;color:${color};">${label}</span><span style="font-size:13px;color:var(--text);line-height:1.4;word-break:break-word;">${SHEET_ROWS.rich(val)}</span></div>`;
 }
 function rowsHtml(rows){
   let html='<div style="display:flex;flex-direction:column;gap:12px;">';
   rows.forEach(r=>{ html+=`<div class="row" style="display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;">
     <div style="display:flex;flex-direction:column;gap:2px;"><span class="mono" style="font-size:13px;font-weight:700;color:var(--accent);">${esc(r.day)}</span><span class="mono" style="font-size:11px;color:var(--faint);">${esc(r.date)}</span></div>
     <div style="display:flex;flex-direction:column;gap:8px;">
-      <span style="font-size:15px;color:var(--bright);line-height:1.35;font-weight:600;">${esc(r.topic)}</span>
+      <span style="font-size:15px;color:var(--bright);line-height:1.35;font-weight:600;">${SHEET_ROWS.rich(r.topic)}</span>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
         ${badge('WARM-UP',r.warmup,'var(--warmup-c)','var(--warmup-bg)','var(--warmup-bd)')}
         ${badge('PRACTICE',r.practice,'var(--lime)','color-mix(in oklch, var(--lime) 12%, var(--bg))','color-mix(in oklch, var(--lime) 35%, var(--border2))')}
@@ -393,8 +394,7 @@ function rowsHtml(rows){
 async function load(){
   const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
   try{
-    const res=await fetch(url,{cache:'no-store'}); if(!res.ok) throw 0;
-    const clean=parseCSV(await res.text()).filter(r=>r.some(c=>c&&c.trim()!==''));
+    const clean=(await SHEET_ROWS.load(SHEET_ID,SHEET_GID)).filter(r=>r.some(c=>c&&c.trim()!==''));
     if(!clean.length){ stateInto('week',"Schedule sheet is empty — add this week's rows."); stateInto('next','Nothing posted yet.'); return; }
     let hi=clean.findIndex(r=>r.some(c=>/weekday/i.test(c))); if(hi<0)hi=0;
     const header=clean[hi].map(c=>(c||'').trim().toLowerCase());
@@ -402,14 +402,14 @@ async function load(){
     const cDay=Math.max(0,find('weekday')),cDate=find('date'),cTopic=[find('topic'),find('section'),find('lesson')].find(i=>i>-1)??-1,cWarmup=find('warm'),cPractice=find('practice'),cProject=[find('ongoing'),find('assignment'),find('project')].find(i=>i>-1)??-1;
     const wd=/^(mon|tue|wed|thu|fri|sat|sun)/i;
     const m=r=>{
-      const topic=(cTopic>-1?(r[cTopic]||''):'').replace(/\n+/g,' · ').trim();
-      const warmup=(cWarmup>-1?(r[cWarmup]||''):'').replace(/\n+/g,' · ').trim();
-      const practice=(cPractice>-1?(r[cPractice]||''):'').replace(/\n+/g,' · ').trim();
-      const project=(cProject>-1?(r[cProject]||''):'').replace(/\n+/g,' · ').trim();
-      return {day:(r[cDay]||'').trim().slice(0,3),date:cDate>-1?fmt(r[cDate]):'',topic:topic||'—',warmup:warmup||'—',practice:practice||'—',project:project||'—'};
+      const topic=(cTopic>-1?(r[cTopic]||''):'').split(/\n+/).map(t=>t.trim()).filter(Boolean).join('\n');
+      const warmup=(cWarmup>-1?(r[cWarmup]||''):'').split(/\n+/).map(t=>t.trim()).filter(Boolean).join('\n');
+      const practice=(cPractice>-1?(r[cPractice]||''):'').split(/\n+/).map(t=>t.trim()).filter(Boolean).join('\n');
+      const project=(cProject>-1?(r[cProject]||''):'').split(/\n+/).map(t=>t.trim()).filter(Boolean).join('\n');
+      return {day:SHEET_ROWS.plain(r[cDay]||'').trim().slice(0,3),date:cDate>-1?fmt(r[cDate]):'',topic:topic||'—',warmup:warmup||'—',practice:practice||'—',project:project||'—'};
     };
     const keep=r=>r.topic!=='—'||r.warmup!=='—'||r.practice!=='—'||r.project!=='—';
-    const after=clean.slice(hi+1).filter(r=>wd.test((r[cDay]||'').trim()));
+    const after=clean.slice(hi+1).filter(r=>wd.test(SHEET_ROWS.plain(r[cDay]||'').trim()));
     // split by calendar week relative to today (Monday start).
     // On weekends, roll forward to the upcoming school week.
     const today=new Date(); today.setHours(0,0,0,0);
@@ -420,7 +420,7 @@ async function load(){
     else mon.setDate(today.getDate()-(dow-1));          // Mon–Fri -> this Monday
     const nextMon=new Date(mon); nextMon.setDate(mon.getDate()+7);
     const weekAfter=new Date(mon); weekAfter.setDate(mon.getDate()+14);
-    const dOf=r=>{ const d=new Date((cDate>-1?r[cDate]:'').trim()); return isNaN(d)?null:(d.setHours(0,0,0,0),d); };
+    const dOf=r=>{ const d=new Date(SHEET_ROWS.plain(cDate>-1?r[cDate]:'').trim()); return isNaN(d)?null:(d.setHours(0,0,0,0),d); };
     let thisArr=after.filter(r=>{ const d=dOf(r); return d&&d>=mon&&d<nextMon; });
     let nextArr=after.filter(r=>{ const d=dOf(r); return d&&d>=nextMon&&d<weekAfter; });
     // Summer / break fallback: if nothing falls in the current calendar week,
@@ -598,10 +598,10 @@ renderCarlow(); setInterval(renderCarlow, 60*60*1000);
 })();
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
-<script src="../supabase-config.js?v=31.3.0"></script>
-<script src="packet-intro.js?v=31.3.0"></script>
-<script src="../profile-link.js?v=31.3.0"></script>
-<script src="../quiz-notice.js?v=31.3.0"></script>
+<script src="../supabase-config.js?v=32.0.0"></script>
+<script src="packet-intro.js?v=32.0.0"></script>
+<script src="../profile-link.js?v=32.0.0"></script>
+<script src="../quiz-notice.js?v=32.0.0"></script>
 
 <div class="mono" style="max-width:1120px;margin:32px auto 0;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
   <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;opacity:.75;">
