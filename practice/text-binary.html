@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../site.js?v=32.0.0"></script>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="../assets/logo/icon-site-64.png?v=32.0.0">
+<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=32.0.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text &harr; Binary — Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--panel3:#0e2136;--border:#1e3350;--border2:#172436;--border3:#244a6d;--border-hi:#2f5580;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--bad:#ff5c7a;--warn:#ffcf5c;--ok:#4fd68a;--on:#4fd68a;}
+:root[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--panel3:#e3ebf7;--border:#d5e0f0;--border2:#e0e8f3;--border3:#bcd0ea;--border-hi:#8fb4e0;--text:#2b3a52;--bright:#111a2c;--muted:#3c4f6b;--dim:#51637f;--faint:#5b6f8c;--accent:#0072b8;--accent2:#005c94;--bad:#c22a48;--warn:#8a6300;--ok:#178a52;--on:#178a52;}
+body,.panel,.btn,.ex{transition:background-color .25s ease,border-color .25s ease,color .25s ease;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.themebtn:hover{border-color:var(--accent);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px;position:relative;z-index:1;}
+#binBg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;-webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.35) 30%,#000 75%);mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.35) 30%,#000 75%);}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;padding-right:110px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand h1{font-size:19px;margin:0;color:var(--bright);letter-spacing:.5px;}
+.backLink{font-size:13px;color:var(--faint);}
+.lead{color:var(--muted);line-height:1.6;font-size:14px;margin:12px 0 20px;max-width:70ch;}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);margin-bottom:10px;letter-spacing:1px;}
+.exGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px;margin-bottom:22px;}
+.ex{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:18px 20px;}
+.ex h2{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1px;color:var(--accent2);margin:0 0 4px;}
+.ex .big{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--bright);margin:6px 0 12px;word-break:break-word;}
+.ex ol{margin:0;padding-left:20px;font-size:13.5px;line-height:1.7;color:var(--muted);}
+.ex ol b{color:var(--bright);font-family:'JetBrains Mono',monospace;font-weight:700;}
+.pv{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;margin:10px 0 4px;}
+.pv div{border:1px solid var(--border2);border-radius:8px;background:var(--panel2);text-align:center;padding:6px 0;font-family:'JetBrains Mono',monospace;}
+.pv .p{font-size:10.5px;color:var(--faint);display:block;}
+.pv .b{font-size:17px;font-weight:800;color:var(--dim);display:block;}
+.pv div.on{border-color:var(--on);background:color-mix(in srgb,var(--on) 14%,var(--panel2));}
+.pv div.on .b{color:var(--on);}
+.u8{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.u8b{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;padding:6px 10px;border-radius:8px;border:1px solid var(--on);background:color-mix(in srgb,var(--on) 12%,var(--panel2));color:var(--on);letter-spacing:1px;}
+.u8b i{font-style:normal;color:var(--warn);}
+.u8Tbl{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px 14px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:12.5px;align-items:center;}
+.u8Tbl .h{color:var(--faint);font-size:11px;letter-spacing:1px;}
+.u8Tbl .r{color:var(--accent2);font-weight:700;}
+.u8Tbl .pt{color:var(--on);font-weight:700;letter-spacing:1px;}
+.u8Tbl .pt i{font-style:normal;color:var(--warn);}
+.panel{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:24px;}
+.progressRow{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);flex-wrap:wrap;}
+.progressBar{flex:1;min-width:120px;height:8px;border-radius:99px;background:var(--panel2);overflow:hidden;}
+.progressBar>div{height:100%;background:var(--accent);width:0;transition:width .3s ease;}
+.stem{font-size:15px;line-height:1.6;color:var(--muted);margin:6px 0 4px;}
+.target{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:800;color:var(--bright);margin:4px 0 18px;letter-spacing:2px;word-break:break-word;}
+.target.q{font-family:'Inter',sans-serif;font-size:21px;letter-spacing:0;line-height:1.45;font-weight:700;}
+.target.q .mono{font-size:.92em;color:var(--accent2);letter-spacing:1px;}
+.ansRow{display:flex;gap:10px;flex-wrap:wrap;}
+.ansInput{flex:1;min-width:180px;padding:13px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:2px;}
+.ansInput:focus{outline:none;border-color:var(--accent);}
+.ansInput.good{border-color:var(--ok);} .ansInput.badv{border-color:var(--bad);}
+.feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.65;}
+.feedback.correct{background:rgba(79,214,138,.1);border:1px solid rgba(79,214,138,.3);}
+.feedback.wrong{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);}
+.feedback b.h{display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px;word-break:break-word;}
+.controls{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.btn{padding:12px 20px;min-height:44px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--border-hi);background:var(--panel3);}
+.btn:disabled{opacity:.4;cursor:default;}
+.btn.pri{border-color:var(--accent);color:var(--accent2);}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.seg button{padding:8px 12px;min-height:36px;border-radius:999px;border:1px solid var(--border3);background:var(--panel2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;cursor:pointer;}
+.seg button.act{border-color:var(--accent);color:var(--accent2);background:var(--panel3);}
+.tally{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);}
+.startScreen{text-align:center;padding:30px 10px;}
+.startScreen p{color:var(--muted);font-size:14px;margin:0 auto 20px;line-height:1.6;max-width:56ch;}
+.nameInput{width:100%;max-width:320px;padding:13px 16px;border-radius:10px;border:1px solid var(--border3);background:var(--panel2);color:var(--bright);font-family:'Inter',sans-serif;font-size:15px;margin-bottom:8px;text-align:center;}
+.nameInput:focus{outline:none;border-color:var(--accent);}
+.nameErr{min-height:18px;font-size:12.5px;color:var(--bad);margin-bottom:10px;font-family:'JetBrains Mono',monospace;}
+.nameTag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent2);}
+.resultsWrap{text-align:center;}
+.resultName{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--bright);margin-bottom:2px;}
+.bigScore{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:800;margin:6px 0;}
+.reviewRow{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-radius:10px;background:var(--panel2);border:1px solid var(--border2);margin-bottom:8px;text-align:left;font-size:13.5px;}
+.reviewRow .mark{flex:none;width:20px;}
+.reviewRow .mono{word-break:break-word;}
+.stepTxt{font-size:13.5px;color:var(--muted);line-height:1.6;}
+.stepTxt b{color:var(--bright);font-family:'JetBrains Mono',monospace;}
+.asciiGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+.asciiGrid div{display:flex;gap:8px;padding:5px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);}
+.asciiGrid .c{color:var(--accent2);font-weight:800;min-width:30px;}
+.asciiGrid .d{color:var(--dim);min-width:26px;text-align:right;}
+.asciiGrid .bn{color:var(--text);}
+details summary{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);min-height:32px;display:flex;align-items:center;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
+<canvas id="binBg" class="siteDecor" aria-hidden="true"></canvas>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><h1>TEXT &harr; BINARY</h1></div>
+    <a class="backLink mono" href="index.html">&larr; practice</a>
+  </div>
+  <p class="lead">Every character is stored as a number. ASCII covers English letters, digits and symbols in one byte each. Unicode covers every language and emoji, and UTF-8 stores those in 1 to 4 bytes. Practice as long as you like, then take the 15-question quiz (5 from each section). Want to experiment freely? Try the <a href="../simulators/bytemessage.html">Byte Message simulator</a>.</p>
+
+  <div class="exGrid">
+    <div class="ex">
+      <h2>TEXT &rarr; BINARY (ASCII)</h2>
+      <div class="big">K &rarr; 01001011</div>
+      <div class="pv" id="exA"></div>
+      <ol>
+        <li>Look up the character in the ASCII table: <b>K = 75</b></li>
+        <li>Break 75 into place values: <b>64 + 8 + 2 + 1</b></li>
+        <li>Put a 1 in those places, 0 everywhere else: <b>01001011</b></li>
+        <li>For a word, do each letter and write one byte per letter</li>
+      </ol>
+    </div>
+    <div class="ex">
+      <h2>BINARY &rarr; TEXT (ASCII)</h2>
+      <div class="big">01101000 &rarr; h</div>
+      <div class="pv" id="exB"></div>
+      <ol>
+        <li>Add the place values that have a 1: <b>64 + 32 + 8 = 104</b></li>
+        <li>Look up 104 in the ASCII table: <b>h</b></li>
+        <li>Capital letters matter. <b>A = 65</b> and <b>a = 97</b>: the two cases are always 32 apart</li>
+      </ol>
+    </div>
+    <div class="ex" style="grid-column:1/-1;">
+      <h2>UNICODE (UTF-8)</h2>
+      <div class="big">&eacute; (233) &rarr; 11000011 10101001</div>
+      <ol>
+        <li>Find the character's Unicode <b>code point</b>: &eacute; = U+00E9 = <b>233</b></li>
+        <li>Pick the byte count from the table below. 233 is more than 127, so it needs <b>2 bytes</b></li>
+        <li>Write 233 in binary, padded to 11 bits: <b>00011101001</b></li>
+        <li>Fill the x's: <b>110</b>00011 <b>10</b>101001 &rarr; <b>11000011 10101001</b></li>
+        <li>To decode, drop the marker bits and join what's left back into one number</li>
+      </ol>
+      <div class="u8Tbl">
+        <span class="h">CODE POINTS</span><span class="h">BYTES</span><span class="h">PATTERN</span>
+        <span class="r">0&ndash;127</span><span>1</span><span class="pt"><i>0</i>xxxxxxx <span style="color:var(--faint);font-weight:400;letter-spacing:0;">(same as ASCII)</span></span>
+        <span class="r">128&ndash;2,047</span><span>2</span><span class="pt"><i>110</i>xxxxx <i>10</i>xxxxxx</span>
+        <span class="r">2,048&ndash;65,535</span><span>3</span><span class="pt"><i>1110</i>xxxx <i>10</i>xxxxxx <i>10</i>xxxxxx</span>
+        <span class="r">65,536 and up</span><span>4</span><span class="pt"><i>11110</i>xxx <i>10</i>xxxxxx <i>10</i>xxxxxx <i>10</i>xxxxxx</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="quizPanel"></div>
+
+  <div class="panel" style="margin-top:14px;">
+    <details>
+      <summary>ASCII TABLE (printable characters 32&ndash;126)</summary>
+      <p class="stepTxt" style="margin:10px 0 0;">Uppercase letters start at <b>A = 65</b>, lowercase at <b>a = 97</b>, and digits at <b>0 = 48</b>. You may use this table during the quiz.</p>
+      <div class="asciiGrid" id="asTable"></div>
+    </details>
+  </div>
+</div>
+<script>
+var PV=[128,64,32,16,8,4,2,1];
+var mode='start', kind='mix', cur=null, done=false, tally={r:0,n:0};
+var Q=[], idx=0, answers=[], studentName='';
+var KINDS=[['mix','MIXED'],['t2b','TEXT → BINARY'],['b2t','BINARY → TEXT'],['uni','UNICODE (UTF-8)']];
+
+function escHtml(s){var d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
+function b8(n){return ('00000000'+n.toString(2)).slice(-8);}
+function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function pvHtml(n){var b=b8(n);return PV.map(function(p,i){return '<div class="'+(b[i]==='1'?'on':'')+'"><span class="p">'+p+'</span><span class="b">'+b[i]+'</span></div>';}).join('');}
+function sum(n){var b=b8(n),on=PV.filter(function(x,i){return b[i]==='1';});return on.length?on.join(' + '):'0';}
+function q(c){return '“'+escHtml(c)+'”';}
+document.getElementById('exA').innerHTML=pvHtml(75);
+document.getElementById('exB').innerHTML=pvHtml(104);
+(function(){var h='';for(var n=32;n<127;n++)h+='<div><span class="c">'+(n===32?'SP':escHtml(String.fromCharCode(n)))+'</span><span class="d">'+n+'</span><span class="bn">'+b8(n)+'</span></div>';document.getElementById('asTable').innerHTML=h;})();
+
+/* ---------- UTF-8 helpers ---------- */
+function utf8(cp){if(cp<0x80)return[cp];if(cp<0x800)return[0xC0|cp>>6,0x80|cp&63];if(cp<0x10000)return[0xE0|cp>>12,0x80|(cp>>6&63),0x80|cp&63];return[0xF0|cp>>18,0x80|(cp>>12&63),0x80|(cp>>6&63),0x80|cp&63];}
+function pre(n,i){return n===1?1:(i===0?n+1:2);}
+function strip(bytes){var n=bytes.length;return '<div class="u8">'+bytes.map(function(b,i){var s=b8(b),pl=pre(n,i);return '<span class="u8b"><i>'+s.slice(0,pl)+'</i>'+s.slice(pl)+'</span>';}).join('')+'</div>';}
+function hex(cp){var h=cp.toString(16).toUpperCase();while(h.length<4)h='0'+h;return 'U+'+h;}
+function fmt(n){return n.toLocaleString('en-US');}
+var CH={1:['A','z','7','?','#'],2:['é','ñ','ü','ß','©','£','Ω','π','ж','א'],3:['€','✓','™','→','♥','漢','☀'],4:['😀','🎉','🐍','🚀']};
+var WORDS=['café','naïve','€5','jalapeño','hi 😀','piñata','über','✓ done','日本','año','résumé','5 €'];
+function bytesOf(s){return Array.from(s).reduce(function(t,c){return t+utf8(c.codePointAt(0)).length;},0);}
+
+/* ---------- ASCII problems ---------- */
+var ASC='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?@#$&';
+var W2=['Hi','OK','Go','Up','No','Me','We','IT','AI','Yo','On','Ox'];
+var W3=['cat','dog','CPU','bit','Yes','web','app','RAM','key','net','Hey','Bot','zip','log'];
+function codes(s){return Array.from(s).map(function(c){return c.charCodeAt(0);});}
+function asciiProblem(t){
+  var txt=Math.random()<0.55?pick(ASC.split('')):t==='t2b'?pick(W2):pick(Math.random()<.5?W2:W3);
+  var bin=codes(txt).map(b8).join(' ');
+  return t==='t2b'?{type:'t2b',txt:txt,ans:bin,key:'t2b'+txt,short:q(txt)+' → binary'}
+                  :{type:'b2t',txt:txt,bin:bin,ans:txt,key:'b2t'+txt,short:bin+' → text'};
+}
+
+/* ---------- Unicode problems ---------- */
+function uniProblem(){
+  var s=pick(['bytes','bytes','lead','word','decode','encode','max1']), p={type:'uni',sub:s}, c, cp, bs, n;
+  if(s==='bytes'){n=ri(1,4);c=pick(CH[n]);cp=c.codePointAt(0);bs=utf8(cp);
+    p.q='How many bytes does UTF-8 use to store '+q(c)+' (code point '+hex(cp)+' = '+fmt(cp)+')?';p.ans=String(n);p.short='bytes for '+c;
+    p.why='UTF-8 uses 1 byte up to 127, 2 bytes up to 2,047, 3 bytes up to 65,535, and 4 bytes above that. '+fmt(cp)+' falls in the <b class="mono">'+n+'-byte</b> range.'+strip(bs);}
+  else if(s==='lead'){n=ri(1,4);var b=n===1?ri(32,126):n===2?ri(0xC2,0xDF):n===3?ri(0xE0,0xEF):ri(0xF0,0xF4),pf=b8(b).slice(0,pre(n,0));
+    p.q='The first byte of a UTF-8 character is <span class="mono">'+b8(b)+'</span>. How many bytes does the whole character use?';p.ans=String(n);p.short='lead byte '+b8(b);
+    p.why='It starts with <b class="mono">'+pf+'</b>. '+(n===1?'A leading 0 means a 1-byte (ASCII) character.':'Count the 1s before the first 0: '+n+' ones means <b class="mono">'+n+' bytes</b>. The other '+(n-1)+' byte'+(n>2?'s':'')+' will start with 10.');}
+  else if(s==='word'){c=pick(WORDS);n=bytesOf(c);
+    p.q='How many bytes does the text '+q(c)+' take up in UTF-8? (Count the space if there is one.)';p.ans=String(n);p.short='bytes in '+c;
+    p.why=Array.from(c).map(function(ch){return (ch===' '?'space':escHtml(ch))+' = '+utf8(ch.codePointAt(0)).length;}).join(', ')+'. Total: <b class="mono">'+n+'</b> bytes.';}
+  else if(s==='decode'||s==='encode'){c=pick(CH[2]);cp=c.codePointAt(0);bs=utf8(cp);var p11=('00000000000'+cp.toString(2)).slice(-11),bt=bs.map(b8);
+    if(s==='decode'){p.q='Decode this 2-byte UTF-8 character: <span class="mono">'+bt.join(' ')+'</span>. What is its code point in decimal?';p.ans=String(cp);p.short='decode '+bt.join(' ');
+      p.why='Drop the marker bits (110 and 10): <b class="mono">'+bt[0].slice(3)+'</b> + <b class="mono">'+bt[1].slice(2)+'</b> = <b class="mono">'+p11+'</b> = <b class="mono">'+fmt(cp)+'</b>, which is '+q(c)+'.'+strip(bs);}
+    else{p.q=q(c)+' has code point '+fmt(cp)+', which is <span class="mono">'+p11+'</span> in 11-bit binary. Write its 2-byte UTF-8 encoding.';p.ans=bt.join(' ');p.short='encode '+c+' ('+cp+')';
+      p.why='Split the 11 bits into 5 + 6: <b class="mono">'+p11.slice(0,5)+'</b> | <b class="mono">'+p11.slice(5)+'</b>. Fill 110xxxxx 10xxxxxx: <b class="mono">'+p.ans+'</b>.'+strip(bs);}}
+  else{p.q='What is the largest code point UTF-8 can store in a single byte?';p.ans='127';p.short='largest 1-byte code point';
+    p.why='1-byte characters use the pattern 0xxxxxxx, which leaves 7 bits: 1111111 = <b class="mono">127</b>. That is the whole ASCII range, so ASCII text is already valid UTF-8.';}
+  p.key=p.q;return p;
+}
+function makeProblem(k,avoid){
+  var t=k==='mix'?pick(['t2b','b2t','uni']):k, p, tries=0;
+  do{p=t==='uni'?uniProblem():asciiProblem(t);}while(avoid&&avoid.indexOf(p.key)>=0&&++tries<40);
+  return p;
+}
+function isBin(p){return p.type==='t2b'||(p.type==='uni'&&p.sub==='encode');}
+function promptHtml(p){
+  if(p.type==='t2b') return '<div class="stem">Convert this text to ASCII binary (8 bits per character).</div><div class="target">'+q(p.txt)+'</div>';
+  if(p.type==='b2t') return '<div class="stem">Decode this ASCII binary to text. Capital letters matter.</div><div class="target">'+p.bin+'</div>';
+  return '<div class="meta">UNICODE (UTF-8)</div><div class="target q">'+p.q+'</div>';
+}
+function placeholder(p){return p.type==='t2b'?(p.txt.length>1?'e.g. 01001000 01101001':'e.g. 01001011'):p.type==='b2t'?'e.g. Hi':isBin(p)?'e.g. 11000011 10101001':'e.g. 2';}
+function inputMode(p){return p.type==='b2t'?'text':'numeric';}
+function grade(p,raw){
+  var v=String(raw);
+  if(!v.trim()) return null;
+  if(isBin(p)){v=v.replace(/\s+/g,'');return /^[01]+$/.test(v)&&v===p.ans.replace(/\s+/g,'');}
+  if(p.type==='b2t') return v.trim().replace(/^["'“”]|["'“”]$/g,'')===p.ans;
+  v=v.replace(/[\s,]+/g,'');return /^\d+$/.test(v)&&parseInt(v,10)===parseInt(p.ans,10);
+}
+function steps(p){
+  if(p.type==='uni') return '<div>'+p.why+'</div>';
+  var cs=codes(p.txt), one=cs.length===1;
+  return cs.map(function(n){var ch=String.fromCharCode(n);
+    return '<div class="stepTxt">'+(p.type==='t2b'?q(ch)+' = <b>'+n+'</b> = '+sum(n)+' &rarr; <b>'+b8(n)+'</b>':'<b>'+b8(n)+'</b> = '+sum(n)+' = <b>'+n+'</b> &rarr; '+q(ch))+'</div>';
+  }).join('')+(one?'<div class="pv">'+pvHtml(cs[0])+'</div>':'');
+}
+function answerOf(p){return p.type==='b2t'?q(p.ans):escHtml(p.ans);}
+
+/* ---------- start ---------- */
+function renderStart(){
+  mode='start';
+  var saved='';try{saved=localStorage.getItem('practice-student-name')||'';}catch(e){}
+  document.getElementById('quizPanel').innerHTML='<div class="startScreen"><div class="meta">CHOOSE A MODE</div><p>Practice gives you unlimited random problems with the work shown after each one. The quiz is 15 random problems: 5 text → binary, 5 binary → text, and 5 Unicode (UTF-8). You may use the ASCII table below. Enter your name to take the quiz.</p><input type="text" id="studentNameInput" class="nameInput" placeholder="First and last name" maxlength="60" value="'+escHtml(saved)+'" onkeydown="if(event.key===\'Enter\')beginQuiz();"><div class="nameErr" id="nameErr"></div><div class="controls" style="justify-content:center;"><button class="btn" onclick="beginPractice()">PRACTICE</button><button class="btn pri" onclick="beginQuiz()">TAKE THE QUIZ &rarr;</button></div></div>';
+}
+
+/* ---------- practice ---------- */
+function beginPractice(){mode='practice';tally={r:0,n:0};nextPractice();}
+function setKind(k){kind=k;nextPractice();}
+function nextPractice(){
+  cur=makeProblem(kind,cur?[cur.key]:null);done=false;
+  var seg=KINDS.map(function(s){return '<button class="'+(kind===s[0]?'act':'')+'" onclick="setKind(\''+s[0]+'\')">'+s[1]+'</button>';}).join('');
+  document.getElementById('quizPanel').innerHTML='<div class="progressRow"><span style="color:var(--accent2);">PRACTICE</span><span class="tally">'+tally.r+' / '+tally.n+' correct</span></div><div class="seg">'+seg+'</div>'+promptHtml(cur)+'<div class="ansRow"><input id="ans" class="ansInput" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="'+inputMode(cur)+'" placeholder="'+placeholder(cur)+'" onkeydown="if(event.key===\'Enter\'){done?nextPractice():checkPractice();}"><button class="btn pri" id="chk" onclick="checkPractice()">CHECK</button></div><div id="fbSlot"></div><div class="controls"><button class="btn" onclick="renderStart()">DONE PRACTICING</button><button class="btn" onclick="showPracticeAnswer()">SHOW ANSWER</button><button class="btn" id="nextBtn" onclick="nextPractice()">NEW PROBLEM &rarr;</button></div>';
+  document.getElementById('ans').focus();
+}
+function checkPractice(){
+  if(done) return;
+  var el=document.getElementById('ans'), g=grade(cur,el.value);
+  if(g===null){el.focus();return;}
+  done=true;tally.n++;if(g)tally.r++;
+  el.classList.add(g?'good':'badv');el.readOnly=true;document.getElementById('chk').disabled=true;
+  document.querySelector('.tally').textContent=tally.r+' / '+tally.n+' correct';
+  document.getElementById('fbSlot').innerHTML='<div class="feedback '+(g?'correct':'wrong')+'"><b class="h">'+(g?'CORRECT':'NOT QUITE — answer: '+answerOf(cur))+'</b>'+steps(cur)+'</div>';
+  document.getElementById('nextBtn').focus();
+}
+function showPracticeAnswer(){
+  if(done) return;
+  done=true;document.getElementById('ans').readOnly=true;document.getElementById('chk').disabled=true;
+  document.getElementById('fbSlot').innerHTML='<div class="feedback wrong"><b class="h">ANSWER: '+answerOf(cur)+'</b>'+steps(cur)+'</div>';
+}
+
+/* ---------- quiz ---------- */
+function beginQuiz(){
+  var v=document.getElementById('studentNameInput').value.trim().replace(/\s+/g,' ');
+  if(v.length<2){document.getElementById('nameErr').textContent='Enter your name to start the quiz.';document.getElementById('studentNameInput').focus();return;}
+  studentName=v;try{localStorage.setItem('practice-student-name',v);}catch(e){}
+  startQuiz();
+}
+function startQuiz(){
+  mode='quiz';idx=0;answers=[];Q=[];
+  var types=[];['t2b','b2t','uni'].forEach(function(t){for(var i=0;i<5;i++)types.push(t);});
+  for(var i=types.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=types[i];types[i]=types[j];types[j]=t;}
+  var used=[], subs={};
+  types.forEach(function(t){var p,tries=0;do{p=makeProblem(t,used);}while(p.type==='uni'&&(subs[p.sub]||0)>=2&&++tries<40);if(p.sub)subs[p.sub]=(subs[p.sub]||0)+1;used.push(p.key);Q.push(p);});
+  renderQ();
+}
+function renderQ(){
+  var p=Q[idx];
+  document.getElementById('quizPanel').innerHTML='<div class="progressRow"><span class="nameTag">'+escHtml(studentName)+'</span><span>QUESTION <b style="color:var(--bright);">'+(idx+1)+'</b>/'+Q.length+'</span><div class="progressBar"><div style="width:'+(idx/Q.length*100)+'%;"></div></div></div>'+promptHtml(p)+'<div class="ansRow"><input id="ans" class="ansInput" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="'+inputMode(p)+'" placeholder="'+placeholder(p)+'" onkeydown="if(event.key===\'Enter\')submitQ();"></div><div class="nameErr" id="qErr" style="margin-top:8px;"></div><div class="controls"><button class="btn pri" onclick="submitQ()">'+(idx===Q.length-1?'SUBMIT QUIZ':'NEXT')+' &rarr;</button></div>';
+  document.getElementById('ans').focus();
+}
+function submitQ(){
+  var p=Q[idx], raw=document.getElementById('ans').value, g=grade(p,raw);
+  if(g===null){document.getElementById('qErr').textContent='Enter an answer.';return;}
+  answers[idx]={pick:raw.trim(),correct:g};
+  if(idx===Q.length-1){showResults();return;}
+  idx++;renderQ();
+}
+function showResults(){
+  var c=answers.filter(function(a){return a.correct;}).length, pct=Math.round(c/Q.length*100);
+  var color=pct>=80?'var(--ok)':pct>=50?'var(--warn)':'var(--bad)';
+  var when=new Date().toLocaleString([], {dateStyle:'medium',timeStyle:'short'});
+  var html='<div class="resultsWrap"><div class="resultName">'+escHtml(studentName)+'</div><div class="meta" style="margin-top:4px;">TEXT ↔ BINARY QUIZ &middot; '+escHtml(when)+'</div><div class="bigScore" style="color:'+color+';">'+c+'/'+Q.length+'</div><div class="mono" style="color:var(--dim);font-size:13px;margin-bottom:24px;">'+pct+'% correct</div></div>';
+  html+=Q.map(function(p,i){var a=answers[i];
+    var sh=p.type==='t2b'?p.short:escHtml(p.short);
+    return '<div class="reviewRow"><span class="mark">'+(a.correct?'✅':'❌')+'</span><div class="mono" style="color:var(--muted);line-height:1.6;"><span style="color:var(--bright);">'+(i+1)+'. '+sh+'</span><br>your answer: '+escHtml(a.pick)+(a.correct?'':' &middot; correct: <span style="color:var(--ok);">'+answerOf(p)+'</span>')+'</div></div>';
+  }).join('');
+  html+='<div class="controls" style="justify-content:center;margin-top:22px;"><button class="btn" onclick="beginPractice()">PRACTICE MORE</button><button class="btn pri" onclick="startQuiz()">RETAKE QUIZ &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML=html;
+}
+renderStart();
+/* binary rain background (same as Binary Conversion); static when motion is reduced */
+(function(){
+  var c=document.getElementById('binBg'),x=c.getContext('2d'),r=document.documentElement,W=0,H=0,cols=[],CW=24,FS=15,last=0;
+  function rm(){try{return window.SITE_REDUCED_MOTION?SITE_REDUCED_MOTION():matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}}
+  function size(){var d=window.devicePixelRatio||1;W=innerWidth;H=innerHeight;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);
+    var n=Math.ceil(W/CW),rows=Math.ceil(H/FS)+2;cols=[];
+    for(var i=0;i<n;i++){var b=[];for(var j=0;j<rows;j++)b.push(Math.random()<.5?'0':'1');cols.push({off:Math.random()*rows*FS,sp:5+Math.random()*16,bits:b,a:.3+Math.random()*.7});}}
+  function draw(dt){
+    var lt=r.getAttribute('data-theme')==='light',rgb=lt?'23,138,82':'79,214,138',base=lt?.16:.13;
+    x.clearRect(0,0,W,H);x.font='700 '+FS+'px "JetBrains Mono",monospace';x.textAlign='center';x.textBaseline='top';
+    cols.forEach(function(k,i){
+      var len=k.bits.length*FS;k.off=(k.off+k.sp*dt)%len;
+      if(dt&&Math.random()<dt*1.5){var q=Math.floor(Math.random()*k.bits.length);k.bits[q]=k.bits[q]==='0'?'1':'0';}
+      x.fillStyle='rgba('+rgb+','+(base*k.a).toFixed(3)+')';
+      for(var j=0;j<k.bits.length;j++){var y=(j*FS+k.off)%len-FS;x.fillText(k.bits[j],i*CW+CW/2,y);}
+    });
+  }
+  function loop(t){var dt=last?Math.min(.1,(t-last)/1000):0;last=t;if(!document.hidden)draw(rm()?0:dt);requestAnimationFrame(loop);}
+  size();addEventListener('resize',function(){size();draw(0);});
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

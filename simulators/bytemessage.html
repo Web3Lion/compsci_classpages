@@ -3,12 +3,12 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=31.1.0"></script>
+<script src="../site.js?v=32.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="../assets/logo/icon-site-64.png?v=31.1.0">
-<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=31.1.0">
+<link rel="icon" type="image/png" href="../assets/logo/icon-site-64.png?v=32.0.0">
+<link rel="apple-touch-icon" href="../assets/logo/icon-site-256.png?v=32.0.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Byte Message — Text ↔ Binary (ASCII) Simulator</title>
+<title>Byte Message — Text ↔ Binary (ASCII + Unicode) Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -97,6 +97,14 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
 .asciiGrid .c{color:var(--accent2);font-weight:800;min-width:30px;}
 .asciiGrid .d{color:var(--dim);min-width:26px;text-align:right;}
 .asciiGrid .bn{color:var(--text);}
+.u8{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.u8b{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;padding:6px 10px;border-radius:8px;border:1px solid var(--on);background:color-mix(in srgb,var(--on) 12%,var(--panel2));color:var(--on);letter-spacing:1px;}
+.u8b i{font-style:normal;color:var(--warn);}
+.u8Tbl{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px 14px;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:12.5px;align-items:center;}
+.u8Tbl .h{color:var(--faint);font-size:11px;letter-spacing:1px;}
+.u8Tbl .r{color:var(--accent2);font-weight:700;}
+.u8Tbl .pt{color:var(--on);font-weight:700;letter-spacing:1px;}
+.u8Tbl .pt i{font-style:normal;color:var(--warn);}
 details summary{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);min-height:32px;display:flex;align-items:center;}
 </style>
 </head>
@@ -108,12 +116,28 @@ details summary{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:
   <div class="top">
     <div class="brand"><span class="dot"></span><h1>BYTE MESSAGE</h1></div>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <span class="mono" style="font-size:12.5px;color:var(--faint);">Text &harr; binary (ASCII) &middot; free play, no XP</span>
+      <span class="mono" style="font-size:12.5px;color:var(--faint);">Text &harr; binary (ASCII + Unicode) &middot; free play, no XP</span>
       <a class="backLink mono" href="index.html">&larr; simulators</a>
     </div>
   </div>
-    <p class="lead">Computers store each letter as a number. ASCII gives every character a code from 0 to 127, and each code fits in one 8-bit byte. Type text or binary below to see every character converted step by step.</p>
+    <p class="lead">Computers store each letter as a number. ASCII gives every character a code from 0 to 127, and each code fits in one 8-bit byte. Unicode extends this to every language, symbol, and emoji, and UTF-8 stores those codes in 1 to 4 bytes. Type text or binary below to see every character converted step by step.</p>
+  <div class="panel" id="u8Help" style="display:none;margin-bottom:14px;">
+    <div class="meta" style="color:var(--accent2);">HOW UTF-8 WORKS</div>
+    <p class="stepTxt" style="margin:0;">ASCII only has 128 codes. Unicode gives a number, called a <b>code point</b>, to over 150,000 characters. UTF-8 stores each code point in 1 to 4 bytes. The first byte's leading bits say how many bytes the character uses, and every byte after it starts with <b>10</b>.</p>
+    <div class="u8Tbl">
+      <span class="h">CODE POINTS</span><span class="h">BYTES</span><span class="h">PATTERN</span>
+      <span class="r">U+0000&ndash;U+007F</span><span>1</span><span class="pt"><i>0</i>xxxxxxx <span style="color:var(--faint);font-weight:400;letter-spacing:0;">(same as ASCII)</span></span>
+      <span class="r">U+0080&ndash;U+07FF</span><span>2</span><span class="pt"><i>110</i>xxxxx <i>10</i>xxxxxx</span>
+      <span class="r">U+0800&ndash;U+FFFF</span><span>3</span><span class="pt"><i>1110</i>xxxx <i>10</i>xxxxxx <i>10</i>xxxxxx</span>
+      <span class="r">U+10000&ndash;U+10FFFF</span><span>4</span><span class="pt"><i>11110</i>xxx <i>10</i>xxxxxx <i>10</i>xxxxxx <i>10</i>xxxxxx</span>
+    </div>
+    <p class="stepTxt" style="margin:12px 0 0;"><span style="color:var(--warn);font-weight:700;">Yellow bits</span> are UTF-8 markers. <span style="color:var(--on);font-weight:700;">Green bits</span> (the x's) carry the code point.</p>
+  </div>
   <div class="panel">
+    <div class="seg" id="encSeg" role="group" aria-label="Encoding">
+      <button class="act" data-e="ascii" onclick="asSetEnc('ascii')">ASCII</button>
+      <button data-e="utf8" onclick="asSetEnc('utf8')">UNICODE (UTF-8)</button>
+    </div>
     <div class="seg" id="asSeg" role="group" aria-label="Direction">
       <button class="act" data-d="t2b" onclick="asSetDir('t2b')">TEXT &rarr; BINARY</button>
       <button data-d="b2t" onclick="asSetDir('b2t')">BINARY &rarr; TEXT</button>
@@ -148,14 +172,60 @@ var asDir='t2b', AS_MAX=40, AS_NAMES={0:'NUL',9:'TAB',10:'LF',13:'CR',32:'SPACE'
 function asName(n){return AS_NAMES[n]||(n<32?'CTRL':null);}
 function asCharCell(n){var nm=asName(n);return nm?'<div class="stepChar sm">'+nm+'</div>':'<div class="stepChar">'+escHtml(String.fromCharCode(n))+'</div>';}
 function asSum(n){var b=bits8(n),on=PV.filter(function(x,i){return b[i]==='1';});return on.length?on.join(' + '):'0';}
+var asEnc='ascii';
+function asLabels(){var d=asDir;document.getElementById('asInLbl').textContent=d==='t2b'?'TEXT':asEnc==='utf8'?'BINARY (8 bits per byte, 1–4 bytes per character)':'BINARY (8 bits per character)';document.getElementById('asOutLbl').textContent=d==='t2b'?'BINARY':'TEXT';}
+function asSample(){var u='café €5 😀';if(asEnc==='ascii')return asDir==='t2b'?'Hi!':'01001000 01101001 00100001';return asDir==='t2b'?u:Array.from('é€😀').map(function(c){return utf8Bytes(c.codePointAt(0)).map(bits8).join(' ');}).join(' ');}
 function asSetDir(d){if(d===asDir)return;asDir=d;document.querySelectorAll('#asSeg button').forEach(function(b){b.classList.toggle('act',b.getAttribute('data-d')===d);});
-  document.getElementById('asInLbl').textContent=d==='t2b'?'TEXT':'BINARY (8 bits per character)';document.getElementById('asOutLbl').textContent=d==='t2b'?'BINARY':'TEXT';
-  var i=document.getElementById('asIn');i.value=d==='t2b'?'Hi!':'01001000 01101001 00100001';asRun();}
+  asLabels();document.getElementById('asIn').value=asSample();asRun();}
+function asSetEnc(e){if(e===asEnc)return;asEnc=e;document.querySelectorAll('#encSeg button').forEach(function(b){b.classList.toggle('act',b.getAttribute('data-e')===e);});
+  document.getElementById('u8Help').style.display=e==='utf8'?'':'none';asLabels();document.getElementById('asIn').value=asSample();asRun();}
+/* ---------- UTF-8 ---------- */
+function cpHex(cp){return 'U+'+('0000'+cp.toString(16).toUpperCase()).slice(-Math.max(4,cp.toString(16).length));}
+function utf8Bytes(cp){if(cp<0x80)return[cp];if(cp<0x800)return[0xC0|cp>>6,0x80|cp&63];if(cp<0x10000)return[0xE0|cp>>12,0x80|(cp>>6&63),0x80|cp&63];return[0xF0|cp>>18,0x80|(cp>>12&63),0x80|(cp>>6&63),0x80|cp&63];}
+function u8Pre(n,i){return n===1?1:(i===0?n+1:2);}
+function u8Strip(bytes){var n=bytes.length;return '<div class="u8">'+bytes.map(function(b,i){var s=bits8(b),pl=u8Pre(n,i);return '<span class="u8b"><i>'+s.slice(0,pl)+'</i>'+s.slice(pl)+'</span>';}).join('')+'</div>';}
+function u8Name(cp){return cp<128?asName(cp):(cp<160?'CTRL':null);}
+function u8Cell(cp){var nm=u8Name(cp);return nm?'<div class="stepChar sm">'+nm+'</div>':'<div class="stepChar">'+escHtml(String.fromCodePoint(cp))+'</div>';}
+var U8_PB=[0,7,11,16,21], U8_T=['','<i>0</i>xxxxxxx','<i>110</i>xxxxx <i>10</i>xxxxxx','<i>1110</i>xxxx <i>10</i>xxxxxx <i>10</i>xxxxxx','<i>11110</i>xxx <i>10</i>xxxxxx <i>10</i>xxxxxx <i>10</i>xxxxxx'];
+function u8Run(){
+  var raw=document.getElementById('asIn').value, err='', items=[], out='';
+  if(asDir==='t2b'){
+    Array.from(raw).forEach(function(ch){var cp=ch.codePointAt(0);if(cp>=0xD800&&cp<=0xDFFF){err='A broken character was skipped.';return;}items.push({cp:cp,bytes:utf8Bytes(cp)});});
+    out=items.map(function(it){return it.bytes.map(bits8).join(' ');}).join(' ');
+  }else{
+    var s=raw.replace(/[^01\s]/g,function(){err='Binary can only contain 0s and 1s. Other characters were ignored.';return '';}).trim(), groups=[], bs=[];
+    if(s){groups=/\s/.test(s)?s.split(/\s+/):s.match(/.{1,8}/g);}
+    groups.forEach(function(g){if(g.length>8){err='"'+g+'" is longer than 8 bits. Write each byte as 8 bits.';return;}if(g.length<8&&!err)err='Tip: write each byte as 8 bits. '+g+' was read as '+bits8(parseInt(g,2))+'.';bs.push(parseInt(g,2));});
+    for(var i=0;i<bs.length;){var b=bs[i],n=b<0x80?1:(b>>5)===6?2:(b>>4)===14?3:(b>>3)===30?4:0;
+      if(!n){err=bits8(b)+' starts with '+((b>>6)===2?'10, which marks a continuation byte. It needs a lead byte (0, 110, 1110, or 11110) before it.':'11111, which is not a valid UTF-8 lead byte.');i++;continue;}
+      var grp=bs.slice(i,i+n);
+      if(grp.length<n||grp.slice(1).some(function(x){return (x>>6)!==2;})){err=bits8(b)+' says this character uses '+n+' bytes, but the next '+(n-1)+' byte'+(n>2?'s':'')+' must each start with 10.';i++;continue;}
+      var pay=grp.map(function(x,j){return bits8(x).slice(u8Pre(n,j));}).join(''), cp=parseInt(pay,2);
+      if(cp>0x10FFFF||(cp>=0xD800&&cp<=0xDFFF)){err=pay+' = '+cp+', which is not a valid Unicode code point.';i+=n;continue;}
+      items.push({cp:cp,bytes:grp,pay:pay});i+=n;}
+    out=items.map(function(it){var nm=u8Name(it.cp);return nm&&it.cp!==32?'['+nm+']':String.fromCodePoint(it.cp);}).join('');
+  }
+  document.getElementById('asErr').textContent=err;
+  var o=document.getElementById('asOut');o.textContent=out||' ';o.setAttribute('data-raw',asDir==='t2b'?out:items.map(function(it){return String.fromCodePoint(it.cp);}).join(''));
+  var rows=items.slice(0,AS_MAX).map(function(it){
+    var cp=it.cp, n=it.bytes.length, PB=U8_PB[n], bin=cp.toString(2), nm=u8Name(cp), ch=nm?nm:'"'+escHtml(String.fromCodePoint(cp))+'"', txt;
+    if(asDir==='t2b'){
+      txt='1. Look up '+ch+' in Unicode: <b>'+cpHex(cp)+'</b> = <b>'+cp+'</b><br>2. '+cp+' in binary is <b>'+bin+'</b> ('+bin.length+' bit'+(bin.length>1?'s':'')+'). '+(n===1?'That fits in 7 bits, so UTF-8 uses <b>1 byte</b>, the same as ASCII.':'That is more than '+U8_PB[n-1]+' bits, so UTF-8 uses <b>'+n+' bytes</b> (room for '+PB+' bits).')+'<br>3. Pad to '+PB+' bits: <b>'+('0'.repeat(PB)+bin).slice(-PB)+'</b> and fill the x\'s in <span class="u8Tbl" style="display:inline;"><span class="pt">'+U8_T[n]+'</span></span>';
+    }else{
+      var pre=bits8(it.bytes[0]).slice(0,u8Pre(n,0));
+      txt='<b>'+it.bytes.map(bits8).join(' ')+'</b><br>1. The first byte starts with <b>'+pre+'</b>, so this character uses <b>'+n+' byte'+(n>1?'s':'')+'</b><br>2. Drop the yellow marker bits and join the rest: <b>'+it.pay+'</b> = <b>'+cp+'</b><br>3. Look up <b>'+cpHex(cp)+'</b> in Unicode: <b>'+ch+'</b>';
+    }
+    return '<div class="stepRow">'+u8Cell(cp)+'<div><div class="stepTxt">'+txt+'</div>'+u8Strip(it.bytes)+'</div></div>';
+  });
+  if(items.length>AS_MAX)rows.push('<div class="stepTxt" style="padding-top:10px;">Steps shown for the first '+AS_MAX+' characters. The full result is above.</div>');
+  document.getElementById('asSteps').innerHTML=rows.join('')||'<div class="stepTxt">Type something above to see the steps.</div>';
+}
 function asSwap(){var o=document.getElementById('asOut').getAttribute('data-raw')||'';asSetDir(asDir==='t2b'?'b2t':'t2b');document.getElementById('asIn').value=o;asRun();}
 function asRun(){
+  if(asEnc==='utf8'){u8Run();return;}
   var raw=document.getElementById('asIn').value, err='', codes=[], out='';
   if(asDir==='t2b'){
-    for(var i=0;i<raw.length;i++){var c=raw.charCodeAt(i);if(c>127){err='"'+raw[i]+'" is not an ASCII character (code '+c+'). ASCII only covers 0–127.';continue;}codes.push(c);}
+    for(var i=0;i<raw.length;i++){var c=raw.charCodeAt(i);if(c>127){err='"'+raw[i]+'" is not an ASCII character (code '+c+'). ASCII only covers 0–127. Switch to UNICODE (UTF-8) to convert it.';continue;}codes.push(c);}
     out=codes.map(bits8).join(' ');
   }else{
     var s=raw.replace(/[^01\s]/g,function(){err='Binary can only contain 0s and 1s. Other characters were ignored.';return '';}).trim(), groups=[];
