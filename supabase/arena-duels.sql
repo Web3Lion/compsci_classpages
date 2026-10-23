@@ -147,9 +147,11 @@ begin
 end $$;
 
 -- ---- scoring: a capture during a live duel adds points ----------------------
+-- 26.3: bounty: a capture that takes you past the leader (3+ pts) pays +1
+alter table arena_duel_caps add column if not exists bounty boolean not null default false;
 create or replace function _ad_score() returns trigger
 language plpgsql security definer set search_path = public as $$
-declare v_pts int; r record;
+declare v_pts int; r record; v_my int; v_top int; v_b boolean;
 begin
   v_pts := case lower(coalesce(new.level,'')) when 'hard' then 3 when 'medium' then 2 else 1 end;
   for r in
@@ -157,11 +159,14 @@ begin
      where p.student_id = new.student_id and not p.forfeit and d.status = 'live'
        and now() >= d.started_at and now() < d.ends_at and new.flag_key = any(d.flag_keys)
   loop
-    insert into arena_duel_caps (duel_id, student_id, flag_key, title, pts)
-      values (r.id, new.student_id, new.flag_key, left(coalesce(new.title,''),120), v_pts)
+    select points into v_my from arena_duel_players where duel_id = r.id and student_id = new.student_id;
+    select max(points) into v_top from arena_duel_players where duel_id = r.id and student_id <> new.student_id and not forfeit;
+    v_b := coalesce(v_top, 0) >= 3 and coalesce(v_my, 0) <= v_top and coalesce(v_my, 0) + v_pts > v_top;
+    insert into arena_duel_caps (duel_id, student_id, flag_key, title, pts, bounty)
+      values (r.id, new.student_id, new.flag_key, left(coalesce(new.title,''),120), v_pts + case when v_b then 1 else 0 end, v_b)
       on conflict do nothing;
     if found then
-      update arena_duel_players set points = points + v_pts, caps = caps + 1, last_seen = now()
+      update arena_duel_players set points = points + v_pts + (case when v_b then 1 else 0 end), caps = caps + 1, last_seen = now()
        where duel_id = r.id and student_id = new.student_id;
     end if;
   end loop;
@@ -217,7 +222,7 @@ begin
   if exists (select 1 from arena_duel_players p join arena_duels x on x.id = p.duel_id
               where p.student_id = me.id and x.status in ('lobby','live') and not p.forfeit)
     then return json_build_object('error','already_in_duel'); end if;
-  if (select count(*) from arena_duel_players where duel_id = d.id and not forfeit) >= 4
+  if (select count(*) from arena_duel_players where duel_id = d.id and not forfeit) >= 6
     then return json_build_object('error','full'); end if;
   if _ad_open_count(me.id, d.flag_keys) = 0 then return json_build_object('error','no_open_flags'); end if;
   insert into arena_duel_players (duel_id, student_id) values (d.id, me.id)
@@ -288,7 +293,7 @@ begin
           'forfeit', p.forfeit, 'won', p.won, 'xp', p.xp,
           'open', _ad_open_count(p.student_id, d.flag_keys)) order by p.points desc, p.joined_at), '[]'::json)
         from arena_duel_players p join students s on s.id = p.student_id where p.duel_id = d.id),
-      'feed', (select coalesce(json_agg(json_build_object('handle', s.handle, 'title', k.title, 'pts', k.pts, 'at', k.at) order by k.at desc), '[]'::json)
+      'feed', (select coalesce(json_agg(json_build_object('handle', s.handle, 'title', k.title, 'pts', k.pts, 'at', k.at, 'bounty', k.bounty, 'eq', to_jsonb(s)->'equipped') order by k.at desc), '[]'::json)
         from (select * from arena_duel_caps where duel_id = d.id order by at desc limit 8) k join students s on s.id = k.student_id)
     ) end);
 end $$;
