@@ -1,16 +1,17 @@
 // © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
-/* waiting-room.js (v29.0) — teacher side of the class duel waiting room (supabase/waiting-room.sql).
-   Used by battle.html (kind "team"), vocab-battle.html ("vocab") and raid.html ("raid").
-   WROOM.attach({ kind, rpc, classId(), demo, teams() }) → { html(), bind(root), go(startFn) }
-     teams() — optional: ids of the ticked teams (31.2). Unticked teams are left out of the room card and the count.
+/* waiting-room.js (v29.0; 32.1 brackets + 5 s countdown) — teacher side of the class duel waiting room (supabase/waiting-room.sql).
+   Used by battle.html (kind "team"), vocab-battle.html ("vocab"), raid.html ("raid") and bracket.html ("bracket").
+   WROOM.attach({ kind, rpc, classId(), demo, teams(), people() }) → { html(), bind(root), go(startFn) }
+     teams()  — optional: ids of the ticked teams (31.2). Unticked teams are left out of the room card and the count.
+     people() — optional: ids of the ticked students (32.1, brackets). Squads show only those students, plus a "No squad" group.
      html()  — the waiting-room card for the setup screen
-     go(fn)  — if the room is open: 10 s countdown on every student's screen, then fn(); else fn() now.
+     go(fn)  — if the room is open: 5 s countdown on every student's screen, then fn(); else fn() now.
                Call this from the page's Start button; when fn's battle is live the room flips to "started". */
 (function () {
   if (window.WROOM) return;
-  var SECS = 10;
+  var SECS = 5;
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  var LBL = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid" };
+  var LBL = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid", bracket: "Duel Bracket" };
   function css() {
     if (document.getElementById("wrCss")) return;
     var s = document.createElement("style"); s.id = "wrCss";
@@ -46,18 +47,24 @@
       if (!L || L.status === "started" || other) {
         return '<div class="card" id="wrCard" style="margin-bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">' +
           '<div style="flex:1;min-width:240px;"><div style="font-weight:800;color:var(--bright);font-size:16px;">Waiting room</div>' +
-          '<div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5;">Every class duel starts here. Open it, then students tap <b>Class Duel</b> on their course home, see their team, and get a 10-second countdown when you press Start.' +
+          '<div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5;">Every class duel starts here. Open it, then students tap <b>Class Duel</b> on their course home, see their team, and get a ' + SECS + '-second countdown when you press Start.' +
           (other ? ' <b style="color:var(--amber);">The room is open for a ' + esc(LBL[L.kind]) + ' right now. Opening it here switches it.</b>' : '') + '</div></div>' +
           '<button type="button" class="btn" id="wrOpen">Open waiting room</button></div>';
       }
-      var pickIds = o.teams ? o.teams() : null, RT = R.teams || [], out = [];
+      var pickIds = o.teams ? o.teams() : null, RT = R.teams || [], out = [], ppl = o.people ? o.people() : null;
       if (pickIds) { RT = RT.filter(function (t) { if (pickIds.indexOf(t.id) >= 0) return true; out.push(t.name); return false; }); }
+      if (ppl) {
+        RT = RT.concat((R.loose || []).length ? [{ id: "_none", name: "No squad", color: "", members: R.loose }] : [])
+          .map(function (t) { return { id: t.id, name: t.name, color: t.color, members: (t.members || []).filter(function (m) { return ppl.indexOf(m.id) >= 0; }) }; })
+          .filter(function (t) { return t.members.length; });
+        pickIds = ppl;
+      }
       var tot = 0, here = 0; RT.forEach(function (t) { tot += (t.members || []).length; here += (t.members || []).filter(function (m) { return m.here; }).length; });
       if (!pickIds) here = R.here;
       return '<div class="card" id="wrCard" style="margin-bottom:18px;border:2px solid var(--amber);box-shadow:0 0 26px -12px var(--amber);">' +
         '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;">' +
           '<div style="flex:1;min-width:220px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:800;">WAITING ROOM OPEN \u00b7 ' + esc(LBL[o.kind]).toUpperCase() + '</div>' +
-          '<div style="font-size:13px;color:var(--muted);margin-top:4px;">Students join from <b>Class Duel</b> on their course home. Start runs a 10-second countdown on every screen.</div></div>' +
+          '<div style="font-size:13px;color:var(--muted);margin-top:4px;">Students join from <b>Class Duel</b> on their course home. Start runs a ' + SECS + '-second countdown on every screen.' + (ppl && !ppl.length ? ' <b style="color:var(--amber);">Tick players below to see who\u2019s here.</b>' : '') + '</div></div>' +
           '<div class="mono" style="font-size:40px;font-weight:800;color:var(--bright);line-height:1;">' + here + '<span style="font-size:18px;color:var(--dim);"> / ' + tot + ' here</span></div>' +
           '<button type="button" class="btn ghost" id="wrClose">Close room</button></div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;">' + RT.map(function (t) {
@@ -67,7 +74,7 @@
             '<div style="display:flex;flex-wrap:wrap;gap:4px 10px;">' + (t.members || []).map(function (m) { return '<span style="font-size:12px;color:' + (m.here ? "var(--bright)" : "var(--faint)") + ';">' + (m.here ? '<span style="color:var(--ok);">\u25cf</span> ' : '\u25cb ') + esc(m.handle) + '</span>'; }).join("") + '</div></div>';
         }).join("") + '</div>' +
         (out.length ? '<div style="margin-top:10px;font-size:12px;color:var(--dim);">Sitting out (not ticked): ' + out.map(esc).join(', ') + '. They are not in this battle or its results.</div>' : '') +
-        (R.ungrouped ? '<div style="margin-top:10px;font-size:12px;color:var(--amber);">' + R.ungrouped + ' student' + (R.ungrouped > 1 ? "s have" : " has") + ' no squad. They can still open the room but sit out a team battle.</div>' : '') +
+        (R.ungrouped && !ppl ? '<div style="margin-top:10px;font-size:12px;color:var(--amber);">' + R.ungrouped + ' student' + (R.ungrouped > 1 ? "s have" : " has") + ' no squad. They can still open the room but sit out a team battle.</div>' : '') +
         (err ? '<div role="alert" style="margin-top:10px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(err) + '</div>' : '') + '</div>';
     }
     function paint() {
@@ -81,7 +88,7 @@
     }
     // 29.2: every class duel goes through the room. Without waiting-room.sql ("na") the page starts directly.
     function needsRoom() { return !!ST && ST !== "na" && !open(); }
-    function label() { return open() ? "Start \u00b7 10 s countdown" : needsRoom() ? "Open waiting room" : null; }
+    function label() { return open() ? "Start \u00b7 " + SECS + " s countdown" : needsRoom() ? "Open waiting room" : null; }
     function openRoom() { err = ""; return rpc("ctf_t_lobby_open", { p_class: o.classId(), p_kind: o.kind }).then(load).catch(function () { err = "Couldn\u2019t open. Run supabase/waiting-room.sql."; ST = "na"; paint(); }); }
     function bind(root) {
       var op = (root || document).querySelector("#wrOpen"); if (op) op.onclick = openRoom;

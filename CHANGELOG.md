@@ -11,6 +11,16 @@ a cache tag (`?v=9.0.0`) — bump both together on every release.
 
 ---
 
+## 32.1.0 — 2026-10-22
+- **Duel Brackets now use the class duel waiting room**, same as Team Battles, Vocab Battles and Boss Raids. The Start button reads "Open waiting room" until it's open; the room card shows the ticked players (by squad, plus "No squad") with live ●/○ presence and a head count. Start runs the countdown, then every student in the room is sent to bracket-play.html.
+- Waiting room countdown is now **5 seconds** (was 10) for every class duel.
+- lobby.html, course-home and arena call-outs know the "Duel Bracket" kind; bracket players with no squad show as "Solo player".
+- SQL: **re-run `supabase/waiting-room.sql`** (adds the `bracket` kind, no-squad list, 5 s default). install-check guard added.
+
+## 32.0.1 — 2026-10-21
+- Flag Duels: the duel page's flag list is a scoreboard, so students saw titles with no questions. Each flag title is now a link that opens that flag (expanded, scrolled to) in the CTF arena, with a line explaining where the questions are.
+- Flag Duels: the duel's flag list now treats `lockedByDefault` modules as locked (same rule as ctf.js), so a duel can't count flags the arena still shows as sealed.
+
 ## 32.0.0 — 2026-10-21
 - New page **practice/text-binary.html** (Text ↔ Binary): worked examples, unlimited practice and a 15-question quiz, 5 each from text → binary (ASCII), binary → text (ASCII), and Unicode (UTF-8: bytes per character, lead byte → byte count, bytes in a word, 2-byte encode and decode). Linked from the Practice index, teacher guide and Binary Conversion.
 - Brackets: **Big screen** projector mode (live matches only in large type, question number / overtime, health or points, the last answer, up next, players left). Esc or "Exit big screen" to leave; remembered per browser.

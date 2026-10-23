@@ -202,7 +202,7 @@
   }
   function battleCheck() {
     Promise.all([rpcRaw("ctf_tb_state"), rpcRaw("ctf_vd_state"), rpcRaw("ctf_ad_state"), rpcRaw("ctf_br_state"), rpcRaw("ctf_raid_state"), rpcRaw("ctf_lobby_state")]).then(function (r) {
-      var lb = r[5] && !r[5].error && r[5].lobby && !r[5].live ? r[5].lobby : null, LBN = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid" };
+      var lb = r[5] && !r[5].error && r[5].lobby && !r[5].live ? r[5].lobby : null, LBN = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid", bracket: "Duel Bracket" };
       var tb = r[0] && r[0].battle, vd = r[1], ad = r[2] && r[2].duel, br = r[3], b = null;
       var bm = br && br.bracket && br.bracket.status === "live" && br.match;
       var rd = r[4] && r[4].raid && r[4].raid.status === "live" ? r[4].raid : null;

@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=32.0.0"></script>
+<script src="site.js?v=32.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=32.0.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=32.0.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=32.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=32.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -50,19 +50,20 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=32.0.0"></script>
-<script src="ctf-data/cyber1.js?v=32.0.0"></script>
-<script src="ctf-data/cyber2.js?v=32.0.0"></script>
-<script src="ctf-data/cyber3.js?v=32.0.0"></script>
-<script src="ctf-data/apcsp.js?v=32.0.0"></script>
-<script src="ctf-data/web3.js?v=32.0.0"></script>
-<script src="supabase-config.js?v=32.0.0"></script>
-<script src="auth.js?v=32.0.0"></script>
-<script src="battle-fx.js?v=32.0.0"></script>
-<script src="battle-bg.js?v=32.0.0"></script>
-<script src="bracket-tree.js?v=32.0.0"></script>
-<script src="binary-pool.js?v=32.0.0"></script>
-<script src="prize-roll.js?v=32.0.0"></script>
+<script src="config.js?v=32.1.0"></script>
+<script src="ctf-data/cyber1.js?v=32.1.0"></script>
+<script src="ctf-data/cyber2.js?v=32.1.0"></script>
+<script src="ctf-data/cyber3.js?v=32.1.0"></script>
+<script src="ctf-data/apcsp.js?v=32.1.0"></script>
+<script src="ctf-data/web3.js?v=32.1.0"></script>
+<script src="supabase-config.js?v=32.1.0"></script>
+<script src="auth.js?v=32.1.0"></script>
+<script src="battle-fx.js?v=32.1.0"></script>
+<script src="battle-bg.js?v=32.1.0"></script>
+<script src="bracket-tree.js?v=32.1.0"></script>
+<script src="binary-pool.js?v=32.1.0"></script>
+<script src="prize-roll.js?v=32.1.0"></script>
+<script src="waiting-room.js?v=32.1.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX, BT = window.BRACKET_TREE, esc = BT.esc;
@@ -76,6 +77,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     no_manifest:"Open this class once in teacher.html so its flag list is published, then try again.", need_two:"Pick at least 2 students.", too_many:"Brackets hold up to 32 students." };
   var DEMO = /[?&]demo=1/.test(location.search);
   function rpc(fn, a){ return DEMO ? Promise.resolve(demo(fn)) : AUTH.rpc(fn, a || {}); }
+  var WR = window.WROOM ? WROOM.attach({ kind: "bracket", demo: DEMO, rpc: function(fn, a){ return AUTH.rpc(fn, a || {}); }, classId: function(){ return CUR && CUR.id; },
+    people: DEMO ? null : function(){ return SET ? picked().map(function(p){ return p.id; }) : []; } }) : null;
   function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
   function names(){ return ((((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}).modules || []; }
@@ -83,7 +86,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=32.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=32.1.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
@@ -108,10 +111,10 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function setupView(){
     var bin = kind === "binary", man = (SET.manifest || []).map(function(m){ return m.module; }), keys = bin ? [] : kind === "flag" ? man : Object.keys(MODS).map(Number).sort(function(a,b){ return a-b; });
     var selM = keys.filter(function(m){ return pick[m]; }), P = picked(), n = P.length, size = pow2(n), nm = PMODES.filter(function(p){ return modes[p[0]]; }).length;
-    var ready = n >= 2 && n <= 32 && (bin || (selM.length && nm)) && !busy;
+    var ready = n >= 2 && n <= 32 && (bin || (selM.length && nm)) && !busy, wl = WR ? WR.label() : null, canGo = ready || (WR && WR.needsRoom() && !busy);
     var groups = (SET.squads || []).filter(function(g){ return (g.members || []).length; }).map(function(g){ return group(g.id, g.name, g.color, g.members); }).join("") +
       ((SET.ungrouped || []).length ? group("_none", "No squad", "", SET.ungrouped) : "");
-    return '<div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;" id="g">' +
+    return (WR ? WR.html() : '') + '<div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;" id="g">' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:6px;">PLAYERS \u00b7 TICK SQUADS OR STUDENTS</div>' +
         '<div style="font-size:13px;color:var(--dim);margin-bottom:12px;">Everyone ticked plays as an individual. Seeds come from current XP.</div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">' + (groups || '<div style="color:var(--dim);">No students yet.</div>') + '</div></div>' +
@@ -128,9 +131,9 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab puzzle types</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + PMODES.map(function(p){ return '<button type="button" class="chip brT" data-p="' + p[0] + '" aria-pressed="' + !!modes[p[0]] + '">' + p[1] + '</button>'; }).join("") + '</div>') +
         '<div class="mono" style="font-size:13px;color:var(--muted);margin-bottom:14px;">' + (n >= 2 ? n + " players \u00b7 " + size + "-slot bracket" + (size - n ? " \u00b7 " + (size - n) + " bye" + (size - n > 1 ? "s" : "") + " for the top seed" + (size - n > 1 ? "s" : "") : "") : "Pick at least 2 players") + '</div>' +
-        '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><button type="button" class="btn" id="brGo"' + (ready ? "" : " disabled") + '>Start bracket</button>' + (ST && ST.bracket ? '<button type="button" class="btn ghost" id="brBack">Back to bracket</button>' : '') + '</div>' +
+        '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><button type="button" class="btn" id="brGo" data-wr-start="Start bracket"' + (canGo ? "" : " disabled") + '>' + (wl || "Start bracket") + '</button>' + (ST && ST.bracket ? '<button type="button" class="btn ghost" id="brBack">Back to bracket</button>' : '') + '</div>' +
         (msg ? '<div role="alert" style="margin-top:12px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(msg) + '</div>' : '') +
-        '<div style="font-size:12px;color:var(--dim);margin-top:14px;line-height:1.6;">Students open <b>Bracket</b> from the Duels card on their CTF page. A match starts by itself once both players are on the page; 30 seconds missing = forfeit. First-round losers play a consolation bracket. Anyone knocked out after that joins the rematch pool: random 1-game matches against other knocked-out players until the bracket ends (no XP).<br>Rewards: champion +25, runner-up +15, semifinals +10, consolation champion +10, everyone else who played +5.</div></div></div>';
+        '<div style="font-size:12px;color:var(--dim);margin-top:14px;line-height:1.6;">Open the waiting room first: students tap <b>Class Duel</b> on their course home and you can see who\u2019s online. Start runs a 5-second countdown, then everyone is sent to the bracket. A match starts by itself once both players are on the page; 30 seconds missing = forfeit. First-round losers play a consolation bracket. Anyone knocked out after that joins the rematch pool: random 1-game matches against other knocked-out players until the bracket ends (no XP).<br>Rewards: champion +25, runner-up +15, semifinals +10, consolation champion +10, everyone else who played +5.</div></div></div>';
   }
   function liveView(){
     var b = ST.bracket, done = b.status !== "live";
@@ -226,12 +229,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     view.querySelectorAll(".brG").forEach(function(b){ b.onchange = function(){
       var g = b.getAttribute("data-g"), L = g === "_none" ? SET.ungrouped : ((SET.squads || []).filter(function(x){ return x.id === g; })[0] || {}).members || [];
       L.forEach(function(p){ chosen[p.id] = b.checked; }); paint(); }; });
+    if (WR) WR.bind(view);
     var go = document.getElementById("brGo"); if (go) go.onclick = function(){
       var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), bin = kind === "binary" && BIN;
+      if (WR && WR.needsRoom()) { WR.openRoom(); return; }   // 32.1: brackets go through the class duel waiting room
+      var n = picked().length; if (n < 2) { msg = ERR.need_two; paint(); return; }
       busy = true; msg = ""; paint();
+      (WR ? WR.go : function(f){ f(function(){}); })(function(done){
       rpc("ctf_t_br_create", { p_class: CUR.id, p_kind: bin ? "vocab" : kind, p_modules: bin ? [BIN.module] : mods, p_pool: bin ? BIN.pool() : pool(mods), p_modes: bin ? BIN.modes : PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }), p_students: picked().map(function(p){ return p.id; }), p_sudden: sudden })
-        .then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; } showSetup = false; prev = {}; load(); })
-        .catch(function(e){ busy = false; msg = "Couldn\u2019t start. Check that supabase/brackets.sql has been run."; paint(); });
+        .then(function(r){ busy = false; var ok = r && !r.error; done(ok); if (!ok) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; } showSetup = false; prev = {}; load(); })
+        .catch(function(e){ busy = false; done(false); msg = "Couldn\u2019t start. Check that supabase/brackets.sql has been run."; paint(); });
+      });
     };
     var bk = document.getElementById("brBack"); if (bk) bk.onclick = function(){ showSetup = false; paint(); };
     var nw = document.getElementById("brNew"); if (nw) nw.onclick = function(){ showSetup = true; msg = ""; paint(); };
@@ -259,7 +267,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function pickClass(cid){
     CUR = CLASSES.filter(function(c){ return c.id === cid; })[0] || CLASSES[0]; sel.value = CUR.id;
     try { localStorage.setItem("battle-class", CUR.id); } catch (e) {}
-    SET = null; ST = null; pick = {}; chosen = {}; prev = {}; showSetup = false; window.CTF_COURSE = CUR.course;
+    SET = null; ST = null; pick = {}; chosen = {}; prev = {}; showSetup = false; window.CTF_COURSE = CUR.course; if (WR) WR.reload();
     loadVocab(CUR.course).then(load);
   }
   function demo(fn){

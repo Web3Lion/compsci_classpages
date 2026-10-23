@@ -22,8 +22,12 @@
   function sess(c) { try { return JSON.parse(localStorage.getItem("ctf-sess-" + c)) || null; } catch (e) { return null; } }
   function solved(c) { try { return (JSON.parse(localStorage.getItem("ctf-" + c)) || {}).solved || {}; } catch (e) { return {}; } }
   function locks(c) {
-    if (window.CTF_LOCKS) return { mods: window.CTF_LOCKS.modules || [], flags: window.CTF_LOCKS.flags || [] };
-    try { var g = JSON.parse(localStorage.getItem("ctf-gates-" + c)) || {}; return { mods: g.locked_modules || [], flags: g.locked_flags || [] }; } catch (e) { return { mods: [], flags: [] }; }
+    var L;
+    if (window.CTF_LOCKS) L = { mods: (window.CTF_LOCKS.modules || []).map(Number), flags: window.CTF_LOCKS.flags || [] };
+    else { try { var g = JSON.parse(localStorage.getItem("ctf-gates-" + c)) || {}; L = { mods: (g.locked_modules || []).map(Number), flags: g.locked_flags || [] }; } catch (e) { L = { mods: [], flags: [] }; } }
+    // 32.0.1: same rule as ctf.js locks() — lockedByDefault modules stay closed until the teacher saves "open:N"
+    ((((window.COURSE_CONFIG || {})[c] || {}).ctf || {}).lockedByDefault || []).forEach(function (m) { m = Number(m); if (L.flags.indexOf("open:" + m) === -1 && L.mods.indexOf(m) === -1) L.mods.push(m); });
+    return L;
   }
   function lvl(d) { d = String(d || "").toLowerCase(); return d.indexOf("hard") === 0 ? "Hard" : d.indexOf("med") === 0 ? "Medium" : d.indexOf("easy") === 0 ? "Easy" : ""; }
   function flags(c) {
@@ -81,7 +85,13 @@
       var head = document.querySelector('.modHead[data-m="' + m + '"]'), body = document.querySelector('.modBody[data-m="' + m + '"]');
       if (!head) { if (++tries < 40) setTimeout(go, 250); return; }
       if (body && body.style.display === "none") head.click();
-      setTimeout(function () { var h = document.querySelector('.modHead[data-m="' + m + '"]'); if (h) window.scrollTo({ top: h.getBoundingClientRect().top + scrollY - 90, behavior: "smooth" }); }, 120);
+      var fid = (location.hash.match(/flag=([^&]+)/) || [])[1];
+      setTimeout(function () {
+        var sel = fid ? '.chalName[data-id="' + decodeURIComponent(fid).replace(/"/g, "") + '"]' : null, row = sel && document.querySelector(sel);
+        if (row && row.getAttribute("aria-expanded") !== "true") row.click();
+        row = sel && document.querySelector(sel);
+        var h = row || document.querySelector('.modHead[data-m="' + m + '"]'); if (h) window.scrollTo({ top: h.getBoundingClientRect().top + scrollY - 90, behavior: "smooth" });
+      }, 160);
       try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
     })();
   }
@@ -93,7 +103,7 @@
     var el = document.getElementById("fdCard"), vb = document.getElementById("vdLive");
     // 29.0: class duel waiting room open → glowing call to lobby.html
     if (ST && ST.lobby) {
-      var LBN = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid" };
+      var LBN = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid", bracket: "Duel Bracket" };
       if (el) el.remove();
       if (!vb) { vb = document.createElement("a"); vb.id = "vdLive"; vb.className = "card"; root.parentNode.insertBefore(vb, root); }
       vb.href = "../lobby.html?c=" + encodeURIComponent(course);

@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=32.0.0"></script>
+<script src="site.js?v=32.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=32.0.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=32.0.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=32.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=32.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
@@ -46,7 +46,7 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<div id="lbOver" role="status" aria-live="assertive"><span id="lbOverK" style="font-size:20px;letter-spacing:3px;"></span><b id="lbNum">10</b><span id="lbOverS" style="font-size:15px;opacity:.8;"></span></div>
+<div id="lbOver" role="status" aria-live="assertive"><span id="lbOverK" style="font-size:20px;letter-spacing:3px;"></span><b id="lbNum">5</b><span id="lbOverS" style="font-size:15px;opacity:.8;"></span></div>
 <script>
 (function(){
   var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase(), DEMO = q.get("demo") === "1";
@@ -58,9 +58,9 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
   function boot(){
     var AUTH = window.CTF_AUTH, view = document.getElementById("view"), FX = window.BATTLE_FX;
     var G = (((window.COURSE_CONFIG || {})[C] || {}).ctf) || {}, GN = G.adversary || "NEMESIS";
-    var LBL = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid" };
-    var HOW = { team: "Capture flags in the arena. Each capture adds to your team\u2019s average.", vocab: "You\u2019ll be paired with someone from another team. Crack the term first to hit them.", raid: "The whole class fights " + GN + ". Every right answer is a hit; wrong ones crack the class shield." };
-    var GO = { team: C + "/ctf.html#arena", vocab: "vocab-duel.html?c=" + C, raid: "raid-play.html?c=" + C };
+    var LBL = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid", bracket: "Duel Bracket" };
+    var HOW = { team: "Capture flags in the arena. Each capture adds to your team\u2019s average.", vocab: "You\u2019ll be paired with someone from another team. Crack the term first to hit them.", raid: "The whole class fights " + GN + ". Every right answer is a hit; wrong ones crack the class shield.", bracket: "Everyone plays as an individual. Your first match starts as soon as you and your opponent are on the bracket page. Knocked out? You\u2019ll get rematches until it ends." };
+    var GO = { team: C + "/ctf.html#arena", vocab: "vocab-duel.html?c=" + C, raid: "raid-play.html?c=" + C, bracket: "bracket-play.html?c=" + C };
     function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
     var S = null; try { S = JSON.parse(localStorage.getItem("ctf-sess-" + C)); } catch (e) {}
     if (!DEMO && (!AUTH || !AUTH.online || !S)) { view.innerHTML = '<div class="card"><p style="margin:0 0 14px;">Sign in on your CTF page first, then come back here.</p><a class="btn" href="' + C + '/ctf.html">Go to CTF</a></div>'; return; }
@@ -79,8 +79,9 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
         team: { id: "g0", name: "Red Rockets", color: "#ff5d73" },
         room: { here: n, ungrouped: 0, teams: T.map(function(t, i){ return { id: "g" + i, name: t[0], color: t[1], members: t[2].map(function(h){ return { id: h, handle: h, me: h === "you", here: h === "you" || k++ < n }; }) }; }) } };
     }
-    function teamsHtml(R, myTeam){
-      return '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;">' + (R.teams || []).map(function(t){
+    function teamsHtml(R, myTeam, kind){
+      var TT = (R.teams || []).concat(kind === "bracket" && (R.loose || []).length ? [{ id: "_none", name: "No squad", color: "", members: R.loose }] : []);
+      return '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;">' + TT.map(function(t){
         var mine = myTeam && t.id === myTeam.id, h = (t.members || []).filter(function(m){ return m.here; }).length;
         return '<div class="card" style="padding:14px 16px;border:' + (mine ? "2px solid " + esc(t.color || "var(--accent)") : "1px solid var(--border)") + ';border-left:6px solid ' + esc(t.color || "var(--border3)") + ';">' +
           '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;"><b style="flex:1;color:var(--bright);font-size:16px;">' + esc(t.name) + (mine ? ' <span class="mono" style="font-size:10px;color:var(--accent);">YOUR TEAM</span>' : '') + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + h + '/' + (t.members || []).length + ' here</span></div>' +
@@ -90,18 +91,18 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
     function draw(){
       if (!ST) return;
       var L = ST.lobby, R = ST.room || { teams: [] }, T = ST.team;
-      var k = JSON.stringify([L && L.kind, L && L.status, ST.live, T && T.id, R.here, (R.teams || []).map(function(t){ return (t.members || []).map(function(m){ return m.here ? 1 : 0; }).join(""); })]);
+      var k = JSON.stringify([L && L.kind, L && L.status, ST.live, T && T.id, R.here, (R.teams || []).concat([{ members: R.loose || [] }]).map(function(t){ return (t.members || []).map(function(m){ return m.here ? 1 : 0; }).join(""); })]);
       if (k === sig) return; sig = k;
       var myCol = (T && T.color) || "var(--accent)";
       var hero = '<div class="card" style="padding:26px 28px;margin-bottom:18px;border:2px solid ' + esc(myCol) + ';box-shadow:0 0 40px -16px ' + esc(myCol) + ';">' +
         '<div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--faint);">' + (L ? "UP NEXT \u00b7 " + esc(LBL[L.kind]).toUpperCase() : "NO CLASS DUEL OPEN") + '</div>' +
         '<div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:10px;">' +
           '<span aria-hidden="true" style="width:56px;height:56px;border-radius:14px;background:' + esc(myCol) + ';flex:none;"></span>' +
-          '<div style="flex:1;min-width:220px;"><div style="font-size:14px;color:var(--muted);">You\u2019re on</div><div style="font-size:clamp(28px,6vw,44px);font-weight:800;color:var(--bright);line-height:1.1;">' + (T ? esc(T.name) : "No squad yet") + '</div></div>' +
+          '<div style="flex:1;min-width:220px;"><div style="font-size:14px;color:var(--muted);">You\u2019re on</div><div style="font-size:clamp(28px,6vw,44px);font-weight:800;color:var(--bright);line-height:1.1;">' + (T ? esc(T.name) : L && L.kind === "bracket" ? "Solo player" : "No squad yet") + '</div></div>' +
           (L ? '<div style="text-align:right;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">IN THE ROOM</div><div class="mono" style="font-size:40px;font-weight:800;color:var(--bright);line-height:1;">' + R.here + '</div></div>' : '') + '</div>' +
         '<div style="display:flex;align-items:center;gap:10px;margin-top:16px;font-size:15px;color:var(--bright);">' + (L ? '<span class="lbDot" aria-hidden="true"></span>' + (L.status === "counting" ? "Starting\u2026" : "Waiting for your teacher to start. Keep this page open.") : "Your teacher hasn\u2019t opened a class duel yet. This page checks every few seconds.") + '</div>' +
         (L && HOW[L.kind] ? '<div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5;">' + HOW[L.kind] + (L.kind === "team" && !T ? " You need a squad to score in a team battle; ask your teacher." : "") + '</div>' : '') + '</div>';
-      view.innerHTML = hero + (L ? teamsHtml(R, T) : '');
+      view.innerHTML = hero + (L ? teamsHtml(R, T, L.kind) : '');
     }
     function countdown(){
       var o = document.getElementById("lbOver"), L = ST && ST.lobby;
