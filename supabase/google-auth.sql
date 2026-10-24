@@ -290,6 +290,8 @@ begin
   if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
   return coalesce((select json_agg(row_to_json(t) order by t.points desc) from (
     select s.id, s.handle, s.email, s.created_at, s.last_seen,
+           -- 26.0.1: keep the squad (class-groups.sql) so re-running this file doesn't empty the Squads board
+           nullif(to_jsonb(s)->>'group_id','')::uuid as group_id,
            coalesce(p.points,0) as points, coalesce(p.bonus,0) as bonus,
            coalesce(p.solved_count,0) as solved_count, coalesce(p.total_count,0) as total_count,
            coalesce(p.streak,'{}'::jsonb) as streak, coalesce(p.badges,'{}'::jsonb) as badges,

@@ -70,7 +70,7 @@ returns int language sql immutable as $$
     -- 6.1: leaderboard row trails
     when 'r_neon' then 10  when 'r_scan' then 12  when 'r_comet' then 15  when 'r_flame' then 20
     -- 19.0: quiz skins (restyle quiz.html + the course profile; skins.js)
-    when 's_arcade' then 20  when 's_quest' then 20  when 's_ops' then 20  when 's_sky' then 20  when 's_mastermind' then 20
+    when 's_cyber' then 0  when 's_arcade' then 20  when 's_quest' then 20  when 's_ops' then 20  when 's_sky' then 20  when 's_mastermind' then 20
     else null end
 $$;
 create or replace function _cosmetic_slot(p_item text)

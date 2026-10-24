@@ -35,11 +35,13 @@ language sql stable security definer set search_path = public as $$
      );
 $$;
 
--- ---- public check: is this exact email in the allowlist? (client-side gate
---      needs this before any teacher-scoped RPC would succeed) -------------
+-- ---- public check: is the CALLER's email in the allowlist? (client-side gate
+--      needs this before any teacher-scoped RPC would succeed). v33: returns
+--      only the signed-in caller's own email, never the whole list. ---------
 create or replace function ctf_allowed_emails_public()
-returns json language sql security definer set search_path = public as $$
-  select coalesce((select json_agg(email) from allowed_emails), '[]'::json);
+returns json language sql stable security definer set search_path = public as $$
+  select coalesce((select json_agg(a.email) from allowed_emails a
+                    where auth.uid() is not null and a.email = lower(coalesce(_email(), ''))), '[]'::json);
 $$;
 grant execute on function ctf_allowed_emails_public() to anon, authenticated;
 

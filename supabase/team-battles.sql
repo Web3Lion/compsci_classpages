@@ -9,6 +9,10 @@
 --  any student Flag Duels in that class, and blocks new ones until it finishes.
 --  Every student (except teacher rows) must be in a team, or the start is refused.
 --
+--  24.0: each battle has one random 30-second Double Points window (dbl_at);
+--  captures inside it score x2. ctf_t_tb_state adds avatars (equipped), the
+--  dbl flag on feed rows, and end-of-battle awards (first / hard / clutch).
+--
 --  Scoring: a capture of a flag in those modules during the battle earns duel
 --  points (Easy 1 / Medium 2 / Hard 3), counted by a trigger on flag_events, so
 --  only flags the student had never captured count. Team score = team points
@@ -74,6 +78,9 @@ create table if not exists team_battle_caps (
   primary key (battle_id, student_id, flag_key)
 );
 alter table team_battle_caps enable row level security;
+-- 24.0: one random 30-second Double Points window per battle
+alter table team_battles     add column if not exists dbl_at timestamptz;
+alter table team_battle_caps add column if not exists dbl boolean not null default false;
 
 -- ---- helpers -----------------------------------------------------------------
 create or replace function _tb_is_teacher_row(p_email text) returns boolean
@@ -118,7 +125,7 @@ $$;
 
 create or replace function _tb_finish(p_battle uuid, p_award boolean default true) returns void
 language plpgsql security definer set search_path = public as $$
-declare b team_battles; v_top numeric; t record; p record;
+declare b team_battles; v_top numeric; t record; r_pl record;   -- 26.0.2: loop var renamed (was "p", which clashed with the table alias p below)
 begin
   select * into b from team_battles where id = p_battle for update;
   if not found or b.status <> 'live' then return; end if;
@@ -135,14 +142,14 @@ begin
   update team_battle_players p set mvp = true
    where p.battle_id = p_battle and p.points > 0 and p.left_at is null
      and p.points = (select max(q.points) from team_battle_players q where q.battle_id = p_battle and q.group_id = p.group_id and q.left_at is null);
-  for p in select pl.*, tm.won from team_battle_players pl join team_battle_teams tm on tm.battle_id = pl.battle_id and tm.group_id = pl.group_id
+  for r_pl in select pl.*, tm.won from team_battle_players pl join team_battle_teams tm on tm.battle_id = pl.battle_id and tm.group_id = pl.group_id
             where pl.battle_id = p_battle and pl.caps > 0 and pl.left_at is null loop
-    if p.won then
-      update team_battle_players set xp = 15 where battle_id = p_battle and student_id = p.student_id;
-      perform _tb_pay(p.student_id, 15, 'Team battle win (+10) and played (+5)');
+    if r_pl.won then
+      update team_battle_players set xp = 15 where battle_id = p_battle and student_id = r_pl.student_id;
+      perform _tb_pay(r_pl.student_id, 15, 'Team battle win (+10) and played (+5)');
     else
-      update team_battle_players set xp = 5 where battle_id = p_battle and student_id = p.student_id;
-      perform _tb_pay(p.student_id, 5, 'Team battle played');
+      update team_battle_players set xp = 5 where battle_id = p_battle and student_id = r_pl.student_id;
+      perform _tb_pay(r_pl.student_id, 5, 'Team battle played');
     end if;
   end loop;
   update team_battles set status = 'done', finished_at = now() where id = p_battle;
@@ -163,19 +170,20 @@ end $$;
 -- ---- scoring -----------------------------------------------------------------
 create or replace function _tb_score() returns trigger
 language plpgsql security definer set search_path = public as $$
-declare v_pts int; r record;
+declare v_pts int; r record; v_dbl boolean;
 begin
   v_pts := case lower(coalesce(new.level,'')) when 'hard' then 3 when 'medium' then 2 else 1 end;
   for r in
-    select b.id from team_battles b join team_battle_players p on p.battle_id = b.id
+    select b.id, b.dbl_at from team_battles b join team_battle_players p on p.battle_id = b.id
      where p.student_id = new.student_id and b.status = 'live' and p.left_at is null
        and (b.ends_at is null or now() < b.ends_at) and new.flag_key = any(b.flag_keys)
   loop
-    insert into team_battle_caps (battle_id, student_id, flag_key, title, pts)
-      values (r.id, new.student_id, new.flag_key, left(coalesce(new.title,''),120), v_pts)
+    v_dbl := r.dbl_at is not null and now() >= r.dbl_at and now() < r.dbl_at + interval '30 seconds';
+    insert into team_battle_caps (battle_id, student_id, flag_key, title, pts, dbl)
+      values (r.id, new.student_id, new.flag_key, left(coalesce(new.title,''),120), case when v_dbl then v_pts * 2 else v_pts end, v_dbl)
       on conflict do nothing;
     if found then
-      update team_battle_players set points = points + v_pts, caps = caps + 1
+      update team_battle_players set points = points + case when v_dbl then v_pts * 2 else v_pts end, caps = caps + 1
        where battle_id = r.id and student_id = new.student_id;
     end if;
   end loop;
@@ -254,9 +262,11 @@ begin
   return json_build_object('ok', true, 'teams', v_n, 'students', k);
 end $$;
 
-create or replace function ctf_t_tb_start(p_class uuid, p_modules int[], p_minutes int)
+-- 26.0: p_groups picks which squads play (null/empty = every squad, everyone must be on one)
+drop function if exists ctf_t_tb_start(uuid, int[], int);
+create or replace function ctf_t_tb_start(p_class uuid, p_modules int[], p_minutes int, p_groups uuid[] default null)
 returns json language plpgsql security definer set search_path = public as $$
-declare c classes; v_keys text[]; v_teams int; v_un int; v_id uuid;
+declare c classes; v_keys text[]; v_teams int; v_un int; v_id uuid; v_sel uuid[];
 begin
   if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
   select * into c from classes where id = p_class;
@@ -270,9 +280,14 @@ begin
   select coalesce(array_agg(k), '{}') into v_keys
     from module_manifest m, unnest(m.flag_keys) k where m.course = c.course and m.module = any(p_modules);
   if cardinality(v_keys) = 0 then return json_build_object('error','no_manifest'); end if;
-  select count(*) into v_un from students where class_id = p_class and group_id is null and not _tb_is_teacher_row(email);
-  if v_un > 0 then return json_build_object('error','ungrouped', 'count', v_un); end if;
-  select count(distinct group_id) into v_teams from students where class_id = p_class and group_id is not null and not _tb_is_teacher_row(email);
+  if coalesce(cardinality(p_groups), 0) = 0 then
+    select count(*) into v_un from students where class_id = p_class and group_id is null and not _tb_is_teacher_row(email);
+    if v_un > 0 then return json_build_object('error','ungrouped', 'count', v_un); end if;
+  end if;
+  select coalesce(array_agg(g.id), '{}') into v_sel from class_groups g
+   where g.class_id = p_class and (coalesce(cardinality(p_groups), 0) = 0 or g.id = any(p_groups))
+     and exists (select 1 from students s where s.group_id = g.id and not _tb_is_teacher_row(s.email));
+  v_teams := cardinality(v_sel);
   if v_teams < 2 then return json_build_object('error','need_two_teams'); end if;
   if v_teams > 4 then return json_build_object('error','too_many_teams', 'count', v_teams); end if;
 
@@ -280,16 +295,17 @@ begin
   if to_regclass('public.arena_duels') is not null then
     execute 'update arena_duels set status = ''cancelled'', finished_at = now() where class_id = $1 and status in (''lobby'',''live'')' using p_class;
   end if;
-  insert into team_battles (class_id, course, modules, flag_keys, minutes, ends_at, created_by)
+  -- 24.0: Double Points starts at a random moment between 25% in and 45s before the end
+  insert into team_battles (class_id, course, modules, flag_keys, minutes, ends_at, created_by, dbl_at)
     values (p_class, c.course, p_modules, v_keys, p_minutes,
-            now() + make_interval(mins => p_minutes), lower(coalesce(_email(),'')))
+            now() + make_interval(mins => p_minutes), lower(coalesce(_email(),'')),
+            now() + make_interval(secs => (p_minutes * 15 + random() * greatest(0, p_minutes * 45 - 45))::int))
     returning id into v_id;
   insert into team_battle_teams (battle_id, group_id, name, color)
-    select v_id, g.id, g.name, g.color from class_groups g
-     where g.class_id = p_class and exists (select 1 from students s where s.group_id = g.id and not _tb_is_teacher_row(s.email));
+    select v_id, g.id, g.name, g.color from class_groups g where g.id = any(v_sel);
   insert into team_battle_players (battle_id, student_id, group_id)
     select v_id, s.id, s.group_id from students s
-     where s.class_id = p_class and s.group_id is not null and not _tb_is_teacher_row(s.email);
+     where s.class_id = p_class and s.group_id = any(v_sel) and not _tb_is_teacher_row(s.email);
   return json_build_object('ok', true, 'id', v_id);
 end $$;
 
@@ -313,14 +329,31 @@ begin
   if b.id is null then return json_build_object('now', now(), 'battle', null); end if;
   return json_build_object('now', now(), 'battle', json_build_object(
     'id', b.id, 'status', b.status, 'modules', b.modules, 'minutes', b.minutes,
-    'started_at', b.started_at, 'ends_at', b.ends_at, 'finished_at', b.finished_at,
+    'started_at', b.started_at, 'ends_at', b.ends_at, 'finished_at', b.finished_at, 'dbl_at', b.dbl_at,
     'teams', _tb_teams(b.id),
     'players', (select coalesce(json_agg(json_build_object('team', p.group_id, 'handle', s.handle, 'points', p.points,
-                  'caps', p.caps, 'mvp', p.mvp, 'xp', p.xp, 'left', p.left_at is not null) order by (p.left_at is null) desc, p.points desc, s.handle), '[]'::json)
+                  'caps', p.caps, 'mvp', p.mvp, 'xp', p.xp, 'left', p.left_at is not null, 'eq', to_jsonb(s)->'equipped') order by (p.left_at is null) desc, p.points desc, s.handle), '[]'::json)
                 from team_battle_players p join students s on s.id = p.student_id where p.battle_id = b.id),
-    'feed', (select coalesce(json_agg(json_build_object('team', p.group_id, 'handle', s.handle, 'title', k.title, 'pts', k.pts, 'at', k.at) order by k.at desc), '[]'::json)
+    'feed', (select coalesce(json_agg(json_build_object('team', p.group_id, 'handle', s.handle, 'title', k.title, 'pts', k.pts, 'at', k.at,
+                  'dbl', k.dbl, 'eq', to_jsonb(s)->'equipped') order by k.at desc), '[]'::json)
              from (select * from team_battle_caps where battle_id = b.id order by at desc limit 12) k
-             join students s on s.id = k.student_id join team_battle_players p on p.battle_id = b.id and p.student_id = k.student_id)
+             join students s on s.id = k.student_id join team_battle_players p on p.battle_id = b.id and p.student_id = k.student_id),
+    -- 24.0 end-of-battle awards
+    'awards', case when b.status = 'done' then json_build_object(
+      'first', (select json_build_object('handle', s.handle, 'team', p.group_id, 'secs', extract(epoch from k.at - b.started_at)::int)
+                  from team_battle_caps k join students s on s.id = k.student_id
+                  join team_battle_players p on p.battle_id = b.id and p.student_id = k.student_id
+                 where k.battle_id = b.id order by k.at limit 1),
+      'hard',  (select json_build_object('handle', s.handle, 'team', p.group_id, 'n', h.n)
+                  from (select student_id, count(*) n from team_battle_caps
+                         where battle_id = b.id and (case when dbl then pts / 2 else pts end) = 3
+                         group by student_id order by count(*) desc, min(at) limit 1) h
+                  join students s on s.id = h.student_id join team_battle_players p on p.battle_id = b.id and p.student_id = h.student_id),
+      'clutch', (select json_build_object('handle', s.handle, 'team', p.group_id, 'secs', greatest(0, extract(epoch from b.ends_at - k.at)::int), 'title', k.title)
+                  from team_battle_caps k join students s on s.id = k.student_id
+                  join team_battle_players p on p.battle_id = b.id and p.student_id = k.student_id
+                 where k.battle_id = b.id and b.ends_at is not null and k.at >= b.ends_at - interval '60 seconds' order by k.at desc limit 1)
+    ) else null end
   ));
 end $$;
 
@@ -339,7 +372,7 @@ begin
   if b.id is null then return json_build_object('now', now(), 'battle', null); end if;
   select * into mine from team_battle_players where battle_id = b.id and student_id = me.id;
   return json_build_object('now', now(), 'battle', json_build_object(
-    'id', b.id, 'status', b.status, 'modules', b.modules, 'minutes', b.minutes, 'ends_at', b.ends_at,
+    'id', b.id, 'status', b.status, 'modules', b.modules, 'minutes', b.minutes, 'ends_at', b.ends_at, 'dbl_at', b.dbl_at,
     'teams', _tb_teams(b.id), 'my_team', mine.group_id,
     'me', json_build_object('points', mine.points, 'caps', mine.caps, 'xp', mine.xp, 'mvp', mine.mvp),
     'mvps', case when b.status = 'done' then (select coalesce(json_agg(json_build_object('team', p.group_id, 'handle', s.handle, 'points', p.points)), '[]'::json)
@@ -365,7 +398,7 @@ declare f text;
 begin
   foreach f in array array[
     'ctf_tb_leave(uuid)',
-    'ctf_t_tb_setup(uuid)', 'ctf_t_tb_randomize(uuid,int)', 'ctf_t_tb_start(uuid,int[],int)',
+    'ctf_t_tb_setup(uuid)', 'ctf_t_tb_randomize(uuid,int)', 'ctf_t_tb_start(uuid,int[],int,uuid[])',
     'ctf_t_tb_end(uuid,boolean)', 'ctf_t_tb_state(uuid)', 'ctf_tb_state(uuid)'
   ] loop
     execute format('revoke all on function %s from public, anon', f);

@@ -46,6 +46,8 @@ create table if not exists vd_sessions (
 );
 create index if not exists vd_sessions_class on vd_sessions (class_id, created_at desc);
 alter table vd_sessions enable row level security;
+-- 26.2: which disguises this session uses (empty = all four)
+alter table vd_sessions add column if not exists modes text[] not null default '{}';
 
 create table if not exists vd_players (
   session_id uuid not null references vd_sessions(id) on delete cascade,
@@ -96,6 +98,9 @@ create table if not exists vd_fights (
   ended_at   timestamptz
 );
 create index if not exists vd_fights_session on vd_fights (session_id, status);
+-- 26.3: KO bonuses (brawls + class battles): revenge = KO the player who KO'd you, bounty = KO the sole leader
+alter table vd_fights add column if not exists revenge boolean not null default false;
+alter table vd_fights add column if not exists bounty  boolean not null default false;
 create index if not exists vd_fights_p1 on vd_fights (p1, status);
 create index if not exists vd_fights_p2 on vd_fights (p2, status);
 alter table vd_fights enable row level security;
@@ -162,12 +167,14 @@ begin
 end $$;
 
 -- cleans a client-sent term list: {t,d}, 3–24 letters/digits, one per term
+-- 30.2: all-digit terms (binary-conversion answers like "45") may be 1–24 long
 create or replace function _vd_pool(p jsonb) returns jsonb
 language sql immutable as $$
   select coalesce(jsonb_agg(jsonb_build_object('t', t, 'd', d)), '[]'::jsonb) from (
     select distinct on (_vd_norm(e->>'t')) left(btrim(e->>'t'), 40) as t, left(btrim(e->>'d'), 400) as d
       from jsonb_array_elements(case when jsonb_typeof(p) = 'array' then p else '[]'::jsonb end) e
-     where length(_vd_norm(e->>'t')) between 3 and 24 and length(btrim(coalesce(e->>'d',''))) > 0
+     where length(_vd_norm(e->>'t')) between (case when btrim(coalesce(e->>'t','')) ~ '^[0-9]+$' then 1 else 3 end) and 24
+       and length(btrim(coalesce(e->>'d',''))) > 0
      limit 600
   ) x;
 $$;
@@ -194,45 +201,112 @@ begin
   update vd_fights set
     term_t = t->>'t', term_d = t->>'d', n = n + 1, term_at = now(),
     used = v_used || (t->>'t'),
-    mode = case when random() < 0.5 then 'cipher' else 'unscramble' end
+    -- 26.1: four disguises, picked at random per term
+    mode = (select m from unnest(coalesce(nullif(s.modes, '{}'::text[]), array['cipher','unscramble','decrypt','bank'])) m order by random() limit 1)
    where id = p_fight;
   update vd_fights set
     shift  = case when mode = 'cipher' then k else null end,
-    puzzle = case when mode = 'cipher' then _vd_cipher(upper(term_t), k) else _vd_shuffle(term_t) end
+    puzzle = case mode when 'cipher' then _vd_cipher(upper(term_t), k)
+                       when 'unscramble' then _vd_shuffle(term_t)
+                       when 'bank' then _vd_bank(s.pool, term_t)
+                       else null end
    where id = p_fight;
 end $$;
 
+-- 26.2: keep only known disguise names; empty = all four
+-- 30.2: 'plain' = no disguise (binary-conversion sets); only used when picked
+create or replace function _vd_modes(p text[]) returns text[]
+language sql immutable as $$
+  select coalesce(array_agg(distinct m), '{}') from unnest(coalesce(p, '{}')) m where m in ('cipher','unscramble','decrypt','bank','plain');
+$$;
+-- 26.1: word bank (the term + 3 other pool terms, shuffled) as a JSON text array
+create or replace function _vd_bank(p_pool jsonb, p_t text) returns text
+language sql volatile as $$
+  select jsonb_agg(x order by random())::text from (
+    select p_t as x
+    union all
+    (select e->>'t' from jsonb_array_elements(p_pool) e
+      where _vd_norm(e->>'t') <> _vd_norm(p_t) group by e->>'t' order by random() limit 3)
+  ) q;
+$$;
+-- 26.1: decrypt mode: letters hidden as _, p_k of them revealed in a fixed random order (never all)
+create or replace function _vd_mask(p_t text, p_seed text, p_k int) returns text
+language sql immutable as $$
+  with ch as (select i, substr(upper(p_t), i, 1) as c from generate_series(1, length(p_t)) i),
+       ord as (select i, row_number() over (order by md5(p_seed || ':' || i)) as r from ch where c ~ '[A-Z0-9]'),
+       tot as (select count(*) as n from ord)
+  select string_agg(case when ch.c !~ '[A-Z0-9]' then ch.c
+                         when o.r <= least(greatest(p_k, 0), (select n from tot) - 1) then ch.c else '_' end, '' order by ch.i)
+    from ch left join ord o on o.i = ch.i;
+$$;
+-- grace 8s, then one letter every 2.5s
+create or replace function _vd_leak(p_at timestamptz) returns int
+language sql stable as $$
+  select case when p_at is null or now() < p_at + interval '8 seconds' then 0
+              else 1 + floor(extract(epoch from now() - p_at - interval '8 seconds') / 2.5)::int end;
+$$;
+
 create or replace function _vd_finish_duel(p_session uuid) returns void
 language plpgsql security definer set search_path = public as $$
-declare f vd_fights; p record;
+declare f vd_fights; r_pl record;   -- 26.0.2: was "p" (clashed with table alias p)
 begin
   update vd_sessions set status = 'done', finished_at = now() where id = p_session and status = 'live';
   if not found then return; end if;
   select * into f from vd_fights where session_id = p_session order by created_at desc limit 1;
-  for p in select * from vd_players where session_id = p_session and left_at is null loop
-    if f.winner = p.student_id then
-      update vd_players set xp = 15 where session_id = p_session and student_id = p.student_id;
-      perform _vd_pay(p.student_id, 15, 'Vocab duel win (+10) and played (+5)');
+  for r_pl in select * from vd_players where session_id = p_session and left_at is null loop
+    if f.winner = r_pl.student_id then
+      update vd_players set xp = 15, mvp = true where session_id = p_session and student_id = r_pl.student_id;
+      perform _vd_pay(r_pl.student_id, 15, 'Vocab duel win (+10) and played (+5)');
     elsif f.winner is not null then
-      update vd_players set xp = 5 where session_id = p_session and student_id = p.student_id;
-      perform _vd_pay(p.student_id, 5, 'Vocab duel played');
+      update vd_players set xp = 5 where session_id = p_session and student_id = r_pl.student_id;
+      perform _vd_pay(r_pl.student_id, 5, 'Vocab duel played');
     end if;
   end loop;
 end $$;
 
 create or replace function _vd_end_fight(p_fight uuid, p_winner uuid) returns void
 language plpgsql security definer set search_path = public as $$
-declare f vd_fights; s vd_sessions;
+declare f vd_fights; s vd_sessions; v_loser uuid; v_rev boolean := false; v_bty boolean := false; v_lw int; v_top int;
 begin
   update vd_fights set status = 'done', winner = p_winner, ended_at = now()
    where id = p_fight and status = 'live' returning * into f;
   if f.id is null then return; end if;
+  select * into s from vd_sessions where id = f.session_id;
   update vd_players set fights = fights + 1 where session_id = f.session_id and student_id in (f.p1, f.p2);
   if p_winner is not null then
-    update vd_players set wins = wins + 1 where session_id = f.session_id and student_id = p_winner;
+    if s.kind = 'class' or s.ends_at is not null then
+      v_loser := case when f.p1 = p_winner then f.p2 else f.p1 end;
+      v_rev := exists (select 1 from vd_fights x where x.session_id = s.id and x.id <> f.id and x.status = 'done'
+                        and x.winner = v_loser and (x.p1 = p_winner or x.p2 = p_winner));
+      select wins into v_lw from vd_players where session_id = s.id and student_id = v_loser;
+      select max(wins) into v_top from vd_players where session_id = s.id and student_id <> v_loser;
+      v_bty := coalesce(v_lw, 0) >= 2 and v_lw > coalesce(v_top, 0);
+      update vd_fights set revenge = v_rev, bounty = v_bty where id = f.id;
+    end if;
+    update vd_players set wins = wins + 1 + (case when v_rev then 1 else 0 end) + (case when v_bty then 1 else 0 end)
+     where session_id = f.session_id and student_id = p_winner;
   end if;
-  select * into s from vd_sessions where id = f.session_id;
-  if s.kind = 'duel' then perform _vd_finish_duel(s.id); end if;
+  if s.kind = 'duel' and s.ends_at is null then perform _vd_finish_duel(s.id); end if;
+end $$;
+
+-- 26.3: 3–4 player brawl (rotating 1v1s on a clock): most KO points wins (+15), everyone who fought +5
+create or replace function _vd_finish_brawl(p_session uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_top int; r_pl record;
+begin
+  update vd_sessions set status = 'done', finished_at = now() where id = p_session and status = 'live';
+  if not found then return; end if;
+  update vd_fights set status = 'done', ended_at = now() where session_id = p_session and status = 'live';
+  select max(wins) into v_top from vd_players where session_id = p_session and left_at is null;
+  for r_pl in select * from vd_players where session_id = p_session and left_at is null loop
+    if coalesce(v_top, 0) > 0 and r_pl.wins = v_top then
+      update vd_players set xp = 15, mvp = true where session_id = p_session and student_id = r_pl.student_id;
+      perform _vd_pay(r_pl.student_id, 15, 'Vocab brawl win (+10) and played (+5)');
+    elsif r_pl.fights > 0 then
+      update vd_players set xp = 5 where session_id = p_session and student_id = r_pl.student_id;
+      perform _vd_pay(r_pl.student_id, 5, 'Vocab brawl played');
+    end if;
+  end loop;
 end $$;
 
 create or replace function _vd_teams(p_session uuid) returns json
@@ -252,7 +326,7 @@ $$;
 
 create or replace function _vd_finish_class(p_session uuid, p_award boolean) returns void
 language plpgsql security definer set search_path = public as $$
-declare s vd_sessions; v_top numeric; p record;
+declare s vd_sessions; v_top numeric; r_pl record;   -- 26.0.2: was "p" (clashed with table alias p)
 begin
   select * into s from vd_sessions where id = p_session for update;
   if not found or s.status <> 'live' then return; end if;
@@ -269,15 +343,15 @@ begin
   update vd_players p set mvp = true
    where p.session_id = p_session and p.wins > 0 and p.left_at is null
      and p.wins = (select max(q.wins) from vd_players q where q.session_id = p_session and q.group_id = p.group_id and q.left_at is null);
-  for p in select pl.student_id, coalesce(tm.won,false) as won from vd_players pl
+  for r_pl in select pl.student_id, coalesce(tm.won,false) as won from vd_players pl
              left join vd_teams tm on tm.session_id = pl.session_id and tm.group_id = pl.group_id
             where pl.session_id = p_session and pl.fights > 0 and pl.left_at is null loop
-    if p.won then
-      update vd_players set xp = 15 where session_id = p_session and student_id = p.student_id;
-      perform _vd_pay(p.student_id, 15, 'Vocab battle win (+10) and played (+5)');
+    if r_pl.won then
+      update vd_players set xp = 15 where session_id = p_session and student_id = r_pl.student_id;
+      perform _vd_pay(r_pl.student_id, 15, 'Vocab battle win (+10) and played (+5)');
     else
-      update vd_players set xp = 5 where session_id = p_session and student_id = p.student_id;
-      perform _vd_pay(p.student_id, 5, 'Vocab battle played');
+      update vd_players set xp = 5 where session_id = p_session and student_id = r_pl.student_id;
+      perform _vd_pay(r_pl.student_id, 5, 'Vocab battle played');
     end if;
   end loop;
   update vd_sessions set status = 'done', finished_at = now() where id = p_session;
@@ -286,8 +360,9 @@ end $$;
 -- pairs every free, present player with someone free from a different team
 create or replace function _vd_pair(p_session uuid) returns void
 language plpgsql security definer set search_path = public as $$
-declare a record; b uuid; v_id uuid;
+declare a record; b uuid; v_id uuid; v_kind text;
 begin
+  select kind into v_kind from vd_sessions where id = p_session;
   for a in
     select p.student_id, p.group_id from vd_players p
      where p.session_id = p_session and p.left_at is null and p.last_seen > now() - interval '20 seconds'
@@ -297,7 +372,7 @@ begin
                 and (f.status = 'live' or f.ended_at > now() - interval '4 seconds')) then continue; end if;
     select p.student_id into b from vd_players p
      where p.session_id = p_session and p.left_at is null and p.last_seen > now() - interval '20 seconds'
-       and p.student_id <> a.student_id and p.group_id is distinct from a.group_id
+       and p.student_id <> a.student_id and (v_kind = 'duel' or p.group_id is distinct from a.group_id)
        and not exists (select 1 from vd_fights f where f.session_id = p_session and (f.p1 = p.student_id or f.p2 = p.student_id)
                         and (f.status = 'live' or f.ended_at > now() - interval '4 seconds'))
      order by (select count(*) from vd_fights f where f.session_id = p_session
@@ -323,7 +398,11 @@ begin
   end if;
   if s.status <> 'live' then return; end if;
   if s.kind = 'class' and now() >= s.ends_at then perform _vd_finish_class(s.id, true); return; end if;
-  if s.kind = 'duel' and s.started_at < now() - interval '20 minutes' then
+  if s.kind = 'duel' and s.ends_at is not null then
+    if now() >= s.ends_at or (select count(*) from vd_players where session_id = s.id and left_at is null) < 2 then
+      perform _vd_finish_brawl(s.id); return;
+    end if;
+  elsif s.kind = 'duel' and s.started_at < now() - interval '20 minutes' then
     update vd_fights set status = 'done', ended_at = now() where session_id = s.id and status = 'live';
     update vd_sessions set status = 'cancelled', finished_at = now() where id = s.id; return;
   end if;
@@ -338,7 +417,7 @@ begin
       perform _vd_new_term(f.id);
     end if;
   end loop;
-  if s.kind = 'class' then perform _vd_pair(s.id); end if;
+  if s.kind = 'class' or s.ends_at is not null then perform _vd_pair(s.id); end if;
 end $$;
 
 create or replace function _vd_class_live(p_class uuid) returns boolean
@@ -356,7 +435,8 @@ language sql stable security definer set search_path = public as $$
 $$;
 
 -- ---- student -------------------------------------------------------------------
-create or replace function ctf_vd_create(p_student uuid, p_modules int[], p_pool jsonb)
+drop function if exists ctf_vd_create(uuid, int[], jsonb);
+create or replace function ctf_vd_create(p_student uuid, p_modules int[], p_pool jsonb, p_modes text[] default null)
 returns json language plpgsql security definer set search_path = public as $$
 declare me students; c classes; v_pool jsonb; v_code text; v_id uuid; i int;
 begin
@@ -376,8 +456,8 @@ begin
     v_code := (select string_agg(substr('ABCDEFGHJKLMNPQRSTUVWXYZ', 1 + floor(random()*24)::int, 1), '') from generate_series(1,4));
     exit when not exists (select 1 from vd_sessions where class_id = c.id and code = v_code and status in ('lobby','live'));
   end loop;
-  insert into vd_sessions (class_id, course, kind, host, code, modules, pool)
-    values (c.id, c.course, 'duel', me.id, v_code, coalesce(p_modules,'{}'), v_pool) returning id into v_id;
+  insert into vd_sessions (class_id, course, kind, host, code, modules, pool, modes)
+    values (c.id, c.course, 'duel', me.id, v_code, coalesce(p_modules,'{}'), v_pool, _vd_modes(p_modes)) returning id into v_id;
   insert into vd_players (session_id, student_id) values (v_id, me.id);
   return json_build_object('ok', true, 'id', v_id, 'code', v_code);
 end $$;
@@ -399,7 +479,7 @@ begin
   if exists (select 1 from vd_sessions x join vd_players p on p.session_id = x.id
               where p.student_id = me.id and p.left_at is null and x.status in ('lobby','live'))
     then return json_build_object('error','already_in_duel'); end if;
-  if (select count(*) from vd_players where session_id = s.id and left_at is null) >= 2
+  if (select count(*) from vd_players where session_id = s.id and left_at is null) >= 4
     then return json_build_object('error','full'); end if;
   insert into vd_players (session_id, student_id) values (s.id, me.id)
     on conflict (session_id, student_id) do update set left_at = null, last_seen = now();
@@ -416,6 +496,12 @@ begin
   if s.id is null then return json_build_object('error','no_lobby'); end if;
   select student_id into v_other from vd_players where session_id = s.id and student_id <> me.id and left_at is null limit 1;
   if v_other is null then return json_build_object('error','need_two'); end if;
+  if (select count(*) from vd_players where session_id = s.id and left_at is null) >= 3 then
+    update vd_sessions set status = 'live', started_at = now(), minutes = 5, ends_at = now() + interval '5 minutes' where id = s.id;
+    update vd_players set last_seen = now() where session_id = s.id;
+    perform _vd_pair(s.id);
+    return json_build_object('ok', true, 'brawl', true);
+  end if;
   update vd_sessions set status = 'live', started_at = now() where id = s.id;
   update vd_players set last_seen = now() where session_id = s.id;
   insert into vd_fights (session_id, p1, p2) values (s.id, me.id, v_other) returning id into v_id;
@@ -454,7 +540,7 @@ begin
   perform pg_advisory_xact_lock(hashtext('vd:' || f.session_id::text));
   select * into f from vd_fights where id = p_fight;
   select * into s from vd_sessions where id = f.session_id;
-  if f.status <> 'live' or s.status <> 'live' or (s.kind = 'class' and now() >= s.ends_at) then return json_build_object('error','over'); end if;
+  if f.status <> 'live' or s.status <> 'live' or (s.ends_at is not null and now() >= s.ends_at) then return json_build_object('error','over'); end if;
   if f.n <> p_n then return json_build_object('stale', true); end if;
   if _vd_norm(p_guess) = '' then return json_build_object('error','empty'); end if;
   update vd_players set last_seen = now() where session_id = s.id and student_id = me.id;
@@ -501,21 +587,25 @@ begin
       'id', s.id, 'kind', s.kind, 'code', s.code, 'status', s.status, 'host', s.host, 'modules', s.modules,
       'minutes', s.minutes, 'ends_at', s.ends_at, 'my_team', mine.group_id,
       'my', json_build_object('fights', mine.fights, 'wins', mine.wins, 'xp', mine.xp, 'mvp', mine.mvp),
-      'players', (select coalesce(json_agg(json_build_object('id', p.student_id, 'handle', st.handle) order by p.joined_at), '[]'::json)
+      'brawl', s.kind = 'duel' and s.ends_at is not null,
+      'players', (select coalesce(json_agg(json_build_object('id', p.student_id, 'handle', st.handle, 'wins', p.wins, 'fights', p.fights, 'mvp', p.mvp) order by p.joined_at), '[]'::json)
                     from vd_players p join students st on st.id = p.student_id where p.session_id = s.id and p.left_at is null and s.kind = 'duel'),
       'teams', case when s.kind = 'class' then _vd_teams(s.id) else '[]'::json end,
       'mvps', case when s.kind = 'class' and s.status = 'done' then (select coalesce(json_agg(json_build_object('team', p.group_id, 'handle', st.handle, 'wins', p.wins)), '[]'::json)
                 from vd_players p join students st on st.id = p.student_id where p.session_id = s.id and p.mvp) else '[]'::json end,
-      'winner_handle', case when s.kind = 'duel' and s.status = 'done' then (select st.handle from vd_fights x join students st on st.id = x.winner where x.session_id = s.id order by x.created_at desc limit 1) end
+      'winner_handle', case when s.kind = 'duel' and s.status = 'done' and s.ends_at is not null then (select string_agg(st.handle, ' & ') from vd_players p join students st on st.id = p.student_id where p.session_id = s.id and p.mvp)
+                             when s.kind = 'duel' and s.status = 'done' then (select st.handle from vd_fights x join students st on st.id = x.winner where x.session_id = s.id order by x.created_at desc limit 1) end
     ) end,
     'fight', case when f.id is null then null else json_build_object(
       'id', f.id, 'n', f.n, 'status', f.status,
       'my_hp', case when v_me then f.hp1 else f.hp2 end, 'opp_hp', case when v_me then f.hp2 else f.hp1 end,
       'opp', (select handle from students where id = case when v_me then f.p2 else f.p1 end),
-      'def', f.term_d, 'mode', f.mode, 'puzzle', f.puzzle, 'shift', f.shift, 'term_at', f.term_at,
+      'def', f.term_d, 'mode', f.mode, 'shift', f.shift, 'term_at', f.term_at,
+      'puzzle', case when f.mode = 'decrypt' then _vd_mask(f.term_t, f.id::text || ':' || f.n, _vd_leak(f.term_at)) else f.puzzle end,
       'len', length(_vd_norm(f.term_t)),
       'last_t', f.last_t, 'last_mine', f.last_by = me.id, 'last_n', f.n - 1,
-      'won', case when f.status = 'done' then f.winner = me.id end
+      'won', case when f.status = 'done' then f.winner = me.id end,
+      'revenge', f.revenge, 'bounty', f.bounty
     ) end
   );
 end $$;
@@ -537,9 +627,12 @@ begin
                    where s.class_id = p_class and s.group_id is null and not _vd_is_teacher_row(s.email)));
 end $$;
 
-create or replace function ctf_t_vd_start(p_class uuid, p_modules int[], p_pool jsonb, p_minutes int)
+-- 26.0: p_groups picks which squads play (null/empty = every squad, everyone must be on one)
+drop function if exists ctf_t_vd_start(uuid, int[], jsonb, int);
+drop function if exists ctf_t_vd_start(uuid, int[], jsonb, int, uuid[]);
+create or replace function ctf_t_vd_start(p_class uuid, p_modules int[], p_pool jsonb, p_minutes int, p_groups uuid[] default null, p_modes text[] default null)
 returns json language plpgsql security definer set search_path = public as $$
-declare c classes; v_pool jsonb; v_un int; v_teams int; v_id uuid; v_min int := coalesce(p_minutes, 15);
+declare c classes; v_pool jsonb; v_un int; v_teams int; v_id uuid; v_min int := coalesce(p_minutes, 15); v_sel uuid[];
 begin
   if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
   select * into c from classes where id = p_class;
@@ -548,9 +641,14 @@ begin
   if v_min not in (5,10,15,20,45) then return json_build_object('error','bad_minutes'); end if;
   v_pool := _vd_pool(p_pool);
   if jsonb_array_length(v_pool) < 4 then return json_build_object('error','too_few_terms'); end if;
-  select count(*) into v_un from students where class_id = p_class and group_id is null and not _vd_is_teacher_row(email);
-  if v_un > 0 then return json_build_object('error','ungrouped', 'count', v_un); end if;
-  select count(distinct group_id) into v_teams from students where class_id = p_class and group_id is not null and not _vd_is_teacher_row(email);
+  if coalesce(cardinality(p_groups), 0) = 0 then
+    select count(*) into v_un from students where class_id = p_class and group_id is null and not _vd_is_teacher_row(email);
+    if v_un > 0 then return json_build_object('error','ungrouped', 'count', v_un); end if;
+  end if;
+  select coalesce(array_agg(g.id), '{}') into v_sel from class_groups g
+   where g.class_id = p_class and (coalesce(cardinality(p_groups), 0) = 0 or g.id = any(p_groups))
+     and exists (select 1 from students s where s.group_id = g.id and not _vd_is_teacher_row(s.email));
+  v_teams := cardinality(v_sel);
   if v_teams < 2 then return json_build_object('error','need_two_teams'); end if;
   if v_teams > 4 then return json_build_object('error','too_many_teams'); end if;
   update classes set squads_on = true where id = p_class;
@@ -558,15 +656,14 @@ begin
   update vd_fights f set status = 'done', ended_at = now() from vd_sessions s
    where s.id = f.session_id and s.class_id = p_class and s.kind = 'duel' and s.status in ('lobby','live') and f.status = 'live';
   update vd_sessions set status = 'cancelled', finished_at = now() where class_id = p_class and kind = 'duel' and status in ('lobby','live');
-  insert into vd_sessions (class_id, course, kind, modules, pool, minutes, status, started_at, ends_at, created_by)
-    values (p_class, c.course, 'class', coalesce(p_modules,'{}'), v_pool, v_min, 'live', now(), now() + make_interval(mins => v_min), lower(coalesce(_email(),'')))
+  insert into vd_sessions (class_id, course, kind, modules, pool, minutes, status, started_at, ends_at, created_by, modes)
+    values (p_class, c.course, 'class', coalesce(p_modules,'{}'), v_pool, v_min, 'live', now(), now() + make_interval(mins => v_min), lower(coalesce(_email(),'')), _vd_modes(p_modes))
     returning id into v_id;
   insert into vd_teams (session_id, group_id, name, color)
-    select v_id, g.id, g.name, g.color from class_groups g
-     where g.class_id = p_class and exists (select 1 from students s where s.group_id = g.id and not _vd_is_teacher_row(s.email));
+    select v_id, g.id, g.name, g.color from class_groups g where g.id = any(v_sel);
   insert into vd_players (session_id, student_id, group_id, last_seen)
     select v_id, s.id, s.group_id, 'epoch'::timestamptz from students s
-     where s.class_id = p_class and s.group_id is not null and not _vd_is_teacher_row(s.email);
+     where s.class_id = p_class and s.group_id = any(v_sel) and not _vd_is_teacher_row(s.email);
   return json_build_object('ok', true, 'id', v_id);
 end $$;
 
@@ -589,7 +686,7 @@ begin
   if s.id is not null then perform _vd_tidy(s.id); select * into s from vd_sessions where id = s.id; end if;
   if s.id is null then return json_build_object('now', now(), 'session', null); end if;
   return json_build_object('now', now(), 'session', json_build_object(
-    'id', s.id, 'status', s.status, 'modules', s.modules, 'minutes', s.minutes, 'ends_at', s.ends_at, 'finished_at', s.finished_at,
+    'id', s.id, 'status', s.status, 'modules', s.modules, 'modes', s.modes, 'minutes', s.minutes, 'ends_at', s.ends_at, 'finished_at', s.finished_at,
     'teams', _vd_teams(s.id),
     'present', (select count(*) from vd_players where session_id = s.id and left_at is null and last_seen > now() - interval '20 seconds')::int,
     'fights', (select coalesce(json_agg(json_build_object(
@@ -632,9 +729,9 @@ do $$
 declare f text;
 begin
   foreach f in array array[
-    'ctf_vd_create(uuid,int[],jsonb)', 'ctf_vd_join(uuid,text)', 'ctf_vd_start(uuid)', 'ctf_vd_leave(uuid)',
+    'ctf_vd_create(uuid,int[],jsonb,text[])', 'ctf_vd_join(uuid,text)', 'ctf_vd_start(uuid)', 'ctf_vd_leave(uuid)',
     'ctf_vd_answer(uuid,uuid,int,text)', 'ctf_vd_state(uuid)',
-    'ctf_t_vd_setup(uuid)', 'ctf_t_vd_start(uuid,int[],jsonb,int)', 'ctf_t_vd_end(uuid,boolean)',
+    'ctf_t_vd_setup(uuid)', 'ctf_t_vd_start(uuid,int[],jsonb,int,uuid[],text[])', 'ctf_t_vd_end(uuid,boolean)',
     'ctf_t_vd_state(uuid)', 'ctf_t_vd_end_all()'
   ] loop
     execute format('revoke all on function %s from public, anon', f);

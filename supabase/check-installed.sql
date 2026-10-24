@@ -35,7 +35,7 @@ from (
     (17, 'teacher-xp.sql', 'Manual XP grants with a reason', exists (select 1 from information_schema.tables where table_schema='public' and table_name='xp_grants')),
     (18, 'hardmode-log.sql', 'Arena mini-game run log', exists (select 1 from information_schema.tables where table_schema='public' and table_name='hardmode_runs')),
     (19, 'hint-log.sql', 'Hint-used tracking per flag', exists (select 1 from information_schema.columns where table_schema='public' and table_name='flag_events' and column_name='hint_used')),
-    (20, 'target-warmup.sql', 'Day-1 "Are You a Target?" warm-up', exists (select 1 from information_schema.tables where table_schema='public' and table_name='target_warmup_responses')),
+    (20, 'target-warmup.sql', 'Day 0 warm-up RETIRED in 33.2 (do not run; lockdown.sql drops it)', not exists (select 1 from information_schema.tables where table_schema='public' and table_name='target_warmup_responses')),
     (21, 'signin-log.sql', 'Rejected sign-in log', exists (select 1 from information_schema.tables where table_schema='public' and table_name='signin_rejects')),
     (22, 'board-leaderboard.sql', 'Classroom leaderboard', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_leaderboard')),
     (23, 'board-leaderboard-weekly.sql', '"This Week" leaderboard mode', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_leaderboard_weekly')),
@@ -63,7 +63,9 @@ from (
       (45, 'duel-record.sql', 'Duel record + duel spectator', exists (select 1 from pg_proc where proname='ctf_t_duels_watch')),
       (46, 'brackets.sql', 'Duel brackets + battle backgrounds', exists (select 1 from information_schema.tables where table_schema='public' and table_name='bracket_matches')),
       (47, 'raids.sql', 'Class boss raid', exists (select 1 from information_schema.tables where table_schema='public' and table_name='raids')),
-      (48, 'waiting-room.sql', 'Class duel waiting room', exists (select 1 from information_schema.tables where table_schema='public' and table_name='class_lobbies'))
+      (48, 'waiting-room.sql', 'Class duel waiting room', exists (select 1 from information_schema.tables where table_schema='public' and table_name='class_lobbies')),
+    (49, 'retention.sql', '30-day cleanup of sign-in rejects + typed guesses', exists (select 1 from pg_proc where proname='_purge_old_data')),
+    (50, 'lockdown.sql', 'Security lockdown (run last)', exists (select 1 from pg_proc where proname='_lockdown_gaps'))
   ) as c(step, file, feature, present)
 
   union all
@@ -202,6 +204,14 @@ union all
          when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_vd_modes' limit 1), 'plain'), 0) > 0 then '✅ fine — battles and brackets can use the Binary question set'
          else '⚠ RE-RUN vocab-duels.sql (Binary battles won''t start)' end,
     2, 97
+  union all
+  select '—', 'security', 'lockdown.sql: every table locked, internal helpers not callable from the browser',
+    case when not exists (select 1 from pg_proc where proname='_lockdown_gaps') then 'rerun'
+         when (select json_array_length(_lockdown_gaps()->'tables') + json_array_length(_lockdown_gaps()->'fns') + coalesce(json_array_length(_lockdown_gaps()->'legacy'),0)) = 0 then 'ok' else 'rerun' end,
+    case when not exists (select 1 from pg_proc where proname='_lockdown_gaps') then '⚠ RUN lockdown.sql (anyone can call internal scoring functions)'
+         when (select json_array_length(_lockdown_gaps()->'tables') + json_array_length(_lockdown_gaps()->'fns') + coalesce(json_array_length(_lockdown_gaps()->'legacy'),0)) = 0 then '✅ fine — tables locked, internal helpers private'
+         else '⚠ RE-RUN lockdown.sql — still open: ' || left((_lockdown_gaps()->'tables')::text || ' ' || (_lockdown_gaps()->'fns')::text || ' ' || coalesce((_lockdown_gaps()->'legacy')::text,''), 300) end,
+    2, 96
   union all
   select '—', 'run order', 'waiting-room.sql must be the 32.1 version (brackets, 5 s countdown)',
     case when not exists (select 1 from pg_proc where proname='_lobby_get') then 'na' when exists (select 1 from pg_proc where proname='_lobby_loose') then 'ok' else 'rerun' end,

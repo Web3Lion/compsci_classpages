@@ -20,6 +20,7 @@ create table if not exists weekly_winners (
   unique(class_id, week_start, pos)
 );
 create index if not exists weekly_winners_class_idx on weekly_winners(class_id, week_start desc);
+alter table weekly_winners enable row level security;   -- v33: was the one table left open to the anon key
 
 create or replace function ctf_t_snapshot_week(p_class uuid)
 returns json language plpgsql security definer set search_path = public as $$

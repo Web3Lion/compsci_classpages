@@ -49,7 +49,7 @@ begin
       (17, 'teacher-xp.sql', 'Manual XP grants with a reason', exists (select 1 from information_schema.tables where table_schema='public' and table_name='xp_grants')),
       (18, 'hardmode-log.sql', 'Arena mini-game run log', exists (select 1 from information_schema.tables where table_schema='public' and table_name='hardmode_runs')),
       (19, 'hint-log.sql', 'Hint-used tracking per flag', exists (select 1 from information_schema.columns where table_schema='public' and table_name='flag_events' and column_name='hint_used')),
-      (20, 'target-warmup.sql', 'Day-1 "Are You a Target?" warm-up', exists (select 1 from information_schema.tables where table_schema='public' and table_name='target_warmup_responses')),
+      (20, 'target-warmup.sql', 'Day 0 warm-up RETIRED in 33.2 (do not run; lockdown.sql drops it)', not exists (select 1 from information_schema.tables where table_schema='public' and table_name='target_warmup_responses')),
       (21, 'signin-log.sql', 'Rejected sign-in log', exists (select 1 from information_schema.tables where table_schema='public' and table_name='signin_rejects')),
       (22, 'board-leaderboard.sql', 'Classroom leaderboard', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_leaderboard')),
       (23, 'board-leaderboard-weekly.sql', '"This Week" leaderboard mode', exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_leaderboard_weekly')),
@@ -71,7 +71,15 @@ begin
       (39, 'teacher-mirror.sql', 'Teacher plays once, shows on every class board', exists (select 1 from pg_trigger where tgname='teacher_mirror')),
       (40, 'arena-duels.sql', 'Student flag duels in the arena', exists (select 1 from information_schema.tables where table_schema='public' and table_name='arena_duels')),
       (41, 'team-battles.sql', 'Teacher-run squad vs squad battles', exists (select 1 from information_schema.tables where table_schema='public' and table_name='team_battles')),
-      (42, 'vocab-duels.sql', 'Vocab Duels (1v1) + class Vocab Battles', exists (select 1 from information_schema.tables where table_schema='public' and table_name='vd_sessions'))
+      (42, 'vocab-duels.sql', 'Vocab Duels (1v1) + class Vocab Battles', exists (select 1 from information_schema.tables where table_schema='public' and table_name='vd_sessions')),
+      (43, 'class-rename.sql', 'Teachers can rename classes', exists (select 1 from pg_proc where proname='ctf_t_rename_class')),
+      (44, 'squad-sets.sql', 'Saved team sets (squads)', exists (select 1 from information_schema.tables where table_schema='public' and table_name='squad_sets')),
+      (45, 'duel-record.sql', 'Duel record + duel spectator', exists (select 1 from pg_proc where proname='ctf_t_duels_watch')),
+      (46, 'brackets.sql', 'Duel brackets + battle backgrounds', exists (select 1 from information_schema.tables where table_schema='public' and table_name='bracket_matches')),
+      (47, 'raids.sql', 'Class boss raid', exists (select 1 from information_schema.tables where table_schema='public' and table_name='raids')),
+      (48, 'waiting-room.sql', 'Class duel waiting room', exists (select 1 from information_schema.tables where table_schema='public' and table_name='class_lobbies')),
+      (49, 'retention.sql', '30-day cleanup of sign-in rejects + typed guesses', exists (select 1 from pg_proc where proname='_purge_old_data')),
+      (50, 'lockdown.sql', 'Security lockdown (run last)', exists (select 1 from pg_proc where proname='_lockdown_gaps'))
     ) as c(step, file, feature, present)
   
     union all
@@ -160,6 +168,15 @@ begin
       2, 90
 
     union all
+    select '—', 'run order', 'team-battles.sql must be the 24.0 version (Double Points)',
+      case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='team_battles') then 'na' when exists (select 1 from information_schema.columns where table_schema='public' and table_name='team_battles' and column_name='dbl_at') then 'ok' else 'rerun' end,
+      case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='team_battles') then 'team-battles.sql not run yet — nothing to check'
+           when exists (select 1 from information_schema.columns where table_schema='public' and table_name='team_battles' and column_name='dbl_at')
+             then '✅ fine — battles get a Double Points window + end awards'
+           else '⚠ RE-RUN team-battles.sql (and arena-duels.sql for feed avatars)' end,
+      2, 91
+
+  union all
     select '—', 'run order', 'module-clears.sql must be the 6.0.2 version (server check)',
       case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_clears') then 'na' when exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_manifest') then 'ok' else 'rerun' end,
       case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='module_clears') then 'module-clears.sql not run yet — nothing to check'
@@ -174,6 +191,77 @@ begin
              then '✅ fine — _is_school() + ctf_join_google honor guest mode'
            else '⚠ RE-RUN guest-mode.sql — a later file turned guest mode off' end,
       2, 92
+    union all
+    select '—', 'run order', 'team-battles.sql + vocab-duels.sql must be the 26.0 / 26.2 version (pick teams + puzzle types)',
+      case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='team_battles') then 'na'
+           when exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_tb_start' and pg_get_function_arguments(p.oid) like '%p_groups%')
+            and (not exists (select 1 from information_schema.tables where table_schema='public' and table_name='vd_sessions')
+                 or exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_vd_start' and pg_get_function_arguments(p.oid) like '%p_modes%')) then 'ok' else 'rerun' end,
+      case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='team_battles') then 'team-battles.sql not run yet — nothing to check'
+           when exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_tb_start' and pg_get_function_arguments(p.oid) like '%p_groups%')
+            and (not exists (select 1 from information_schema.tables where table_schema='public' and table_name='vd_sessions')
+                 or exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_vd_start' and pg_get_function_arguments(p.oid) like '%p_modes%'))
+             then '✅ fine — battles can use a chosen set of teams'
+           else '⚠ RE-RUN team-battles.sql and vocab-duels.sql' end,
+      2, 96
+    union all
+    select '—', 'run order', 'vocab-duels.sql + arena-duels.sql must be the 26.3 version (brawls, revenge, bounty)',
+      case when not (exists (select 1 from information_schema.tables where table_schema='public' and table_name='vd_fights') and exists (select 1 from information_schema.tables where table_schema='public' and table_name='arena_duel_caps')) then 'na' when exists (select 1 from information_schema.columns where table_schema='public' and table_name='vd_fights' and column_name='revenge') and exists (select 1 from information_schema.columns where table_schema='public' and table_name='arena_duel_caps' and column_name='bounty') then 'ok' else 'rerun' end,
+      case when not (exists (select 1 from information_schema.tables where table_schema='public' and table_name='vd_fights') and exists (select 1 from information_schema.tables where table_schema='public' and table_name='arena_duel_caps')) then 'duel files not run yet — nothing to check'
+           when exists (select 1 from information_schema.columns where table_schema='public' and table_name='vd_fights' and column_name='revenge') and exists (select 1 from information_schema.columns where table_schema='public' and table_name='arena_duel_caps' and column_name='bounty') then '✅ fine — brawls, revenge and bounty KOs are on'
+           else '⚠ RE-RUN vocab-duels.sql and arena-duels.sql' end,
+      2, 97
+    union all
+    select '—', 'run order', 'vocab-duels.sql must be the 30.2 version (binary conversion battles + brackets)',
+      case when not exists (select 1 from pg_proc where proname='_vd_modes') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_vd_modes' limit 1), 'plain'), 0) > 0 then 'ok' else 'rerun' end,
+      case when not exists (select 1 from pg_proc where proname='_vd_modes') then 'vocab-duels.sql not run yet — nothing to check'
+           when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_vd_modes' limit 1), 'plain'), 0) > 0 then '✅ fine — battles and brackets can use the Binary question set'
+           else '⚠ RE-RUN vocab-duels.sql (Binary battles won''t start)' end,
+      2, 97
+    union all
+    select '—', 'security', 'lockdown.sql: every table locked, internal helpers not callable from the browser',
+      case when not exists (select 1 from pg_proc where proname='_lockdown_gaps') then 'rerun'
+           when (select json_array_length(_lockdown_gaps()->'tables') + json_array_length(_lockdown_gaps()->'fns') + coalesce(json_array_length(_lockdown_gaps()->'legacy'),0)) = 0 then 'ok' else 'rerun' end,
+      case when not exists (select 1 from pg_proc where proname='_lockdown_gaps') then '⚠ RUN lockdown.sql (anyone can call internal scoring functions)'
+           when (select json_array_length(_lockdown_gaps()->'tables') + json_array_length(_lockdown_gaps()->'fns') + coalesce(json_array_length(_lockdown_gaps()->'legacy'),0)) = 0 then '✅ fine — tables locked, internal helpers private'
+           else '⚠ RE-RUN lockdown.sql — still open: ' || left((_lockdown_gaps()->'tables')::text || ' ' || (_lockdown_gaps()->'fns')::text || ' ' || coalesce((_lockdown_gaps()->'legacy')::text,''), 300) end,
+      2, 96
+    union all
+    select '—', 'run order', 'waiting-room.sql must be the 32.1 version (brackets, 5 s countdown)',
+      case when not exists (select 1 from pg_proc where proname='_lobby_get') then 'na' when exists (select 1 from pg_proc where proname='_lobby_loose') then 'ok' else 'rerun' end,
+      case when not exists (select 1 from pg_proc where proname='_lobby_get') then 'waiting-room.sql not run yet — nothing to check'
+           when exists (select 1 from pg_proc where proname='_lobby_loose') then '✅ fine — brackets use the waiting room'
+           else '⚠ RE-RUN waiting-room.sql (Open waiting room fails on the bracket page)' end,
+      2, 97
+    union all
+    select '—', 'run order', 'brackets.sql must be the 31.8 version (30 s forfeit, big screen)',
+      case when not exists (select 1 from pg_proc where proname='_br_tree') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_br_tree' limit 1), 'last_t'), 0) > 0 then 'ok' else 'rerun' end,
+      case when not exists (select 1 from pg_proc where proname='_br_tree') then 'brackets.sql not run yet — nothing to check'
+           when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_br_tree' limit 1), 'last_t'), 0) > 0 then '✅ fine — 30 s forfeit, answers on the big screen'
+           else '⚠ RE-RUN brackets.sql (60 s forfeit, big screen shows no answers)' end,
+      2, 97
+    union all
+    select '—', 'run order', 'brackets.sql must be the 31.7 version (sudden death)',
+      case when not exists (select 1 from pg_proc where proname='_br_tidy') then 'na' when exists (select 1 from pg_proc where proname='_br_sd_next') then 'ok' else 'rerun' end,
+      case when not exists (select 1 from pg_proc where proname='_br_tidy') then 'brackets.sql not run yet — nothing to check'
+           when exists (select 1 from pg_proc where proname='_br_sd_next') then '✅ fine — sudden death brackets available'
+           else '⚠ RE-RUN brackets.sql (Start bracket fails until you do)' end,
+      2, 97
+    union all
+    select '—', 'run order', 'brackets.sql must be the 31.6 version (rematch pool)',
+      case when not exists (select 1 from pg_proc where proname='_br_tidy') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_br_tidy' limit 1), '_br_pool'), 0) > 0 then 'ok' else 'rerun' end,
+      case when not exists (select 1 from pg_proc where proname='_br_tidy') then 'brackets.sql not run yet — nothing to check'
+           when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_br_tidy' limit 1), '_br_pool'), 0) > 0 then '✅ fine — knocked-out players get rematches'
+           else '⚠ RE-RUN brackets.sql (knocked-out players sit idle)' end,
+      2, 97
+    union all
+    select '—', 'run order', 'class-groups.sql must run after google-auth.sql',
+      case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='class_groups') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_roster' limit 1), 'group_id'), 0) > 0 then 'ok' else 'rerun' end,
+      case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='class_groups') then 'class-groups.sql not run yet — nothing to check'
+           when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_t_roster' limit 1), 'group_id'), 0) > 0
+             then '✅ fine — the roster carries each student''s squad'
+           else '⚠ RE-RUN class-groups.sql — the Squads board shows everyone as "Not on a squad"' end,
+      2, 97
     union all
     select '—', 'run order', 'scheduled-unlocks.sql must run after the gate files',
       case when not exists (select 1 from information_schema.tables where table_schema='public' and table_name='unlock_schedule') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='ctf_gates' limit 1), '_apply_unlocks'), 0) > 0 then 'ok' else 'rerun' end,
