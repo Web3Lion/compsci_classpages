@@ -52,7 +52,7 @@ checks who is asking.
    | 17 | `teacher-xp.sql` | Teacher-granted bonus XP |
    | 18 | `hardmode-log.sql` | Arena mini-game run log |
    | 19 | `hint-log.sql` | Hint-used tracking per flag |
-   | 20 | `target-warmup.sql` | Day-1 "Are You a Target?" warm-up |
+   | 20 | `target-warmup.sql` | RETIRED in 33.2 — skip. lockdown.sql drops the table and its functions. |
    | 21 | `signin-log.sql` | Logs rejected sign-ins (wrong domain), so you can see what a new student domain actually is |
    | 22 | `board-leaderboard.sql` | Full-class classroom leaderboard (`leaderboard.html`) |
    | 23 | `board-leaderboard-weekly.sql` | "This Week" leaderboard mode |
@@ -77,6 +77,8 @@ checks who is asking.
    | 42 | `vocab-duels.sql` | **v23.0** Vocab Duels (vocab-duel.html) and teacher-run Vocab Battles (vocab-battle.html): health-bar fights on cipher/unscramble terms, answers checked server-side, random cross-team pairing with a different term per pair (needs google-auth.sql, teacher-xp.sql, class-groups.sql, squads.sql; Randomize teams uses team-battles.sql) **v30.2: re-run** for the Binary question set (`plain` puzzle mode, all-digit answers). |
    | 43 | `class-rename.sql` | **v25.0** Rename a class from teacher.html (✎ Rename next to the class name). Run after google-auth.sql. |
    | 48 | `waiting-room.sql` | **v29.0** Class duel waiting room (lobby.html): students wait with their squad, the teacher's Start runs a 5-second countdown (**32.1**: also Duel Brackets — re-run), then everyone is sent into the Team Battle / Vocab Battle / Boss Raid. Run after squads.sql. |
+   | 49 | `retention.sql` | **v33.1** Data retention: after 30 days, sign-in reject rows are deleted and the typed text of wrong answers (`attempt_events.guess`) is blanked. Runs itself (2% of inserts) and from the weekly GitHub Action (`cron_purge_old_data`). Run after signin-log.sql and attempt-log.sql. |
+   | 50 | `lockdown.sql` | **v33.0** Security lockdown. Turns on row level security for every table and makes internal `_` helper functions uncallable from the browser (before this, a student could call scoring helpers like `_br_game_won` directly). Also stops `ctf_allowed_emails_public` from listing every allowed email. **Run LAST, and re-run after any SQL file that adds a table or function.** install-check names anything still open. |
    | 47 | `raids.sql` | **v28.0** Class boss raid (raid.html projector / raid-play.html students): whole class vs the course guide, personal vocab puzzles, shared shield, phases, weak point, enrage. Run after vocab-duels.sql. |
    | 46 | `brackets.sql` | **v27.0** Duel brackets (bracket.html teacher / bracket-play.html students, best of 3, XP seeding, consolation bracket; **31.6** rematch pool for knocked-out players; **31.7** sudden death option; **31.8** 30 s forfeit + big-screen answers — re-run) + per-class animated battle backgrounds. Run after vocab-duels.sql and module-clears.sql. |
    | 45 | `duel-record.sql` | **v26.3** Duel record + Weekly Duel Champion on profiles, and the projector Duel Spectator (duel-watch.html). Run after arena-duels.sql + vocab-duels.sql. Also **re-run arena-duels.sql and vocab-duels.sql** (26.3: 6-player flag duels, bounty, 3–4 player vocab brawls, revenge). |
@@ -90,7 +92,7 @@ checks who is asking.
    - `squads.sql` needs `class-groups.sql`; `objectives.sql` must run after BOTH
      `class-gates.sql` and `squads.sql`.
    - `teachers.sql`, `multi-domain.sql`, `teacher-xp.sql`, `hardmode-log.sql`,
-     `hint-log.sql`, and `target-warmup.sql` all need `google-auth.sql` already run,
+     and `hint-log.sql` all need `google-auth.sql` already run,
      and must be **re-run** any time you re-run `google-auth.sql` or `schema.sql`
      later — those two redefine shared functions and silently drop the later add-ons'
      changes (lockable symptoms: added teachers lose dashboard access, second-domain

@@ -31,6 +31,17 @@
 
    The Sheet AND the Doc must be shared: "Anyone with the link -> Viewer".
    ============================================================ */
+/* Day 0 "Are You a Target?" warm-up (Cybersecurity 1, 2, AP CSP + Web 3.0) is a Google Form since 33.2.
+   Student link below; responses: https://docs.google.com/forms/d/1Hdb3jPzShl2MvvDc9urQ-SkB-blw27NmneTh6w5cHn4/edit#responses
+   If it's ever blank, the home-page links show "coming soon" instead of a dead link. */
+window.TARGET_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfdg19VVD6i2bOJxGwe2FWBElai2zRcKCMBWzYqTgkJL_AHXg/viewform";
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("a[data-target-form]").forEach(function (a) {
+    if (window.TARGET_FORM_URL) { a.href = window.TARGET_FORM_URL; a.target = "_blank"; a.rel = "noopener"; }
+    else { a.removeAttribute("href"); a.style.opacity = ".55"; a.style.cursor = "default"; a.title = "Form link coming soon"; }
+  });
+});
+
 window.COURSE_CONFIG = {
 
   cyber1: {

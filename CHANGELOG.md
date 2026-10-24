@@ -11,6 +11,25 @@ a cache tag (`?v=9.0.0`) — bump both together on every release.
 
 ---
 
+## 33.2.0 — 2026-10-24
+- **Day 0 "Are You a Target?" moved to one Google Form for Cybersecurity 1, 2, AP CSP and Web 3.0.** The site pages (are-you-a-target.html, target-warmup-review.html) are removed; home-page links point at `TARGET_FORM_URL` in config.js (shown as "coming soon" until it's set). `claude only/are-you-a-target-form.gs` builds the form in Google Apps Script. AP CSP Student Info (student-info.html + review) is removed too. lockdown.sql drops `target_warmup_responses` and its functions, deleting every stored response. The teacher "Day 0 responses" button opens the form's Responses tab.
+- **Fonts are self-hosted** (`assets/fonts/`, 13 families). No page contacts Google Fonts any more, so visitor IPs aren't sent to Google.
+- lockdown.sql: drops the passcode-era functions from schema.sql (teacher roster / integrity / delete-class by passcode, and the old PIN student functions, including an anonymous `ctf_cheat`). The Day 0 submit function now needs a signed-in account. install-check names any that come back.
+- retention.sql: assigned vocab quiz attempts (names, answers, scores) are deleted 30 days after they were taken. Re-run retention.sql.
+- privacy.html updated (fonts, Google Form, quiz retention).
+
+## 33.1.0 — 2026-10-23
+- New `supabase/retention.sql`: after 30 days, sign-in reject records (emails of accounts turned away) are deleted and the typed text of wrong answers is blanked. Attempt rows stay, so wrong-try counts and timings in teacher reports are unchanged. Runs automatically (on a small share of inserts) and from the weekly GitHub Action.
+- privacy.html: states the 30-day removal.
+- install-check / check-installed: step 49 retention.sql; lockdown.sql moves to step 50 (still last).
+
+## 33.0.0 — 2026-10-23
+- **Security audit.** New `supabase/lockdown.sql` (run last): row level security on every table, and all 68 internal `_` helper functions made uncallable from the browser. 18 of them changed data (e.g. `_br_game_won`, `_ad_pay`, `_raid_finish`), so a student could have called them directly to win matches or award XP.
+- `weekly_winners` table now has row level security (it was the one table the public key could read and write).
+- `ctf_allowed_emails_public` returns only the caller's own email, not the whole allow-list.
+- Secret scan: only the public anon key is in the site; the service-role key lives in GitHub Secrets only.
+- install-check / check-installed: step 49 + a guard that names any table or helper still open.
+
 ## 32.1.0 — 2026-10-22
 - **Duel Brackets now use the class duel waiting room**, same as Team Battles, Vocab Battles and Boss Raids. The Start button reads "Open waiting room" until it's open; the room card shows the ticked players (by squad, plus "No squad") with live ●/○ presence and a head count. Start runs the countdown, then every student in the room is sent to bracket-play.html.
 - Waiting room countdown is now **5 seconds** (was 10) for every class duel.
