@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../site.js?v=33.4.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Mane Event · Connection Test</title>
+<link href="../assets/fonts/fonts.css?v=33.4.0" rel="stylesheet">
+<style>
+:root{--bg:#0b0a08;--panel:#15130f;--panel2:#1d1a14;--border:#3a3222;--border3:#5a4a2a;--text:#ece3cf;--bright:#fff8e8;--muted:#c9bc9f;--dim:#a39577;--gold:#f2b705;--gold2:#ffd34d;--ink:#0b0a08;--ok:#4cd68a;--warn:#ffb347;--bad:#ff7a6b;}
+:root[data-theme="light"]{--bg:#f6f1e6;--panel:#ffffff;--panel2:#fbf7ee;--border:#e2d6bb;--border3:#c9b68a;--text:#2a2418;--bright:#120f08;--muted:#4d4330;--dim:#6b5d40;--gold:#9a6f00;--gold2:#7a5800;--ink:#ffffff;--ok:#1d7a4c;--warn:#8a5300;--bad:#b3261e;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);line-height:1.5;}
+a{color:var(--gold);} a:hover{color:var(--gold2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;min-height:44px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--gold);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:800;min-height:52px;padding:12px 22px;border-radius:12px;border:2px solid var(--gold);background:var(--gold);color:#0b0a08;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+input.code{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;letter-spacing:8px;text-transform:uppercase;text-align:center;width:100%;max-width:300px;min-height:60px;border-radius:12px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--dim);padding:8px;border-bottom:1px solid var(--border3);}
+td{padding:9px 8px;border-bottom:1px solid var(--border);}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:110px;">
+    <div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">MANE EVENT</div>
+    <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(28px,5vw,40px);line-height:1.1;color:var(--bright);">Connection test</h1>
+    <p style="margin:6px 0 0;color:var(--muted);max-width:640px;">Checks whether student devices can connect straight to the teacher's browser on this network. No sign-in, nothing is saved, and it all disappears when you close the tab.</p>
+  </div>
+  <div id="view" aria-live="polite"></div>
+</div>
+<script src="../assets/vendor/peerjs.min.js?v=33.4.0"></script>
+<script src="../assets/vendor/qrcode.js?v=33.4.0"></script>
+<script>
+if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
+  var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
+  r.setAttribute("data-theme", t); try { localStorage.setItem("course-theme", t); } catch (e) {}
+  document.getElementById("themeToggle").textContent = t === "light" ? "DARK" : "LIGHT";
+};
+document.getElementById("themeToggle").textContent = document.documentElement.getAttribute("data-theme") === "light" ? "DARK" : "LIGHT";
+
+(function(){
+  var PREFIX = "sf-mane-event-", view = document.getElementById("view");
+  // short address students type (mane/index.html forwards here)
+  var SHORT = /web3lion\.github\.io$/.test(location.host) ? "web3lion.github.io/compsci_classpages/mane" : location.host + location.pathname.replace(/mane-event\/connection-test\.html$/, "mane");
+  var LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // no I or O
+  var ADJ = ["Roaring","Golden","Mighty","Brave","Swift","Royal","Fierce","Clever","Bold","Noble","Savanna","Sunlit","Maned","Prowling","Pouncing","Proud"];
+  var NOUN = ["Neuron","Byte","Photon","Proton","Atom","Comet","Pixel","Quark","Vector","Circuit","Galaxy","Fossil","Magnet","Prism","Nebula","Cipher","Helix","Orbit","Ion","Electron","Molecule","Crystal","Pulsar","Algorithm"];
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+  function device(){ var u = navigator.userAgent; return /CrOS/.test(u) ? "Chromebook" : /iPad|Tablet/.test(u) ? "Tablet" : /Android|iPhone|Mobile/.test(u) ? "Phone" : "Laptop / desktop"; }
+  function newCode(){ var s = ""; var a = new Uint32Array(6); crypto.getRandomValues(a); for (var i = 0; i < 6; i++) s += LETTERS[a[i] % LETTERS.length]; return s; }
+  function route(pc){
+    if (!pc || !pc.getStats) return Promise.resolve("?");
+    return pc.getStats().then(function(st){
+      var pair = null, loc = {};
+      st.forEach(function(r){ if (r.type === "transport" && r.selectedCandidatePairId) pair = st.get(r.selectedCandidatePairId); });
+      if (!pair) st.forEach(function(r){ if (r.type === "candidate-pair" && r.state === "succeeded" && (r.nominated || r.selected)) pair = pair || r; });
+      if (!pair) return "?";
+      var lc = st.get(pair.localCandidateId), rc = st.get(pair.remoteCandidateId);
+      var t = [lc && lc.candidateType, rc && rc.candidateType];
+      if (t.indexOf("relay") >= 0) return "relay";
+      if (t[0] === "host" && t[1] === "host") return "local";
+      return "direct";
+    }).catch(function(){ return "?"; });
+  }
+  var ROUTE = { local: ["Direct · same network", "var(--ok)"], direct: ["Direct · through internet", "var(--ok)"], relay: ["Relayed (still works, slower)", "var(--warn)"], "?": ["Checking…", "var(--dim)"] };
+
+  var q = new URLSearchParams(location.search), code = (q.get("code") || "").toUpperCase().replace(/[^A-Z]/g, "");
+  if (code.length === 6) join(code); else home();
+
+  function home(msg){
+    view.innerHTML =
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;">' +
+        '<div class="card"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--gold);">TEACHER</div><h2 style="margin:6px 0 8px;color:var(--bright);font-size:22px;">Host a test</h2><p style="margin:0 0 16px;color:var(--muted);">Put this on the projector. Students scan the QR code or type the code.</p><button class="btn" id="host">Host test</button></div>' +
+        '<div class="card"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--gold);">STUDENT</div><h2 style="margin:6px 0 8px;color:var(--bright);font-size:22px;">Join with a code</h2>' +
+          '<div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;"><input class="code" id="code" maxlength="6" autocomplete="off" autocapitalize="characters" aria-label="6-letter code" placeholder="ABCDEF"><button class="btn" id="go">Join</button></div>' +
+          (msg ? '<p role="alert" style="margin:12px 0 0;color:var(--bad);font-weight:700;">' + esc(msg) + '</p>' : '') + '</div>' +
+      '</div>';
+    document.getElementById("host").onclick = host;
+    var inp = document.getElementById("code");
+    inp.oninput = function(){ inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 6); };
+    document.getElementById("go").onclick = function(){ if (inp.value.length === 6) join(inp.value); else inp.focus(); };
+    inp.onkeydown = function(e){ if (e.key === "Enter") document.getElementById("go").click(); };
+  }
+
+  /* ---------------- host ---------------- */
+  function host(){
+    var c = newCode(), peer = new Peer(PREFIX + c, { debug: 0 }), players = {}, used = {};
+    view.innerHTML = '<div class="card mono" style="color:var(--dim);">Opening the den…</div>';
+    peer.on("open", function(){ drawHost(); });
+    peer.on("error", function(e){
+      if (e.type === "unavailable-id") { peer.destroy(); host(); return; }
+      view.innerHTML = '<div class="card"><b style="color:var(--bad);">Couldn\u2019t reach the connection server.</b><p style="color:var(--muted);">' + esc(e.type || e.message) + '. The school network may block it. Try again, or try on a phone hotspot to compare.</p><button class="btn ghost" onclick="location.reload()">Try again</button></div>';
+    });
+    function pickName(){ for (var i = 0; i < 200; i++) { var n = ADJ[Math.random() * ADJ.length | 0] + " " + NOUN[Math.random() * NOUN.length | 0]; if (!used[n]) { used[n] = 1; return n; } } return "Lion " + (Object.keys(used).length + 1); }
+    peer.on("connection", function(conn){
+      conn.on("open", function(){
+        var p = { conn: conn, name: pickName(), dev: "?", ping: null, route: "?", up: true, t: Date.now() };
+        players[conn.peer] = p;
+        conn.send({ k: "hi", name: p.name });
+        conn.on("data", function(d){
+          if (!d) return;
+          if (d.k === "dev") p.dev = String(d.dev).slice(0, 30);
+          if (d.k === "pong") { p.ping = Math.round(performance.now() - d.t); conn.send({ k: "ping-ms", ms: p.ping }); }
+          table();
+        });
+        conn.on("close", function(){ p.up = false; table(); });
+        setTimeout(function(){ route(conn.peerConnection).then(function(r){ p.route = r; table(); }); }, 1500);
+        table();
+      });
+    });
+    setInterval(function(){ Object.keys(players).forEach(function(id){ var p = players[id]; if (p.up && p.conn.open) p.conn.send({ k: "ping", t: performance.now() }); }); }, 2000);
+    window.addEventListener("beforeunload", function(){ peer.destroy(); });
+
+    function drawHost(){
+      var url = location.origin + location.pathname + "?code=" + c, qr = qrcode(0, "M"); qr.addData(url); qr.make();
+      view.innerHTML =
+        '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">' +
+          '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;">' + qr.createSvgTag({ cellSize: 6, margin: 0, scalable: false }) + '</div>' +
+          '<div style="flex:1;min-width:240px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--dim);">JOIN CODE</div>' +
+            '<div class="mono" style="font-size:clamp(44px,9vw,76px);font-weight:800;letter-spacing:10px;color:var(--gold);line-height:1.1;">' + c + '</div>' +
+            '<div style="color:var(--muted);margin-top:6px;">Go to</div><div class="mono" style="font-size:clamp(18px,2.6vw,26px);font-weight:800;color:var(--bright);word-break:break-all;">' + esc(SHORT) + '</div><div style="color:var(--muted);margin-top:2px;">and type the code, or scan the QR code.</div></div>' +
+        '</div>' +
+        '<div class="card"><div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px;"><h2 style="margin:0;font-size:20px;color:var(--bright);flex:1;">Devices</h2><span class="mono" id="sum" style="font-size:13px;color:var(--dim);"></span></div><div id="tbl" style="overflow-x:auto;"></div></div>';
+      table();
+    }
+    function table(){
+      var el = document.getElementById("tbl"); if (!el) return;
+      var L = Object.keys(players).map(function(k){ return players[k]; });
+      var up = L.filter(function(p){ return p.up; }), pings = up.filter(function(p){ return p.ping != null; }).map(function(p){ return p.ping; });
+      var relays = up.filter(function(p){ return p.route === "relay"; }).length;
+      document.getElementById("sum").textContent = up.length + " connected" + (pings.length ? " · avg " + Math.round(pings.reduce(function(a, b){ return a + b; }, 0) / pings.length) + " ms" : "") + (relays ? " · " + relays + " relayed" : "");
+      if (!L.length) { el.innerHTML = '<p style="margin:0;color:var(--dim);">Waiting for the first device…</p>'; return; }
+      el.innerHTML = '<table><thead><tr><th>NAME</th><th>DEVICE</th><th>ROUTE</th><th>PING</th></tr></thead><tbody>' + L.map(function(p){
+        var r = ROUTE[p.route] || ROUTE["?"];
+        return '<tr style="' + (p.up ? "" : "opacity:.45;") + '"><td style="font-weight:700;color:var(--bright);">' + esc(p.name) + (p.up ? "" : " · left") + '</td><td>' + esc(p.dev) + '</td><td style="color:' + r[1] + ';">' + r[0] + '</td><td class="mono">' + (p.ping == null ? "…" : p.ping + " ms") + '</td></tr>';
+      }).join("") + '</tbody></table>';
+    }
+  }
+
+  /* ---------------- student ---------------- */
+  function join(c){
+    view.innerHTML = '<div class="card mono" style="color:var(--dim);">Connecting to ' + esc(c) + '…</div>';
+    var peer = new Peer({ debug: 0 }), done = false, me = { name: "", ping: null, route: "?" };
+    var fail = setTimeout(function(){ if (!done) { peer.destroy(); home("Couldn\u2019t connect to " + c + " in 15 seconds. Check the code, or the network may be blocking it."); } }, 15000);
+    peer.on("error", function(e){ if (done) return; clearTimeout(fail); peer.destroy(); home(e.type === "peer-unavailable" ? "No game found with code " + c + "." : "Connection problem: " + (e.type || e.message) + "."); });
+    peer.on("open", function(){
+      var conn = peer.connect(PREFIX + c, { reliable: true });
+      conn.on("open", function(){ done = true; clearTimeout(fail); conn.send({ k: "dev", dev: device() }); draw();
+        setTimeout(function(){ route(conn.peerConnection).then(function(r){ me.route = r; draw(); }); }, 1500); });
+      conn.on("data", function(d){
+        if (!d) return;
+        if (d.k === "hi") me.name = d.name;
+        if (d.k === "ping") conn.send({ k: "pong", t: d.t });
+        if (d.k === "ping-ms") me.ping = d.ms;
+        draw();
+      });
+      conn.on("close", function(){ view.innerHTML = '<div class="card"><b style="color:var(--bright);">The host ended the test.</b><p style="color:var(--muted);margin-bottom:0;">You can close this tab.</p></div>'; });
+    });
+    function draw(){
+      var r = ROUTE[me.route] || ROUTE["?"];
+      view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;border:2px solid var(--gold);">' +
+        '<div class="mono" style="font-size:13px;letter-spacing:2px;color:var(--ok);font-weight:800;">\u2713 CONNECTED TO ' + esc(c) + '</div>' +
+        '<div style="color:var(--muted);margin-top:18px;">You are</div>' +
+        '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:clamp(34px,9vw,56px);font-weight:800;color:var(--gold);line-height:1.1;">' + esc(me.name || "…") + '</div>' +
+        '<div class="mono" style="margin-top:20px;font-size:13px;color:var(--dim);display:flex;gap:18px;justify-content:center;flex-wrap:wrap;"><span>' + esc(device()) + '</span><span style="color:' + r[1] + ';">' + r[0] + '</span><span>' + (me.ping == null ? "…" : me.ping + " ms") + '</span></div>' +
+        '<p style="color:var(--muted);margin:20px 0 0;">Keep this page open until your teacher says you\u2019re done.</p></div>';
+    }
+  }
+})();
+</script>
+</body>
+</html>
