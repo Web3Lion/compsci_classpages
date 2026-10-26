@@ -11,6 +11,21 @@ a cache tag (`?v=9.0.0`) — bump both together on every release.
 
 ---
 
+## 35.0.0 — 2026-10-26
+- **New SQL: `supabase/backup-export.sql`** (run #50, then re-run lockdown.sql, now #51). teacher.html → Settings → **Export backup** downloads every table as CSV in one .zip. Owners only, read-only.
+- lockdown.sql: fixed a syntax error in the integrity-log block (nested `$$` quoting).
+- Mane Event: 124-question binary set (`mane-event/binary-questions.csv`).
+
+## 34.1.0 — 2026-10-26
+- **Knockouts hit harder** (new `ko-fx.js`): "K.O.!" slam with an announcer voice and crash, a screen shake, and the knocked-out player's card exploding into pieces. Reduce motion keeps only the text.
+- **Mane Event sound:** host gets countdown ticks, start horn, KO blasts, a win fanfare and background music that speeds up in the last minute (SOUND / MUSIC buttons). Students hear KO, hit and miss sounds (SOUND button on their screen), no music.
+- **Class duels:** the same KO blast on vocab duels and bracket matches (student screens, with sound) and on the Vocab Battle and Bracket projector screens.
+
+## 34.0.0 — 2026-10-26
+- **New: Mane Event** (`mane-event/index.html`, short link `/mane`, card on Teacher Tools). Stand-alone live review game from a CSV (Definition, Term or Question, Answer). Students join with a 6-letter code or QR and get a random lion + science name. Browser to browser: no sign-in, no database; the host's browser keeps a backup so a refresh resumes the game.
+- Class battle (2–6 teams, random or teacher-assigned, 5–30 min) or Bracket (sudden death / best of 3 / best of 5) with a rematch pool for eliminated players. 4 hits = knockout. Puzzle types: Shift, Scramble, Reveal, Word bank. Time per question: none or 20–60 s.
+- Connection test: host reconnects automatically and shows LIVE / RECONNECTING; students retry a missing code.
+
 ## 33.4.0 — 2026-10-24
 - **Integrity logging removed.** Paste, focus-loss, devtools, honeypot and vocab-quiz violation events are no longer sent or stored. The teacher Integrity tab, roster Integrity column, "Integrity flags" stat tiles, Integrity-rate distribution and student-detail integrity table are gone. The on-page deterrents (paste block, NEMESIS takeover, honeypots, devtools taunt) still run.
 - SQL: **re-run `supabase/lockdown.sql`**. It deletes every stored integrity event and drops any future insert.

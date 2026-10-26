@@ -1,0 +1,125 @@
+Question,Answer
+"Convert 1010 to decimal",10
+"Convert 1111 to decimal",15
+"Convert 0110 to decimal",6
+"Convert 1001 to decimal",9
+"Convert 10000 to decimal",16
+"Convert 11001 to decimal",25
+"Convert 101101 to decimal",45
+"Convert 00101010 to decimal",42
+"Convert 01100100 to decimal",100
+"Convert 10000000 to decimal",128
+"Convert 11111111 to decimal",255
+"Convert 5 to binary (no leading zeros)",101
+"Convert 12 to binary (no leading zeros)",1100
+"Convert 20 to binary (no leading zeros)",10100
+"Convert 31 to binary (no leading zeros)",11111
+"Convert 33 to binary (no leading zeros)",100001
+"Convert 64 to binary (no leading zeros)",1000000
+"Convert 100 to binary (no leading zeros)",1100100
+"Convert 200 to binary (no leading zeros)",11001000
+"What is the largest number a 3-bit binary number can represent?",7
+"What is the largest number a 4-bit binary number can represent?",15
+"What is the largest number an 8-bit binary number can represent?",255
+"How many different values can 4 bits represent?",16
+"How many different values can 8 bits represent?",256
+"How many unique codes can 5 bits make?",32
+"What is the fewest number of bits needed to represent the number 100?",7
+"What is the fewest number of bits needed to represent the number 255?",8
+"What is the fewest number of bits needed to represent the number 256?",9
+"How many bits are in 2 bytes?",16
+"How many bytes are in 32 bits?",4
+"What is the place value of the leftmost bit in an 8-bit number?",128
+"Adding one more bit multiplies the number of possible values by what?",2
+"What is 1 + 1 in binary?",10
+"What 4-bit binary number comes right after 0111?",1000
+"Is the binary number 1011 odd or even?",Odd
+"Is the binary number 1100 odd or even?",Even
+"A single binary digit (0 or 1) is called a ___",Bit
+"A group of 8 bits is called a ___",Byte
+"A group of 4 bits is called a ___",Nibble
+"Binary is a base-___ number system",2
+"What is it called when a result is too big to fit in the available bits?",Overflow
+"The number system we normally count in (base 10) is called ___",Decimal
+"Convert 0011 to decimal",3
+"Convert 1011 to decimal",11
+"Convert 1101 to decimal",13
+"Convert 1110 to decimal",14
+"Convert 00010011 to decimal",19
+"Convert 00010110 to decimal",22
+"Convert 00011011 to decimal",27
+"Convert 00100101 to decimal",37
+"Convert 00110010 to decimal",50
+"Convert 00111111 to decimal",63
+"Convert 01001101 to decimal",77
+"Convert 01010101 to decimal",85
+"Convert 01100000 to decimal",96
+"Convert 01101111 to decimal",111
+"Convert 01111111 to decimal",127
+"Convert 10010110 to decimal",150
+"Convert 10101010 to decimal",170
+"Convert 11000000 to decimal",192
+"Convert 11011110 to decimal",222
+"Convert 11110000 to decimal",240
+"Convert 2 to binary (no leading zeros)",10
+"Convert 7 to binary (no leading zeros)",111
+"Convert 9 to binary (no leading zeros)",1001
+"Convert 15 to binary (no leading zeros)",1111
+"Convert 18 to binary (no leading zeros)",10010
+"Convert 26 to binary (no leading zeros)",11010
+"Convert 40 to binary (no leading zeros)",101000
+"Convert 50 to binary (no leading zeros)",110010
+"Convert 75 to binary (no leading zeros)",1001011
+"Convert 99 to binary (no leading zeros)",1100011
+"Convert 128 to binary (no leading zeros)",10000000
+"Convert 150 to binary (no leading zeros)",10010110
+"Convert 170 to binary (no leading zeros)",10101010
+"Convert 255 to binary (no leading zeros)",11111111
+"What is the largest number a 2-bit binary number can represent?",3
+"What is the largest number a 5-bit binary number can represent?",31
+"What is the largest number a 6-bit binary number can represent?",63
+"What is the largest number a 7-bit binary number can represent?",127
+"What is the largest number a 10-bit binary number can represent?",1023
+"What is the largest number a 16-bit binary number can represent?",65535
+"How many different values can 2 bits represent?",4
+"How many different values can 3 bits represent?",8
+"How many different values can 5 bits represent?",32
+"How many different values can 6 bits represent?",64
+"How many different values can 7 bits represent?",128
+"How many different values can 10 bits represent?",1024
+"What is the fewest number of bits needed to represent the number 10?",4
+"What is the fewest number of bits needed to represent the number 16?",5
+"What is the fewest number of bits needed to represent the number 50?",6
+"What is the fewest number of bits needed to represent the number 64?",7
+"What is the fewest number of bits needed to represent the number 127?",7
+"What is the fewest number of bits needed to represent the number 128?",8
+"What is the fewest number of bits needed to represent the number 500?",9
+"What is the fewest number of bits needed to represent the number 1000?",10
+"What is the fewest bits needed to give each of 26 letters of the alphabet its own code?",5
+"What is the fewest bits needed to give each of 30 students its own code?",5
+"What is the fewest bits needed to give each of 60 unique items its own code?",6
+"What is the fewest bits needed to give each of 200 unique items its own code?",8
+"What is the fewest bits needed to give each of 10 digits (0–9) its own code?",4
+"How many bits are in 4 bytes?",32
+"How many bits are in 3 bytes?",24
+"How many bytes are in 64 bits?",8
+"How many bytes are in 16 bits?",2
+"How many nibbles are in a byte?",2
+"What is 1 + 1 + 1 in binary?",11
+"What is 101 + 1 in binary?",110
+"What is 111 + 1 in binary?",1000
+"What is 1010 + 0101 in binary?",1111
+"What 4-bit binary number comes right before 1000?",0111
+"What 4-bit binary number comes right after 1001?",1010
+"What 4-bit binary number comes right after 1110?",1111
+"Is the binary number 1110 odd or even?",Even
+"Is the binary number 0101 odd or even?",Odd
+"A binary number ending in ? ? ? 1 is always odd or even?",Odd
+"A binary number ending in ? ? ? 0 is always odd or even?",Even
+"What is the place value of the rightmost bit?",1
+"What is the place value of the 4th bit from the right?",8
+"What is the place value of the 6th bit from the right?",32
+"Shifting a binary number one place left multiplies it by what?",2
+"The two digits used in binary are 0 and ___",1
+"Base 16 is called ___",Hexadecimal
+"Base 2 is called ___",Binary

@@ -43,7 +43,7 @@
   };
   var ORDER = [null, "s_cyber", "s_arcade", "s_quest", "s_ops", "s_sky", "s_mastermind"];
   // 33.2: self-hosted (assets/fonts/fonts.css, same folder level as skins.js)
-  var FONT = (function () { var c = document.currentScript && document.currentScript.src; return c ? c.replace(/skins\.js(\?.*)?$/, "assets/fonts/fonts.css?v=33.4.0") : "/assets/fonts/fonts.css"; })();
+  var FONT = (function () { var c = document.currentScript && document.currentScript.src; return c ? c.replace(/skins\.js(\?.*)?$/, "assets/fonts/fonts.css?v=35.0.0") : "/assets/fonts/fonts.css"; })();
 
   function font() {
     if (document.getElementById("skinFont") || document.querySelector('link[href*="assets/fonts/fonts.css"]')) return;

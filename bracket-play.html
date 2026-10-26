@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=33.4.0"></script>
+<script src="site.js?v=35.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=33.4.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=33.4.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=35.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=35.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Duel Bracket</title>
-<link href="assets/fonts/fonts.css?v=33.4.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=35.0.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--ok:#3ddc97;--bad:#ff7a85;--adv:#ff3b3b;--arena:#0b0306;}
 :root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--ok:#1d7a4c;--bad:#b3261e;--arena:#ffffff;}
@@ -43,7 +43,7 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
   var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase();
   if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { document.getElementById("view").innerHTML = '<div class="card">Open the bracket from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
-  var V = window.SITE_VERSION || "27.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js", "bracket-tree.js"];
+  var V = window.SITE_VERSION || "27.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js", "bracket-tree.js", "ko-fx.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){
@@ -145,8 +145,11 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
       var m = d.match, p = prevM;
       if (m && p && p.id === m.id) {
         var pool = m.side === "pool";
-        if (m.my_games > p.my_games) { FX.banner(pool ? "REMATCH WON!" : m.status === "done" ? "MATCH WON!" : "GAME " + p.game_no + " IS YOURS!", "#3ddc97", m.my_games + "\u2013" + m.opp_games); FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; FX.combo(0); }
-        if (m.opp_games > p.opp_games) { FX.banner(pool ? "REMATCH LOST" : m.status === "done" ? "ELIMINATED" : "GAME TO " + String(m.opp || "").toUpperCase(), "#ff3b3b", m.my_games + "\u2013" + m.opp_games); streak = 0; FX.combo(0); }
+        var KX = window.KO_FX, kbig = m.sd ? "WIN!" : "K.O.!";
+        if (KX && m.my_games > p.my_games) KX.blast({ name: m.opp, label: pool ? "REMATCH" : "KNOCKED OUT", big: kbig, color: "#3ddc97", sub: (pool ? "Rematch won" : m.status === "done" ? "Match won" : "Game " + p.game_no + " is yours") + " \u00b7 " + m.my_games + "\u2013" + m.opp_games });
+        else if (KX && m.opp_games > p.opp_games) KX.blast({ name: "YOU", label: m.opp, big: m.sd ? "LOST" : "K.O.!", color: "#ff3b3b", say: m.sd ? "Game over" : "K. O.!", sub: (pool ? "Rematch lost" : m.status === "done" ? "Eliminated" : "Game to " + m.opp) + " \u00b7 " + m.my_games + "\u2013" + m.opp_games });
+        if (m.my_games > p.my_games) { if (!KX) FX.banner(pool ? "REMATCH WON!" : m.status === "done" ? "MATCH WON!" : "GAME " + p.game_no + " IS YOURS!", "#3ddc97", m.my_games + "\u2013" + m.opp_games); FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; FX.combo(0); }
+        if (m.opp_games > p.opp_games) { if (!KX) FX.banner(pool ? "REMATCH LOST" : m.status === "done" ? "ELIMINATED" : "GAME TO " + String(m.opp || "").toUpperCase(), "#ff3b3b", m.my_games + "\u2013" + m.opp_games); streak = 0; FX.combo(0); }
         if (p.status === "ready" && m.status === "live") { FX.banner("FIGHT!", "#ff3b3b", "You vs " + m.opp); FX.sfx("blood"); }
         if (m.game_kind === "vocab" && p.game_kind === "flag") FX.banner("VOCAB TIEBREAK!", "#ffcf5c", "Out of open flags \u2014 settle it with words");
         var settled = (m.game_kind === "vocab" && lastN != null && m.n > lastN) || (p.game_kind === "vocab" && !m.game_kind);

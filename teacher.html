@@ -3,14 +3,14 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=34.1.0"></script>
+<script src="site.js?v=35.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=34.1.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=34.1.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=35.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=35.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Dashboard (new) — CTF Platform</title>
-<link href="assets/fonts/fonts.css?v=34.1.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=35.0.0" rel="stylesheet">
 <style>
   :root{
     --bg:#0a0d12;--panel:#111620;--panel2:#161d29;--panel3:#1c2432;--bg2:#0d1119;
@@ -307,20 +307,20 @@
   </div>
 </div>
 
-<script src="config.js?v=34.1.0"></script>
-<script src="ctf-data/cyber1.js?v=34.1.0"></script>
-<script src="ctf-data/cyber2.js?v=34.1.0"></script>
-<script src="ctf-data/cyber3.js?v=34.1.0"></script>
-<script src="ctf-data/apcsp.js?v=34.1.0"></script>
-<script src="ctf-data/web3.js?v=34.1.0"></script>
-<script src="cipher.js?v=34.1.0"></script>
-<script src="supabase-config.js?v=34.1.0"></script>
-<script src="auth.js?v=34.1.0"></script>
-<script src="name-filter.js?v=34.1.0"></script>
-<script src="objectives.js?v=34.1.0"></script>
-<script src="standards.js?v=34.1.0"></script>
-<script src="csv.js?v=34.1.0"></script>
-<script src="skins.js?v=34.1.0"></script>
+<script src="config.js?v=35.0.0"></script>
+<script src="ctf-data/cyber1.js?v=35.0.0"></script>
+<script src="ctf-data/cyber2.js?v=35.0.0"></script>
+<script src="ctf-data/cyber3.js?v=35.0.0"></script>
+<script src="ctf-data/apcsp.js?v=35.0.0"></script>
+<script src="ctf-data/web3.js?v=35.0.0"></script>
+<script src="cipher.js?v=35.0.0"></script>
+<script src="supabase-config.js?v=35.0.0"></script>
+<script src="auth.js?v=35.0.0"></script>
+<script src="name-filter.js?v=35.0.0"></script>
+<script src="objectives.js?v=35.0.0"></script>
+<script src="standards.js?v=35.0.0"></script>
+<script src="csv.js?v=35.0.0"></script>
+<script src="skins.js?v=35.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -4260,8 +4260,70 @@ function settingsView(){
   h+=allowedEmailsPanel();
   h+=rejectsPanel();
   h+=toolClicksPanel();
+  h+=backupPanel();
   h+='</div>';
   return h;
+}
+
+/* ----- Export backup (supabase/backup-export.sql): every table as CSV in one zip ----- */
+function backupPanel(){
+  return '<div style="border-top:1px solid var(--border);padding-top:18px;margin-top:26px;">'+
+    '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Export backup</div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">Downloads every database table as a CSV file, all in one .zip. Owners only. The file contains student names and emails, so save it in your district Google Drive or OneDrive, never on a personal device or GitHub.</div>'+
+    '<button class="btn pri" id="bkBtn" onclick="exportBackup()">Export backup (.zip)</button>'+
+    '<span id="bkMsg" class="mono" style="font-size:12px;color:var(--dim);margin-left:10px;"></span>'+
+  '</div>';
+}
+function bkCsv(rows){
+  if(!rows.length) return "";
+  var cols=[]; rows.forEach(function(r){ Object.keys(r).forEach(function(k){ if(cols.indexOf(k)<0) cols.push(k); }); });
+  function cell(v){ if(v==null) return ""; if(typeof v==="object") v=JSON.stringify(v); v=String(v); return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+  return cols.join(",")+"\r\n"+rows.map(function(r){ return cols.map(function(c){ return cell(r[c]); }).join(","); }).join("\r\n")+"\r\n";
+}
+var BK_CRC=null;
+function bkCrc(b){ if(!BK_CRC){ BK_CRC=new Uint32Array(256); for(var n=0;n<256;n++){ var c=n; for(var k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; BK_CRC[n]=c>>>0; } }
+  var x=0xFFFFFFFF; for(var i=0;i<b.length;i++) x=BK_CRC[(x^b[i])&255]^(x>>>8); return (x^0xFFFFFFFF)>>>0; }
+function bkZip(files){ // stored (no compression) zip
+  var enc=new TextEncoder(), parts=[], central=[], off=0;
+  function u16(n){ return [n&255,(n>>8)&255]; } function u32(n){ return [n&255,(n>>8)&255,(n>>16)&255,(n>>>24)&255]; }
+  files.forEach(function(f){
+    var name=enc.encode(f.name), data=enc.encode("\ufeff"+f.text), crc=bkCrc(data);
+    var head=[].concat([0x50,0x4b,3,4],u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0));
+    parts.push(new Uint8Array(head),name,data);
+    central.push(new Uint8Array([].concat([0x50,0x4b,1,2],u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off))),name);
+    off+=head.length+name.length+data.length;
+  });
+  var csize=central.reduce(function(a,p){ return a+p.length; },0);
+  return new Blob(parts.concat(central,[new Uint8Array([].concat([0x50,0x4b,5,6],u16(0),u16(0),u16(files.length),u16(files.length),u32(csize),u32(off),u16(0)))]),{type:"application/zip"});
+}
+async function exportBackup(){
+  var btn=document.getElementById("bkBtn"), msg=document.getElementById("bkMsg");
+  function say(s,c){ if(msg){ msg.textContent=s; msg.style.color=c||"var(--dim)"; } }
+  if(!confirm("Download a backup of every table? It includes student names and emails.")) return;
+  btn.disabled=true; say("Reading tables\u2026");
+  try{
+    var L=await rpc("ctf_t_backup_tables");
+    if(!L||L.error){ say(L&&L.error==="not_owner"?"Only an owner can export a backup.":"Couldn\u2019t read tables ("+((L&&L.error)||"error")+").","var(--bad)"); btn.disabled=false; return; }
+    var files=[], total=0, list=L.tables||[];
+    for(var i=0;i<list.length;i++){
+      var tb=list[i], rows=[];
+      for(var o=0;o<tb.n;o+=2000){
+        say("Exporting "+tb.t+" ("+(i+1)+" of "+list.length+")\u2026");
+        var r=await rpc("ctf_t_backup_table",{p_table:tb.t,p_offset:o});
+        if(!r||r.error) throw new Error(tb.t+": "+((r&&r.error)||"error"));
+        rows=rows.concat(r.rows||[]); if(!(r.rows||[]).length) break;
+      }
+      total+=rows.length; files.push({name:tb.t+".csv",text:bkCsv(rows)});
+    }
+    var stamp=new Date().toISOString().slice(0,16).replace(/[:T]/g,"-");
+    files.push({name:"README.txt",text:"Supabase backup exported "+new Date().toString()+"\r\n"+list.length+" tables, "+total+" rows.\r\nContains student data (FERPA). Store in district storage only; delete old copies.\r\n"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(bkZip(files)); a.download="course-backup-"+stamp+".zip"; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); },4000);
+    say("Done: "+list.length+" tables, "+total.toLocaleString()+" rows.","var(--ok)");
+  }catch(e){
+    say(/ctf_t_backup|function|not find/i.test(String(e&&e.message))?"Run supabase/backup-export.sql first.":"Export failed: "+((e&&e.message)||e),"var(--bad)");
+  }
+  btn.disabled=false;
 }
 
 /* ----- Assigned Vocab Quizzes (supabase/vocab-quizzes.sql, student page quiz.html) -----
