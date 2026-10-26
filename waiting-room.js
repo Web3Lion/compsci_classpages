@@ -47,7 +47,7 @@
       if (!L || L.status === "started" || other) {
         return '<div class="card" id="wrCard" style="margin-bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">' +
           '<div style="flex:1;min-width:240px;"><div style="font-weight:800;color:var(--bright);font-size:16px;">Waiting room</div>' +
-          '<div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5;">Every class duel starts here. Open it, then students tap <b>Class Duel</b> on their course home, see their team, and get a ' + SECS + '-second countdown when you press Start.' +
+          '<div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5;">Every class duel starts here. Open it, then students tap <b>Duel Waiting Room</b> on their course home, see their team, and get a ' + SECS + '-second countdown when you press Start.' +
           (other ? ' <b style="color:var(--amber);">The room is open for a ' + esc(LBL[L.kind]) + ' right now. Opening it here switches it.</b>' : '') + '</div></div>' +
           '<button type="button" class="btn" id="wrOpen">Open waiting room</button></div>';
       }
@@ -64,7 +64,7 @@
       return '<div class="card" id="wrCard" style="margin-bottom:18px;border:2px solid var(--amber);box-shadow:0 0 26px -12px var(--amber);">' +
         '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;">' +
           '<div style="flex:1;min-width:220px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);font-weight:800;">WAITING ROOM OPEN \u00b7 ' + esc(LBL[o.kind]).toUpperCase() + '</div>' +
-          '<div style="font-size:13px;color:var(--muted);margin-top:4px;">Students join from <b>Class Duel</b> on their course home. Start runs a ' + SECS + '-second countdown on every screen.' + (ppl && !ppl.length ? ' <b style="color:var(--amber);">Tick players below to see who\u2019s here.</b>' : '') + '</div></div>' +
+          '<div style="font-size:13px;color:var(--muted);margin-top:4px;">Students join from <b>Duel Waiting Room</b> on their course home. Start runs a ' + SECS + '-second countdown on every screen.' + (ppl && !ppl.length ? ' <b style="color:var(--amber);">Tick players below to see who\u2019s here.</b>' : '') + '</div></div>' +
           '<div class="mono" style="font-size:40px;font-weight:800;color:var(--bright);line-height:1;">' + here + '<span style="font-size:18px;color:var(--dim);"> / ' + tot + ' here</span></div>' +
           '<button type="button" class="btn ghost" id="wrClose">Close room</button></div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;">' + RT.map(function (t) {

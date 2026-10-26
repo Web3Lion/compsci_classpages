@@ -11,6 +11,15 @@ a cache tag (`?v=9.0.0`) — bump both together on every release.
 
 ---
 
+## 33.4.0 — 2026-10-24
+- **Integrity logging removed.** Paste, focus-loss, devtools, honeypot and vocab-quiz violation events are no longer sent or stored. The teacher Integrity tab, roster Integrity column, "Integrity flags" stat tiles, Integrity-rate distribution and student-detail integrity table are gone. The on-page deterrents (paste block, NEMESIS takeover, honeypots, devtools taunt) still run.
+- SQL: **re-run `supabase/lockdown.sql`**. It deletes every stored integrity event and drops any future insert.
+- privacy.html no longer lists integrity events.
+- Mane Event connection test (`mane-event/connection-test.html`, short link `/mane`).
+
+## 33.3.0 — 2026-10-24
+- The "Class Duel" card on every course home is now **Duel Waiting Room**, and it glows (with an OPEN · JOIN tag) while the teacher has the waiting room open. Reduced motion shows a steady outline instead. Waiting room labels on lobby.html, the arena call-out and the teacher cards use the new name.
+
 ## 33.2.0 — 2026-10-24
 - **Day 0 "Are You a Target?" moved to one Google Form for Cybersecurity 1, 2, AP CSP and Web 3.0.** The site pages (are-you-a-target.html, target-warmup-review.html) are removed; home-page links point at `TARGET_FORM_URL` in config.js (shown as "coming soon" until it's set). `claude only/are-you-a-target-form.gs` builds the form in Google Apps Script. AP CSP Student Info (student-info.html + review) is removed too. lockdown.sql drops `target_warmup_responses` and its functions, deleting every stored response. The teacher "Day 0 responses" button opens the form's Responses tab.
 - **Fonts are self-hosted** (`assets/fonts/`, 13 families). No page contacts Google Fonts any more, so visitor IPs aren't sent to Google.

@@ -109,7 +109,7 @@
       vb.href = "../lobby.html?c=" + encodeURIComponent(course);
       vb.setAttribute("style", "display:flex;align-items:center;gap:16px;flex-wrap:wrap;text-decoration:none;color:inherit;margin-bottom:18px;padding:18px 22px;border:2px solid var(--amber);box-shadow:0 0 30px -8px var(--amber);");
       vb.innerHTML = '<span aria-hidden="true" style="flex:none;font-size:30px;line-height:1;color:var(--amber);">\u2694</span>' +
-        '<span style="min-width:0;flex:1;"><span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--amber);font-weight:700;">// CLASS DUEL \u00b7 WAITING ROOM ' + (ST.lobby.status === "counting" ? "\u00b7 STARTING NOW" : "OPEN") + '</span>' +
+        '<span style="min-width:0;flex:1;"><span class="mono" style="display:block;font-size:12px;letter-spacing:1.5px;color:var(--amber);font-weight:700;">// DUEL WAITING ROOM ' + (ST.lobby.status === "counting" ? "\u00b7 STARTING NOW" : "OPEN") + '</span>' +
         '<span style="display:block;font-size:16px;font-weight:700;color:var(--bright);margin-top:4px;">' + (LBN[ST.lobby.kind] || "Class duel") + ' starting soon. Join the waiting room to see your team.</span></span>' +
         '<span class="mono" style="flex:none;font-size:12px;font-weight:700;color:var(--bright);border:1px solid var(--amber);padding:8px 12px;border-radius:999px;">JOIN \u2192</span>';
       return;

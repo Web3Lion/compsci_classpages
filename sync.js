@@ -184,11 +184,8 @@
       p_banked: !!r.banked
     }).catch(function () {});
   };
-  window.CTF_CHEAT = function (kind, detail, flagKey) {
-    var sess = loadSess(); if (!sess) return;
-    AUTH.rpc("ctf_cheat_google", { p_student: sess.studentId, p_kind: kind,
-      p_detail: detail, p_flag: flagKey || null }).catch(function () {});
-  };
+  // 33.4: integrity events are no longer logged (deterrents still run in ctf.js, nothing is sent)
+  window.CTF_CHEAT = function () {};
 
   /* Every submission, right or wrong. Fire-and-forget: a dropped attempt log
      must never block or slow a student mid-flag. */

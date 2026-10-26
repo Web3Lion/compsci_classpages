@@ -200,13 +200,27 @@
     return fetch(C.url + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: C.anonKey, Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: JSON.stringify(fn === "ctf_raid_state" ? { p_student: sess.studentId, p_peek: true } : { p_student: sess.studentId }) })
       .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
   }
+  // 33.3: the Duel Waiting Room card on the course home glows while the teacher has the room open
+  function roomGlow(on) {
+    var a = document.querySelector('a[href^="../lobby.html"]'); if (!a) return;
+    glowCss();
+    if (on) {
+      if (!a.classList.contains("vqGlow")) { a.classList.add("vqGlow"); a.style.borderColor = "var(--vqw)"; a.style.animation = "vqGlow 1.8s ease-in-out infinite"; }
+      var tag = a.querySelector(".wrOpenTag");
+      if (!tag) { tag = document.createElement("span"); tag.className = "mono wrOpenTag"; tag.style.cssText = "margin-left:auto;flex:none;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--bright);border:1px solid var(--vqw);padding:6px 10px;border-radius:999px;"; tag.textContent = "OPEN \u00b7 JOIN \u2192"; a.appendChild(tag); }
+    } else if (a.classList.contains("vqGlow")) {
+      a.classList.remove("vqGlow"); a.style.borderColor = ""; a.style.animation = "";
+      var t = a.querySelector(".wrOpenTag"); if (t) t.remove();
+    }
+  }
   function battleCheck() {
     Promise.all([rpcRaw("ctf_tb_state"), rpcRaw("ctf_vd_state"), rpcRaw("ctf_ad_state"), rpcRaw("ctf_br_state"), rpcRaw("ctf_raid_state"), rpcRaw("ctf_lobby_state")]).then(function (r) {
       var lb = r[5] && !r[5].error && r[5].lobby && !r[5].live ? r[5].lobby : null, LBN = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid", bracket: "Duel Bracket" };
       var tb = r[0] && r[0].battle, vd = r[1], ad = r[2] && r[2].duel, br = r[3], b = null;
       var bm = br && br.bracket && br.bracket.status === "live" && br.match;
       var rd = r[4] && r[4].raid && r[4].raid.status === "live" ? r[4].raid : null;
-      if (lb) b = { t: "// CLASS DUEL \u00b7 WAITING ROOM " + (lb.status === "counting" ? "\u00b7 STARTING NOW" : "OPEN"), h: (LBN[lb.kind] || "Class duel") + " starting soon", s: "Join the waiting room to see your team. Everyone goes in together when your teacher starts.", go: "JOIN", href: "../lobby.html?c=" + encodeURIComponent(course) };
+      roomGlow(!!lb);
+      if (lb) b = { t: "// DUEL WAITING ROOM " + (lb.status === "counting" ? "\u00b7 STARTING NOW" : "OPEN"), h: (LBN[lb.kind] || "Class duel") + " starting soon", s: "Join the waiting room to see your team. Everyone goes in together when your teacher starts.", go: "JOIN", href: "../lobby.html?c=" + encodeURIComponent(course) };
       else if (rd) b = { t: "// BOSS RAID LIVE \u00b7 " + Math.round(rd.hp / Math.max(1, rd.hp_max) * 100) + "% HP LEFT", h: "The whole class vs the boss", s: "Every right answer is a hit. Wrong answers crack the class shield.", go: "JOIN RAID", href: "../raid-play.html?c=" + encodeURIComponent(course) };
       else if (bm && (bm.status === "ready" || bm.status === "live")) b = { t: "// BRACKET MATCH " + (bm.status === "ready" ? "READY" : "LIVE"), h: "You vs " + (bm.opp || "?"), s: bm.status === "ready" ? "Open the bracket page now. Missing for 60 seconds is a forfeit." : "Your match is on.", go: "BRACKET", href: "../bracket-play.html?c=" + encodeURIComponent(course) };
       else if (br && br.bracket && br.bracket.status === "live") b = { t: "// DUEL BRACKET LIVE", h: "You\u2019re in the bracket", s: "Stay on the bracket page so your next match can start.", go: "BRACKET", href: "../bracket-play.html?c=" + encodeURIComponent(course) };

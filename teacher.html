@@ -3,14 +3,14 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=33.2.0"></script>
+<script src="site.js?v=33.4.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=33.2.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=33.2.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=33.4.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=33.4.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Dashboard (new) — CTF Platform</title>
-<link href="assets/fonts/fonts.css?v=33.2.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=33.4.0" rel="stylesheet">
 <style>
   :root{
     --bg:#0a0d12;--panel:#111620;--panel2:#161d29;--panel3:#1c2432;--bg2:#0d1119;
@@ -275,7 +275,7 @@
 
       <!-- main -->
       <div id="main" class="card" style="padding:22px;min-height:420px;">
-        <div class="empty">Select a class to view its roster, flag captures, and integrity log.</div>
+        <div class="empty">Select a class to view its roster and flag captures.</div>
       </div>
     </div>
   </div>
@@ -307,20 +307,20 @@
   </div>
 </div>
 
-<script src="config.js?v=33.2.0"></script>
-<script src="ctf-data/cyber1.js?v=33.2.0"></script>
-<script src="ctf-data/cyber2.js?v=33.2.0"></script>
-<script src="ctf-data/cyber3.js?v=33.2.0"></script>
-<script src="ctf-data/apcsp.js?v=33.2.0"></script>
-<script src="ctf-data/web3.js?v=33.2.0"></script>
-<script src="cipher.js?v=33.2.0"></script>
-<script src="supabase-config.js?v=33.2.0"></script>
-<script src="auth.js?v=33.2.0"></script>
-<script src="name-filter.js?v=33.2.0"></script>
-<script src="objectives.js?v=33.2.0"></script>
-<script src="standards.js?v=33.2.0"></script>
-<script src="csv.js?v=33.2.0"></script>
-<script src="skins.js?v=33.2.0"></script>
+<script src="config.js?v=33.4.0"></script>
+<script src="ctf-data/cyber1.js?v=33.4.0"></script>
+<script src="ctf-data/cyber2.js?v=33.4.0"></script>
+<script src="ctf-data/cyber3.js?v=33.4.0"></script>
+<script src="ctf-data/apcsp.js?v=33.4.0"></script>
+<script src="ctf-data/web3.js?v=33.4.0"></script>
+<script src="cipher.js?v=33.4.0"></script>
+<script src="supabase-config.js?v=33.4.0"></script>
+<script src="auth.js?v=33.4.0"></script>
+<script src="name-filter.js?v=33.4.0"></script>
+<script src="objectives.js?v=33.4.0"></script>
+<script src="standards.js?v=33.4.0"></script>
+<script src="csv.js?v=33.4.0"></script>
+<script src="skins.js?v=33.4.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -456,7 +456,7 @@ async function loadDetail(){
     var rest=await Promise.all([
       rpc("ctf_t_class_summary",{p_class:CUR.id}).catch(function(){return null;}),
       rpc("ctf_t_flags",{p_class:CUR.id,p_limit:800}).catch(function(){return [];}),
-      rpc("ctf_t_cheats",{p_class:CUR.id,p_limit:800}).catch(function(){return [];}),
+      Promise.resolve([]),   // 33.4: integrity log retired
       rpc("ctf_t_flag_stats",{p_class:CUR.id}).catch(function(){return [];}),
       rpc("ctf_t_attendance",{p_class:CUR.id,p_days:ATTEND_DAYS}).catch(function(){return null;}),
       rpc("ctf_t_groups",{p_class:CUR.id}).catch(function(){return [];}),
@@ -521,11 +521,11 @@ function renderMain(){
   // stat strip
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-bottom:18px;">'+
       stat(ROSTER.length,"STUDENTS")+stat(avg.toLocaleString(),"AVG XP")+
-      stat(capTotal?capTotal.toLocaleString():"—","FLAG CAPTURES")+stat(cheatTotal,"INTEGRITY FLAGS")+
+      stat(capTotal?capTotal.toLocaleString():"—","FLAG CAPTURES")+
     '</div>';
   // tabs
   h+='<div style="padding-top:4px;">'+(TAB==="summary"?runTiles():"");
-  INTEG=cheatTotal;
+  INTEG=0;
   if(TAB==="roster") h+=rosterView();
   else if(TAB==="summary") h+=summaryView();
   else if(TAB==="spread") h+=spreadView();
@@ -543,7 +543,6 @@ function renderMain(){
   else if(TAB==="weekxp") h+=weekXpView();
   else if(TAB==="rewards") h+=rewardsView();
   else if(TAB==="enroll") h+=enrollView();
-  else if(TAB==="cheats") h+=cheatsView();
   else h+=settingsView();
   h+='</div></div>';
   el("main").innerHTML=h;
@@ -568,7 +567,7 @@ function openPracticeGuide(){
 /* 28.1: tabs grouped into sections; links grouped into two menus */
 var TGROUPS=[
   ["overview","Overview",[["summary","Summary"],["spread","Distributions"],["weekxp","Weekly XP"],["attend","Login Report"]]],
-  ["students","Students",[["roster","Roster"],["squads","Squads"],["enroll","Enrollment"],["pgrids","Progress Grids"],["cheats","Integrity"]]],
+  ["students","Students",[["roster","Roster"],["squads","Squads"],["enroll","Enrollment"],["pgrids","Progress Grids"]]],
   ["ctf","CTF",[["flagstats","Flag Analytics"],["flags","Flag Captures"],["ultimate","Ultimate Flags"],["objectives","Objectives"],["gates","Locks, Guide &amp; Duels"]]],
   ["vocab","Vocab",[["vocab","Vocab Lab"],["quizzes","Assigned Quizzes"]]],
   ["xp","XP &amp; Rewards",[["rewards","Send Rewards"],["xplog","XP Log"]]],
@@ -582,7 +581,7 @@ var NAV=[
   ["PROGRESS",[["Flag analytics","flagstats"],["Flag captures","flags"],["Ultimate flags","ultimate"],["Progress grids","pgrids"],["Objectives","objectives"]]],
   ["VOCAB",[["Vocab lab","vocab"],["Assigned quizzes","quizzes"]]],
   ["XP & REWARDS",[["XP log","xplog"],["Weekly XP","weekxp"],["Send rewards","rewards"],["Snapshot week",null,"snapshotWeek()"],["Certificates",null,"openCerts()"]]],
-  ["CLASS SETUP",[["Locks, guide & duels","gates"],["Answer key",null,"openAnswerKey()"],["Integrity","cheats"],["Settings","settings"]]]
+  ["CLASS SETUP",[["Locks, guide & duels","gates"],["Answer key",null,"openAnswerKey()"],["Settings","settings"]]]
 ];
 function NAV_FLAT(){ var o=[]; NAV.forEach(function(g){ g[1].forEach(function(x){ o.push({name:x[0],tab:x[1],act:x[2],group:g[0]}); }); }); return o; }
 /* 28.2 collapsible sidebar groups: only the group holding the open tab starts expanded; clicks toggle (remembered) */
@@ -696,7 +695,6 @@ function summaryView(){
     box(Number(s.captures||0).toLocaleString(),"TOTAL CAPTURES",fmtSecs(Number(s.avg_secs||0))+" avg time")+
     box(s.best_streak||0,"BEST STREAK","days in a row","var(--warn)")+
     box(s.never_started||0,"NOT STARTED",s.never_started?"needs a nudge":"everyone\u2019s in",s.never_started?"var(--warn)":"var(--ok)")+
-    box(s.integrity||0,"INTEGRITY FLAGS",(s.tainted||0)+" tainted captures",s.integrity?"var(--bad)":"var(--ok)")+
   '</div>';
 
   // distribution + who needs attention, both derived from the roster we already have
@@ -1469,9 +1467,6 @@ function spreadMetrics(){
       vals:withCaps.map(function(s){ return (perStudentFirstTry[s.handle]||0)/perStudentCaps[s.handle]*100; }) }
   ];
   var withCaptures=(ROSTER||[]).filter(function(s){ return s.solved_count; });
-  if(withCaptures.length) M.push(
-    { key:"integrity", label:"Integrity rate", hint:"flagged integrity events per 100 captures, per student", fmt:score,
-      vals:withCaptures.map(function(s){ return (s.cheat_count||0)/s.solved_count*100; }) });
   var SESS=sessionLengths();
   if(SESS.length) M.push(
     { key:"sesslen", label:"Session length", hint:"minutes per continuous work session (20-min-gap cutoff), across the class", fmt:mins, vals:SESS });
@@ -2300,7 +2295,7 @@ function renderStudentModal(){
   if(!flags.length) h+='<div class="empty" style="padding:22px;font-size:13px;">No captures yet.</div>';
   else{
     h+='<div style="overflow:auto;max-height:280px;"><table style="font-size:12px;"><thead><tr>'+
-      '<th>When</th><th>Challenge</th><th>Level</th><th>XP</th><th>Time</th><th>Tries</th><th>Integrity</th><th>Clean</th></tr></thead><tbody>';
+      '<th>When</th><th>Challenge</th><th>Level</th><th>XP</th><th>Time</th><th>Tries</th></tr></thead><tbody>';
     flags.forEach(function(f){
       var lvlC=f.level==="Hard"?"var(--bad)":f.level==="Medium"?"var(--warn)":"var(--ok)";
       var fk=f.flag_key||f.challenge_id;
@@ -2311,14 +2306,13 @@ function renderStudentModal(){
         '<td class="mono" style="color:var(--accent)">'+(f.points||0)+'</td>'+
         '<td class="mono">'+fmtSecs(f.secs)+'</td>'+
         '<td>'+((f.wrong_tries||f.retries)?'<span style="color:var(--warn)">'+(f.wrong_tries||f.retries)+'</span>':'0')+'</td>'+
-        '<td>'+(f.flag_cheats?'<span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">'+f.flag_cheats+'</span>':'<span style="color:var(--faint)">0</span>')+'</td>'+
-        '<td>'+(f.tainted?'<span style="color:var(--bad)">no</span>':'<span style="color:var(--ok)">yes</span>')+'</td></tr>';
+        '</tr>';
     });
     h+='</tbody></table></div>';
   }
 
-  if(cheats.length){
-    h+='<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin:22px 0 10px;">INTEGRITY EVENTS ('+cheats.length+')</div>'+
+  if(false){
+    h+='<div>'+
       '<div style="overflow:auto;max-height:200px;"><table style="font-size:12px;"><thead><tr><th>When</th><th>Event</th><th>Detail</th></tr></thead><tbody>'+
       cheats.map(function(c){
         return '<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(c.created_at)+'</td>'+
@@ -2432,7 +2426,7 @@ function rosterView(){
     '<th style="width:26px;"><input type="checkbox" onclick="selAllVisible(this.checked)" '+
       (rows.length&&rows.every(function(r){return GSEL[r.id];})?'checked':'')+'></th>'+
     th("handle","Handle")+'<th>Group</th><th>School account</th>'+th("xp","XP")+th("solved_count","Solved")+th("streak","Streak")+
-    th("cheat","Integrity")+th("last","Last active")+'<th>Badges</th><th></th></tr></thead><tbody>';
+    th("last","Last active")+'<th>Badges</th><th></th></tr></thead><tbody>';
   rows.forEach(function(s){
     var xp=(s.points||0)+(s.bonus||0);
     var sc=(s.streak&&s.streak.count)||0, best=(s.streak&&s.streak.best)||0;
@@ -2447,7 +2441,6 @@ function rosterView(){
       '<td class="mono" style="color:var(--accent);font-weight:700;">'+xp.toLocaleString()+'</td>'+
       '<td>'+(s.solved_count||0)+(pctTot?' <span style="color:var(--faint)">/ '+pctTot+'</span> <span class="mono" style="font-size:11px;color:var(--dim)">'+pct+'%</span>':'')+'</td>'+
       '<td>'+(sc?'<span style="color:var(--warn);font-weight:700">🔥 '+sc+'</span>':'—')+(best>sc?' <span class="mono" style="font-size:10px;color:var(--faint)">best '+best+'</span>':'')+'</td>'+
-      '<td>'+(s.cheat_count?'<span class="pill" style="background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)">'+s.cheat_count+'</span>':'<span style="color:var(--faint)">0</span>')+'</td>'+
       '<td style="color:var(--dim)">'+ago(s.updated_at)+'</td>'+
       '<td>'+(badges?'<span class="chip" style="font-size:11px">🏅 '+badges+'</span>':'<span style="color:var(--faint)">—</span>')+'</td>'+
       '<td style="text-align:right;white-space:nowrap">'+
@@ -2893,7 +2886,7 @@ async function rosterRemove(email){
 async function removeSelected(){
   var ids=Object.keys(GSEL).filter(function(k){return GSEL[k];});
   if(!ids.length) return;
-  if(!confirm("Remove "+ids.length+" student"+(ids.length==1?"":"s")+" from this class?\n\nTheir progress, captures, and integrity logs are deleted. This cannot be undone.")) return;
+  if(!confirm("Remove "+ids.length+" student"+(ids.length==1?"":"s")+" from this class?\n\nTheir progress and captures are deleted. This cannot be undone.")) return;
   try{ var r=await rpc("ctf_t_remove_students",{p_students:ids}); if(r&&r.error) throw new Error(r.error); GSEL={}; await loadClasses(true); if(typeof loadDetail==="function") await loadDetail(); }
   catch(e){ alert("Couldn\u2019t remove those students \u2014 run supabase/roster-csv.sql."); }
 }
@@ -2911,7 +2904,7 @@ function moveStudent(sid,handle){
     '<div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">MOVE STUDENT</div>'+
     '<h3 style="font-size:19px;color:var(--bright);margin:6px 0 4px;">'+esc(handle)+'</h3>'+
     '<div style="font-size:13px;color:var(--dim);line-height:1.55;margin-bottom:16px;">'+
-      'All XP, captures, attempts, and integrity history move with them. Moving to a different course keeps the record but their solved count will read oddly until they work through the new course.</div>'+
+      'All XP, captures and attempts move with them. Moving to a different course keeps the record but their solved count will read oddly until they work through the new course.</div>'+
     '<select id="moveSel" style="width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:14px;margin-bottom:16px;">'+opts+'</select>'+
     '<div style="display:flex;gap:9px;justify-content:flex-end;">'+
       '<button class="btn" onclick="closeMove()">Cancel</button>'+
@@ -4260,7 +4253,7 @@ function settingsView(){
   // danger
   h+='<div style="border-top:1px solid var(--border);padding-top:18px;">'+
     '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Danger zone</div>'+
-    '<div style="color:var(--dim);font-size:13px;margin-bottom:12px;">Deleting a class removes all its students, progress, flag captures, and integrity logs. This cannot be undone.</div>'+
+    '<div style="color:var(--dim);font-size:13px;margin-bottom:12px;">Deleting a class removes all its students, progress and flag captures. This cannot be undone.</div>'+
     '<button class="btn danger" onclick="deleteClass()">Delete this class</button>'+
   '</div>';
   h+=teachersPanel();
