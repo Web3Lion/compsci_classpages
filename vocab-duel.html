@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=33.4.0"></script>
+<script src="site.js?v=34.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=33.4.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=33.4.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=34.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=34.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Vocab Duel</title>
-<link href="assets/fonts/fonts.css?v=33.4.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=34.1.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--adv:#ff3b3b;--adv2:#ff8080;--advglow:#ff0033;--arena:#0b0306;--advtext:var(--adv2);}
 :root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--arena:#ffffff;--advtext:var(--bright);}
@@ -54,7 +54,7 @@ html[data-motion="reduce"] .shake{animation:none;}
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   if (!VG[C]) { document.getElementById("view").innerHTML = '<div class="card">Open a Vocab Duel from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
-  var V = window.SITE_VERSION || "26.2.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js"];
+  var V = window.SITE_VERSION || "26.2.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js", "ko-fx.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){
@@ -227,11 +227,13 @@ html[data-motion="reduce"] .shake{animation:none;}
       if (!force && k === sig) return update();
       var keep = (document.getElementById("vdCode") || {}).value || "";
       var wasKo = /^ko/.test(sig); sig = k; var s = ST.session, f = ST.fight;
+      if (window.KO_FX && sc[0] === "ko" && !wasKo && f && f.won != null) { var kb = document.getElementById(f.won ? "vdOppB" : "vdMeB");
+        KO_FX.blast({ el: kb && kb.parentElement, name: f.won ? f.opp : "YOU", big: "K.O.!", color: f.won ? "#3ddc97" : "#ff3b3b", sub: f.won ? "You knocked out " + f.opp : f.opp + " got you this time" }); }
       view.innerHTML = sc[0] === "setup" ? setupView() : sc[0] === "lobby" ? lobbyView(s) : sc[0] === "done" ? doneView(s) : sc[0] === "fight" ? fightView(s, f) : sc[0] === "ko" ? koView(s, f) : waitView(s);
       var ci = document.getElementById("vdCode"); if (ci) ci.value = keep;
       var g = document.getElementById("g"); if (g && innerWidth < 760) g.style.gridTemplateColumns = "1fr";
       bind(); clock(); brawlFx(s);
-      if (FX && sc[0] === "ko" && !wasKo) { FX.banner(f.won ? "K.O.!" : f.won === false ? "DOWN!" : "TIME!", f.won ? "#3ddc97" : "#ff3b3b", f.won ? "You knocked out " + f.opp : f.won === false ? f.opp + " got you this time" : ""); if (f.won) FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; FX.combo(0);
+      if (FX && sc[0] === "ko" && !wasKo) { if (!window.KO_FX || f.won == null) FX.banner(f.won ? "K.O.!" : f.won === false ? "DOWN!" : "TIME!", f.won ? "#3ddc97" : "#ff3b3b", f.won ? "You knocked out " + f.opp : f.won === false ? f.opp + " got you this time" : ""); if (f.won) FX.confetti(["#3ddc97", "#00b3ff"]); streak = 0; FX.combo(0);
         if (f.won && f.revenge) FX.banner("REVENGE!", "#ff3b3b", "You paid back " + f.opp + " \u00b7 +1 KO point");
         if (f.won && f.bounty) FX.banner("BOUNTY CLAIMED!", "#ffcf5c", "You took down the leader \u00b7 +1 KO point"); }
       if (FX && sc[0] === "done" && s && !endFx[s.id]) { endFx[s.id] = 1; var my = s.my || {}, won = s.kind === "class" ? (s.teams || []).some(function(t){ return t.won && t.id === s.my_team; }) : s.brawl ? !!(s.my || {}).mvp : s.winner_handle === ST.handle;
