@@ -74,6 +74,21 @@ drop function if exists ctf_target_warmup_submit(text,text,text,jsonb);
 drop function if exists ctf_t_target_warmup(text,int);
 drop table if exists target_warmup_responses;
 
+-- 33.4: integrity logging retired. Every stored event is deleted and any insert
+-- (CTF focus/paste/devtools, vocab quiz violations) is silently dropped.
+create or replace function _no_cheat_log() returns trigger
+language plpgsql as $fn$ begin return null; end $fn$;
+revoke all on function _no_cheat_log() from public, anon, authenticated;
+
+do $blk$
+begin
+  if to_regclass('public.cheat_events') is not null then
+    delete from cheat_events;
+    drop trigger if exists no_cheat_log on cheat_events;
+    create trigger no_cheat_log before insert on cheat_events for each row execute function _no_cheat_log();
+  end if;
+end $blk$;
+
 -- install-check reads this: what is still open
 create or replace function _lockdown_gaps() returns json
 language sql stable security definer set search_path = public as $$

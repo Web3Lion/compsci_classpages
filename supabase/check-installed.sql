@@ -65,7 +65,8 @@ from (
       (47, 'raids.sql', 'Class boss raid', exists (select 1 from information_schema.tables where table_schema='public' and table_name='raids')),
       (48, 'waiting-room.sql', 'Class duel waiting room', exists (select 1 from information_schema.tables where table_schema='public' and table_name='class_lobbies')),
     (49, 'retention.sql', '30-day cleanup of sign-in rejects + typed guesses', exists (select 1 from pg_proc where proname='_purge_old_data')),
-    (50, 'lockdown.sql', 'Security lockdown (run last)', exists (select 1 from pg_proc where proname='_lockdown_gaps'))
+    (50, 'backup-export.sql', 'Owner-only CSV backup export (teacher.html Settings)', exists (select 1 from pg_proc where proname='ctf_t_backup_table')),
+      (51, 'lockdown.sql', 'Security lockdown (run last)', exists (select 1 from pg_proc where proname='_lockdown_gaps'))
   ) as c(step, file, feature, present)
 
   union all
