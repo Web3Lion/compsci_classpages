@@ -11,6 +11,13 @@ a cache tag (`?v=9.0.0`) — bump both together on every release.
 
 ---
 
+## 36.0.0 — 2026-10-26
+- **Emails only, no names.** New `supabase/no-names.sql` (run #51, lockdown.sql is now #52): blanks every stored name (roster upload, teachers, vocab quiz attempts) and blocks new ones with triggers. The Google account name is no longer read.
+- Also strips the Google name + photo that Supabase Auth copies into `auth.users` / `auth.identities` on every sign-in.
+- **New SQL: `supabase/class-wipe.sql`** (run #52, lockdown.sql is now #53). Settings → **[ DANGER ] → Delete all class data**: prompts a CSV backup, then requires typing `delete class data`. Keeps the class and its join code.
+- teacher.html: roster import ignores the name column; Enrollment, Teachers and Weekly XP show the email instead of a name; the teacher name field is gone. Certificates fall back to the hacker name (still editable before printing).
+- Mane Event: students can **Forfeit** (battle: opponent gets the KO; bracket: forfeits the match) or **Leave game**; removing a player mid-game counts as a forfeit.
+
 ## 35.0.0 — 2026-10-26
 - **New SQL: `supabase/backup-export.sql`** (run #50, then re-run lockdown.sql, now #51). teacher.html → Settings → **Export backup** downloads every table as CSV in one .zip. Owners only, read-only.
 - lockdown.sql: fixed a syntax error in the integrity-log block (nested `$$` quoting).

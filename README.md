@@ -1,6 +1,6 @@
 # Cybersecurity & CS Classroom Site
 
-**Version 2.0.0** — see `CHANGELOG.md`.
+**Version 36.0.0** — see `CHANGELOG.md`.
 
 Static, no-build HTML site for five courses: AP Computer Science Principles (`apcsp/`),
 Cybersecurity 1 (`cyber1/`), AP Cybersecurity 2 (`cyber2/`), Cybersecurity 3 (`cyber3/`),
@@ -84,10 +84,19 @@ isn't filled in.
 - `teacher.html` — teacher-facing dashboard/reports (Supabase-backed): class summaries,
   login/attendance report, flag analytics, module/flag locks, course-guide persona and
   answer-key toggles, Ultimate Flags active/inactive toggle (cyber1 & cyber2), squads,
-  vocab lab, objectives, XP log, enrollment, integrity/cheat log, send rewards (to one
-  student or a whole class) with an item log, settings.
-- `answers.local.js` — teacher-only answer key for text-entry flags, uploaded via
+  vocab lab, objectives, XP log, enrollment, send rewards (to one student or a whole
+  class) with an item log, settings (teachers, CSV backup export, [ DANGER ] delete
+  all class data).
+- `claude only/answers.local.js` — teacher-only answer key for text-entry flags, uploaded via
   `answers.html`. **Gitignored — never commit it.**
+- `mane-event/` — Mane Event, a stand-alone live CSV battle / bracket (no sign-in, no database,
+  browser to browser). `/mane` is the short join link; `connection-test.html` checks the
+  school network; `binary-questions.csv` is a ready-made question set.
+- `tools/` — Teacher Tools hub. `rewards/`, `carnival.html`, `reward.html` — reward games.
+- Class battle pages: `vocab-battle.html`, `vocab-duel.html`, `battle.html`, `bracket.html`,
+  `bracket-play.html`, `raid.html`, `arena-duel.html` (+ `waiting-room.js`, `battle-fx.js`,
+  `ko-fx.js`, `binary-pool.js`, `prize-roll.js`, `team-picker.js`).
+- `assets/` — `fonts/` (self-hosted, `fonts.css`), `logo/`, `vendor/` (PeerJS, QR code).
 - `resources.js`, `objectives.js`, `standards.js`, `sync.js`, `auth.js`, `profile.js`,
   `profile-link.js`, `practice-sync.js`, `vocab-log.js`, `vocab-xp.js`, `welcome.js`,
   `nemesis-intro.js`, `name-filter.js`, `gate-art.js`, `csv.js`, `cipher.js`,
@@ -95,9 +104,11 @@ isn't filled in.
   pad) — shared helper scripts used across course pages.
 - `site.js` — loaded in `<head>` on every page: `SITE_VERSION`, the A11Y panel
   (reduce motion, high contrast), skip link, focus styles.
-  Script tags carry the release number as a cache tag (`?v=2.0.0`) — when you bump
+  Script tags carry the release number as a cache tag (`?v=36.0.0`) — when you bump
   `SITE_VERSION`, bump the tag on every page too.
-- `claude only/` — working files (source curriculum PDFs, extracted text, design reference). Gitignored, not deployed.
+- `claude only/` — working files, gitignored, never deployed: `uploads/` (curriculum PDFs, pasted
+  images), `scraps/` (extracted text), `design-system/`, `archive/` (old dashboard versions and
+  old bundled copies of Reward Rally / Teacher Tools), `answers.local.js`, the district data summary.
 - `supabase/` — SQL schema files for the optional backend (run in the order noted in
   `SUPABASE-SETUP.md`: schema, google-auth, teacher-reports, class-gates, answer-key,
   attempt-log, class-groups, and the rest). **Re-run order matters**: `multi-domain.sql`
@@ -109,7 +120,6 @@ isn't filled in.
   weekly top 3 to the Hall of Fame every Monday (replaces pg_cron, which the Supabase
   free tier lacks). Needs repo secrets `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`, plus
   `supabase/weekly-snapshot-auto.sql` installed.
-- `uploads/` — reference materials (CED PDFs, pasted images) used while building content.
 
 ## Rewards & items
 

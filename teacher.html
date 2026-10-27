@@ -3,14 +3,14 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=35.0.0"></script>
+<script src="site.js?v=36.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=35.0.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=35.0.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=36.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=36.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Dashboard (new) — CTF Platform</title>
-<link href="assets/fonts/fonts.css?v=35.0.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=36.0.0" rel="stylesheet">
 <style>
   :root{
     --bg:#0a0d12;--panel:#111620;--panel2:#161d29;--panel3:#1c2432;--bg2:#0d1119;
@@ -307,20 +307,20 @@
   </div>
 </div>
 
-<script src="config.js?v=35.0.0"></script>
-<script src="ctf-data/cyber1.js?v=35.0.0"></script>
-<script src="ctf-data/cyber2.js?v=35.0.0"></script>
-<script src="ctf-data/cyber3.js?v=35.0.0"></script>
-<script src="ctf-data/apcsp.js?v=35.0.0"></script>
-<script src="ctf-data/web3.js?v=35.0.0"></script>
-<script src="cipher.js?v=35.0.0"></script>
-<script src="supabase-config.js?v=35.0.0"></script>
-<script src="auth.js?v=35.0.0"></script>
-<script src="name-filter.js?v=35.0.0"></script>
-<script src="objectives.js?v=35.0.0"></script>
-<script src="standards.js?v=35.0.0"></script>
-<script src="csv.js?v=35.0.0"></script>
-<script src="skins.js?v=35.0.0"></script>
+<script src="config.js?v=36.0.0"></script>
+<script src="ctf-data/cyber1.js?v=36.0.0"></script>
+<script src="ctf-data/cyber2.js?v=36.0.0"></script>
+<script src="ctf-data/cyber3.js?v=36.0.0"></script>
+<script src="ctf-data/apcsp.js?v=36.0.0"></script>
+<script src="ctf-data/web3.js?v=36.0.0"></script>
+<script src="cipher.js?v=36.0.0"></script>
+<script src="supabase-config.js?v=36.0.0"></script>
+<script src="auth.js?v=36.0.0"></script>
+<script src="name-filter.js?v=36.0.0"></script>
+<script src="objectives.js?v=36.0.0"></script>
+<script src="standards.js?v=36.0.0"></script>
+<script src="csv.js?v=36.0.0"></script>
+<script src="skins.js?v=36.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -339,7 +339,7 @@ var DEMO=/[?&]demo=1/.test(location.search);
 async function rpc(fn,args){
   if(DEMO){
     if(fn==="ctf_t_classes") return [{id:"d1",name:"Period 1",course:"cyber1",code:"CY1-P1-7QX2",student_count:22},{id:"d3",name:"Period 3",course:"apcsp",code:"CSP-P3-2K8R",student_count:24},{id:"d5",name:"Period 5",course:"cyber2",code:"CY2-P5-9MZT",student_count:19}];
-    if(fn==="ctf_t_roster") return [{id:"s1",handle:"null_byte",google_name:"Ava Chen",points:5800,bonus:320,cheat_count:0},{id:"s2",handle:"r00tkit",google_name:"Marcus Lee",points:5500,bonus:390,cheat_count:2},{id:"s3",handle:"ghost_shell",google_name:"Priya Patel",points:5100,bonus:310,cheat_count:1},{id:"s4",handle:"hexwitch",google_name:"Sofia Ramos",points:4700,bonus:270,cheat_count:0}];
+    if(fn==="ctf_t_roster") return [{id:"s1",handle:"null_byte",google_name:"",points:5800,bonus:320,cheat_count:0},{id:"s2",handle:"r00tkit",google_name:"Marcus Lee",points:5500,bonus:390,cheat_count:2},{id:"s3",handle:"ghost_shell",google_name:"Priya Patel",points:5100,bonus:310,cheat_count:1},{id:"s4",handle:"hexwitch",google_name:"Sofia Ramos",points:4700,bonus:270,cheat_count:0}];
     if(/^ctf_t_(flags|cheats|flag_stats|groups)$/.test(fn)) return [];
     throw new Error("demo mode: no data");
   }
@@ -2030,7 +2030,7 @@ async function loadWeekXp(){
 }
 function setWxpWeeks(n){ WXP_WEEKS=+n; loadWeekXp(); }
 function setWxpSort(k){ if(WXP_SORT===k) WXP_DIR=-WXP_DIR; else { WXP_SORT=k; WXP_DIR=(k==="google"||k==="hacker")?1:-1; } renderMain(); }
-function wxpGoogle(s){ return s.full_name||(s.email||"").split("@")[0]||""; }
+function wxpGoogle(s){ return (s.email||"").split("@")[0]||""; }
 function wxpRows(){
   var d=WEEKXP||{}, weeks=d.weeks||[];
   var rows=(d.students||[]).map(function(s){
@@ -2058,7 +2058,7 @@ function weekXpView(){
     'XP each student earned per week (Sunday to Saturday, Eastern time): flag captures plus XP you granted by hand. Click a column heading to sort.</div>';
   h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'+
     '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);">SORT BY</span>'+
-    '<button class="btn sm'+(WXP_SORT==="google"?' pri':'')+'" onclick="setWxpSort(\'google\')">Google name'+arrow("google")+'</button>'+
+    '<button class="btn sm'+(WXP_SORT==="google"?' pri':'')+'" onclick="setWxpSort(\'google\')">Student'+arrow("google")+'</button>'+
     '<button class="btn sm'+(WXP_SORT==="hacker"?' pri':'')+'" onclick="setWxpSort(\'hacker\')">Hacker name'+arrow("hacker")+'</button>'+
     '<button class="btn sm'+(WXP_SORT==="total"?' pri':'')+'" onclick="setWxpSort(\'total\')">Total XP'+arrow("total")+'</button>'+
     '<span class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-left:10px;">SHOW</span>'+
@@ -2066,10 +2066,10 @@ function weekXpView(){
       [4,8,12,18].map(function(n){ return '<option value="'+n+'"'+(n===WXP_WEEKS?' selected':'')+'>Last '+n+' weeks</option>'; }).join('')+'</select>'+
     '<span style="margin-left:auto;">'+CSV.button("exportWeekXp()")+'</span></div>';
   if(!R.rows.length) return h+'<div class="empty">No students in this class yet.</div>';
-  h+='<div style="overflow:auto;"><table style="font-size:12px;"><thead><tr>'+th("google","Google name")+th("hacker","Hacker name")+
+  h+='<div style="overflow:auto;"><table style="font-size:12px;"><thead><tr>'+th("google","Student")+th("hacker","Hacker name")+
     weeks.map(function(k,i){ return th(k,(i===0?'This wk':wxpWeekLabel(k)),'text-align:right;'); }).join('')+th("total","Total",'text-align:right;')+'</tr></thead><tbody>';
   R.rows.forEach(function(r){
-    h+='<tr><td style="color:var(--bright)">'+esc(r.g||"\u2014")+(r.s.full_name?'':' <span class="mono" style="font-size:10px;color:var(--faint)">'+esc(r.s.email||"")+'</span>')+'</td>'+
+    h+='<tr><td class="mono" style="color:var(--bright);font-size:12px;">'+esc(r.s.email||r.g||"\u2014")+'</td>'+
       '<td><b style="color:var(--accent)">'+esc(r.s.handle||"\u2014")+'</b></td>'+
       weeks.map(function(k){ var v=Number(r.w[k])||0; return '<td class="mono" style="text-align:right;color:'+(v?'var(--bright)':'var(--faint)')+'">'+(v?v.toLocaleString():'0')+'</td>'; }).join('')+
       '<td class="mono" style="text-align:right;font-weight:800;color:var(--ok)">'+r.tot.toLocaleString()+'</td></tr>';
@@ -2078,8 +2078,8 @@ function weekXpView(){
 }
 function exportWeekXp(){
   var R=wxpRows();
-  var out=[["Google name","Email","Hacker name"].concat(R.weeks.map(function(k){ return "Week of "+k; })).concat(["Total"])];
-  R.rows.forEach(function(r){ out.push([r.s.full_name||"",r.s.email||"",r.s.handle||""].concat(R.weeks.map(function(k){ return Number(r.w[k])||0; })).concat([r.tot])); });
+  var out=[["Email","Hacker name"].concat(R.weeks.map(function(k){ return "Week of "+k; })).concat(["Total"])];
+  R.rows.forEach(function(r){ out.push([r.s.email||"",r.s.handle||""].concat(R.weeks.map(function(k){ return Number(r.w[k])||0; })).concat([r.tot])); });
   CSV.download(out,"weekly-xp",CUR.name);
 }
 function exportXpLog(){
@@ -2850,7 +2850,7 @@ function parseCSV(text){
     if(!email) email=c.filter(function(x){return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x);})[0];
     if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ skipped++; return; }
     var name=(ni>=0&&c[ni])?c[ni]:c.filter(function(x){return x&&x!==email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x);})[0]||"";
-    rows.push({email:email.toLowerCase(),full_name:name,note:""});
+    rows.push({email:email.toLowerCase(),full_name:"",note:""}); // v36: emails only, names are never stored
   });
   return {rows:rows,skipped:skipped};
 }
@@ -2968,14 +2968,13 @@ function enrollView(){
         '<div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);margin-top:4px;">NOT YET</div></div>'+
     '</div>'+
     '<div style="overflow:auto;margin-bottom:26px;"><table><thead><tr>'+
-      '<th>Status</th><th>Name</th><th>School account</th><th>Handle</th><th></th></tr></thead><tbody>';
+      '<th>Status</th><th>School account</th><th>Handle</th><th></th></tr></thead><tbody>';
     EXPECTED.forEach(function(r){
       h+='<tr>'+
         '<td>'+(r.joined
           ? '<span class="pill" style="background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)">signed in</span>'
           : '<span class="pill" style="background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)">not yet</span>')+'</td>'+
-        '<td style="color:var(--bright)">'+esc(r.full_name||"\u2014")+'</td>'+
-        '<td class="mono" style="font-size:11px;color:var(--dim)">'+esc(r.email)+'</td>'+
+        '<td class="mono" style="font-size:12px;color:var(--bright)">'+esc(r.email)+'</td>'+
         '<td>'+(r.handle?'<b style="color:var(--accent)">'+esc(r.handle)+'</b>':'<span style="color:var(--faint)">\u2014</span>')+'</td>'+
         '<td style="text-align:right"><button class="btn sm" onclick=\'rosterRemove("'+esc(r.email)+'")\'>Remove</button></td>'+
       '</tr>';
@@ -4040,7 +4039,7 @@ async function loadWhoami(){
 }
 async function addTeacher(){
   var email=(el("tEmail")||{}).value||"";
-  var name=(el("tName")||{}).value||"";
+  var name="";
   var role=(el("tRole")||{}).value||"staff";
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())){ alert("That doesn’t look like an email address."); return; }
   try{
@@ -4092,8 +4091,6 @@ function teachersPanel(){
     h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">'+
       '<input id="tEmail" type="email" placeholder="teacher@southfayette.org" '+
         'style="flex:1;min-width:210px;padding:9px 11px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;">'+
-      '<input id="tName" placeholder="Name (optional)" '+
-        'style="min-width:150px;padding:9px 11px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;">'+
       '<select id="tRole" style="padding:9px 10px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--bright);font:inherit;font-size:13px;">'+
         '<option value="staff">Staff — full teaching access</option>'+
         '<option value="owner">Owner — can also manage teachers</option></select>'+
@@ -4103,14 +4100,13 @@ function teachersPanel(){
   if(!TEACHERS.length) return h+'<div class="empty" style="text-align:left;padding:8px 0;">No teachers listed yet.</div></div>';
 
   h+='<div style="overflow:auto;"><table><thead><tr>'+
-    '<th>Email</th><th>Name</th><th>Role</th><th>Last seen</th>'+(owner?'<th></th>':'')+
+    '<th>Email</th><th>Role</th><th>Last seen</th>'+(owner?'<th></th>':'')+
   '</tr></thead><tbody>';
   TEACHERS.forEach(function(t){
     var isMe=String(t.email).toLowerCase()===String(ME.email||"").toLowerCase();
     h+='<tr>'+
       '<td class="mono" style="font-size:12px;color:var(--bright)">'+esc(t.email)+
         (isMe?' <span class="pill" style="background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)">you</span>':'')+'</td>'+
-      '<td style="color:var(--dim)">'+esc(t.full_name||"\u2014")+'</td>'+
       '<td>'+(t.role==="owner"
         ? '<span class="pill" style="background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)">owner</span>'
         : '<span class="pill" style="background:var(--bg2);color:var(--dim)">staff</span>')+
@@ -4252,9 +4248,15 @@ function settingsView(){
   '</div>';
   // danger
   h+='<div style="border-top:1px solid var(--border);padding-top:18px;">'+
-    '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Danger zone</div>'+
-    '<div style="color:var(--dim);font-size:13px;margin-bottom:12px;">Deleting a class removes all its students, progress and flag captures. This cannot be undone.</div>'+
-    '<button class="btn danger" onclick="deleteClass()">Delete this class</button>'+
+    '<div style="border:1px solid var(--bad);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;">'+
+      '<div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--bad);">[ DANGER ]</div>'+
+      '<div><div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Delete all class data</div>'+
+        '<div style="color:var(--dim);font-size:13px;margin-bottom:10px;line-height:1.6;">Removes every student in this class and everything tied to them or the class: progress, XP, captures, quiz attempts, squads, roster upload, grids and battles. The class itself, its name and its join code stay, so you can reuse it. This cannot be undone.</div>'+
+        '<button class="btn danger" style="border-color:var(--bad);color:var(--bad);" onclick="wipeClassOpen()">Delete all class data\u2026</button></div>'+
+      '<div style="border-top:1px solid var(--border);padding-top:14px;"><div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Delete this class</div>'+
+        '<div style="color:var(--dim);font-size:13px;margin-bottom:10px;">Removes the class itself along with all its students, progress and flag captures. This cannot be undone.</div>'+
+        '<button class="btn danger" onclick="deleteClass()">Delete this class</button></div>'+
+    '</div>'+
   '</div>';
   h+=teachersPanel();
   h+=allowedEmailsPanel();
@@ -4269,7 +4271,7 @@ function settingsView(){
 function backupPanel(){
   return '<div style="border-top:1px solid var(--border);padding-top:18px;margin-top:26px;">'+
     '<div style="font-size:15px;font-weight:700;color:var(--bright);margin-bottom:4px;">Export backup</div>'+
-    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">Downloads every database table as a CSV file, all in one .zip. Owners only. The file contains student names and emails, so save it in your district Google Drive or OneDrive, never on a personal device or GitHub.</div>'+
+    '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">Downloads every database table as a CSV file, all in one .zip. Owners only. The file contains student emails, so save it in your district Google Drive or OneDrive, never on a personal device or GitHub.</div>'+
     '<button class="btn pri" id="bkBtn" onclick="exportBackup()">Export backup (.zip)</button>'+
     '<span id="bkMsg" class="mono" style="font-size:12px;color:var(--dim);margin-left:10px;"></span>'+
   '</div>';
@@ -4296,14 +4298,14 @@ function bkZip(files){ // stored (no compression) zip
   var csize=central.reduce(function(a,p){ return a+p.length; },0);
   return new Blob(parts.concat(central,[new Uint8Array([].concat([0x50,0x4b,5,6],u16(0),u16(0),u16(files.length),u16(files.length),u32(csize),u32(off),u16(0)))]),{type:"application/zip"});
 }
-async function exportBackup(){
-  var btn=document.getElementById("bkBtn"), msg=document.getElementById("bkMsg");
+async function exportBackup(btnId,msgId,noAsk){
+  var btn=document.getElementById(btnId||"bkBtn"), msg=document.getElementById(msgId||"bkMsg");
   function say(s,c){ if(msg){ msg.textContent=s; msg.style.color=c||"var(--dim)"; } }
-  if(!confirm("Download a backup of every table? It includes student names and emails.")) return;
+  if(!noAsk&&!confirm("Download a backup of every table? It includes student emails.")) return false;
   btn.disabled=true; say("Reading tables\u2026");
   try{
     var L=await rpc("ctf_t_backup_tables");
-    if(!L||L.error){ say(L&&L.error==="not_owner"?"Only an owner can export a backup.":"Couldn\u2019t read tables ("+((L&&L.error)||"error")+").","var(--bad)"); btn.disabled=false; return; }
+    if(!L||L.error){ say(L&&L.error==="not_owner"?"Only an owner can export a backup.":"Couldn\u2019t read tables ("+((L&&L.error)||"error")+").","var(--bad)"); btn.disabled=false; return false; }
     var files=[], total=0, list=L.tables||[];
     for(var i=0;i<list.length;i++){
       var tb=list[i], rows=[];
@@ -4320,6 +4322,7 @@ async function exportBackup(){
     var a=document.createElement("a"); a.href=URL.createObjectURL(bkZip(files)); a.download="course-backup-"+stamp+".zip"; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function(){ URL.revokeObjectURL(a.href); },4000);
     say("Done: "+list.length+" tables, "+total.toLocaleString()+" rows.","var(--ok)");
+    btn.disabled=false; return true;
   }catch(e){
     say(/ctf_t_backup|function|not find/i.test(String(e&&e.message))?"Run supabase/backup-export.sql first.":"Export failed: "+((e&&e.message)||e),"var(--bad)");
   }
@@ -5156,6 +5159,60 @@ async function renameClass(){
     if(c) selectClass(c); else { CUR.name=r.name||n; selectClass(CUR); }
   }catch(e){ alert("Rename failed. Run supabase/class-rename.sql in Supabase first."); }
 }
+/* ----- Danger: delete all class data (supabase/class-wipe.sql) ----- */
+var WIPE={backup:false};
+function wipeClassOpen(){
+  WIPE={backup:false};
+  var m=document.createElement("div"); m.className="modal"; m.id="wipeModal";
+  m.innerHTML='<div class="card" role="dialog" aria-modal="true" aria-labelledby="wipeT" style="max-width:560px;width:100%;padding:24px;border:2px solid var(--bad);display:flex;flex-direction:column;gap:16px;">'+
+    '<div class="mono" style="font-size:11px;letter-spacing:2px;color:var(--bad);">[ DANGER ]</div>'+
+    '<div id="wipeT" style="font-size:20px;font-weight:800;color:var(--bright);">Delete all data in '+esc(CUR.name)+'?</div>'+
+    '<div style="border:1px solid var(--border3);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;">'+
+      '<div style="font-weight:700;color:var(--bright);">Step 1 \u00b7 Back up first</div>'+
+      '<div style="font-size:13px;color:var(--dim);line-height:1.6;">Download a CSV backup before deleting. It includes student emails, so save it in your district Google Drive or OneDrive.</div>'+
+      '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><button class="btn pri" id="wipeBk" onclick="wipeBackup()">Download backup (CSV .zip)</button><span id="wipeBkMsg" class="mono" style="font-size:12px;color:var(--dim);"></span></div>'+
+      '<label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--dim);cursor:pointer;"><input type="checkbox" id="wipeSkip" onchange="wipeCheck()"> Continue without a backup</label>'+
+    '</div>'+
+    '<div style="border:1px solid var(--border3);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;">'+
+      '<div style="font-weight:700;color:var(--bright);">Step 2 \u00b7 Confirm</div>'+
+      '<label for="wipeTxt" style="font-size:13px;color:var(--dim);">Type <b class="mono" style="color:var(--bad);">delete class data</b> to confirm.</label>'+
+      '<input id="wipeTxt" class="in mono" autocomplete="off" spellcheck="false" oninput="wipeCheck()" onkeydown="if(event.key===\'Enter\')wipeGo()">'+
+    '</div>'+
+    '<div id="wipeMsg" class="mono" style="font-size:12px;color:var(--dim);"></div>'+
+    '<div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;"><button class="btn" onclick="wipeClose()">Cancel</button>'+
+      '<button class="btn" id="wipeGo" disabled onclick="wipeGo()" style="background:var(--bad);border-color:var(--bad);color:#fff;">Delete all class data</button></div>'+
+  '</div>';
+  m.addEventListener("click",function(e){ if(e.target===m) wipeClose(); });
+  document.addEventListener("keydown",wipeEsc);
+  document.body.appendChild(m);
+  var b=document.getElementById("wipeBk"); if(b) b.focus();
+}
+function wipeEsc(e){ if(e.key==="Escape") wipeClose(); }
+function wipeClose(){ var m=document.getElementById("wipeModal"); if(m) m.remove(); document.removeEventListener("keydown",wipeEsc); }
+async function wipeBackup(){ var ok=await exportBackup("wipeBk","wipeBkMsg",true); if(ok){ WIPE.backup=true; } wipeCheck(); }
+function wipeCheck(){
+  var typed=((document.getElementById("wipeTxt")||{}).value||"").trim().toLowerCase()==="delete class data";
+  var step1=WIPE.backup||((document.getElementById("wipeSkip")||{}).checked);
+  var go=document.getElementById("wipeGo"), msg=document.getElementById("wipeMsg");
+  if(go) go.disabled=!(typed&&step1);
+  if(msg) msg.textContent=!step1?"Download a backup, or tick \u201cContinue without a backup\u201d.":!typed?"Type the phrase exactly to unlock the button.":"Ready. This cannot be undone.";
+}
+async function wipeGo(){
+  var go=document.getElementById("wipeGo"), msg=document.getElementById("wipeMsg"), txt=(document.getElementById("wipeTxt")||{}).value||"";
+  if(!go||go.disabled) return;
+  go.disabled=true; go.textContent="Deleting\u2026";
+  try{
+    var r=await rpc("ctf_t_wipe_class",{p_class:CUR.id,p_confirm:txt});
+    if(!r||r.error){ throw new Error(r&&r.error==="bad_confirm"?"The phrase didn\u2019t match.":r&&r.error==="not_teacher"?"Only teachers can do this.":((r&&r.error)||"error")); }
+    wipeClose(); GSEL={};
+    await loadClasses(true); if(typeof loadDetail==="function") await loadDetail(); renderMain();
+    alert("Done. Removed "+(r.students||0)+" student"+(r.students==1?"":"s")+" and "+Number(r.rows||0).toLocaleString()+" other rows from "+CUR.name+".");
+  }catch(e){
+    var m=String((e&&e.message)||e);
+    if(msg){ msg.style.color="var(--bad)"; msg.textContent=/ctf_t_wipe_class|function|not find/i.test(m)?"Run supabase/class-wipe.sql in Supabase first.":"Couldn\u2019t delete: "+m; }
+    go.textContent="Delete all class data"; wipeCheck();
+  }
+}
 async function deleteClass(){
   if(!confirm('Delete "'+CUR.name+'" and ALL its data? This cannot be undone.')) return;
   try{ await rpc("ctf_t_delete_class",{p_class:CUR.id});
@@ -5332,7 +5389,7 @@ async function createClass(){
   if(!AUTH.isTeacher(u) && !addedTeacher){ AUTH.logReject&&AUTH.logReject("not_teacher"); return denied(AUTH.emailOf(u)); }
   if(whoami && !whoami.error) ME=whoami;
   el("app").style.display="block";
-  (function(){ var em=AUTH.emailOf(u)||"", nm=(u&&u.user_metadata&&(u.user_metadata.full_name||u.user_metadata.name))||em.split("@")[0];
+  (function(){ var em=AUTH.emailOf(u)||"", nm=em.split("@")[0]||"teacher";
     if(el("meName")) el("meName").textContent=nm; if(el("meIni")) el("meIni").textContent=(nm.split(/[\s._]+/).map(function(w){ return w.charAt(0); }).join("").slice(0,2)||"?").toUpperCase();
     var sw=el("clsSwitch"); if(sw&&!CUR) sw.setAttribute("open",""); renderNav(); })();
   loadClasses();
