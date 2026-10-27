@@ -36,6 +36,9 @@ isn't filled in.
     student-documents buttons linking to each course's Drive folder. AP CSP/Web3
     versions pending their document links.
   - `open-button.html` — generic configurable button (`?to=&label=&color=`).
+  - `buttons/` is the current location. The `open-*.html` copies in the site root are
+    legacy, kept only because older Schoology embeds may still point at them; don't
+    edit them or link to them from new pages.
 - `apcsp/`, `cyber1/`, `cyber2/`, `cyber3/`, `web3/` — one folder per course, each with:
   - `index.html` — course home (schedule, countdowns, quick links, resources)
   - `syllabus.html`, `vocab.html`, `vocab-data.js`, `news.html`, `profile.html`
