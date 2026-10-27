@@ -14,7 +14,7 @@
      .apply(id, mode)           mode "quiz" | "profile"; id null = Default
      .forCourse(course)         equipped skin id from the cosmetics cache
      .swatch(id)                small preview card HTML (shop)
-   Auto-apply: <script src="skins.js" data-auto="profile|quiz">
+   Auto-apply: <script src="js/skins.js" data-auto="profile|quiz">
    ========================================================================== */
 (function () {
   var SH = { pop: { r: 16, bw: 2, card: "4px 4px 0 var(--q-shadow)", btn: "0 4px 0 var(--q-shadow)", sel: "0 4px 0 var(--q-shadow)", opt: 14, up: 0 } };
@@ -42,8 +42,8 @@
       dark:  { bg:"#160f2b",panel:"#221640",panel2:"#2a1c4f",ink:"#faf5ff",ink2:"#e4dcf5",muted:"#b9acd9",rule:"#5b3fa8",rule2:"#3b2a66",accent:"#c4a5ff",accentBg:"#33215c",onAccent:"#160f2b",sel:"#a78bfa",onSel:"#160f2b",btn:"#facc15",onBtn:"#3b0f78",ok:"#86efac",okBg:"#163a26",bad:"#fca5a5",badBg:"#4a1d24",warn:"#fde68a",warnBg:"#3d3112",shadow:"transparent",hero:"linear-gradient(135deg,#4c1d95 0%,#7c3aed 50%,#c026d3 100%)" } }
   };
   var ORDER = [null, "s_cyber", "s_arcade", "s_quest", "s_ops", "s_sky", "s_mastermind"];
-  // 33.2: self-hosted (assets/fonts/fonts.css, same folder level as skins.js)
-  var FONT = (function () { var c = document.currentScript && document.currentScript.src; return c ? c.replace(/skins\.js(\?.*)?$/, "assets/fonts/fonts.css?v=35.0.0") : "/assets/fonts/fonts.css"; })();
+  // 33.2: self-hosted (assets/fonts/fonts.css, one folder up from js/skins.js)
+  var FONT = (function () { var c = document.currentScript && document.currentScript.src; return c ? c.replace(/skins\.js(\?.*)?$/, "../assets/fonts/fonts.css?v=35.0.0") : "/assets/fonts/fonts.css"; })();
 
   function font() {
     if (document.getElementById("skinFont") || document.querySelector('link[href*="assets/fonts/fonts.css"]')) return;

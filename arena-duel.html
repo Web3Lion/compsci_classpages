@@ -50,7 +50,7 @@ input.code:focus{outline:none;border-color:var(--amber);}
   if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { document.getElementById("view").innerHTML = '<div class="card">Open a Flag Duel from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C;
   document.getElementById("back").href = C + "/ctf.html";
-  var V = window.SITE_VERSION || "27.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "skins.js", "cosmetics.js", "battle-fx.js", "battle-bg.js", "arena-duel.js"];
+  var V = window.SITE_VERSION || "27.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "js/auth.js", "js/skins.js", "js/cosmetics.js", "js/battle-fx.js", "js/battle-bg.js", "js/arena-duel.js"];
   (function next(i){
     if (i >= list.length) return window.__fdBoot && window.__fdBoot();
     var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); };

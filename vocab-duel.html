@@ -54,7 +54,7 @@ html[data-motion="reduce"] .shake{animation:none;}
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   if (!VG[C]) { document.getElementById("view").innerHTML = '<div class="card">Open a Vocab Duel from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
-  var V = window.SITE_VERSION || "26.2.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js", "ko-fx.js"];
+  var V = window.SITE_VERSION || "26.2.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "js/auth.js", "js/battle-fx.js", "js/battle-bg.js", "js/ko-fx.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){

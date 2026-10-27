@@ -24,17 +24,18 @@ jobs:
         run: |
           set -e
           FOUND=""
+          # Keep this list identical to .gitignore.
+          # Root-only paths (/name in .gitignore):
           for p in \
-            "answers.local.js" "answers.js" \
             "claude only" "uploads" "scraps" "design-system" \
             "Canvas.dc.html" "Canvas-2.dc.html" "Test Day Duck Pond.html" \
-            "styles.css" "support.js" ".thumbnail" "CLAUDE.md" "github.md"; do
+            "styles.css" "support.js" ".thumbnail" "github.md"; do
             if [ -e "$p" ]; then FOUND="$FOUND|$p"; git rm -r -q --cached -- "$p"; rm -rf -- "$p"; fi
           done
-          # any answers file under any name or folder, plus _tmp_ working files
+          # Any folder: answers.js, answers*.local.js, _tmp_*
           while IFS= read -r f; do
             FOUND="$FOUND|$f"; git rm -q --cached -- "$f"; rm -f -- "$f"
-          done < <(git ls-files | grep -Ei '(^|/)answers[^/]*\.local\.js$|(^|/)_tmp_[^/]*$' || true)
+          done < <(git ls-files | grep -Ei '(^|/)answers\.js$|(^|/)answers[^/]*\.local\.js$|(^|/)_tmp_' || true)
           echo "found=$FOUND" >> "$GITHUB_OUTPUT"
 
       - name: Commit removal

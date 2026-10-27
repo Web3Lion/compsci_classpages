@@ -1,11 +1,27 @@
+# Private paths. Keep this list identical to the one in
+# .github/workflows/block-private-files.yml, which deletes them on every push
+# to main (GitHub web uploads ignore this file).
+
 # The answer key must never be deployed to GitHub Pages.
 # It is a local-only seed file: open answers.html, sign in as the teacher, and
 # use "Upload answer file" to push it into Supabase (sealed behind RLS + an
 # _is_teacher() gated RPC). After uploading you can delete your local copy.
+# Any name, any folder:
 answers.js
-answers.local.js
+answers*.local.js
+
+# Throwaway working files, any folder
+_tmp_*
 
 # Working files for Claude (source PDFs, extracted text, design scratch). Not part of the site.
-claude only/
-support.js
-.thumbnail
+/claude only/
+/uploads/
+/scraps/
+/design-system/
+/Canvas.dc.html
+/Canvas-2.dc.html
+/Test Day Duck Pond.html
+/styles.css
+/support.js
+/.thumbnail
+/github.md

@@ -81,7 +81,7 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 #tripCard:active{transform:translateY(2px) scale(.992);}
 </style>
 <script>window.CTF_COURSE=window.CTF_COURSE||"cyber2";</script>
-<script src="../skins.js?v=35.0.0" data-auto="profile"></script>
+<script src="../js/skins.js?v=35.0.0" data-auto="profile"></script>
 </head>
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
@@ -329,10 +329,10 @@ body,.card,.tab,.chip,.m-item,.q-opt,.btn{transition:background-color .25s ease,
 
 <script src="vocab-data.js?v=35.0.0"></script>
 <script src="../config.js?v=35.0.0"></script>
-<script src="../sheet-rows.js?v=35.0.0"></script>
-<script src="../competitions.js?v=35.0.0"></script>
+<script src="../js/sheet-rows.js?v=35.0.0"></script>
+<script src="../js/competitions.js?v=35.0.0"></script>
 <script>renderCompCard(document.getElementById("compCard"), "cyber2");</script>
-<script src="../resources.js"></script>
+<script src="../js/resources.js"></script>
 <script>
 const CFG = (window.COURSE_CONFIG && window.COURSE_CONFIG.cyber2) || {};
 const SHEET_ID = CFG.sheetId || "1QK16rbnhGoegU101VnkfikWIeu54L_eKm3zfNQnqbPU";
@@ -637,9 +637,9 @@ renderExam(); setInterval(renderExam, 60*60*1000);
 </script>
 <script>(function(){var K='course-theme',r=document.documentElement,b=document.getElementById('themeToggle');function lbl(){if(b)b.textContent=r.getAttribute('data-theme')==='light'?'◐ DARK':'◑ LIGHT';}window.__toggleTheme=function(){var t=r.getAttribute('data-theme')==='light'?'dark':'light';r.setAttribute('data-theme',t);try{localStorage.setItem(K,t);}catch(e){}lbl();};lbl();})();</script>
 <script src="../supabase-config.js?v=35.0.0"></script>
-<script src="../nemesis-intro.js?v=35.0.0"></script>
-<script src="../profile-link.js?v=35.0.0"></script>
-<script src="../quiz-notice.js?v=35.0.0"></script>
+<script src="../js/nemesis-intro.js?v=35.0.0"></script>
+<script src="../js/profile-link.js?v=35.0.0"></script>
+<script src="../js/quiz-notice.js?v=35.0.0"></script>
 <script>
 (function(){
   try { localStorage.setItem('__diag_cyber2', 'af307c1e58.html'); } catch(e){}

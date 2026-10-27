@@ -15,8 +15,8 @@
 
    Load AFTER supabase-config.js, auth.js, vocab-xp.js and vocab-log.js:
      <script src="../supabase-config.js"></script>
-     <script src="../auth.js"></script>
-     <script src="../practice-sync.js"></script>
+     <script src="../js/auth.js"></script>
+     <script src="../js/practice-sync.js"></script>
    ========================================================================== */
 (function () {
   var CFG = window.SUPABASE_CONFIG || {};

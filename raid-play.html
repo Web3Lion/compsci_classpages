@@ -43,7 +43,7 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
   var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase();
   if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { document.getElementById("view").innerHTML = '<div class="card">Open the raid from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
-  var V = window.SITE_VERSION || "28.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js", "raid-fx.js"];
+  var V = window.SITE_VERSION || "28.0.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "js/auth.js", "js/battle-fx.js", "js/battle-bg.js", "js/raid-fx.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){

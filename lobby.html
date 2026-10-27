@@ -50,7 +50,7 @@ input.ans{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:18px;
   var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase(), DEMO = q.get("demo") === "1";
   if (!/^(cyber1|cyber2|cyber3|apcsp|web3)$/.test(C)) { if (DEMO) C = "cyber1"; else { document.getElementById("view").innerHTML = '<div class="card">Open the waiting room from your course home page.</div>'; return; } }
   window.CTF_COURSE = C; document.getElementById("back").href = C + "/index.html"; document.getElementById("back").innerHTML = "&larr; Course home";
-  var V = window.SITE_VERSION || "29.2.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "auth.js", "battle-fx.js", "battle-bg.js"];
+  var V = window.SITE_VERSION || "29.2.0", list = ["config.js", "ctf-data/" + C + ".js", "supabase-config.js", "js/auth.js", "js/battle-fx.js", "js/battle-bg.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){
