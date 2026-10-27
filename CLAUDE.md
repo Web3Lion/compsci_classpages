@@ -78,6 +78,8 @@
   contrast in the new theme rather than reusing raw dark-mode hex values.
 
 ## Shared engine
+- Shared helper scripts live in `js/` (since 35.0.1). `site.js`, `config.js`, `supabase-config.js`
+  and `ctf.js` stay in the root. Pages load them by relative path (`../js/sync.js`).
 - `ctf.js` is loaded by all five courses' ctf.html/profile.html (cyber1, cyber2,
   cyber3, apcsp, web3) — badges, ranks, streaks, and the challenge engine are
   the same mechanics everywhere, just themed per course (e.g. flags are called

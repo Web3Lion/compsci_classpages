@@ -45,7 +45,7 @@ isn't filled in.
   - `ctf.html` — the course's Capture-the-Flag / challenge arena. All five courses
     have one, themed per course ("Bug Bounty" in AP CSP, "Block Hunter" in Web3).
   - `apcsp/packet-intro.js`, `web3/consensus-intro.js` — page-transition intros for
-    the non-cyber courses (cyber pages use `nemesis-intro.js`).
+    the non-cyber courses (cyber pages use `js/nemesis-intro.js`).
 - `simulators/` — standalone interactive teaching tools (one HTML file each), linked
   from the course pages' "Simulators" / "Class Links" cards. `simulators/index.html`
   is the simulators hub/directory.
@@ -69,6 +69,8 @@ isn't filled in.
 - `certificates.html` — printable certificates (module / weekly top 3 / course /
   duel champion / custom), one landscape page per student.
 - `answers.html` — teacher page for uploading `answers.local.js`.
+- `summit/` — `FFL-summit-mainpage.html` + `FFL-summit-2026-deck.html` (FFL Summit talk,
+  screenshots in `summit/assets/creation/`).
 - `summit/sru-summit.html` — Cyberspace K-12 Summit field-trip page (Cyber 1 + AP Cyber 2),
   linked from the announcement card on both course home pages.
 - `install-check.html` — setup + database + course-content check (needs
@@ -89,13 +91,18 @@ isn't filled in.
   answer-key toggles, Ultimate Flags active/inactive toggle (cyber1 & cyber2), squads,
   vocab lab, objectives, XP log, enrollment, integrity/cheat log, send rewards (to one
   student or a whole class) with an item log, settings.
-- `answers.local.js` — teacher-only answer key for text-entry flags, uploaded via
+- `claude only/answers.local.js` — teacher-only answer key for text-entry flags, uploaded via
   `answers.html`. **Gitignored — never commit it.**
-- `resources.js`, `objectives.js`, `standards.js`, `sync.js`, `auth.js`, `profile.js`,
-  `profile-link.js`, `practice-sync.js`, `vocab-log.js`, `vocab-xp.js`, `welcome.js`,
-  `nemesis-intro.js`, `name-filter.js`, `gate-art.js`, `csv.js`, `cipher.js`,
-  `cosmetics.js` (Coin Shop + leaderboard cosmetics), `duel-client.js` (student duel
-  pad) — shared helper scripts used across course pages.
+- `js/` — shared helper scripts used across pages: `auth.js`, `sync.js`, `profile.js`,
+  `profile-link.js`, `resources.js`, `objectives.js`, `standards.js`, `practice-sync.js`,
+  `vocab-log.js`, `vocab-xp.js`, `welcome.js`, `nemesis-intro.js`, `name-filter.js`,
+  `gate-art.js`, `csv.js`, `cipher.js`, `cosmetics.js` (Coin Shop + leaderboard
+  cosmetics), `skins.js` (quiz skins), `duel-client.js` (student duel pad), the battle
+  scripts (`arena-duel.js`, `battle-fx.js`, `battle-bg.js`, `bracket-tree.js`, `ko-fx.js`,
+  `raid-fx.js`, `team-picker.js`, `waiting-room.js`, `prize-roll.js`), and smaller
+  helpers (`binary-pool.js`, `click-log.js`, `competitions.js`, `image-slot.js`,
+  `progress-grid.js`, `quiz-notice.js`, `sheet-rows.js`). `site.js`, `config.js`,
+  `supabase-config.js` and `ctf.js` stay in the site root.
 - `site.js` — loaded in `<head>` on every page: `SITE_VERSION`, the A11Y panel
   (reduce motion, high contrast), skip link, focus styles.
   Script tags carry the release number as a cache tag (`?v=2.0.0`) — when you bump
@@ -112,7 +119,28 @@ isn't filled in.
   weekly top 3 to the Hall of Fame every Monday (replaces pg_cron, which the Supabase
   free tier lacks). Needs repo secrets `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`, plus
   `supabase/weekly-snapshot-auto.sql` installed.
-- `uploads/` — reference materials (CED PDFs, pasted images) used while building content.
+- `.github/workflows/block-private-files.yml` — deletes private files (answer key,
+  `claude only/`, `uploads/`, …) on every push to main, since GitHub web uploads ignore
+  `.gitignore`. Its list must match `.gitignore`.
+- `uploads/` — new curriculum uploads land here before moving into `claude only/uploads/`.
+  Gitignored, never deployed.
+- `assets/` — self-hosted fonts (`fonts/fonts.css`), logos and favicons (`logo/`), and
+  vendored libraries (`vendor/`: PeerJS, QR code).
+- `tools/` — Teacher Tools (games, timers, translator); `teacher_cyber_tools/` — cyber
+  teacher resources, linked from `teacher.html`; `directory.html` — searchable teacher
+  site map of every main page.
+- `mane-event/` — Mane Event live review game (`mane/` is its short link) plus its
+  connection test and `binary-questions.csv`.
+- `rewards/testday/` — Test Day Duck Pond. `reward.html` — Reward Big Top; `bingo-template.csv`
+  is its bingo CSV template.
+- Live class pages in the root: `arena-duel.html` (Flag Duels), `battle.html` (Team
+  Battles), `vocab-duel.html` / `vocab-battle.html`, `bracket.html` / `bracket-play.html`,
+  `raid.html` / `raid-play.html`, `lobby.html` (duel waiting room), `duel-watch.html`,
+  `quiz.html` (assigned vocab quizzes), `competitions.html` (cyber competitions), plus `privacy.html` and `terms.html`.
+- Redirect stubs kept for old links: `reward-spinner.html` → `carnival.html`,
+  `sru-summit.html` → `summit/sru-summit.html`.
+- `tools-dev/` — developer checks, not loaded by the site: `node tools-dev/check-links.mjs
+  --baseline tools-dev/link-baseline.txt` checks every local href/src and `?v=` tag.
 
 ## Rewards & items
 
