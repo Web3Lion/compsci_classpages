@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=35.0.0"></script>
+<script src="../site.js?v=36.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Mane Event</title>
-<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=35.0.0">
-<link href="../assets/fonts/fonts.css?v=35.0.0" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=36.0.0">
+<link href="../assets/fonts/fonts.css?v=36.0.0" rel="stylesheet">
 <style>
 :root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--gold2:#e6fff0;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
   --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
@@ -52,20 +52,27 @@ th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-
 td{padding:9px 8px;border-bottom:1px solid var(--border);}
 .pchip{font-size:14px;font-weight:700;padding:6px 12px;min-height:40px;border-radius:999px;border:2px solid currentColor;background:transparent;cursor:pointer;font-family:'Inter',sans-serif;}
 </style>
+<style>
+/* team themes: page always stays Lion Pride green/white; only team colours change */
+:root[data-mt="arcade"]:not([data-theme="light"]){--t0:#ff9ad8;--t1:#a8dcff;--t2:#e2ff8f;--t3:#ffc08a;--t4:#dcc4ff;--t5:#9ffff5;}
+:root[data-mt="arcade"][data-theme="light"]{--t0:#b0127a;--t1:#0b5fa8;--t2:#3f7200;--t3:#a84c00;--t4:#6b3fb5;--t5:#007a75;}
+:root[data-mt="elements"]:not([data-theme="light"]){--t0:#ffab8a;--t1:#a8d8ff;--t2:#f0dfa0;--t3:#fff27a;--t4:#c8fbff;--t5:#e3c4ff;}
+:root[data-mt="elements"][data-theme="light"]{--t0:#c2410c;--t1:#0b5cad;--t2:#6b4f1d;--t3:#8a6a00;--t4:#00798a;--t5:#7a3fb5;}
+</style>
 </head>
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
   <div id="hdr" style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:110px;">
-    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=35.0.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
+    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=36.0.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
     <h1 class="disp" style="margin:0;font-size:clamp(30px,5vw,44px);line-height:1.1;color:var(--bright);">Mane Event</h1>
     <p style="margin:6px 0 0;color:var(--muted);max-width:680px;">Live vocab and review battles. Students join with a code, get a random lion name, and nothing is saved anywhere except the host&rsquo;s own browser.</p>
   </div>
   <div id="view" aria-live="polite"></div>
 </div>
-<script src="../assets/vendor/peerjs.min.js?v=35.0.0"></script>
-<script src="../assets/vendor/qrcode.js?v=35.0.0"></script>
-<script src="../ko-fx.js?v=35.0.0"></script>
+<script src="../assets/vendor/peerjs.min.js?v=36.0.0"></script>
+<script src="../assets/vendor/qrcode.js?v=36.0.0"></script>
+<script src="../ko-fx.js?v=36.0.0"></script>
 <script>
 if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
   var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -80,7 +87,14 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
   var LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   var ADJ = ["Roaring","Golden","Mighty","Brave","Swift","Royal","Fierce","Clever","Bold","Noble","Savanna","Sunlit","Maned","Prowling","Pouncing","Proud"];
   var NOUN = ["Neuron","Byte","Photon","Proton","Atom","Comet","Pixel","Quark","Vector","Circuit","Galaxy","Fossil","Magnet","Prism","Nebula","Cipher","Helix","Orbit","Ion","Electron","Molecule","Crystal","Laser","Rocket","Quasar","Gene","Isotope","Kernel","Packet","Router"];
-  var TEAMS = ["Gold Pride","Crimson Pride","Azure Pride","Lime Pride","Violet Pride","Silver Pride"];
+  var THEMES = {
+    lion:     { name: "Lion Pride", teams: ["Gold Pride","Crimson Pride","Azure Pride","Lime Pride","Violet Pride","Silver Pride"] },
+    arcade:   { name: "Arcade",     teams: ["Neon Pink","Electric Blue","Laser Lime","Solar Orange","Ultra Violet","Cyber Cyan"] },
+    elements: { name: "Elements",   teams: ["Fire","Water","Earth","Lightning","Ice","Plasma"] }
+  };
+  var MT = "lion";
+  function teamNames(){ return (THEMES[MT] || THEMES.lion).teams; }
+  function applyTheme(t){ MT = THEMES[t] ? t : "lion"; document.documentElement.setAttribute("data-mt", MT); }
   var TYPES = [["shift","Shift"],["scramble","Scramble"],["reveal","Reveal"],["bank","Word bank"]];
   var HP = 12, HIT = 3, MISS = 1;   // 4 correct answers = knockout; a wrong answer costs a third of a hit
   var MINS = [5,10,15,20,30], QT = [[0,"No limit"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]];
@@ -162,10 +176,12 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
      ===================================================================== */
   function host(resume){
     var S = resume || { v: 1, code: "", phase: "setup", saved: now(), fseq: 0,
-      setup: { csv: "", types: { shift: 1, scramble: 1, reveal: 1, bank: 1 }, mode: "battle", teams: 2, assign: "random", minutes: 10, qtime: 30, format: "bo3" },
+      setup: { csv: "", theme: "lion", rcount: 10, rtime: 20, types: { shift: 1, scramble: 1, reveal: 1, bank: 1 }, mode: "battle", teams: 2, assign: "random", minutes: 10, qtime: 30, format: "bo3" },
       rows: [], players: {}, fights: {}, teamKO: [], feed: [], goAt: 0, endAt: 0, br: null };
     var HQ = [], lastCd = 0, CONN = {}, LAST = {}, LASTT = {}, peer = null, opened = false, tries = 0, dirty = true, lastDraw = 0, lastSave = 0, wake = null;
     if (!S.code) S.code = newCode();
+    S.setup.rcount = S.setup.rcount || 10; S.setup.rtime = S.setup.rtime || 20;
+    S.setup.theme = THEMES[S.setup.theme] ? S.setup.theme : "lion"; applyTheme(S.setup.theme);
     Object.keys(S.players).forEach(function(id){ S.players[id].up = false; S.players[id].downAt = now(); });
     Object.keys(S.fights).forEach(function(id){ var f = S.fights[id]; f.pause = 0; if (!f.between) newPrompt(f); });
     hdr.style.display = "none";
@@ -199,7 +215,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function save(force){ if (!force && now() - lastSave < 1000) return; lastSave = now(); S.saved = now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
     function send(id, o){ var c = CONN[id]; if (c && c.open) try { c.send(o); } catch (e) {} }
     function list(){ return Object.keys(S.players).map(function(k){ return S.players[k]; }); }
-    function upList(){ return list().filter(function(p){ return p.up; }); }
+    function upList(){ return list().filter(function(p){ return p.up && !p.left; }); }
     function pickName(){ var used = {}; list().forEach(function(p){ used[p.name] = 1; }); for (var i = 0; i < 300; i++) { var n = ADJ[rnd(ADJ.length)] + " " + NOUN[rnd(NOUN.length)]; if (!used[n]) return n; } return "Lion " + (list().length + 1); }
     function teamSizes(){ var z = []; for (var i = 0; i < S.setup.teams; i++) z.push(0); list().forEach(function(p){ if (p.team != null && p.team < S.setup.teams) z[p.team]++; }); return z; }
     function smallest(){ var z = teamSizes(), b = 0; z.forEach(function(n, i){ if (n < z[b]) b = i; }); return b; }
@@ -214,14 +230,32 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         if (!p) {
           if (list().length >= 80) { try { conn.send({ k: "full" }); } catch (e) {} return; }
           p = S.players[tok] = { id: tok, name: pickName(), team: null, ko: 0, out: false, rest: 0, fid: null, last: null, msg: "", dev: "" };
-          if (S.setup.mode === "battle") p.team = smallest();
+          if (S.setup.mode === "battle") { p.team = smallest(); if (S.phase === "countdown" || S.phase === "live") feed(p.name + " joined " + teamNames()[p.team], p.team); }
           else if (S.phase === "countdown" || S.phase === "live") { p.out = true; p.late = true; }
         }
-        p.up = true; p.dev = String(d.dev || "").slice(0, 30); conn._pid = tok; CONN[tok] = conn; LAST[tok] = "";
+        p.left = false; p.up = true; p.dev = String(d.dev || "").slice(0, 30); conn._pid = tok; CONN[tok] = conn; LAST[tok] = "";
         try { conn.send({ k: "hi" }); } catch (e) {}
         dirty = true; return;
       }
-      if (d.k === "ans" && conn._pid) answer(conn._pid, d);
+      if (d.k === "ans" && conn._pid) { if (S.setup.mode === "rush") rushAnswer(conn._pid, d); else answer(conn._pid, d); }
+      if (d.k === "forfeit" && conn._pid) forfeit(conn._pid, d.n);
+      if (d.k === "leave" && conn._pid) { leave(conn._pid); try { conn.close(); } catch (e) {} }
+    }
+    /* forfeit: battle/pool = the opponent gets the KO; bracket match = the whole match */
+    function forfeit(id, n){
+      var f = fightOf(id); if (!f || (n != null && n !== f.n && !f.between)) return;
+      var i = f.p.indexOf(id), P = S.players[id], W = S.players[f.p[1 - i]]; if (i < 0) return;
+      if (f.kind === "match") { var m = S.br.m[f.mid]; endFight(f); m.ff = 1; finishMatch(m, 1 - i); return; }
+      f.ff = 1; gameOver(f, 1 - i);
+    }
+    /* leave: forfeit anything live, settle a waiting bracket match, then drop out of pairing */
+    function leave(id){
+      var p = S.players[id]; if (!p) return;
+      if (S.phase === "setup" || S.phase === "lobby" || S.phase === "done") { delete S.players[id]; delete CONN[id]; dirty = true; return; }
+      if (p.fid) forfeit(id, null);
+      if (S.br && !p.out) Object.keys(S.br.m).forEach(function(k){ var m = S.br.m[k], j = m.p.indexOf(id); if (!m.winner && j >= 0 && m.p[1 - j]) { m.ff = 1; finishMatch(m, 1 - j); } });
+      p.left = true; if (S.setup.mode === "bracket") p.out = true; p.up = false; p.downAt = now(); delete CONN[id];
+      dirty = true;
     }
 
     /* ----- fights ----- */
@@ -288,7 +322,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       }
       endFight(f);
       W.rest = L.rest = t + 2500; W.last = L.id; L.last = W.id;
-      W.msg = "KO! You beat " + L.name + "."; L.msg = W.name + " got the KO. Next opponent coming up.";
+      W.msg = f.ff ? L.name + " forfeited. KO to you!" : "KO! You beat " + L.name + "."; L.msg = f.ff ? "You forfeited. " + W.name + " gets the KO." : W.name + " got the KO. Next opponent coming up.";
       if (f.kind === "battle") { W.ko++; S.teamKO[W.team] = (S.teamKO[W.team] || 0) + 1; feed(W.name + " KO\u2019d " + L.name, W.team); }
     }
 
@@ -310,21 +344,58 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function finishMatch(m, w){
       var t = now(), Wp = S.players[m.p[w]], Lp = S.players[m.p[1 - w]];
       m.winner = Wp.id; Lp.out = true; Lp.outR = m.r; Lp.rest = Wp.rest = t + 3500; Lp.last = Wp.id;
-      Lp.msg = "Eliminated by " + Wp.name + ". You\u2019re in the rematch pool now, so keep playing!";
-      Wp.msg = m.r === S.br.R - 1 ? "CHAMPION!" : "You win the match! On to the " + roundName(m.r + 1) + ".";
-      feed(Wp.name + " beat " + Lp.name + " (" + roundName(m.r) + ")", null);
+      Lp.msg = (m.ff ? "You forfeited to " + Wp.name + "." : "Eliminated by " + Wp.name + ".") + " You\u2019re in the rematch pool now, so keep playing!";
+      Wp.msg = (m.ff ? Lp.name + " forfeited. " : "") + (m.r === S.br.R - 1 ? "KING OF THE PRIDE!" : "You win the match! On to the " + roundName(m.r + 1) + ".");
+      feed(Wp.name + (m.ff ? " advances (" + Lp.name + " forfeited)" : " beat " + Lp.name) + " \u00b7 " + roundName(m.r), null); m.ff = 0;
       dirty = true; advance(m);
     }
 
     /* ----- phases ----- */
+    /* ----- Roar Rush: everyone answers the same question; faster correct answers score more ----- */
+    function rushT(){ return (S.setup.rtime || 20) * 1000; }
+    function rushStart(){
+      var R0 = S.rush; newPrompt(R0.f); R0.f.endsAt = now() + rushT(); R0.f.next = now() + Math.max(2500, rushT() / 8);
+      R0.qi++; R0.phase = "q"; R0.ans = {}; R0.revealAt = 0; dirty = true; save(true);
+    }
+    function rushAnswer(id, d){
+      var R0 = S.rush, f = R0 && R0.f, p = S.players[id], t = now(); if (!f || R0.phase !== "q" || d.n !== f.n || !p) return;
+      var A = R0.ans[id] || (R0.ans[id] = { ok: 0, lock: 0, tries: 0, last: 0 });
+      if (A.ok || A.lock || t - A.last < 400) return; A.last = t; A.tries++;
+      if (alts(S.rows[f.row].a).indexOf(norm(String(d.a || "").slice(0, 100))) >= 0) {
+        p.streak = (p.streak || 0) + 1;
+        A.ok = 1; A.pts = Math.round(500 + 500 * Math.max(0, f.endsAt - t) / rushT()) + (p.streak >= 3 ? 100 : 0); A.at = t;
+        p.score = (p.score || 0) + A.pts;
+      } else { send(id, { k: "bad" }); if (f.mode === "bank") A.lock = 1; }
+      dirty = true;
+    }
+    function rushIn(){ return upList(); }
+    function rushTick(t){
+      var R0 = S.rush, f = R0.f; if (R0.phase !== "q") return;
+      var ps = rushIn(), done = ps.length && ps.every(function(p){ var A = R0.ans[p.id]; return A && (A.ok || A.lock); });
+      if (t >= f.endsAt || done) return rushReveal();
+      if (f.mode === "reveal" && t >= f.next) {
+        var dd = disp(S.rows[f.row].a), hid = [];
+        dd.split("").forEach(function(ch, j){ if (/[a-z0-9]/i.test(ch) && f.rev.indexOf(j) < 0) hid.push(j); });
+        if (hid.length > 1) { f.rev.push(hid[rnd(hid.length)]); dirty = true; }
+        f.next = t + Math.max(2500, rushT() / 8);
+      }
+    }
+    function rushReveal(){
+      var R0 = S.rush; R0.phase = "reveal"; R0.revealAt = now();
+      list().forEach(function(p){ var A = R0.ans[p.id]; p.lastPts = A && A.ok ? A.pts : 0; if (!(A && A.ok)) p.streak = 0; });
+      KS("horn"); dirty = true; save(true);
+    }
+    function rushBoard(){ return list().filter(function(p){ return !p.left || p.score; }).sort(function(a, b){ return (b.score || 0) - (a.score || 0); }); }
+    function rushPlace(id){ return rushBoard().map(function(p){ return p.id; }).indexOf(id) + 1; }
     function startGame(){
       var t = now(); S.phase = "countdown"; S.goAt = t + 5000; S.feed = []; S.fights = {}; S.br = null;
-      list().forEach(function(p){ p.ko = 0; p.out = false; p.outR = null; p.rest = 0; p.fid = null; p.last = null; p.late = false; });
+      list().forEach(function(p){ p.score = 0; p.lastPts = 0; p.streak = 0; p.ko = 0; p.out = false; p.outR = null; p.rest = 0; p.fid = null; p.last = null; p.late = false; });
       dirty = true; save(true);
     }
     function goLive(){
       var t = now(); S.phase = "live";
       if (S.setup.mode === "battle") { S.endAt = t + S.setup.minutes * 60000; S.teamKO = teamSizes().map(function(){ return 0; }); }
+      else if (S.setup.mode === "rush") { S.rush = { f: { used: [], n: 0, lock: [0, 0] }, qi: 0, total: Math.min(S.setup.rcount || 10, S.rows.length), phase: "q", ans: {} }; rushStart(); }
       else { var ids = upList().map(function(p){ return p.id; }); list().forEach(function(p){ if (!p.up) { p.out = true; p.late = true; } }); buildBracket(ids); }
       lastCd = 0; KS("horn");
       try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function(w){ wake = w; }).catch(function(){}); } catch (e) {}
@@ -376,7 +447,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
             f.next = t + 3000;
           }
         });
-        if (S.phase === "live") pair(t);
+        if (S.phase === "live") { if (S.setup.mode === "rush") rushTick(t); else pair(t); }
       }
       music();
       pushAll(t);
@@ -408,17 +479,28 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
 
     /* ----- what each student sees ----- */
     function viewFor(id, t){
-      var p = S.players[id], v = { s: "", name: p.name, team: p.team, tn: p.team != null && S.setup.mode === "battle" ? TEAMS[p.team] : null, mode: S.setup.mode, T: {} };
-      v.kev = p.kev || null;
+      var p = S.players[id], v = { s: "", name: p.name, team: p.team, tn: p.team != null && S.setup.mode === "battle" ? teamNames()[p.team] : null, mode: S.setup.mode, T: {} };
+      v.kev = p.kev || null; v.th = S.setup.theme;
       if (S.phase === "setup" || S.phase === "lobby") { v.s = "lobby"; return v; }
       if (S.phase === "countdown") { v.s = "cd"; v.T.left = S.goAt - t; return v; }
       if (S.phase === "done") {
         v.s = "done";
-        if (S.setup.mode === "battle") { var st = standings(); v.win = st.length ? TEAMS[st[0].i] : ""; v.place = st.map(function(x){ return x.i; }).indexOf(p.team) + 1; v.ko = p.ko; }
+        if (S.setup.mode === "rush") { v.place = rushPlace(id); v.of = rushBoard().length; v.score = p.score || 0; v.champ = (rushBoard()[0] || {}).name || ""; }
+        else if (S.setup.mode === "battle") { var st = standings(); v.win = st.length ? teamNames()[st[0].i] : ""; v.place = st.map(function(x){ return x.i; }).indexOf(p.team) + 1; v.ko = p.ko; }
         else { v.champ = S.br && S.br.champ ? S.players[S.br.champ].name : ""; v.place = placeOf(id); }
         return v;
       }
       v.ko = p.ko;
+      if (S.setup.mode === "rush" && S.rush) {
+        var R0 = S.rush, rf = R0.f, A = R0.ans[id] || {};
+        v.score = p.score || 0; v.place = rushPlace(id); v.of = rushBoard().length; v.qi = R0.qi; v.total = R0.total;
+        if (R0.phase === "q") {
+          v.s = "rushq"; v.ok = !!A.ok; v.pts = A.pts || 0;
+          if (!A.ok) { v.f = { n: rf.n, kind: "rush", q: S.rows[rf.row].q, m: rf.mode, len: rf.len, lock: !!A.lock, pz: rf.mode === "reveal" ? mask(rf) : rf.pz }; if (rf.shift) v.f.k = rf.shift; if (rf.opts) v.f.opts = rf.opts; }
+          v.T.left = rf.endsAt - t; v.T.full = rushT();
+        } else { v.s = "rushr"; v.ok = !!A.ok; v.pts = A.pts || 0; v.a = disp(S.rows[rf.row].a); v.streak = p.streak || 0; }
+        return v;
+      }
       var f = fightOf(id);
       if (f) {
         var i = f.p.indexOf(id), o = 1 - i, op = S.players[f.p[o]], F = { n: f.n, opp: op.name, ot: op.team, kind: f.kind, hp: [f.hp[i], f.hp[o]] };
@@ -452,6 +534,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var a = b.getAttribute("data-act"), val = b.getAttribute("data-v"), st = S.setup;
       if (a === "type") st.types[val] = st.types[val] ? 0 : 1;
       else if (a === "mode") st.mode = val;
+      else if (a === "theme") { st.theme = val; applyTheme(val); }
       else if (a === "teams") { st.teams = +val; list().forEach(function(p){ if (p.team != null && p.team >= st.teams) p.team = null; }); list().forEach(function(p){ if (p.team == null && st.mode === "battle") p.team = smallest(); }); }
       else if (a === "assign") st.assign = val;
       else if (a === "minutes") st.minutes = +val;
@@ -468,10 +551,14 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (a === "setup") S.phase = "setup";
       else if (a === "shuffle") deal();
       else if (a === "pteam") { var p = S.players[val]; if (p) p.team = ((p.team || 0) + 1) % st.teams; }
-      else if (a === "kick") { var pk = S.players[val]; if (pk && confirm("Remove " + pk.name + "?")) { send(val, { k: "kicked" }); delete S.players[val]; if (CONN[val]) { try { CONN[val].close(); } catch (er) {} delete CONN[val]; } } }
+      else if (a === "kick") { var pk = S.players[val]; if (pk && confirm("Remove " + pk.name + "?" + (S.phase === "live" ? " Anything they are playing counts as a forfeit." : ""))) { send(val, { k: "kicked" }); var kc = CONN[val]; leave(val); if (S.phase !== "live" && S.phase !== "countdown") delete S.players[val]; if (kc) { try { kc.close(); } catch (er) {} } } }
       else if (a === "start") startGame();
       else if (a === "snd") { if (window.KO_FX) KO_FX.setSound(!KO_FX.soundOn()); }
       else if (a === "mus") { if (window.KO_FX) KO_FX.setMusic(!KO_FX.musicOn()); }
+      else if (a === "rnext") { if (S.rush && S.rush.phase === "reveal") { if (S.rush.qi >= S.rush.total) endGame(); else rushStart(); } }
+      else if (a === "rnow") { if (S.rush && S.rush.phase === "q") rushReveal(); }
+      else if (a === "rcount") st.rcount = +val;
+      else if (a === "rtime") st.rtime = +val;
       else if (a === "end") { if (!confirm("End the game now?")) return; if (S.setup.mode === "bracket" && S.br) S.br.ended = true; endGame(); }
       else if (a === "again") { S.phase = "lobby"; S.br = null; S.feed = []; list().forEach(function(p){ if (!p.up) delete S.players[p.id]; }); save(true); }
       else if (a === "finish") { if (!confirm("Close the game and erase it from this browser?")) return; try { localStorage.removeItem(KEY); } catch (er) {} Object.keys(CONN).forEach(function(id){ send(id, { k: "closed" }); }); setTimeout(function(){ peer.destroy(); location.href = location.pathname; }, 400); return; }
@@ -491,16 +578,26 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     }
     function chips(act, opts, cur){ return '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + opts.map(function(o){ return '<button type="button" class="chip" data-act="' + act + '" data-v="' + o[0] + '" aria-pressed="' + (String(cur) === String(o[0])) + '">' + esc(o[1]) + '</button>'; }).join("") + '</div>'; }
     function sec(title, body, note){ return '<div style="display:flex;flex-direction:column;gap:10px;"><div style="font-weight:700;color:var(--bright);">' + title + '</div>' + body + (note ? '<div style="font-size:13px;color:var(--dim);">' + note + '</div>' : '') + '</div>'; }
+    var QRMINI = { code: "", svg: "" };
+    function miniJoin(){
+      if (QRMINI.code !== S.code) { var q = qrcode(0, "M"); q.addData(location.origin + location.pathname + "?code=" + S.code); q.make(); QRMINI = { code: S.code, svg: q.createSvgTag({ cellSize: 3, margin: 0, scalable: false }) }; }
+      return '<div style="display:flex;gap:12px;align-items:center;border:1px solid var(--border3);border-radius:12px;padding:8px 12px;background:var(--panel);">' +
+        '<div style="background:#fff;padding:6px;border-radius:8px;line-height:0;">' + QRMINI.svg + '</div>' +
+        '<div><div class="lbl" style="font-size:11px;">Late? Join at</div><div class="mono" style="font-size:13px;font-weight:700;color:var(--bright);word-break:break-all;">' + esc(SHORT) + '</div>' +
+        '<div class="mono" style="font-size:30px;font-weight:800;letter-spacing:5px;color:var(--gold);line-height:1.1;">' + S.code + '</div></div></div>';
+    }
     function codeCard(){
       var url = location.origin + location.pathname + "?code=" + S.code, qr = qrcode(0, "H"); qr.addData(url); qr.make();
       return '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">' +
-        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=35.0.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
+        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=36.0.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
         '<div style="flex:1;min-width:240px;"><div class="lbl">Join code</div>' +
           '<div class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);margin:2px 0 4px;">\u25CF LIVE \u00B7 students can join</div>' +
           '<div class="mono" style="font-size:clamp(48px,9vw,84px);font-weight:800;letter-spacing:10px;color:var(--gold);line-height:1.05;">' + S.code + '</div>' +
           '<div style="color:var(--muted);margin-top:6px;">Go to</div><div class="mono" style="font-size:clamp(18px,2.6vw,26px);font-weight:800;color:var(--bright);word-break:break-all;">' + esc(SHORT) + '</div><div style="color:var(--muted);margin-top:2px;">and type the code, or scan the QR code.</div></div></div>';
     }
     function tickText(t){
+      var rt = document.getElementById("hRushT"), rb = document.getElementById("hRushB");
+      if (rt && S.rush && S.rush.phase === "q") { var lf = Math.max(0, S.rush.f.endsAt - t); rt.textContent = Math.ceil(lf / 1000); if (rb) rb.style.width = (lf / rushT() * 100) + "%"; }
       var a = document.getElementById("hTimer"); if (a && S.phase === "live" && S.setup.mode === "battle") a.textContent = clock(S.endAt - t);
       var c = document.getElementById("hCd"); if (c) { var cn = Math.max(1, Math.ceil((S.goAt - t) / 1000)); if (cn !== lastCd) { lastCd = cn; KS("tick"); } c.textContent = cn; }
       var n = document.getElementById("hCount"); if (n) n.textContent = upList().length;
@@ -519,7 +616,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       if (S.phase === "setup") h = drawSetup();
       else if (S.phase === "lobby") h = drawLobby();
       else if (S.phase === "countdown") h = '<div class="card" style="text-align:center;padding:60px 20px;"><div class="lbl">Get ready</div><div class="disp" id="hCd" style="font-size:clamp(120px,22vw,240px);font-weight:800;color:var(--gold);line-height:1;">5</div><div style="color:var(--muted);font-size:20px;">' + upList().length + ' player' + (upList().length === 1 ? '' : 's') + '</div></div>';
-      else if (S.phase === "live") h = S.setup.mode === "battle" ? drawBattle(t) : drawBracket(t);
+      else if (S.phase === "live") h = S.setup.mode === "battle" ? drawBattle(t) : S.setup.mode === "rush" ? drawRush(t) : drawBracket(t);
       else h = drawDone();
       view.innerHTML = h; tickText(t); if (S.phase === "setup") csvInfo(); flushKO();
     }
@@ -532,14 +629,19 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           '<div id="csvInfo" style="font-size:14px;color:var(--muted);"></div>' +
           '<div style="font-size:13px;color:var(--dim);">You can paste straight from Google Sheets. The file stays in this browser and is never uploaded.</div></div>' +
         '<div class="card" style="display:flex;flex-direction:column;gap:20px;"><div class="lbl" style="color:var(--gold);">2 \u00b7 Game</div>' +
+          sec("Team theme", chips("theme", Object.keys(THEMES).map(function(k){ return [k, THEMES[k].name]; }), st.theme) +
+            '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + teamNames().map(function(nm, i){ return '<span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;border:2px solid ' + tc(i) + ';color:' + tc(i) + ';' + (st.mode === "battle" && i >= st.teams ? 'opacity:.35;' : '') + '">' + esc(nm) + '</span>'; }).join("") + '</div>',
+            "Sets the team names and colours. Students see the same teams.") +
           sec("Puzzle types", '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + TYPES.map(function(x){ return '<button type="button" class="chip" data-act="type" data-v="' + x[0] + '" aria-pressed="' + !!st.types[x[0]] + '">' + x[1] + '</button>'; }).join("") + '</div>',
             "Each question uses one ticked type at random. <b>Shift</b>: letters moved forward in the alphabet. <b>Scramble</b>: letters mixed up. <b>Reveal</b>: blanks that fill in over time. <b>Word bank</b>: pick from 4. Answers that are very short or long are typed instead.") +
-          sec("Mode", chips("mode", [["battle","Class battle"],["bracket","Bracket"]], st.mode),
-            st.mode === "battle" ? "Teams fight rotating 1v1s until the clock runs out. 4 correct answers = a knockout. Team score = KOs per player." : "Single elimination. Knocked-out players drop into a rematch pool and keep playing.") +
-          (st.mode === "battle"
+          sec("Mode", chips("mode", [["battle","Class battle"],["bracket","King of the Pride"],["rush","Roar Rush"]], st.mode),
+            st.mode === "rush" ? "The whole class answers the same question at once. Correct answers score 500\u20131,000 points, more for faster answers, +100 on a 3-in-a-row streak. The leaderboard shows after each question." : st.mode === "battle" ? "Teams fight rotating 1v1s until the clock runs out. 4 correct answers = a knockout. Team score = KOs per player." : "King of the Pride: a single-elimination bracket. Knocked-out players drop into a rematch pool and keep playing.") +
+          (st.mode === "rush"
+            ? sec("Questions", chips("rcount", [[10,"10"],[15,"15"],[20,"20"],[30,"30"]], st.rcount || 10)) + sec("Time per question", chips("rtime", [[10,"10 s"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.rtime || 20))
+            : st.mode === "battle"
             ? sec("Teams", chips("teams", [[2,"2"],[3,"3"],[4,"4"],[5,"5"],[6,"6"]], st.teams)) + sec("Team assignment", chips("assign", [["random","Random"],["manual","I\u2019ll assign"]], st.assign)) + sec("Length", chips("minutes", MINS.map(function(m){ return [m, m + " min"]; }), st.minutes))
             : sec("Match format", chips("format", FORMATS, st.format), st.format === "sd" ? "5 questions, most correct wins. Ties go to overtime: next point wins." : "Each game is a 4-hit knockout. First to " + need() + " games wins the match.")) +
-          sec("Time per question", chips("qtime", QT, st.qtime)) +
+          (st.mode === "rush" ? "" : sec("Time per question", chips("qtime", QT, st.qtime))) +
           '<div><button class="btn" data-act="lobby" disabled>Open lobby \u2192</button></div></div>' +
       '</div>';
     }
@@ -549,12 +651,12 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         '<button type="button" data-act="kick" data-v="' + esc(p.id) + '" aria-label="Remove ' + esc(p.name) + '" style="background:none;border:0;color:var(--dim);cursor:pointer;min-width:32px;min-height:40px;font-size:16px;">\u00d7</button></span>';
     }
     function drawLobby(){
-      var st = S.setup, ps = list(), ups = upList(), z = teamSizes();
+      var st = S.setup, ps = list().filter(function(p){ return !p.left; }), ups = upList(), z = teamSizes();
       var upTeams = {}; ups.forEach(function(p){ if (p.team != null) upTeams[p.team] = 1; });
-      var ready = ups.length >= 2 && (st.mode !== "battle" || Object.keys(upTeams).length >= 2);
-      var summary = (st.mode === "battle" ? "Class battle \u00b7 " + st.teams + " teams \u00b7 " + st.minutes + " min" : "Bracket \u00b7 " + FORMATS.filter(function(f){ return f[0] === st.format; })[0][1]) + " \u00b7 " + S.rows.length + " questions \u00b7 " + (st.qtime ? st.qtime + " s per question" : "no time limit");
+      var ready = st.mode === "rush" ? ups.length >= 1 : ups.length >= 2 && (st.mode !== "battle" || Object.keys(upTeams).length >= 2);
+      var summary = (st.mode === "rush" ? "Roar Rush \u00b7 " + Math.min(st.rcount || 10, S.rows.length) + " questions \u00b7 " + (st.rtime || 20) + " s each" : st.mode === "battle" ? "Class battle \u00b7 " + st.teams + " teams \u00b7 " + st.minutes + " min" : "King of the Pride \u00b7 " + FORMATS.filter(function(f){ return f[0] === st.format; })[0][1]) + (st.mode === "rush" ? "" : " \u00b7 " + S.rows.length + " questions \u00b7 " + (st.qtime ? st.qtime + " s per question" : "no time limit"));
       var players = st.mode === "battle"
-        ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">' + z.map(function(n, i){ return '<div style="border:2px solid ' + tc(i) + ';border-radius:14px;padding:12px;"><div style="font-weight:800;color:' + tc(i) + ';margin-bottom:8px;">' + TEAMS[i] + ' \u00b7 ' + n + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.filter(function(p){ return p.team === i; }).map(function(p){ return pchip(p, true); }).join("") + '</div></div>'; }).join("") + '</div>'
+        ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">' + z.map(function(n, i){ return '<div style="border:2px solid ' + tc(i) + ';border-radius:14px;padding:12px;"><div style="font-weight:800;color:' + tc(i) + ';margin-bottom:8px;">' + teamNames()[i] + ' \u00b7 ' + n + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.filter(function(p){ return p.team === i; }).map(function(p){ return pchip(p, true); }).join("") + '</div></div>'; }).join("") + '</div>'
         : '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.map(function(p){ return pchip(p, false); }).join("") + '</div>';
       return codeCard() +
         '<div class="card" style="margin-top:16px;display:flex;flex-direction:column;gap:14px;">' +
@@ -568,14 +670,14 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     }
     function fightBox(f, big){
       var A = S.players[f.p[0]], B = S.players[f.p[1]], bat = S.setup.mode === "battle" && f.kind === "battle";
-      function side(P, i){ return '<div style="min-width:0;"><div style="font-weight:800;color:' + (bat ? tc(P.team) : "var(--bright)") + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(P.name) + (P.up ? '' : ' \u00b7 away') + '</div>' + (f.sd ? '<div class="mono" style="font-weight:800;color:var(--gold);">' + f.pts[i] + ' pts</div>' : hpBar(f.hp[i])) + '</div>'; }
+      function side(P, i){ return '<div style="min-width:0;"><div style="font-weight:800;color:' + (bat ? tc(P.team) : "var(--bright)") + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(P.name) + (P.left ? ' \u00b7 left' : P.up ? '' : ' \u00b7 away') + '</div>' + (f.sd ? '<div class="mono" style="font-weight:800;color:var(--gold);">' + f.pts[i] + ' pts</div>' : hpBar(f.hp[i])) + '</div>'; }
       return '<div style="border:1px solid var(--border3);border-radius:12px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;background:var(--panel2);">' + side(A, 0) + '<div class="mono" style="font-size:12px;color:var(--dim);text-align:center;">' + (f.sd ? 'Q' + Math.min(f.q + 1, 99) : 'VS') + '</div>' + side(B, 1) + '</div>';
     }
     function drawBattle(t){
       var st = standings(), fs = Object.keys(S.fights).map(function(k){ return S.fights[k]; }), waiting = upList().filter(function(p){ return !p.fid; }).length;
       var top = list().filter(function(p){ return p.ko; }).sort(function(a, b){ return b.ko - a.ko; }).slice(0, 5);
-      return '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">Class battle \u00b7 code ' + S.code + '</div><div class="mono" id="hTimer" style="font-size:clamp(44px,8vw,72px);font-weight:800;color:var(--gold);line-height:1;">' + clock(S.endAt - t) + '</div></div><div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>' +
-        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;margin-bottom:16px;">' + st.map(function(x, r){ return '<div class="card" style="border:2px solid ' + tc(x.i) + ';padding:16px;"><div class="mono" style="font-size:12px;color:var(--dim);">#' + (r + 1) + '</div><div style="font-weight:800;color:' + tc(x.i) + ';font-size:18px;">' + TEAMS[x.i] + '</div><div class="mono" style="font-size:34px;font-weight:800;color:var(--bright);">' + x.score.toFixed(2) + '</div><div style="font-size:13px;color:var(--muted);">' + x.ko + ' KO' + (x.ko === 1 ? '' : 's') + ' \u00b7 ' + x.n + ' player' + (x.n === 1 ? '' : 's') + '</div></div>'; }).join("") + '</div>' +
+      return '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">Class battle \u00b7 code ' + S.code + '</div><div class="mono" id="hTimer" style="font-size:clamp(44px,8vw,72px);font-weight:800;color:var(--gold);line-height:1;">' + clock(S.endAt - t) + '</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;margin-bottom:16px;">' + st.map(function(x, r){ return '<div class="card" style="border:2px solid ' + tc(x.i) + ';padding:16px;"><div class="mono" style="font-size:12px;color:var(--dim);">#' + (r + 1) + '</div><div style="font-weight:800;color:' + tc(x.i) + ';font-size:18px;">' + teamNames()[x.i] + '</div><div class="mono" style="font-size:34px;font-weight:800;color:var(--bright);">' + x.score.toFixed(2) + '</div><div style="font-size:13px;color:var(--muted);">' + x.ko + ' KO' + (x.ko === 1 ? '' : 's') + ' \u00b7 ' + x.n + ' player' + (x.n === 1 ? '' : 's') + '</div></div>'; }).join("") + '</div>' +
         '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;" class="bgrid">' +
           '<div class="card"><div class="lbl" style="margin-bottom:10px;">Live fights \u00b7 ' + fs.length + (waiting ? ' \u00b7 ' + waiting + ' waiting' : '') + '</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:10px;">' + (fs.length ? fs.map(function(f){ return fightBox(f); }).join("") : '<p style="margin:0;color:var(--dim);">Pairing players\u2026</p>') + '</div></div>' +
           '<div class="card"><div class="lbl" style="margin-bottom:10px;">Knockouts</div>' + (S.feed.length ? S.feed.map(function(x){ return '<div style="padding:6px 0;border-bottom:1px solid var(--border);color:' + tc(x.team) + ';font-weight:700;">' + esc(x.txt) + '</div>'; }).join("") : '<p style="margin:0;color:var(--dim);">No KOs yet.</p>') +
@@ -585,7 +687,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function matchBox(m){
       var b = S.br, f = null;
       Object.keys(S.fights).forEach(function(k){ if (S.fights[k].mid === m.k) f = S.fights[k]; });
-      function nm(i){ var id = m.p[i]; if (!id) return '<span style="color:var(--dim);">' + (m.r === 0 ? 'bye' : '\u2014') + '</span>'; var P = S.players[id]; return '<span style="font-weight:' + (m.winner === id ? 800 : 600) + ';color:' + (m.winner && m.winner !== id ? 'var(--dim)' : 'var(--bright)') + ';' + (m.winner && m.winner !== id ? 'text-decoration:line-through;' : '') + '">' + esc(P.name) + (P.up ? '' : ' \u00b7 away') + '</span>'; }
+      function nm(i){ var id = m.p[i]; if (!id) return '<span style="color:var(--dim);">' + (m.r === 0 ? 'bye' : '\u2014') + '</span>'; var P = S.players[id]; return '<span style="font-weight:' + (m.winner === id ? 800 : 600) + ';color:' + (m.winner && m.winner !== id ? 'var(--dim)' : 'var(--bright)') + ';' + (m.winner && m.winner !== id ? 'text-decoration:line-through;' : '') + '">' + esc(P.name) + (P.left ? ' \u00b7 left' : P.up ? '' : ' \u00b7 away') + '</span>'; }
       function sc(i){ return b && S.setup.format !== "sd" && !m.bye ? '<span class="mono" style="color:var(--gold);font-weight:800;">' + m.wins[i] + '</span>' : (S.setup.format === "sd" && f ? '<span class="mono" style="color:var(--gold);font-weight:800;">' + f.pts[i] + '</span>' : ''); }
       return '<div style="border:' + (f ? '2px solid var(--gold)' : '1px solid var(--border3)') + ';border-radius:10px;padding:8px 10px;background:var(--panel2);display:flex;flex-direction:column;gap:4px;font-size:14px;">' +
         '<div style="display:flex;justify-content:space-between;gap:8px;">' + nm(0) + sc(0) + '</div><div style="display:flex;justify-content:space-between;gap:8px;">' + nm(1) + sc(1) + '</div>' +
@@ -595,22 +697,56 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var b = S.br, cols = "";
       for (var r = 0; r < b.R; r++) { var ms = []; for (var s = 0; s < b.size >> (r + 1); s++) ms.push(b.m[r + ":" + s]); cols += '<div style="display:flex;flex-direction:column;justify-content:space-around;gap:10px;min-width:190px;"><div class="lbl" style="text-align:center;">' + roundName(r) + '</div>' + ms.map(matchBox).join("") + '</div>'; }
       var pool = list().filter(function(p){ return p.out && p.up; }), pf = Object.keys(S.fights).filter(function(k){ return S.fights[k].kind === "pool"; }).length;
-      return '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">Bracket \u00b7 code ' + S.code + '</div><div class="disp" style="font-size:clamp(28px,4vw,40px);font-weight:800;color:var(--gold);line-height:1.1;">' + esc(FORMATS.filter(function(f){ return f[0] === S.setup.format; })[0][1]) + '</div></div><div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>' +
+      return '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">King of the Pride \u00b7 code ' + S.code + '</div><div class="disp" style="font-size:clamp(28px,4vw,40px);font-weight:800;color:var(--gold);line-height:1.1;">' + esc(FORMATS.filter(function(f){ return f[0] === S.setup.format; })[0][1]) + '</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>' +
         '<div class="card" style="overflow-x:auto;"><div style="display:flex;gap:18px;min-width:min-content;">' + cols + '</div></div>' +
         '<div class="card" style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;"><div style="flex:1;min-width:240px;"><div class="lbl">Rematch pool</div><div style="color:var(--muted);">' + pool.length + ' eliminated players still playing \u00b7 ' + pf + ' pool fights live. Pool games don\u2019t change the bracket.</div></div>' +
           (S.feed.length ? '<div style="flex:1;min-width:240px;">' + S.feed.slice(0, 4).map(function(x){ return '<div style="font-size:14px;color:var(--bright);">' + esc(x.txt) + '</div>'; }).join("") + '</div>' : '') + '</div>';
     }
+    function boardRows(ps, withLast){
+      return ps.map(function(p, i){ return '<div style="display:grid;grid-template-columns:44px minmax(0,1fr) auto' + (withLast ? ' 70px' : '') + ';gap:10px;align-items:center;padding:8px 12px;border-radius:10px;background:' + (i < 3 ? 'var(--panel2)' : 'transparent') + ';border:1px solid ' + (i < 3 ? 'var(--border3)' : 'var(--border)') + ';">' +
+        '<span class="mono" style="font-weight:800;color:' + (i < 3 ? 'var(--gold)' : 'var(--dim)') + ';font-size:18px;">' + (i + 1) + '</span>' +
+        '<span style="font-weight:700;color:var(--bright);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(p.name) + (p.left ? ' <span style="color:var(--dim);font-weight:500;">\u00b7 left</span>' : '') + '</span>' +
+        '<span class="mono" style="font-weight:800;color:var(--bright);font-size:18px;">' + (p.score || 0).toLocaleString() + '</span>' +
+        (withLast ? '<span class="mono" style="font-size:14px;color:' + (p.lastPts ? 'var(--ok)' : 'var(--dim)') + ';text-align:right;">' + (p.lastPts ? '+' + p.lastPts : '\u2014') + '</span>' : '') + '</div>'; }).join("");
+    }
+    function drawRush(t){
+      var R0 = S.rush, f = R0.f, row = S.rows[f.row], ps = rushIn(), got = ps.filter(function(p){ var A = R0.ans[p.id]; return A && A.ok; }).length, tried = ps.filter(function(p){ return R0.ans[p.id]; }).length;
+      var head = '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">Roar Rush \u00b7 code ' + S.code + '</div><div class="disp" style="font-size:clamp(28px,4vw,40px);font-weight:800;color:var(--gold);line-height:1.1;">Question ' + R0.qi + ' of ' + R0.total + '</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>';
+      if (R0.phase === "q") {
+        var pz = "";
+        if (f.mode === "shift") pz = '<div class="mono" style="font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:6px;color:var(--gold);">' + esc(f.pz) + '</div><div class="mono" style="color:var(--muted);">SHIFT \u00b7 move each letter back ' + f.shift + '</div>';
+        else if (f.mode === "scramble") pz = '<div class="mono" style="font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:10px;color:var(--gold);">' + esc(f.pz) + '</div><div class="mono" style="color:var(--muted);">SCRAMBLE \u00b7 unscramble the letters</div>';
+        else if (f.mode === "reveal") pz = '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">' + mask(f).split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask" style="min-width:44px;height:64px;font-size:40px;">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div><div class="mono" style="color:var(--muted);">REVEAL \u00b7 letters fill in over time</div>';
+        else if (f.mode === "bank") pz = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;width:100%;">' + f.opts.map(function(o){ return '<div class="bankb" style="cursor:default;font-size:24px;min-height:80px;display:flex;align-items:center;justify-content:center;">' + esc(o) + '</div>'; }).join("") + '</div>';
+        return head + '<div class="card" style="padding:28px;display:flex;flex-direction:column;gap:22px;align-items:center;text-align:center;">' +
+          '<div style="display:flex;align-items:center;gap:14px;width:100%;"><div style="flex:1;height:10px;border-radius:5px;background:var(--border);overflow:hidden;"><div id="hRushB" style="height:100%;background:var(--gold);width:100%;"></div></div><span class="mono" id="hRushT" style="font-size:34px;font-weight:800;color:var(--gold);min-width:56px;text-align:right;"></span></div>' +
+          '<div style="font-size:clamp(28px,4.2vw,48px);font-weight:800;color:var(--bright);line-height:1.25;text-wrap:balance;max-width:1000px;">' + esc(row.q) + '</div>' + pz +
+          '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span class="mono" style="font-size:20px;color:var(--muted);">' + tried + ' of ' + ps.length + ' answered</span><button class="btn ghost sm" data-act="rnow">Show answer now</button></div></div>';
+      }
+      var top = rushBoard().slice(0, 10), last = R0.qi >= R0.total;
+      return head + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;" class="bgrid">' +
+        '<div class="card" style="padding:26px;display:flex;flex-direction:column;gap:14px;"><div class="lbl">Answer</div><div class="disp" style="font-size:clamp(34px,5vw,60px);font-weight:800;color:var(--gold);line-height:1.1;word-break:break-word;">' + esc(disp(row.a)) + '</div>' +
+          '<div style="color:var(--muted);font-size:18px;text-wrap:pretty;">' + esc(row.q) + '</div><div class="mono" style="font-size:22px;color:var(--bright);margin-top:6px;">' + got + ' of ' + ps.length + ' got it</div>' +
+          '<div style="margin-top:auto;padding-top:10px;"><button class="btn" data-act="rnext">' + (last ? "Final results \u2192" : "Next question \u2192") + '</button></div></div>' +
+        '<div class="card" style="padding:20px;"><div class="lbl" style="margin-bottom:10px;">Leaderboard</div><div style="display:flex;flex-direction:column;gap:6px;">' + (top.length ? boardRows(top, true) : '<p style="color:var(--dim);margin:0;">No players yet.</p>') + '</div></div></div>';
+    }
     function drawDone(){
       var body;
+      if (S.setup.mode === "rush") {
+        var B = rushBoard(), pod = B.slice(0, 3), H = [150, 110, 80], order = [1, 0, 2];
+        body = '<div class="lbl">Roar Rush \u00b7 final results</div>' +
+          (pod.length ? '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:18px 0 26px;flex-wrap:wrap;">' + order.filter(function(i){ return pod[i]; }).map(function(i){ var p = pod[i]; return '<div style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:150px;"><div style="font-weight:800;color:var(--bright);font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(p.name) + '</div><div class="mono" style="color:var(--muted);">' + (p.score || 0).toLocaleString() + ' pts</div><div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : 'var(--btn)') + ';border:2px solid var(--gold);display:flex;align-items:flex-start;justify-content:center;padding-top:10px;"><span class="disp" style="font-size:40px;font-weight:800;color:' + (i ? 'var(--gold)' : 'var(--btnText)') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' : '') +
+          '<div style="display:flex;flex-direction:column;gap:6px;max-width:720px;">' + boardRows(B.slice(0, 30), false) + '</div>';
+      } else
       if (S.setup.mode === "battle") {
         var st = standings(), top = list().filter(function(p){ return p.ko; }).sort(function(a, b){ return b.ko - a.ko; }).slice(0, 5);
-        body = (st.length ? '<div class="disp" style="font-size:clamp(40px,7vw,72px);font-weight:800;color:' + tc(st[0].i) + ';line-height:1.05;">' + TEAMS[st[0].i] + ' wins!</div>' : '') +
-          '<table style="margin-top:18px;"><thead><tr><th>#</th><th>TEAM</th><th>SCORE</th><th>KOS</th><th>PLAYERS</th></tr></thead><tbody>' + st.map(function(x, r){ return '<tr><td class="mono">' + (r + 1) + '</td><td style="font-weight:800;color:' + tc(x.i) + ';">' + TEAMS[x.i] + '</td><td class="mono">' + x.score.toFixed(2) + '</td><td class="mono">' + x.ko + '</td><td class="mono">' + x.n + '</td></tr>'; }).join("") + '</tbody></table>' +
+        body = (st.length ? '<div class="disp" style="font-size:clamp(40px,7vw,72px);font-weight:800;color:' + tc(st[0].i) + ';line-height:1.05;">' + teamNames()[st[0].i] + ' wins!</div>' : '') +
+          '<table style="margin-top:18px;"><thead><tr><th>#</th><th>TEAM</th><th>SCORE</th><th>KOS</th><th>PLAYERS</th></tr></thead><tbody>' + st.map(function(x, r){ return '<tr><td class="mono">' + (r + 1) + '</td><td style="font-weight:800;color:' + tc(x.i) + ';">' + teamNames()[x.i] + '</td><td class="mono">' + x.score.toFixed(2) + '</td><td class="mono">' + x.ko + '</td><td class="mono">' + x.n + '</td></tr>'; }).join("") + '</tbody></table>' +
           (top.length ? '<div class="lbl" style="margin:20px 0 8px;">Top lions</div>' + top.map(function(p, i){ return '<div style="display:flex;gap:10px;padding:4px 0;"><span class="mono" style="color:var(--dim);">' + (i + 1) + '</span><span style="flex:1;color:' + tc(p.team) + ';font-weight:700;">' + esc(p.name) + '</span><span class="mono">' + p.ko + ' KOs</span></div>'; }).join("") : '');
       } else {
         var b = S.br || {}, c = b.champ && S.players[b.champ], s2 = b.second && S.players[b.second];
         var thirds = list().filter(function(p){ return b.R && p.outR === b.R - 2 && !p.late; });
-        body = c ? '<div class="lbl">Champion</div><div class="disp" style="font-size:clamp(40px,7vw,72px);font-weight:800;color:var(--gold);line-height:1.05;">' + esc(c.name) + '</div>' +
+        body = c ? '<div class="lbl">King of the Pride</div><div class="disp" style="font-size:clamp(40px,7vw,72px);font-weight:800;color:var(--gold);line-height:1.05;">' + esc(c.name) + '</div>' +
             (s2 ? '<div style="margin-top:12px;font-size:20px;color:var(--bright);"><b>2nd</b> \u00b7 ' + esc(s2.name) + '</div>' : '') +
             (thirds.length ? '<div style="margin-top:4px;font-size:18px;color:var(--muted);"><b>3rd</b> \u00b7 ' + thirds.map(function(p){ return esc(p.name); }).join(" & ") + '</div>' : '')
           : '<div class="disp" style="font-size:40px;font-weight:800;color:var(--bright);">Bracket ended early</div>';
@@ -664,17 +800,33 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     }, 200);
 
     function bad(){ if (window.KO_FX) KO_FX.sfx("miss"); var a = document.getElementById("sAns"); if (!a) return; a.classList.remove("bad"); void a.offsetWidth; a.classList.add("bad"); a.value = ""; used = []; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); a.focus(); }
+    function forfeitNow(){
+      if (!V || !V.f || !conn || !conn.open) return;
+      var F = V.f, msg = F.kind === "match" ? "Forfeit the whole match? " + F.opp + " advances and you drop into the rematch pool." : "Forfeit this fight? " + F.opp + " gets the KO.";
+      if (confirm(msg)) conn.send({ k: "forfeit", n: F.n });
+    }
+    function leaveNow(){
+      if (!conn || !conn.open) return;
+      var live = V && V.s !== "lobby" && V.s !== "done";
+      if (!confirm(live ? "Leave the game? " + (V.mode === "bracket" ? "You\u2019ll be out of the bracket." : "Anything you\u2019re playing counts as a forfeit.") : "Leave the game?")) return;
+      joined = false; try { conn.send({ k: "leave" }); } catch (e) {}
+      try { localStorage.removeItem(tk); } catch (e) {}
+      setTimeout(function(){ try { conn.close(); } catch (e) {} }, 300);
+      end("You left the game.");
+    }
     function submit(text){ if (!V || !V.f || !conn || !conn.open) return; conn.send({ k: "ans", n: V.f.n, a: text }); }
-    function me(){ return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:200px;"><span class="lbl">You are</span><b style="color:' + (V.tn ? tc(V.team) : "var(--gold)") + ';font-size:18px;">' + esc(V.name) + '</b>' + (V.tn ? '<span class="mono" style="font-size:13px;color:' + tc(V.team) + ';">' + esc(V.tn) + '</span>' : '') + (V.ko ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.ko + ' KO' + (V.ko === 1 ? '' : 's') + '</span>' : '') + (window.KO_FX ? '<button type="button" id="sSnd" class="chip" aria-pressed="' + KO_FX.soundOn() + '" style="min-height:40px;padding:4px 12px;font-size:12px;' + (V.ko ? '' : 'margin-left:auto;') + '">' + (KO_FX.soundOn() ? 'SOUND ON' : 'SOUND OFF') + '</button>' : '') + '</div>'; }
+    function me(){ return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:200px;"><span class="lbl">You are</span><b style="color:' + (V.tn ? tc(V.team) : "var(--gold)") + ';font-size:18px;">' + esc(V.name) + '</b>' + (V.tn ? '<span class="mono" style="font-size:13px;color:' + tc(V.team) + ';">' + esc(V.tn) + '</span>' : '') + (V.mode === "rush" && V.score != null ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.score.toLocaleString() + ' pts</span>' : V.ko ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.ko + ' KO' + (V.ko === 1 ? '' : 's') + '</span>' : '') + '<button type="button" id="sLeave" class="chip" style="min-height:40px;padding:4px 12px;font-size:12px;' + (V.ko ? '' : 'margin-left:auto;') + '">LEAVE GAME</button>' + (window.KO_FX ? '<button type="button" id="sSnd" class="chip" aria-pressed="' + KO_FX.soundOn() + '" style="min-height:40px;padding:4px 12px;font-size:12px;">' + (KO_FX.soundOn() ? 'SOUND ON' : 'SOUND OFF') + '</button>' : '') + '</div>'; }
     function big(title, sub, col){ return '<div class="card" style="text-align:center;padding:40px 22px;border:2px solid ' + (col || "var(--gold)") + ';"><div class="disp" style="font-size:clamp(28px,6vw,46px);font-weight:800;color:' + (col || "var(--gold)") + ';line-height:1.15;">' + title + '</div>' + (sub ? '<p style="color:var(--muted);font-size:17px;margin:14px 0 0;">' + sub + '</p>' : '') + '</div>'; }
     function render(){
       if (!V) return;
+      if (V.th && V.th !== MT) applyTheme(V.th);
       if (window.KO_FX) {
         if (V.kev && lastKev !== null && V.kev.n !== lastKev) {
           var kv = V.kev, kel = document.getElementById(kv.won ? "sOppC" : "sMeC");
           KO_FX.blast({ el: kel, name: kv.won ? kv.opp : V.name, big: kv.sd ? (kv.won ? "WIN!" : "LOST") : "K.O.!", color: kv.won ? "#00934a" : "#d93a2b",
             sub: kv.sd ? (kv.won ? "You beat " + kv.opp : kv.opp + " wins") : kv.won ? "You knocked out " + kv.opp : kv.opp + " got the KO", say: kv.sd ? (kv.won ? "You win!" : "Match over") : "K. O.!" });
         }
+        if (V.s === "rushq" && V.ok && lastSettled !== "r" + V.qi) { lastSettled = "r" + V.qi; KO_FX.sfx("hit"); }
         if (V.f && V.f.last && V.f.n !== lastSettled) { lastSettled = V.f.n; if (V.f.last.by === "me") KO_FX.sfx("hit"); }
       }
       lastKev = V.kev ? V.kev.n : (lastKev === null ? 0 : lastKev);
@@ -687,10 +839,18 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (V.s === "rest") h = big(esc(V.msg), "");
       else if (V.s === "pool") h = big("Rematch pool", (V.late ? "The bracket started before you joined, " : "You\u2019re out of the bracket, ") + "but you can keep playing for fun. Waiting for another player\u2026");
       else if (V.s === "done") {
-        if (V.mode === "battle") h = big(esc(V.win) + " wins!", "Your team finished <b style=\"color:var(--bright);\">#" + V.place + "</b>. You scored <b style=\"color:var(--bright);\">" + V.ko + "</b> KO" + (V.ko === 1 ? "" : "s") + ". Nice work, " + esc(V.name) + ".");
-        else h = big(V.champ ? esc(V.champ) + " is the champion!" : "The bracket is over.", V.place ? "You: <b style=\"color:var(--bright);\">" + esc(V.place) + "</b>" : "");
+        if (V.mode === "rush") h = big(V.place === 1 ? "You won!" : esc(V.champ) + " wins!", "You finished <b style=\"color:var(--bright);\">#" + V.place + "</b> of " + V.of + " with <b style=\"color:var(--bright);\">" + (V.score || 0).toLocaleString() + "</b> points.");
+        else if (V.mode === "battle") h = big(esc(V.win) + " wins!", "Your team finished <b style=\"color:var(--bright);\">#" + V.place + "</b>. You scored <b style=\"color:var(--bright);\">" + V.ko + "</b> KO" + (V.ko === 1 ? "" : "s") + ". Nice work, " + esc(V.name) + ".");
+        else h = big(V.champ ? esc(V.champ) + " is King of the Pride!" : "The bracket is over.", V.place ? "You: <b style=\"color:var(--bright);\">" + esc(V.place) + "</b>" : "");
       }
       else if (V.s === "fight") h = fightView(V.f);
+      else if (V.s === "rushq") {
+        var rh = '<div class="mono" style="font-size:13px;color:var(--dim);margin-bottom:10px;">Roar Rush \u00b7 question ' + V.qi + ' of ' + V.total + ' \u00b7 #' + V.place + ' of ' + V.of + '</div>';
+        if (V.ok) h = rh + big("Locked in! +" + V.pts, "Nice and fast. Waiting for the others\u2026", "var(--ok)");
+        else if (V.f && V.f.lock && V.f.m === "bank") h = rh + big("Not that one", "Wait for the answer.", "var(--bad)");
+        else if (V.f) h = rh + puzzleCard(V.f);
+      }
+      else if (V.s === "rushr") h = big(V.ok ? "Correct! +" + V.pts : "The answer was " + esc(V.a), "You\u2019re <b style=\"color:var(--bright);\">#" + V.place + "</b> of " + V.of + " with <b style=\"color:var(--bright);\">" + V.score.toLocaleString() + "</b> points." + (V.ok && V.streak >= 3 ? " " + V.streak + " in a row!" : "") + (V.ok ? "" : " Get the next one!"), V.ok ? "var(--ok)" : "var(--gold)");
       view.innerHTML = me() + h;
       var a = document.getElementById("sAns");
       if (a) { if (keep != null) a.value = keep; if (hadFocus || keep == null) a.focus(); used.forEach(function(i){ var b = view.querySelector('.tile[data-i="' + i + '"]'); if (b) b.disabled = true; }); }
@@ -708,6 +868,9 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         var who = F.last.by === "me" ? ["You got it!", "var(--ok)"] : F.last.by === "opp" ? [esc(F.opp) + " got it", "var(--bad)"] : ["Nobody got it", "var(--warn)"];
         return head + '<div class="card" style="text-align:center;padding:26px 20px;"><div class="disp" style="font-size:clamp(26px,5vw,38px);font-weight:800;color:' + who[1] + ';">' + who[0] + '</div><div style="color:var(--muted);margin-top:10px;">' + esc(F.q) + '</div><div class="lbl" style="margin-top:14px;">Answer</div><div class="disp" style="font-size:clamp(26px,5vw,40px);font-weight:800;color:var(--bright);">' + esc(F.last.a) + '</div></div>';
       }
+      return head + puzzleCard(F);
+    }
+    function puzzleCard(F){
       var pz = "", note = "";
       if (F.m === "shift") { pz = '<div class="mono" style="font-size:clamp(26px,6vw,42px);font-weight:800;letter-spacing:4px;color:var(--gold);word-break:break-word;">' + esc(F.pz) + '</div>'; note = "SHIFT \u00b7 move each letter back <b style=\"color:var(--bright);\">" + F.k + "</b> (" + String.fromCharCode(65 + F.k) + "\u2192A)"; }
       else if (F.m === "scramble") { pz = '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + F.pz.split("").map(function(ch, i){ return '<button type="button" class="tile" data-i="' + i + '" aria-label="Letter ' + esc(ch) + '">' + esc(ch) + '</button>'; }).join("") + '</div>'; note = "SCRAMBLE \u00b7 tap the letters in order, or type the answer"; }
@@ -715,14 +878,17 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (F.m === "bank") { pz = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;">' + F.opts.map(function(o){ return '<button type="button" class="bankb"' + (F.lock ? ' disabled' : '') + '>' + esc(o) + '</button>'; }).join("") + '</div>'; note = F.lock ? "Wrong pick. Wait for the next question." : "WORD BANK \u00b7 pick the answer \u00b7 a wrong pick costs a third of a hit"; }
       else note = "Type the answer";
       var form = F.m === "bank" ? "" : '<form id="sForm" style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;"><input class="ans" id="sAns" data-n="' + F.n + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" style="flex:1;min-width:200px;"' + (F.lock ? ' disabled placeholder="Locked for this question"' : ' placeholder="Answer"') + '><button class="btn" type="submit"' + (F.lock ? ' disabled' : '') + '>Strike</button>' + (F.m === "scramble" ? '<button class="btn ghost sm" type="button" id="sClr">Clear</button>' : '') + '</form>';
-      return head + '<div class="card" style="display:flex;flex-direction:column;gap:14px;">' +
+      return '<div class="card" style="display:flex;flex-direction:column;gap:14px;">' +
         (T.left != null ? '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;height:6px;border-radius:3px;background:var(--border);overflow:hidden;"><div id="sBar" style="height:100%;background:var(--gold);width:100%;"></div></div><span class="mono" id="sLeft" style="font-size:13px;color:var(--dim);min-width:40px;text-align:right;"></span></div>' : '') +
         '<div style="font-size:clamp(19px,3.4vw,26px);font-weight:700;color:var(--bright);line-height:1.35;text-wrap:pretty;">' + esc(F.q) + '</div>' +
-        pz + '<div class="mono" style="font-size:13px;color:var(--muted);">' + note + '</div>' + form + '</div>';
+        pz + '<div class="mono" style="font-size:13px;color:var(--muted);">' + note + '</div>' + form +
+        (F.kind === "rush" ? '</div>' : '<div style="display:flex;justify-content:flex-end;"><button type="button" id="sFF" class="btn ghost sm" style="border-color:var(--bad);color:var(--bad);">' + (F.kind === "match" ? "Forfeit match" : "Forfeit") + '</button></div></div>');
     }
     function wire(){
       var f = document.getElementById("sForm"), a = document.getElementById("sAns"), sn = document.getElementById("sSnd");
       if (sn) sn.onclick = function(){ KO_FX.setSound(!KO_FX.soundOn()); render(); };
+      var lv = document.getElementById("sLeave"); if (lv) lv.onclick = leaveNow;
+      var fb = document.getElementById("sFF"); if (fb) fb.onclick = forfeitNow;
       if (f) f.onsubmit = function(e){ e.preventDefault(); if (a && a.value.trim()) submit(a.value); };
       view.querySelectorAll(".bankb").forEach(function(b){ b.onclick = function(){ submit(b.textContent); }; });
       view.querySelectorAll(".tile").forEach(function(b){ b.onclick = function(){ if (!a) return; a.value += b.textContent; b.disabled = true; used.push(b.getAttribute("data-i")); if (V.f && norm(a.value).length >= V.f.len) submit(a.value); }; });

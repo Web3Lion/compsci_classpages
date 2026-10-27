@@ -3,12 +3,12 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=35.0.0"></script>
+<script src="../site.js?v=36.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Mane Event · Connection Test</title>
-<link href="../assets/fonts/fonts.css?v=35.0.0" rel="stylesheet">
+<link href="../assets/fonts/fonts.css?v=36.0.0" rel="stylesheet">
 <style>
 :root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--gold2:#e6fff0;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;}
 :root[data-theme="light"]{--bg:#ffffff;--panel:#ffffff;--panel2:#f1faf4;--border:#cfe8d9;--border3:#00934a;--text:#123322;--bright:#062014;--muted:#2c4d3a;--dim:#4a6b58;--gold:#007a3d;--gold2:#00602f;--btn:#007a3d;--btnText:#ffffff;--ok:#007a3d;--warn:#8a5300;--bad:#b3261e;}
@@ -37,8 +37,8 @@ td{padding:9px 8px;border-bottom:1px solid var(--border);}
   </div>
   <div id="view" aria-live="polite"></div>
 </div>
-<script src="../assets/vendor/peerjs.min.js?v=35.0.0"></script>
-<script src="../assets/vendor/qrcode.js?v=35.0.0"></script>
+<script src="../assets/vendor/peerjs.min.js?v=36.0.0"></script>
+<script src="../assets/vendor/qrcode.js?v=36.0.0"></script>
 <script>
 if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
   var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -131,7 +131,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var url = location.origin + location.pathname + "?code=" + c, qr = qrcode(0, "H"); qr.addData(url); qr.make();
       view.innerHTML =
         '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">' +
-          '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=35.0.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
+          '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=36.0.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
           '<div style="flex:1;min-width:240px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--dim);">JOIN CODE</div>' +
             '<div class="mono" id="live" style="font-size:13px;font-weight:800;letter-spacing:1px;color:var(--ok);margin:2px 0 4px;">\u25CF LIVE \u00B7 students can join</div>' +
             '<div class="mono" style="font-size:clamp(44px,9vw,76px);font-weight:800;letter-spacing:10px;color:var(--gold);line-height:1.1;">' + c + '</div>' +
