@@ -1,6 +1,6 @@
 # Cybersecurity & CS Classroom Site
 
-**Version 2.0.0** — see `CHANGELOG.md`.
+**Version 35.0.1** — see `CHANGELOG.md`.
 
 Static, no-build HTML site for five courses: AP Computer Science Principles (`apcsp/`),
 Cybersecurity 1 (`cyber1/`), AP Cybersecurity 2 (`cyber2/`), Cybersecurity 3 (`cyber3/`),
@@ -105,7 +105,7 @@ isn't filled in.
   `supabase-config.js` and `ctf.js` stay in the site root.
 - `site.js` — loaded in `<head>` on every page: `SITE_VERSION`, the A11Y panel
   (reduce motion, high contrast), skip link, focus styles.
-  Script tags carry the release number as a cache tag (`?v=2.0.0`) — when you bump
+  Script tags carry the release number as a cache tag (`?v=35.0.1`) — when you bump
   `SITE_VERSION`, bump the tag on every page too.
 - `claude only/` — working files (source curriculum PDFs, extracted text, design reference). Gitignored, not deployed.
 - `supabase/` — SQL schema files for the optional backend (run in the order noted in

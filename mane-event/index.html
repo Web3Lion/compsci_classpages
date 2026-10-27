@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=35.0.0"></script>
+<script src="../site.js?v=35.0.1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Mane Event</title>
-<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=35.0.0">
-<link href="../assets/fonts/fonts.css?v=35.0.0" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=35.0.1">
+<link href="../assets/fonts/fonts.css?v=35.0.1" rel="stylesheet">
 <style>
 :root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--gold2:#e6fff0;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
   --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
@@ -57,15 +57,15 @@ td{padding:9px 8px;border-bottom:1px solid var(--border);}
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
   <div id="hdr" style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:110px;">
-    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=35.0.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
+    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=35.0.1" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
     <h1 class="disp" style="margin:0;font-size:clamp(30px,5vw,44px);line-height:1.1;color:var(--bright);">Mane Event</h1>
     <p style="margin:6px 0 0;color:var(--muted);max-width:680px;">Live vocab and review battles. Students join with a code, get a random lion name, and nothing is saved anywhere except the host&rsquo;s own browser.</p>
   </div>
   <div id="view" aria-live="polite"></div>
 </div>
-<script src="../assets/vendor/peerjs.min.js?v=35.0.0"></script>
-<script src="../assets/vendor/qrcode.js?v=35.0.0"></script>
-<script src="../js/ko-fx.js?v=35.0.0"></script>
+<script src="../assets/vendor/peerjs.min.js?v=35.0.1"></script>
+<script src="../assets/vendor/qrcode.js?v=35.0.1"></script>
+<script src="../js/ko-fx.js?v=35.0.1"></script>
 <script>
 if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
   var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -494,7 +494,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function codeCard(){
       var url = location.origin + location.pathname + "?code=" + S.code, qr = qrcode(0, "H"); qr.addData(url); qr.make();
       return '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">' +
-        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=35.0.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
+        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=35.0.1" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
         '<div style="flex:1;min-width:240px;"><div class="lbl">Join code</div>' +
           '<div class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);margin:2px 0 4px;">\u25CF LIVE \u00B7 students can join</div>' +
           '<div class="mono" style="font-size:clamp(48px,9vw,84px);font-weight:800;letter-spacing:10px;color:var(--gold);line-height:1.05;">' + S.code + '</div>' +

@@ -11,6 +11,16 @@ a cache tag (`?v=9.0.0`) — bump both together on every release.
 
 ---
 
+## 35.0.1 — 2026-10-27
+Repo cleanup. No page looks or works differently.
+- **Shared scripts moved to `js/`** (35 files: auth, sync, profile, cosmetics, skins, the battle scripts and the rest). Every `<script src>` and the script lists on arena-duel, bracket-play, lobby, raid-play and vocab-duel point there. `site.js`, `config.js`, `supabase-config.js` and `ctf.js` stay in the root. skins.js now finds `assets/fonts/fonts.css` one folder up.
+- **Removed stray and retired files:** root copies of course pages (`ctf.html`, `profile.html`, `syllabus.html`, `vocab.html`, `news.html`, `vocab-data.js`, `carlow-grade-scale.html`, `student-info.html`, `student-info-review.html`, `FFL-summit-2026-deck.html`); the Day 0 pages retired in 33.2.0 (`cyber1/` + `cyber2/` `are-you-a-target.html` and `target-warmup-review.html`, `apcsp/student-info.html` + review); `web3/index-bitcoin.html`, `web3/index-original.html`, `cyber2/AP-Cybersecurity-Vocabulary.html`, `cyber1/vocab-standalone-src.html`, `rewards/testday/standalone-src.html`, the `Teacher Tools.html` and `Reward Rally.html` bundled snapshots, the old root `secret/` copies (no flag points at them), `styles.css`, `support.js`, `github.md`, `.thumbnail`, a stray image, and the duplicate root `workflows/` folder.
+- **Error Identifier** (`simulators/erroridentifier.html`) is now on the simulators hub and in directory.html, and loads site.js + self-hosted fonts like the other simulators.
+- **Private-file guard now actually runs:** `block-private-files.yml` moved into `.github/workflows/` (CLAUDE.md is no longer on its delete list) and its list matches `.gitignore`, which was restored from a file uploaded as `download`.
+- teacher.html: the Teacher Tools clicks "Open page" link pointed outside the site (`../tools/`); now `tools/`.
+- SUPABASE-SETUP.md: run-order table matches install-check (`backup-export.sql` is #50, `lockdown.sql` #51). README folder list updated.
+- New dev check `tools-dev/check-links.mjs` (not loaded by the site): every local href/src exists and every `?v=` tag matches `SITE_VERSION`. All cache tags are now 35.0.1 (some pages still carried tags as old as 13.0.0).
+
 ## 35.0.0 — 2026-10-26
 - **New SQL: `supabase/backup-export.sql`** (run #50, then re-run lockdown.sql, now #51). teacher.html → Settings → **Export backup** downloads every table as CSV in one .zip. Owners only, read-only.
 - lockdown.sql: fixed a syntax error in the integrity-log block (nested `$$` quoting).
