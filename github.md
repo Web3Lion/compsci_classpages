@@ -1,22 +1,17 @@
 repo: Web3Lion/compsci_classpages
-branch: main
+branch: claude/repo-cleanup-organization-nla1yv
+
 ## Last sync
-date: 2026-10-16T23:15:31Z
+date: 2026-10-27T16:15:40Z
 
 ### Updated in this project
-- Live check: GitHub main is at site version 27.0.0; project is at 29.0.0
-- Not yet on GitHub: raid.html, raid-play.html, raid-fx.js, lobby.html, waiting-room.js
-- SQL not in repo: class-rename, squad-sets, duel-record, brackets, raids, waiting-room
-
-## Sync history
-- 2026-10-12 — summit deck QR fix, root redirect stubs deleted locally, summit/ + directory.html verified live
-- 2026-08-27 — user manually pushed all prior changes (Day-0 gating, VECTOR rename, AP CSP Module 1 flags, allowed-emails RPC)
+- Applied the repo cleanup (shared scripts in js/, stray files removed) on top of v36.0.0 → 36.0.1
+- Pulled in 7 hidden flag pages and simulators/erroridentifier.html that only existed on GitHub
+- .gitignore + private-file guard taken from the branch; CLAUDE.md and tools-dev/ added as private
 
 ## Screen map
 | Screen | Repo files |
 |---|---|
-| Course homes | apcsp/index.html, cyber1/index.html, cyber2/index.html, web3/index.html |
-| Simulators hub | simulators/index.html + simulators/*.html |
-| Config | config.js |
-| Summit pages | summit/FFL-summit-mainpage.html, summit/FFL-summit-2026-deck.html, summit/sru-summit.html, summit/assets/creation/*.png |
-| Teacher directory | directory.html |
+| Hidden flag pages | cyber1/6dd41be832.html, cyber1/f7e71d0032.html, cyber2/047c0caf40.html, cyber2/a94a5d6f9f.html, cyber2/b5c2cd6c8d.html, cyber2/e72146ecdf.html, cyber2/fc004b2ae3.html |
+| Error Identifier | simulators/erroridentifier.html |
+| Repo guard | .gitignore, .github/workflows/block-private-files.yml |

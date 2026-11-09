@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=36.0.0"></script>
+<script src="site.js?v=37.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=36.0.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=36.0.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>Duel Bracket</title>
-<link href="assets/fonts/fonts.css?v=36.0.0" rel="stylesheet">
+<title>King of the Pride</title>
+<link href="assets/fonts/fonts.css?v=37.0.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--amber:#ffcf5c;--amber-bg:#1a150a;--ok:#3ddc97;--bad:#ff7a85;}
 :root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--amber:#8a6a00;--amber-bg:#fbf4dd;--ok:#1d7a4c;--bad:#b3261e;}
@@ -40,7 +40,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
 <div class="wrap">
   <div id="hdr" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;padding-right:210px;">
     <a href="teacher.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; Teacher dashboard</a>
-    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9876; DUEL BRACKET</div>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--amber);">&#9876; KING OF THE PRIDE</div>
     <span style="flex:1;"></span>
     <span id="snd" role="group" aria-label="Projector sound"></span>
     <label class="mono" for="cls" style="font-size:12px;color:var(--dim);">Class</label>
@@ -48,21 +48,21 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=36.0.0"></script>
-<script src="ctf-data/cyber1.js?v=36.0.0"></script>
-<script src="ctf-data/cyber2.js?v=36.0.0"></script>
-<script src="ctf-data/cyber3.js?v=36.0.0"></script>
-<script src="ctf-data/apcsp.js?v=36.0.0"></script>
-<script src="ctf-data/web3.js?v=36.0.0"></script>
-<script src="supabase-config.js?v=36.0.0"></script>
-<script src="auth.js?v=36.0.0"></script>
-<script src="battle-fx.js?v=36.0.0"></script>
-<script src="ko-fx.js?v=36.0.0"></script>
-<script src="battle-bg.js?v=36.0.0"></script>
-<script src="bracket-tree.js?v=36.0.0"></script>
-<script src="binary-pool.js?v=36.0.0"></script>
-<script src="prize-roll.js?v=36.0.0"></script>
-<script src="waiting-room.js?v=36.0.0"></script>
+<script src="config.js?v=37.0.0"></script>
+<script src="ctf-data/cyber1.js?v=37.0.0"></script>
+<script src="ctf-data/cyber2.js?v=37.0.0"></script>
+<script src="ctf-data/cyber3.js?v=37.0.0"></script>
+<script src="ctf-data/apcsp.js?v=37.0.0"></script>
+<script src="ctf-data/web3.js?v=37.0.0"></script>
+<script src="supabase-config.js?v=37.0.0"></script>
+<script src="js/auth.js?v=37.0.0"></script>
+<script src="js/battle-fx.js?v=37.0.0"></script>
+<script src="js/ko-fx.js?v=37.0.0"></script>
+<script src="js/battle-bg.js?v=37.0.0"></script>
+<script src="js/bracket-tree.js?v=37.0.0"></script>
+<script src="js/binary-pool.js?v=37.0.0"></script>
+<script src="js/prize-roll.js?v=37.0.0"></script>
+<script src="js/waiting-room.js?v=37.0.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX, BT = window.BRACKET_TREE, esc = BT.esc;
@@ -81,17 +81,62 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
   function names(){ return ((((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}).modules || []; }
-  function modName(m){ if (+m === 0) return "Binary"; var n = names()[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
+  function modName(m){ if (+m === 0) return "Binary"; if (+m === 99) return "Google Sheet"; var n = names()[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=36.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=37.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
   }
   function pool(mods){ var p = []; mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ p.push({ t: disp(t.t), d: t.d }); }); });
     if (p.length < 4) Object.keys(MODS).forEach(function(m){ if (mods.indexOf(+m) === -1) MODS[m].forEach(function(t){ p.push({ t: disp(t.t), d: t.d }); }); }); return p; }
+  /* ---- Google Sheet questions (teacher only; the link never reaches students) ---- */
+  var SHEET = { url: "", rows: [], msg: "", col: "var(--dim)", skipped: 0 };
+  try { SHEET.url = localStorage.getItem("bracket-sheet") || ""; } catch (e) {}
+  function csvRows(text){
+    var t = String(text || "").replace(/^\uFEFF/, ""), rows = [], row = [], f = "", q = false;
+    for (var i = 0; i < t.length; i++) { var c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"' && f === "") q = true; else if (c === ",") { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; } else f += c; }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows.map(function(r){ return r.map(function(x){ return x.trim(); }); }).filter(function(r){ return r.filter(Boolean).length >= 2; });
+  }
+  function sheetPool(text){
+    var rows = csvRows(text), h = rows.length ? rows[0].map(norm) : [], fmt = "vt", out = [], seen = {}, skip = 0;
+    if (h.length >= 3 && /^(type|questiontype|kind)$/.test(h[0])) { fmt = "qa"; rows.shift(); }
+    else if (/^(term|name|word|vocab)/.test(h[0] || "") && /definition|meaning/.test(h[1] || "")) rows.shift();
+    else if (/definition|question|prompt|clue/.test(h[0] || "") && /term|answer|word/.test(h[h.length - 1] || "")) { fmt = "dt"; rows.shift(); }
+    rows.forEach(function(r){
+      var a, d;
+      if (fmt === "qa") { d = r[1]; a = r[2]; } else if (fmt === "vt") { a = r[0]; d = r.slice(1).filter(Boolean).join(", "); } else { a = r[r.length - 1]; d = r.slice(0, -1).join(", "); }
+      a = disp(a); var k = norm(a);
+      if (!d || !k || (/^\d+$/.test(k) ? k.length > 24 : (k.length < 3 || k.length > 24)) || seen[k]) { skip++; return; }
+      seen[k] = 1; out.push({ t: a, d: String(d).slice(0, 400) });
+    });
+    return { pool: out, skipped: skip };
+  }
+  function sheetUrls(u){
+    u = String(u || "").trim(); var g = (u.match(/[#&?]gid=(\d+)/) || [])[1], m = u.match(/\/spreadsheets\/d\/e\/([\w-]+)/);
+    if (m) return ["https://docs.google.com/spreadsheets/d/e/" + m[1] + "/pub?output=csv" + (g ? "&gid=" + g : "")];
+    m = u.match(/\/spreadsheets\/d\/([\w-]+)/); if (!m) return null;
+    return ["https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&gid=" + (g || "0"), "https://docs.google.com/spreadsheets/d/" + m[1] + "/export?format=csv&gid=" + (g || "0")];
+  }
+  async function importSheet(){
+    var inp = document.getElementById("brSheet"); SHEET.url = inp ? inp.value.trim() : SHEET.url;
+    try { localStorage.setItem("bracket-sheet", SHEET.url); } catch (e) {}
+    var urls = sheetUrls(SHEET.url);
+    if (!urls) { SHEET.msg = "That doesn\u2019t look like a Google Sheets link."; SHEET.col = "var(--bad)"; paint(); return; }
+    SHEET.msg = "Loading the sheet\u2026"; SHEET.col = "var(--dim)"; paint();
+    for (var i = 0; i < urls.length; i++) {
+      try { var r = await fetch(urls[i], { cache: "no-store" }), txt = r.ok ? await r.text() : "";
+        if (txt && !/^\s*<(!doctype|html)/i.test(txt)) { var P = sheetPool(txt);
+          if (P.pool.length) { SHEET.rows = P.pool; SHEET.skipped = P.skipped; SHEET.msg = P.pool.length + " questions ready" + (P.skipped ? " \u00b7 " + P.skipped + " skipped (answer must be 3\u201324 letters or digits, no repeats)" : "") + "."; SHEET.col = P.pool.length >= 4 ? "var(--ok)" : "var(--bad)"; if (P.pool.length < 4) SHEET.msg += " Add at least 4."; paint(); return; } } } catch (e) {}
+    }
+    SHEET.msg = "Couldn\u2019t read the sheet. Share it as \u201cAnyone with the link \u00b7 Viewer\u201d, then Import again."; SHEET.col = "var(--bad)"; paint();
+  }
   function allPlayers(){ var L = []; (SET.squads || []).forEach(function(g){ (g.members || []).forEach(function(p){ L.push(p); }); }); (SET.ungrouped || []).forEach(function(p){ L.push(p); }); return L; }
   function picked(){ return allPlayers().filter(function(p){ return chosen[p.id]; }); }
   function pow2(n){ var s = 2; while (s < n) s *= 2; return s; }
@@ -108,9 +153,9 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       members.map(plRow).join("") + '</div>';
   }
   function setupView(){
-    var bin = kind === "binary", man = (SET.manifest || []).map(function(m){ return m.module; }), keys = bin ? [] : kind === "flag" ? man : Object.keys(MODS).map(Number).sort(function(a,b){ return a-b; });
+    var sh = kind === "sheet", bin = kind === "binary", man = (SET.manifest || []).map(function(m){ return m.module; }), keys = bin ? [] : kind === "flag" ? man : Object.keys(MODS).map(Number).sort(function(a,b){ return a-b; });
     var selM = keys.filter(function(m){ return pick[m]; }), P = picked(), n = P.length, size = pow2(n), nm = PMODES.filter(function(p){ return modes[p[0]]; }).length;
-    var ready = n >= 2 && n <= 32 && (bin || (selM.length && nm)) && !busy, wl = WR ? WR.label() : null, canGo = ready || (WR && WR.needsRoom() && !busy);
+    var ready = n >= 2 && n <= 32 && (bin || (sh ? SHEET.rows.length >= 4 && nm : selM.length && nm)) && !busy, wl = WR ? WR.label() : null, canGo = ready || (WR && WR.needsRoom() && !busy);
     var groups = (SET.squads || []).filter(function(g){ return (g.members || []).length; }).map(function(g){ return group(g.id, g.name, g.color, g.members); }).join("") +
       ((SET.ungrouped || []).length ? group("_none", "No squad", "", SET.ungrouped) : "");
     return (WR ? WR.html() : '') + '<div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;" id="g">' +
@@ -120,13 +165,17 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BRACKET OPTIONS</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Game</div>' +
         '<div role="group" aria-label="Game" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
-          '<button type="button" class="chip brK" data-k="vocab" aria-pressed="' + (kind === "vocab") + '">Vocab</button><button type="button" class="chip brK" data-k="flag" aria-pressed="' + (kind === "flag") + '">Flags</button>' + (BIN ? '<button type="button" class="chip brK" data-k="binary" aria-pressed="' + bin + '">Binary</button>' : '') + '</div>' +
+          '<button type="button" class="chip brK" data-k="vocab" aria-pressed="' + (kind === "vocab") + '">Vocab</button><button type="button" class="chip brK" data-k="flag" aria-pressed="' + (kind === "flag") + '">Flags</button>' + (BIN ? '<button type="button" class="chip brK" data-k="binary" aria-pressed="' + bin + '">Binary</button>' : '') + '<button type="button" class="chip brK" data-k="sheet" aria-pressed="' + sh + '">Google Sheet</button></div>' +
+        (sh ? '<div style="display:flex;flex-direction:column;gap:8px;margin:12px 0 18px;"><label for="brSheet" style="font-weight:700;color:var(--bright);">Google Sheet link</label>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="brSheet" type="url" value="' + esc(SHEET.url) + '" placeholder="https://docs.google.com/spreadsheets/d/\u2026" autocomplete="off" spellcheck="false" style="flex:1;min-width:200px;min-height:44px;border-radius:10px;border:1px solid var(--border2);background:var(--bg);color:var(--bright);font:13px \'JetBrains Mono\',monospace;padding:8px 10px;"><button type="button" class="btn" id="brSheetGo">Import</button></div>' +
+          '<div style="font-size:12px;color:' + SHEET.col + ';line-height:1.5;">' + esc(SHEET.msg || "Same sheets as Mane Event: Term, Definition (students see the definition) or Type, Question, Answer, \u2026 (students see the question and type the answer). Share as \u201cAnyone with the link \u00b7 Viewer\u201d. Only you see the link.") + '</div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;"><a class="btn ghost" href="mane-event/vocab-template.csv" download>Vocab template</a><a class="btn ghost" href="mane-event/qa-template.csv" download>Q&amp;A template</a></div></div>' : '') +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Match length</div>' +
         '<div role="group" aria-label="Match length" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;"><button type="button" class="chip brS" data-s="0" aria-pressed="' + !sudden + '">Best of 3</button><button type="button" class="chip brS" data-s="1" aria-pressed="' + sudden + '">\u2620 Sudden death</button></div>' +
         (sudden ? '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">One game per match. ' + (kind === "flag" ? "First to 3 flag points wins the match. Out of open flags? It becomes a 5-question vocab game." : "5 questions: the first correct answer scores the point, and a wrong answer locks you out of that question. Most points wins; tied after 5 = next point wins.") + ' Brackets finish in about half the time.</div>' : '') +
-        (sudden ? '' : '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">' + (bin ? "Best of 3. A game is a fight on random binary questions: 8-bit conversions plus concepts (largest value / how many values for N bits or bytes, even or odd, the number before or after, bits \u2194 bytes, fewest bits for a number or a set of items), typed answers, 4 hits to KO." : kind === "flag" ? "Best of 3. A game is a race to 3 flag points (Easy 1, Medium 2, Hard 3) on flags the player hasn\u2019t captured. Out of open flags? That game becomes a vocab fight." : "Best of 3. A game is a normal vocab fight: 4 hits to KO.") + '</div>') +
-        (bin ? '' : '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules</div>' +
-        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip brM" data-m="' + m + '" aria-pressed="' + !!pick[m] + '" title="' + esc(modName(m)) + '">M' + String(m).padStart(2,"0") + '</button>'; }).join("") : '<span style="font-size:13px;color:var(--dim);">' + (kind === "flag" ? "No published flag list. Open this class in teacher.html once." : "No vocab for this course.") + '</span>') + '</div>' +
+        (sudden ? '' : '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;line-height:1.5;">' + (bin ? "Best of 3. A game is a fight on random binary questions: 8-bit conversions plus concepts (largest value / how many values for N bits or bytes, even or odd, the number before or after, bits \u2194 bytes, fewest bits for a number or a set of items), typed answers, 4 hits to KO." : sh ? "Best of 3. A game is a fight on your sheet\u2019s questions with the puzzle types below: 4 hits to KO." : kind === "flag" ? "Best of 3. A game is a race to 3 flag points (Easy 1, Medium 2, Hard 3) on flags the player hasn\u2019t captured. Out of open flags? That game becomes a vocab fight." : "Best of 3. A game is a normal vocab fight: 4 hits to KO.") + '</div>') +
+        (bin ? '' : (sh ? '' : '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip brM" data-m="' + m + '" aria-pressed="' + !!pick[m] + '" title="' + esc(modName(m)) + '">M' + String(m).padStart(2,"0") + '</button>'; }).join("") : '<span style="font-size:13px;color:var(--dim);">' + (kind === "flag" ? "No published flag list. Open this class in teacher.html once." : "No vocab for this course.") + '</span>') + '</div>') +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab puzzle types</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + PMODES.map(function(p){ return '<button type="button" class="chip brT" data-p="' + p[0] + '" aria-pressed="' + !!modes[p[0]] + '">' + p[1] + '</button>'; }).join("") + '</div>') +
         '<div class="mono" style="font-size:13px;color:var(--muted);margin-bottom:14px;">' + (n >= 2 ? n + " players \u00b7 " + size + "-slot bracket" + (size - n ? " \u00b7 " + (size - n) + " bye" + (size - n > 1 ? "s" : "") + " for the top seed" + (size - n > 1 ? "s" : "") : "") : "Pick at least 2 players") + '</div>' +
@@ -205,6 +254,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       if (p && m.status === "live" && (p.wa !== m.wa || p.wb !== m.wb)) FX.shake(document.getElementById("bm-" + m.id));
       prev[m.id] = { status: m.status, wa: m.wa, wb: m.wb };
     });
+    if (FX && FX.music) { var mLive = ST.bracket.status === "live", mFinal = mLive && (ST.tree.matches || []).some(function(m){ return m.side === "main" && m.status === "live" && !(ST.tree.matches || []).some(function(n){ return n.side === "main" && n.round > m.round; }); });
+      FX.music(mLive, mFinal); }
     if (ST.bracket.status === "done" && !fx.done) { fx.done = ST.bracket.id; var ch = (ST.tree.entrants || []).filter(function(e){ return e.place === "champion"; })[0]; FX.banner("\u2655 " + (ch ? ch.handle : "CHAMPION") + " WINS THE BRACKET!", "#ffcf5c", "", 3600); FX.confetti(); FX.sfx("horn"); }
   }
   // 31.3: champion = every prize, runner-up = no test bonus, semifinalists (3rd) = in-game items. Rolled 3rd \u2192 1st.
@@ -222,6 +273,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function bind(){
     prizeAuto();
     var pz = document.getElementById("brPrize"); if (pz) pz.onclick = function(){ if (!PRIZE_ROLL.open(prizeList())) { msg = "Every bracket prize has been rolled."; paint(); } };
+    var sg = document.getElementById("brSheetGo"); if (sg) sg.onclick = importSheet;
+    var si = document.getElementById("brSheet"); if (si) si.onkeydown = function(e){ if (e.key === "Enter") importSheet(); };
     view.querySelectorAll(".brK").forEach(function(b){ b.onclick = function(){ kind = b.getAttribute("data-k"); pick = {}; paint(); }; });
     view.querySelectorAll(".brM").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
     view.querySelectorAll(".brS").forEach(function(b){ b.onclick = function(){ sudden = b.getAttribute("data-s") === "1"; paint(); }; });
@@ -232,12 +285,13 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       L.forEach(function(p){ chosen[p.id] = b.checked; }); paint(); }; });
     if (WR) WR.bind(view);
     var go = document.getElementById("brGo"); if (go) go.onclick = function(){
-      var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), bin = kind === "binary" && BIN;
+      var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), bin = kind === "binary" && BIN, sh = kind === "sheet";
+      if (sh && SHEET.rows.length < 4) { msg = "Import a Google Sheet with at least 4 questions first."; paint(); return; }
       if (WR && WR.needsRoom()) { WR.openRoom(); return; }   // 32.1: brackets go through the class duel waiting room
       var n = picked().length; if (n < 2) { msg = ERR.need_two; paint(); return; }
       busy = true; msg = ""; paint();
       (WR ? WR.go : function(f){ f(function(){}); })(function(done){
-      rpc("ctf_t_br_create", { p_class: CUR.id, p_kind: bin ? "vocab" : kind, p_modules: bin ? [BIN.module] : mods, p_pool: bin ? BIN.pool() : pool(mods), p_modes: bin ? BIN.modes : PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }), p_students: picked().map(function(p){ return p.id; }), p_sudden: sudden })
+      rpc("ctf_t_br_create", { p_class: CUR.id, p_kind: bin || sh ? "vocab" : kind, p_modules: bin ? [BIN.module] : sh ? [99] : mods, p_pool: bin ? BIN.pool() : sh ? SHEET.rows : pool(mods), p_modes: bin ? BIN.modes : PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }), p_students: picked().map(function(p){ return p.id; }), p_sudden: sudden })
         .then(function(r){ busy = false; var ok = r && !r.error; done(ok); if (!ok) { msg = ERR[r && r.error] || "Couldn\u2019t start (" + ((r && r.error) || "error") + ")."; paint(); return; } showSetup = false; prev = {}; load(); })
         .catch(function(e){ busy = false; done(false); msg = "Couldn\u2019t start. Check that supabase/brackets.sql has been run."; paint(); });
       });

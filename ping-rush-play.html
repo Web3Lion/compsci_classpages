@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=37.0.0"></script>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.0.0">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Ping Rush</title>
+<link href="assets/fonts/fonts.css?v=37.0.0" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--warn:#ffcf5c;--rush:#00e0c6;--rushText:#03201c;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--warn:#8a5a00;--rush:#00796b;--rushText:#ffffff;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:820px;margin:0 auto;padding:20px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800;min-height:52px;padding:10px 20px;border-radius:10px;border:2px solid var(--rush);background:var(--rush);color:var(--rushText);cursor:pointer;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;min-height:64px;padding:12px 16px;border-radius:12px;border:2px solid var(--border3);background:var(--panel2);color:var(--bright);font:700 18px 'Inter',sans-serif;cursor:pointer;}
+.opt:hover:not(:disabled){border-color:var(--rush);}
+.opt b{font-family:'JetBrains Mono',monospace;color:var(--rush);font-size:18px;}
+input.ans{flex:1;min-width:200px;min-height:56px;padding:8px 14px;border-radius:10px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);font:800 20px 'JetBrains Mono',monospace;letter-spacing:1px;}
+input.ans:focus{outline:none;border-color:var(--rush);}
+.mask{display:inline-flex;align-items:flex-end;justify-content:center;min-width:26px;height:40px;border-bottom:3px solid var(--rush);font:800 22px 'JetBrains Mono',monospace;color:var(--bright);}
+.mask.sp{border-bottom-color:transparent;min-width:12px;}
+@keyframes prShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:prShake .3s ease 2;}
+html[data-motion="reduce"] .shake{animation:none;}
+@media (max-width:640px){.wrap{padding:16px 14px 50px;}.card{padding:16px;}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <a id="back" href="index.html" class="mono" style="display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;">&larr; Back</a>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script>
+(function(){
+  var r0 = document.documentElement, tb = document.getElementById("themeToggle");
+  window.__toggleTheme = function(){ var t = r0.getAttribute("data-theme") === "light" ? "dark" : "light"; r0.setAttribute("data-theme", t); try { localStorage.setItem("course-theme", t); } catch (e) {} tb.textContent = t === "light" ? "DARK" : "LIGHT"; };
+  tb.textContent = r0.getAttribute("data-theme") === "light" ? "DARK" : "LIGHT";
+})();
+(function(){
+  var q = new URLSearchParams(location.search), C = (q.get("c") || "").toLowerCase();
+  var OK = { cyber1: 1, cyber2: 1, cyber3: 1, apcsp: 1, web3: 1 };
+  if (!OK[C]) { document.getElementById("view").innerHTML = '<div class="card">Open Ping Rush from the Duel Waiting Room on your course home.</div>'; return; }
+  document.getElementById("back").href = C + "/index.html";
+  var V = window.SITE_VERSION || "37.0.0", list = ["config.js", "supabase-config.js", "js/auth.js", "js/ko-fx.js"];
+  (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
+
+  function boot(){
+    var AUTH = window.CTF_AUTH, view = document.getElementById("view"), KX = window.KO_FX;
+    var S = null; try { S = JSON.parse(localStorage.getItem("ctf-sess-" + C)); } catch (e) {}
+    if (!AUTH || !AUTH.online || !S || !S.studentId) { view.innerHTML = '<div class="card">Sign in on your <a href="' + C + '/ctf.html">CTF page</a> first, then come back through the Duel Waiting Room.</div>'; return; }
+    function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+    function rpc(fn, a){ return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
+    var ST = null, skew = 0, sig = "", timer = null, sending = false, lastKey = "";
+    function sfx(n){ if (KX) KX.sfx(n); }
+    function load(){
+      clearTimeout(timer);
+      rpc("ctf_pr_state").then(function(d){
+        if (!d || d.error) { view.innerHTML = '<div class="card">' + (d && d.error === "not_yours" ? 'Sign in on your <a href="' + C + '/ctf.html">CTF page</a> first.' : 'Couldn\u2019t load Ping Rush.') + '</div>'; timer = setTimeout(load, 5000); return; }
+        ST = d; if (d.now) skew = new Date(d.now).getTime() - Date.now();
+        render(); timer = setTimeout(load, d.status === "live" ? 1000 : 4000);
+      }).catch(function(){ timer = setTimeout(load, 3000); });
+    }
+    function big(title, sub, col){ return '<div class="card" style="text-align:center;padding:40px 22px;border:2px solid ' + (col || "var(--rush)") + ';"><div style="font-size:clamp(28px,6vw,44px);font-weight:800;color:' + (col || "var(--rush)") + ';line-height:1.15;">' + title + '</div>' + (sub ? '<p style="color:var(--muted);font-size:17px;margin:14px 0 0;line-height:1.5;">' + sub + '</p>' : '') + '</div>'; }
+    function bar(){ return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="flex:1;height:8px;border-radius:4px;background:var(--bg);border:1px solid var(--border2);overflow:hidden;"><div id="prBar" style="height:100%;background:var(--rush);width:100%;"></div></div><span class="mono" id="prT" style="font-size:15px;font-weight:800;color:var(--rush);min-width:44px;text-align:right;"></span></div>'; }
+    function header(){
+      var d = ST;
+      return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:170px;"><span class="mono" style="font-size:12px;letter-spacing:2px;color:var(--rush);font-weight:800;">\u26a1 PING RUSH</span>' +
+        (d.status === "live" ? '<span class="mono" style="font-size:13px;color:var(--dim);">Q ' + d.qi + ' of ' + d.total + '</span>' : '') +
+        '<span style="flex:1;"></span><span class="mono" style="font-size:13px;color:var(--bright);">' + esc(d.handle) + ' \u00b7 ' + Number(d.score || 0).toLocaleString() + ' pts \u00b7 #' + d.rank + ' of ' + d.of + '</span>' +
+        (KX ? '<button type="button" id="prSnd" class="mono" aria-pressed="' + KX.soundOn() + '" style="min-height:40px;padding:4px 12px;border-radius:999px;border:1px solid var(--border3);background:transparent;color:var(--dim);font-size:11px;cursor:pointer;">' + (KX.soundOn() ? "SOUND ON" : "SOUND OFF") + '</button>' : '') + '</div>';
+    }
+    function render(){
+      var d = ST; if (!d) return;
+      var m = d.mine || {}, key = JSON.stringify([d.status, d.phase, d.qi, m.ok, m.locked, d.score, d.rank, d.of, KX && KX.soundOn()]);
+      if (key === sig) return; sig = key;
+      if (d.status === "live" && d.phase === "reveal" && lastKey !== "r" + d.qi) { lastKey = "r" + d.qi; if (!m.ok) sfx("miss"); }
+      var h;
+      if (!d.status) h = big("No Ping Rush right now", "Wait in the <a href=\"lobby.html?c=" + C + "\">Duel Waiting Room</a>. When your teacher starts, you\u2019ll be sent here.");
+      else if (d.status === "done") {
+        var top = (d.top || []).map(function(p, i){ return '<div style="font-size:18px;color:var(--bright);"><b class="mono" style="color:var(--rush);">' + (i + 1) + '</b> \u00b7 ' + esc(p.h) + ' <span class="mono" style="color:var(--dim);">' + Number(p.s).toLocaleString() + '</span></div>'; }).join("");
+        var xp = !d.played ? 0 : d.score > 0 && d.rank <= 3 ? [25, 15, 10][d.rank - 1] : 5;
+        h = big(d.rank === 1 && d.score > 0 ? "You won!" : "Game over", "You finished <b style=\"color:var(--bright);\">#" + d.rank + "</b> of " + d.of + " with <b style=\"color:var(--bright);\">" + Number(d.score || 0).toLocaleString() + "</b> points." + (xp ? " <b style=\"color:var(--ok);\">+" + xp + " XP</b>" : "")) +
+          (top ? '<div class="card" style="margin-top:14px;display:flex;flex-direction:column;gap:6px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--dim);">TOP 3</div>' + top + '</div>' : '');
+      }
+      else if (d.phase === "reveal") h = big(m.ok ? "Correct! +" + m.pts : "The answer was " + esc(d.a), (m.ok ? "" : "<span style=\"white-space:pre-line;\">" + esc(d.q) + "</span><br>") + "You\u2019re <b style=\"color:var(--bright);\">#" + d.rank + "</b> of " + d.of + "." + (m.ok && d.streak >= 3 ? " " + d.streak + " in a row!" : "") + " Next question coming up\u2026", m.ok ? "var(--ok)" : "var(--warn)");
+      else if (m.ok) h = big("Locked in! +" + m.pts, "Nice and fast. Waiting for everyone else\u2026", "var(--ok)");
+      else if (m.locked) h = big("Not that one", "Wait for the answer.", "var(--bad)");
+      else {
+        var body;
+        if (d.k === "mc") body = '<div style="display:flex;flex-direction:column;gap:10px;">' + (d.o || []).map(function(o, i){ return '<button type="button" class="opt" data-o="' + i + '"' + (sending ? ' disabled' : '') + '><b>' + "ABCD"[i] + '</b><span>' + esc(o) + '</span></button>'; }).join("") + '</div><div class="mono" style="font-size:12px;color:var(--dim);">One pick. A wrong pick locks you out of this question.</div>';
+        else body = '<div style="display:flex;flex-wrap:wrap;gap:5px;" aria-hidden="true">' + String(d.mask || "").split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : ch === "_" ? '<span class="mask"></span>' : '<span class="mask" style="border-bottom-color:transparent;">' + esc(ch) + '</span>'; }).join("") + '</div>' +
+          '<div class="mono" style="font-size:12px;color:var(--dim);">' + String(d.mask || "").replace(/[^_]/g, "").length + ' letters \u00b7 wrong answers can be retried</div>' +
+          '<form id="prForm" style="display:flex;gap:10px;flex-wrap:wrap;"><input class="ans" id="prAns" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" placeholder="Answer"><button class="btn" type="submit">Send</button></form>';
+        h = '<div class="card" style="display:flex;flex-direction:column;gap:14px;">' + bar() +
+          '<div style="font-size:clamp(19px,3.4vw,26px);font-weight:700;color:var(--bright);line-height:1.35;white-space:pre-line;text-wrap:pretty;">' + esc(d.q) + '</div>' + body + '</div>';
+      }
+      view.innerHTML = (d.status ? header() : '') + h;
+      var a = document.getElementById("prAns"); if (a) a.focus();
+      wire(); tick();
+    }
+    function send(txt, btn){
+      if (sending || !ST || ST.status !== "live" || ST.phase !== "q") return;
+      sending = true; if (btn) btn.disabled = true;
+      rpc("ctf_pr_answer", { p_rush: ST.id, p_qi: ST.qi, p_answer: txt }).then(function(r){
+        sending = false; r = r || {};
+        if (r.ok) { ST.mine = { ok: true, locked: false, pts: r.pts }; sfx("hit"); sig = ""; render(); return; }
+        if (r.locked) { ST.mine = { ok: false, locked: true, pts: 0 }; sfx("miss"); sig = ""; render(); return; }
+        if (r.error === "closed") { load(); return; }
+        if (btn) btn.disabled = false;
+        sfx("miss"); var a = document.getElementById("prAns"); if (a) { a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); a.value = ""; a.focus(); }
+      }).catch(function(){ sending = false; if (btn) btn.disabled = false; });
+    }
+    function wire(){
+      var f = document.getElementById("prForm"), a = document.getElementById("prAns");
+      if (f) f.onsubmit = function(e){ e.preventDefault(); if (a && a.value.trim()) send(a.value, f.querySelector("button")); };
+      view.querySelectorAll(".opt").forEach(function(b){ b.onclick = function(){ send(b.querySelector("span").textContent, b); }; });
+      var sn = document.getElementById("prSnd"); if (sn) sn.onclick = function(){ KX.setSound(!KX.soundOn()); sig = ""; render(); };
+    }
+    function tick(){
+      var d = ST, t = document.getElementById("prT"), b = document.getElementById("prBar");
+      if (!d || !t || d.status !== "live" || d.phase !== "q") return;
+      var left = Math.max(0, new Date(d.q_ends).getTime() - (Date.now() + skew));
+      t.textContent = Math.ceil(left / 1000) + " s"; if (b) b.style.width = (left / (d.qtime * 1000) * 100) + "%";
+    }
+    setInterval(tick, 200);
+    load();
+  }
+})();
+</script>
+</body>
+</html>

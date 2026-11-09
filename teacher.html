@@ -3,14 +3,14 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=36.0.0"></script>
+<script src="site.js?v=37.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=36.0.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=36.0.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Dashboard (new) — CTF Platform</title>
-<link href="assets/fonts/fonts.css?v=36.0.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=37.0.0" rel="stylesheet">
 <style>
   :root{
     --bg:#0a0d12;--panel:#111620;--panel2:#161d29;--panel3:#1c2432;--bg2:#0d1119;
@@ -260,7 +260,7 @@
         <nav id="navGroups" aria-label="Dashboard sections" style="display:flex;flex-direction:column;gap:14px;flex:1;"></nav>
         <div style="border-top:1px solid var(--border2);padding-top:12px;display:flex;flex-direction:column;gap:2px;">
           <div class="mono" style="font-size:10px;letter-spacing:1.5px;color:var(--faint);padding:0 8px 4px;">RESOURCES</div>
-          <button type="button" class="nv" onclick="window.open('../directory','_blank')">Directory ↗</button>
+          <button type="button" class="nv" onclick="window.open('directory.html','_blank')">Directory ↗</button>
           <button type="button" class="nv" id="nvPractice" onclick="openPracticeGuide()">Practice guide ↗</button>
           <a class="nv" href="teacher_cyber_tools/">Teacher Resources</a>
           <a class="nv" href="install-check.html" target="_blank" rel="noopener">Install Check ↗</a>
@@ -307,20 +307,20 @@
   </div>
 </div>
 
-<script src="config.js?v=36.0.0"></script>
-<script src="ctf-data/cyber1.js?v=36.0.0"></script>
-<script src="ctf-data/cyber2.js?v=36.0.0"></script>
-<script src="ctf-data/cyber3.js?v=36.0.0"></script>
-<script src="ctf-data/apcsp.js?v=36.0.0"></script>
-<script src="ctf-data/web3.js?v=36.0.0"></script>
-<script src="cipher.js?v=36.0.0"></script>
-<script src="supabase-config.js?v=36.0.0"></script>
-<script src="auth.js?v=36.0.0"></script>
-<script src="name-filter.js?v=36.0.0"></script>
-<script src="objectives.js?v=36.0.0"></script>
-<script src="standards.js?v=36.0.0"></script>
-<script src="csv.js?v=36.0.0"></script>
-<script src="skins.js?v=36.0.0"></script>
+<script src="config.js?v=37.0.0"></script>
+<script src="ctf-data/cyber1.js?v=37.0.0"></script>
+<script src="ctf-data/cyber2.js?v=37.0.0"></script>
+<script src="ctf-data/cyber3.js?v=37.0.0"></script>
+<script src="ctf-data/apcsp.js?v=37.0.0"></script>
+<script src="ctf-data/web3.js?v=37.0.0"></script>
+<script src="js/cipher.js?v=37.0.0"></script>
+<script src="supabase-config.js?v=37.0.0"></script>
+<script src="js/auth.js?v=37.0.0"></script>
+<script src="js/name-filter.js?v=37.0.0"></script>
+<script src="js/objectives.js?v=37.0.0"></script>
+<script src="js/standards.js?v=37.0.0"></script>
+<script src="js/csv.js?v=37.0.0"></script>
+<script src="js/skins.js?v=37.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -615,7 +615,7 @@ function renderNav(){
 function runTiles(){
   var q='?class='+encodeURIComponent(CUR.id);
   var T=[["PULSE","Live Pulse","pulse.html"+q,"var(--ok)"],["TEAM","Team Battle","battle.html"+q,"var(--accent)"],["VOCAB","Vocab Battle","vocab-battle.html"+q,"var(--accent)"],
-    ["RAID","Boss Raid","raid.html"+q,"var(--bad)"],["BRKT","Duel Bracket","bracket.html"+q,"var(--accent)"],["1V1","Duel Arena","duel.html"+q,"var(--accent)"],["WATCH","Duel Spectator","duel-watch.html"+q,"var(--muted)"],["RALLY","Reward Rally","../carnival","var(--warn,#ffcf5c)"]];
+    ["RAID","Boss Raid","raid.html"+q,"var(--bad)"],["BRKT","King of the Pride","bracket.html"+q,"var(--accent)"],["PING","Ping Rush","ping-rush.html"+q,"var(--accent)"],["1V1","Duel Arena","duel.html"+q,"var(--accent)"],["WATCH","Duel Spectator","duel-watch.html"+q,"var(--muted)"],["RALLY","Reward Rally","carnival.html","var(--warn,#ffcf5c)"]];
   return '<div class="card" style="padding:16px;margin-bottom:18px;background:var(--bg);">'+
     '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px;"><div style="font-size:15px;font-weight:700;color:var(--bright);">Run class</div>'+
     '<div style="font-size:12px;color:var(--dim);">Opens in a new tab for the projector</div>'+
@@ -626,9 +626,9 @@ var JUMP=[], JSEL=0;
 function jumpItems(){
   var o=NAV_FLAT().map(function(x){ return {name:x.name,group:x.group,go:x.tab?"setTab('"+x.tab+"')":x.act}; });
   var q='?class='+encodeURIComponent(CUR.id);
-  [["Live Pulse","pulse.html"],["Team Battle","battle.html"],["Vocab Battle","vocab-battle.html"],["Boss Raid","raid.html"],["Duel Bracket","bracket.html"],["Duel Arena","duel.html"],["Duel Spectator","duel-watch.html"]].forEach(function(x){ o.push({name:x[0],group:"RUN CLASS",go:"window.open('"+x[1]+q+"','_blank')"}); });
-  o.push({name:"Reasey's Reward Rally",group:"RUN CLASS",go:"window.open('../carnival','_blank')"},{name:"End all duels",group:"RUN CLASS",go:"endAllDuels()"});
-  [["Directory","window.open('../directory','_blank')"],["Teacher Resources","location.href='teacher_cyber_tools/'"],["Install Check","window.open('install-check.html','_blank')"]].forEach(function(x){ o.push({name:x[0],group:"RESOURCES",go:x[1]}); });
+  [["Live Pulse","pulse.html"],["Team Battle","battle.html"],["Vocab Battle","vocab-battle.html"],["Boss Raid","raid.html"],["King of the Pride","bracket.html"],["Ping Rush","ping-rush.html"],["Duel Arena","duel.html"],["Duel Spectator","duel-watch.html"]].forEach(function(x){ o.push({name:x[0],group:"RUN CLASS",go:"window.open('"+x[1]+q+"','_blank')"}); });
+  o.push({name:"Reasey's Reward Rally",group:"RUN CLASS",go:"window.open('carnival.html','_blank')"},{name:"End all duels",group:"RUN CLASS",go:"endAllDuels()"});
+  [["Directory","window.open('directory.html','_blank')"],["Teacher Resources","location.href='teacher_cyber_tools/'"],["Install Check","window.open('install-check.html','_blank')"]].forEach(function(x){ o.push({name:x[0],group:"RESOURCES",go:x[1]}); });
   (ROSTER||[]).forEach(function(s){ var nm=s.google_name||s.name||s.email||""; o.push({name:(s.handle||"?")+(nm?" \u00b7 "+nm:""),group:"STUDENT",go:"openStudent('"+s.id+"')"}); });
   return o;
 }
@@ -661,12 +661,13 @@ function launchMenus(){
   return '<details class="tmenu"><summary class="btn sm pri">\u25b6 Launch \u25be</summary><div class="tmenu-p">'+
       '<div class="nvh" style="padding:6px 10px 2px;">IN CLASS</div>'+
       it('pulse.html'+q,'Live Pulse','Who is working right now')+
-      '<button type="button" onclick="window.open(\'../carnival\',\'_blank\')">Reasey\u2019s Reward Rally \u2197<small>Spinner, Plinko, Duck Pond and more</small></button>'+
+      '<button type="button" onclick="window.open(\'carnival.html\',\'_blank\')">Reasey\u2019s Reward Rally \u2197<small>Spinner, Plinko, Duck Pond and more</small></button>'+
       '<div class="nvh" style="padding:8px 10px 2px;">COMPETE</div>'+
       it('battle.html'+q,'Team Battle','Squads race on flags')+
       it('vocab-battle.html'+q,'Vocab Battle','Squads fight 1v1 on vocab')+
       it('raid.html'+q,'Boss Raid','Whole class vs the course guide')+
-      it('bracket.html'+q,'Duel Bracket','Best-of-3 knockout, seeded by XP')+
+      it('bracket.html'+q,'King of the Pride','Knockout bracket, seeded by XP')+
+      it('ping-rush.html'+q,'Ping Rush','Whole class, same question, speed scores')+
       it('duel.html'+q,'Duel Arena','Projector quiz duel')+
       it('duel-watch.html'+q,'Duel Spectator','Every live student duel')+
       '<div class="sep"></div>'+
@@ -4443,7 +4444,8 @@ function adCard(){
     '<span style="display:flex;gap:8px;flex-wrap:wrap;"><a class="btn" target="_blank" rel="noopener" href="battle.html?class='+encodeURIComponent(CUR.id)+'">Flag battle \u2197</a>'+
     '<a class="btn" target="_blank" rel="noopener" href="vocab-battle.html?class='+encodeURIComponent(CUR.id)+'">Vocab battle \u2197</a>'+
     '<a class="btn" target="_blank" rel="noopener" href="duel-watch.html?class='+encodeURIComponent(CUR.id)+'">Duel spectator \u2197</a>'+
-    '<a class="btn" target="_blank" rel="noopener" href="bracket.html?class='+encodeURIComponent(CUR.id)+'">Duel bracket \u2197</a>'+
+    '<a class="btn" target="_blank" rel="noopener" href="bracket.html?class='+encodeURIComponent(CUR.id)+'">King of the Pride \u2197</a>'+
+    '<a class="btn" target="_blank" rel="noopener" href="ping-rush.html?class='+encodeURIComponent(CUR.id)+'">Ping Rush \u2197</a>'+
     '<a class="btn" target="_blank" rel="noopener" href="raid.html?class='+encodeURIComponent(CUR.id)+'">Boss raid \u2197</a></span></div>'+bgCard()+
     '<div class="card" style="padding:16px 18px;margin-bottom:20px;">'+
     slider(!!AD.data.on,"toggleDuels()","Student flag duels",
@@ -5037,7 +5039,7 @@ function toolClicksPanel(){
   var h='<div style="border-top:1px solid var(--border);padding-top:18px;margin-top:26px;">'+
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">'+
       '<div style="font-size:15px;font-weight:700;color:var(--bright);">Teacher Tools clicks</div>'+
-      '<a class="btn sm" href="../tools/" target="_blank" rel="noopener" style="margin-left:auto;">Open page</a>'+
+      '<a class="btn sm" href="tools/" target="_blank" rel="noopener" style="margin-left:auto;">Open page</a>'+
       '<button class="btn sm" onclick="refreshToolClicks()">Refresh</button>'+
     '</div>'+
     '<div style="color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:12px;">Anonymous count of clicks on each card and button on <span class="mono" style="color:var(--accent);">tools/</span>. No names or emails are stored.</div>';
