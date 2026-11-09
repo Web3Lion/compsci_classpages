@@ -1,0 +1,11 @@
+Term,Definition
+Vulnerability,A weakness that can be exploited by a threat
+Confidentiality,Keeping information private from people who should not see it
+Integrity,Making sure data is accurate and has not been changed without permission
+Availability,Making sure systems and data are there when authorized users need them
+Phishing,A fake message that tricks someone into giving up information or clicking a bad link
+Malware,Software designed to harm a computer or steal data
+Firewall,A tool that blocks or allows network traffic based on rules
+Encryption,Scrambling data so only someone with the key can read it
+Byte,A group of 8 bits
+Bit,"The smallest unit of data, a single 0 or 1"

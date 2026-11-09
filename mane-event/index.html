@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=36.0.0"></script>
+<script src="../site.js?v=37.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Mane Event</title>
-<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=36.0.0">
-<link href="../assets/fonts/fonts.css?v=36.0.0" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=37.0.0">
+<link href="../assets/fonts/fonts.css?v=37.0.0" rel="stylesheet">
 <style>
 :root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--gold2:#e6fff0;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
   --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
@@ -64,15 +64,15 @@ td{padding:9px 8px;border-bottom:1px solid var(--border);}
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
   <div id="hdr" style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:110px;">
-    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=36.0.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
+    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=37.0.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
     <h1 class="disp" style="margin:0;font-size:clamp(30px,5vw,44px);line-height:1.1;color:var(--bright);">Mane Event</h1>
     <p style="margin:6px 0 0;color:var(--muted);max-width:680px;">Live vocab and review battles. Students join with a code, get a random lion name, and nothing is saved anywhere except the host&rsquo;s own browser.</p>
   </div>
   <div id="view" aria-live="polite"></div>
 </div>
-<script src="../assets/vendor/peerjs.min.js?v=36.0.0"></script>
-<script src="../assets/vendor/qrcode.js?v=36.0.0"></script>
-<script src="../ko-fx.js?v=36.0.0"></script>
+<script src="../assets/vendor/peerjs.min.js?v=37.0.0"></script>
+<script src="../assets/vendor/qrcode.js?v=37.0.0"></script>
+<script src="../js/ko-fx.js?v=37.0.0"></script>
 <script>
 if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
   var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -84,6 +84,21 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
 (function(){
   var PREFIX = "sf-mane-event-", KEY = "mane-event-host", view = document.getElementById("view"), hdr = document.getElementById("hdr");
   var SHORT = /web3lion\.github\.io$/.test(location.host) ? "web3lion.github.io/compsci_classpages/mane" : location.host + location.pathname.replace(/mane-event\/(index\.html)?$/, "mane");
+  /* Cloudflare relay (TURN) for devices the school network won't let connect directly.
+     Paste either the Metered credentials URL (https://<app>.metered.live/api/v1/turn/credentials?apiKey=...)
+     or a Cloudflare Worker URL (claude only/cloudflare-relay-worker.js). Blank = direct only. */
+  var RELAY_URL = "";
+  var ICE = null, ICE_AT = 0, RELAY_ON = false;
+  function iceConfig(){
+    if (!RELAY_URL) return Promise.resolve(null);
+    if (ICE && Date.now() - ICE_AT < 3 * 3600e3) return Promise.resolve(ICE);
+    var done = false;
+    return Promise.race([
+      fetch(RELAY_URL, { cache: "no-store" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ done = true; var list = Array.isArray(j) ? j : j && j.iceServers; if (list && list.length) { ICE = list; ICE_AT = Date.now(); RELAY_ON = true; return ICE; } return null; }).catch(function(){ return null; }),
+      new Promise(function(res){ setTimeout(function(){ if (!done) res(ICE); }, 5000); })
+    ]);
+  }
+  function peerOpts(ice){ return { debug: 0, config: { iceServers: [{ urls: "stun:stun.cloudflare.com:3478" }, { urls: "stun:stun.l.google.com:19302" }].concat(ice || []) } }; }
   var LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   var ADJ = ["Roaring","Golden","Mighty","Brave","Swift","Royal","Fierce","Clever","Bold","Noble","Savanna","Sunlit","Maned","Prowling","Pouncing","Proud"];
   var NOUN = ["Neuron","Byte","Photon","Proton","Atom","Comet","Pixel","Quark","Vector","Circuit","Galaxy","Fossil","Magnet","Prism","Nebula","Cipher","Helix","Orbit","Ion","Electron","Molecule","Crystal","Laser","Rocket","Quasar","Gene","Isotope","Kernel","Packet","Router"];
@@ -104,6 +119,8 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
   function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function disp(a){ var d = String(a || "").replace(/\([^)]*\)/g, "").split("/")[0].trim(); return d || String(a || "").trim(); }
   function alts(a){ var o = [norm(a), norm(disp(a))]; String(a || "").split("/").forEach(function(x){ o.push(norm(x.replace(/\([^)]*\)/g, ""))); }); return o.filter(Boolean); }
+  function ansText(r){ return r.k === "v" ? disp(r.a) : String(r.a || "").trim(); }
+  function isRight(r, txt){ var n = norm(txt); if (!n) return false; return r.k === "mc" ? n === norm(r.a) : alts(r.a).indexOf(n) >= 0; }
   function rnd(n){ return Math.random() * n | 0; }
   function shuffle(a){ for (var i = a.length - 1; i > 0; i--) { var j = rnd(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function now(){ return Date.now(); }
@@ -114,7 +131,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
 
   /* ---------- CSV ---------- */
   function parseRows(text){
-    var t = String(text || ""), tab = t.indexOf("\t") >= 0, rows = [], row = [], f = "", q = false;
+    var t = String(text || "").replace(/^\uFEFF/, ""), tab = t.indexOf("\t") >= 0, rows = [], row = [], f = "", q = false;
     for (var i = 0; i < t.length; i++) {
       var c = t[i];
       if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
@@ -124,30 +141,33 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else f += c;
     }
     if (f || row.length) { row.push(f); rows.push(row); }
-    rows = rows.map(function(r){ return r.map(function(x){ return x.trim(); }); }).filter(function(r){ return r.filter(Boolean).length >= 2; });
-    var swap = false;
-    if (rows.length) {
-      var h0 = norm(rows[0][0]), hl = norm(rows[0][rows[0].length - 1]), P = /definition|question|prompt|clue/, A = /term|answer|word/;
-      if (P.test(h0) && A.test(hl) && h0.length < 20) rows.shift();
-      else if (A.test(h0) && P.test(hl) && h0.length < 20) { rows.shift(); swap = true; }
-    }
+    rows = rows.map(function(r){ return r.map(function(x){ return x.replace(/\r\n?/g, "\n").split("\n").map(function(l){ return l.trim(); }).join("\n").replace(/\n{3,}/g, "\n\n").trim(); }); }).filter(function(r){ return r.filter(Boolean).length >= 2; });
+    var fmt = "vt", hdr = rows.length ? rows[0].map(norm) : [];
+    if (hdr.length >= 3 && /^(type|questiontype|qtype|kind)$/.test(hdr[0])) { fmt = "qa"; rows.shift(); }
+    else if (hdr.length >= 2 && /^(term|name|word|vocab|vocabulary)/.test(hdr[0]) && /definition|meaning/.test(hdr[1])) { fmt = "vt"; rows.shift(); }
+    else if (hdr.length >= 2 && hdr[0].length < 20 && /definition|meaning|question|prompt|clue/.test(hdr[0]) && /term|answer|word|name/.test(hdr[hdr.length - 1])) { fmt = "dt"; rows.shift(); }
+    else if (rows.length && /^(mc|fr|multiplechoice|freeresponse|shortanswer|multiple|free)$/.test(hdr[0])) fmt = "qa";
+    else if (rows.length) { var a0 = 0, a1 = 0; rows.forEach(function(r){ a0 += (r[0] || "").length; a1 += (r[r.length - 1] || "").length; }); fmt = a0 <= a1 ? "vt" : "dt"; }
     var out = [], seen = {};
     rows.forEach(function(r){
-      r = r.filter(function(x, i){ return x || i === 0; });
-      var qq, aa;
-      if (swap) { aa = r[0]; qq = r.slice(1).join(", "); } else { aa = r[r.length - 1]; qq = r.slice(0, -1).join(", "); }
-      qq = qq.slice(0, 300); aa = aa.slice(0, 80);
-      var k = norm(qq) + "|" + norm(aa);
-      if (!norm(qq) || !norm(aa) || seen[k] || out.length >= 500) return;
-      seen[k] = 1; out.push({ q: qq, a: aa });
+      var qq, aa, k = "v", d = null;
+      if (fmt === "qa") {
+        var ty = norm(r[0]); qq = r[1] || ""; aa = r[2] || ""; d = r.slice(3, 6).map(function(x){ return (x || "").replace(/\s*\n\s*/g, " ").slice(0, 160); }).filter(Boolean);
+        k = /^(fr|free|short|open|text|typed|written)/.test(ty) ? "fr" : /^(mc|multi|choice)/.test(ty) ? "mc" : d.length ? "mc" : "fr";
+        if (k === "fr") d = null;
+      } else if (fmt === "vt") { aa = r[0] || ""; qq = r.slice(1).filter(Boolean).join(", "); }
+      else { r = r.filter(function(x, i){ return x || i === 0; }); aa = r[r.length - 1]; qq = r.slice(0, -1).join(", "); }
+      qq = qq.slice(0, 400); aa = aa.replace(/\s*\n\s*/g, " ").slice(0, k === "v" ? 80 : 160);
+      var key = norm(qq) + "|" + norm(aa);
+      if (!norm(qq) || !norm(aa) || seen[key] || out.length >= 500) return;
+      seen[key] = 1; var o = { q: qq, a: aa, k: k }; if (d) o.d = d; out.push(o);
     });
     return out;
   }
-  var TEMPLATE = "Definition,Term\n\"A weakness that can be exploited by a threat\",Vulnerability\n\"Keeping information private from people who should not see it\",Confidentiality\n\"What is 2 to the 4th power?\",16\n\"How many bits are in a byte?\",8\n";
 
   /* ---------- start ---------- */
   var q0 = new URLSearchParams(location.search), qcode = (q0.get("code") || "").toUpperCase().replace(/[^A-Z]/g, "");
-  if (qcode.length === 6) join(qcode); else home();
+  if (q0.get("preview")) join("PREVIEW", true); else if (qcode.length === 6) join(qcode); else home();
 
   function saved(){ try { var s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.v === 1 && now() - s.saved < 4 * 3600e3) return s; } catch (e) {} return null; }
 
@@ -188,8 +208,9 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     view.innerHTML = '<div class="card mono" style="color:var(--dim);">Opening the den\u2026</div>';
     function newCode(){ var c = ""; for (var i = 0; i < 6; i++) c += LETTERS[rnd(LETTERS.length)]; return c; }
 
-    function connect(){
-      peer = new Peer(PREFIX + S.code, { debug: 0 });
+    function connect(){ iceConfig().then(connectWith); }
+    function connectWith(ice){
+      peer = new Peer(PREFIX + S.code, peerOpts(ice));
       peer.on("open", function(){ if (!opened) { opened = true; dirty = true; } live(true); });
       peer.on("disconnected", function(){ live(false); setTimeout(function(){ if (!peer.destroyed && peer.disconnected) peer.reconnect(); }, 1000); });
       peer.on("error", function(e){
@@ -209,7 +230,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     }
     connect();
     setInterval(function(){ if (peer && !peer.destroyed && peer.disconnected) peer.reconnect(); }, 5000);
-    function live(ok){ var el = document.getElementById("live"); if (el) { el.textContent = ok ? "\u25CF LIVE \u00B7 students can join" : "\u25CF RECONNECTING\u2026 keep this tab open"; el.style.color = ok ? "var(--ok)" : "var(--warn)"; } }
+    function live(ok){ var el = document.getElementById("live"); if (el) { el.textContent = ok ? "\u25CF LIVE \u00B7 students can join" + (RELAY_ON ? " \u00B7 relay on" : "") : "\u25CF RECONNECTING\u2026 keep this tab open"; el.style.color = ok ? "var(--ok)" : "var(--warn)"; } }
     window.addEventListener("beforeunload", function(e){ if (S.phase !== "setup" && S.phase !== "done") { save(true); e.preventDefault(); e.returnValue = ""; } });
 
     function save(force){ if (!force && now() - lastSave < 1000) return; lastSave = now(); S.saved = now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -224,6 +245,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
 
     function onData(conn, d){
       if (!d || typeof d !== "object") return;
+      if (d.k === "route" && conn._pid) { var pr = S.players[conn._pid]; if (pr) { pr.route = d.r === "relay" ? "relay" : "direct"; dirty = true; } return; }
       if (d.k === "join") {
         var tok = String(d.tok || ""); if (!/^[a-z0-9]{8,32}$/i.test(tok)) return;
         var p = S.players[tok];
@@ -233,6 +255,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           if (S.setup.mode === "battle") { p.team = smallest(); if (S.phase === "countdown" || S.phase === "live") feed(p.name + " joined " + teamNames()[p.team], p.team); }
           else if (S.phase === "countdown" || S.phase === "live") { p.out = true; p.late = true; }
         }
+        if (S.setup.mode === "battle" && (p.team == null || p.team >= S.setup.teams)) p.team = smallest();
         p.left = false; p.up = true; p.dev = String(d.dev || "").slice(0, 30); conn._pid = tok; CONN[tok] = conn; LAST[tok] = "";
         try { conn.send({ k: "hi" }); } catch (e) {}
         dirty = true; return;
@@ -275,30 +298,32 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var R = S.rows, i = 0;
       for (var k = 0; k < 30; k++) { i = rnd(R.length); if (f.used.indexOf(i) < 0) break; }
       f.used.push(i); if (f.used.length > Math.min(R.length - 1, 40)) f.used.shift();
-      var d = disp(R[i].a), ok = allowed(d);
-      f.row = i; f.n++; f.mode = ok.length ? ok[rnd(ok.length)] : "type"; f.pz = ""; f.opts = null; f.rev = []; f.shift = 0; f.len = norm(d).length;
+      var r = R[i], d = ansText(r), ok = r.k === "v" ? allowed(d) : [];
+      f.row = i; f.n++; f.mc = r.k === "mc"; f.mode = f.mc ? "bank" : r.k === "fr" ? "outline" : ok.length ? ok[rnd(ok.length)] : "type"; f.pz = ""; f.opts = null; f.rev = []; f.shift = 0; f.len = norm(d).length;
+      if (f.mode === "outline") f.pz = d.split("").map(function(ch){ return /[a-z0-9]/i.test(ch) ? "_" : ch; }).join("");
       if (f.mode === "shift") { f.shift = 1 + rnd(5); f.pz = d.toUpperCase().replace(/[A-Z]/g, function(c){ return String.fromCharCode((c.charCodeAt(0) - 65 + f.shift) % 26 + 65); }); }
       if (f.mode === "scramble") { var L = d.toUpperCase().replace(/[^A-Z0-9]/g, "").split(""), orig = L.join(""); for (var j = 0; j < 6; j++) { shuffle(L); if (L.join("") !== orig) break; } f.pz = L.join(""); }
       if (f.mode === "bank") {
         var seen = {}, o = [d]; seen[norm(d)] = 1;
-        shuffle(R.map(function(r){ return disp(r.a); })).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
+        if (f.mc) (r.d || []).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
+        if (!f.mc || o.length < 2) shuffle(R.filter(function(x){ return f.mc ? x.k !== "v" : x.k === "v"; }).map(ansText)).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
         f.opts = shuffle(o);
       }
       var t = now(); f.t0 = t; f.next = t + 6000; f.endsAt = S.setup.qtime ? t + S.setup.qtime * 1000 : 0; f.lock = [0, 0]; f.pause = 0; f.last = null; dirty = true;
     }
-    function mask(f){ var d = disp(S.rows[f.row].a); return d.split("").map(function(ch, j){ return /[a-z0-9]/i.test(ch) && f.rev.indexOf(j) < 0 ? "_" : ch; }).join(""); }
+    function mask(f){ var d = ansText(S.rows[f.row]); return d.split("").map(function(ch, j){ return /[a-z0-9]/i.test(ch) && f.rev.indexOf(j) < 0 ? "_" : ch; }).join(""); }
     function startFight(a, b, kind, mid){
       var id = "f" + (++S.fseq), f = { id: id, p: [a, b], kind: kind, mid: mid || null, hp: [HP, HP], n: 0, used: [], lock: [0, 0], tries: [0, 0],
         sd: kind === "match" && S.setup.format === "sd", q: 0, pts: [0, 0], pause: 0, between: 0, down: 0 };
       S.fights[id] = f; S.players[a].fid = id; S.players[b].fid = id; newPrompt(f); return f;
     }
     function endFight(f){ delete S.fights[f.id]; f.p.forEach(function(id){ var p = S.players[id]; if (p && p.fid === f.id) p.fid = null; }); dirty = true; }
-    function settle(f, w){ f.last = { a: disp(S.rows[f.row].a), by: w }; f.pause = now() + 1800; if (f.sd) f.q++; dirty = true; }
+    function settle(f, w){ f.last = { a: ansText(S.rows[f.row]), by: w }; f.pause = now() + 1800; if (f.sd) f.q++; dirty = true; }
     function answer(id, d){
       var f = fightOf(id); if (!f || d.n !== f.n || f.pause || f.between) return;
       var i = f.p.indexOf(id), t = now(); if (i < 0 || f.lock[i] || t - f.tries[i] < 500) return;
       f.tries[i] = t;
-      var ok = alts(S.rows[f.row].a).indexOf(norm(String(d.a || "").slice(0, 100))) >= 0;
+      var ok = isRight(S.rows[f.row], String(d.a || "").slice(0, 160));
       if (ok) { if (f.sd) f.pts[i]++; else f.hp[1 - i] = Math.max(0, f.hp[1 - i] - HIT); settle(f, i); return; }
       send(id, { k: "bad" });
       if (f.sd) f.lock[i] = 1;
@@ -361,7 +386,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var R0 = S.rush, f = R0 && R0.f, p = S.players[id], t = now(); if (!f || R0.phase !== "q" || d.n !== f.n || !p) return;
       var A = R0.ans[id] || (R0.ans[id] = { ok: 0, lock: 0, tries: 0, last: 0 });
       if (A.ok || A.lock || t - A.last < 400) return; A.last = t; A.tries++;
-      if (alts(S.rows[f.row].a).indexOf(norm(String(d.a || "").slice(0, 100))) >= 0) {
+      if (isRight(S.rows[f.row], String(d.a || "").slice(0, 160))) {
         p.streak = (p.streak || 0) + 1;
         A.ok = 1; A.pts = Math.round(500 + 500 * Math.max(0, f.endsAt - t) / rushT()) + (p.streak >= 3 ? 100 : 0); A.at = t;
         p.score = (p.score || 0) + A.pts;
@@ -374,7 +399,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var ps = rushIn(), done = ps.length && ps.every(function(p){ var A = R0.ans[p.id]; return A && (A.ok || A.lock); });
       if (t >= f.endsAt || done) return rushReveal();
       if (f.mode === "reveal" && t >= f.next) {
-        var dd = disp(S.rows[f.row].a), hid = [];
+        var dd = ansText(S.rows[f.row]), hid = [];
         dd.split("").forEach(function(ch, j){ if (/[a-z0-9]/i.test(ch) && f.rev.indexOf(j) < 0) hid.push(j); });
         if (hid.length > 1) { f.rev.push(hid[rnd(hid.length)]); dirty = true; }
         f.next = t + Math.max(2500, rushT() / 8);
@@ -441,7 +466,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           if (f.pause) { if (t >= f.pause) { f.pause = 0; afterPause(f); } return; }
           if (f.endsAt && t >= f.endsAt) { settle(f, null); return; }
           if (f.mode === "reveal" && t >= f.next) {
-            var d = disp(S.rows[f.row].a), hid = [];
+            var d = ansText(S.rows[f.row]), hid = [];
             d.split("").forEach(function(ch, j){ if (/[a-z0-9]/i.test(ch) && f.rev.indexOf(j) < 0) hid.push(j); });
             if (hid.length > 1) { f.rev.push(hid[rnd(hid.length)]); dirty = true; }
             f.next = t + 3000;
@@ -496,9 +521,9 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         v.score = p.score || 0; v.place = rushPlace(id); v.of = rushBoard().length; v.qi = R0.qi; v.total = R0.total;
         if (R0.phase === "q") {
           v.s = "rushq"; v.ok = !!A.ok; v.pts = A.pts || 0;
-          if (!A.ok) { v.f = { n: rf.n, kind: "rush", q: S.rows[rf.row].q, m: rf.mode, len: rf.len, lock: !!A.lock, pz: rf.mode === "reveal" ? mask(rf) : rf.pz }; if (rf.shift) v.f.k = rf.shift; if (rf.opts) v.f.opts = rf.opts; }
+          if (!A.ok) { v.f = { n: rf.n, kind: "rush", q: S.rows[rf.row].q, m: rf.mode, mc: !!rf.mc, len: rf.len, lock: !!A.lock, pz: rf.mode === "reveal" ? mask(rf) : rf.pz }; if (rf.shift) v.f.k = rf.shift; if (rf.opts) v.f.opts = rf.opts; }
           v.T.left = rf.endsAt - t; v.T.full = rushT();
-        } else { v.s = "rushr"; v.ok = !!A.ok; v.pts = A.pts || 0; v.a = disp(S.rows[rf.row].a); v.streak = p.streak || 0; }
+        } else { v.s = "rushr"; v.ok = !!A.ok; v.pts = A.pts || 0; v.a = ansText(S.rows[rf.row]); v.streak = p.streak || 0; }
         return v;
       }
       var f = fightOf(id);
@@ -509,7 +534,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         if (f.between) { F.between = f.gameMsg; v.T.left = f.between - t; }
         else if (f.pause) { F.q = S.rows[f.row].q; F.last = { a: f.last.a, by: f.last.by == null ? "" : f.last.by === i ? "me" : "opp" }; }
         else {
-          F.q = S.rows[f.row].q; F.m = f.mode; F.len = f.len; F.lock = !!f.lock[i];
+          F.q = S.rows[f.row].q; F.m = f.mode; F.mc = !!f.mc; F.len = f.len; F.lock = !!f.lock[i];
           F.pz = f.mode === "reveal" ? mask(f) : f.pz; if (f.shift) F.k = f.shift; if (f.opts) F.opts = f.opts;
           if (f.endsAt) { v.T.left = f.endsAt - t; v.T.full = S.setup.qtime * 1000; }
         }
@@ -533,16 +558,17 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
       var a = b.getAttribute("data-act"), val = b.getAttribute("data-v"), st = S.setup;
       if (a === "type") st.types[val] = st.types[val] ? 0 : 1;
-      else if (a === "mode") st.mode = val;
+      else if (a === "game") { st.mode = val; st.game = 1; }
+      else if (a === "game0") st.game = 0;
+      else if (a === "sheet") { importSheet(); return; }
       else if (a === "theme") { st.theme = val; applyTheme(val); }
       else if (a === "teams") { st.teams = +val; list().forEach(function(p){ if (p.team != null && p.team >= st.teams) p.team = null; }); list().forEach(function(p){ if (p.team == null && st.mode === "battle") p.team = smallest(); }); }
       else if (a === "assign") st.assign = val;
       else if (a === "minutes") st.minutes = +val;
       else if (a === "qtime") st.qtime = +val;
       else if (a === "format") st.format = val;
-      else if (a === "template") { var u = URL.createObjectURL(new Blob([TEMPLATE], { type: "text/csv" })), l = document.createElement("a"); l.href = u; l.download = "mane-event-template.csv"; l.click(); setTimeout(function(){ URL.revokeObjectURL(u); }, 2000); return; }
       else if (a === "lobby") {
-        S.rows = parseRows(st.csv); var seen = {}; S.rows.forEach(function(r){ seen[norm(disp(r.a))] = 1; }); S.distinct = Object.keys(seen).length;
+        S.rows = parseRows(st.csv); var seen = {}; S.rows.forEach(function(r){ if (r.k === "v") seen[norm(disp(r.a))] = 1; }); S.distinct = Object.keys(seen).length;
         if (S.rows.length < 4) return;
         if (st.mode === "battle") { list().forEach(function(p){ if (p.team == null || p.team >= st.teams) p.team = smallest(); }); if (st.assign === "random") deal(); }
         else list().forEach(function(p){ p.team = null; });
@@ -566,15 +592,51 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     });
     view.addEventListener("input", function(e){
       if (e.target.id === "csv") { S.setup.csv = e.target.value.slice(0, 200000); csvInfo(); save(false); }
+      if (e.target.id === "sheetUrl") { S.setup.sheet = e.target.value.slice(0, 500); save(false); }
     });
     view.addEventListener("change", function(e){
       if (e.target.id === "csvFile" && e.target.files[0]) { var rd = new FileReader(); rd.onload = function(){ S.setup.csv = String(rd.result).slice(0, 200000); draw(); save(true); }; rd.readAsText(e.target.files[0]); }
     });
-    function deal(){ var ps = shuffle(list().slice()); ps.forEach(function(p, i){ p.team = i % S.setup.teams; }); }
+    function deal(){
+      var n = S.setup.teams, z = [], i; for (i = 0; i < n; i++) z.push(0);
+      shuffle(upList().slice()).forEach(function(p){ var b = 0; for (var j = 1; j < n; j++) if (z[j] < z[b]) b = j; p.team = b; z[b]++; });
+      list().forEach(function(p){ if (!p.up && (p.team == null || p.team >= n)) { var b = 0; for (var j = 1; j < n; j++) if (z[j] < z[b]) b = j; p.team = b; z[b]++; } });
+    }
+    var DRAG = null;
+    function moveTo(id, team){ var p = S.players[id]; if (!p || team == null || isNaN(team) || team >= S.setup.teams || p.team === team) return; p.team = team; dirty = true; save(true); draw(); }
+    view.addEventListener("dragstart", function(e){ var c = e.target.closest && e.target.closest("[data-drag]"); if (!c) return; DRAG = c.getAttribute("data-drag"); try { e.dataTransfer.setData("text/plain", DRAG); e.dataTransfer.effectAllowed = "move"; } catch (er) {} c.style.opacity = ".4"; });
+    view.addEventListener("dragend", function(e){ var c = e.target.closest && e.target.closest("[data-drag]"); if (c) c.style.opacity = ""; DRAG = null; view.querySelectorAll("[data-drop]").forEach(function(b){ b.style.background = ""; }); });
+    view.addEventListener("dragover", function(e){ var b = e.target.closest && e.target.closest("[data-drop]"); if (!b || !DRAG) return; e.preventDefault(); try { e.dataTransfer.dropEffect = "move"; } catch (er) {} view.querySelectorAll("[data-drop]").forEach(function(x){ x.style.background = x === b ? "var(--panel2)" : ""; }); });
+    view.addEventListener("drop", function(e){ var b = e.target.closest && e.target.closest("[data-drop]"); if (!b || !DRAG) return; e.preventDefault(); var id = DRAG; DRAG = null; moveTo(id, +b.getAttribute("data-drop")); });
+    var SHEETMSG = "", SHEETCOL = "var(--dim)";
+    function sheetUrls(u){
+      u = String(u || "").trim(); var g = (u.match(/[#&?]gid=(\d+)/) || [])[1], m = u.match(/\/spreadsheets\/d\/e\/([\w-]+)/);
+      if (m) return ["https://docs.google.com/spreadsheets/d/e/" + m[1] + "/pub?output=csv" + (g ? "&gid=" + g : "")];
+      m = u.match(/\/spreadsheets\/d\/([\w-]+)/); if (!m) return null;
+      return ["https://docs.google.com/spreadsheets/d/" + m[1] + "/export?format=csv&gid=" + (g || "0"), "https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&gid=" + (g || "0")];
+    }
+    async function importSheet(){
+      var inp = document.getElementById("sheetUrl"), st = S.setup; st.sheet = inp ? inp.value.trim() : st.sheet;
+      var urls = sheetUrls(st.sheet);
+      if (!urls) { SHEETMSG = "That doesn\u2019t look like a Google Sheets link. Copy it from the address bar of the sheet."; SHEETCOL = "var(--bad)"; draw(); return; }
+      SHEETMSG = "Loading the sheet\u2026"; SHEETCOL = "var(--dim)"; draw();
+      for (var i = 0; i < urls.length; i++) {
+        try {
+          var r = await fetch(urls[i], { cache: "no-store" }), txt = r.ok ? await r.text() : "";
+          if (txt && !/^\s*<(!doctype|html)/i.test(txt)) {
+            var n = parseRows(txt).length;
+            if (n) { st.csv = txt.slice(0, 200000); SHEETMSG = "Imported " + n + " question" + (n === 1 ? "" : "s") + " from the sheet. Change the sheet and press Import again to refresh."; SHEETCOL = "var(--ok)"; save(true); draw(); return; }
+          }
+        } catch (e) {}
+      }
+      SHEETMSG = "Couldn\u2019t read the sheet. In Google Sheets click Share \u2192 General access \u2192 Anyone with the link (Viewer), then press Import again."; SHEETCOL = "var(--bad)"; draw();
+    }
     function csvInfo(){
-      var el = document.getElementById("csvInfo"), go = document.querySelector('[data-act="lobby"]'), n = parseRows(S.setup.csv).length;
-      if (el) el.innerHTML = n ? '<b style="color:var(--ok);">' + n + ' question' + (n === 1 ? '' : 's') + ' ready.</b> The first column is shown; the last column is the answer.' + (n < 4 ? ' <b style="color:var(--bad);">Add at least 4.</b>' : '') : 'Paste or upload a CSV. Two columns: <b>Definition, Term</b> or <b>Question, Answer</b>.';
-      if (go) go.disabled = n < 4 || !Object.keys(S.setup.types).some(function(k){ return S.setup.types[k]; });
+      var el = document.getElementById("csvInfo"), go = document.querySelector('[data-act="lobby"]'), rs = parseRows(S.setup.csv), n = rs.length, c = { v: 0, mc: 0, fr: 0 };
+      rs.forEach(function(r){ c[r.k]++; });
+      var parts = []; if (c.v) parts.push(c.v + " vocab"); if (c.mc) parts.push(c.mc + " multiple choice"); if (c.fr) parts.push(c.fr + " free response");
+      if (el) el.innerHTML = n ? '<b style="color:var(--ok);">' + n + ' question' + (n === 1 ? '' : 's') + ' ready</b> \u00b7 ' + parts.join(" \u00b7 ") + (n < 4 ? ' <b style="color:var(--bad);">Add at least 4.</b>' : '') : 'Import a Google Sheet, upload a CSV, or paste rows below.';
+      if (go) go.disabled = n < 4;
     }
     function chips(act, opts, cur){ return '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + opts.map(function(o){ return '<button type="button" class="chip" data-act="' + act + '" data-v="' + o[0] + '" aria-pressed="' + (String(cur) === String(o[0])) + '">' + esc(o[1]) + '</button>'; }).join("") + '</div>'; }
     function sec(title, body, note){ return '<div style="display:flex;flex-direction:column;gap:10px;"><div style="font-weight:700;color:var(--bright);">' + title + '</div>' + body + (note ? '<div style="font-size:13px;color:var(--dim);">' + note + '</div>' : '') + '</div>'; }
@@ -589,7 +651,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function codeCard(){
       var url = location.origin + location.pathname + "?code=" + S.code, qr = qrcode(0, "H"); qr.addData(url); qr.make();
       return '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">' +
-        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=36.0.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
+        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=37.0.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
         '<div style="flex:1;min-width:240px;"><div class="lbl">Join code</div>' +
           '<div class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);margin:2px 0 4px;">\u25CF LIVE \u00B7 students can join</div>' +
           '<div class="mono" style="font-size:clamp(48px,9vw,84px);font-weight:800;letter-spacing:10px;color:var(--gold);line-height:1.05;">' + S.code + '</div>' +
@@ -620,50 +682,73 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else h = drawDone();
       view.innerHTML = h; tickText(t); if (S.phase === "setup") csvInfo(); flushKO();
     }
+    var GAMES = {
+      battle: { name: "Class Battle", tag: "Teams \u00b7 1v1 knockouts", d: "Teams fight rotating 1v1s until the clock runs out. 4 correct answers knock out the opponent. Team score = KOs per player.", t: "v" },
+      rush: { name: "Roar Rush", tag: "Whole class at once \u00b7 points for speed", d: "Everyone answers the same question at the same time. Faster correct answers score more (500\u20131,000, +100 for 3 in a row). The leaderboard shows after each question.", t: "qa" },
+      bracket: { name: "King of the Pride", tag: "Bracket \u00b7 last lion standing", d: "Single-elimination bracket. Knocked-out players drop into a rematch pool and keep playing.", t: "any" }
+    };
     function drawSetup(){
-      var st = S.setup;
-      return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;">' +
-        '<div class="card" style="display:flex;flex-direction:column;gap:14px;"><div class="lbl" style="color:var(--gold);">1 \u00b7 Questions</div>' +
-          '<textarea id="csv" rows="10" spellcheck="false" aria-label="Questions CSV" placeholder="Definition,Term\n&quot;A weakness that can be exploited&quot;,Vulnerability\nHow many bits are in a byte?,8">' + esc(st.csv) + '</textarea>' +
-          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><label class="btn ghost sm" style="cursor:pointer;">Upload CSV<input type="file" id="csvFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label><button type="button" class="btn ghost sm" data-act="template">Download template</button></div>' +
+      var st = S.setup, G = GAMES[st.mode] || GAMES.battle;
+      if (!st.game) return '<div class="card" style="display:flex;flex-direction:column;gap:16px;margin-top:56px;"><div class="lbl" style="color:var(--gold);">1 \u00b7 Pick a game</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;">' + ["battle", "rush", "bracket"].map(function(k){ var g = GAMES[k];
+          return '<button type="button" data-act="game" data-v="' + k + '" style="text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;padding:20px;border-radius:16px;border:2px solid var(--border3);background:var(--panel2);color:var(--text);font:inherit;">' +
+            '<span class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--gold);">' + esc(g.tag.toUpperCase()) + '</span><span class="disp" style="font-size:26px;font-weight:800;color:var(--bright);">' + esc(g.name) + '</span>' +
+            '<span style="font-size:14px;color:var(--muted);line-height:1.5;">' + esc(g.d) + '</span>' +
+            '<span class="mono" style="font-size:12px;color:var(--dim);margin-top:auto;">' + (g.t === "v" ? "Best with a vocab sheet" : g.t === "qa" ? "Best with a Q&amp;A sheet" : "Works with vocab or Q&amp;A sheets") + '</span></button>'; }).join("") + '</div></div>';
+      var fmtV = '<div><b style="color:var(--bright);">Vocab sheet</b> \u00b7 columns <span class="mono">Term, Definition</span>. Students see the definition and answer with the term, using the hints you pick.</div>';
+      var fmtQ = '<div><b style="color:var(--bright);">Q&amp;A sheet</b> \u00b7 columns <span class="mono">Type, Question, Answer, Distractor 1, Distractor 2, Distractor 3</span>. Type is <i>multiple choice</i> (answer + distractors shown as buttons) or <i>free response</i> (typed; leave distractors blank).</div>';
+      var tplV = '<a class="btn ghost sm" href="vocab-template.csv" download>Vocab template (CSV)</a>', tplQ = '<a class="btn ghost sm" href="qa-template.csv" download>Q&amp;A template (CSV)</a>';
+      return '<div class="card" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:16px 200px 16px 20px;"><div style="flex:1;min-width:220px;"><div class="lbl">Game</div><div class="disp" style="font-size:24px;font-weight:800;color:var(--bright);">' + esc(G.name) + ' <span class="mono" style="font-size:13px;font-weight:600;color:var(--dim);">' + esc(G.tag) + '</span></div></div><button type="button" class="btn ghost sm" data-act="game0">Change game</button></div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;">' +
+        '<div class="card" style="display:flex;flex-direction:column;gap:14px;"><div class="lbl" style="color:var(--gold);">2 \u00b7 Questions</div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;"><label for="sheetUrl" style="font-weight:700;color:var(--bright);">Google Sheet link</label>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="sheetUrl" type="url" value="' + esc(st.sheet || "") + '" placeholder="https://docs.google.com/spreadsheets/d/\u2026" autocomplete="off" spellcheck="false" style="flex:1;min-width:220px;min-height:44px;border-radius:12px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);font:14px monospace;padding:8px 12px;"><button type="button" class="btn sm" data-act="sheet">Import</button></div>' +
+            '<div style="font-size:13px;color:' + SHEETCOL + ';">' + esc(SHEETMSG || "Share the sheet as \u201cAnyone with the link \u00b7 Viewer\u201d. The tab in the link is the one imported.") + '</div></div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;"><div style="font-weight:700;color:var(--bright);">Or paste / upload a CSV</div>' +
+          '<textarea id="csv" rows="8" spellcheck="false" aria-label="Questions CSV" placeholder="' + (G.t === "qa" ? 'Type,Question,Answer,Distractor 1,Distractor 2,Distractor 3\nmultiple choice,How many bits are in a byte?,8,4,16,2' : 'Term,Definition\nVulnerability,A weakness that can be exploited by a threat') + '">' + esc(st.csv) + '</textarea>' +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><label class="btn ghost sm" style="cursor:pointer;">Upload CSV<input type="file" id="csvFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label>' + (G.t === "qa" ? tplQ + tplV : tplV + tplQ) + '</div></div>' +
           '<div id="csvInfo" style="font-size:14px;color:var(--muted);"></div>' +
-          '<div style="font-size:13px;color:var(--dim);">You can paste straight from Google Sheets. The file stays in this browser and is never uploaded.</div></div>' +
-        '<div class="card" style="display:flex;flex-direction:column;gap:20px;"><div class="lbl" style="color:var(--gold);">2 \u00b7 Game</div>' +
-          sec("Team theme", chips("theme", Object.keys(THEMES).map(function(k){ return [k, THEMES[k].name]; }), st.theme) +
-            '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + teamNames().map(function(nm, i){ return '<span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;border:2px solid ' + tc(i) + ';color:' + tc(i) + ';' + (st.mode === "battle" && i >= st.teams ? 'opacity:.35;' : '') + '">' + esc(nm) + '</span>'; }).join("") + '</div>',
-            "Sets the team names and colours. Students see the same teams.") +
-          sec("Puzzle types", '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + TYPES.map(function(x){ return '<button type="button" class="chip" data-act="type" data-v="' + x[0] + '" aria-pressed="' + !!st.types[x[0]] + '">' + x[1] + '</button>'; }).join("") + '</div>',
-            "Each question uses one ticked type at random. <b>Shift</b>: letters moved forward in the alphabet. <b>Scramble</b>: letters mixed up. <b>Reveal</b>: blanks that fill in over time. <b>Word bank</b>: pick from 4. Answers that are very short or long are typed instead.") +
-          sec("Mode", chips("mode", [["battle","Class battle"],["bracket","King of the Pride"],["rush","Roar Rush"]], st.mode),
-            st.mode === "rush" ? "The whole class answers the same question at once. Correct answers score 500\u20131,000 points, more for faster answers, +100 on a 3-in-a-row streak. The leaderboard shows after each question." : st.mode === "battle" ? "Teams fight rotating 1v1s until the clock runs out. 4 correct answers = a knockout. Team score = KOs per player." : "King of the Pride: a single-elimination bracket. Knocked-out players drop into a rematch pool and keep playing.") +
+          '<div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border);padding-top:12px;">' + (G.t === "qa" ? fmtQ + fmtV : fmtV + fmtQ) +
+            '<div style="color:var(--dim);">Open a template in Google Sheets with File \u2192 Import. Questions stay in this browser and are never uploaded.</div></div></div>' +
+        '<div class="card" style="display:flex;flex-direction:column;gap:20px;"><div class="lbl" style="color:var(--gold);">3 \u00b7 Options</div>' +
+          (st.mode === "battle" ? sec("Team theme", chips("theme", Object.keys(THEMES).map(function(k){ return [k, THEMES[k].name]; }), st.theme) +
+            '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + teamNames().map(function(nm, i){ return '<span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;border:2px solid ' + tc(i) + ';color:' + tc(i) + ';' + (i >= st.teams ? 'opacity:.35;' : '') + '">' + esc(nm) + '</span>'; }).join("") + '</div>',
+            "Sets the team names and colours. Students see the same teams.") : '') +
+          sec("Vocab hints", '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + TYPES.map(function(x){ return '<button type="button" class="chip" data-act="type" data-v="' + x[0] + '" aria-pressed="' + !!st.types[x[0]] + '">' + x[1] + '</button>'; }).join("") + '</div>',
+            "For vocab rows, each question uses one ticked hint at random. <b>Shift</b>: letters moved forward in the alphabet. <b>Scramble</b>: letters mixed up. <b>Reveal</b>: blanks that fill in over time. <b>Word bank</b>: pick from 4 terms. Untick all and students type the term with no hint. Q&amp;A rows ignore this: multiple choice shows its own choices and free response is typed.") +
           (st.mode === "rush"
             ? sec("Questions", chips("rcount", [[10,"10"],[15,"15"],[20,"20"],[30,"30"]], st.rcount || 10)) + sec("Time per question", chips("rtime", [[10,"10 s"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.rtime || 20))
             : st.mode === "battle"
             ? sec("Teams", chips("teams", [[2,"2"],[3,"3"],[4,"4"],[5,"5"],[6,"6"]], st.teams)) + sec("Team assignment", chips("assign", [["random","Random"],["manual","I\u2019ll assign"]], st.assign)) + sec("Length", chips("minutes", MINS.map(function(m){ return [m, m + " min"]; }), st.minutes))
             : sec("Match format", chips("format", FORMATS, st.format), st.format === "sd" ? "5 questions, most correct wins. Ties go to overtime: next point wins." : "Each game is a 4-hit knockout. First to " + need() + " games wins the match.")) +
           (st.mode === "rush" ? "" : sec("Time per question", chips("qtime", QT, st.qtime))) +
-          '<div><button class="btn" data-act="lobby" disabled>Open lobby \u2192</button></div></div>' +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><button class="btn" data-act="lobby" disabled>Open lobby \u2192</button><a class="btn ghost sm" href="?preview=1" target="_blank" rel="noopener">Preview as a student \u2197</a></div></div>' +
       '</div>';
     }
     function pchip(p, clickable){
       var col = S.setup.mode === "battle" ? tc(p.team) : "var(--gold)";
-      return '<span style="display:inline-flex;gap:2px;align-items:center;"><button type="button" class="pchip" ' + (clickable ? 'data-act="pteam" data-v="' + esc(p.id) + '" title="Click to move to the next team"' : 'disabled style="cursor:default;"') + ' style="color:' + col + ';' + (p.up ? '' : 'opacity:.45;') + '">' + esc(p.name) + (p.up ? '' : ' \u00b7 away') + '</button>' +
+      return '<span style="display:inline-flex;gap:2px;align-items:center;' + (clickable ? 'cursor:grab;' : '') + '"' + (clickable ? ' draggable="true" data-drag="' + esc(p.id) + '"' : '') + '><button type="button" class="pchip" ' + (clickable ? 'draggable="true" data-act="pteam" data-v="' + esc(p.id) + '" title="Drag to another team, or click to move to the next team"' : 'disabled style="cursor:default;"') + ' style="color:' + col + ';' + (p.up ? '' : 'opacity:.45;') + '">' + esc(p.name) + (p.up ? '' : ' \u00b7 away') + '</button>' +
         '<button type="button" data-act="kick" data-v="' + esc(p.id) + '" aria-label="Remove ' + esc(p.name) + '" style="background:none;border:0;color:var(--dim);cursor:pointer;min-width:32px;min-height:40px;font-size:16px;">\u00d7</button></span>';
+    }
+    function routeNote(){
+      var ups = upList(), rl = ups.filter(function(p){ return p.route === "relay"; }).length, dr = ups.filter(function(p){ return p.route === "direct"; }).length;
+      if (!ups.length) return RELAY_ON ? ' <span class="mono" style="font-size:13px;font-weight:600;color:var(--dim);">\u00b7 relay ready</span>' : '';
+      return ' <span class="mono" style="font-size:13px;font-weight:600;color:var(--dim);">\u00b7 ' + dr + ' direct \u00b7 ' + rl + ' relayed' + (RELAY_ON ? '' : ' \u00b7 relay off') + '</span>';
     }
     function drawLobby(){
       var st = S.setup, ps = list().filter(function(p){ return !p.left; }), ups = upList(), z = teamSizes();
       var upTeams = {}; ups.forEach(function(p){ if (p.team != null) upTeams[p.team] = 1; });
       var ready = st.mode === "rush" ? ups.length >= 1 : ups.length >= 2 && (st.mode !== "battle" || Object.keys(upTeams).length >= 2);
-      var summary = (st.mode === "rush" ? "Roar Rush \u00b7 " + Math.min(st.rcount || 10, S.rows.length) + " questions \u00b7 " + (st.rtime || 20) + " s each" : st.mode === "battle" ? "Class battle \u00b7 " + st.teams + " teams \u00b7 " + st.minutes + " min" : "King of the Pride \u00b7 " + FORMATS.filter(function(f){ return f[0] === st.format; })[0][1]) + (st.mode === "rush" ? "" : " \u00b7 " + S.rows.length + " questions \u00b7 " + (st.qtime ? st.qtime + " s per question" : "no time limit"));
+      var summary = (st.mode === "rush" ? "Roar Rush \u00b7 " + Math.min(st.rcount || 10, S.rows.length) + " questions \u00b7 " + (st.rtime || 20) + " s each" : st.mode === "battle" ? "Class Battle \u00b7 " + st.teams + " teams \u00b7 " + st.minutes + " min" : "King of the Pride \u00b7 " + FORMATS.filter(function(f){ return f[0] === st.format; })[0][1]) + (st.mode === "rush" ? "" : " \u00b7 " + S.rows.length + " questions \u00b7 " + (st.qtime ? st.qtime + " s per question" : "no time limit"));
       var players = st.mode === "battle"
-        ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">' + z.map(function(n, i){ return '<div style="border:2px solid ' + tc(i) + ';border-radius:14px;padding:12px;"><div style="font-weight:800;color:' + tc(i) + ';margin-bottom:8px;">' + teamNames()[i] + ' \u00b7 ' + n + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.filter(function(p){ return p.team === i; }).map(function(p){ return pchip(p, true); }).join("") + '</div></div>'; }).join("") + '</div>'
+        ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">' + z.map(function(n, i){ return '<div data-drop="' + i + '" aria-label="' + teamNames()[i] + ' drop zone" style="min-height:96px;transition:background .15s;border:2px solid ' + tc(i) + ';border-radius:14px;padding:12px;"><div style="font-weight:800;color:' + tc(i) + ';margin-bottom:8px;">' + teamNames()[i] + ' \u00b7 ' + n + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.filter(function(p){ return p.team === i; }).map(function(p){ return pchip(p, true); }).join("") + '</div></div>'; }).join("") + '</div>'
         : '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.map(function(p){ return pchip(p, false); }).join("") + '</div>';
       return codeCard() +
         '<div class="card" style="margin-top:16px;display:flex;flex-direction:column;gap:14px;">' +
-          '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><h2 style="margin:0;color:var(--bright);font-size:22px;flex:1;min-width:200px;"><span id="hCount">' + ups.length + '</span> player' + (ups.length === 1 ? '' : 's') + ' in the den</h2>' +
-            (st.mode === "battle" ? '<button class="btn ghost sm" data-act="shuffle">Shuffle teams</button>' : '') + sndBtns() + '<button class="btn ghost sm" data-act="setup">\u2190 Back to setup</button>' +
+          '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><h2 style="margin:0;color:var(--bright);font-size:22px;flex:1;min-width:200px;"><span id="hCount">' + ups.length + '</span> player' + (ups.length === 1 ? '' : 's') + ' in the den' + routeNote() + '</h2>' +
+            (st.mode === "battle" ? '<button class="btn ghost sm" data-act="shuffle">Shuffle teams</button>' : '') + sndBtns() + '<a class="btn ghost sm" href="?preview=1" target="_blank" rel="noopener">Preview \u2197</a><button class="btn ghost sm" data-act="setup">\u2190 Back to setup</button>' +
             '<button class="btn" data-act="start"' + (ready ? '' : ' disabled') + '>Start (5 s countdown)</button></div>' +
-          '<div class="mono" style="font-size:13px;color:var(--dim);">' + esc(summary) + (st.mode === "battle" ? ' \u00b7 click a name to move it to the next team' : '') + '</div>' +
+          '<div class="mono" style="font-size:13px;color:var(--dim);">' + esc(summary) + (st.mode === "battle" ? ' \u00b7 drag a name to another team (or click it) \u00b7 Shuffle uses online players only' : '') + '</div>' +
           (ps.length ? players : '<p style="margin:0;color:var(--dim);">Waiting for the first lion\u2026</p>') +
           (!ready && ups.length ? '<div style="color:var(--warn);font-size:14px;">' + (ups.length < 2 ? "Need at least 2 players." : "Need players on at least 2 teams.") + '</div>' : '') +
         '</div>';
@@ -676,7 +761,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function drawBattle(t){
       var st = standings(), fs = Object.keys(S.fights).map(function(k){ return S.fights[k]; }), waiting = upList().filter(function(p){ return !p.fid; }).length;
       var top = list().filter(function(p){ return p.ko; }).sort(function(a, b){ return b.ko - a.ko; }).slice(0, 5);
-      return '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">Class battle \u00b7 code ' + S.code + '</div><div class="mono" id="hTimer" style="font-size:clamp(44px,8vw,72px);font-weight:800;color:var(--gold);line-height:1;">' + clock(S.endAt - t) + '</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>' +
+      return '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">Class Battle \u00b7 code ' + S.code + '</div><div class="mono" id="hTimer" style="font-size:clamp(44px,8vw,72px);font-weight:800;color:var(--gold);line-height:1;">' + clock(S.endAt - t) + '</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;margin-bottom:16px;">' + st.map(function(x, r){ return '<div class="card" style="border:2px solid ' + tc(x.i) + ';padding:16px;"><div class="mono" style="font-size:12px;color:var(--dim);">#' + (r + 1) + '</div><div style="font-weight:800;color:' + tc(x.i) + ';font-size:18px;">' + teamNames()[x.i] + '</div><div class="mono" style="font-size:34px;font-weight:800;color:var(--bright);">' + x.score.toFixed(2) + '</div><div style="font-size:13px;color:var(--muted);">' + x.ko + ' KO' + (x.ko === 1 ? '' : 's') + ' \u00b7 ' + x.n + ' player' + (x.n === 1 ? '' : 's') + '</div></div>'; }).join("") + '</div>' +
         '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;" class="bgrid">' +
           '<div class="card"><div class="lbl" style="margin-bottom:10px;">Live fights \u00b7 ' + fs.length + (waiting ? ' \u00b7 ' + waiting + ' waiting' : '') + '</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:10px;">' + (fs.length ? fs.map(function(f){ return fightBox(f); }).join("") : '<p style="margin:0;color:var(--dim);">Pairing players\u2026</p>') + '</div></div>' +
@@ -716,17 +801,18 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         var pz = "";
         if (f.mode === "shift") pz = '<div class="mono" style="font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:6px;color:var(--gold);">' + esc(f.pz) + '</div><div class="mono" style="color:var(--muted);">SHIFT \u00b7 move each letter back ' + f.shift + '</div>';
         else if (f.mode === "scramble") pz = '<div class="mono" style="font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:10px;color:var(--gold);">' + esc(f.pz) + '</div><div class="mono" style="color:var(--muted);">SCRAMBLE \u00b7 unscramble the letters</div>';
+        else if (f.mode === "outline") pz = '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">' + f.pz.split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask" style="min-width:44px;height:64px;font-size:40px;">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div><div class="mono" style="color:var(--muted);">FREE RESPONSE \u00b7 type the answer</div>';
         else if (f.mode === "reveal") pz = '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">' + mask(f).split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask" style="min-width:44px;height:64px;font-size:40px;">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div><div class="mono" style="color:var(--muted);">REVEAL \u00b7 letters fill in over time</div>';
         else if (f.mode === "bank") pz = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;width:100%;">' + f.opts.map(function(o){ return '<div class="bankb" style="cursor:default;font-size:24px;min-height:80px;display:flex;align-items:center;justify-content:center;">' + esc(o) + '</div>'; }).join("") + '</div>';
         return head + '<div class="card" style="padding:28px;display:flex;flex-direction:column;gap:22px;align-items:center;text-align:center;">' +
           '<div style="display:flex;align-items:center;gap:14px;width:100%;"><div style="flex:1;height:10px;border-radius:5px;background:var(--border);overflow:hidden;"><div id="hRushB" style="height:100%;background:var(--gold);width:100%;"></div></div><span class="mono" id="hRushT" style="font-size:34px;font-weight:800;color:var(--gold);min-width:56px;text-align:right;"></span></div>' +
-          '<div style="font-size:clamp(28px,4.2vw,48px);font-weight:800;color:var(--bright);line-height:1.25;text-wrap:balance;max-width:1000px;">' + esc(row.q) + '</div>' + pz +
+          '<div style="font-size:clamp(28px,4.2vw,48px);font-weight:800;color:var(--bright);line-height:1.25;text-wrap:balance;max-width:1000px;white-space:pre-line;' + (/\n/.test(row.q) ? 'text-align:left;' : '') + '">' + esc(row.q) + '</div>' + pz +
           '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span class="mono" style="font-size:20px;color:var(--muted);">' + tried + ' of ' + ps.length + ' answered</span><button class="btn ghost sm" data-act="rnow">Show answer now</button></div></div>';
       }
       var top = rushBoard().slice(0, 10), last = R0.qi >= R0.total;
       return head + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;" class="bgrid">' +
-        '<div class="card" style="padding:26px;display:flex;flex-direction:column;gap:14px;"><div class="lbl">Answer</div><div class="disp" style="font-size:clamp(34px,5vw,60px);font-weight:800;color:var(--gold);line-height:1.1;word-break:break-word;">' + esc(disp(row.a)) + '</div>' +
-          '<div style="color:var(--muted);font-size:18px;text-wrap:pretty;">' + esc(row.q) + '</div><div class="mono" style="font-size:22px;color:var(--bright);margin-top:6px;">' + got + ' of ' + ps.length + ' got it</div>' +
+        '<div class="card" style="padding:26px;display:flex;flex-direction:column;gap:14px;"><div class="lbl">Answer</div><div class="disp" style="font-size:clamp(34px,5vw,60px);font-weight:800;color:var(--gold);line-height:1.1;word-break:break-word;">' + esc(ansText(row)) + '</div>' +
+          '<div style="color:var(--muted);font-size:18px;text-wrap:pretty;white-space:pre-line;">' + esc(row.q) + '</div><div class="mono" style="font-size:22px;color:var(--bright);margin-top:6px;">' + got + ' of ' + ps.length + ' got it</div>' +
           '<div style="margin-top:auto;padding-top:10px;"><button class="btn" data-act="rnext">' + (last ? "Final results \u2192" : "Next question \u2192") + '</button></div></div>' +
         '<div class="card" style="padding:20px;"><div class="lbl" style="margin-bottom:10px;">Leaderboard</div><div style="display:flex;flex-direction:column;gap:6px;">' + (top.length ? boardRows(top, true) : '<p style="color:var(--dim);margin:0;">No players yet.</p>') + '</div></div></div>';
     }
@@ -760,7 +846,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
   /* =====================================================================
      STUDENT
      ===================================================================== */
-  function join(c){
+  function join(c, PREV){
     hdr.style.display = "none";
     var tk = "mane-tok-" + c, tok;
     try { tok = localStorage.getItem(tk); } catch (e) {}
@@ -768,13 +854,26 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     var V = null, T = {}, got = 0, conn = null, joined = false, tries = 0, lostAt = 0, used = [], curN = -1, cdTimer = null, sending = false, lastKev = null, lastSettled = -1;
     function status(msg){ view.innerHTML = '<div class="card mono" style="color:var(--dim);">' + msg + '</div>'; }
     status("Connecting to " + esc(c) + "\u2026");
-    function connect(){
-      var peer = new Peer({ debug: 0 }), done = false;
-      var fail = setTimeout(function(){ if (!done) { peer.destroy(); retry("Couldn\u2019t connect in 15 seconds."); } }, 15000);
+    var ROUTE = "";
+    function checkRoute(c2){
+      try { c2.peerConnection.getStats().then(function(st){
+        var pair = null, loc = {}, rem = {};
+        st.forEach(function(x){ if (x.type === "candidate-pair" && x.state === "succeeded" && (x.nominated || x.selected) && !pair) pair = x; if (x.type === "local-candidate") loc[x.id] = x; if (x.type === "remote-candidate") rem[x.id] = x; });
+        if (!pair) return;
+        var lt = (loc[pair.localCandidateId] || {}).candidateType, rt = (rem[pair.remoteCandidateId] || {}).candidateType;
+        ROUTE = lt === "relay" || rt === "relay" ? "relay" : "direct";
+        try { c2.send({ k: "route", r: ROUTE }); } catch (e) {}
+        render();
+      }).catch(function(){}); } catch (e) {}
+    }
+    function connect(){ iceConfig().then(connectWith); }
+    function connectWith(ice){
+      var peer = new Peer(peerOpts(ice)), done = false;
+      var fail = setTimeout(function(){ if (!done) { peer.destroy(); retry("Couldn\u2019t connect in 20 seconds."); } }, 20000);
       peer.on("error", function(e){ if (done) return; clearTimeout(fail); peer.destroy(); retry(e.type === "peer-unavailable" ? "No game found with code " + c + ". Check the code on the projector." : "Connection problem: " + (e.type || e.message) + "."); });
       peer.on("open", function(){
         conn = peer.connect(PREFIX + c, { reliable: true });
-        conn.on("open", function(){ done = true; clearTimeout(fail); joined = true; tries = 0; lostAt = 0; conn.send({ k: "join", tok: tok, dev: device() }); });
+        conn.on("open", function(){ done = true; clearTimeout(fail); joined = true; tries = 0; lostAt = 0; conn.send({ k: "join", tok: tok, dev: device() }); var c2 = conn; setTimeout(function(){ checkRoute(c2); }, 1500); });
         conn.on("data", function(d){
           if (!d) return;
           if (d.k === "v") { V = d.v; T = d.v.T || {}; got = performance.now(); render(); }
@@ -792,7 +891,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       hdr.style.display = ""; home(msg);
     }
     function end(msg){ view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;"><b style="color:var(--bright);font-size:20px;">' + esc(msg) + '</b><p style="color:var(--muted);margin-bottom:0;">You can close this tab.</p></div>'; }
-    connect();
+    if (PREV) setTimeout(previewStart, 0); else connect();
     setInterval(function(){
       var el = document.getElementById("sLeft"), bar = document.getElementById("sBar"), left = T.left != null ? T.left - (performance.now() - got) : null;
       if (el && left != null) el.textContent = V && V.s === "cd" ? Math.max(1, Math.ceil(left / 1000)) : Math.max(0, Math.ceil(left / 1000)) + " s";
@@ -814,8 +913,76 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       setTimeout(function(){ try { conn.close(); } catch (e) {} }, 300);
       end("You left the game.");
     }
-    function submit(text){ if (!V || !V.f || !conn || !conn.open) return; conn.send({ k: "ans", n: V.f.n, a: text }); }
-    function me(){ return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:200px;"><span class="lbl">You are</span><b style="color:' + (V.tn ? tc(V.team) : "var(--gold)") + ';font-size:18px;">' + esc(V.name) + '</b>' + (V.tn ? '<span class="mono" style="font-size:13px;color:' + tc(V.team) + ';">' + esc(V.tn) + '</span>' : '') + (V.mode === "rush" && V.score != null ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.score.toLocaleString() + ' pts</span>' : V.ko ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.ko + ' KO' + (V.ko === 1 ? '' : 's') + '</span>' : '') + '<button type="button" id="sLeave" class="chip" style="min-height:40px;padding:4px 12px;font-size:12px;' + (V.ko ? '' : 'margin-left:auto;') + '">LEAVE GAME</button>' + (window.KO_FX ? '<button type="button" id="sSnd" class="chip" aria-pressed="' + KO_FX.soundOn() + '" style="min-height:40px;padding:4px 12px;font-size:12px;">' + (KO_FX.soundOn() ? 'SOUND ON' : 'SOUND OFF') + '</button>' : '') + '</div>'; }
+    /* ----- teacher preview: reads the host tab's saved game from this browser, nothing is sent ----- */
+    var PV = { i: 0, force: "", show: false, msg: "", ok: false, rows: [], st: null, n: 0 };
+    function previewLoad(){
+      var sv = saved(); if (!sv) { PV.rows = []; return; }
+      PV.st = sv.setup; PV.rows = parseRows(sv.setup.csv); applyTheme(sv.setup.theme);
+      if (PV.i >= PV.rows.length) PV.i = 0;
+    }
+    function previewMake(){
+      var r = PV.rows[PV.i], st = PV.st, d = ansText(r), mode, F;
+      var vd = {}; PV.rows.forEach(function(x){ if (x.k === "v") vd[norm(disp(x.a))] = 1; });
+      if (r.k === "mc") mode = "bank"; else if (r.k === "fr") mode = "outline";
+      else {
+        var L = norm(d).length, ok = TYPES.map(function(t){ return t[0]; }).filter(function(t){
+          if (t === "bank") return Object.keys(vd).length >= 4; if (L < 3 || L > 24) return false; return t !== "shift" || /[a-z]/i.test(d); });
+        var ticked = ok.filter(function(t){ return st.types[t]; });
+        mode = PV.force ? (PV.force === "type" || ok.indexOf(PV.force) >= 0 ? PV.force : "type") : ticked.length ? ticked[rnd(ticked.length)] : "type";
+      }
+      F = { n: ++PV.n, kind: "rush", q: r.q, m: mode, mc: r.k === "mc", len: norm(d).length, lock: false, pz: "", rev: [] };
+      if (mode === "outline" || mode === "reveal") F.pz = d.split("").map(function(ch){ return /[a-z0-9]/i.test(ch) ? "_" : ch; }).join("");
+      if (mode === "shift") { F.k = 1 + rnd(5); F.pz = d.toUpperCase().replace(/[A-Z]/g, function(ch){ return String.fromCharCode((ch.charCodeAt(0) - 65 + F.k) % 26 + 65); }); }
+      if (mode === "scramble") { var Ls = d.toUpperCase().replace(/[^A-Z0-9]/g, "").split(""), orig = Ls.join(""); for (var j = 0; j < 6; j++) { shuffle(Ls); if (Ls.join("") !== orig) break; } F.pz = Ls.join(""); }
+      if (mode === "bank") {
+        var seen = {}, o = [d]; seen[norm(d)] = 1;
+        if (F.mc) (r.d || []).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
+        if (!F.mc || o.length < 2) shuffle(PV.rows.filter(function(x){ return F.mc ? x.k !== "v" : x.k === "v"; }).map(ansText)).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
+        F.opts = shuffle(o);
+      }
+      PV.msg = ""; PV.ok = false; PV.show = false; curN = -1;
+      V = { s: "fight", name: "Teacher preview", tn: null, mode: st.mode, f: F }; T = {};
+    }
+    function previewDraw(){
+      var keepEl = document.getElementById("sAns"), keep = keepEl && keepEl.value;
+      if (!PV.rows.length) { view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;margin-top:56px;"><b style="color:var(--bright);font-size:20px;">No questions to preview yet.</b><p style="color:var(--muted);margin-bottom:0;">In your host tab, load questions on the setup screen. This preview updates on its own.</p></div>'; return; }
+      var r = PV.rows[PV.i], F = V.f, isV = r.k === "v";
+      var hint = isV ? '<div role="group" aria-label="Hint type" style="display:flex;flex-wrap:wrap;gap:6px;">' + [["","Random"]].concat(TYPES, [["type","Typed"]]).map(function(t){ return '<button type="button" class="chip" data-pv="force" data-v="' + t[0] + '" aria-pressed="' + (PV.force === t[0]) + '" style="min-height:40px;padding:4px 12px;font-size:12px;">' + t[1] + '</button>'; }).join("") + '</div>' : '<div class="mono" style="font-size:12px;color:var(--dim);">' + (r.k === "mc" ? "Multiple choice row" : "Free response row") + '</div>';
+      var bar = '<div class="card" style="margin-bottom:16px;padding:14px 200px 14px 18px;display:flex;flex-direction:column;gap:10px;border:2px dashed var(--border3);">' +
+        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><span class="mono" style="font-size:12px;letter-spacing:2px;color:var(--gold);">TEACHER PREVIEW</span><span style="font-size:13px;color:var(--dim);">What students see. Not connected; nothing is sent or scored.</span></div>' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button type="button" class="btn ghost sm" data-pv="prev">\u2190 Prev</button><span class="mono" style="font-size:14px;color:var(--bright);min-width:90px;text-align:center;">' + (PV.i + 1) + ' of ' + PV.rows.length + '</span><button type="button" class="btn ghost sm" data-pv="next">Next \u2192</button><button type="button" class="btn ghost sm" data-pv="rand">Random</button><button type="button" class="btn ghost sm" data-pv="show">' + (PV.show ? "Hide answer" : "Show answer") + '</button></div>' +
+        hint + (PV.show ? '<div style="font-size:15px;color:var(--muted);">Answer: <b style="color:var(--gold);">' + esc(ansText(r)) + '</b></div>' : '') + '</div>';
+      var body = PV.ok ? '<div class="card" style="text-align:center;padding:30px 20px;border:2px solid var(--ok);"><div class="disp" style="font-size:clamp(28px,5vw,40px);font-weight:800;color:var(--ok);">Correct!</div><div style="color:var(--muted);margin-top:8px;">' + esc(ansText(r)) + '</div><div style="margin-top:16px;"><button type="button" class="btn" data-pv="next">Next question \u2192</button></div></div>'
+        : puzzleCard(F) + (PV.msg ? '<div role="alert" style="margin-top:10px;font-weight:700;color:var(--bad);">' + esc(PV.msg) + '</div>' : '');
+      view.innerHTML = bar + body;
+      var a = document.getElementById("sAns"); if (a) { if (keep && !PV.ok) a.value = keep; a.focus(); }
+      wire();
+    }
+    function previewCheck(text){
+      var r = PV.rows[PV.i];
+      if (isRight(r, text)) { PV.ok = true; if (window.KO_FX) KO_FX.sfx("hit"); }
+      else { PV.msg = "Not quite. Try again."; if (window.KO_FX) KO_FX.sfx("miss"); var a = document.getElementById("sAns"); if (a) a.value = ""; }
+      previewDraw();
+    }
+    function previewStart(){
+      document.title = "Mane Event \u00b7 Teacher preview";
+      previewLoad(); if (PV.rows.length) previewMake(); previewDraw();
+      view.addEventListener("click", function(e){
+        var b = e.target.closest && e.target.closest("[data-pv]"); if (!b) return;
+        var a = b.getAttribute("data-pv"), n = PV.rows.length; if (!n) return;
+        if (a === "next") PV.i = (PV.i + 1) % n; else if (a === "prev") PV.i = (PV.i - 1 + n) % n; else if (a === "rand") PV.i = rnd(n);
+        else if (a === "force") PV.force = b.getAttribute("data-v"); else if (a === "show") { PV.show = !PV.show; previewDraw(); return; }
+        previewMake(); previewDraw();
+      });
+      window.addEventListener("storage", function(e){ if (e.key !== KEY) return; var had = PV.rows.length, oldCsv = PV.st && PV.st.csv; previewLoad(); if (!had || !PV.st || PV.st.csv !== oldCsv) { if (PV.rows.length) previewMake(); previewDraw(); } });
+      setInterval(function(){
+        if (!V || !V.f || V.f.m !== "reveal" || PV.ok) return;
+        var hid = []; V.f.pz.split("").forEach(function(ch, j){ if (ch === "_") hid.push(j); });
+        if (hid.length > 1) { var j = hid[rnd(hid.length)], d = ansText(PV.rows[PV.i]); V.f.pz = V.f.pz.slice(0, j) + d[j] + V.f.pz.slice(j + 1); previewDraw(); }
+      }, 3000);
+    }
+    function submit(text){ if (PREV) return previewCheck(text); if (!V || !V.f || !conn || !conn.open) return; conn.send({ k: "ans", n: V.f.n, a: text }); }
+    function me(){ return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:200px;">' + (ROUTE ? '<span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--dim);" title="How this device is connected">\u25CF ' + (ROUTE === "relay" ? "RELAY" : "DIRECT") + '</span>' : '') + '<span class="lbl">You are</span><b style="color:' + (V.tn ? tc(V.team) : "var(--gold)") + ';font-size:18px;">' + esc(V.name) + '</b>' + (V.tn ? '<span class="mono" style="font-size:13px;color:' + tc(V.team) + ';">' + esc(V.tn) + '</span>' : '') + (V.mode === "rush" && V.score != null ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.score.toLocaleString() + ' pts</span>' : V.ko ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.ko + ' KO' + (V.ko === 1 ? '' : 's') + '</span>' : '') + '<button type="button" id="sLeave" class="chip" style="min-height:40px;padding:4px 12px;font-size:12px;' + (V.ko ? '' : 'margin-left:auto;') + '">LEAVE GAME</button>' + (window.KO_FX ? '<button type="button" id="sSnd" class="chip" aria-pressed="' + KO_FX.soundOn() + '" style="min-height:40px;padding:4px 12px;font-size:12px;">' + (KO_FX.soundOn() ? 'SOUND ON' : 'SOUND OFF') + '</button>' : '') + '</div>'; }
     function big(title, sub, col){ return '<div class="card" style="text-align:center;padding:40px 22px;border:2px solid ' + (col || "var(--gold)") + ';"><div class="disp" style="font-size:clamp(28px,6vw,46px);font-weight:800;color:' + (col || "var(--gold)") + ';line-height:1.15;">' + title + '</div>' + (sub ? '<p style="color:var(--muted);font-size:17px;margin:14px 0 0;">' + sub + '</p>' : '') + '</div>'; }
     function render(){
       if (!V) return;
@@ -866,7 +1033,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       if (F.between) return head + big(esc(F.between), 'Next game in <span id="sLeft">3 s</span>');
       if (F.last) {
         var who = F.last.by === "me" ? ["You got it!", "var(--ok)"] : F.last.by === "opp" ? [esc(F.opp) + " got it", "var(--bad)"] : ["Nobody got it", "var(--warn)"];
-        return head + '<div class="card" style="text-align:center;padding:26px 20px;"><div class="disp" style="font-size:clamp(26px,5vw,38px);font-weight:800;color:' + who[1] + ';">' + who[0] + '</div><div style="color:var(--muted);margin-top:10px;">' + esc(F.q) + '</div><div class="lbl" style="margin-top:14px;">Answer</div><div class="disp" style="font-size:clamp(26px,5vw,40px);font-weight:800;color:var(--bright);">' + esc(F.last.a) + '</div></div>';
+        return head + '<div class="card" style="text-align:center;padding:26px 20px;"><div class="disp" style="font-size:clamp(26px,5vw,38px);font-weight:800;color:' + who[1] + ';">' + who[0] + '</div><div style="color:var(--muted);margin-top:10px;white-space:pre-line;">' + esc(F.q) + '</div><div class="lbl" style="margin-top:14px;">Answer</div><div class="disp" style="font-size:clamp(26px,5vw,40px);font-weight:800;color:var(--bright);">' + esc(F.last.a) + '</div></div>';
       }
       return head + puzzleCard(F);
     }
@@ -875,12 +1042,15 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       if (F.m === "shift") { pz = '<div class="mono" style="font-size:clamp(26px,6vw,42px);font-weight:800;letter-spacing:4px;color:var(--gold);word-break:break-word;">' + esc(F.pz) + '</div>'; note = "SHIFT \u00b7 move each letter back <b style=\"color:var(--bright);\">" + F.k + "</b> (" + String.fromCharCode(65 + F.k) + "\u2192A)"; }
       else if (F.m === "scramble") { pz = '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + F.pz.split("").map(function(ch, i){ return '<button type="button" class="tile" data-i="' + i + '" aria-label="Letter ' + esc(ch) + '">' + esc(ch) + '</button>'; }).join("") + '</div>'; note = "SCRAMBLE \u00b7 tap the letters in order, or type the answer"; }
       else if (F.m === "reveal") { pz = '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + F.pz.split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div>'; note = "REVEAL \u00b7 letters fill in over time \u00b7 type the answer"; }
-      else if (F.m === "bank") { pz = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;">' + F.opts.map(function(o){ return '<button type="button" class="bankb"' + (F.lock ? ' disabled' : '') + '>' + esc(o) + '</button>'; }).join("") + '</div>'; note = F.lock ? "Wrong pick. Wait for the next question." : "WORD BANK \u00b7 pick the answer \u00b7 a wrong pick costs a third of a hit"; }
+      else if (F.m === "outline") { var wc = F.pz.split(/\s+/).filter(function(w){ return /_/.test(w); }).length, lc = (F.pz.match(/_/g) || []).length;
+        pz = '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + F.pz.split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div>';
+        note = "FREE RESPONSE \u00b7 " + lc + " character" + (lc === 1 ? "" : "s") + (wc > 1 ? " \u00b7 " + wc + " words" : "") + " \u00b7 type the answer"; }
+      else if (F.m === "bank") { pz = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;">' + F.opts.map(function(o){ return '<button type="button" class="bankb"' + (F.lock ? ' disabled' : '') + '>' + esc(o) + '</button>'; }).join("") + '</div>'; note = F.lock ? "Wrong pick. Wait for the next question." : (F.mc ? "MULTIPLE CHOICE" : "WORD BANK") + " \u00b7 pick the answer" + (F.kind === "rush" ? "" : " \u00b7 a wrong pick costs a third of a hit"); }
       else note = "Type the answer";
       var form = F.m === "bank" ? "" : '<form id="sForm" style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;"><input class="ans" id="sAns" data-n="' + F.n + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" style="flex:1;min-width:200px;"' + (F.lock ? ' disabled placeholder="Locked for this question"' : ' placeholder="Answer"') + '><button class="btn" type="submit"' + (F.lock ? ' disabled' : '') + '>Strike</button>' + (F.m === "scramble" ? '<button class="btn ghost sm" type="button" id="sClr">Clear</button>' : '') + '</form>';
       return '<div class="card" style="display:flex;flex-direction:column;gap:14px;">' +
         (T.left != null ? '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;height:6px;border-radius:3px;background:var(--border);overflow:hidden;"><div id="sBar" style="height:100%;background:var(--gold);width:100%;"></div></div><span class="mono" id="sLeft" style="font-size:13px;color:var(--dim);min-width:40px;text-align:right;"></span></div>' : '') +
-        '<div style="font-size:clamp(19px,3.4vw,26px);font-weight:700;color:var(--bright);line-height:1.35;text-wrap:pretty;">' + esc(F.q) + '</div>' +
+        '<div style="font-size:clamp(19px,3.4vw,26px);font-weight:700;color:var(--bright);line-height:1.35;text-wrap:pretty;white-space:pre-line;">' + esc(F.q) + '</div>' +
         pz + '<div class="mono" style="font-size:13px;color:var(--muted);">' + note + '</div>' + form +
         (F.kind === "rush" ? '</div>' : '<div style="display:flex;justify-content:flex-end;"><button type="button" id="sFF" class="btn ghost sm" style="border-color:var(--bad);color:var(--bad);">' + (F.kind === "match" ? "Forfeit match" : "Forfeit") + '</button></div></div>');
     }
