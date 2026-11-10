@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=37.1.0"></script>
+<script src="site.js?v=37.2.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.1.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.1.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.2.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.2.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Ping Rush</title>
-<link href="assets/fonts/fonts.css?v=37.1.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=37.2.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--amber:#ffcf5c;--rush:#00e0c6;--rushText:#03201c;}
 :root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--amber:#8a5a00;--rush:#00796b;--rushText:#ffffff;}
@@ -31,6 +31,18 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
 select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);}
 .mask{display:inline-flex;align-items:flex-end;justify-content:center;min-width:34px;height:52px;border-bottom:4px solid var(--rush);font:800 30px 'JetBrains Mono',monospace;color:var(--bright);}
 .mask.sp{border-bottom-color:transparent;min-width:18px;}
+@keyframes prPop{0%{transform:scale(1)}35%{transform:scale(1.35)}100%{transform:scale(1)}}
+.prPop{animation:prPop .35s ease;}
+@keyframes prPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+.prPulse{animation:prPulse .5s ease infinite;}
+@keyframes prIntro{0%{opacity:0;transform:translate(-50%,-50%) scale(2.4) rotate(-6deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(.95) rotate(-3deg)}28%{transform:translate(-50%,-50%) scale(1.04) rotate(-3deg)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1) rotate(-3deg)}}
+#prIntro{position:fixed;left:50%;top:42%;z-index:9500;pointer-events:none;text-align:center;font-weight:800;line-height:1;color:var(--rush);text-shadow:0 0 40px var(--rush),0 6px 0 rgba(0,0,0,.35);animation:prIntro 1.2s cubic-bezier(.2,1.4,.4,1) forwards;}
+#prIntro b{display:block;font-size:clamp(90px,16vw,200px);letter-spacing:-2px;}
+#prIntro span{display:block;font-family:'JetBrains Mono',monospace;font-size:clamp(18px,2.4vw,28px);letter-spacing:4px;color:var(--bright);margin-bottom:8px;}
+@keyframes prSlide{from{transform:translateY(var(--dy,0))}to{transform:translateY(0)}}
+@keyframes prWin{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1.03)}}
+@keyframes prRise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-motion="reduce"] .prPulse{animation:none!important;opacity:1!important;transform:none!important;}
 </style>
 </head>
 <body>
@@ -46,17 +58,17 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=37.1.0"></script>
-<script src="ctf-data/cyber1.js?v=37.1.0"></script>
-<script src="ctf-data/cyber2.js?v=37.1.0"></script>
-<script src="ctf-data/cyber3.js?v=37.1.0"></script>
-<script src="ctf-data/apcsp.js?v=37.1.0"></script>
-<script src="ctf-data/web3.js?v=37.1.0"></script>
-<script src="supabase-config.js?v=37.1.0"></script>
-<script src="js/auth.js?v=37.1.0"></script>
-<script src="js/battle-fx.js?v=37.1.0"></script>
-<script src="js/ko-fx.js?v=37.1.0"></script>
-<script src="js/waiting-room.js?v=37.1.0"></script>
+<script src="config.js?v=37.2.0"></script>
+<script src="ctf-data/cyber1.js?v=37.2.0"></script>
+<script src="ctf-data/cyber2.js?v=37.2.0"></script>
+<script src="ctf-data/cyber3.js?v=37.2.0"></script>
+<script src="ctf-data/apcsp.js?v=37.2.0"></script>
+<script src="ctf-data/web3.js?v=37.2.0"></script>
+<script src="supabase-config.js?v=37.2.0"></script>
+<script src="js/auth.js?v=37.2.0"></script>
+<script src="js/battle-fx.js?v=37.2.0"></script>
+<script src="js/ko-fx.js?v=37.2.0"></script>
+<script src="js/waiting-room.js?v=37.2.0"></script>
 <script>
 (function(){
   var r0 = document.documentElement, tb = document.getElementById("themeToggle");
@@ -67,12 +79,14 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX, KX = window.KO_FX;
   if (FX) { FX.enableSound(true); if (FX.soundUi) FX.soundUi(document.getElementById("snd")); }
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
+  var PRV = { qi: null, tried: 0 }, LASTQ = {}, REVQ = null, PREVR = {}, ARROW = {}, STRK = {}, DONEID = null, AC = null;
   var CLASSES = [], CUR = null, ST = null, skew = 0, msg = "", busy = false, timer = null, MODS = {}, pick = {}, showSetup = false, sig = "", lastPhase = "", lastTick = -1;
   var OPT = { src: "sheet", count: 10, qtime: 20, vbank: true, pace: "timed" };
   try { var o0 = JSON.parse(localStorage.getItem("pingrush-opt") || "null"); if (o0) for (var k0 in OPT) if (o0[k0] != null) OPT[k0] = o0[k0]; } catch (e) {}
   var SHEET = { url: "", rows: [], msg: "", col: "var(--dim)" };
   try { SHEET.url = localStorage.getItem("pingrush-sheet") || ""; } catch (e) {}
   var ERR = { rush_live: "A Ping Rush is already running in this class.", too_few: "Load at least 4 usable questions.", not_teacher: "Sign in on the teacher dashboard first." };
+  var LC = ["#d6334a", "#1f7ae0", "#e0a400", "#1a9e5c"], LT = ["#ffffff", "#ffffff", "#1a1200", "#ffffff"];
   function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
   function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function disp(t){ var d = String(t || "").replace(/\([^)]*\)/g, "").split("/")[0].trim(); return d || String(t || "").trim(); }
@@ -102,15 +116,18 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
     else if (rows.length && /^(mc|fr|multiplechoice|freeresponse|shortanswer|multiple|free)$/.test(h[0])) fmt = "qa";
     h.forEach(function(x, i){ if (tcol < 0 && i > 0 && /^(time|seconds|secs|sec|timelimit|timer)$/.test(x)) tcol = i; });
     if (tcol < 0 && fmt === "qa") tcol = 6;
+    var dcol = -1; h.forEach(function(x, i){ if (dcol < 0 && i > 0 && /^(double|x2|doublepoints|bonus)$/.test(x)) dcol = i; });
+    if (dcol < 0 && fmt === "qa") dcol = 7;
     rows.forEach(function(r){
-      var o = null, q, a, k = "v", tt = 0;
+      var o = null, q, a, k = "v", tt = 0, dd = false;
+      if (dcol >= 0) { dd = /^(1|true|yes|y|x2|2|double)$/i.test(String(r[dcol] || "").trim()); r = r.slice(); r[dcol] = ""; }
       if (tcol >= 0) { var tv = parseInt(String(r[tcol] || "").replace(/[^0-9]/g, ""), 10); if (tv >= 5 && tv <= 300) tt = tv; r = r.slice(); r[tcol] = ""; }
       if (fmt === "qa") { var ty = norm(r[0]); q = r[1] || ""; a = r[2] || ""; o = r.slice(3, 6).filter(Boolean); k = /^(fr|free|short|open|text|typed|written)/.test(ty) ? "fr" : /^(mc|multi|choice)/.test(ty) ? "mc" : o.length ? "mc" : "fr"; }
       else if (fmt === "vt") { a = r[0] || ""; q = r.slice(1).filter(Boolean).join(", "); }
       else { a = r[r.length - 1]; q = r.slice(0, -1).join(", "); }
       a = String(a || "").replace(/\s*\n\s*/g, " ");
       var key = norm(q) + "|" + norm(a); if (!norm(q) || !norm(a) || seen[key]) return; seen[key] = 1;
-      out.push({ q: q.slice(0, 400), a: a.slice(0, 160), k: k, o: k === "mc" ? o : null, t: tt || null });
+      out.push({ q: q.slice(0, 400), a: a.slice(0, 160), k: k, o: k === "mc" ? o : null, t: tt || null, x2: dd || null });
     });
     return out;
   }
@@ -138,7 +155,7 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=37.1.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=37.2.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){ MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ if (!norm(disp(t.t)) || !t.d) return; (MODS[t.m] = MODS[t.m] || []).push(t); }); });
   }
   function source(){
@@ -155,7 +172,7 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
       if (r.k === "mc") o = { q: r.q, a: r.a, k: "mc", o: r.o || [] };
       else if (r.k === "fr") o = { q: r.q, a: r.a, k: "fr" };
       else { var d = disp(r.a); o = OPT.vbank && pool.length >= 4 ? { q: r.q, a: d, k: "mc", o: shuffle(pool.filter(function(x){ return norm(x) !== norm(d); })).slice(0, 3) } : { q: r.q, a: r.a, k: "fr" }; }
-      if (r.t) o.t = r.t;
+      if (r.t) o.t = r.t; if (r.x2) o.x2 = true;
       return o;
     });
   }
@@ -169,10 +186,44 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
       var s = d.session;
       if (s && s.phase !== lastPhase) { if (lastPhase === "q" && s.phase === "reveal" && FX) FX.sfx("horn"); lastPhase = s.phase; }
       if (FX && FX.music) FX.music(!!(s && s.status === "live"), false);
-      paint(); timer = setTimeout(load, s && s.status === "live" ? 1000 : 6000);
+      lastTick = -1;
+      var newAns = 0, intro = 0;
+      if (s && s.status === "live" && s.phase === "q") {
+        if (PRV.qi === s.qi && s.tried > PRV.tried) newAns = s.tried - PRV.tried;
+        if (PRV.qi !== s.qi) intro = s.qi;
+        PRV = { qi: s.qi, tried: s.tried }; if (s.o) LASTQ = { qi: s.qi, o: s.o };
+      }
+      if (s && (s.phase === "reveal" || s.status === "done") && REVQ !== s.id + ":" + s.qi + ":" + s.status) { REVQ = s.id + ":" + s.qi + ":" + s.status; rankDeltas(s.board || []); }
+      if (s && s.status === "done" && DONEID !== s.id) { DONEID = s.id; podiumFx(); }
+      paint();
+      if (intro) showIntro(intro, s.x2);
+      if (newAns) { pings(newAns); var cnt = document.getElementById("prCnt"); if (cnt) { cnt.classList.remove("prPop"); void cnt.offsetWidth; cnt.classList.add("prPop"); } }
+      timer = setTimeout(load, s && s.status === "live" ? 1000 : 6000);
     }).catch(function(e){
       ST = { na: true, err: /pr_|function/.test(String(e && e.message)) ? "sql" : String(e && e.message || e) }; paint(); timer = setTimeout(load, 10000);
     });
+  }
+  function RM(){ try { return document.documentElement.getAttribute("data-motion") === "reduce" || (window.SITE_REDUCED_MOTION && window.SITE_REDUCED_MOTION()); } catch (e) { return false; } }
+  function sndOk(){ try { return localStorage.getItem("bfx-sfx") !== "0"; } catch (e) { return true; } }
+  function ac(){ try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === "suspended") AC.resume(); } catch (e) { return null; } return AC; }
+  function blip(f, d, vol, when, type){ var a = ac(); if (!a || !sndOk()) return; var t0 = a.currentTime + (when || 0), o = a.createOscillator(), g = a.createGain(); o.type = type || "sine"; o.frequency.setValueAtTime(f, t0); o.frequency.exponentialRampToValueAtTime(f * 1.5, t0 + d * .6); g.gain.setValueAtTime(vol || .12, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + d); o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + d + .02); }
+  var PINGN = 0;
+  function pings(n){ n = Math.min(n, 6); for (var i = 0; i < n; i++) { var f = 880 * Math.pow(2, (PINGN++ % 12) / 12); blip(f, .16, .11, i * .07); } }
+  function showIntro(qi, x2){
+    if (RM()) return; var o = document.getElementById("prIntro"); if (o) o.remove();
+    o = document.createElement("div"); o.id = "prIntro"; o.setAttribute("aria-hidden", "true"); o.innerHTML = "<span>QUESTION " + qi + (x2 ? " \u00b7 \u00d72" : "") + "</span><b>" + (x2 ? "DOUBLE!" : "PING!") + "</b>";
+    document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 1250);
+    blip(660, .12, .12, 0, "square"); blip(990, .2, .12, .1, "square");
+  }
+  function rankDeltas(board){
+    var now = {}; ARROW = {};
+    board.forEach(function(p, i){ now[p.h] = i + 1; if (PREVR[p.h]) ARROW[p.h] = PREVR[p.h] - (i + 1); STRK[p.h] = p.l ? (STRK[p.h] || 0) + 1 : 0; });
+    PREVR = now;
+  }
+  function podiumFx(){
+    if (!FX) return;
+    for (var i = 0; i < 16; i++) (function(k){ setTimeout(function(){ blip(140 + k * 6, .07, .09, 0, "triangle"); }, k * (150 - k * 6)); })(i);
+    setTimeout(function(){ if (FX.confetti) FX.confetti(["#00e0c6", "#ffffff", "#ffcf5c", "#3ddc97"]); FX.sfx("win"); }, 2700);
   }
   function act(fn){ if (busy) return; busy = true; rpc(fn, { p_class: CUR.id }).then(function(){ busy = false; load(); }).catch(function(e){ busy = false; msg = String(e && e.message || e); paint(true); }); }
   function start(){
@@ -199,7 +250,7 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
     var src = OPT.src === "sheet"
       ? '<div style="display:flex;flex-direction:column;gap:8px;"><label for="prSheet" style="font-weight:700;color:var(--bright);">Google Sheet link</label>' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="prSheet" class="in mono" type="url" value="' + esc(SHEET.url) + '" placeholder="https://docs.google.com/spreadsheets/d/\u2026" autocomplete="off" spellcheck="false" style="flex:1;min-width:220px;font-size:13px;"><button type="button" class="btn" id="prImport">Import</button></div>' +
-          '<div style="font-size:12px;color:' + SHEET.col + ';line-height:1.5;">' + esc(SHEET.msg || "Same sheets as Mane Event. Vocab: Term, Definition. Q&A: Type, Question, Answer, Distractor 1\u20133 (Type = multiple choice or free response). Optional Time column (seconds) per question. Share as \u201cAnyone with the link \u00b7 Viewer\u201d. Only you see the link.") + '</div>' +
+          '<div style="font-size:12px;color:' + SHEET.col + ';line-height:1.5;">' + esc(SHEET.msg || "Same sheets as Mane Event. Vocab: Term, Definition. Q&A: Type, Question, Answer, Distractor 1\u20133 (Type = multiple choice or free response). Optional Time column (seconds) and Double column (yes = \u00d72 points) per question. Share as \u201cAnyone with the link \u00b7 Viewer\u201d. Only you see the link.") + '</div>' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;"><a class="btn ghost" href="mane-event/vocab-template.csv" download>Vocab template</a><a class="btn ghost" href="mane-event/qa-template.csv" download>Q&amp;A template</a></div></div>'
       : '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip" data-mod="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(+m)) + ' \u00b7 ' + MODS[m].length + '</button>'; }).join("") : '<span style="color:var(--dim);font-size:13px;">No vocab for this course.</span>') + '</div>';
     return (WR ? WR.html() : '') +
@@ -214,7 +265,7 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
           sec("Pace", chips("pace", [["timed", "Timed"], ["teacher", "Teacher-paced"], ["auto", "Auto-advance"]], OPT.pace),
             OPT.pace === "teacher" ? "No timer. Students answer until you press <b>Show answer</b>, then <b>Next</b> when you\u2019re done discussing. Faster answers still score more." : OPT.pace === "auto" ? "Each question ends on its timer (or when everyone answers). The next one starts 8 seconds after the answer shows." : "Each question ends on its timer or when everyone answers. You press <b>Next</b> after the leaderboard, so you can stop and discuss.") +
           sec("Time per question", chips("qtime", [[10, "10 s"], [20, "20 s"], [30, "30 s"], [45, "45 s"], [60, "60 s"]], OPT.qtime),
-            "Used when a row has no time. Add a <b>Time</b> column (seconds, 5\u2013300) to your sheet to give each question its own time." + (OPT.pace === "teacher" ? " Teacher-paced: this only sets how fast an answer must be for full points." : "")) +
+            "Used when a row has no time. Add a <b>Time</b> column (seconds, 5\u2013300) to your sheet to give each question its own time, and a <b>Double</b> column (yes) to make a question worth \u00d72." + (OPT.pace === "teacher" ? " Teacher-paced: this only sets how fast an answer must be for full points." : "")) +
           '<div style="font-size:13px;color:var(--muted);line-height:1.6;">Everyone answers the same question at once. Correct answers score 500\u20131,000 points (faster = more), +100 for 3 in a row. A question ends when time runs out or everyone is done.<br><b style="color:var(--bright);">XP:</b> 1st +25 \u00b7 2nd +15 \u00b7 3rd +10 \u00b7 everyone else who answered +5.</div>' +
           '<div><button type="button" class="btn" id="prStart" data-wr-start="Start Ping Rush"' + (busy ? ' disabled' : '') + '>' + esc((WR && WR.label()) || "Start Ping Rush") + '</button></div>' +
           (msg ? '<div role="alert" style="color:var(--bad);font-weight:700;font-size:14px;">' + esc(msg) + '</div>' : '') + '</div>' +
@@ -227,17 +278,20 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
     var q = qs[PREV.i], secs = q.t || OPT.qtime, opts = q.k === "mc" ? shuffle([q.a].concat(q.o || [])) : null;
     var outline = q.k === "fr" ? String(q.a).split("").map(function(ch){ return /[a-z0-9]/i.test(ch) ? '<span style="display:inline-block;width:22px;border-bottom:3px solid var(--rush);margin:0 2px;height:28px;"></span>' : ch === " " ? '<span style="display:inline-block;width:14px;"></span>' : '<span class="mono" style="font-weight:800;color:var(--bright);">' + esc(ch) + '</span>'; }).join("") : "";
     return '<div style="border:1px solid var(--border3);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px;background:var(--bg);">' +
-      '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--dim);flex:1;">PREVIEW \u00b7 ' + (PREV.i + 1) + ' OF ' + n + ' \u00b7 ' + (q.k === "mc" ? "MULTIPLE CHOICE" : "TYPED") + ' \u00b7 ' + (OPT.pace === "teacher" ? "NO TIMER" : secs + " S") + (q.t ? " (SHEET)" : "") + '</span>' +
+      '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--dim);flex:1;">PREVIEW \u00b7 ' + (PREV.i + 1) + ' OF ' + n + ' \u00b7 ' + (q.k === "mc" ? "MULTIPLE CHOICE" : "TYPED") + ' \u00b7 ' + (OPT.pace === "teacher" ? "NO TIMER" : secs + " S") + (q.t ? " (SHEET)" : "") + (q.x2 ? " \u00b7 DOUBLE \u00d72" : "") + '</span>' +
         '<button type="button" class="btn ghost" data-act="pprev"' + (PREV.i ? '' : ' disabled') + ' aria-label="Previous question">\u2190</button><button type="button" class="btn ghost" data-act="pnext"' + (PREV.i < n - 1 ? '' : ' disabled') + ' aria-label="Next question">\u2192</button></div>' +
       '<div style="font-size:22px;font-weight:800;color:var(--bright);line-height:1.3;white-space:pre-line;text-wrap:pretty;">' + esc(q.q) + '</div>' +
-      (opts ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:8px;">' + opts.map(function(o){ var ok = norm(o) === norm(q.a); return '<div style="padding:12px;border-radius:10px;border:2px solid ' + (ok ? 'var(--ok)' : 'var(--border3)') + ';color:var(--bright);font-weight:700;">' + esc(o) + (ok ? ' <span class="mono" style="font-size:11px;color:var(--ok);">\u2713 ANSWER</span>' : '') + '</div>'; }).join("") + '</div>'
+      (opts ? '<div style="display:grid;grid-template-columns:repeat(' + ((opts || []).length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:8px;">' + opts.map(function(o){ var ok = norm(o) === norm(q.a); return '<div style="padding:12px;border-radius:10px;border:2px solid ' + (ok ? 'var(--ok)' : 'var(--border3)') + ';color:var(--bright);font-weight:700;">' + esc(o) + (ok ? ' <span class="mono" style="font-size:11px;color:var(--ok);">\u2713 ANSWER</span>' : '') + '</div>'; }).join("") + '</div>'
         : '<div style="display:flex;flex-wrap:wrap;align-items:flex-end;">' + outline + '</div><div class="mono" style="font-size:13px;color:var(--ok);">Answer: ' + esc(q.a) + '</div>') +
       '<div style="font-size:12px;color:var(--dim);">Only you see this. Students see the same question without the answer marked. Multiple-choice order is shuffled for each game.</div></div>';
   }
   function boardRows(b, withLast){
-    return b.map(function(p, i){ return '<div style="display:grid;grid-template-columns:44px minmax(0,1fr) auto' + (withLast ? ' 74px' : '') + ';gap:10px;align-items:center;padding:8px 12px;border-radius:10px;background:' + (i < 3 ? 'var(--panel2)' : 'transparent') + ';border:1px solid ' + (i < 3 ? 'var(--border3)' : 'var(--border2)') + ';">' +
+    return b.map(function(p, i){ var dl = withLast ? (ARROW[p.h] || 0) : 0, sk = withLast ? (STRK[p.h] || 0) : 0;
+      return '<div class="prAnim" style="display:grid;grid-template-columns:44px minmax(0,1fr) auto' + (withLast ? ' 74px' : '') + ';gap:10px;align-items:center;padding:8px 12px;border-radius:10px;background:' + (i < 3 ? 'var(--panel2)' : 'transparent') + ';border:' + (i === 0 && withLast ? '2px solid var(--rush);box-shadow:0 0 26px -8px var(--rush)' : '1px solid ' + (i < 3 ? 'var(--border3)' : 'var(--border2)')) + ';' + (dl ? '--dy:' + (dl * 54) + 'px;animation:prSlide .8s cubic-bezier(.2,.8,.2,1) both;' : '') + '">' +
       '<span class="mono" style="font-weight:800;font-size:18px;color:' + (i < 3 ? 'var(--rush)' : 'var(--dim)') + ';">' + (i + 1) + '</span>' +
-      '<span style="font-weight:700;font-size:18px;color:var(--bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(p.h) + '</span>' +
+      '<span style="font-weight:700;font-size:18px;color:var(--bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(p.h) +
+        (dl ? ' <span class="mono" style="font-size:13px;font-weight:800;color:' + (dl > 0 ? 'var(--ok)' : 'var(--bad)') + ';">' + (dl > 0 ? '\u25b2' : '\u25bc') + Math.abs(dl) + '</span>' : '') +
+        (sk >= 3 ? ' <span class="mono" style="font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--warn);color:#2a1d00;">' + sk + '\u00d7 STREAK</span>' : '') + '</span>' +
       '<span class="mono" style="font-weight:800;font-size:18px;color:var(--bright);">' + Number(p.s || 0).toLocaleString() + '</span>' +
       (withLast ? '<span class="mono" style="font-size:14px;text-align:right;color:' + (p.l ? 'var(--ok)' : 'var(--dim)') + ';">' + (p.l ? '+' + p.l : '\u2014') + '</span>' : '') + '</div>'; }).join("");
   }
@@ -249,33 +303,36 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
       var B = s.board || [], pod = B.slice(0, 3), H = [150, 110, 80];
       return head + '<div class="card" style="padding:28px;">' +
         (pod.length ? '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:6px 0 26px;flex-wrap:wrap;">' + [1, 0, 2].filter(function(i){ return pod[i]; }).map(function(i){ var p = pod[i];
-          return '<div style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:160px;"><div style="font-weight:800;color:var(--bright);font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(p.h) + '</div><div class="mono" style="color:var(--muted);">' + Number(p.s).toLocaleString() + ' pts \u00b7 +' + [25, 15, 10][i] + ' XP</div>' +
+          return '<div class="prAnim" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:160px;opacity:0;animation:prRise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.6, 1.4, .4][i] + 's;"><div style="font-weight:800;color:var(--bright);font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(p.h) + '</div><div class="mono" style="color:var(--muted);">' + Number(p.s).toLocaleString() + ' pts \u00b7 +' + [25, 15, 10][i] + ' XP</div>' +
             '<div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : 'var(--rush)') + ';border:2px solid var(--rush);display:flex;justify-content:center;padding-top:10px;"><span style="font-size:40px;font-weight:800;color:' + (i ? 'var(--rush)' : 'var(--rushText)') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' : '<p style="color:var(--dim);">Nobody answered.</p>') +
-        '<div style="display:flex;flex-direction:column;gap:6px;max-width:760px;margin:0 auto;">' + boardRows(B, false) + '</div>' +
+        '<div class="prAnim" style="display:flex;flex-direction:column;gap:6px;max-width:760px;margin:0 auto;opacity:0;animation:prRise .6s ease forwards;animation-delay:3.4s;">' + boardRows(B, false) + '</div>' +
         '<div style="font-size:13px;color:var(--dim);text-align:center;margin-top:14px;">XP is paid: 1st +25, 2nd +15, 3rd +10, everyone else who answered +5.</div></div>';
     }
     if (s.phase === "q") {
-      var opts = s.k === "mc" ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;width:100%;">' + (s.o || []).map(function(o, i){ return '<div style="display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:14px;border:2px solid var(--border3);background:var(--panel2);text-align:left;"><span class="mono" style="font-size:22px;font-weight:800;color:var(--rush);">' + "ABCD"[i] + '</span><span style="font-size:clamp(20px,2.4vw,28px);font-weight:700;color:var(--bright);">' + esc(o) + '</span></div>'; }).join("") + '</div>'
+      var opts = s.k === "mc" ? '<div style="display:grid;grid-template-columns:repeat(' + ((s.o || []).length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:12px;width:100%;">' + (s.o || []).map(function(o, i){ return '<div style="display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:14px;border:2px solid ' + LC[i] + ';background:var(--panel2);text-align:left;"><span class="mono" style="font-size:22px;font-weight:800;min-width:44px;height:44px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:' + LC[i] + ';color:' + LT[i] + ';">' + "ABCD"[i] + '</span><span style="font-size:clamp(20px,2.4vw,28px);font-weight:700;color:var(--bright);">' + esc(o) + '</span></div>'; }).join("") + '</div>'
         : '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">' + String(s.mask || "").split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : ch === "_" ? '<span class="mask"></span>' : '<span class="mask" style="border-bottom-color:transparent;">' + esc(ch) + '</span>'; }).join("") + '</div><div class="mono" style="color:var(--muted);">TYPE THE ANSWER \u00b7 ' + String(s.mask || "").replace(/[^_]/g, "").length + ' letters</div>';
       return head + '<div class="card" style="padding:28px;display:flex;flex-direction:column;gap:22px;align-items:center;text-align:center;">' +
+        (s.x2 ? '<div class="mono" style="font-size:20px;font-weight:800;letter-spacing:3px;padding:8px 18px;border-radius:999px;background:var(--warn);color:#2a1d00;">DOUBLE POINTS \u00d72</div>' : '') +
         (s.q_ends ? '' : '<div class="mono" style="font-size:16px;color:var(--muted);">TEACHER-PACED \u00b7 press Show answer when the class is ready</div>') + '<div style="display:' + (s.q_ends ? 'flex' : 'none') + ';align-items:center;gap:14px;width:100%;"><div style="flex:1;height:10px;border-radius:5px;background:var(--bg);overflow:hidden;"><div id="prBar" style="height:100%;background:var(--rush);width:100%;"></div></div><span class="mono" id="prT" style="font-size:34px;font-weight:800;color:var(--rush);min-width:60px;text-align:right;"></span></div>' +
         '<div style="font-size:clamp(28px,4vw,46px);font-weight:800;color:var(--bright);line-height:1.25;max-width:1000px;white-space:pre-line;text-wrap:balance;' + (/\n/.test(s.q || "") ? 'text-align:left;' : '') + '">' + esc(s.q) + '</div>' + opts +
-        '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span class="mono" style="font-size:20px;color:var(--muted);">' + s.tried + ' of ' + s.here + ' answered \u00b7 ' + s.right + ' correct</span><button type="button" class="btn ghost" data-act="next">Show answer now</button></div></div>';
+        '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span style="display:inline-flex;align-items:baseline;gap:8px;"><span id="prCnt" class="mono" style="display:inline-block;font-size:48px;font-weight:800;color:var(--rush);line-height:1;">' + s.tried + '</span><span class="mono" style="font-size:20px;color:var(--muted);">/ ' + s.here + ' locked in</span></span><button type="button" class="btn ghost" data-act="next">Show answer now</button></div></div>';
     }
     var last = s.qi >= s.total;
     return head + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;" class="prGrid">' +
       '<div class="card" style="padding:26px;display:flex;flex-direction:column;gap:14px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--dim);">ANSWER</div>' +
         '<div style="font-size:clamp(34px,5vw,60px);font-weight:800;color:var(--rush);line-height:1.1;word-break:break-word;">' + esc(s.a) + '</div>' +
+        (LASTQ.qi === s.qi && LASTQ.o ? '<div style="display:grid;grid-template-columns:repeat(' + (LASTQ.o.length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:8px;">' + LASTQ.o.map(function(o, i){ var ok = norm(o) === norm(s.a);
+          return '<div class="prAnim" style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:2px solid ' + (ok ? 'var(--ok)' : 'var(--border2)') + ';background:var(--panel2);' + (ok ? 'box-shadow:0 0 24px -6px var(--ok);animation:prWin .6s ease both;' : 'opacity:.35;') + '"><span class="mono" style="font-weight:800;min-width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:' + LC[i] + ';color:' + LT[i] + ';">' + "ABCD"[i] + '</span><span style="font-weight:700;color:var(--bright);">' + esc(o) + '</span>' + (ok ? '<span class="mono" style="margin-left:auto;font-size:12px;color:var(--ok);">\u2713</span>' : '') + '</div>'; }).join("") + '</div>' : '') +
         '<div style="color:var(--muted);font-size:18px;white-space:pre-line;">' + esc(s.q) + '</div>' +
         '<div class="mono" style="font-size:22px;color:var(--bright);">' + s.right + ' of ' + s.here + ' got it</div>' +
-        '<div style="margin-top:auto;padding-top:10px;"><button type="button" class="btn" data-act="next">' + (last ? "Final results \u2192" : "Next question \u2192") + '</button>' + (s.pace === "auto" ? '<span class="mono" style="margin-left:12px;font-size:14px;color:var(--dim);">auto in 8 s</span>' : '') + '</div></div>' +
+        '<div style="margin-top:auto;padding-top:10px;"><button type="button" class="btn" data-act="next">' + (last ? "Final results \u2192" : "Next question \u2192") + '</button>' + (s.pace === "auto" ? '<span class="mono" style="margin-left:12px;font-size:14px;color:var(--dim);">auto in 8 s</span>' : '') + (!last ? '<button type="button" class="btn ghost" data-act="x2" aria-pressed="' + !!s.next_x2 + '" style="margin-left:10px;' + (s.next_x2 ? 'border-color:var(--warn);color:var(--warn);' : '') + '">' + (s.next_x2 ? 'Next is DOUBLE \u2713' : 'Make next \u00d72') + '</button>' : '') + '</div></div>' +
       '<div class="card" style="padding:20px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--dim);margin-bottom:10px;">LEADERBOARD</div><div style="display:flex;flex-direction:column;gap:6px;">' + ((s.board || []).length ? boardRows(s.board, true) : '<p style="color:var(--dim);margin:0;">No players yet.</p>') + '</div></div></div>';
   }
   function paint(force){
     if (!CUR) return;
     var s = ST && ST.session, live = s && !showSetup && (s.status === "live" || s.status === "done");
     if (ST && ST.na) { view.innerHTML = '<div class="card">' + (ST.err === "sql" ? 'Run <b>supabase/ping-rush.sql</b> (after re-running <b>waiting-room.sql</b>) in Supabase first.' : esc(ERR[ST.err] || ("Couldn\u2019t load: " + ST.err))) + '</div>'; return; }
-    var k = live ? JSON.stringify([s.status, s.phase, s.qi, s.tried, s.right, s.here, s.board]) : "setup";
+    var k = live ? JSON.stringify([s.status, s.phase, s.qi, s.tried, s.right, s.here, s.board, s.next_x2, s.x2]) : "setup";
     if (!force && k === sig && live) return; sig = k;
     var f = document.activeElement && document.activeElement.id, val = f === "prSheet" ? document.activeElement.value : null;
     if (live) { view.innerHTML = liveHtml(s); }
@@ -287,8 +344,10 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
     var s = ST && ST.session, t = document.getElementById("prT"), b = document.getElementById("prBar");
     if (!s || s.status !== "live" || s.phase !== "q" || !t || !s.q_ends) return;
     var left = Math.max(0, new Date(s.q_ends).getTime() - (Date.now() + skew)), sec = Math.ceil(left / 1000);
-    t.textContent = sec; if (b) b.style.width = (left / ((s.secs || s.qtime) * 1000) * 100) + "%";
-    if (sec !== lastTick) { lastTick = sec; if (FX && sec > 0 && sec <= 5) FX.sfx("tick"); }
+    var fr = left / ((s.secs || s.qtime) * 1000), col = fr > .5 ? "var(--rush)" : fr > .25 ? "var(--warn)" : "var(--bad)";
+    t.textContent = sec; t.style.color = col; if (b) { b.style.width = (fr * 100) + "%"; b.style.background = col; }
+    if (sec <= 5 && sec > 0) t.classList.add("prPulse"); else t.classList.remove("prPulse");
+    if (sec !== lastTick) { lastTick = sec; if (FX && sec > 0 && sec <= 5) FX.sfx("tick"); if (FX && FX.music) FX.music(true, sec > 0 && sec <= 5 ? 2 : false); }
   }
   setInterval(tick, 200);
   view.addEventListener("click", function(e){
@@ -303,6 +362,7 @@ select,input.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;bor
     if (a === "pprev") { PREV.i--; paint(true); return; }
     if (a === "pnext") { PREV.i++; paint(true); return; }
     if (a === "next") return act("ctf_t_pr_next");
+    if (a === "x2") return act("ctf_t_pr_double");
     if (a === "end") { if (confirm("End Ping Rush now? XP is paid for the current scores.")) act("ctf_t_pr_end"); return; }
     if (a === "new") { showSetup = true; msg = ""; paint(true); }
   });

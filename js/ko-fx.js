@@ -125,7 +125,7 @@
   function setMusic(on) { try { localStorage.setItem("ko-music", on ? "1" : "0"); } catch (e) {} stop(); if (on) music(M.want, M.wantFast); }
   function sched() {
     var a = ac(); if (!a || !M.on) return;
-    var spb = 60 / (M.fast ? 150 : 120) / 4;
+    var spb = 60 / (M.fast === 2 ? 240 : M.fast ? 150 : 120) / 4;
     while (M.next < a.currentTime + .15) {
       var w = M.next - a.currentTime, s = M.step % 16, bar = Math.floor(M.step / 16) % 4;
       if (s % 4 === 0) tone(110, .14, "sine", .22, w, 40);
@@ -138,7 +138,7 @@
   }
   function stop() { M.on = false; clearInterval(M.iv); M.iv = null; }
   function music(on, fast) {
-    M.want = !!on; M.wantFast = !!fast; M.fast = !!fast;
+    M.want = !!on; M.wantFast = fast === 2 ? 2 : !!fast; M.fast = M.wantFast;
     on = M.want && musicOn() && soundOn();
     if (on && !M.on) { var a = ac(); if (!a) return; M.on = true; M.next = a.currentTime + .05; M.step = 0; M.iv = setInterval(sched, 40); }
     else if (!on && M.on) stop();

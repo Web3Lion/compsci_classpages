@@ -204,7 +204,7 @@
   var BASS = [55, 0, 55, 0, 65.4, 0, 55, 73.4, 55, 0, 55, 0, 82.4, 0, 73.4, 65.4];
   function schedule() {
     var a = ac(); if (!a || !M.on) return;
-    var spb = 60 / (M.fast ? 150 : 118) / 4;
+    var spb = 60 / (M.fast === 2 ? 236 : M.fast ? 150 : 118) / 4;
     while (M.next < a.currentTime + .15) {
       var w = M.next - a.currentTime, s = M.step % 16;
       if (s % 4 === 0) tone(110, .14, "sine", .16, w, 40);
@@ -217,7 +217,7 @@
   }
   function music(on, fast) {
     on = !!on && SND && prefs.music;
-    M.fast = !!fast;
+    M.fast = fast === 2 ? 2 : !!fast;
     if (on && !M.on) { var a = ac(); if (!a) return; M.on = true; M.next = a.currentTime + .05; M.step = 0; M.iv = setInterval(schedule, 40); }
     else if (!on && M.on) { M.on = false; clearInterval(M.iv); M.iv = null; }
   }

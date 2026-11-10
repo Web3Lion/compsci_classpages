@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=37.1.0"></script>
+<script src="../site.js?v=37.2.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Mane Event</title>
-<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=37.1.0">
-<link href="../assets/fonts/fonts.css?v=37.1.0" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=37.2.0">
+<link href="../assets/fonts/fonts.css?v=37.2.0" rel="stylesheet">
 <style>
 :root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--gold2:#e6fff0;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
   --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
@@ -51,6 +51,29 @@ table{width:100%;border-collapse:collapse;font-size:15px;}
 th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--dim);padding:8px;border-bottom:1px solid var(--border3);}
 td{padding:9px 8px;border-bottom:1px solid var(--border);}
 .pchip{font-size:14px;font-weight:700;padding:6px 12px;min-height:40px;border-radius:999px;border:2px solid currentColor;background:transparent;cursor:pointer;font-family:'Inter',sans-serif;}
+@keyframes prPop{0%{transform:scale(1)}35%{transform:scale(1.35)}100%{transform:scale(1)}}
+.prPop{animation:prPop .35s ease;}
+@keyframes prPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+.prPulse{animation:prPulse .5s ease infinite;}
+@keyframes prIntro{0%{opacity:0;transform:translate(-50%,-50%) scale(2.4) rotate(-6deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(.95) rotate(-3deg)}28%{transform:translate(-50%,-50%) scale(1.04) rotate(-3deg)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1) rotate(-3deg)}}
+#prIntro{position:fixed;left:50%;top:42%;z-index:9500;pointer-events:none;text-align:center;font-weight:800;line-height:1;color:var(--gold);text-shadow:0 0 40px rgba(0,0,0,.45),0 6px 0 rgba(0,0,0,.35);animation:prIntro 1.2s cubic-bezier(.2,1.4,.4,1) forwards;font-family:'Bricolage Grotesque',sans-serif;}
+#prIntro b{display:block;font-size:clamp(90px,16vw,200px);letter-spacing:-2px;}
+#prIntro span{display:block;font-family:'JetBrains Mono',monospace;font-size:clamp(18px,2.4vw,28px);letter-spacing:4px;color:var(--bright);margin-bottom:8px;}
+@keyframes prSlide{from{transform:translateY(var(--dy,0))}to{transform:translateY(0)}}
+@keyframes prWin{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1.03)}}
+@keyframes prRise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes cfFall{to{transform:translateY(112vh) rotate(760deg)}}
+.cf{position:fixed;top:-24px;width:10px;height:14px;z-index:9400;pointer-events:none;border-radius:2px;animation:cfFall linear forwards;}
+.bankb[data-o]{display:flex;align-items:center;gap:12px;text-align:left;}
+.bankb .lt{font-family:'JetBrains Mono',monospace;font-size:17px;min-width:36px;height:36px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex:none;}
+.bankb[data-o="0"]{border-color:#d6334a;} .bankb[data-o="0"] .lt{background:#d6334a;color:#fff;}
+.bankb[data-o="1"]{border-color:#1f7ae0;} .bankb[data-o="1"] .lt{background:#1f7ae0;color:#fff;}
+.bankb[data-o="2"]{border-color:#e0a400;} .bankb[data-o="2"] .lt{background:#e0a400;color:#1a1200;}
+.bankb[data-o="3"]{border-color:#1a9e5c;} .bankb[data-o="3"] .lt{background:#1a9e5c;color:#fff;}
+@keyframes sFlash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+#sFlash{position:fixed;inset:0;z-index:9000;pointer-events:none;display:flex;align-items:center;justify-content:center;font:800 clamp(60px,16vw,140px) 'JetBrains Mono',monospace;color:#fff;text-shadow:0 4px 24px rgba(0,0,0,.45);animation:sFlash .9s ease-out forwards;}
+html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-motion="reduce"] .prPulse{animation:none!important;opacity:1!important;transform:none!important;}
+html[data-motion="reduce"] #sFlash{animation-duration:.01s;}
 </style>
 <style>
 /* team themes: page always stays Lion Pride green/white; only team colours change */
@@ -64,15 +87,15 @@ td{padding:9px 8px;border-bottom:1px solid var(--border);}
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
   <div id="hdr" style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:110px;">
-    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=37.1.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
+    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=37.2.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
     <h1 class="disp" style="margin:0;font-size:clamp(30px,5vw,44px);line-height:1.1;color:var(--bright);">Mane Event</h1>
     <p style="margin:6px 0 0;color:var(--muted);max-width:680px;">Live vocab and review battles. Students join with a code, get a random lion name, and nothing is saved anywhere except the host&rsquo;s own browser.</p>
   </div>
   <div id="view" aria-live="polite"></div>
 </div>
-<script src="../assets/vendor/peerjs.min.js?v=37.1.0"></script>
-<script src="../assets/vendor/qrcode.js?v=37.1.0"></script>
-<script src="../js/ko-fx.js?v=37.1.0"></script>
+<script src="../assets/vendor/peerjs.min.js?v=37.2.0"></script>
+<script src="../assets/vendor/qrcode.js?v=37.2.0"></script>
+<script src="../js/ko-fx.js?v=37.2.0"></script>
 <script>
 if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
   var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -150,9 +173,12 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     else if (rows.length) { var a0 = 0, a1 = 0; rows.forEach(function(r){ a0 += (r[0] || "").length; a1 += (r[r.length - 1] || "").length; }); fmt = a0 <= a1 ? "vt" : "dt"; }
     var tcol = -1; hdr.forEach(function(h, i){ if (tcol < 0 && i > 0 && /^(time|seconds|secs|sec|timelimit|timer|time(s|sec|seconds)?)$/.test(h)) tcol = i; });
     if (tcol < 0 && fmt === "qa") tcol = 6;
+    var dcol = -1; hdr.forEach(function(h, i){ if (dcol < 0 && i > 0 && /^(double|x2|doublepoints|bonus)$/.test(h)) dcol = i; });
+    if (dcol < 0 && fmt === "qa") dcol = 7;
     var out = [], seen = {};
     rows.forEach(function(r){
-      var qq, aa, k = "v", d = null, tt = 0;
+      var qq, aa, k = "v", d = null, tt = 0, dd = false;
+      if (dcol >= 0) { dd = /^(1|true|yes|y|x2|2|double)$/i.test(String(r[dcol] || "").trim()); r = r.slice(); r[dcol] = ""; }
       if (tcol >= 0) { var tv = parseInt(String(r[tcol] || "").replace(/[^0-9]/g, ""), 10); if (tv >= 5 && tv <= 300) tt = tv; r = r.slice(); r[tcol] = ""; }
       if (fmt === "qa") {
         var ty = norm(r[0]); qq = r[1] || ""; aa = r[2] || ""; d = r.slice(3, 6).map(function(x){ return (x || "").replace(/\s*\n\s*/g, " ").slice(0, 160); }).filter(Boolean);
@@ -163,7 +189,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       qq = qq.slice(0, 400); aa = aa.replace(/\s*\n\s*/g, " ").slice(0, k === "v" ? 80 : 160);
       var key = norm(qq) + "|" + norm(aa);
       if (!norm(qq) || !norm(aa) || seen[key] || out.length >= 500) return;
-      seen[key] = 1; var o = { q: qq, a: aa, k: k }; if (d) o.d = d; if (tt) o.t = tt; out.push(o);
+      seen[key] = 1; var o = { q: qq, a: aa, k: k }; if (d) o.d = d; if (tt) o.t = tt; if (dd) o.x2 = 1; out.push(o);
     });
     return out;
   }
@@ -383,16 +409,16 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function rushT(){ var R0 = S.rush, r = R0 && R0.f && S.rows[R0.f.row]; return ((r && r.t) || S.setup.rtime || 20) * 1000; }
     function rushPace(){ return S.setup.rpace || "timed"; }
     function rushStart(){
-      var R0 = S.rush; newPrompt(R0.f); R0.f.t0 = now(); R0.f.endsAt = rushPace() === "teacher" ? 0 : now() + rushT(); R0.f.next = now() + Math.max(2500, rushT() / 8);
-      R0.qi++; R0.phase = "q"; R0.ans = {}; R0.revealAt = 0; dirty = true; save(true);
+      var R0 = S.rush; newPrompt(R0.f); R0.x2 = !!(S.rows[R0.f.row] && S.rows[R0.f.row].x2) || !!R0.nx2; R0.nx2 = false; R0.f.t0 = now(); R0.f.endsAt = rushPace() === "teacher" ? 0 : now() + rushT(); R0.f.next = now() + Math.max(2500, rushT() / 8);
+      R0.qi++; R0.phase = "q"; R0.ans = {}; R0.revealAt = 0; dirty = true; save(true); showIntro(R0.qi, R0.x2);
     }
     function rushAnswer(id, d){
       var R0 = S.rush, f = R0 && R0.f, p = S.players[id], t = now(); if (!f || R0.phase !== "q" || d.n !== f.n || !p) return;
       var A = R0.ans[id] || (R0.ans[id] = { ok: 0, lock: 0, tries: 0, last: 0 });
-      if (A.ok || A.lock || t - A.last < 400) return; A.last = t; A.tries++;
+      if (A.ok || A.lock || t - A.last < 400) return; A.last = t; A.tries++; if (A.tries === 1) { hostPing(); POPN = true; }
       if (isRight(S.rows[f.row], String(d.a || "").slice(0, 160))) {
         p.streak = (p.streak || 0) + 1;
-        A.ok = 1; A.pts = Math.round(500 + 500 * Math.max(0, rushT() - (t - (f.t0 || t))) / rushT()) + (p.streak >= 3 ? 100 : 0); A.at = t;
+        A.ok = 1; A.pts = Math.round(500 + 500 * Math.max(0, rushT() - (t - (f.t0 || t))) / rushT()) + (p.streak >= 3 ? 100 : 0); if (R0.x2) A.pts *= 2; A.at = t;
         p.score = (p.score || 0) + A.pts;
       } else { send(id, { k: "bad" }); if (f.mode === "bank") A.lock = 1; }
       dirty = true;
@@ -414,13 +440,14 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function rushReveal(){
       var R0 = S.rush; R0.phase = "reveal"; R0.revealAt = now();
       list().forEach(function(p){ var A = R0.ans[p.id]; p.lastPts = A && A.ok ? A.pts : 0; if (!(A && A.ok)) p.streak = 0; });
+      rushBoard().forEach(function(p, i){ p.dl = p.prevRank ? p.prevRank - (i + 1) : 0; p.prevRank = i + 1; });
       KS("horn"); dirty = true; save(true);
     }
     function rushBoard(){ return list().filter(function(p){ return !p.left || p.score; }).sort(function(a, b){ return (b.score || 0) - (a.score || 0); }); }
     function rushPlace(id){ return rushBoard().map(function(p){ return p.id; }).indexOf(id) + 1; }
     function startGame(){
       var t = now(); S.phase = "countdown"; S.goAt = t + 5000; S.feed = []; S.fights = {}; S.br = null;
-      list().forEach(function(p){ p.score = 0; p.lastPts = 0; p.streak = 0; p.ko = 0; p.out = false; p.outR = null; p.rest = 0; p.fid = null; p.last = null; p.late = false; });
+      list().forEach(function(p){ p.score = 0; p.lastPts = 0; p.streak = 0; p.prevRank = 0; p.dl = 0; p.ko = 0; p.out = false; p.outR = null; p.rest = 0; p.fid = null; p.last = null; p.late = false; });
       dirty = true; save(true);
     }
     function goLive(){
@@ -434,7 +461,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     }
     function endGame(){
       Object.keys(S.fights).forEach(function(k){ endFight(S.fights[k]); });
-      S.phase = "done"; S.doneAt = now(); dirty = true; save(true); KS("win"); if (window.KO_FX) KO_FX.music(false);
+      S.phase = "done"; S.doneAt = now(); dirty = true; save(true); if (S.setup.mode === "rush") podiumFx(); else KS("win"); if (window.KO_FX) KO_FX.music(false);
       try { if (wake) wake.release(); } catch (e) {}
     }
     function standings(){
@@ -526,10 +553,10 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         var R0 = S.rush, rf = R0.f, A = R0.ans[id] || {};
         v.score = p.score || 0; v.place = rushPlace(id); v.of = rushBoard().length; v.qi = R0.qi; v.total = R0.total;
         if (R0.phase === "q") {
-          v.s = "rushq"; v.ok = !!A.ok; v.pts = A.pts || 0;
+          v.s = "rushq"; v.ok = !!A.ok; v.pts = A.pts || 0; v.streak = p.streak || 0; v.x2 = !!R0.x2;
           if (!A.ok) { v.f = { n: rf.n, kind: "rush", q: S.rows[rf.row].q, m: rf.mode, mc: !!rf.mc, len: rf.len, lock: !!A.lock, pz: rf.mode === "reveal" ? mask(rf) : rf.pz }; if (rf.shift) v.f.k = rf.shift; if (rf.opts) v.f.opts = rf.opts; }
           if (rf.endsAt) { v.T.left = rf.endsAt - t; v.T.full = rushT(); }
-        } else { v.s = "rushr"; v.ok = !!A.ok; v.pts = A.pts || 0; v.a = ansText(S.rows[rf.row]); v.streak = p.streak || 0; }
+        } else { v.s = "rushr"; v.ok = !!A.ok; v.pts = A.pts || 0; v.a = ansText(S.rows[rf.row]); v.streak = p.streak || 0; var bb = rushBoard(), pi = bb.indexOf(p); v.gap = pi > 0 ? (bb[pi - 1].score || 0) - (p.score || 0) : 0; }
         return v;
       }
       var f = fightOf(id);
@@ -588,6 +615,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (a === "snd") { if (window.KO_FX) KO_FX.setSound(!KO_FX.soundOn()); }
       else if (a === "mus") { if (window.KO_FX) KO_FX.setMusic(!KO_FX.musicOn()); }
       else if (a === "rnext") { if (S.rush && S.rush.phase === "reveal") { if (S.rush.qi >= S.rush.total) endGame(); else rushStart(); } }
+      else if (a === "rx2") { if (S.rush) S.rush.nx2 = !S.rush.nx2; }
       else if (a === "rnow") { if (S.rush && S.rush.phase === "q") rushReveal(); }
       else if (a === "rcount") st.rcount = +val;
       else if (a === "rtime") st.rtime = +val;
@@ -658,7 +686,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function codeCard(){
       var url = location.origin + location.pathname + "?code=" + S.code, qr = qrcode(0, "H"); qr.addData(url); qr.make();
       return '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">' +
-        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=37.1.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
+        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=37.2.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
         '<div style="flex:1;min-width:240px;"><div class="lbl">Join code</div>' +
           '<div class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);margin:2px 0 4px;">\u25CF LIVE \u00B7 students can join</div>' +
           '<div class="mono" style="font-size:clamp(48px,9vw,84px);font-weight:800;letter-spacing:10px;color:var(--gold);line-height:1.05;">' + S.code + '</div>' +
@@ -666,13 +694,35 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     }
     function tickText(t){
       var rt = document.getElementById("hRushT"), rb = document.getElementById("hRushB");
-      if (rt && S.rush && S.rush.phase === "q" && S.rush.f.endsAt) { var lf = Math.max(0, S.rush.f.endsAt - t); rt.textContent = Math.ceil(lf / 1000); if (rb) rb.style.width = (lf / rushT() * 100) + "%"; }
+      if (rt && S.rush && S.rush.phase === "q" && S.rush.f.endsAt) { var lf = Math.max(0, S.rush.f.endsAt - t); var fr = lf / rushT(), col = fr > .5 ? "var(--gold)" : fr > .25 ? "var(--warn)" : "var(--bad)"; rt.style.color = col; if (rb) rb.style.background = col; if (lf > 0 && lf <= 5000) rt.classList.add("prPulse"); else rt.classList.remove("prPulse"); rt.textContent = Math.ceil(lf / 1000); if (rb) rb.style.width = (lf / rushT() * 100) + "%"; }
       var a = document.getElementById("hTimer"); if (a && S.phase === "live" && S.setup.mode === "battle") a.textContent = clock(S.endAt - t);
       var c = document.getElementById("hCd"); if (c) { var cn = Math.max(1, Math.ceil((S.goAt - t) / 1000)); if (cn !== lastCd) { lastCd = cn; KS("tick"); } c.textContent = cn; }
       var n = document.getElementById("hCount"); if (n) n.textContent = upList().length;
     }
     function KS(n){ if (window.KO_FX) KO_FX.sfx(n); }
-    function music(){ if (!window.KO_FX) return; KO_FX.music(S.phase === "live", S.phase === "live" && S.setup.mode === "battle" && S.endAt - now() < 60000); }
+    var LC = ["#d6334a", "#1f7ae0", "#e0a400", "#1a9e5c"], LT = ["#ffffff", "#ffffff", "#1a1200", "#ffffff"], POPN = false, HAC = null, PINGN = 0;
+    function hRM(){ return document.documentElement.getAttribute("data-motion") === "reduce"; }
+    function hSnd(){ return !window.KO_FX || KO_FX.soundOn(); }
+    function hac(){ try { if (!HAC) HAC = new (window.AudioContext || window.webkitAudioContext)(); if (HAC.state === "suspended") HAC.resume(); } catch (e) { return null; } return HAC; }
+    function blip(f, d, vol, when, type){ var a = hac(); if (!a || !hSnd()) return; var t0 = a.currentTime + (when || 0), o = a.createOscillator(), g = a.createGain(); o.type = type || "sine"; o.frequency.setValueAtTime(f, t0); o.frequency.exponentialRampToValueAtTime(f * 1.5, t0 + d * .6); g.gain.setValueAtTime(vol || .12, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + d); o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + d + .02); }
+    function hostPing(){ blip(880 * Math.pow(2, (PINGN++ % 12) / 12), .16, .11); }
+    function showIntro(qi, x2){
+      blip(660, .12, .12, 0, "square"); blip(990, .2, .12, .1, "square");
+      if (hRM()) return; var o = document.getElementById("prIntro"); if (o) o.remove();
+      o = document.createElement("div"); o.id = "prIntro"; o.setAttribute("aria-hidden", "true"); o.innerHTML = "<span>QUESTION " + qi + (x2 ? " \u00b7 \u00d72" : "") + "</span><b>" + (x2 ? "DOUBLE!" : "ROAR!") + "</b>";
+      document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 1250);
+    }
+    function confetti(){
+      if (hRM()) return; var C = ["#ffffff", "#ffd34d", "#00934a", "#7cc49c", "#ffb3b3"];
+      for (var i = 0; i < 90; i++) { var c = document.createElement("i"); c.className = "cf"; c.style.left = (Math.random() * 100) + "vw"; c.style.background = C[i % C.length];
+        c.style.animationDuration = (2.2 + Math.random() * 1.8) + "s"; c.style.animationDelay = (Math.random() * .6) + "s"; document.body.appendChild(c); (function(x){ setTimeout(function(){ x.remove(); }, 4800); })(c); }
+    }
+    function podiumFx(){
+      for (var i = 0; i < 16; i++) (function(k){ setTimeout(function(){ blip(140 + k * 6, .07, .09, 0, "triangle"); }, k * (150 - k * 6)); })(i);
+      setTimeout(function(){ confetti(); KS("win"); }, 2700);
+    }
+    function music(){ if (!window.KO_FX) return; var rr = S.rush, rl = S.phase === "live" && S.setup.mode === "rush" && rr && rr.phase === "q" && rr.f && rr.f.endsAt ? rr.f.endsAt - now() : -1;
+      KO_FX.music(S.phase === "live", rl > 0 && rl <= 5000 ? 2 : S.phase === "live" && S.setup.mode === "battle" && S.endAt - now() < 60000); }
     function flushKO(){
       if (!window.KO_FX) { HQ = []; return; }
       var q = HQ.splice(0, 3); HQ = [];
@@ -687,7 +737,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (S.phase === "countdown") h = '<div class="card" style="text-align:center;padding:60px 20px;"><div class="lbl">Get ready</div><div class="disp" id="hCd" style="font-size:clamp(120px,22vw,240px);font-weight:800;color:var(--gold);line-height:1;">5</div><div style="color:var(--muted);font-size:20px;">' + upList().length + ' player' + (upList().length === 1 ? '' : 's') + '</div></div>';
       else if (S.phase === "live") h = S.setup.mode === "battle" ? drawBattle(t) : S.setup.mode === "rush" ? drawRush(t) : drawBracket(t);
       else h = drawDone();
-      view.innerHTML = h; tickText(t); if (S.phase === "setup") csvInfo(); flushKO();
+      view.innerHTML = h; tickText(t); if (POPN) { POPN = false; var hc = document.getElementById("hCnt"); if (hc) { hc.classList.remove("prPop"); void hc.offsetWidth; hc.classList.add("prPop"); } } if (S.phase === "setup") csvInfo(); flushKO();
     }
     var GAMES = {
       battle: { name: "Class Battle", tag: "Teams \u00b7 1v1 knockouts", d: "Teams fight rotating 1v1s until the clock runs out. 4 correct answers knock out the opponent. Team score = KOs per player.", t: "v" },
@@ -724,7 +774,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           sec("Vocab hints", '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + TYPES.map(function(x){ return '<button type="button" class="chip" data-act="type" data-v="' + x[0] + '" aria-pressed="' + !!st.types[x[0]] + '">' + x[1] + '</button>'; }).join("") + '</div>',
             "For vocab rows, each question uses one ticked hint at random. <b>Shift</b>: letters moved forward in the alphabet. <b>Scramble</b>: letters mixed up. <b>Reveal</b>: blanks that fill in over time. <b>Word bank</b>: pick from 4 terms. Untick all and students type the term with no hint. Q&amp;A rows ignore this: multiple choice shows its own choices and free response is typed.") +
           (st.mode === "rush"
-            ? sec("Questions", chips("rcount", [[10,"10"],[15,"15"],[20,"20"],[30,"30"]], st.rcount || 10)) + sec("Pace", chips("rpace", [["timed","Timed"],["teacher","Teacher-paced"],["auto","Auto-advance"]], st.rpace || "timed"), (st.rpace || "timed") === "teacher" ? "No timer. Students answer until you press <b>Show answer</b>, then <b>Next</b> when the class is done discussing. Faster answers still score more." : (st.rpace || "timed") === "auto" ? "Each question ends on its timer (or when everyone answers); the next one starts 8 seconds after the answer shows." : "Each question ends on its timer or when everyone answers. You press <b>Next</b> after the leaderboard, so you can stop and discuss.") + sec("Time per question", chips("rtime", [[10,"10 s"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.rtime || 20), "Used when a row has no time. Add a <b>Time</b> column (seconds, 5\u2013300) to your sheet to give each question its own time." + ((st.rpace || "timed") === "teacher" ? " In Teacher-paced mode it only sets how fast an answer has to be for full points." : ""))
+            ? sec("Questions", chips("rcount", [[10,"10"],[15,"15"],[20,"20"],[30,"30"]], st.rcount || 10)) + sec("Pace", chips("rpace", [["timed","Timed"],["teacher","Teacher-paced"],["auto","Auto-advance"]], st.rpace || "timed"), (st.rpace || "timed") === "teacher" ? "No timer. Students answer until you press <b>Show answer</b>, then <b>Next</b> when the class is done discussing. Faster answers still score more." : (st.rpace || "timed") === "auto" ? "Each question ends on its timer (or when everyone answers); the next one starts 8 seconds after the answer shows." : "Each question ends on its timer or when everyone answers. You press <b>Next</b> after the leaderboard, so you can stop and discuss.") + sec("Time per question", chips("rtime", [[10,"10 s"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.rtime || 20), "Used when a row has no time. Add a <b>Time</b> column (seconds, 5\u2013300) to your sheet to give each question its own time, and a <b>Double</b> column (yes) to make a question worth \u00d72." + ((st.rpace || "timed") === "teacher" ? " In Teacher-paced mode it only sets how fast an answer has to be for full points." : ""))
             : st.mode === "battle"
             ? sec("Teams", chips("teams", [[2,"2"],[3,"3"],[4,"4"],[5,"5"],[6,"6"]], st.teams)) + sec("Team assignment", chips("assign", [["random","Random"],["manual","I\u2019ll assign"]], st.assign)) + sec("Length", chips("minutes", MINS.map(function(m){ return [m, m + " min"]; }), st.minutes))
             : sec("Match format", chips("format", FORMATS, st.format), st.format === "sd" ? "5 questions, most correct wins. Ties go to overtime: next point wins." : "Each game is a 4-hit knockout. First to " + need() + " games wins the match.")) +
@@ -795,9 +845,12 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           (S.feed.length ? '<div style="flex:1;min-width:240px;">' + S.feed.slice(0, 4).map(function(x){ return '<div style="font-size:14px;color:var(--bright);">' + esc(x.txt) + '</div>'; }).join("") + '</div>' : '') + '</div>';
     }
     function boardRows(ps, withLast){
-      return ps.map(function(p, i){ return '<div style="display:grid;grid-template-columns:44px minmax(0,1fr) auto' + (withLast ? ' 70px' : '') + ';gap:10px;align-items:center;padding:8px 12px;border-radius:10px;background:' + (i < 3 ? 'var(--panel2)' : 'transparent') + ';border:1px solid ' + (i < 3 ? 'var(--border3)' : 'var(--border)') + ';">' +
+      return ps.map(function(p, i){ var dl = withLast ? (p.dl || 0) : 0, sk = withLast && p.lastPts ? (p.streak || 0) : 0;
+        return '<div class="prAnim" style="display:grid;grid-template-columns:44px minmax(0,1fr) auto' + (withLast ? ' 70px' : '') + ';gap:10px;align-items:center;padding:8px 12px;border-radius:10px;background:' + (i < 3 ? 'var(--panel2)' : 'transparent') + ';border:' + (i === 0 && withLast ? '2px solid var(--gold);box-shadow:0 0 26px -8px var(--gold)' : '1px solid ' + (i < 3 ? 'var(--border3)' : 'var(--border)')) + ';' + (dl ? '--dy:' + (dl * 54) + 'px;animation:prSlide .8s cubic-bezier(.2,.8,.2,1) both;' : '') + '">' +
         '<span class="mono" style="font-weight:800;color:' + (i < 3 ? 'var(--gold)' : 'var(--dim)') + ';font-size:18px;">' + (i + 1) + '</span>' +
-        '<span style="font-weight:700;color:var(--bright);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(p.name) + (p.left ? ' <span style="color:var(--dim);font-weight:500;">\u00b7 left</span>' : '') + '</span>' +
+        '<span style="font-weight:700;color:var(--bright);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(p.name) + (p.left ? ' <span style="color:var(--dim);font-weight:500;">\u00b7 left</span>' : '') +
+          (dl ? ' <span class="mono" style="font-size:13px;font-weight:800;color:' + (dl > 0 ? 'var(--ok)' : 'var(--bad)') + ';">' + (dl > 0 ? '\u25b2' : '\u25bc') + Math.abs(dl) + '</span>' : '') +
+          (sk >= 3 ? ' <span class="mono" style="font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--warn);color:#2a1d00;">' + sk + '\u00d7 STREAK</span>' : '') + '</span>' +
         '<span class="mono" style="font-weight:800;color:var(--bright);font-size:18px;">' + (p.score || 0).toLocaleString() + '</span>' +
         (withLast ? '<span class="mono" style="font-size:14px;color:' + (p.lastPts ? 'var(--ok)' : 'var(--dim)') + ';text-align:right;">' + (p.lastPts ? '+' + p.lastPts : '\u2014') + '</span>' : '') + '</div>'; }).join("");
     }
@@ -810,17 +863,20 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         else if (f.mode === "scramble") pz = '<div class="mono" style="font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:10px;color:var(--gold);">' + esc(f.pz) + '</div><div class="mono" style="color:var(--muted);">SCRAMBLE \u00b7 unscramble the letters</div>';
         else if (f.mode === "outline") pz = '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">' + f.pz.split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask" style="min-width:44px;height:64px;font-size:40px;">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div><div class="mono" style="color:var(--muted);">FREE RESPONSE \u00b7 type the answer</div>';
         else if (f.mode === "reveal") pz = '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">' + mask(f).split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask" style="min-width:44px;height:64px;font-size:40px;">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div><div class="mono" style="color:var(--muted);">REVEAL \u00b7 letters fill in over time</div>';
-        else if (f.mode === "bank") pz = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;width:100%;">' + f.opts.map(function(o){ return '<div class="bankb" style="cursor:default;font-size:24px;min-height:80px;display:flex;align-items:center;justify-content:center;">' + esc(o) + '</div>'; }).join("") + '</div>';
+        else if (f.mode === "bank") pz = '<div style="display:grid;grid-template-columns:repeat(' + ((f.opts || []).length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:12px;width:100%;">' + f.opts.map(function(o, i){ return '<div class="bankb" style="cursor:default;font-size:24px;min-height:80px;display:flex;align-items:center;gap:14px;text-align:left;border-color:' + LC[i] + ';"><span class="mono" style="font-size:22px;font-weight:800;min-width:44px;height:44px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none;background:' + LC[i] + ';color:' + LT[i] + ';">' + "ABCD"[i] + '</span><span>' + esc(o) + '</span></div>'; }).join("") + '</div>';
         return head + '<div class="card" style="padding:28px;display:flex;flex-direction:column;gap:22px;align-items:center;text-align:center;">' +
+          (R0.x2 ? '<div class="mono" style="font-size:20px;font-weight:800;letter-spacing:3px;padding:8px 18px;border-radius:999px;background:var(--warn);color:#2a1d00;">DOUBLE POINTS \u00d72</div>' : '') +
           (f.endsAt ? '' : '<div class="mono" style="font-size:16px;color:var(--muted);">TEACHER-PACED \u00b7 press Show answer when the class is ready</div>') + '<div style="display:' + (f.endsAt ? 'flex' : 'none') + ';align-items:center;gap:14px;width:100%;"><div style="flex:1;height:10px;border-radius:5px;background:var(--border);overflow:hidden;"><div id="hRushB" style="height:100%;background:var(--gold);width:100%;"></div></div><span class="mono" id="hRushT" style="font-size:34px;font-weight:800;color:var(--gold);min-width:56px;text-align:right;"></span></div>' +
           '<div style="font-size:clamp(28px,4.2vw,48px);font-weight:800;color:var(--bright);line-height:1.25;text-wrap:balance;max-width:1000px;white-space:pre-line;' + (/\n/.test(row.q) ? 'text-align:left;' : '') + '">' + esc(row.q) + '</div>' + pz +
-          '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span class="mono" style="font-size:20px;color:var(--muted);">' + tried + ' of ' + ps.length + ' answered</span><button class="btn ghost sm" data-act="rnow">Show answer now</button></div></div>';
+          '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span style="display:inline-flex;align-items:baseline;gap:8px;"><span id="hCnt" class="mono" style="display:inline-block;font-size:48px;font-weight:800;color:var(--gold);line-height:1;">' + tried + '</span><span class="mono" style="font-size:20px;color:var(--muted);">/ ' + ps.length + ' locked in</span></span><button class="btn ghost sm" data-act="rnow">Show answer now</button></div></div>';
       }
       var top = rushBoard().slice(0, 10), last = R0.qi >= R0.total;
       return head + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;" class="bgrid">' +
         '<div class="card" style="padding:26px;display:flex;flex-direction:column;gap:14px;"><div class="lbl">Answer</div><div class="disp" style="font-size:clamp(34px,5vw,60px);font-weight:800;color:var(--gold);line-height:1.1;word-break:break-word;">' + esc(ansText(row)) + '</div>' +
+          (f.mode === "bank" && f.opts ? '<div style="display:grid;grid-template-columns:repeat(' + (f.opts.length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:8px;">' + f.opts.map(function(o, i){ var ok = norm(o) === norm(ansText(row));
+            return '<div class="prAnim" style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:2px solid ' + (ok ? 'var(--ok)' : 'var(--border)') + ';background:var(--panel2);' + (ok ? 'box-shadow:0 0 24px -6px var(--ok);animation:prWin .6s ease both;' : 'opacity:.35;') + '"><span class="mono" style="font-weight:800;min-width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:none;background:' + LC[i] + ';color:' + LT[i] + ';">' + "ABCD"[i] + '</span><span style="font-weight:700;color:var(--bright);">' + esc(o) + '</span>' + (ok ? '<span class="mono" style="margin-left:auto;font-size:13px;color:var(--ok);">\u2713</span>' : '') + '</div>'; }).join("") + '</div>' : '') +
           '<div style="color:var(--muted);font-size:18px;text-wrap:pretty;white-space:pre-line;">' + esc(row.q) + '</div><div class="mono" style="font-size:22px;color:var(--bright);margin-top:6px;">' + got + ' of ' + ps.length + ' got it</div>' +
-          '<div style="margin-top:auto;padding-top:10px;"><button class="btn" data-act="rnext">' + (last ? "Final results \u2192" : "Next question \u2192") + '</button>' + (rushPace() === "auto" ? '<span class="mono" style="margin-left:12px;font-size:14px;color:var(--dim);">auto in 8 s</span>' : '') + '</div></div>' +
+          '<div style="margin-top:auto;padding-top:10px;"><button class="btn" data-act="rnext">' + (last ? "Final results \u2192" : "Next question \u2192") + '</button>' + (rushPace() === "auto" ? '<span class="mono" style="margin-left:12px;font-size:14px;color:var(--dim);">auto in 8 s</span>' : '') + (!last ? '<button class="btn ghost sm" data-act="rx2" aria-pressed="' + !!R0.nx2 + '" style="margin-left:10px;">' + (R0.nx2 ? 'Next is DOUBLE \u2713' : 'Make next \u00d72') + '</button>' : '') + '</div></div>' +
         '<div class="card" style="padding:20px;"><div class="lbl" style="margin-bottom:10px;">Leaderboard</div><div style="display:flex;flex-direction:column;gap:6px;">' + (top.length ? boardRows(top, true) : '<p style="color:var(--dim);margin:0;">No players yet.</p>') + '</div></div></div>';
     }
     function drawDone(){
@@ -828,8 +884,8 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       if (S.setup.mode === "rush") {
         var B = rushBoard(), pod = B.slice(0, 3), H = [150, 110, 80], order = [1, 0, 2];
         body = '<div class="lbl">Roar Rush \u00b7 final results</div>' +
-          (pod.length ? '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:18px 0 26px;flex-wrap:wrap;">' + order.filter(function(i){ return pod[i]; }).map(function(i){ var p = pod[i]; return '<div style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:150px;"><div style="font-weight:800;color:var(--bright);font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(p.name) + '</div><div class="mono" style="color:var(--muted);">' + (p.score || 0).toLocaleString() + ' pts</div><div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : 'var(--btn)') + ';border:2px solid var(--gold);display:flex;align-items:flex-start;justify-content:center;padding-top:10px;"><span class="disp" style="font-size:40px;font-weight:800;color:' + (i ? 'var(--gold)' : 'var(--btnText)') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' : '') +
-          '<div style="display:flex;flex-direction:column;gap:6px;max-width:720px;">' + boardRows(B.slice(0, 30), false) + '</div>';
+          (pod.length ? '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:18px 0 26px;flex-wrap:wrap;">' + order.filter(function(i){ return pod[i]; }).map(function(i){ var p = pod[i]; return '<div class="prAnim" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:150px;opacity:0;animation:prRise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.6, 1.4, .4][i] + 's;"><div style="font-weight:800;color:var(--bright);font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(p.name) + '</div><div class="mono" style="color:var(--muted);">' + (p.score || 0).toLocaleString() + ' pts</div><div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : 'var(--btn)') + ';border:2px solid var(--gold);display:flex;align-items:flex-start;justify-content:center;padding-top:10px;"><span class="disp" style="font-size:40px;font-weight:800;color:' + (i ? 'var(--gold)' : 'var(--btnText)') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' : '') +
+          '<div class="prAnim" style="display:flex;flex-direction:column;gap:6px;max-width:720px;opacity:0;animation:prRise .6s ease forwards;animation-delay:3.4s;">' + boardRows(B.slice(0, 30), false) + '</div>';
       } else
       if (S.setup.mode === "battle") {
         var st = standings(), top = list().filter(function(p){ return p.ko; }).sort(function(a, b){ return b.ko - a.ko; }).slice(0, 5);
@@ -858,6 +914,14 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     var tk = "mane-tok-" + c, tok;
     try { tok = localStorage.getItem(tk); } catch (e) {}
     if (!tok) { tok = ""; for (var i = 0; i < 20; i++) tok += "abcdefghijklmnopqrstuvwxyz0123456789"[rnd(36)]; try { localStorage.setItem(tk, tok); } catch (e) {} }
+    var PREVP = 0, RDL = 0, lastRR = -1;
+    function sFlash(col, txt){ var o = document.getElementById("sFlash"); if (o) o.remove(); o = document.createElement("div"); o.id = "sFlash"; o.setAttribute("aria-hidden", "true"); o.style.background = "color-mix(in srgb, " + col + " 38%, transparent)"; o.textContent = txt || ""; document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 950); }
+    document.addEventListener("keydown", function(e){
+      if (!V || !V.f || V.f.m !== "bank" || V.f.lock || V.s === "rushr") return;
+      if (e.ctrlKey || e.metaKey || e.altKey || (e.target && /INPUT|TEXTAREA/.test(e.target.tagName))) return;
+      var i = "abcd".indexOf(String(e.key || "").toLowerCase()); if (i < 0) return;
+      var b = view.querySelector('.bankb[data-o="' + i + '"]'); if (b && !b.disabled) { e.preventDefault(); b.click(); }
+    });
     var V = null, T = {}, got = 0, conn = null, joined = false, tries = 0, lostAt = 0, used = [], curN = -1, cdTimer = null, sending = false, lastKev = null, lastSettled = -1;
     function status(msg){ view.innerHTML = '<div class="card mono" style="color:var(--dim);">' + msg + '</div>'; }
     status("Connecting to " + esc(c) + "\u2026");
@@ -905,7 +969,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       if (bar && left != null && T.full) bar.style.width = Math.max(0, left / T.full * 100) + "%";
     }, 200);
 
-    function bad(){ if (window.KO_FX) KO_FX.sfx("miss"); var a = document.getElementById("sAns"); if (!a) return; a.classList.remove("bad"); void a.offsetWidth; a.classList.add("bad"); a.value = ""; used = []; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); a.focus(); }
+    function bad(){ if (window.KO_FX) KO_FX.sfx("miss"); sFlash("var(--bad)", ""); var a = document.getElementById("sAns"); if (!a) return; a.classList.remove("bad"); void a.offsetWidth; a.classList.add("bad"); a.value = ""; used = []; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); a.focus(); }
     function forfeitNow(){
       if (!V || !V.f || !conn || !conn.open) return;
       var F = V.f, msg = F.kind === "match" ? "Forfeit the whole match? " + F.opp + " advances and you drop into the rematch pool." : "Forfeit this fight? " + F.opp + " gets the KO.";
@@ -1000,7 +1064,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           KO_FX.blast({ el: kel, name: kv.won ? kv.opp : V.name, big: kv.sd ? (kv.won ? "WIN!" : "LOST") : "K.O.!", color: kv.won ? "#00934a" : "#d93a2b",
             sub: kv.sd ? (kv.won ? "You beat " + kv.opp : kv.opp + " wins") : kv.won ? "You knocked out " + kv.opp : kv.opp + " got the KO", say: kv.sd ? (kv.won ? "You win!" : "Match over") : "K. O.!" });
         }
-        if (V.s === "rushq" && V.ok && lastSettled !== "r" + V.qi) { lastSettled = "r" + V.qi; KO_FX.sfx("hit"); }
+        if (V.s === "rushq" && V.ok && lastSettled !== "r" + V.qi) { lastSettled = "r" + V.qi; KO_FX.sfx("hit"); sFlash("var(--ok)", "+" + V.pts); }
         if (V.f && V.f.last && V.f.n !== lastSettled) { lastSettled = V.f.n; if (V.f.last.by === "me") KO_FX.sfx("hit"); }
       }
       lastKev = V.kev ? V.kev.n : (lastKev === null ? 0 : lastKev);
@@ -1019,12 +1083,14 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       }
       else if (V.s === "fight") h = fightView(V.f);
       else if (V.s === "rushq") {
-        var rh = '<div class="mono" style="font-size:13px;color:var(--dim);margin-bottom:10px;">Roar Rush \u00b7 question ' + V.qi + ' of ' + V.total + ' \u00b7 #' + V.place + ' of ' + V.of + '</div>';
+        var rh = '<div class="mono" style="font-size:13px;color:var(--dim);margin-bottom:10px;">Roar Rush \u00b7 question ' + V.qi + ' of ' + V.total + ' \u00b7 #' + V.place + ' of ' + V.of + (V.streak >= 2 ? ' <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--warn);color:#2a1d00;">STREAK \u00d7' + V.streak + (V.streak >= 3 ? ' \u00b7 +100' : '') + '</span>' : '') + '</div>';
+        if (V.x2) rh += '<div class="mono" style="display:inline-block;font-size:13px;font-weight:800;letter-spacing:2px;padding:5px 12px;border-radius:999px;background:var(--warn);color:#2a1d00;margin-bottom:10px;">DOUBLE POINTS \u00d72</div>';
         if (V.ok) h = rh + big("Locked in! +" + V.pts, "Nice and fast. Waiting for the others\u2026", "var(--ok)");
         else if (V.f && V.f.lock && V.f.m === "bank") h = rh + big("Not that one", "Wait for the answer.", "var(--bad)");
         else if (V.f) h = rh + puzzleCard(V.f);
       }
-      else if (V.s === "rushr") h = big(V.ok ? "Correct! +" + V.pts : "The answer was " + esc(V.a), "You\u2019re <b style=\"color:var(--bright);\">#" + V.place + "</b> of " + V.of + " with <b style=\"color:var(--bright);\">" + V.score.toLocaleString() + "</b> points." + (V.ok && V.streak >= 3 ? " " + V.streak + " in a row!" : "") + (V.ok ? "" : " Get the next one!"), V.ok ? "var(--ok)" : "var(--gold)");
+      else if (V.s === "rushr" && lastRR !== V.qi) { lastRR = V.qi; RDL = PREVP ? PREVP - V.place : 0; PREVP = V.place; }
+      if (V.s === "rushr") h = big(V.ok ? "Correct! +" + V.pts : "The answer was " + esc(V.a), "You\u2019re <b style=\"color:var(--bright);\">#" + V.place + "</b> of " + V.of + " with <b style=\"color:var(--bright);\">" + V.score.toLocaleString() + "</b> points." + (RDL > 0 ? " <b style=\"color:var(--ok);\">\u25b2 up " + RDL + "!</b>" : RDL < 0 ? " <b style=\"color:var(--bad);\">\u25bc down " + (-RDL) + "</b>" : "") + (V.gap > 0 ? " <b style=\"color:var(--bright);\">" + V.gap.toLocaleString() + " pts behind #" + (V.place - 1) + "</b>" : V.place === 1 && V.score > 0 ? " <b style=\"color:var(--ok);\">You\u2019re in the lead!</b>" : "") + (V.ok && V.streak >= 3 ? " " + V.streak + " in a row!" : "") + (V.ok ? "" : " Get the next one!"), V.ok ? "var(--ok)" : "var(--gold)");
       view.innerHTML = me() + h;
       var a = document.getElementById("sAns");
       if (a) { if (keep != null) a.value = keep; if (hadFocus || keep == null) a.focus(); used.forEach(function(i){ var b = view.querySelector('.tile[data-i="' + i + '"]'); if (b) b.disabled = true; }); }
@@ -1052,7 +1118,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (F.m === "outline") { var wc = F.pz.split(/\s+/).filter(function(w){ return /_/.test(w); }).length, lc = (F.pz.match(/_/g) || []).length;
         pz = '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + F.pz.split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div>';
         note = "FREE RESPONSE \u00b7 " + lc + " character" + (lc === 1 ? "" : "s") + (wc > 1 ? " \u00b7 " + wc + " words" : "") + " \u00b7 type the answer"; }
-      else if (F.m === "bank") { pz = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;">' + F.opts.map(function(o){ return '<button type="button" class="bankb"' + (F.lock ? ' disabled' : '') + '>' + esc(o) + '</button>'; }).join("") + '</div>'; note = F.lock ? "Wrong pick. Wait for the next question." : (F.mc ? "MULTIPLE CHOICE" : "WORD BANK") + " \u00b7 pick the answer" + (F.kind === "rush" ? "" : " \u00b7 a wrong pick costs a third of a hit"); }
+      else if (F.m === "bank") { pz = '<div style="display:grid;grid-template-columns:repeat(' + ((F.opts || []).length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:8px;">' + F.opts.map(function(o, i){ return '<button type="button" class="bankb" data-o="' + i + '" data-t="' + esc(o) + '"' + (F.lock ? ' disabled' : '') + '><b class="lt">' + "ABCD"[i] + '</b><span>' + esc(o) + '</span></button>'; }).join("") + '</div>'; note = F.lock ? "Wrong pick. Wait for the next question." : (F.mc ? "MULTIPLE CHOICE" : "WORD BANK") + " \u00b7 tap or press A\u2013D" + (F.kind === "rush" ? "" : " \u00b7 a wrong pick costs a third of a hit"); }
       else note = "Type the answer";
       var form = F.m === "bank" ? "" : '<form id="sForm" style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;"><input class="ans" id="sAns" data-n="' + F.n + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" style="flex:1;min-width:200px;"' + (F.lock ? ' disabled placeholder="Locked for this question"' : ' placeholder="Answer"') + '><button class="btn" type="submit"' + (F.lock ? ' disabled' : '') + '>Strike</button>' + (F.m === "scramble" ? '<button class="btn ghost sm" type="button" id="sClr">Clear</button>' : '') + '</form>';
       return '<div class="card" style="display:flex;flex-direction:column;gap:14px;">' +
@@ -1067,7 +1133,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var lv = document.getElementById("sLeave"); if (lv) lv.onclick = leaveNow;
       var fb = document.getElementById("sFF"); if (fb) fb.onclick = forfeitNow;
       if (f) f.onsubmit = function(e){ e.preventDefault(); if (a && a.value.trim()) submit(a.value); };
-      view.querySelectorAll(".bankb").forEach(function(b){ b.onclick = function(){ submit(b.textContent); }; });
+      view.querySelectorAll(".bankb").forEach(function(b){ b.onclick = function(){ submit(b.getAttribute("data-t") || b.textContent); }; });
       view.querySelectorAll(".tile").forEach(function(b){ b.onclick = function(){ if (!a) return; a.value += b.textContent; b.disabled = true; used.push(b.getAttribute("data-i")); if (V.f && norm(a.value).length >= V.f.len) submit(a.value); }; });
       var cl = document.getElementById("sClr"); if (cl) cl.onclick = function(){ if (a) { a.value = ""; a.focus(); } used = []; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); };
     }

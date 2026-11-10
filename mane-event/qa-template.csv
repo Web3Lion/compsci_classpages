@@ -1,4 +1,4 @@
-Type,Question,Answer,Distractor 1,Distractor 2,Distractor 3,Time
+Type,Question,Answer,Distractor 1,Distractor 2,Distractor 3,Time,Double
 multiple choice,How many bits are in a byte?,8,4,16,2,15
 multiple choice,Which part of the CIA triad keeps data from being changed without permission?,Integrity,Confidentiality,Availability,Authentication
 multiple choice,"Which one is the strongest password?
@@ -10,4 +10,4 @@ multiple choice,True or false: HTTPS encrypts data between your browser and the 
 free response,Convert 1010 to decimal,10,,,,45
 free response,What is the largest number 4 bits can represent?,15,,,
 free response,What is the name for a fake email that tries to steal your login?,Phishing,,,
-free response,How many different values can 8 bits represent?,256,,,
+free response,How many different values can 8 bits represent?,256,,,,,yes

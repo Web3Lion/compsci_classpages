@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=37.1.0"></script>
+<script src="site.js?v=37.2.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.1.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.1.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.2.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.2.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Ping Rush</title>
-<link href="assets/fonts/fonts.css?v=37.1.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=37.2.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--warn:#ffcf5c;--rush:#00e0c6;--rushText:#03201c;}
 :root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--warn:#8a5a00;--rush:#00796b;--rushText:#ffffff;}
@@ -26,7 +26,15 @@ a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
 .btn:disabled{opacity:.45;cursor:not-allowed;}
 .opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;min-height:64px;padding:12px 16px;border-radius:12px;border:2px solid var(--border3);background:var(--panel2);color:var(--bright);font:700 18px 'Inter',sans-serif;cursor:pointer;}
 .opt:hover:not(:disabled){border-color:var(--rush);}
-.opt b{font-family:'JetBrains Mono',monospace;color:var(--rush);font-size:18px;}
+.opt b{font-family:'JetBrains Mono',monospace;font-size:18px;min-width:38px;height:38px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex:none;}
+.opt[data-o="0"]{border-color:#d6334a;} .opt[data-o="0"] b{background:#d6334a;color:#fff;}
+.opt[data-o="1"]{border-color:#1f7ae0;} .opt[data-o="1"] b{background:#1f7ae0;color:#fff;}
+.opt[data-o="2"]{border-color:#e0a400;} .opt[data-o="2"] b{background:#e0a400;color:#1a1200;}
+.opt[data-o="3"]{border-color:#1a9e5c;} .opt[data-o="3"] b{background:#1a9e5c;color:#fff;}
+.opt:hover:not(:disabled){filter:brightness(1.12);}
+@keyframes prFlash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+#prFlash{position:fixed;inset:0;z-index:9000;pointer-events:none;display:flex;align-items:center;justify-content:center;font:800 clamp(60px,16vw,140px) 'JetBrains Mono',monospace;animation:prFlash .9s ease-out forwards;}
+html[data-motion="reduce"] #prFlash{animation-duration:.01s;}
 input.ans{flex:1;min-width:200px;min-height:56px;padding:8px 14px;border-radius:10px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);font:800 20px 'JetBrains Mono',monospace;letter-spacing:1px;}
 input.ans:focus{outline:none;border-color:var(--rush);}
 .mask{display:inline-flex;align-items:flex-end;justify-content:center;min-width:26px;height:40px;border-bottom:3px solid var(--rush);font:800 22px 'JetBrains Mono',monospace;color:var(--bright);}
@@ -54,7 +62,7 @@ html[data-motion="reduce"] .shake{animation:none;}
   var OK = { cyber1: 1, cyber2: 1, cyber3: 1, apcsp: 1, web3: 1 };
   if (!OK[C]) { document.getElementById("view").innerHTML = '<div class="card">Open Ping Rush from the Duel Waiting Room on your course home.</div>'; return; }
   document.getElementById("back").href = C + "/index.html";
-  var V = window.SITE_VERSION || "37.1.0", list = ["config.js", "supabase-config.js", "js/auth.js", "js/ko-fx.js"];
+  var V = window.SITE_VERSION || "37.2.0", list = ["config.js", "supabase-config.js", "js/auth.js", "js/ko-fx.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){
@@ -63,7 +71,16 @@ html[data-motion="reduce"] .shake{animation:none;}
     if (!AUTH || !AUTH.online || !S || !S.studentId) { view.innerHTML = '<div class="card">Sign in on your <a href="' + C + '/ctf.html">CTF page</a> first, then come back through the Duel Waiting Room.</div>'; return; }
     function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
     function rpc(fn, a){ return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
-    var ST = null, skew = 0, sig = "", timer = null, sending = false, lastKey = "";
+    var ST = null, skew = 0, sig = "", timer = null, sending = false, lastKey = "", PREVR = 0, RD = 0;
+    function flash(col, txt){ var o = document.getElementById("prFlash"); if (o) o.remove(); o = document.createElement("div"); o.id = "prFlash"; o.setAttribute("aria-hidden", "true");
+      o.style.background = "color-mix(in srgb, " + col + " 38%, transparent)"; o.style.color = "#fff"; o.style.textShadow = "0 4px 24px rgba(0,0,0,.45)"; o.textContent = txt || ""; document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 950); }
+    function shakeCard(){ var c = view.querySelector(".card:last-child"); if (!c) return; c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake"); }
+    document.addEventListener("keydown", function(e){
+      var d = ST; if (!d || d.status !== "live" || d.phase !== "q" || d.k !== "mc" || sending) return;
+      if (e.ctrlKey || e.metaKey || e.altKey || (e.target && /INPUT|TEXTAREA/.test(e.target.tagName))) return;
+      var i = "abcd".indexOf(String(e.key || "").toLowerCase()); if (i < 0) return;
+      var b = view.querySelector('.opt[data-o="' + i + '"]'); if (b && !b.disabled) { e.preventDefault(); b.click(); }
+    });
     function sfx(n){ if (KX) KX.sfx(n); }
     function load(){
       clearTimeout(timer);
@@ -80,13 +97,14 @@ html[data-motion="reduce"] .shake{animation:none;}
       return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:170px;"><span class="mono" style="font-size:12px;letter-spacing:2px;color:var(--rush);font-weight:800;">\u26a1 PING RUSH</span>' +
         (d.status === "live" ? '<span class="mono" style="font-size:13px;color:var(--dim);">Q ' + d.qi + ' of ' + d.total + '</span>' : '') +
         '<span style="flex:1;"></span><span class="mono" style="font-size:13px;color:var(--bright);">' + esc(d.handle) + ' \u00b7 ' + Number(d.score || 0).toLocaleString() + ' pts \u00b7 #' + d.rank + ' of ' + d.of + '</span>' +
+        (d.status === "live" && d.streak >= 2 ? '<span class="mono" style="font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--warn);color:#2a1d00;">STREAK \u00d7' + d.streak + (d.streak >= 3 ? ' \u00b7 +100' : '') + '</span>' : '') +
         (KX ? '<button type="button" id="prSnd" class="mono" aria-pressed="' + KX.soundOn() + '" style="min-height:40px;padding:4px 12px;border-radius:999px;border:1px solid var(--border3);background:transparent;color:var(--dim);font-size:11px;cursor:pointer;">' + (KX.soundOn() ? "SOUND ON" : "SOUND OFF") + '</button>' : '') + '</div>';
     }
     function render(){
       var d = ST; if (!d) return;
-      var m = d.mine || {}, key = JSON.stringify([d.status, d.phase, d.qi, m.ok, m.locked, d.score, d.rank, d.of, KX && KX.soundOn()]);
+      var m = d.mine || {}, key = JSON.stringify([d.x2, d.gap, d.status, d.phase, d.qi, m.ok, m.locked, d.score, d.rank, d.of, KX && KX.soundOn()]);
       if (key === sig) return; sig = key;
-      if (d.status === "live" && d.phase === "reveal" && lastKey !== "r" + d.qi) { lastKey = "r" + d.qi; if (!m.ok) sfx("miss"); }
+      if (d.status === "live" && d.phase === "reveal" && lastKey !== "r" + d.qi) { lastKey = "r" + d.qi; if (!m.ok) sfx("miss"); RD = PREVR ? PREVR - d.rank : 0; PREVR = d.rank; }
       var h;
       if (!d.status) h = big("No Ping Rush right now", "Wait in the <a href=\"lobby.html?c=" + C + "\">Duel Waiting Room</a>. When your teacher starts, you\u2019ll be sent here.");
       else if (d.status === "done") {
@@ -95,16 +113,16 @@ html[data-motion="reduce"] .shake{animation:none;}
         h = big(d.rank === 1 && d.score > 0 ? "You won!" : "Game over", "You finished <b style=\"color:var(--bright);\">#" + d.rank + "</b> of " + d.of + " with <b style=\"color:var(--bright);\">" + Number(d.score || 0).toLocaleString() + "</b> points." + (xp ? " <b style=\"color:var(--ok);\">+" + xp + " XP</b>" : "")) +
           (top ? '<div class="card" style="margin-top:14px;display:flex;flex-direction:column;gap:6px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--dim);">TOP 3</div>' + top + '</div>' : '');
       }
-      else if (d.phase === "reveal") h = big(m.ok ? "Correct! +" + m.pts : "The answer was " + esc(d.a), (m.ok ? "" : "<span style=\"white-space:pre-line;\">" + esc(d.q) + "</span><br>") + "You\u2019re <b style=\"color:var(--bright);\">#" + d.rank + "</b> of " + d.of + "." + (m.ok && d.streak >= 3 ? " " + d.streak + " in a row!" : "") + " Next question coming up\u2026", m.ok ? "var(--ok)" : "var(--warn)");
+      else if (d.phase === "reveal") h = big(m.ok ? "Correct! +" + m.pts : "The answer was " + esc(d.a), (m.ok ? "" : "<span style=\"white-space:pre-line;\">" + esc(d.q) + "</span><br>") + "You\u2019re <b style=\"color:var(--bright);\">#" + d.rank + "</b> of " + d.of + "." + (RD > 0 ? " <b style=\"color:var(--ok);\">\u25b2 up " + RD + "!</b>" : RD < 0 ? " <b style=\"color:var(--bad);\">\u25bc down " + (-RD) + "</b>" : "") + (d.gap > 0 ? " <b style=\"color:var(--bright);\">" + Number(d.gap).toLocaleString() + " pts behind #" + (d.rank - 1) + "</b>" : d.rank === 1 && d.score > 0 ? " <b style=\"color:var(--ok);\">You\u2019re in the lead!</b>" : "") + (m.ok && d.streak >= 3 ? " " + d.streak + " in a row!" : "") + " Next question coming up\u2026", m.ok ? "var(--ok)" : "var(--warn)");
       else if (m.ok) h = big("Locked in! +" + m.pts, "Nice and fast. Waiting for everyone else\u2026", "var(--ok)");
       else if (m.locked) h = big("Not that one", "Wait for the answer.", "var(--bad)");
       else {
         var body;
-        if (d.k === "mc") body = '<div style="display:flex;flex-direction:column;gap:10px;">' + (d.o || []).map(function(o, i){ return '<button type="button" class="opt" data-o="' + i + '"' + (sending ? ' disabled' : '') + '><b>' + "ABCD"[i] + '</b><span>' + esc(o) + '</span></button>'; }).join("") + '</div><div class="mono" style="font-size:12px;color:var(--dim);">One pick. A wrong pick locks you out of this question.</div>';
+        if (d.k === "mc") body = '<div style="display:grid;grid-template-columns:repeat(' + ((d.o || []).length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:10px;">' + (d.o || []).map(function(o, i){ return '<button type="button" class="opt" data-o="' + i + '"' + (sending ? ' disabled' : '') + '><b>' + "ABCD"[i] + '</b><span>' + esc(o) + '</span></button>'; }).join("") + '</div><div class="mono" style="font-size:12px;color:var(--dim);">Tap a choice or press A\u2013D. One pick: a wrong pick locks you out of this question.</div>';
         else body = '<div style="display:flex;flex-wrap:wrap;gap:5px;" aria-hidden="true">' + String(d.mask || "").split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : ch === "_" ? '<span class="mask"></span>' : '<span class="mask" style="border-bottom-color:transparent;">' + esc(ch) + '</span>'; }).join("") + '</div>' +
           '<div class="mono" style="font-size:12px;color:var(--dim);">' + String(d.mask || "").replace(/[^_]/g, "").length + ' letters \u00b7 wrong answers can be retried</div>' +
           '<form id="prForm" style="display:flex;gap:10px;flex-wrap:wrap;"><input class="ans" id="prAns" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" placeholder="Answer"><button class="btn" type="submit">Send</button></form>';
-        h = '<div class="card" style="display:flex;flex-direction:column;gap:14px;">' + (d.q_ends ? bar() : '<div class="mono" style="font-size:12px;color:var(--dim);">No timer \u00b7 faster answers still score more</div>') +
+        h = '<div class="card" style="display:flex;flex-direction:column;gap:14px;' + (d.x2 ? 'border:2px solid var(--warn);' : '') + '">' + (d.x2 ? '<div class="mono" style="align-self:flex-start;font-size:13px;font-weight:800;letter-spacing:2px;padding:5px 12px;border-radius:999px;background:var(--warn);color:#2a1d00;">DOUBLE POINTS \u00d72</div>' : '') + (d.q_ends ? bar() : '<div class="mono" style="font-size:12px;color:var(--dim);">No timer \u00b7 faster answers still score more</div>') +
           '<div style="font-size:clamp(19px,3.4vw,26px);font-weight:700;color:var(--bright);line-height:1.35;white-space:pre-line;text-wrap:pretty;">' + esc(d.q) + '</div>' + body + '</div>';
       }
       view.innerHTML = (d.status ? header() : '') + h;
@@ -116,11 +134,11 @@ html[data-motion="reduce"] .shake{animation:none;}
       sending = true; if (btn) btn.disabled = true;
       rpc("ctf_pr_answer", { p_rush: ST.id, p_qi: ST.qi, p_answer: txt }).then(function(r){
         sending = false; r = r || {};
-        if (r.ok) { ST.mine = { ok: true, locked: false, pts: r.pts }; sfx("hit"); sig = ""; render(); return; }
-        if (r.locked) { ST.mine = { ok: false, locked: true, pts: 0 }; sfx("miss"); sig = ""; render(); return; }
+        if (r.ok) { ST.mine = { ok: true, locked: false, pts: r.pts }; sfx("hit"); flash("var(--ok)", "+" + r.pts); sig = ""; render(); return; }
+        if (r.locked) { ST.mine = { ok: false, locked: true, pts: 0 }; sfx("miss"); flash("var(--bad)", "\u2715"); sig = ""; render(); shakeCard(); return; }
         if (r.error === "closed") { load(); return; }
         if (btn) btn.disabled = false;
-        sfx("miss"); var a = document.getElementById("prAns"); if (a) { a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); a.value = ""; a.focus(); }
+        sfx("miss"); flash("var(--bad)", ""); var a = document.getElementById("prAns"); if (a) { a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); a.value = ""; a.focus(); }
       }).catch(function(){ sending = false; if (btn) btn.disabled = false; });
     }
     function wire(){
