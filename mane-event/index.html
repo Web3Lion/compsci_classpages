@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=37.2.0"></script>
+<script src="../site.js?v=38.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Mane Event</title>
-<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=37.2.0">
-<link href="../assets/fonts/fonts.css?v=37.2.0" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=38.0.0">
+<link href="../assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
 <style>
 :root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--gold2:#e6fff0;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
   --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
@@ -74,6 +74,24 @@ td{padding:9px 8px;border-bottom:1px solid var(--border);}
 #sFlash{position:fixed;inset:0;z-index:9000;pointer-events:none;display:flex;align-items:center;justify-content:center;font:800 clamp(60px,16vw,140px) 'JetBrains Mono',monospace;color:#fff;text-shadow:0 4px 24px rgba(0,0,0,.45);animation:sFlash .9s ease-out forwards;}
 html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-motion="reduce"] .prPulse{animation:none!important;opacity:1!important;transform:none!important;}
 html[data-motion="reduce"] #sFlash{animation-duration:.01s;}
+/* Team Jeopardy board (data-jt = lion | classic) */
+:root{--jb-tile:#00843f;--jb-tileHi:#00a352;--jb-val:#ffffff;--jb-cat:#ffffff;--jb-clue:#00843f;--jb-text:#ffffff;--jb-gap:#ffffff;--jb-used:#005a2c;--jb-font:'Bricolage Grotesque',sans-serif;}
+:root[data-jt="classic"]{--jb-tile:#060ce9;--jb-tileHi:#2a31ff;--jb-val:#ffcc00;--jb-cat:#ffffff;--jb-clue:#060ce9;--jb-text:#ffffff;--jb-gap:#000000;--jb-used:#030766;--jb-font:'Libre Caslon Text',Georgia,serif;}
+.jboard{display:grid;gap:6px;padding:6px;background:var(--jb-gap);border-radius:14px;}
+.jcat,.jtile{display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;}
+.jcat{background:var(--jb-tile);color:var(--jb-cat);font:800 clamp(12px,1.5vw,22px)/1.15 var(--jb-font);text-transform:uppercase;padding:10px 6px;min-height:70px;text-wrap:balance;text-shadow:2px 2px 0 rgba(0,0,0,.35);}
+.jtile{background:var(--jb-tile);color:var(--jb-val);font:800 clamp(22px,3.2vw,48px)/1 var(--jb-font);min-height:clamp(54px,9vh,96px);border:0;cursor:pointer;text-shadow:3px 3px 0 rgba(0,0,0,.45);transition:transform .12s,background .12s;}
+.jtile:hover:not(:disabled),.jtile:focus-visible{background:var(--jb-tileHi);transform:scale(1.03);outline:3px solid var(--jb-val);outline-offset:-3px;}
+.jtile:disabled{background:var(--jb-used);color:transparent;text-shadow:none;cursor:default;}
+.jclue{background:var(--jb-clue);color:var(--jb-text);border-radius:16px;padding:clamp(18px,3vw,36px);display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center;}
+.jclue .jq{font:700 clamp(26px,3.8vw,58px)/1.2 var(--jb-font);text-transform:uppercase;text-wrap:balance;text-shadow:3px 3px 0 rgba(0,0,0,.4);white-space:pre-line;}
+.jclue img{max-width:min(100%,820px);max-height:42vh;border-radius:12px;background:#fff;}
+.jclue .ja{font:800 clamp(28px,4vw,60px)/1.15 var(--jb-font);color:var(--jb-val);text-transform:uppercase;text-shadow:3px 3px 0 rgba(0,0,0,.4);}
+.jw{display:inline-flex;gap:5px;margin:0 9px 8px;}
+.jw i{display:inline-flex;align-items:flex-end;justify-content:center;width:clamp(18px,2.2vw,30px);height:clamp(28px,3.4vw,44px);border-bottom:3px solid currentColor;font:800 clamp(18px,2.4vw,32px) 'JetBrains Mono',monospace;font-style:normal;}
+@keyframes ddIn{0%{transform:scale(.2) rotate(-20deg);opacity:0}60%{transform:scale(1.12) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.ddIn{animation:ddIn .9s cubic-bezier(.2,1.4,.4,1) both;}
+html[data-motion="reduce"] .ddIn{animation:none!important;}
 </style>
 <style>
 /* team themes: page always stays Lion Pride green/white; only team colours change */
@@ -87,15 +105,15 @@ html[data-motion="reduce"] #sFlash{animation-duration:.01s;}
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
   <div id="hdr" style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:110px;">
-    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=37.2.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
+    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=38.0.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
     <h1 class="disp" style="margin:0;font-size:clamp(30px,5vw,44px);line-height:1.1;color:var(--bright);">Mane Event</h1>
     <p style="margin:6px 0 0;color:var(--muted);max-width:680px;">Live vocab and review battles. Students join with a code, get a random lion name, and nothing is saved anywhere except the host&rsquo;s own browser.</p>
   </div>
   <div id="view" aria-live="polite"></div>
 </div>
-<script src="../assets/vendor/peerjs.min.js?v=37.2.0"></script>
-<script src="../assets/vendor/qrcode.js?v=37.2.0"></script>
-<script src="../js/ko-fx.js?v=37.2.0"></script>
+<script src="../assets/vendor/peerjs.min.js?v=38.0.0"></script>
+<script src="../assets/vendor/qrcode.js?v=38.0.0"></script>
+<script src="../js/ko-fx.js?v=38.0.0"></script>
 <script>
 if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
   var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -145,6 +163,43 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
   function ansText(r){ return r.k === "v" ? disp(r.a) : String(r.a || "").trim(); }
   function isRight(r, txt){ var n = norm(txt); if (!n) return false; return r.k === "mc" ? n === norm(r.a) : alts(r.a).indexOf(n) >= 0; }
   function rnd(n){ return Math.random() * n | 0; }
+  /* Jeopardy sheet: row 1 = categories, then a question row + answer row per value; a label column A is skipped */
+  function parseBoard(text){
+    var rows = parseCells(text).filter(function(r){ return r.some(function(x){ return x; }); });
+    if (rows.length < 3) return null;
+    var a = rows.map(function(r){ return r[0] || ""; }), lab = 0;
+    a.slice(0, 7).forEach(function(x){ if (/^(categor|\$?\d{2,4}|q(uestion)?\b|a(nswer)?\b|clue|value|points?)/i.test(x) || /\b(q|a|question|answer)$/i.test(x)) lab++; });
+    if (lab >= 2 || (a[0] === "" && rows[0].length > 1)) rows = rows.map(function(r){ return r.slice(1); });
+    var cats = rows[0].map(function(x){ return x.replace(/\s*\n\s*/g, " "); }), n = 0;
+    cats.forEach(function(c, i){ if (c) n = i + 1; }); n = Math.min(n, 8); if (n < 1) return null; cats = cats.slice(0, n);
+    var levels = [];
+    for (var r = 1; r < rows.length && levels.length < 10; r += 2) {
+      var qr = rows[r] || [], ar = rows[r + 1] || [];
+      if (!qr.some(function(x){ return x; })) continue;
+      levels.push(cats.map(function(_, c){ return { q: (qr[c] || "").slice(0, 500), a: (ar[c] || "").replace(/\s*\n\s*/g, " ").slice(0, 160) }; }));
+    }
+    var clues = 0; levels.forEach(function(Lv){ Lv.forEach(function(x){ if (x.q && x.a) clues++; }); });
+    return levels.length ? { cats: cats, levels: levels, clues: clues } : null;
+  }
+  function parseCells(text){
+    var t = String(text || "").replace(/^\uFEFF/, ""), tab = t.indexOf("\t") >= 0 && t.indexOf(",") < 0, rows = [], row = [], f = "", q = false;
+    for (var i = 0; i < t.length; i++) { var c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"' && f === "") q = true; else if (c === (tab ? "\t" : ",")) { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; } else f += c; }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows.map(function(r){ return r.map(function(x){ return String(x).replace(/\r\n?/g, "\n").trim(); }); });
+  }
+  var JIMG = /(https?:\/\/[^\s"]+?(?:\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?|googleusercontent\.com\/[^\s"]+|drive\.google\.com\/[^\s"]+))/i;
+  function jClue(txt){
+    var m = String(txt || "").match(JIMG); if (!m) return '<div class="jq">' + esc(txt) + '</div>';
+    var u = m[1], id = (u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/) || [])[1];
+    if (id) u = "https://drive.google.com/thumbnail?id=" + id + "&sz=w1600";
+    var rest = String(txt).replace(m[1], "").trim();
+    return (rest ? '<div class="jq">' + esc(rest) + '</div>' : '') + '<img src="' + esc(u) + '" alt="Clue image">';
+  }
+  function jMask(a){ return disp(a).split(/\s+/).filter(Boolean).map(function(w){ return '<span class="jw">' + w.split("").map(function(ch){ return '<i>' + (/[a-z0-9]/i.test(ch) ? '' : esc(ch)) + '</i>'; }).join("") + '</span>'; }).join(""); }
+  function jRight(a, txt){ var n = norm(txt); if (!n) return false; var ok = alts(a); String(a || "").replace(/\(([^)]*)\)/g, function(_, x){ ok.push(norm(x)); }); return ok.indexOf(n) >= 0; }
   function shuffle(a){ for (var i = a.length - 1; i > 0; i--) { var j = rnd(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function now(){ return Date.now(); }
   function tc(i){ return "var(--t" + (i || 0) + ")"; }
@@ -229,7 +284,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       rows: [], players: {}, fights: {}, teamKO: [], feed: [], goAt: 0, endAt: 0, br: null };
     var HQ = [], lastCd = 0, CONN = {}, LAST = {}, LASTT = {}, peer = null, opened = false, tries = 0, dirty = true, lastDraw = 0, lastSave = 0, wake = null;
     if (!S.code) S.code = newCode();
-    S.setup.rcount = S.setup.rcount || 10; S.setup.rtime = S.setup.rtime || 20;
+    if (S.setup.rcount == null) S.setup.rcount = 10; S.setup.rtime = S.setup.rtime || 20;
     S.setup.theme = THEMES[S.setup.theme] ? S.setup.theme : "lion"; applyTheme(S.setup.theme);
     Object.keys(S.players).forEach(function(id){ S.players[id].up = false; S.players[id].downAt = now(); });
     Object.keys(S.fights).forEach(function(id){ var f = S.fights[id]; f.pause = 0; if (!f.between) newPrompt(f); });
@@ -267,6 +322,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function list(){ return Object.keys(S.players).map(function(k){ return S.players[k]; }); }
     function upList(){ return list().filter(function(p){ return p.up && !p.left; }); }
     function pickName(){ var used = {}; list().forEach(function(p){ used[p.name] = 1; }); for (var i = 0; i < 300; i++) { var n = ADJ[rnd(ADJ.length)] + " " + NOUN[rnd(NOUN.length)]; if (!used[n]) return n; } return "Lion " + (list().length + 1); }
+    function TM(){ return S.setup.mode === "battle" || S.setup.mode === "jteam"; }
     function teamSizes(){ var z = []; for (var i = 0; i < S.setup.teams; i++) z.push(0); list().forEach(function(p){ if (p.team != null && p.team < S.setup.teams) z[p.team]++; }); return z; }
     function smallest(){ var z = teamSizes(), b = 0; z.forEach(function(n, i){ if (n < z[b]) b = i; }); return b; }
     function feed(txt, team){ S.feed.unshift({ txt: txt, team: team }); S.feed = S.feed.slice(0, 8); }
@@ -281,15 +337,16 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         if (!p) {
           if (list().length >= 80) { try { conn.send({ k: "full" }); } catch (e) {} return; }
           p = S.players[tok] = { id: tok, name: pickName(), team: null, ko: 0, out: false, rest: 0, fid: null, last: null, msg: "", dev: "" };
-          if (S.setup.mode === "battle") { p.team = smallest(); if (S.phase === "countdown" || S.phase === "live") feed(p.name + " joined " + teamNames()[p.team], p.team); }
+          if (TM()) { p.team = smallest(); if (S.phase === "countdown" || S.phase === "live") feed(p.name + " joined " + teamNames()[p.team], p.team); }
           else if (S.phase === "countdown" || S.phase === "live") { p.out = true; p.late = true; }
         }
-        if (S.setup.mode === "battle" && (p.team == null || p.team >= S.setup.teams)) p.team = smallest();
+        if (TM() && (p.team == null || p.team >= S.setup.teams)) p.team = smallest();
         p.left = false; p.up = true; p.dev = String(d.dev || "").slice(0, 30); conn._pid = tok; CONN[tok] = conn; LAST[tok] = "";
         try { conn.send({ k: "hi" }); } catch (e) {}
         dirty = true; return;
       }
-      if (d.k === "ans" && conn._pid) { if (S.setup.mode === "rush") rushAnswer(conn._pid, d); else answer(conn._pid, d); }
+      if (d.k === "ans" && conn._pid) { if (S.setup.mode === "rush") rushAnswer(conn._pid, d); else if (S.setup.mode === "jteam") jpAnswer(conn._pid, d); else answer(conn._pid, d); }
+      if (d.k === "jpick" && conn._pid) jpPick(conn._pid, String(d.key || ""));
       if (d.k === "forfeit" && conn._pid) forfeit(conn._pid, d.n);
       if (d.k === "leave" && conn._pid) { leave(conn._pid); try { conn.close(); } catch (e) {} }
     }
@@ -445,15 +502,61 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     }
     function rushBoard(){ return list().filter(function(p){ return !p.left || p.score; }).sort(function(a, b){ return (b.score || 0) - (a.score || 0); }); }
     function rushPlace(id){ return rushBoard().map(function(p){ return p.id; }).indexOf(id) + 1; }
+    /* ----- Team Jeopardy: a team picks a tile, everyone answers, correct players earn the value for their team ----- */
+    function jVal(li){ return (li + 1) * 100 * (S.setup.jmult || 1); }
+    function jLeft(){ var J = S.jp, n = 0; J.b.levels.forEach(function(Lv, li){ Lv.forEach(function(x, c){ if (x.q && x.a && !J.used[li + ":" + c]) n++; }); }); return n; }
+    function jMembers(i){ return list().filter(function(p){ return p.team === i && (!p.left || p.jcash); }); }
+    function jTeams(){ var out = []; for (var i = 0; i < S.setup.teams; i++) { var m = jMembers(i); if (!m.length) continue; var cash = 0; m.forEach(function(p){ cash += p.jcash || 0; }); out.push({ i: i, n: m.length, cash: cash, avg: Math.round(cash / m.length) }); }
+      return out.sort(function(a, b){ return b.avg - a.avg || b.cash - a.cash; }); }
+    function jNextPicker(){ var J = S.jp; for (var k = 1; k <= S.setup.teams; k++) { var i = (J.pick + k) % S.setup.teams; if (upList().some(function(p){ return p.team === i; })) return i; } return J.pick; }
+    function jStartPick(){ var J = S.jp; J.phase = "pick"; J.pickEnds = now() + 15000; J.seq++; dirty = true; save(true); }
+    function jOpen(key){
+      var J = S.jp, p = key.split(":"), li = +p[0], c = +p[1], x = J.b.levels[li] && J.b.levels[li][c];
+      if (J.phase !== "pick" || !x || !x.q || !x.a || J.used[key]) return;
+      J.used[key] = 1; J.key = key; J.li = li; J.c = c; J.n++; J.phase = "q"; J.ans = {}; J.dd = J.dds.indexOf(key) >= 0;
+      J.endsAt = now() + (S.setup.jtime || 30) * 1000; KS(J.dd ? "win" : "hit"); dirty = true; save(true);
+    }
+    function jpPick(id, key){ var p = S.players[id], J = S.jp; if (!p || !J || J.phase !== "pick" || p.team !== J.pick) return; jOpen(key); }
+    function jpAnswer(id, d){
+      var J = S.jp, p = S.players[id], t = now(); if (!J || J.phase !== "q" || d.n !== J.n || !p || p.team == null) return;
+      var A = J.ans[id] || (J.ans[id] = { ok: 0, tries: 0, last: 0 }); if (A.ok || t - A.last < 400) return; A.last = t; A.tries++;
+      if (A.tries === 1) { hostPing(); POPN = true; }
+      var x = J.b.levels[J.li][J.c];
+      if (jRight(x.a, String(d.a || "").slice(0, 160))) { A.ok = 1; A.pts = jVal(J.li) * (J.dd && p.team === J.pick ? 2 : 1); p.jcash = (p.jcash || 0) + A.pts; }
+      else send(id, { k: "bad" });
+      dirty = true;
+    }
+    function jReveal(){
+      var J = S.jp; J.phase = "rev"; J.revAt = now();
+      var ranks = jTeams(); ranks.forEach(function(tm, r){ J.dl[tm.i] = J.prev[tm.i] ? J.prev[tm.i] - (r + 1) : 0; J.prev[tm.i] = r + 1; });
+      KS("horn"); dirty = true; save(true);
+    }
+    function jTick(t){
+      var J = S.jp; if (!J) return;
+      if (J.phase === "pick") {
+        var pk = J.pick; if (!upList().some(function(p){ return p.team === pk; })) { J.pick = jNextPicker(); }
+        if (t >= J.pickEnds) { var open = []; J.b.levels.forEach(function(Lv, li){ Lv.forEach(function(x, c){ if (x.q && x.a && !J.used[li + ":" + c]) open.push(li + ":" + c); }); }); if (open.length) jOpen(open[rnd(open.length)]); else endGame(); }
+      } else if (J.phase === "q") {
+        var ps = upList().filter(function(p){ return p.team != null; }), done = ps.length && ps.every(function(p){ var A = J.ans[p.id]; return A && A.ok; });
+        if (t >= J.endsAt || done) jReveal();
+      } else if (J.phase === "rev" && t - J.revAt >= 9000) jAfter();
+    }
+    function jAfter(){ var J = S.jp; if (!jLeft()) return endGame(); J.pick = jNextPicker(); jStartPick(); }
     function startGame(){
       var t = now(); S.phase = "countdown"; S.goAt = t + 5000; S.feed = []; S.fights = {}; S.br = null;
-      list().forEach(function(p){ p.score = 0; p.lastPts = 0; p.streak = 0; p.prevRank = 0; p.dl = 0; p.ko = 0; p.out = false; p.outR = null; p.rest = 0; p.fid = null; p.last = null; p.late = false; });
+      list().forEach(function(p){ p.jcash = 0; p.score = 0; p.lastPts = 0; p.streak = 0; p.prevRank = 0; p.dl = 0; p.ko = 0; p.out = false; p.outR = null; p.rest = 0; p.fid = null; p.last = null; p.late = false; });
       dirty = true; save(true);
     }
     function goLive(){
       var t = now(); S.phase = "live";
       if (S.setup.mode === "battle") { S.endAt = t + S.setup.minutes * 60000; S.teamKO = teamSizes().map(function(){ return 0; }); }
-      else if (S.setup.mode === "rush") { S.rush = { f: { used: [], n: 0, lock: [0, 0] }, qi: 0, total: Math.min(S.setup.rcount || 10, S.rows.length), phase: "q", ans: {} }; rushStart(); }
+      else if (S.setup.mode === "jteam") {
+        var jb = parseBoard(S.setup.csv), cells = [];
+        jb.levels.forEach(function(Lv, li){ Lv.forEach(function(x, c){ if (x.q && x.a && (li > 0 || jb.levels.length < 3)) cells.push(li + ":" + c); }); });
+        S.jp = { b: jb, used: {}, dds: shuffle(cells).slice(0, S.setup.jdd == null ? 1 : S.setup.jdd), pick: -1, seq: 0, n: 0, phase: "pick", ans: {}, prev: {}, dl: {} };
+        S.jp.pick = jNextPicker(); jStartPick();
+      }
+      else if (S.setup.mode === "rush") { S.rush = { f: { used: [], n: 0, lock: [0, 0] }, qi: 0, total: S.setup.rcount === 0 ? S.rows.length : Math.min(S.setup.rcount || 10, S.rows.length), phase: "q", ans: {} }; rushStart(); }
       else { var ids = upList().map(function(p){ return p.id; }); list().forEach(function(p){ if (!p.up) { p.out = true; p.late = true; } }); buildBracket(ids); }
       lastCd = 0; KS("horn");
       try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function(w){ wake = w; }).catch(function(){}); } catch (e) {}
@@ -461,7 +564,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     }
     function endGame(){
       Object.keys(S.fights).forEach(function(k){ endFight(S.fights[k]); });
-      S.phase = "done"; S.doneAt = now(); dirty = true; save(true); if (S.setup.mode === "rush") podiumFx(); else KS("win"); if (window.KO_FX) KO_FX.music(false);
+      S.phase = "done"; S.doneAt = now(); dirty = true; save(true); if (S.setup.mode === "rush" || S.setup.mode === "jteam") podiumFx(); else KS("win"); if (window.KO_FX) KO_FX.music(false);
       try { if (wake) wake.release(); } catch (e) {}
     }
     function standings(){
@@ -505,7 +608,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
             f.next = t + 3000;
           }
         });
-        if (S.phase === "live") { if (S.setup.mode === "rush") rushTick(t); else pair(t); }
+        if (S.phase === "live") { if (S.setup.mode === "rush") rushTick(t); else if (S.setup.mode === "jteam") jTick(t); else pair(t); }
       }
       music();
       pushAll(t);
@@ -537,18 +640,33 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
 
     /* ----- what each student sees ----- */
     function viewFor(id, t){
-      var p = S.players[id], v = { s: "", name: p.name, team: p.team, tn: p.team != null && S.setup.mode === "battle" ? teamNames()[p.team] : null, mode: S.setup.mode, T: {} };
+      var p = S.players[id], v = { s: "", name: p.name, team: p.team, tn: p.team != null && TM() ? teamNames()[p.team] : null, mode: S.setup.mode, T: {} };
       v.kev = p.kev || null; v.th = S.setup.theme;
       if (S.phase === "setup" || S.phase === "lobby") { v.s = "lobby"; return v; }
       if (S.phase === "countdown") { v.s = "cd"; v.T.left = S.goAt - t; return v; }
       if (S.phase === "done") {
         v.s = "done";
-        if (S.setup.mode === "rush") { v.place = rushPlace(id); v.of = rushBoard().length; v.score = p.score || 0; v.champ = (rushBoard()[0] || {}).name || ""; }
+        if (S.setup.mode === "jteam") { var jt = jTeams(); v.win = jt.length ? teamNames()[jt[0].i] : ""; v.place = jt.map(function(x){ return x.i; }).indexOf(p.team) + 1; v.cash = p.jcash || 0; v.jt = S.setup.jtheme; }
+        else if (S.setup.mode === "rush") { v.place = rushPlace(id); v.of = rushBoard().length; v.score = p.score || 0; v.champ = (rushBoard()[0] || {}).name || ""; }
         else if (S.setup.mode === "battle") { var st = standings(); v.win = st.length ? teamNames()[st[0].i] : ""; v.place = st.map(function(x){ return x.i; }).indexOf(p.team) + 1; v.ko = p.ko; }
         else { v.champ = S.br && S.br.champ ? S.players[S.br.champ].name : ""; v.place = placeOf(id); }
         return v;
       }
       v.ko = p.ko;
+      if (S.setup.mode === "jteam" && S.jp) {
+        var J = S.jp, jts = jTeams(), mt = jts.filter(function(x){ return x.i === p.team; })[0];
+        v.jt = S.setup.jtheme; v.cash = p.jcash || 0; v.tavg = mt ? mt.avg : 0; v.trank = mt ? jts.indexOf(mt) + 1 : 0; v.tof = jts.length; v.pickT = teamNames()[J.pick]; v.pickC = J.pick;
+        if (J.phase === "pick") {
+          v.s = "jpick"; v.mine = p.team === J.pick; v.T.left = J.pickEnds - t; v.T.full = 15000;
+          if (v.mine) v.board = { cats: J.b.cats, rows: J.b.levels.map(function(Lv, li){ return Lv.map(function(x, c){ return x.q && x.a && !J.used[li + ":" + c] ? jVal(li) : 0; }); }) };
+        } else {
+          var x = J.b.levels[J.li][J.c], A = J.ans[id] || {};
+          v.cat = J.b.cats[J.c]; v.val = jVal(J.li); v.dd = !!J.dd; v.ok = !!A.ok; v.pts = A.pts || 0; v.f = { n: J.n };
+          if (J.phase === "q") { v.s = "jq"; v.q = x.q; v.mask = jMask(x.a); v.T.left = J.endsAt - t; v.T.full = (S.setup.jtime || 30) * 1000; }
+          else { v.s = "jr"; v.a = x.a; }
+        }
+        return v;
+      }
       if (S.setup.mode === "rush" && S.rush) {
         var R0 = S.rush, rf = R0.f, A = R0.ans[id] || {};
         v.score = p.score || 0; v.place = rushPlace(id); v.of = rushBoard().length; v.qi = R0.qi; v.total = R0.total;
@@ -595,15 +713,20 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (a === "game0") st.game = 0;
       else if (a === "sheet") { importSheet(); return; }
       else if (a === "theme") { st.theme = val; applyTheme(val); }
-      else if (a === "teams") { st.teams = +val; list().forEach(function(p){ if (p.team != null && p.team >= st.teams) p.team = null; }); list().forEach(function(p){ if (p.team == null && st.mode === "battle") p.team = smallest(); }); }
+      else if (a === "teams") { st.teams = +val; list().forEach(function(p){ if (p.team != null && p.team >= st.teams) p.team = null; }); list().forEach(function(p){ if (p.team == null && TM()) p.team = smallest(); }); }
       else if (a === "assign") st.assign = val;
       else if (a === "minutes") st.minutes = +val;
       else if (a === "qtime") st.qtime = +val;
       else if (a === "format") st.format = val;
+      else if (a === "lobby" && st.mode === "jteam") {
+        var jb0 = parseBoard(st.csv); if (!jb0 || !jb0.clues) return;
+        list().forEach(function(p){ if (p.team == null || p.team >= st.teams) p.team = smallest(); }); if (st.assign === "random") deal();
+        S.phase = "lobby"; save(true);
+      }
       else if (a === "lobby") {
         S.rows = parseRows(st.csv); var seen = {}; S.rows.forEach(function(r){ if (r.k === "v") seen[norm(disp(r.a))] = 1; }); S.distinct = Object.keys(seen).length;
         if (S.rows.length < 4) return;
-        if (st.mode === "battle") { list().forEach(function(p){ if (p.team == null || p.team >= st.teams) p.team = smallest(); }); if (st.assign === "random") deal(); }
+        if (TM()) { list().forEach(function(p){ if (p.team == null || p.team >= st.teams) p.team = smallest(); }); if (st.assign === "random") deal(); }
         else list().forEach(function(p){ p.team = null; });
         S.phase = "lobby"; save(true);
       }
@@ -619,6 +742,13 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (a === "rnow") { if (S.rush && S.rush.phase === "q") rushReveal(); }
       else if (a === "rcount") st.rcount = +val;
       else if (a === "rtime") st.rtime = +val;
+      else if (a === "jtime") st.jtime = +val;
+      else if (a === "jdd") st.jdd = +val;
+      else if (a === "jmult") st.jmult = +val;
+      else if (a === "jtheme") st.jtheme = val;
+      else if (a === "jtile") { if (S.jp && S.jp.phase === "pick") jOpen(val); }
+      else if (a === "jnow") { if (S.jp && S.jp.phase === "q") jReveal(); }
+      else if (a === "jnext") { if (S.jp && S.jp.phase === "rev") jAfter(); }
       else if (a === "rpace") st.rpace = val;
       else if (a === "end") { if (!confirm("End the game now?")) return; if (S.setup.mode === "bracket" && S.br) S.br.ended = true; endGame(); }
       else if (a === "again") { S.phase = "lobby"; S.br = null; S.feed = []; list().forEach(function(p){ if (!p.up) delete S.players[p.id]; }); save(true); }
@@ -648,7 +778,9 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       u = String(u || "").trim(); var g = (u.match(/[#&?]gid=(\d+)/) || [])[1], m = u.match(/\/spreadsheets\/d\/e\/([\w-]+)/);
       if (m) return ["https://docs.google.com/spreadsheets/d/e/" + m[1] + "/pub?output=csv" + (g ? "&gid=" + g : "")];
       m = u.match(/\/spreadsheets\/d\/([\w-]+)/); if (!m) return null;
-      return ["https://docs.google.com/spreadsheets/d/" + m[1] + "/export?format=csv&gid=" + (g || "0"), "https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&gid=" + (g || "0")];
+      var o2 = ["https://docs.google.com/spreadsheets/d/" + m[1] + "/export?format=csv&gid=" + (g || "0"), "https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&gid=" + (g || "0")];
+      if (S.setup.mode === "jteam" && !g) o2.unshift("https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&sheet=Jeopardy");
+      return o2;
     }
     async function importSheet(){
       var inp = document.getElementById("sheetUrl"), st = S.setup; st.sheet = inp ? inp.value.trim() : st.sheet;
@@ -659,14 +791,17 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         try {
           var r = await fetch(urls[i], { cache: "no-store" }), txt = r.ok ? await r.text() : "";
           if (txt && !/^\s*<(!doctype|html)/i.test(txt)) {
-            var n = parseRows(txt).length;
-            if (n) { st.csv = txt.slice(0, 200000); SHEETMSG = "Imported " + n + " question" + (n === 1 ? "" : "s") + " from the sheet. Change the sheet and press Import again to refresh."; SHEETCOL = "var(--ok)"; save(true); draw(); return; }
+            var jbI = st.mode === "jteam" ? parseBoard(txt) : null, n = st.mode === "jteam" ? (jbI ? jbI.clues : 0) : parseRows(txt).length;
+            if (n) { st.csv = txt.slice(0, 200000); SHEETMSG = "Imported " + (jbI ? jbI.cats.length + " categories \u00b7 " + n + " clue" : n + " question") + (n === 1 ? "" : "s") + " from the sheet. Change the sheet and press Import again to refresh."; SHEETCOL = "var(--ok)"; save(true); draw(); return; }
           }
         } catch (e) {}
       }
       SHEETMSG = "Couldn\u2019t read the sheet. In Google Sheets click Share \u2192 General access \u2192 Anyone with the link (Viewer), then press Import again."; SHEETCOL = "var(--bad)"; draw();
     }
     function csvInfo(){
+      if (S.setup.mode === "jteam") { var je = document.getElementById("csvInfo"), jg = document.querySelector('[data-act="lobby"]'), jb = parseBoard(S.setup.csv);
+        if (je) je.innerHTML = jb && jb.clues ? '<b style="color:var(--ok);">' + jb.cats.length + ' categories \u00b7 ' + jb.levels.length + ' rows \u00b7 ' + jb.clues + ' clues ready.</b>' : (S.setup.csv.trim() ? '<b style="color:var(--bad);">Couldn\u2019t find a board.</b> Row 1 = categories, then a question row and an answer row for each value.' : 'Import your Jeopardy sheet, upload a CSV, or paste below.');
+        if (jg) jg.disabled = !(jb && jb.clues); return; }
       var el = document.getElementById("csvInfo"), go = document.querySelector('[data-act="lobby"]'), rs = parseRows(S.setup.csv), n = rs.length, c = { v: 0, mc: 0, fr: 0 };
       rs.forEach(function(r){ c[r.k]++; });
       var parts = []; if (c.v) parts.push(c.v + " vocab"); if (c.mc) parts.push(c.mc + " multiple choice"); if (c.fr) parts.push(c.fr + " free response");
@@ -686,13 +821,18 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function codeCard(){
       var url = location.origin + location.pathname + "?code=" + S.code, qr = qrcode(0, "H"); qr.addData(url); qr.make();
       return '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">' +
-        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=37.2.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
-        '<div style="flex:1;min-width:240px;"><div class="lbl">Join code</div>' +
+        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=38.0.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
+        '<div style="flex:1;min-width:240px;container-type:inline-size;"><div class="lbl">Join code</div>' +
           '<div class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);margin:2px 0 4px;">\u25CF LIVE \u00B7 students can join</div>' +
-          '<div class="mono" style="font-size:clamp(48px,9vw,84px);font-weight:800;letter-spacing:10px;color:var(--gold);line-height:1.05;">' + S.code + '</div>' +
+          '<div class="mono" style="font-size:clamp(32px,min(9vw,13.5cqi),84px);font-weight:800;letter-spacing:.12em;color:var(--gold);line-height:1.05;white-space:nowrap;">' + S.code + '</div>' +
           '<div style="color:var(--muted);margin-top:6px;">Go to</div><div class="mono" style="font-size:clamp(18px,2.6vw,26px);font-weight:800;color:var(--bright);word-break:break-all;">' + esc(SHORT) + '</div><div style="color:var(--muted);margin-top:2px;">and type the code, or scan the QR code.</div></div></div>';
     }
+    var lastJT = -1;
     function tickText(t){
+      var jT = document.getElementById("hJT"), jB = document.getElementById("hJB"), J = S.jp;
+      if (jT && J && S.phase === "live" && S.setup.mode === "jteam") { var jl = Math.max(0, (J.phase === "pick" ? J.pickEnds : J.endsAt) - t), js = Math.ceil(jl / 1000); jT.textContent = js;
+        if (J.phase === "q") { var jf = jl / ((S.setup.jtime || 30) * 1000); if (jB) jB.style.width = (jf * 100) + "%"; if (js <= 5 && js > 0) { jT.classList.add("prPulse"); if (js !== lastJT) KS("tick"); } else jT.classList.remove("prPulse"); }
+        lastJT = js; }
       var rt = document.getElementById("hRushT"), rb = document.getElementById("hRushB");
       if (rt && S.rush && S.rush.phase === "q" && S.rush.f.endsAt) { var lf = Math.max(0, S.rush.f.endsAt - t); var fr = lf / rushT(), col = fr > .5 ? "var(--gold)" : fr > .25 ? "var(--warn)" : "var(--bad)"; rt.style.color = col; if (rb) rb.style.background = col; if (lf > 0 && lf <= 5000) rt.classList.add("prPulse"); else rt.classList.remove("prPulse"); rt.textContent = Math.ceil(lf / 1000); if (rb) rb.style.width = (lf / rushT() * 100) + "%"; }
       var a = document.getElementById("hTimer"); if (a && S.phase === "live" && S.setup.mode === "battle") a.textContent = clock(S.endAt - t);
@@ -732,9 +872,11 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function draw(){
       if (!opened) return;
       var t = now(), h = "";
+      document.documentElement.setAttribute("data-jt", S.setup.jtheme === "classic" ? "classic" : "lion");
       if (S.phase === "setup") h = drawSetup();
       else if (S.phase === "lobby") h = drawLobby();
       else if (S.phase === "countdown") h = '<div class="card" style="text-align:center;padding:60px 20px;"><div class="lbl">Get ready</div><div class="disp" id="hCd" style="font-size:clamp(120px,22vw,240px);font-weight:800;color:var(--gold);line-height:1;">5</div><div style="color:var(--muted);font-size:20px;">' + upList().length + ' player' + (upList().length === 1 ? '' : 's') + '</div></div>';
+      else if (S.phase === "live" && S.setup.mode === "jteam") h = drawJp(t);
       else if (S.phase === "live") h = S.setup.mode === "battle" ? drawBattle(t) : S.setup.mode === "rush" ? drawRush(t) : drawBracket(t);
       else h = drawDone();
       view.innerHTML = h; tickText(t); if (POPN) { POPN = false; var hc = document.getElementById("hCnt"); if (hc) { hc.classList.remove("prPop"); void hc.offsetWidth; hc.classList.add("prPop"); } } if (S.phase === "setup") csvInfo(); flushKO();
@@ -742,18 +884,21 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     var GAMES = {
       battle: { name: "Class Battle", tag: "Teams \u00b7 1v1 knockouts", d: "Teams fight rotating 1v1s until the clock runs out. 4 correct answers knock out the opponent. Team score = KOs per player.", t: "v" },
       rush: { name: "Roar Rush", tag: "Whole class at once \u00b7 points for speed", d: "Everyone answers the same question at the same time. Faster correct answers score more (500\u20131,000, +100 for 3 in a row). The leaderboard shows after each question.", t: "qa" },
-      bracket: { name: "King of the Pride", tag: "Bracket \u00b7 last lion standing", d: "Single-elimination bracket. Knocked-out players drop into a rematch pool and keep playing.", t: "any" }
+      bracket: { name: "King of the Pride", tag: "Bracket \u00b7 last lion standing", d: "Single-elimination bracket. Knocked-out players drop into a rematch pool and keep playing.", t: "any" },
+      jteam: { name: "Team Jeopardy", tag: "Teams \u00b7 everyone answers", d: "A team picks a tile on their devices; then every student answers it. Each correct player adds the value to their team. Team score = average $ per player, so team size doesn\u2019t matter.", t: "jp" },
+      jeopardy: { name: "Classic Jeopardy", tag: "Projector \u00b7 you score", d: "A category board run from your Jeopardy spreadsheet. Teams pick a clue, you award points with one click. Daily Doubles, image clues, two themes. No student devices needed.", t: "jp", href: "jeopardy.html" }
     };
     function drawSetup(){
       var st = S.setup, G = GAMES[st.mode] || GAMES.battle;
       if (!st.game) return '<div class="card" style="display:flex;flex-direction:column;gap:16px;margin-top:56px;"><div class="lbl" style="color:var(--gold);">1 \u00b7 Pick a game</div>' +
-        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;">' + ["battle", "rush", "bracket"].map(function(k){ var g = GAMES[k];
-          return '<button type="button" data-act="game" data-v="' + k + '" style="text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;padding:20px;border-radius:16px;border:2px solid var(--border3);background:var(--panel2);color:var(--text);font:inherit;">' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;">' + ["battle", "rush", "bracket", "jteam", "jeopardy"].map(function(k){ var g = GAMES[k];
+          return (g.href ? '<a href="' + g.href + '" ' : '<button type="button" data-act="game" data-v="' + k + '" ') + ' style="text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;padding:20px;border-radius:16px;border:2px solid var(--border3);background:var(--panel2);color:var(--text);font:inherit;text-decoration:none;">' +
             '<span class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--gold);">' + esc(g.tag.toUpperCase()) + '</span><span class="disp" style="font-size:26px;font-weight:800;color:var(--bright);">' + esc(g.name) + '</span>' +
             '<span style="font-size:14px;color:var(--muted);line-height:1.5;">' + esc(g.d) + '</span>' +
-            '<span class="mono" style="font-size:12px;color:var(--dim);margin-top:auto;">' + (g.t === "v" ? "Best with a vocab sheet" : g.t === "qa" ? "Best with a Q&amp;A sheet" : "Works with vocab or Q&amp;A sheets") + '</span></button>'; }).join("") + '</div></div>';
+            '<span class="mono" style="font-size:12px;color:var(--dim);margin-top:auto;">' + (g.t === "jp" ? "Uses your Jeopardy sheet (categories + Q/A rows)" : g.t === "v" ? "Best with a vocab sheet" : g.t === "qa" ? "Best with a Q&amp;A sheet" : "Works with vocab or Q&amp;A sheets") + '</span>' + (g.href ? '</a>' : '</button>'); }).join("") + '</div></div>';
       var fmtV = '<div><b style="color:var(--bright);">Vocab sheet</b> \u00b7 columns <span class="mono">Term, Definition</span>. Students see the definition and answer with the term, using the hints you pick.</div>';
       var fmtQ = '<div><b style="color:var(--bright);">Q&amp;A sheet</b> \u00b7 columns <span class="mono">Type, Question, Answer, Distractor 1, Distractor 2, Distractor 3</span>. Type is <i>multiple choice</i> (answer + distractors shown as buttons) or <i>free response</i> (typed; leave distractors blank).</div>';
+      var JP = G.t === "jp", fmtJ = '<div><b style="color:var(--bright);">Jeopardy sheet</b> \u00b7 the same layout as the Jeopardy tab: <b>row 1</b> = category names, then a <b>question row</b> and an <b>answer row</b> for $100, $200, $300\u2026 A label column A is skipped. Put alternatives in an answer with a slash (<span class="mono">DDoS / Distributed denial of service</span>); a part in parentheses is optional. Image or Drive links in a question show as a picture.</div>';
       var tplV = '<a class="btn ghost sm" href="vocab-template.csv" download>Vocab template (CSV)</a>', tplQ = '<a class="btn ghost sm" href="qa-template.csv" download>Q&amp;A template (CSV)</a>';
       return '<div class="card" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:16px 200px 16px 20px;"><div style="flex:1;min-width:220px;"><div class="lbl">Game</div><div class="disp" style="font-size:24px;font-weight:800;color:var(--bright);">' + esc(G.name) + ' <span class="mono" style="font-size:13px;font-weight:600;color:var(--dim);">' + esc(G.tag) + '</span></div></div><button type="button" class="btn ghost sm" data-act="game0">Change game</button></div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;">' +
@@ -762,28 +907,34 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
             '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="sheetUrl" type="url" value="' + esc(st.sheet || "") + '" placeholder="https://docs.google.com/spreadsheets/d/\u2026" autocomplete="off" spellcheck="false" style="flex:1;min-width:220px;min-height:44px;border-radius:12px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);font:14px monospace;padding:8px 12px;"><button type="button" class="btn sm" data-act="sheet">Import</button></div>' +
             '<div style="font-size:13px;color:' + SHEETCOL + ';">' + esc(SHEETMSG || "Share the sheet as \u201cAnyone with the link \u00b7 Viewer\u201d. The tab in the link is the one imported.") + '</div></div>' +
           '<div style="display:flex;flex-direction:column;gap:8px;"><div style="font-weight:700;color:var(--bright);">Or paste / upload a CSV</div>' +
-          '<textarea id="csv" rows="8" spellcheck="false" aria-label="Questions CSV" placeholder="' + (G.t === "qa" ? 'Type,Question,Answer,Distractor 1,Distractor 2,Distractor 3\nmultiple choice,How many bits are in a byte?,8,4,16,2' : 'Term,Definition\nVulnerability,A weakness that can be exploited by a threat') + '">' + esc(st.csv) + '</textarea>' +
-          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><label class="btn ghost sm" style="cursor:pointer;">Upload CSV<input type="file" id="csvFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label>' + (G.t === "qa" ? tplQ + tplV : tplV + tplQ) + '</div></div>' +
+          '<textarea id="csv" rows="8" spellcheck="false" aria-label="Questions CSV" placeholder="' + (JP ? 'Planets,Weather\nThis planet is closest to the Sun.,This instrument measures air pressure.\nMercury,Barometer' : G.t === "qa" ? 'Type,Question,Answer,Distractor 1,Distractor 2,Distractor 3\nmultiple choice,How many bits are in a byte?,8,4,16,2' : 'Term,Definition\nVulnerability,A weakness that can be exploited by a threat') + '">' + esc(st.csv) + '</textarea>' +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><label class="btn ghost sm" style="cursor:pointer;">Upload CSV<input type="file" id="csvFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label>' + (JP ? '<a class="btn ghost sm" href="jeopardy-template.csv" download>Jeopardy template (CSV)</a><a class="btn ghost sm" href="../tools/index.html#jeopardy-ai">AI question builder</a>' : G.t === "qa" ? tplQ + tplV : tplV + tplQ) + '</div></div>' +
           '<div id="csvInfo" style="font-size:14px;color:var(--muted);"></div>' +
-          '<div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border);padding-top:12px;">' + (G.t === "qa" ? fmtQ + fmtV : fmtV + fmtQ) +
+          '<div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border);padding-top:12px;">' + (JP ? fmtJ : G.t === "qa" ? fmtQ + fmtV : fmtV + fmtQ) +
             '<div style="color:var(--dim);">Open a template in Google Sheets with File \u2192 Import. Questions stay in this browser and are never uploaded.</div></div></div>' +
         '<div class="card" style="display:flex;flex-direction:column;gap:20px;"><div class="lbl" style="color:var(--gold);">3 \u00b7 Options</div>' +
-          (st.mode === "battle" ? sec("Team theme", chips("theme", Object.keys(THEMES).map(function(k){ return [k, THEMES[k].name]; }), st.theme) +
+          (TM() ? sec("Team theme", chips("theme", Object.keys(THEMES).map(function(k){ return [k, THEMES[k].name]; }), st.theme) +
             '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + teamNames().map(function(nm, i){ return '<span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;border:2px solid ' + tc(i) + ';color:' + tc(i) + ';' + (i >= st.teams ? 'opacity:.35;' : '') + '">' + esc(nm) + '</span>'; }).join("") + '</div>',
             "Sets the team names and colours. Students see the same teams.") : '') +
-          sec("Vocab hints", '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + TYPES.map(function(x){ return '<button type="button" class="chip" data-act="type" data-v="' + x[0] + '" aria-pressed="' + !!st.types[x[0]] + '">' + x[1] + '</button>'; }).join("") + '</div>',
-            "For vocab rows, each question uses one ticked hint at random. <b>Shift</b>: letters moved forward in the alphabet. <b>Scramble</b>: letters mixed up. <b>Reveal</b>: blanks that fill in over time. <b>Word bank</b>: pick from 4 terms. Untick all and students type the term with no hint. Q&amp;A rows ignore this: multiple choice shows its own choices and free response is typed.") +
+          (JP ? "" : sec("Vocab hints", '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + TYPES.map(function(x){ return '<button type="button" class="chip" data-act="type" data-v="' + x[0] + '" aria-pressed="' + !!st.types[x[0]] + '">' + x[1] + '</button>'; }).join("") + '</div>',
+            "For vocab rows, each question uses one ticked hint at random. <b>Shift</b>: letters moved forward in the alphabet. <b>Scramble</b>: letters mixed up. <b>Reveal</b>: blanks that fill in over time. <b>Word bank</b>: pick from 4 terms. Untick all and students type the term with no hint. Q&amp;A rows ignore this: multiple choice shows its own choices and free response is typed.")) +
           (st.mode === "rush"
-            ? sec("Questions", chips("rcount", [[10,"10"],[15,"15"],[20,"20"],[30,"30"]], st.rcount || 10)) + sec("Pace", chips("rpace", [["timed","Timed"],["teacher","Teacher-paced"],["auto","Auto-advance"]], st.rpace || "timed"), (st.rpace || "timed") === "teacher" ? "No timer. Students answer until you press <b>Show answer</b>, then <b>Next</b> when the class is done discussing. Faster answers still score more." : (st.rpace || "timed") === "auto" ? "Each question ends on its timer (or when everyone answers); the next one starts 8 seconds after the answer shows." : "Each question ends on its timer or when everyone answers. You press <b>Next</b> after the leaderboard, so you can stop and discuss.") + sec("Time per question", chips("rtime", [[10,"10 s"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.rtime || 20), "Used when a row has no time. Add a <b>Time</b> column (seconds, 5\u2013300) to your sheet to give each question its own time, and a <b>Double</b> column (yes) to make a question worth \u00d72." + ((st.rpace || "timed") === "teacher" ? " In Teacher-paced mode it only sets how fast an answer has to be for full points." : ""))
+            ? sec("Questions", chips("rcount", [[10,"10"],[15,"15"],[20,"20"],[30,"30"],[0,"ALL questions"]], st.rcount == null ? 10 : st.rcount), st.rcount === 0 ? "Plays every question in the file, in random order. Press <b>End now</b> whenever you\u2019re ready to stop; the podium shows the scores so far." : "") + sec("Pace", chips("rpace", [["timed","Timed"],["teacher","Teacher-paced"],["auto","Auto-advance"]], st.rpace || "timed"), (st.rpace || "timed") === "teacher" ? "No timer. Students answer until you press <b>Show answer</b>, then <b>Next</b> when the class is done discussing. Faster answers still score more." : (st.rpace || "timed") === "auto" ? "Each question ends on its timer (or when everyone answers); the next one starts 8 seconds after the answer shows." : "Each question ends on its timer or when everyone answers. You press <b>Next</b> after the leaderboard, so you can stop and discuss.") + sec("Time per question", chips("rtime", [[10,"10 s"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.rtime || 20), "Used when a row has no time. Add a <b>Time</b> column (seconds, 5\u2013300) to your sheet to give each question its own time, and a <b>Double</b> column (yes) to make a question worth \u00d72." + ((st.rpace || "timed") === "teacher" ? " In Teacher-paced mode it only sets how fast an answer has to be for full points." : ""))
+            : JP
+            ? sec("Teams", chips("teams", [[2,"2"],[3,"3"],[4,"4"],[5,"5"],[6,"6"]], st.teams)) + sec("Team assignment", chips("assign", [["random","Random"],["manual","I\u2019ll assign"]], st.assign)) +
+              sec("Board theme", chips("jtheme", [["lion","Lion Pride (green & white)"],["classic","Classic TV"]], st.jtheme || "lion")) +
+              sec("Time per clue", chips("jtime", [[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.jtime || 30), "Ends early once everyone has it right. Wrong answers cost nothing, so everyone keeps trying.") +
+              sec("Daily Doubles", chips("jdd", [[0,"None"],[1,"1"],[2,"2"]], st.jdd == null ? 1 : st.jdd), "Hidden at random (never in the top row). Everyone still answers; the picking team\u2019s correct players earn double.") +
+              sec("Values", chips("jmult", [[1,"$100\u2013$500"],[2,"$200\u2013$1,000"]], st.jmult || 1))
             : st.mode === "battle"
             ? sec("Teams", chips("teams", [[2,"2"],[3,"3"],[4,"4"],[5,"5"],[6,"6"]], st.teams)) + sec("Team assignment", chips("assign", [["random","Random"],["manual","I\u2019ll assign"]], st.assign)) + sec("Length", chips("minutes", MINS.map(function(m){ return [m, m + " min"]; }), st.minutes))
             : sec("Match format", chips("format", FORMATS, st.format), st.format === "sd" ? "5 questions, most correct wins. Ties go to overtime: next point wins." : "Each game is a 4-hit knockout. First to " + need() + " games wins the match.")) +
-          (st.mode === "rush" ? "" : sec("Time per question", chips("qtime", QT, st.qtime))) +
-          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><button class="btn" data-act="lobby" disabled>Open lobby \u2192</button><a class="btn ghost sm" href="?preview=1" target="_blank" rel="noopener">Preview as a student \u2197</a></div></div>' +
+          (st.mode === "rush" || JP ? "" : sec("Time per question", chips("qtime", QT, st.qtime))) +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><button class="btn" data-act="lobby" disabled>Open lobby \u2192</button>' + (JP ? '' : '<a class="btn ghost sm" href="?preview=1" target="_blank" rel="noopener">Preview as a student \u2197</a>') + '</div></div>' +
       '</div>';
     }
     function pchip(p, clickable){
-      var col = S.setup.mode === "battle" ? tc(p.team) : "var(--gold)";
+      var col = TM() ? tc(p.team) : "var(--gold)";
       return '<span style="display:inline-flex;gap:2px;align-items:center;' + (clickable ? 'cursor:grab;' : '') + '"' + (clickable ? ' draggable="true" data-drag="' + esc(p.id) + '"' : '') + '><button type="button" class="pchip" ' + (clickable ? 'draggable="true" data-act="pteam" data-v="' + esc(p.id) + '" title="Drag to another team, or click to move to the next team"' : 'disabled style="cursor:default;"') + ' style="color:' + col + ';' + (p.up ? '' : 'opacity:.45;') + '">' + esc(p.name) + (p.up ? '' : ' \u00b7 away') + '</button>' +
         '<button type="button" data-act="kick" data-v="' + esc(p.id) + '" aria-label="Remove ' + esc(p.name) + '" style="background:none;border:0;color:var(--dim);cursor:pointer;min-width:32px;min-height:40px;font-size:16px;">\u00d7</button></span>';
     }
@@ -795,17 +946,17 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function drawLobby(){
       var st = S.setup, ps = list().filter(function(p){ return !p.left; }), ups = upList(), z = teamSizes();
       var upTeams = {}; ups.forEach(function(p){ if (p.team != null) upTeams[p.team] = 1; });
-      var ready = st.mode === "rush" ? ups.length >= 1 : ups.length >= 2 && (st.mode !== "battle" || Object.keys(upTeams).length >= 2);
-      var summary = (st.mode === "rush" ? "Roar Rush \u00b7 " + Math.min(st.rcount || 10, S.rows.length) + " questions \u00b7 " + ((st.rpace || "timed") === "teacher" ? "teacher-paced" : (st.rtime || 20) + " s each" + ((st.rpace || "timed") === "auto" ? " \u00b7 auto-advance" : "")) : st.mode === "battle" ? "Class Battle \u00b7 " + st.teams + " teams \u00b7 " + st.minutes + " min" : "King of the Pride \u00b7 " + FORMATS.filter(function(f){ return f[0] === st.format; })[0][1]) + (st.mode === "rush" ? "" : " \u00b7 " + S.rows.length + " questions \u00b7 " + (st.qtime ? st.qtime + " s per question" : "no time limit"));
-      var players = st.mode === "battle"
+      var ready = st.mode === "rush" || st.mode === "jteam" ? ups.length >= 1 : ups.length >= 2 && (!TM() || Object.keys(upTeams).length >= 2);
+      var summary = (st.mode === "jteam" ? (function(){ var jb = parseBoard(st.csv) || { cats: [], clues: 0 }; return "Team Jeopardy \u00b7 " + st.teams + " teams \u00b7 " + jb.cats.length + " categories \u00b7 " + jb.clues + " clues \u00b7 " + (st.jtime || 30) + " s per clue"; })() : st.mode === "rush" ? "Roar Rush \u00b7 " + (st.rcount === 0 ? "all " + S.rows.length : Math.min(st.rcount || 10, S.rows.length)) + " questions \u00b7 " + ((st.rpace || "timed") === "teacher" ? "teacher-paced" : (st.rtime || 20) + " s each" + ((st.rpace || "timed") === "auto" ? " \u00b7 auto-advance" : "")) : st.mode === "battle" ? "Class Battle \u00b7 " + st.teams + " teams \u00b7 " + st.minutes + " min" : "King of the Pride \u00b7 " + FORMATS.filter(function(f){ return f[0] === st.format; })[0][1]) + (st.mode === "rush" || st.mode === "jteam" ? "" : " \u00b7 " + S.rows.length + " questions \u00b7 " + (st.qtime ? st.qtime + " s per question" : "no time limit"));
+      var players = TM()
         ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">' + z.map(function(n, i){ return '<div data-drop="' + i + '" aria-label="' + teamNames()[i] + ' drop zone" style="min-height:96px;transition:background .15s;border:2px solid ' + tc(i) + ';border-radius:14px;padding:12px;"><div style="font-weight:800;color:' + tc(i) + ';margin-bottom:8px;">' + teamNames()[i] + ' \u00b7 ' + n + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.filter(function(p){ return p.team === i; }).map(function(p){ return pchip(p, true); }).join("") + '</div></div>'; }).join("") + '</div>'
         : '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.map(function(p){ return pchip(p, false); }).join("") + '</div>';
       return codeCard() +
         '<div class="card" style="margin-top:16px;display:flex;flex-direction:column;gap:14px;">' +
           '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><h2 style="margin:0;color:var(--bright);font-size:22px;flex:1;min-width:200px;"><span id="hCount">' + ups.length + '</span> player' + (ups.length === 1 ? '' : 's') + ' in the den' + routeNote() + '</h2>' +
-            (st.mode === "battle" ? '<button class="btn ghost sm" data-act="shuffle">Shuffle teams</button>' : '') + sndBtns() + '<a class="btn ghost sm" href="?preview=1" target="_blank" rel="noopener">Preview \u2197</a><button class="btn ghost sm" data-act="setup">\u2190 Back to setup</button>' +
+            (TM() ? '<button class="btn ghost sm" data-act="shuffle">Shuffle teams</button>' : '') + sndBtns() + '<a class="btn ghost sm" href="?preview=1" target="_blank" rel="noopener">Preview \u2197</a><button class="btn ghost sm" data-act="setup">\u2190 Back to setup</button>' +
             '<button class="btn" data-act="start"' + (ready ? '' : ' disabled') + '>Start (5 s countdown)</button></div>' +
-          '<div class="mono" style="font-size:13px;color:var(--dim);">' + esc(summary) + (st.mode === "battle" ? ' \u00b7 drag a name to another team (or click it) \u00b7 Shuffle uses online players only' : '') + '</div>' +
+          '<div class="mono" style="font-size:13px;color:var(--dim);">' + esc(summary) + (TM() ? ' \u00b7 drag a name to another team (or click it) \u00b7 Shuffle uses online players only' : '') + '</div>' +
           (ps.length ? players : '<p style="margin:0;color:var(--dim);">Waiting for the first lion\u2026</p>') +
           (!ready && ups.length ? '<div style="color:var(--warn);font-size:14px;">' + (ups.length < 2 ? "Need at least 2 players." : "Need players on at least 2 teams.") + '</div>' : '') +
         '</div>';
@@ -879,8 +1030,41 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           '<div style="margin-top:auto;padding-top:10px;"><button class="btn" data-act="rnext">' + (last ? "Final results \u2192" : "Next question \u2192") + '</button>' + (rushPace() === "auto" ? '<span class="mono" style="margin-left:12px;font-size:14px;color:var(--dim);">auto in 8 s</span>' : '') + (!last ? '<button class="btn ghost sm" data-act="rx2" aria-pressed="' + !!R0.nx2 + '" style="margin-left:10px;">' + (R0.nx2 ? 'Next is DOUBLE \u2713' : 'Make next \u00d72') + '</button>' : '') + '</div></div>' +
         '<div class="card" style="padding:20px;"><div class="lbl" style="margin-bottom:10px;">Leaderboard</div><div style="display:flex;flex-direction:column;gap:6px;">' + (top.length ? boardRows(top, true) : '<p style="color:var(--dim);margin:0;">No players yet.</p>') + '</div></div></div>';
     }
+    function jScores(){
+      var J = S.jp, ts = jTeams();
+      return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">' + ts.map(function(x, r){ var dl = J && J.phase === "rev" ? (J.dl[x.i] || 0) : 0, pk = J && J.pick === x.i && J.phase !== "rev";
+        return '<div class="prAnim" style="flex:1;min-width:150px;border-radius:14px;padding:12px 14px;background:var(--panel);border:3px solid ' + tc(x.i) + ';' + (pk ? 'box-shadow:0 0 24px -6px ' + tc(x.i) + ';' : '') + (dl ? '--dy:' + (dl * 30) + 'px;animation:prSlide .8s cubic-bezier(.2,.8,.2,1) both;' : '') + '">' +
+          '<div style="display:flex;gap:8px;align-items:baseline;"><span class="mono" style="color:var(--dim);font-weight:800;">#' + (r + 1) + '</span><b style="flex:1;color:' + tc(x.i) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(teamNames()[x.i]) + '</b>' + (dl ? '<span class="mono" style="font-size:13px;font-weight:800;color:' + (dl > 0 ? 'var(--ok)' : 'var(--bad)') + ';">' + (dl > 0 ? '\u25b2' : '\u25bc') + Math.abs(dl) + '</span>' : '') + (pk ? '<span class="mono" style="font-size:11px;font-weight:800;color:' + tc(x.i) + ';">PICKING</span>' : '') + '</div>' +
+          '<div class="mono" style="font-size:clamp(26px,2.8vw,38px);font-weight:800;color:var(--bright);line-height:1.1;">$' + x.avg.toLocaleString() + '</div><div class="mono" style="font-size:12px;color:var(--dim);">per player \u00b7 ' + x.n + ' player' + (x.n === 1 ? '' : 's') + ' \u00b7 $' + x.cash.toLocaleString() + ' total</div></div>'; }).join("") + '</div>';
+    }
+    function drawJp(t){
+      var J = S.jp, b = J.b, head = '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:200px;"><div><div class="lbl">Team Jeopardy \u00b7 code ' + S.code + '</div><div class="disp" style="font-size:clamp(24px,3.4vw,36px);font-weight:800;color:var(--gold);line-height:1.1;">' + jLeft() + ' of ' + b.clues + ' clues left</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>';
+      if (J.phase === "pick") {
+        return head + '<div class="card" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px;border:3px solid ' + tc(J.pick) + ';"><div class="disp" style="flex:1;font-size:clamp(24px,3vw,38px);font-weight:800;color:' + tc(J.pick) + ';">' + esc(teamNames()[J.pick]) + ' picks!</div><span style="color:var(--muted);">First tap on a ' + esc(teamNames()[J.pick]) + ' device counts \u00b7 random pick in</span><span id="hJT" class="mono" style="font-size:34px;font-weight:800;color:var(--bright);min-width:48px;text-align:right;"></span></div>' +
+          '<div class="jboard" style="grid-template-columns:repeat(' + b.cats.length + ',minmax(0,1fr));">' + b.cats.map(function(c){ return '<div class="jcat">' + esc(c) + '</div>'; }).join("") +
+          b.levels.map(function(Lv, li){ return Lv.map(function(x, c){ var k = li + ":" + c, off = !x.q || !x.a || J.used[k]; return '<button type="button" class="jtile" data-act="jtile" data-v="' + k + '"' + (off ? ' disabled aria-label="Used"' : ' aria-label="' + esc(b.cats[c]) + ' for $' + jVal(li) + '"') + '>$' + jVal(li) + '</button>'; }).join(""); }).join("") + '</div>' + jScores();
+      }
+      var x = b.levels[J.li][J.c], ps = upList().filter(function(p){ return p.team != null; }), got = ps.filter(function(p){ var A = J.ans[p.id]; return A && A.ok; }).length;
+      var cap = '<div class="mono" style="font-size:clamp(14px,1.6vw,20px);letter-spacing:2px;font-weight:800;">' + esc(b.cats[J.c].toUpperCase()) + ' \u00b7 $' + jVal(J.li) + '</div>' +
+        (J.dd ? '<div class="disp ddIn" style="font-size:clamp(34px,5vw,64px);font-weight:800;color:var(--jb-val);line-height:1;">DAILY DOUBLE!</div><div class="mono" style="font-size:16px;">' + esc(teamNames()[J.pick]) + ' earns \u00d72 \u00b7 everyone answers</div>' : '');
+      if (J.phase === "q") return head + '<div class="jclue">' + cap +
+          '<div style="display:flex;align-items:center;gap:14px;width:100%;"><div style="flex:1;height:10px;border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden;"><div id="hJB" style="height:100%;width:100%;background:var(--jb-val);"></div></div><span id="hJT" class="mono" style="display:inline-block;font-size:34px;font-weight:800;color:var(--jb-val);min-width:56px;text-align:right;"></span></div>' +
+          jClue(x.q) + '<div aria-hidden="true">' + jMask(x.a) + '</div>' +
+          '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span style="display:inline-flex;align-items:baseline;gap:8px;"><span id="hCnt" class="mono" style="display:inline-block;font-size:48px;font-weight:800;line-height:1;">' + Object.keys(J.ans).length + '</span><span class="mono" style="font-size:18px;">/ ' + ps.length + ' answered</span></span><button class="btn ghost sm" data-act="jnow" style="color:var(--jb-text);border-color:var(--jb-text);">Show answer now</button></div></div>' + jScores();
+      var per = []; for (var i = 0; i < S.setup.teams; i++) { var tp = ps.filter(function(p){ return p.team === i; }); if (!tp.length) continue; var ok = tp.filter(function(p){ var A = J.ans[p.id]; return A && A.ok; }).length; per.push({ i: i, ok: ok, n: tp.length }); }
+      return head + '<div class="jclue">' + cap + jClue(x.q) + '<div class="ja">' + esc(x.a) + '</div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:760px;">' + per.map(function(r){ var pc = Math.round(r.ok / r.n * 100); return '<div style="display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 120px;gap:10px;align-items:center;text-align:left;"><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(teamNames()[r.i]) + '</b><div style="height:16px;border-radius:8px;background:rgba(0,0,0,.3);overflow:hidden;"><div style="height:100%;width:' + pc + '%;background:' + tc(r.i) + ';"></div></div><span class="mono" style="font-weight:800;">' + r.ok + '/' + r.n + ' \u00b7 ' + pc + '%</span></div>'; }).join("") + '</div>' +
+          '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;"><span class="mono" style="font-size:18px;">' + got + ' of ' + ps.length + ' got it</span><button class="btn" data-act="jnext" style="background:var(--jb-text);border-color:var(--jb-text);color:var(--jb-clue);">' + (jLeft() ? 'Next pick \u2192' : 'Final results \u2192') + '</button><span class="mono" style="font-size:14px;">auto in 9 s</span></div></div>' + jScores();
+    }
     function drawDone(){
       var body;
+      if (S.setup.mode === "jteam" && S.jp) {
+        var jt = jTeams(), pod = jt.slice(0, 3), H = [150, 110, 80], order = [1, 0, 2], mvp = list().filter(function(p){ return p.jcash; }).sort(function(a, b){ return (b.jcash || 0) - (a.jcash || 0); }).slice(0, 3);
+        body = '<div class="lbl">Team Jeopardy \u00b7 final results</div>' +
+          '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:18px 0 22px;flex-wrap:wrap;">' + order.filter(function(i){ return pod[i]; }).map(function(i){ var x = pod[i];
+            return '<div class="prAnim" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:160px;opacity:0;animation:prRise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.6, 1.4, .4][i] + 's;"><div style="font-weight:800;color:' + tc(x.i) + ';font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(teamNames()[x.i]) + '</div><div class="mono" style="color:var(--bright);font-weight:800;">$' + x.avg.toLocaleString() + ' per player</div><div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : 'var(--btn)') + ';border:3px solid ' + tc(x.i) + ';display:flex;justify-content:center;padding-top:10px;"><span class="disp" style="font-size:40px;font-weight:800;color:' + (i ? 'var(--gold)' : 'var(--btnText)') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' +
+          (mvp.length ? '<div class="prAnim" style="opacity:0;animation:prRise .6s ease forwards;animation-delay:3.4s;"><div class="lbl" style="margin-bottom:8px;">Top earners</div><div style="display:flex;gap:10px;flex-wrap:wrap;">' + mvp.map(function(p, i){ return '<div style="padding:10px 14px;border-radius:12px;border:2px solid ' + tc(p.team) + ';background:var(--panel2);"><span class="mono" style="color:var(--dim);">' + (i + 1) + '</span> <b style="color:' + tc(p.team) + ';">' + esc(p.name) + '</b> <span class="mono" style="color:var(--bright);">$' + (p.jcash || 0).toLocaleString() + '</span></div>'; }).join("") + '</div></div>' : '');
+      } else
       if (S.setup.mode === "rush") {
         var B = rushBoard(), pod = B.slice(0, 3), H = [150, 110, 80], order = [1, 0, 2];
         body = '<div class="lbl">Roar Rush \u00b7 final results</div>' +
@@ -1052,6 +1236,23 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
         if (hid.length > 1) { var j = hid[rnd(hid.length)], d = ansText(PV.rows[PV.i]); V.f.pz = V.f.pz.slice(0, j) + d[j] + V.f.pz.slice(j + 1); previewDraw(); }
       }, 3000);
     }
+    function jView(){
+      if (V.jt) document.documentElement.setAttribute("data-jt", V.jt === "classic" ? "classic" : "lion");
+      var bar = '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;height:6px;border-radius:3px;background:rgba(0,0,0,.3);overflow:hidden;"><div id="sBar" style="height:100%;background:var(--jb-val);width:100%;"></div></div><span class="mono" id="sLeft" style="font-size:13px;min-width:40px;text-align:right;"></span></div>';
+      var tline = '<div class="mono" style="font-size:13px;color:var(--dim);margin-bottom:10px;">Team Jeopardy \u00b7 your team $' + (V.tavg || 0).toLocaleString() + ' per player \u00b7 #' + V.trank + ' of ' + V.tof + ' \u00b7 you\u2019ve earned $' + (V.cash || 0).toLocaleString() + '</div>';
+      if (V.s === "jpick") {
+        if (!V.mine || !V.board) return tline + big(esc(V.pickT) + " is picking\u2026", "Get ready to answer. Everyone answers every clue.", tc(V.pickC));
+        return tline + '<div class="card" style="display:flex;flex-direction:column;gap:12px;border:3px solid ' + tc(V.pickC) + ';"><div class="disp" style="font-size:26px;font-weight:800;color:' + tc(V.pickC) + ';">Your team picks!</div><div style="color:var(--muted);">First tap on your team counts.</div>' + bar.replace("var(--jb-val)", tc(V.pickC)) +
+          '<div class="jboard" style="grid-template-columns:repeat(' + V.board.cats.length + ',minmax(0,1fr));">' + V.board.cats.map(function(c){ return '<div class="jcat" style="min-height:44px;font-size:11px;padding:4px;">' + esc(c) + '</div>'; }).join("") +
+          V.board.rows.map(function(r, li){ return r.map(function(v, c){ return '<button type="button" class="jtile" data-jk="' + li + ':' + c + '" style="min-height:48px;font-size:18px;"' + (v ? ' aria-label="' + esc(V.board.cats[c]) + ' for $' + v + '"' : ' disabled aria-label="Used"') + '>$' + (v || 0) + '</button>'; }).join(""); }).join("") + '</div></div>';
+      }
+      var cap = '<div class="mono" style="font-size:13px;letter-spacing:2px;font-weight:800;">' + esc(String(V.cat || "").toUpperCase()) + ' \u00b7 $' + V.val + '</div>' + (V.dd ? '<div class="mono" style="font-size:13px;font-weight:800;padding:5px 12px;border-radius:999px;background:var(--jb-val);color:var(--jb-clue);">DAILY DOUBLE \u00b7 ' + (V.pickC === V.team ? "your team earns \u00d72" : esc(V.pickT) + " earns \u00d72") + '</div>' : '');
+      if (V.s === "jr") return tline + big(V.ok ? "Correct! +$" + V.pts : "The answer was " + esc(V.a), "Your team: <b style=\"color:var(--bright);\">$" + (V.tavg || 0).toLocaleString() + "</b> per player \u00b7 #" + V.trank + " of " + V.tof + ".", V.ok ? "var(--ok)" : "var(--gold)");
+      if (V.ok) return tline + big("Locked in! +$" + V.pts, "Waiting for the others\u2026", "var(--ok)");
+      return tline + '<div class="jclue" style="gap:14px;">' + cap + bar + jClue(V.q).replace('class="jq"', 'class="jq" style="font-size:clamp(20px,5vw,34px);"') + '<div aria-label="Answer length">' + V.mask + '</div>' +
+        '<form id="sForm" style="display:flex;gap:10px;flex-wrap:wrap;width:100%;"><input class="ans" id="sAns" data-n="' + V.f.n + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" placeholder="Type the answer" style="flex:1;min-width:200px;"><button class="btn" type="submit" style="background:var(--jb-text);border-color:var(--jb-text);color:var(--jb-clue);">Answer</button></form>' +
+        '<div class="mono" style="font-size:12px;">Wrong answers cost nothing \u00b7 keep trying</div></div>';
+    }
     function submit(text){ if (PREV) return previewCheck(text); if (!V || !V.f || !conn || !conn.open) return; conn.send({ k: "ans", n: V.f.n, a: text }); }
     function me(){ return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:200px;">' + (ROUTE ? '<span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--dim);" title="How this device is connected">\u25CF ' + (ROUTE === "relay" ? "RELAY" : "DIRECT") + '</span>' : '') + '<span class="lbl">You are</span><b style="color:' + (V.tn ? tc(V.team) : "var(--gold)") + ';font-size:18px;">' + esc(V.name) + '</b>' + (V.tn ? '<span class="mono" style="font-size:13px;color:' + tc(V.team) + ';">' + esc(V.tn) + '</span>' : '') + (V.mode === "rush" && V.score != null ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.score.toLocaleString() + ' pts</span>' : V.ko ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.ko + ' KO' + (V.ko === 1 ? '' : 's') + '</span>' : '') + '<button type="button" id="sLeave" class="chip" style="min-height:40px;padding:4px 12px;font-size:12px;' + (V.ko ? '' : 'margin-left:auto;') + '">LEAVE GAME</button>' + (window.KO_FX ? '<button type="button" id="sSnd" class="chip" aria-pressed="' + KO_FX.soundOn() + '" style="min-height:40px;padding:4px 12px;font-size:12px;">' + (KO_FX.soundOn() ? 'SOUND ON' : 'SOUND OFF') + '</button>' : '') + '</div>'; }
     function big(title, sub, col){ return '<div class="card" style="text-align:center;padding:40px 22px;border:2px solid ' + (col || "var(--gold)") + ';"><div class="disp" style="font-size:clamp(28px,6vw,46px);font-weight:800;color:' + (col || "var(--gold)") + ';line-height:1.15;">' + title + '</div>' + (sub ? '<p style="color:var(--muted);font-size:17px;margin:14px 0 0;">' + sub + '</p>' : '') + '</div>'; }
@@ -1064,6 +1265,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           KO_FX.blast({ el: kel, name: kv.won ? kv.opp : V.name, big: kv.sd ? (kv.won ? "WIN!" : "LOST") : "K.O.!", color: kv.won ? "#00934a" : "#d93a2b",
             sub: kv.sd ? (kv.won ? "You beat " + kv.opp : kv.opp + " wins") : kv.won ? "You knocked out " + kv.opp : kv.opp + " got the KO", say: kv.sd ? (kv.won ? "You win!" : "Match over") : "K. O.!" });
         }
+        if (V.s === "jq" && V.ok && lastSettled !== "j" + V.f.n) { lastSettled = "j" + V.f.n; KO_FX.sfx("hit"); sFlash("var(--ok)", "+$" + V.pts); }
         if (V.s === "rushq" && V.ok && lastSettled !== "r" + V.qi) { lastSettled = "r" + V.qi; KO_FX.sfx("hit"); sFlash("var(--ok)", "+" + V.pts); }
         if (V.f && V.f.last && V.f.n !== lastSettled) { lastSettled = V.f.n; if (V.f.last.by === "me") KO_FX.sfx("hit"); }
       }
@@ -1077,11 +1279,13 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       else if (V.s === "rest") h = big(esc(V.msg), "");
       else if (V.s === "pool") h = big("Rematch pool", (V.late ? "The bracket started before you joined, " : "You\u2019re out of the bracket, ") + "but you can keep playing for fun. Waiting for another player\u2026");
       else if (V.s === "done") {
-        if (V.mode === "rush") h = big(V.place === 1 ? "You won!" : esc(V.champ) + " wins!", "You finished <b style=\"color:var(--bright);\">#" + V.place + "</b> of " + V.of + " with <b style=\"color:var(--bright);\">" + (V.score || 0).toLocaleString() + "</b> points.");
+        if (V.mode === "jteam") h = big(esc(V.win) + " wins!", "Your team finished <b style=\"color:var(--bright);\">#" + V.place + "</b>. You earned <b style=\"color:var(--bright);\">$" + (V.cash || 0).toLocaleString() + "</b> for your team. Nice work, " + esc(V.name) + ".");
+        else if (V.mode === "rush") h = big(V.place === 1 ? "You won!" : esc(V.champ) + " wins!", "You finished <b style=\"color:var(--bright);\">#" + V.place + "</b> of " + V.of + " with <b style=\"color:var(--bright);\">" + (V.score || 0).toLocaleString() + "</b> points.");
         else if (V.mode === "battle") h = big(esc(V.win) + " wins!", "Your team finished <b style=\"color:var(--bright);\">#" + V.place + "</b>. You scored <b style=\"color:var(--bright);\">" + V.ko + "</b> KO" + (V.ko === 1 ? "" : "s") + ". Nice work, " + esc(V.name) + ".");
         else h = big(V.champ ? esc(V.champ) + " is King of the Pride!" : "The bracket is over.", V.place ? "You: <b style=\"color:var(--bright);\">" + esc(V.place) + "</b>" : "");
       }
       else if (V.s === "fight") h = fightView(V.f);
+      else if (V.s === "jpick" || V.s === "jq" || V.s === "jr") h = jView();
       else if (V.s === "rushq") {
         var rh = '<div class="mono" style="font-size:13px;color:var(--dim);margin-bottom:10px;">Roar Rush \u00b7 question ' + V.qi + ' of ' + V.total + ' \u00b7 #' + V.place + ' of ' + V.of + (V.streak >= 2 ? ' <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--warn);color:#2a1d00;">STREAK \u00d7' + V.streak + (V.streak >= 3 ? ' \u00b7 +100' : '') + '</span>' : '') + '</div>';
         if (V.x2) rh += '<div class="mono" style="display:inline-block;font-size:13px;font-weight:800;letter-spacing:2px;padding:5px 12px;border-radius:999px;background:var(--warn);color:#2a1d00;margin-bottom:10px;">DOUBLE POINTS \u00d72</div>';
@@ -1133,6 +1337,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
       var lv = document.getElementById("sLeave"); if (lv) lv.onclick = leaveNow;
       var fb = document.getElementById("sFF"); if (fb) fb.onclick = forfeitNow;
       if (f) f.onsubmit = function(e){ e.preventDefault(); if (a && a.value.trim()) submit(a.value); };
+      view.querySelectorAll("[data-jk]").forEach(function(b){ b.onclick = function(){ if (conn && conn.open) { conn.send({ k: "jpick", key: b.getAttribute("data-jk") }); view.querySelectorAll("[data-jk]").forEach(function(x){ x.disabled = true; }); } }; });
       view.querySelectorAll(".bankb").forEach(function(b){ b.onclick = function(){ submit(b.getAttribute("data-t") || b.textContent); }; });
       view.querySelectorAll(".tile").forEach(function(b){ b.onclick = function(){ if (!a) return; a.value += b.textContent; b.disabled = true; used.push(b.getAttribute("data-i")); if (V.f && norm(a.value).length >= V.f.len) submit(a.value); }; });
       var cl = document.getElementById("sClr"); if (cl) cl.onclick = function(){ if (a) { a.value = ""; a.focus(); } used = []; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); };

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="../site.js?v=38.0.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Jeopardy · Mane Event</title>
+<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=38.0.0">
+<link href="../assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
+<style>
+:root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
+  --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
+:root[data-theme="light"]{--bg:#ffffff;--panel:#ffffff;--panel2:#f1faf4;--border:#cfe8d9;--border3:#00934a;--text:#123322;--bright:#062014;--muted:#2c4d3a;--dim:#4a6b58;--gold:#007a3d;--btn:#007a3d;--btnText:#ffffff;--ok:#007a3d;--warn:#8a5300;--bad:#b3261e;
+  --t0:#8a6300;--t1:#b3261e;--t2:#1f5fa8;--t3:#4f7000;--t4:#6b3fb5;--t5:#4d4d4d;}
+/* board themes */
+:root{--jb-bg:#00934a;--jb-tile:#00843f;--jb-tileHi:#00a352;--jb-edge:#ffffff;--jb-val:#ffffff;--jb-cat:#ffffff;--jb-clue:#00843f;--jb-text:#ffffff;--jb-gap:#ffffff;--jb-used:#005a2c;--jb-font:'Bricolage Grotesque',sans-serif;}
+:root[data-jt="classic"]{--jb-bg:#000000;--jb-tile:#060ce9;--jb-tileHi:#2a31ff;--jb-edge:#000000;--jb-val:#ffcc00;--jb-cat:#ffffff;--jb-clue:#060ce9;--jb-text:#ffffff;--jb-gap:#000000;--jb-used:#030766;--jb-font:'Libre Caslon Text',Georgia,serif;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);line-height:1.5;}
+a{color:var(--gold);} a:hover{color:var(--bright);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.disp{font-family:'Bricolage Grotesque',sans-serif;}
+.wrap{max-width:1400px;margin:0 auto;padding:24px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:22px;}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;min-height:44px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--gold);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:800;min-height:52px;padding:12px 22px;border-radius:12px;border:2px solid var(--btn);background:var(--btn);color:var(--btnText);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;}
+.btn:hover{color:var(--btnText);filter:brightness(1.08);}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.btn.sm{min-height:44px;font-size:13px;padding:8px 14px;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;min-height:44px;padding:8px 14px;border-radius:999px;border:2px solid var(--border3);background:transparent;color:var(--text);cursor:pointer;}
+.chip[aria-pressed="true"]{background:var(--btn);border-color:var(--btn);color:var(--btnText);}
+.in{min-height:44px;border-radius:12px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);font:15px 'Inter',sans-serif;padding:8px 12px;}
+textarea.in{width:100%;font:14px/1.5 'JetBrains Mono',monospace;}
+/* board */
+.jboard{display:grid;gap:8px;padding:8px;background:var(--jb-gap);border-radius:14px;}
+.jcat,.jtile{display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;}
+.jcat{background:var(--jb-tile);color:var(--jb-cat);font:800 clamp(14px,1.7vw,24px)/1.15 var(--jb-font);text-transform:uppercase;padding:14px 8px;min-height:84px;text-wrap:balance;letter-spacing:.5px;text-shadow:2px 2px 0 rgba(0,0,0,.35);}
+.jtile{background:var(--jb-tile);color:var(--jb-val);font:800 clamp(26px,3.6vw,54px)/1 var(--jb-font);min-height:clamp(64px,10vh,110px);border:0;cursor:pointer;text-shadow:3px 3px 0 rgba(0,0,0,.45);transition:transform .12s, background .12s;}
+.jtile:hover:not(:disabled),.jtile:focus-visible{background:var(--jb-tileHi);transform:scale(1.03);outline:3px solid var(--jb-val);outline-offset:-3px;}
+.jtile:disabled{background:var(--jb-used);color:transparent;text-shadow:none;cursor:default;}
+.jteam{flex:1;min-width:150px;border-radius:14px;padding:12px 14px;background:var(--panel);border:3px solid var(--c);display:flex;flex-direction:column;gap:6px;}
+.jteam .nm{font-weight:800;color:var(--c);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.jteam .sc{font:800 clamp(28px,3vw,42px)/1 'JetBrains Mono',monospace;color:var(--bright);}
+.jteam .sc.neg{color:var(--bad);}
+.adj{font:800 13px 'JetBrains Mono',monospace;min-width:44px;min-height:36px;border-radius:9px;border:1px solid var(--border3);background:transparent;color:var(--text);cursor:pointer;}
+/* clue */
+#clue{position:fixed;inset:0;z-index:9000;background:var(--jb-clue);color:var(--jb-text);display:flex;flex-direction:column;padding:clamp(18px,3vw,40px);gap:18px;}
+#clue .ctext{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px;font:700 clamp(28px,4.4vw,68px)/1.2 var(--jb-font);text-transform:uppercase;text-wrap:balance;text-shadow:3px 3px 0 rgba(0,0,0,.4);white-space:pre-line;}
+#clue .ctext img{max-width:min(100%,900px);max-height:48vh;border-radius:12px;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.4);}
+#clue .ans{font:800 clamp(24px,3.4vw,50px)/1.2 var(--jb-font);color:var(--jb-val);text-transform:uppercase;text-shadow:3px 3px 0 rgba(0,0,0,.4);}
+#clue .cbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+#clue .cbtn{font:800 15px 'JetBrains Mono',monospace;min-height:52px;padding:10px 18px;border-radius:12px;border:2px solid var(--jb-text);background:transparent;color:var(--jb-text);cursor:pointer;}
+#clue .cbtn.pri{background:var(--jb-text);color:var(--jb-clue);}
+#clue .tbtn{font:800 15px 'Inter',sans-serif;min-height:52px;padding:8px 14px;border-radius:12px;border:3px solid var(--c);background:rgba(0,0,0,.25);color:#fff;cursor:pointer;display:flex;align-items:center;gap:8px;}
+#clue .tbtn b{font-family:'JetBrains Mono',monospace;}
+#clue .tbtn[aria-pressed="true"]{background:var(--c);color:#111;}
+@keyframes ddIn{0%{transform:scale(.2) rotate(-20deg);opacity:0}60%{transform:scale(1.12) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.dd{animation:ddIn .9s cubic-bezier(.2,1.4,.4,1) both;}
+@keyframes tileZoom{from{transform:scale(.25);opacity:.2}to{transform:none;opacity:1}}
+#clue.zoom{animation:tileZoom .35s ease-out both;}
+@keyframes jPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.jPulse{animation:jPulse .5s ease infinite;}
+@keyframes cfFall{to{transform:translateY(112vh) rotate(760deg)}}
+.cf{position:fixed;top:-24px;width:10px;height:14px;z-index:9400;pointer-events:none;border-radius:2px;animation:cfFall linear forwards;}
+@keyframes rise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+html[data-motion="reduce"] .dd,html[data-motion="reduce"] #clue.zoom,html[data-motion="reduce"] .jPulse,html[data-motion="reduce"] .rise{animation:none!important;opacity:1!important;transform:none!important;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:200px;">
+    <a href="index.html" class="mono" style="font-size:12px;letter-spacing:2px;text-decoration:none;">&larr; MANE EVENT</a>
+    <h1 class="disp" style="margin:0;font-size:clamp(30px,5vw,44px);line-height:1.1;color:var(--bright);">Jeopardy</h1>
+  </div>
+  <div id="view" aria-live="polite"></div>
+</div>
+<script src="../js/ko-fx.js?v=38.0.0"></script>
+<script>
+if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
+  var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
+  r.setAttribute("data-theme", t); try { localStorage.setItem("course-theme", t); } catch (e) {}
+  document.getElementById("themeToggle").textContent = t === "light" ? "DARK" : "LIGHT";
+};
+document.getElementById("themeToggle").textContent = document.documentElement.getAttribute("data-theme") === "light" ? "DARK" : "LIGHT";
+
+(function(){
+  var KEY = "mane-jeopardy", view = document.getElementById("view");
+  var TEAMNAMES = ["Gold Pride", "Crimson Pride", "Azure Pride", "Lime Pride", "Violet Pride", "Silver Pride"];
+  var TC = ["var(--t0)", "var(--t1)", "var(--t2)", "var(--t3)", "var(--t4)", "var(--t5)"];
+  var TCB = ["#ffd34d", "#ffb3b3", "#b9dcff", "#e2ff8f", "#e3c8ff", "#e6e6e6"];   // clue overlay: fixed bright team colours (its background never changes with light/dark)
+  var S = load() || fresh();
+  function fresh(){ return { v: 1, phase: "setup", csv: "", sheet: "", theme: "lion", nteams: 3, names: TEAMNAMES.slice(), dd: 1, mult: 1, ctime: 0, board: null, used: {}, scores: [], hist: [], ddCells: [] }; }
+  function load(){ try { var s = JSON.parse(localStorage.getItem(KEY) || "null"); return s && s.v === 1 ? s : null; } catch (e) { return null; } }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+  function RM(){ return document.documentElement.getAttribute("data-motion") === "reduce"; }
+  function sfx(n){ if (window.KO_FX) KO_FX.sfx(n); }
+  function applyTheme(){ document.documentElement.setAttribute("data-jt", S.theme === "classic" ? "classic" : "lion"); }
+  applyTheme();
+
+  /* ---------- sheet / CSV ---------- */
+  function csvRows(text){
+    var t = String(text || "").replace(/^\uFEFF/, ""), tab = t.indexOf("\t") >= 0 && t.indexOf(",") < 0, rows = [], row = [], f = "", q = false;
+    for (var i = 0; i < t.length; i++) {
+      var c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"' && f === "") q = true;
+      else if (c === (tab ? "\t" : ",")) { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; }
+      else f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows.map(function(r){ return r.map(function(x){ return String(x).replace(/\r\n?/g, "\n").trim(); }); });
+  }
+  // Same layout as the Google Sheets Jeopardy tab: row 1 = categories, then a question row and an answer row
+  // for each value. Column A may hold the game's labels ("Category", "$100 Q", "$100 A" ...) and is skipped.
+  function parseBoard(text){
+    var rows = csvRows(text).filter(function(r){ return r.some(function(x){ return x; }); });
+    if (rows.length < 3) return null;
+    var a = rows.map(function(r){ return r[0] || ""; }), lab = 0;
+    a.slice(0, 7).forEach(function(x){ if (/^(categor|\$?\d{2,4}|q(uestion)?\b|a(nswer)?\b|clue|value|points?)/i.test(x) || /\b(q|a|question|answer)$/i.test(x)) lab++; });
+    if (lab >= 2 || (a[0] === "" && rows[0].length > 1)) rows = rows.map(function(r){ return r.slice(1); });
+    var cats = rows[0].map(function(x){ return x.replace(/\s*\n\s*/g, " "); });
+    var n = 0; cats.forEach(function(c, i){ if (c) n = i + 1; }); n = Math.min(n, 8);
+    if (n < 1) return null;
+    cats = cats.slice(0, n);
+    var levels = [];
+    for (var r = 1; r + 1 < rows.length + 1 && levels.length < 10; r += 2) {
+      var qr = rows[r] || [], ar = rows[r + 1] || [];
+      if (!qr.some(function(x){ return x; })) continue;
+      levels.push(cats.map(function(_, c){ return { q: qr[c] || "", a: ar[c] || "" }; }));
+    }
+    if (!levels.length) return null;
+    var clues = 0; levels.forEach(function(L){ L.forEach(function(x){ if (x.q) clues++; }); });
+    return { cats: cats, levels: levels, clues: clues };
+  }
+  function sheetUrls(u){
+    u = String(u || "").trim(); var g = (u.match(/[#&?]gid=(\d+)/) || [])[1], m = u.match(/\/spreadsheets\/d\/e\/([\w-]+)/);
+    if (m) return ["https://docs.google.com/spreadsheets/d/e/" + m[1] + "/pub?output=csv" + (g ? "&gid=" + g : "")];
+    m = u.match(/\/spreadsheets\/d\/([\w-]+)/); if (!m) return null;
+    var id = m[1], out = [];
+    if (g) out.push("https://docs.google.com/spreadsheets/d/" + id + "/export?format=csv&gid=" + g);
+    out.push("https://docs.google.com/spreadsheets/d/" + id + "/gviz/tq?tqx=out:csv&sheet=Jeopardy");
+    if (!g) out.push("https://docs.google.com/spreadsheets/d/" + id + "/export?format=csv&gid=0");
+    return out;
+  }
+  var MSG = "", MSGC = "var(--dim)";
+  async function importSheet(){
+    var inp = document.getElementById("jSheet"); S.sheet = inp ? inp.value.trim() : S.sheet;
+    var urls = sheetUrls(S.sheet);
+    if (!urls) { MSG = "That doesn\u2019t look like a Google Sheets link. Copy it from the address bar of the sheet."; MSGC = "var(--bad)"; draw(); return; }
+    MSG = "Loading the sheet\u2026"; MSGC = "var(--dim)"; draw();
+    for (var i = 0; i < urls.length; i++) {
+      try {
+        var r = await fetch(urls[i], { cache: "no-store" }), txt = r.ok ? await r.text() : "";
+        if (txt && !/^\s*<(!doctype|html)/i.test(txt)) { var b = parseBoard(txt); if (b && b.clues) { S.csv = txt.slice(0, 200000); MSG = "Imported " + b.cats.length + " categories \u00b7 " + b.clues + " clues."; MSGC = "var(--ok)"; save(); draw(); return; } }
+      } catch (e) {}
+    }
+    MSG = "Couldn\u2019t read the sheet. Share it as \u201cAnyone with the link \u00b7 Viewer\u201d, and copy the link while the Jeopardy tab is open."; MSGC = "var(--bad)"; draw();
+  }
+
+  /* ---------- images in a clue ---------- */
+  var IMG = /(https?:\/\/[^\s"]+?(?:\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?|googleusercontent\.com\/[^\s"]+|drive\.google\.com\/[^\s"]+))/i;
+  function clueHtml(txt){
+    var m = String(txt || "").match(IMG), body = esc(txt || "");
+    if (!m) return '<div>' + body + '</div>';
+    var u = m[1], id = (u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/) || [])[1];
+    if (id) u = "https://drive.google.com/thumbnail?id=" + id + "&sz=w1600";
+    var rest = esc(String(txt).replace(m[1], "").trim());
+    return (rest ? '<div>' + rest + '</div>' : '') + '<img src="' + esc(u) + '" alt="Clue image">';
+  }
+
+  /* ---------- game ---------- */
+  function val(L){ return (L + 1) * 100 * (S.mult || 1); }
+  function startGame(){
+    var b = parseBoard(S.csv); if (!b || !b.clues) return;
+    S.board = b; S.used = {}; S.hist = []; S.scores = []; for (var i = 0; i < S.nteams; i++) S.scores.push(0);
+    var cells = []; b.levels.forEach(function(L, li){ L.forEach(function(x, c){ if (x.q && (li > 0 || b.levels.length < 3)) cells.push(li + ":" + c); }); });
+    for (var k = cells.length - 1; k > 0; k--) { var j = Math.random() * (k + 1) | 0, t = cells[k]; cells[k] = cells[j]; cells[j] = t; }
+    S.ddCells = cells.slice(0, S.dd);
+    S.phase = "board"; save(); draw(); sfx("horn");
+  }
+  function left(){ var n = 0; S.board.levels.forEach(function(L, li){ L.forEach(function(x, c){ if (x.q && !S.used[li + ":" + c]) n++; }); }); return n; }
+  function award(team, pts, label){ S.scores[team] += pts; S.hist.push({ t: team, p: pts, l: label }); save(); }
+  function undo(){ var h = S.hist.pop(); if (!h) return; S.scores[h.t] -= h.p; save(); }
+
+  /* ---------- clue overlay ---------- */
+  var C = null, TT = null;
+  function openClue(li, c){
+    var x = S.board.levels[li][c], key = li + ":" + c;
+    C = { li: li, c: c, key: key, x: x, val: val(li), dd: S.ddCells.indexOf(key) >= 0, stage: "q", wTeam: null, wager: 0, marks: {} };
+    if (C.dd) C.stage = "dd";
+    renderClue(true);
+    if (C.dd) { sfx("win"); } else { sfx("hit"); startTimer(); }
+  }
+  function stopTimer(){ clearInterval(TT); TT = null; }
+  function startTimer(){
+    stopTimer(); if (!S.ctime || !C) return;
+    C.ends = Date.now() + S.ctime * 1000; var last = -1;
+    TT = setInterval(function(){
+      if (!C) return stopTimer();
+      var l = Math.max(0, C.ends - Date.now()), s = Math.ceil(l / 1000), el = document.getElementById("cT"), br = document.getElementById("cB");
+      if (el) { el.textContent = s; el.classList.toggle("jPulse", s <= 5 && s > 0); }
+      if (br) br.style.width = (l / (S.ctime * 1000) * 100) + "%";
+      if (s !== last && s <= 5 && s > 0) sfx("tick"); last = s;
+      if (!l) { stopTimer(); sfx("horn"); }
+    }, 200);
+  }
+  function closeClue(markUsed){
+    stopTimer();
+    if (markUsed && C) S.used[C.key] = 1;
+    C = null; var o = document.getElementById("clue"); if (o) o.remove(); save(); draw();
+    if (S.board && !left()) setTimeout(function(){ S.phase = "done"; save(); draw(); finale(); }, 400);
+  }
+  function renderClue(first){
+    var o = document.getElementById("clue"), cat = S.board.cats[C.c];
+    if (!o) { o = document.createElement("div"); o.id = "clue"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", cat + " for " + C.val); document.body.appendChild(o); }
+    if (first && !RM()) { o.classList.remove("zoom"); void o.offsetWidth; o.classList.add("zoom"); }
+    var head = '<div class="cbar" style="justify-content:space-between;padding-right:200px;"><div class="mono" style="font-size:clamp(14px,1.6vw,20px);letter-spacing:2px;font-weight:800;">' + esc(cat.toUpperCase()) + ' \u00b7 ' + (C.dd ? 'DAILY DOUBLE' : '$' + C.val) + '</div>' +
+      (S.ctime && C.stage === "q" ? '<div style="display:flex;align-items:center;gap:12px;min-width:200px;"><div style="flex:1;height:10px;border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden;"><div id="cB" style="height:100%;width:100%;background:var(--jb-val);"></div></div><span id="cT" class="mono" style="display:inline-block;font-size:34px;font-weight:800;color:var(--jb-val);min-width:48px;text-align:right;">' + S.ctime + '</span></div>' : '') + '</div>';
+    var body = "", bar = "";
+    if (C.stage === "dd") {
+      var maxW = Math.max(S.scores[C.wTeam == null ? 0 : C.wTeam] || 0, val(S.board.levels.length - 1));
+      body = '<div class="ctext"><div class="dd" style="font-size:clamp(60px,11vw,170px);color:var(--jb-val);line-height:1;">DAILY<br>DOUBLE!</div>' +
+        '<div style="font-size:clamp(18px,2vw,28px);text-transform:none;">Which team found it? Then set the wager (up to $' + maxW.toLocaleString() + ').</div></div>';
+      bar = '<div class="cbar" style="justify-content:center;">' + S.scores.map(function(sc, i){ return '<button type="button" class="tbtn" data-ddt="' + i + '" aria-pressed="' + (C.wTeam === i) + '" style="--c:' + TCB[i] + ';">' + esc(S.names[i]) + ' <b>$' + sc.toLocaleString() + '</b></button>'; }).join("") + '</div>' +
+        '<div class="cbar" style="justify-content:center;"><label for="ddW" class="mono" style="font-weight:800;">WAGER $</label><input id="ddW" class="in mono" type="number" min="0" step="100" value="' + (C.wager || maxW) + '" style="width:150px;font-size:22px;font-weight:800;background:rgba(0,0,0,.25);color:#fff;border-color:#fff;">' +
+        '<button type="button" class="cbtn pri" data-c="ddgo"' + (C.wTeam == null ? ' disabled style="opacity:.5;"' : '') + '>Show the clue</button><button type="button" class="cbtn" data-c="close">Back to board</button></div>';
+    } else {
+      body = '<div class="ctext">' + clueHtml(C.x.q) + (C.stage === "a" ? '<div class="ans">' + esc(C.x.a || "(no answer in sheet)") + '</div>' : '') + '</div>';
+      var stake = C.dd ? C.wager : C.val;
+      if (C.dd) bar = '<div class="cbar" style="justify-content:center;">' +
+          (C.stage === "q" ? '<button type="button" class="cbtn pri" data-c="ans">Show answer</button>' : '') +
+          '<button type="button" class="cbtn" data-c="ddok" style="border-color:#7dffb0;">' + esc(S.names[C.wTeam]) + ' correct +$' + stake.toLocaleString() + '</button>' +
+          '<button type="button" class="cbtn" data-c="ddno" style="border-color:#ffb3a6;">Wrong \u2212$' + stake.toLocaleString() + '</button></div>';
+      else bar = '<div class="cbar" style="justify-content:center;">' + S.scores.map(function(sc, i){ var m = C.marks[i];
+          return '<span style="display:inline-flex;gap:4px;"><button type="button" class="tbtn" data-ok="' + i + '" aria-pressed="' + (m === 1) + '" style="--c:' + TCB[i] + ';" title="Correct: +$' + C.val + '">\u2713 ' + esc(S.names[i]) + '</button>' +
+            '<button type="button" class="tbtn" data-no="' + i + '" aria-pressed="' + (m === -1) + '" style="--c:#ffb3a6;min-width:52px;justify-content:center;" aria-label="' + esc(S.names[i]) + ' wrong: minus $' + C.val + '">\u2715</button></span>'; }).join("") + '</div>' +
+        '<div class="cbar" style="justify-content:center;">' + (C.stage === "q" ? '<button type="button" class="cbtn pri" data-c="ans">Show answer</button>' : '') + '<button type="button" class="cbtn" data-c="done">Back to board</button><button type="button" class="cbtn" data-c="close" title="Leave this clue on the board">Cancel</button></div>';
+    }
+    o.innerHTML = head + body + bar;
+  }
+  document.addEventListener("click", function(e){
+    if (!C) return; var b = e.target.closest("button"); if (!b || b.disabled || !document.getElementById("clue").contains(b)) return;
+    var c = b.getAttribute("data-c"), ok = b.getAttribute("data-ok"), no = b.getAttribute("data-no"), ddt = b.getAttribute("data-ddt");
+    var lab = S.board.cats[C.c] + " $" + C.val;
+    if (ddt != null) { C.wTeam = +ddt; renderClue(); return; }
+    if (c === "ddgo") { var w = Math.max(0, Math.round(+((document.getElementById("ddW") || {}).value) || 0)), mx = Math.max(S.scores[C.wTeam] || 0, val(S.board.levels.length - 1)); C.wager = Math.min(w, mx); C.stage = "q"; renderClue(); startTimer(); return; }
+    if (c === "ans") { stopTimer(); C.stage = "a"; sfx("hit"); renderClue(); return; }
+    if (c === "ddok") { award(C.wTeam, C.wager, "DD " + lab); sfx("win"); confetti(40); closeClue(true); return; }
+    if (c === "ddno") { award(C.wTeam, -C.wager, "DD " + lab); sfx("miss"); closeClue(true); return; }
+    if (c === "done") { closeClue(true); return; }
+    if (c === "close") { closeClue(false); return; }
+    if (ok != null || no != null) {
+      var i = +(ok != null ? ok : no), want = ok != null ? 1 : -1, cur = C.marks[i] || 0;
+      if (cur) award(i, -cur * C.val, "undo " + lab);
+      if (cur !== want) { award(i, want * C.val, lab); C.marks[i] = want; sfx(want > 0 ? "hit" : "miss"); } else delete C.marks[i];
+      if (want > 0 && cur !== want) { stopTimer(); C.stage = "a"; }
+      renderClue(); return;
+    }
+  });
+  document.addEventListener("keydown", function(e){
+    if (!C || (e.target && /INPUT|TEXTAREA/.test(e.target.tagName))) return;
+    if (e.key === "Escape") { e.preventDefault(); closeClue(C.stage !== "dd" && C.stage === "a"); }
+    else if ((e.key === " " || e.key === "Enter") && C.stage === "q") { e.preventDefault(); stopTimer(); C.stage = "a"; renderClue(); }
+  });
+
+  /* ---------- effects ---------- */
+  function confetti(n){
+    if (RM()) return; var Cc = S.theme === "classic" ? ["#ffcc00", "#ffffff", "#060ce9", "#8fb3ff"] : ["#ffffff", "#ffd34d", "#00934a", "#7cc49c"];
+    for (var i = 0; i < (n || 90); i++) { var c = document.createElement("i"); c.className = "cf"; c.style.left = (Math.random() * 100) + "vw"; c.style.background = Cc[i % Cc.length];
+      c.style.animationDuration = (2.2 + Math.random() * 1.8) + "s"; c.style.animationDelay = (Math.random() * .6) + "s"; document.body.appendChild(c); (function(x){ setTimeout(function(){ x.remove(); }, 4800); })(c); }
+  }
+  function finale(){ setTimeout(function(){ confetti(); sfx("win"); }, 2400); }
+
+  /* ---------- screens ---------- */
+  function chips(act, opts, cur){ return '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + opts.map(function(o){ return '<button type="button" class="chip" data-act="' + act + '" data-v="' + o[0] + '" aria-pressed="' + (String(cur) === String(o[0])) + '">' + esc(o[1]) + '</button>'; }).join("") + '</div>'; }
+  function sec(t, body, note){ return '<div style="display:flex;flex-direction:column;gap:10px;"><div style="font-weight:700;color:var(--bright);">' + t + '</div>' + body + (note ? '<div style="font-size:13px;color:var(--dim);line-height:1.55;">' + note + '</div>' : '') + '</div>'; }
+  function drawSetup(){
+    var b = parseBoard(S.csv), info = b ? '<b style="color:var(--ok);">' + b.cats.length + ' categories \u00b7 ' + b.levels.length + ' rows \u00b7 ' + b.clues + ' clues ready.</b>' : (S.csv.trim() ? '<b style="color:var(--bad);">Couldn\u2019t find a board.</b> Row 1 = categories, then a question row and an answer row for each value.' : 'Import your Jeopardy sheet, upload a CSV, or paste below.');
+    var prev = b ? '<div class="jboard" style="grid-template-columns:repeat(' + b.cats.length + ',minmax(0,1fr));font-size:12px;">' + b.cats.map(function(c){ return '<div class="jcat" style="min-height:48px;font-size:12px;padding:6px;">' + esc(c || "\u2014") + '</div>'; }).join("") +
+      b.levels.map(function(L, li){ return L.map(function(x){ return '<div class="jtile" style="min-height:34px;font-size:16px;cursor:default;' + (x.q ? '' : 'opacity:.35;') + '">' + (x.q ? '$' + val(li) : '') + '</div>'; }).join(""); }).join("") + '</div>' : '';
+    return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:16px;">' +
+      '<div class="card" style="display:flex;flex-direction:column;gap:14px;"><div class="lbl" style="color:var(--gold);">1 \u00b7 Board</div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;"><label for="jSheet" style="font-weight:700;color:var(--bright);">Google Sheet link</label>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="jSheet" class="in mono" type="url" value="' + esc(S.sheet) + '" placeholder="https://docs.google.com/spreadsheets/d/\u2026" autocomplete="off" spellcheck="false" style="flex:1;min-width:220px;font-size:14px;"><button type="button" class="btn sm" data-act="sheet">Import</button></div>' +
+          '<div style="font-size:13px;color:' + MSGC + ';">' + esc(MSG || "Works with your existing Jeopardy spreadsheet. Share it as \u201cAnyone with the link \u00b7 Viewer\u201d; the Jeopardy tab is read (or the tab in your link).") + '</div></div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;"><div style="font-weight:700;color:var(--bright);">Or paste / upload a CSV</div>' +
+          '<textarea id="jCsv" class="in" rows="7" spellcheck="false" aria-label="Board CSV" placeholder="Planets,Weather\nThis planet is closest to the Sun.,This instrument measures air pressure.\nMercury,Barometer">' + esc(S.csv) + '</textarea>' +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap;"><label class="btn ghost sm" style="cursor:pointer;">Upload CSV<input type="file" id="jFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label><a class="btn ghost sm" href="jeopardy-template.csv" download>Template (CSV)</a><a class="btn ghost sm" href="../tools/index.html#jeopardy-ai">AI question builder</a></div></div>' +
+        '<div style="font-size:14px;color:var(--muted);">' + info + '</div>' + prev +
+        '<div style="font-size:13px;color:var(--dim);line-height:1.55;border-top:1px solid var(--border);padding-top:12px;">Same layout as the Jeopardy tab: <b>row 1</b> = category names, then a <b>question row</b> and an <b>answer row</b> for $100, $200, $300\u2026 A label column A is skipped automatically. Put an image link (or a Google Drive file link shared to anyone) in a question cell to show a picture. Nothing is uploaded; the board stays in this browser.</div></div>' +
+      '<div class="card" style="display:flex;flex-direction:column;gap:20px;"><div class="lbl" style="color:var(--gold);">2 \u00b7 Game</div>' +
+        sec("Board theme", chips("theme", [["lion", "Lion Pride (green & white)"], ["classic", "Classic TV"]], S.theme)) +
+        sec("Teams", chips("nteams", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"]], S.nteams) +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:8px;">' + S.names.slice(0, S.nteams).map(function(n, i){ return '<input class="in" data-name="' + i + '" value="' + esc(n) + '" aria-label="Team ' + (i + 1) + ' name" maxlength="24" style="border-color:' + TC[i] + ';font-weight:700;">'; }).join("") + '</div>') +
+        sec("Daily Doubles", chips("dd", [[0, "None"], [1, "1"], [2, "2"], [3, "3"]], S.dd), "Hidden at random (never in the top row). The team that finds one wagers up to its score or the board\u2019s top value.") +
+        sec("Values", chips("mult", [[1, "$100\u2013$500"], [2, "$200\u2013$1,000"]], S.mult)) +
+        sec("Clue timer", chips("ctime", [[0, "Off"], [10, "10 s"], [15, "15 s"], [20, "20 s"], [30, "30 s"]], S.ctime), "Counts down on each clue, with ticks in the last 5 seconds.") +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button type="button" class="btn" data-act="start"' + (b && b.clues ? '' : ' disabled') + '>Start game \u2192</button>' + (S.board ? '<button type="button" class="btn ghost" data-act="resume">Resume board</button>' : '') + '</div></div>' +
+    '</div>';
+  }
+  function scoreBar(){
+    return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">' + S.scores.map(function(sc, i){ var step = 100 * (S.mult || 1);
+      return '<div class="jteam" style="--c:' + TC[i] + ';"><div class="nm">' + esc(S.names[i]) + '</div><div class="sc' + (sc < 0 ? ' neg' : '') + '">' + (sc < 0 ? '\u2212' : '') + '$' + Math.abs(sc).toLocaleString() + '</div>' +
+        '<div style="display:flex;gap:6px;"><button type="button" class="adj" data-adj="' + i + '" data-d="-' + step + '" aria-label="' + esc(S.names[i]) + ' minus ' + step + '">\u2212' + step + '</button><button type="button" class="adj" data-adj="' + i + '" data-d="' + step + '" aria-label="' + esc(S.names[i]) + ' plus ' + step + '">+' + step + '</button></div></div>'; }).join("") + '</div>';
+  }
+  function drawBoard(){
+    var b = S.board, n = b.cats.length;
+    return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:-6px 0 12px;"><span class="mono" style="font-size:13px;color:var(--dim);">' + left() + ' of ' + b.clues + ' clues left</span><span style="flex:1;"></span>' +
+        (S.hist.length ? '<button type="button" class="btn ghost sm" data-act="undo">Undo last score</button>' : '') +
+        '<button type="button" class="btn ghost sm" data-act="setup">Setup</button><button type="button" class="btn ghost sm" data-act="end">End game</button></div>' +
+      '<div class="jboard" style="grid-template-columns:repeat(' + n + ',minmax(0,1fr));">' + b.cats.map(function(c){ return '<div class="jcat">' + esc(c) + '</div>'; }).join("") +
+        b.levels.map(function(L, li){ return L.map(function(x, c){ var k = li + ":" + c, used = S.used[k] || !x.q;
+          return '<button type="button" class="jtile" data-tile="' + k + '"' + (used ? ' disabled aria-label="Used"' : ' aria-label="' + esc(b.cats[c]) + ' for $' + val(li) + '"') + '>$' + val(li) + '</button>'; }).join(""); }).join("") + '</div>' +
+      scoreBar();
+  }
+  function drawDone(){
+    var order = S.scores.map(function(s, i){ return { i: i, s: s }; }).sort(function(a, b){ return b.s - a.s; }), pod = order.slice(0, 3), H = [150, 110, 80], seq = [1, 0, 2];
+    return '<div class="card" style="padding:32px;text-align:center;"><div class="lbl">Final scores</div>' +
+      '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:20px 0 26px;flex-wrap:wrap;">' + seq.filter(function(k){ return pod[k]; }).map(function(k){ var p = pod[k];
+        return '<div class="rise" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:160px;opacity:0;animation:rise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.2, 1.2, .3][k] + 's;"><div style="font-weight:800;font-size:' + (k ? 20 : 30) + 'px;color:' + TC[p.i] + ';">' + esc(S.names[p.i]) + '</div><div class="mono" style="color:var(--bright);font-weight:800;">$' + p.s.toLocaleString() + '</div>' +
+          '<div style="width:100%;height:' + H[k] + 'px;border-radius:12px 12px 0 0;background:' + (k ? 'var(--panel2)' : 'var(--btn)') + ';border:3px solid ' + TC[p.i] + ';display:flex;justify-content:center;padding-top:10px;"><span class="disp" style="font-size:40px;font-weight:800;color:' + (k ? 'var(--bright)' : 'var(--btnText)') + ';">' + (k + 1) + '</span></div></div>'; }).join("") + '</div>' +
+      (order.length > 3 ? '<div style="display:flex;flex-direction:column;gap:6px;max-width:520px;margin:0 auto 20px;">' + order.slice(3).map(function(p, j){ return '<div style="display:flex;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;"><span class="mono" style="color:var(--dim);">' + (j + 4) + '</span><span style="flex:1;text-align:left;font-weight:700;color:' + TC[p.i] + ';">' + esc(S.names[p.i]) + '</span><span class="mono">$' + p.s.toLocaleString() + '</span></div>'; }).join("") + '</div>' : '') +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button type="button" class="btn" data-act="again">Play again</button><button type="button" class="btn ghost" data-act="board">Back to board</button><button type="button" class="btn ghost" data-act="setup">Setup</button></div></div>';
+  }
+  function draw(){
+    applyTheme();
+    view.innerHTML = S.phase === "board" && S.board ? drawBoard() : S.phase === "done" && S.board ? drawDone() : drawSetup();
+  }
+  view.addEventListener("click", function(e){
+    var b = e.target.closest("button,[data-act]"); if (!b || b.disabled) return;
+    var a = b.getAttribute("data-act"), v = b.getAttribute("data-v"), tile = b.getAttribute("data-tile"), adj = b.getAttribute("data-adj");
+    if (tile) { var p = tile.split(":"); openClue(+p[0], +p[1]); return; }
+    if (adj != null) { award(+adj, +b.getAttribute("data-d"), "adjust"); draw(); return; }
+    if (!a) return;
+    if (a === "sheet") return importSheet();
+    if (a === "theme") S.theme = v;
+    else if (a === "nteams") { S.nteams = +v; }
+    else if (a === "dd") S.dd = +v;
+    else if (a === "mult") S.mult = +v;
+    else if (a === "ctime") S.ctime = +v;
+    else if (a === "start") { if (S.board && left() && left() < S.board.clues && !confirm("Start a new game? The current board and scores will be cleared.")) return; startGame(); return; }
+    else if (a === "resume") S.phase = "board";
+    else if (a === "setup") S.phase = "setup";
+    else if (a === "undo") undo();
+    else if (a === "end") { if (!confirm("End the game and show final scores?")) return; S.phase = "done"; save(); draw(); finale(); return; }
+    else if (a === "board") S.phase = "board";
+    else if (a === "again") { startGame(); return; }
+    save(); draw();
+  });
+  view.addEventListener("input", function(e){
+    if (e.target.id === "jCsv") { S.csv = e.target.value.slice(0, 200000); save(); clearTimeout(window.__jd); window.__jd = setTimeout(function(){ var ae = document.activeElement && document.activeElement.id, ss = e.target.selectionStart; draw(); var t = document.getElementById(ae); if (t) { t.focus(); try { t.setSelectionRange(ss, ss); } catch (er) {} } }, 500); }
+    if (e.target.id === "jSheet") { S.sheet = e.target.value.slice(0, 500); save(); }
+    var ni = e.target.getAttribute && e.target.getAttribute("data-name"); if (ni != null) { S.names[+ni] = e.target.value.slice(0, 24) || TEAMNAMES[+ni]; save(); }
+  });
+  view.addEventListener("change", function(e){
+    if (e.target.id === "jFile" && e.target.files[0]) { var rd = new FileReader(); rd.onload = function(){ S.csv = String(rd.result).slice(0, 200000); MSG = ""; save(); draw(); }; rd.readAsText(e.target.files[0]); }
+  });
+  draw();
+})();
+</script>
+</body>
+</html>

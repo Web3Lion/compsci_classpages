@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=37.2.0"></script>
+<script src="site.js?v=38.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.2.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.2.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=38.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=38.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Ping Rush</title>
-<link href="assets/fonts/fonts.css?v=37.2.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--amber:#ffcf5c;--rush:#00e0c6;--rushText:#03201c;}
 :root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--amber:#8a5a00;--rush:#00796b;--rushText:#ffffff;}
@@ -58,17 +58,17 @@ html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-m
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=37.2.0"></script>
-<script src="ctf-data/cyber1.js?v=37.2.0"></script>
-<script src="ctf-data/cyber2.js?v=37.2.0"></script>
-<script src="ctf-data/cyber3.js?v=37.2.0"></script>
-<script src="ctf-data/apcsp.js?v=37.2.0"></script>
-<script src="ctf-data/web3.js?v=37.2.0"></script>
-<script src="supabase-config.js?v=37.2.0"></script>
-<script src="js/auth.js?v=37.2.0"></script>
-<script src="js/battle-fx.js?v=37.2.0"></script>
-<script src="js/ko-fx.js?v=37.2.0"></script>
-<script src="js/waiting-room.js?v=37.2.0"></script>
+<script src="config.js?v=38.0.0"></script>
+<script src="ctf-data/cyber1.js?v=38.0.0"></script>
+<script src="ctf-data/cyber2.js?v=38.0.0"></script>
+<script src="ctf-data/cyber3.js?v=38.0.0"></script>
+<script src="ctf-data/apcsp.js?v=38.0.0"></script>
+<script src="ctf-data/web3.js?v=38.0.0"></script>
+<script src="supabase-config.js?v=38.0.0"></script>
+<script src="js/auth.js?v=38.0.0"></script>
+<script src="js/battle-fx.js?v=38.0.0"></script>
+<script src="js/ko-fx.js?v=38.0.0"></script>
+<script src="js/waiting-room.js?v=38.0.0"></script>
 <script>
 (function(){
   var r0 = document.documentElement, tb = document.getElementById("themeToggle");
@@ -155,7 +155,7 @@ html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-m
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=37.2.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=38.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){ MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ if (!norm(disp(t.t)) || !t.d) return; (MODS[t.m] = MODS[t.m] || []).push(t); }); });
   }
   function source(){
@@ -233,7 +233,7 @@ html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-m
     if (WR && WR.needsRoom()) { WR.openRoom(); return; }
     var run = function(done){
       busy = true; msg = "";
-      rpc("ctf_t_pr_start", { p_class: CUR.id, p_questions: Q, p_count: OPT.count, p_qtime: OPT.qtime, p_pace: OPT.pace }).then(function(r){
+      rpc("ctf_t_pr_start", { p_class: CUR.id, p_questions: Q, p_count: OPT.count === 0 ? 500 : OPT.count, p_qtime: OPT.qtime, p_pace: OPT.pace }).then(function(r){
         busy = false;
         if (!r || r.error) { msg = ERR[r && r.error] || ("Couldn\u2019t start: " + ((r && r.error) || "error")); done(false); paint(true); return; }
         showSetup = false; sig = ""; done(true); load();
@@ -261,12 +261,12 @@ html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-m
           '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><span class="mono" style="font-size:13px;color:' + (n >= 4 ? 'var(--ok)' : 'var(--dim)') + ';">' + n + ' question' + (n === 1 ? '' : 's') + ' ready</span>' + (n ? '<button type="button" class="btn ghost" data-act="prev">' + (PREV.on ? 'Hide preview' : 'Preview questions') + '</button>' : '') + '</div>' +
           (PREV.on && n ? previewHtml() : '') + '</div>' +
         '<div class="card" style="display:flex;flex-direction:column;gap:18px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--rush);font-weight:800;">2 \u00b7 GAME</div>' +
-          sec("Questions per game", chips("count", [[10, "10"], [15, "15"], [20, "20"], [30, "30"]], OPT.count)) +
+          sec("Questions per game", chips("count", [[10, "10"], [15, "15"], [20, "20"], [30, "30"], [0, "ALL questions"]], OPT.count), OPT.count === 0 ? "Plays every question (up to 500), in random order. Press <b>End now</b> whenever you\u2019re ready to stop; XP and the podium use the scores so far." : "") +
           sec("Pace", chips("pace", [["timed", "Timed"], ["teacher", "Teacher-paced"], ["auto", "Auto-advance"]], OPT.pace),
             OPT.pace === "teacher" ? "No timer. Students answer until you press <b>Show answer</b>, then <b>Next</b> when you\u2019re done discussing. Faster answers still score more." : OPT.pace === "auto" ? "Each question ends on its timer (or when everyone answers). The next one starts 8 seconds after the answer shows." : "Each question ends on its timer or when everyone answers. You press <b>Next</b> after the leaderboard, so you can stop and discuss.") +
           sec("Time per question", chips("qtime", [[10, "10 s"], [20, "20 s"], [30, "30 s"], [45, "45 s"], [60, "60 s"]], OPT.qtime),
             "Used when a row has no time. Add a <b>Time</b> column (seconds, 5\u2013300) to your sheet to give each question its own time, and a <b>Double</b> column (yes) to make a question worth \u00d72." + (OPT.pace === "teacher" ? " Teacher-paced: this only sets how fast an answer must be for full points." : "")) +
-          '<div style="font-size:13px;color:var(--muted);line-height:1.6;">Everyone answers the same question at once. Correct answers score 500\u20131,000 points (faster = more), +100 for 3 in a row. A question ends when time runs out or everyone is done.<br><b style="color:var(--bright);">XP:</b> 1st +25 \u00b7 2nd +15 \u00b7 3rd +10 \u00b7 everyone else who answered +5.</div>' +
+          '<div style="font-size:13px;color:var(--muted);line-height:1.6;">Everyone answers the same question at once. Correct answers score 500\u20131,000 points (faster = more), +100 for 3 in a row. A question ends when time runs out or everyone is done.<br><b style="color:var(--bright);">XP:</b> 1st +200 \u00b7 2nd +150 \u00b7 3rd +100 \u00b7 everyone else who answered +5.</div>' +
           '<div><button type="button" class="btn" id="prStart" data-wr-start="Start Ping Rush"' + (busy ? ' disabled' : '') + '>' + esc((WR && WR.label()) || "Start Ping Rush") + '</button></div>' +
           (msg ? '<div role="alert" style="color:var(--bad);font-weight:700;font-size:14px;">' + esc(msg) + '</div>' : '') + '</div>' +
       '</div>';
@@ -303,10 +303,10 @@ html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-m
       var B = s.board || [], pod = B.slice(0, 3), H = [150, 110, 80];
       return head + '<div class="card" style="padding:28px;">' +
         (pod.length ? '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:6px 0 26px;flex-wrap:wrap;">' + [1, 0, 2].filter(function(i){ return pod[i]; }).map(function(i){ var p = pod[i];
-          return '<div class="prAnim" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:160px;opacity:0;animation:prRise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.6, 1.4, .4][i] + 's;"><div style="font-weight:800;color:var(--bright);font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(p.h) + '</div><div class="mono" style="color:var(--muted);">' + Number(p.s).toLocaleString() + ' pts \u00b7 +' + [25, 15, 10][i] + ' XP</div>' +
+          return '<div class="prAnim" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:160px;opacity:0;animation:prRise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.6, 1.4, .4][i] + 's;"><div style="font-weight:800;color:var(--bright);font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(p.h) + '</div><div class="mono" style="color:var(--muted);">' + Number(p.s).toLocaleString() + ' pts \u00b7 +' + [200, 150, 100][i] + ' XP</div>' +
             '<div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : 'var(--rush)') + ';border:2px solid var(--rush);display:flex;justify-content:center;padding-top:10px;"><span style="font-size:40px;font-weight:800;color:' + (i ? 'var(--rush)' : 'var(--rushText)') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' : '<p style="color:var(--dim);">Nobody answered.</p>') +
         '<div class="prAnim" style="display:flex;flex-direction:column;gap:6px;max-width:760px;margin:0 auto;opacity:0;animation:prRise .6s ease forwards;animation-delay:3.4s;">' + boardRows(B, false) + '</div>' +
-        '<div style="font-size:13px;color:var(--dim);text-align:center;margin-top:14px;">XP is paid: 1st +25, 2nd +15, 3rd +10, everyone else who answered +5.</div></div>';
+        '<div style="font-size:13px;color:var(--dim);text-align:center;margin-top:14px;">XP is paid: 1st +200, 2nd +150, 3rd +100, everyone else who answered +5.</div></div>';
     }
     if (s.phase === "q") {
       var opts = s.k === "mc" ? '<div style="display:grid;grid-template-columns:repeat(' + ((s.o || []).length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:12px;width:100%;">' + (s.o || []).map(function(o, i){ return '<div style="display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:14px;border:2px solid ' + LC[i] + ';background:var(--panel2);text-align:left;"><span class="mono" style="font-size:22px;font-weight:800;min-width:44px;height:44px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:' + LC[i] + ';color:' + LT[i] + ';">' + "ABCD"[i] + '</span><span style="font-size:clamp(20px,2.4vw,28px);font-weight:700;color:var(--bright);">' + esc(o) + '</span></div>'; }).join("") + '</div>'

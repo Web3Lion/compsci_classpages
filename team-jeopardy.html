@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=38.0.0"></script>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=38.0.0">
+<link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Team Jeopardy</title>
+<link href="assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--warn:#ffcf5c;--go:#ffcc00;--goText:#1a1200;
+  --jb-tile:#00843f;--jb-tileHi:#00a352;--jb-val:#ffffff;--jb-cat:#ffffff;--jb-clue:#00843f;--jb-text:#ffffff;--jb-gap:#ffffff;--jb-used:#005a2c;--jb-font:'Bricolage Grotesque',sans-serif;}
+:root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--warn:#8a5a00;--go:#8a6300;--goText:#ffffff;}
+:root[data-jt="classic"]{--jb-tile:#060ce9;--jb-tileHi:#2a31ff;--jb-val:#ffcc00;--jb-cat:#ffffff;--jb-clue:#060ce9;--jb-text:#ffffff;--jb-gap:#000000;--jb-used:#030766;--jb-font:'Libre Caslon Text',Georgia,serif;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);}
+a{color:var(--accent);text-decoration:none;} a:hover{color:var(--accent2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1400px;margin:0 auto;padding:20px 24px 60px;}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:22px;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--accent);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;min-height:44px;padding:10px 18px;border-radius:10px;border:2px solid var(--go);background:var(--go);color:var(--goText);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border3);background:transparent;color:var(--dim);cursor:pointer;}
+.chip[aria-pressed="true"]{border-color:var(--go);color:var(--bright);box-shadow:inset 0 0 0 1px var(--go);}
+.chip[aria-pressed="true"]::before{content:"\2713  ";}
+select,input.in,textarea.in{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--border3);background:var(--bg);color:var(--bright);}
+textarea.in{width:100%;font:13px/1.5 'JetBrains Mono',monospace;}
+.jboard{display:grid;gap:6px;padding:6px;background:var(--jb-gap);border-radius:14px;}
+.jcat,.jtile{display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;}
+.jcat{background:var(--jb-tile);color:var(--jb-cat);font:800 clamp(12px,1.5vw,22px)/1.15 var(--jb-font);text-transform:uppercase;padding:10px 6px;min-height:70px;text-wrap:balance;text-shadow:2px 2px 0 rgba(0,0,0,.35);}
+.jtile{background:var(--jb-tile);color:var(--jb-val);font:800 clamp(22px,3.2vw,48px)/1 var(--jb-font);min-height:clamp(54px,9vh,96px);border:0;cursor:pointer;text-shadow:3px 3px 0 rgba(0,0,0,.45);transition:transform .12s,background .12s;}
+.jtile:hover:not(:disabled),.jtile:focus-visible{background:var(--jb-tileHi);transform:scale(1.03);outline:3px solid var(--jb-val);outline-offset:-3px;}
+.jtile:disabled{background:var(--jb-used);color:transparent;text-shadow:none;cursor:default;}
+.jclue{background:var(--jb-clue);color:var(--jb-text);border-radius:16px;padding:clamp(18px,3vw,36px);display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center;}
+.jclue .jq{font:700 clamp(26px,3.8vw,58px)/1.2 var(--jb-font);text-transform:uppercase;text-wrap:balance;text-shadow:3px 3px 0 rgba(0,0,0,.4);white-space:pre-line;}
+.jclue img{max-width:min(100%,820px);max-height:42vh;border-radius:12px;background:#fff;}
+.jclue .ja{font:800 clamp(28px,4vw,60px)/1.15 var(--jb-font);color:var(--jb-val);text-transform:uppercase;text-shadow:3px 3px 0 rgba(0,0,0,.4);}
+.jw{display:inline-flex;gap:5px;margin:0 9px 8px;}
+.jw i{display:inline-flex;align-items:flex-end;justify-content:center;width:clamp(18px,2.2vw,30px);height:clamp(28px,3.4vw,44px);border-bottom:3px solid currentColor;font:800 clamp(18px,2.4vw,32px) 'JetBrains Mono',monospace;font-style:normal;}
+@keyframes ddIn{0%{transform:scale(.2) rotate(-20deg);opacity:0}60%{transform:scale(1.12) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.ddIn{animation:ddIn .9s cubic-bezier(.2,1.4,.4,1) both;}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.35)}100%{transform:scale(1)}}
+.pop{animation:pop .35s ease;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.pulse{animation:pulse .5s ease infinite;}
+@keyframes rise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes slide{from{transform:translateY(var(--dy,0))}to{transform:none}}
+html[data-motion="reduce"] .ddIn,html[data-motion="reduce"] .pop,html[data-motion="reduce"] .pulse,html[data-motion="reduce"] .anim{animation:none!important;opacity:1!important;transform:none!important;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px;padding-right:170px;">
+    <a href="teacher.html" class="mono" style="font-size:12px;color:var(--dim);padding:13px 4px;min-height:44px;display:inline-flex;align-items:center;">&larr; Teacher dashboard</a>
+    <div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--go);font-weight:800;">&#9632; TEAM JEOPARDY</div>
+    <span style="flex:1;"></span>
+    <span id="snd" role="group" aria-label="Projector sound"></span>
+    <label class="mono" for="cls" style="font-size:12px;color:var(--dim);">Class</label>
+    <select id="cls"></select>
+  </div>
+  <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
+</div>
+<script src="config.js?v=38.0.0"></script>
+<script src="supabase-config.js?v=38.0.0"></script>
+<script src="js/auth.js?v=38.0.0"></script>
+<script src="js/battle-fx.js?v=38.0.0"></script>
+<script src="js/waiting-room.js?v=38.0.0"></script>
+<script>
+(function(){
+  var r0 = document.documentElement, tb = document.getElementById("themeToggle");
+  window.__toggleTheme = function(){ var t = r0.getAttribute("data-theme") === "light" ? "dark" : "light"; r0.setAttribute("data-theme", t); try { localStorage.setItem("course-theme", t); } catch (e) {} tb.textContent = t === "light" ? "DARK" : "LIGHT"; };
+  tb.textContent = r0.getAttribute("data-theme") === "light" ? "DARK" : "LIGHT";
+})();
+(function(){
+  var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
+  if (FX) { FX.enableSound(true); if (FX.soundUi) FX.soundUi(document.getElementById("snd")); }
+  var CLASSES = [], CUR = null, ST = null, skew = 0, msg = "", busy = false, timer = null, showSetup = false, sig = "", lastPhase = "", lastN = -1, lastTick = -1, PREVT = {}, DL = {}, DONEID = null, LASTTRIED = 0;
+  var OPT = { theme: "lion", ctime: 30, dd: 1, mult: 1 };
+  try { var o0 = JSON.parse(localStorage.getItem("tjeop-opt") || "null"); if (o0) for (var k0 in OPT) if (o0[k0] != null) OPT[k0] = o0[k0]; } catch (e) {}
+  var SH = { url: "", csv: "", msg: "", col: "var(--dim)" };
+  try { SH.url = localStorage.getItem("tjeop-sheet") || ""; SH.csv = localStorage.getItem("tjeop-csv") || ""; } catch (e) {}
+  var ERR = { jeop_live: "A Team Jeopardy game is already running in this class.", bad_board: "That board has no usable clues.", need_two_teams: "Make at least 2 squads with students first (Students \u2192 Squads).", not_teacher: "Sign in on the teacher dashboard first." };
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+  function rpc(fn, a){ return AUTH.rpc(fn, a || {}); }
+  function saveOpt(){ try { localStorage.setItem("tjeop-opt", JSON.stringify(OPT)); } catch (e) {} }
+  function theme(){ document.documentElement.setAttribute("data-jt", OPT.theme === "classic" ? "classic" : "lion"); }
+  theme();
+  var WR = window.WROOM ? WROOM.attach({ kind: "jeop", rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: false }) : null;
+
+  /* ---- board: same layout as the Jeopardy sheet tab ---- */
+  function cells(text){
+    var t = String(text || "").replace(/^\uFEFF/, ""), tab = t.indexOf("\t") >= 0 && t.indexOf(",") < 0, rows = [], row = [], f = "", q = false;
+    for (var i = 0; i < t.length; i++) { var c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"' && f === "") q = true; else if (c === (tab ? "\t" : ",")) { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; } else f += c; }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows.map(function(r){ return r.map(function(x){ return String(x).replace(/\r\n?/g, "\n").trim(); }); });
+  }
+  function parseBoard(text){
+    var rows = cells(text).filter(function(r){ return r.some(function(x){ return x; }); });
+    if (rows.length < 3) return null;
+    var a = rows.map(function(r){ return r[0] || ""; }), lab = 0;
+    a.slice(0, 7).forEach(function(x){ if (/^(categor|\$?\d{2,4}|q(uestion)?\b|a(nswer)?\b|clue|value|points?)/i.test(x) || /\b(q|a|question|answer)$/i.test(x)) lab++; });
+    if (lab >= 2 || (a[0] === "" && rows[0].length > 1)) rows = rows.map(function(r){ return r.slice(1); });
+    var cats = rows[0].map(function(x){ return x.replace(/\s*\n\s*/g, " "); }), n = 0;
+    cats.forEach(function(c, i){ if (c) n = i + 1; }); n = Math.min(n, 8); if (n < 1) return null; cats = cats.slice(0, n);
+    var levels = [];
+    for (var r = 1; r < rows.length && levels.length < 10; r += 2) { var qr = rows[r] || [], ar = rows[r + 1] || [];
+      if (!qr.some(function(x){ return x; })) continue;
+      levels.push(cats.map(function(_, c){ return { q: (qr[c] || "").slice(0, 500), a: (ar[c] || "").replace(/\s*\n\s*/g, " ").slice(0, 160) }; })); }
+    var clues = 0; levels.forEach(function(L){ L.forEach(function(x){ if (x.q && x.a) clues++; }); });
+    return levels.length ? { cats: cats, levels: levels, clues: clues } : null;
+  }
+  function sheetUrls(u){
+    u = String(u || "").trim(); var g = (u.match(/[#&?]gid=(\d+)/) || [])[1], m = u.match(/\/spreadsheets\/d\/e\/([\w-]+)/);
+    if (m) return ["https://docs.google.com/spreadsheets/d/e/" + m[1] + "/pub?output=csv" + (g ? "&gid=" + g : "")];
+    m = u.match(/\/spreadsheets\/d\/([\w-]+)/); if (!m) return null;
+    var out = []; if (g) out.push("https://docs.google.com/spreadsheets/d/" + m[1] + "/export?format=csv&gid=" + g);
+    out.push("https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&sheet=Jeopardy");
+    if (!g) out.push("https://docs.google.com/spreadsheets/d/" + m[1] + "/export?format=csv&gid=0");
+    return out;
+  }
+  async function importSheet(){
+    var inp = document.getElementById("tjSheet"); SH.url = inp ? inp.value.trim() : SH.url;
+    try { localStorage.setItem("tjeop-sheet", SH.url); } catch (e) {}
+    var urls = sheetUrls(SH.url);
+    if (!urls) { SH.msg = "That doesn\u2019t look like a Google Sheets link."; SH.col = "var(--bad)"; paint(true); return; }
+    SH.msg = "Loading the sheet\u2026"; SH.col = "var(--dim)"; paint(true);
+    for (var i = 0; i < urls.length; i++) {
+      try { var r = await fetch(urls[i], { cache: "no-store" }), txt = r.ok ? await r.text() : "";
+        if (txt && !/^\s*<(!doctype|html)/i.test(txt)) { var b = parseBoard(txt); if (b && b.clues) { setCsv(txt); SH.msg = ""; paint(true); return; } } } catch (e) {}
+    }
+    SH.msg = "Couldn\u2019t read the sheet. Share it as \u201cAnyone with the link \u00b7 Viewer\u201d, and copy the link while the Jeopardy tab is open."; SH.col = "var(--bad)"; paint(true);
+  }
+  function setCsv(t){ SH.csv = String(t || "").slice(0, 200000); try { localStorage.setItem("tjeop-csv", SH.csv); } catch (e) {} }
+  function val(li){ return (li + 1) * 100 * (OPT.mult || 1); }
+
+  /* ---- server ---- */
+  function load(){
+    clearTimeout(timer); if (!CUR) return;
+    rpc("ctf_t_tj_state", { p_class: CUR.id }).then(function(d){
+      if (!d || d.error) { ST = { na: true, err: d && d.error }; paint(); return; }
+      ST = d; if (d.now) skew = new Date(d.now).getTime() - Date.now();
+      var s = d.session;
+      if (s && FX) {
+        if (s.phase !== lastPhase || s.n !== lastN) {
+          if (s.phase === "q" && s.n !== lastN) FX.sfx(s.clue && s.clue.dd ? "win" : "hit");
+          if (s.phase === "rev" && lastPhase === "q") { FX.sfx("horn"); deltas(s.teams || []); }
+          lastPhase = s.phase; lastN = s.n; LASTTRIED = 0;
+        }
+        if (s.phase === "q" && s.tried > LASTTRIED) { if (LASTTRIED) FX.sfx("tick"); LASTTRIED = s.tried; var c = document.getElementById("tjCnt"); if (c) { c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+        if (FX.music) FX.music(s.status === "live", false);
+        if (s.status === "done" && DONEID !== s.id) { DONEID = s.id; setTimeout(function(){ if (FX.confetti) FX.confetti(["#ffcc00", "#ffffff", "#00934a", "#3ddc97"]); FX.sfx("win"); }, 2600); }
+      }
+      paint();
+      timer = setTimeout(load, s && s.status === "live" ? 1000 : 6000);
+    }).catch(function(e){ ST = { na: true, err: /tj_|function/.test(String(e && e.message)) ? "sql" : String(e && e.message || e) }; paint(); timer = setTimeout(load, 10000); });
+  }
+  function deltas(teams){ DL = {}; teams.forEach(function(t, i){ if (PREVT[t.id]) DL[t.id] = PREVT[t.id] - (i + 1); PREVT[t.id] = i + 1; }); }
+  function act(fn, extra){ if (busy) return; busy = true; rpc(fn, Object.assign({ p_class: CUR.id }, extra || {})).then(function(){ busy = false; load(); }).catch(function(e){ busy = false; msg = String(e && e.message || e); paint(true); }); }
+  function start(){
+    if (busy) return;
+    var b = parseBoard(SH.csv);
+    if (!b || !b.clues) { msg = "Import your Jeopardy sheet (or paste the board) first."; paint(true); return; }
+    if (WR && WR.needsRoom()) { WR.openRoom(); return; }
+    var run = function(done){
+      busy = true; msg = "";
+      rpc("ctf_t_tj_start", { p_class: CUR.id, p_board: { cats: b.cats, levels: b.levels }, p_ctime: OPT.ctime, p_dd: OPT.dd, p_mult: OPT.mult, p_groups: null }).then(function(r){
+        busy = false;
+        if (!r || r.error) { msg = ERR[r && r.error] || ("Couldn\u2019t start: " + ((r && r.error) || "error")); done(false); paint(true); return; }
+        showSetup = false; sig = ""; PREVT = {}; DL = {}; done(true); load();
+      }).catch(function(e){ busy = false; msg = /tj_|function/.test(String(e && e.message)) ? "Run supabase/team-jeopardy.sql first." : String(e && e.message || e); done(false); paint(true); });
+    };
+    if (WR) WR.go(run); else run(function(){});
+  }
+
+  /* ---- screens ---- */
+  var JIMG = /(https?:\/\/[^\s"]+?(?:\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?|googleusercontent\.com\/[^\s"]+|drive\.google\.com\/[^\s"]+))/i;
+  function clueHtml(txt){
+    var m = String(txt || "").match(JIMG); if (!m) return '<div class="jq">' + esc(txt) + '</div>';
+    var u = m[1], id = (u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/) || [])[1];
+    if (id) u = "https://drive.google.com/thumbnail?id=" + id + "&sz=w1600";
+    var rest = String(txt).replace(m[1], "").trim();
+    return (rest ? '<div class="jq">' + esc(rest) + '</div>' : '') + '<img src="' + esc(u) + '" alt="Clue image">';
+  }
+  function maskHtml(m){ return String(m || "").split(/\s+/).filter(Boolean).map(function(w){ return '<span class="jw">' + w.split("").map(function(ch){ return '<i>' + (ch === "_" ? "" : esc(ch)) + '</i>'; }).join("") + '</span>'; }).join(""); }
+  function chips(group, opts, cur){ return '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + opts.map(function(o){ return '<button type="button" class="chip" data-g="' + group + '" data-v="' + o[0] + '" aria-pressed="' + (String(cur) === String(o[0])) + '">' + esc(o[1]) + '</button>'; }).join("") + '</div>'; }
+  function sec(t, body, note){ return '<div style="display:flex;flex-direction:column;gap:10px;"><div style="font-weight:700;color:var(--bright);">' + t + '</div>' + body + (note ? '<div style="font-size:12px;color:var(--dim);line-height:1.5;">' + note + '</div>' : '') + '</div>'; }
+  function setupHtml(){
+    var b = parseBoard(SH.csv);
+    var info = b && b.clues ? '<b style="color:var(--ok);">' + b.cats.length + ' categories \u00b7 ' + b.levels.length + ' rows \u00b7 ' + b.clues + ' clues ready.</b>' : (SH.csv.trim() ? '<b style="color:var(--bad);">Couldn\u2019t find a board.</b> Row 1 = categories, then a question row and an answer row for each value.' : 'Import your Jeopardy sheet, or paste the board below.');
+    var prev = b ? '<div class="jboard" style="grid-template-columns:repeat(' + b.cats.length + ',minmax(0,1fr));">' + b.cats.map(function(c){ return '<div class="jcat" style="min-height:44px;font-size:11px;padding:4px;">' + esc(c || "\u2014") + '</div>'; }).join("") +
+      b.levels.map(function(L, li){ return L.map(function(x){ return '<div class="jtile" style="min-height:30px;font-size:15px;cursor:default;' + (x.q && x.a ? '' : 'opacity:.3;') + '">$' + val(li) + '</div>'; }).join(""); }).join("") + '</div>' : '';
+    return (WR ? WR.html() : '') +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:16px;">' +
+        '<div class="card" style="display:flex;flex-direction:column;gap:14px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--go);font-weight:800;">1 \u00b7 BOARD</div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;"><label for="tjSheet" style="font-weight:700;color:var(--bright);">Google Sheet link</label>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="tjSheet" class="in mono" type="url" value="' + esc(SH.url) + '" placeholder="https://docs.google.com/spreadsheets/d/\u2026" autocomplete="off" spellcheck="false" style="flex:1;min-width:220px;font-size:13px;"><button type="button" class="btn" id="tjImport">Import</button></div>' +
+            '<div style="font-size:12px;color:' + SH.col + ';line-height:1.5;">' + esc(SH.msg || "Your existing Jeopardy spreadsheet: the Jeopardy tab is read (or the tab in your link). Share as \u201cAnyone with the link \u00b7 Viewer\u201d. Only you see the link; students only ever get one clue at a time.") + '</div></div>' +
+          '<details' + (SH.csv && !(b && b.clues) ? ' open' : '') + '><summary style="cursor:pointer;color:var(--muted);font-size:13px;min-height:32px;">Or paste / upload a CSV</summary><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">' +
+            '<textarea id="tjCsv" class="in" rows="6" spellcheck="false" aria-label="Board CSV">' + esc(SH.csv) + '</textarea>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;"><label class="btn ghost" style="cursor:pointer;">Upload CSV<input type="file" id="tjFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label><a class="btn ghost" href="mane-event/jeopardy-template.csv" download>Template</a></div></div></details>' +
+          '<div style="font-size:14px;color:var(--muted);">' + info + '</div>' + prev +
+          '<div style="font-size:12px;color:var(--dim);line-height:1.55;">Answers are typed. Put alternatives with a slash (<span class="mono">DDoS / Distributed denial of service</span>); a part in parentheses is optional. An image or Drive link in a question shows as a picture.</div></div>' +
+        '<div class="card" style="display:flex;flex-direction:column;gap:18px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--go);font-weight:800;">2 \u00b7 GAME</div>' +
+          sec("Board theme", chips("theme", [["lion", "Lion Pride (green & white)"], ["classic", "Classic TV"]], OPT.theme)) +
+          sec("Time per clue", chips("ctime", [[20, "20 s"], [30, "30 s"], [45, "45 s"], [60, "60 s"]], OPT.ctime), "Ends early once everyone has it right. Wrong answers cost nothing, so students keep trying.") +
+          sec("Daily Doubles", chips("dd", [[0, "None"], [1, "1"], [2, "2"]], OPT.dd), "Hidden at random (never in the top row). Everyone still answers; the picking team\u2019s correct players earn \u00d72.") +
+          sec("Values", chips("mult", [[1, "$100\u2013$500"], [2, "$200\u2013$1,000"]], OPT.mult)) +
+          '<div style="font-size:13px;color:var(--muted);line-height:1.6;">Teams are your class squads. Squads take turns picking a tile on their devices (first tap counts; a random tile after 15 s, or click one on the board). Everyone answers every clue. Team score = team $ \u00f7 players.<br><b style="color:var(--bright);">XP:</b> every player on the 1st / 2nd / 3rd team +200 / +150 / +100 \u00b7 everyone else who answered +5 \u00b7 MVP (most $) +100.</div>' +
+          '<div><button type="button" class="btn" id="tjStart" data-wr-start="Start Team Jeopardy"' + (busy ? ' disabled' : '') + '>' + esc((WR && WR.label()) || "Start Team Jeopardy") + '</button></div>' +
+          (msg ? '<div role="alert" style="color:var(--bad);font-weight:700;font-size:14px;">' + esc(msg) + '</div>' : '') + '</div>' +
+      '</div>';
+  }
+  function scores(s){
+    return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">' + (s.teams || []).map(function(t, r){ var dl = s.phase === "rev" ? (DL[t.id] || 0) : 0, pk = s.pick && s.pick.id === t.id && s.phase === "pick", c = t.color || "var(--go)";
+      return '<div class="anim" style="flex:1;min-width:160px;border-radius:14px;padding:12px 14px;background:var(--panel);border:3px solid ' + esc(c) + ';' + (pk ? 'box-shadow:0 0 24px -6px ' + esc(c) + ';' : '') + (dl ? '--dy:' + (dl * 30) + 'px;animation:slide .8s cubic-bezier(.2,.8,.2,1) both;' : '') + '">' +
+        '<div style="display:flex;gap:8px;align-items:baseline;"><span class="mono" style="color:var(--dim);font-weight:800;">#' + (r + 1) + '</span><b style="flex:1;color:' + esc(c) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(t.name) + '</b>' +
+          (dl ? '<span class="mono" style="font-size:13px;font-weight:800;color:' + (dl > 0 ? 'var(--ok)' : 'var(--bad)') + ';">' + (dl > 0 ? '\u25b2' : '\u25bc') + Math.abs(dl) + '</span>' : '') + (pk ? '<span class="mono" style="font-size:11px;font-weight:800;color:' + esc(c) + ';">PICKING</span>' : '') + '</div>' +
+        '<div class="mono" style="font-size:clamp(26px,2.8vw,38px);font-weight:800;color:var(--bright);line-height:1.1;">$' + Number(t.avg || 0).toLocaleString() + '</div><div class="mono" style="font-size:12px;color:var(--dim);">per player \u00b7 ' + t.n + ' players \u00b7 $' + Number(t.cash || 0).toLocaleString() + ' total</div></div>'; }).join("") + '</div>';
+  }
+  function liveHtml(s){
+    var head = '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:14px;"><div><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--dim);">TEAM JEOPARDY \u00b7 ' + esc(CUR.name) + '</div>' +
+      '<div style="font-size:clamp(24px,3.4vw,36px);font-weight:800;color:var(--go);line-height:1.15;">' + (s.status === "done" ? "Final results" : s.left + " clues left") + '</div></div><span style="flex:1;"></span>' +
+      (s.status === "live" ? '<button type="button" class="btn ghost" data-act="end">End now</button>' : '<button type="button" class="btn" data-act="new">New game</button>') + '</div>';
+    if (s.status === "done") {
+      var T = s.teams || [], pod = T.slice(0, 3), H = [150, 110, 80], XP = [200, 150, 100];
+      return head + '<div class="card" style="padding:28px;">' +
+        '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:6px 0 24px;flex-wrap:wrap;">' + [1, 0, 2].filter(function(i){ return pod[i]; }).map(function(i){ var t = pod[i], c = t.color || "var(--go)";
+          return '<div class="anim" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:170px;opacity:0;animation:rise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.4, 1.3, .3][i] + 's;"><div style="font-weight:800;color:' + esc(c) + ';font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(t.name) + '</div><div class="mono" style="color:var(--bright);font-weight:800;">$' + Number(t.avg).toLocaleString() + ' per player</div><div class="mono" style="font-size:12px;color:var(--muted);">+' + XP[i] + ' XP each</div>' +
+            '<div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : esc(c)) + ';border:3px solid ' + esc(c) + ';display:flex;justify-content:center;padding-top:10px;"><span style="font-size:40px;font-weight:800;color:' + (i ? 'var(--bright)' : '#111') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' +
+        ((s.mvp || []).length ? '<div class="anim" style="opacity:0;animation:rise .6s ease forwards;animation-delay:3.2s;text-align:center;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;">TOP EARNERS \u00b7 MVP +100 XP</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">' + s.mvp.map(function(p, i){ return '<div style="padding:10px 14px;border-radius:12px;border:2px solid ' + (i ? 'var(--border3)' : 'var(--go)') + ';background:var(--panel2);"><span class="mono" style="color:var(--dim);">' + (i + 1) + '</span> <b style="color:var(--bright);">' + esc(p.h) + '</b> <span class="mono">$' + Number(p.c).toLocaleString() + '</span>' + (i ? '' : ' <span class="mono" style="color:var(--go);font-weight:800;">MVP</span>') + '</div>'; }).join("") + '</div></div>' : '') +
+        '<div style="font-size:13px;color:var(--dim);text-align:center;margin-top:14px;">XP is paid: every player on the 1st / 2nd / 3rd team who answered +200 / +150 / +100, everyone else who answered +5, MVP +100.</div></div>' + scores(s);
+    }
+    var g = s.grid || { cats: [], rows: [] }, pc = (s.pick && s.pick.color) || "var(--go)";
+    if (s.phase === "pick") {
+      return head + '<div class="card" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px;border:3px solid ' + esc(pc) + ';"><div style="flex:1;font-size:clamp(24px,3vw,38px);font-weight:800;color:' + esc(pc) + ';">' + esc(s.pick ? s.pick.name : "") + ' picks!</div><span style="color:var(--muted);">First tap on a ' + esc(s.pick ? s.pick.name : "") + ' device counts \u00b7 random pick in</span><span id="tjT" class="mono" style="font-size:34px;font-weight:800;color:var(--bright);min-width:48px;text-align:right;"></span></div>' +
+        '<div class="jboard" style="grid-template-columns:repeat(' + g.cats.length + ',minmax(0,1fr));">' + g.cats.map(function(c){ return '<div class="jcat">' + esc(c) + '</div>'; }).join("") +
+        g.rows.map(function(r, li){ return r.map(function(v, c){ return '<button type="button" class="jtile" data-key="' + li + ':' + c + '"' + (v ? ' aria-label="' + esc(g.cats[c]) + ' for $' + v + '"' : ' disabled aria-label="Used"') + '>$' + (v || 0) + '</button>'; }).join(""); }).join("") + '</div>' + scores(s);
+    }
+    var cl = s.clue || {}, cap = '<div class="mono" style="font-size:clamp(14px,1.6vw,20px);letter-spacing:2px;font-weight:800;">' + esc(String(cl.cat || "").toUpperCase()) + ' \u00b7 $' + cl.val + '</div>' +
+      (cl.dd ? '<div class="ddIn" style="font:800 clamp(34px,5vw,64px)/1 var(--jb-font);color:var(--jb-val);">DAILY DOUBLE!</div><div class="mono" style="font-size:16px;">' + esc(s.pick ? s.pick.name : "") + ' earns \u00d72 \u00b7 everyone answers</div>' : '');
+    if (s.phase === "q") return head + '<div class="jclue">' + cap +
+      '<div style="display:flex;align-items:center;gap:14px;width:100%;"><div style="flex:1;height:10px;border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden;"><div id="tjB" style="height:100%;width:100%;background:var(--jb-val);"></div></div><span id="tjT" class="mono" style="display:inline-block;font-size:34px;font-weight:800;color:var(--jb-val);min-width:56px;text-align:right;"></span></div>' +
+      clueHtml(cl.q) + '<div aria-hidden="true">' + maskHtml(cl.mask) + '</div>' +
+      '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span style="display:inline-flex;align-items:baseline;gap:8px;"><span id="tjCnt" class="mono" style="display:inline-block;font-size:48px;font-weight:800;line-height:1;">' + s.right + '</span><span class="mono" style="font-size:18px;">/ ' + s.here + ' got it</span></span><button type="button" class="btn ghost" data-act="next" style="color:var(--jb-text);border-color:var(--jb-text);">Show answer now</button></div></div>' + scores(s);
+    var per = (s.per || []).map(function(p){ var t = (s.teams || []).filter(function(x){ return x.id === p.id; })[0]; return t ? { t: t, ok: p.ok, n: p.n } : null; }).filter(Boolean);
+    return head + '<div class="jclue">' + cap + clueHtml(cl.q) + '<div class="ja">' + esc(cl.a) + '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:760px;">' + per.map(function(r){ var pct = r.n ? Math.round(r.ok / r.n * 100) : 0; return '<div style="display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 120px;gap:10px;align-items:center;text-align:left;"><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(r.t.name) + '</b><div style="height:16px;border-radius:8px;background:rgba(0,0,0,.3);overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + esc(r.t.color || "#fff") + ';"></div></div><span class="mono" style="font-weight:800;">' + r.ok + '/' + r.n + ' \u00b7 ' + pct + '%</span></div>'; }).join("") + '</div>' +
+      '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;"><span class="mono" style="font-size:18px;">' + s.right + ' got it</span><button type="button" class="btn" data-act="next" style="background:var(--jb-text);border-color:var(--jb-text);color:var(--jb-clue);">' + (s.left ? 'Next pick \u2192' : 'Final results \u2192') + '</button><span class="mono" style="font-size:14px;">auto in 9 s</span></div></div>' + scores(s);
+  }
+  function paint(force){
+    if (!CUR) return; theme();
+    var s = ST && ST.session, live = s && !showSetup && (s.status === "live" || s.status === "done");
+    if (ST && ST.na) { view.innerHTML = '<div class="card">' + (ST.err === "sql" ? 'Run <b>supabase/team-jeopardy.sql</b> (after re-running <b>waiting-room.sql</b>) in Supabase first.' : esc(ERR[ST.err] || ("Couldn\u2019t load: " + ST.err))) + '</div>'; return; }
+    var k = live ? JSON.stringify([s.status, s.phase, s.n, s.right, s.here, s.teams, s.left, s.pick && s.pick.id]) : "setup";
+    if (!force && k === sig && live) return; sig = k;
+    var f = document.activeElement && document.activeElement.id;
+    if (live) view.innerHTML = liveHtml(s);
+    else { if (!force && (f === "tjSheet" || f === "tjCsv")) return; view.innerHTML = setupHtml(); if (WR) WR.bind(view); }
+    if (f && document.getElementById(f)) document.getElementById(f).focus();
+    tick();
+  }
+  function tick(){
+    var s = ST && ST.session, t = document.getElementById("tjT"), b = document.getElementById("tjB");
+    if (!s || s.status !== "live" || !t) return;
+    var end = s.phase === "pick" ? s.pick_ends : s.q_ends; if (!end) return;
+    var left = Math.max(0, new Date(end).getTime() - (Date.now() + skew)), sec = Math.ceil(left / 1000);
+    t.textContent = sec;
+    if (s.phase === "q") { if (b) b.style.width = (left / (s.ctime * 1000) * 100) + "%"; t.classList.toggle("pulse", sec <= 5 && sec > 0);
+      if (sec !== lastTick) { lastTick = sec; if (FX && sec > 0 && sec <= 5) FX.sfx("tick"); if (FX && FX.music) FX.music(true, sec > 0 && sec <= 5 ? 2 : false); } }
+  }
+  setInterval(tick, 200);
+  view.addEventListener("click", function(e){
+    var b = e.target.closest("button"); if (!b || b.disabled) return;
+    if (b.id === "tjImport") return importSheet();
+    if (b.id === "tjStart") return start();
+    var g = b.getAttribute("data-g"), v = b.getAttribute("data-v"), a = b.getAttribute("data-act"), key = b.getAttribute("data-key");
+    if (g) { OPT[g] = g === "theme" ? v : +v; saveOpt(); paint(true); return; }
+    if (key) return act("ctf_t_tj_pick", { p_key: key });
+    if (a === "next") return act("ctf_t_tj_next");
+    if (a === "end") { if (confirm("End Team Jeopardy now? XP is paid for the current scores.")) act("ctf_t_tj_end"); return; }
+    if (a === "new") { showSetup = true; msg = ""; paint(true); }
+  });
+  view.addEventListener("input", function(e){ if (e.target.id === "tjCsv") { setCsv(e.target.value); clearTimeout(window.__tjc); window.__tjc = setTimeout(function(){ paint(true); }, 600); } });
+  view.addEventListener("change", function(e){ if (e.target.id === "tjFile" && e.target.files[0]) { var rd = new FileReader(); rd.onload = function(){ setCsv(rd.result); SH.msg = ""; paint(true); }; rd.readAsText(e.target.files[0]); } });
+  view.addEventListener("keydown", function(e){ if (e.target.id === "tjSheet" && e.key === "Enter") importSheet(); });
+  function pickClass(id){
+    CUR = CLASSES.filter(function(c){ return c.id === id; })[0] || CLASSES[0]; if (!CUR) return;
+    try { localStorage.setItem("tjeop-class", CUR.id); } catch (e) {}
+    sel.value = CUR.id; ST = null; showSetup = false; msg = ""; sig = ""; lastPhase = ""; lastN = -1;
+    if (WR) WR.reload();
+    paint(true); load();
+  }
+  (async function(){
+    if (!AUTH || !AUTH.online) { view.innerHTML = '<div class="card">Connect the class backend (supabase-config.js) first.</div>'; return; }
+    try { CLASSES = await rpc("ctf_t_classes") || []; } catch (e) { CLASSES = null; }
+    if (!Array.isArray(CLASSES)) { view.innerHTML = '<div class="card">Sign in on the <a href="teacher.html">teacher dashboard</a> to run Team Jeopardy.</div>'; return; }
+    if (!CLASSES.length) { view.innerHTML = '<div class="card">No classes yet.</div>'; return; }
+    sel.innerHTML = CLASSES.map(function(c){ return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join("");
+    sel.onchange = function(){ pickClass(sel.value); };
+    var want = new URLSearchParams(location.search).get("class"); try { want = want || localStorage.getItem("tjeop-class"); } catch (e) {}
+    pickClass(want);
+  })();
+})();
+</script>
+</body>
+</html>

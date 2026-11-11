@@ -1,6 +1,6 @@
 // © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md.
 /* waiting-room.js (v29.0; 32.1 brackets + 5 s countdown) — teacher side of the class duel waiting room (supabase/waiting-room.sql).
-   Used by battle.html (kind "team"), vocab-battle.html ("vocab"), raid.html ("raid"), bracket.html ("bracket") and ping-rush.html ("rush").
+   Used by battle.html (kind "team"), vocab-battle.html ("vocab"), raid.html ("raid"), bracket.html ("bracket"), ping-rush.html ("rush") and team-jeopardy.html ("jeop").
    WROOM.attach({ kind, rpc, classId(), demo, teams(), people() }) → { html(), bind(root), go(startFn) }
      teams()  — optional: ids of the ticked teams (31.2). Unticked teams are left out of the room card and the count.
      people() — optional: ids of the ticked students (32.1, brackets). Squads show only those students, plus a "No squad" group.
@@ -11,7 +11,7 @@
   if (window.WROOM) return;
   var SECS = 5;
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  var LBL = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid", bracket: "King of the Pride", rush: "Ping Rush" };
+  var LBL = { team: "Team Battle", vocab: "Vocab Battle", raid: "Boss Raid", bracket: "King of the Pride", rush: "Ping Rush", jeop: "Team Jeopardy" };
   function css() {
     if (document.getElementById("wrCss")) return;
     var s = document.createElement("style"); s.id = "wrCss";
@@ -23,13 +23,17 @@
   function attach(o) {
     var ST = null, timer = null, counting = false, skew = 0, err = "";
     function rpc(fn, a) { return o.demo ? Promise.resolve(demo(fn, a)) : o.rpc(fn, a); }
-    var D = { lobby: null, here: {} };
+    var D = { lobby: null, here: {}, moves: {} };
     function demo(fn, a) {
       if (fn === "ctf_t_lobby_open") { D.lobby = { kind: o.kind, status: "open", opened_at: new Date().toISOString() }; D.t0 = Date.now(); return { ok: true }; }
       if (fn === "ctf_t_lobby_set") { if (a.p_status === "closed") D.lobby = null; else if (D.lobby) { D.lobby.status = a.p_status; if (a.p_status === "counting") D.lobby.start_at = new Date(Date.now() + SECS * 1000).toISOString(); } return { ok: true, now: new Date().toISOString(), start_at: D.lobby && D.lobby.start_at }; }
+      if (fn === "ctf_t_group_assign") { (a.p_students || []).forEach(function (id) { D.moves[id] = a.p_group || "_none"; }); return { ok: true, moved: (a.p_students || []).length }; }
       var names = [["Red Rockets", "#ff5d73", ["byte_knight", "zero_day", "packet_pal", "nullptr"]], ["Blue Byte", "#3a86ff", ["cipher_sam", "root_ruth", "hex_hero", "bitwise"]], ["Green Ghosts", "#2ec27e", ["sudo_sue", "pingu", "lambda_lu"]]];
       var n = D.lobby ? Math.min(11, Math.floor((Date.now() - D.t0) / 900)) : 0, k = 0;
-      return { now: new Date().toISOString(), lobby: D.lobby, live: null, room: { ungrouped: 0, here: n, teams: names.map(function (t, i) { return { id: "g" + i, name: t[0], color: t[1], members: t[2].map(function (h) { return { id: h, handle: h, here: k++ < n }; }) }; }) } };
+      var mem = names.map(function () { return []; }), loose = [];
+      names.forEach(function (t, i) { t[2].forEach(function (h) { var m = { id: h, handle: h, here: k++ < n }, g = D.moves[h];
+        if (g === "_none") loose.push(m); else if (g && /^g\d$/.test(g) && mem[+g.slice(1)]) mem[+g.slice(1)].push(m); else mem[i].push(m); }); });
+      return { now: new Date().toISOString(), lobby: D.lobby, live: null, room: { ungrouped: loose.length, here: n, loose: loose, teams: names.map(function (t, i) { return { id: "g" + i, name: t[0], color: t[1], members: mem[i] }; }) } };
     }
     function load() {
       clearTimeout(timer);
@@ -69,15 +73,37 @@
           '<button type="button" class="btn ghost" id="wrClose">Close room</button></div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;">' + RT.map(function (t) {
           var h = (t.members || []).filter(function (m) { return m.here; }).length;
-          return '<div style="border:1px solid var(--border2);border-left:4px solid ' + esc(t.color || "var(--border3)") + ';border-radius:10px;padding:10px 12px;background:var(--bg);">' +
+          return '<div data-wrg="' + esc(t.id) + '" aria-label="' + esc(t.name) + ' (drop a student here)" style="border:1px solid var(--border2);border-left:4px solid ' + esc(t.color || "var(--border3)") + ';border-radius:10px;padding:10px 12px;background:var(--bg);">' +
             '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><b style="flex:1;color:var(--bright);">' + esc(t.name) + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + h + '/' + (t.members || []).length + '</span></div>' +
-            '<div style="display:flex;flex-wrap:wrap;gap:4px 10px;">' + (t.members || []).map(function (m) { return '<span style="font-size:12px;color:' + (m.here ? "var(--bright)" : "var(--faint)") + ';">' + (m.here ? '<span style="color:var(--ok);">\u25cf</span> ' : '\u25cb ') + esc(m.handle) + '</span>'; }).join("") + '</div></div>';
+            '<div style="display:flex;flex-wrap:wrap;gap:4px 10px;">' + (t.members || []).map(function (m) { return '<span draggable="true" data-wrm="' + esc(m.id) + '" title="Drag to another squad" style="font-size:12px;cursor:grab;padding:2px 6px;margin:-2px -6px;border-radius:6px;color:' + (m.here ? "var(--bright)" : "var(--faint)") + ';">' + (m.here ? '<span style="color:var(--ok);">\u25cf</span> ' : '\u25cb ') + esc(m.handle) + '</span>'; }).join("") + '</div></div>';
         }).join("") + '</div>' +
+        (RT.length > 1 ? '<div style="margin-top:10px;font-size:12px;color:var(--dim);">Drag a name to another squad to move them. The change is saved to the class squads.</div>' : '') +
         (out.length ? '<div style="margin-top:10px;font-size:12px;color:var(--dim);">Sitting out (not ticked): ' + out.map(esc).join(', ') + '. They are not in this battle or its results.</div>' : '') +
         (R.ungrouped && !ppl ? '<div style="margin-top:10px;font-size:12px;color:var(--amber);">' + R.ungrouped + ' student' + (R.ungrouped > 1 ? "s have" : " has") + ' no squad. They can still open the room but sit out a team battle.</div>' : '') +
         (err ? '<div role="alert" style="margin-top:10px;font-size:13px;color:var(--bad);font-weight:700;">' + esc(err) + '</div>' : '') + '</div>';
     }
+    var WRD = null;
+    function wrBox(e) { return e.target.closest && e.target.closest("[data-wrg]"); }
+    function wrClear() { document.querySelectorAll("[data-wrg]").forEach(function (b) { b.style.outline = ""; b.style.background = "var(--bg)"; }); }
+    document.addEventListener("dragstart", function (e) { var m = e.target.closest && e.target.closest("[data-wrm]"); if (!m || !document.getElementById("wrCard") || !document.getElementById("wrCard").contains(m)) return; WRD = m.getAttribute("data-wrm"); try { e.dataTransfer.setData("text/plain", WRD); e.dataTransfer.effectAllowed = "move"; } catch (x) {} m.style.opacity = ".45"; });
+    document.addEventListener("dragend", function (e) { var m = e.target.closest && e.target.closest("[data-wrm]"); if (m) m.style.opacity = ""; WRD = null; wrClear(); });
+    document.addEventListener("dragover", function (e) { var b = wrBox(e); if (!b || !WRD) return; e.preventDefault(); try { e.dataTransfer.dropEffect = "move"; } catch (x) {} wrClear(); b.style.outline = "2px solid var(--amber)"; b.style.background = "color-mix(in srgb, var(--amber) 10%, var(--bg))"; });
+    document.addEventListener("drop", function (e) {
+      var b = wrBox(e); if (!b || !WRD) return; e.preventDefault();
+      var id = WRD, gid = b.getAttribute("data-wrg"); WRD = null; wrClear();
+      var R = ST && ST.room; if (!R) return;
+      var all = (R.teams || []).concat([{ id: "_none", members: R.loose || (R.loose = []) }]), m = null, from = null;
+      all.forEach(function (t) { (t.members || []).forEach(function (x, i) { if (x.id === id) { m = x; from = t; } }); });
+      if (!m || from.id === gid) return;
+      var to = all.filter(function (t) { return t.id === gid; })[0]; if (!to) return;
+      from.members = from.members.filter(function (x) { return x.id !== id; }); (to.members = to.members || []).push(m); err = ""; paint();
+      rpc("ctf_t_group_assign", { p_students: [id], p_group: gid === "_none" ? null : gid }).then(function (r) {
+        if (!r || r.error || !r.moved) { err = "Couldn’t move " + (m.handle || "that student") + ": " + ((r && r.error) || "nothing saved") + "."; }
+        load();
+      }).catch(function () { err = "Couldn’t move " + (m.handle || "that student") + ". Re-run supabase/class-groups.sql."; load(); });
+    });
     function paint() {
+      if (WRD) return;   // don't redraw mid-drag
       var c = document.getElementById("wrCard"); if (!c) return;
       var f = document.activeElement && document.activeElement.id;
       var tmp = document.createElement("div"); tmp.innerHTML = html(); var n = tmp.firstChild;

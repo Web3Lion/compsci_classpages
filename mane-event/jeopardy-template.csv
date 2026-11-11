@@ -1,0 +1,11 @@
+Category,Binary Basics,Network Security,Passwords,CIA Triad,Famous Hacks
+$100 Q,How many bits are in a byte?,This tool blocks or allows network traffic based on rules.,"A password made of random words, like ""correct horse battery staple"".",The C in the CIA triad.,The 2017 ransomware that spread worldwide through an unpatched Windows flaw.
+$100 A,8,Firewall,Passphrase,Confidentiality,WannaCry
+$200 Q,Convert 1010 to decimal.,The S in HTTPS stands for this.,A second step after your password like a code from an app.,Making sure data hasn't been changed without permission.,The retailer whose 2013 breach began with a heating vendor's stolen login.
+$200 A,10,Secure,Two-factor authentication (2FA),Integrity,Target
+$300 Q,The largest number 4 bits can represent.,A fake email that tries to steal your login.,An attack that tries every possible password.,Making sure systems are there when users need them.,The worm that damaged Iran's nuclear centrifuges.
+$300 A,15,Phishing,Brute force,Availability,Stuxnet
+$400 Q,How many different values can 8 bits represent?,"This attack floods a server with traffic from many computers.",Adding random data to a password before hashing it.,"Encryption mainly protects this part of the triad.",The credit bureau breached in 2017 through an unpatched web app.
+$400 A,256,DDoS,Salt,Confidentiality,Equifax
+$500 Q,Convert 255 to binary.,A network that sits between the internet and a private network to host public servers.,The one-way function used to store passwords safely.,A checksum or hash helps protect this part of the triad.,The 2020 attack that hid malware inside SolarWinds Orion updates.
+$500 A,11111111,DMZ,Hashing,Integrity,SUNBURST

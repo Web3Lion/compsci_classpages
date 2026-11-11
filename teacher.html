@@ -3,14 +3,14 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=37.2.0"></script>
+<script src="site.js?v=38.0.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=37.2.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=37.2.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=38.0.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=38.0.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Dashboard (new) — CTF Platform</title>
-<link href="assets/fonts/fonts.css?v=37.2.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
 <style>
   :root{
     --bg:#0a0d12;--panel:#111620;--panel2:#161d29;--panel3:#1c2432;--bg2:#0d1119;
@@ -307,20 +307,20 @@
   </div>
 </div>
 
-<script src="config.js?v=37.2.0"></script>
-<script src="ctf-data/cyber1.js?v=37.2.0"></script>
-<script src="ctf-data/cyber2.js?v=37.2.0"></script>
-<script src="ctf-data/cyber3.js?v=37.2.0"></script>
-<script src="ctf-data/apcsp.js?v=37.2.0"></script>
-<script src="ctf-data/web3.js?v=37.2.0"></script>
-<script src="js/cipher.js?v=37.2.0"></script>
-<script src="supabase-config.js?v=37.2.0"></script>
-<script src="js/auth.js?v=37.2.0"></script>
-<script src="js/name-filter.js?v=37.2.0"></script>
-<script src="js/objectives.js?v=37.2.0"></script>
-<script src="js/standards.js?v=37.2.0"></script>
-<script src="js/csv.js?v=37.2.0"></script>
-<script src="js/skins.js?v=37.2.0"></script>
+<script src="config.js?v=38.0.0"></script>
+<script src="ctf-data/cyber1.js?v=38.0.0"></script>
+<script src="ctf-data/cyber2.js?v=38.0.0"></script>
+<script src="ctf-data/cyber3.js?v=38.0.0"></script>
+<script src="ctf-data/apcsp.js?v=38.0.0"></script>
+<script src="ctf-data/web3.js?v=38.0.0"></script>
+<script src="js/cipher.js?v=38.0.0"></script>
+<script src="supabase-config.js?v=38.0.0"></script>
+<script src="js/auth.js?v=38.0.0"></script>
+<script src="js/name-filter.js?v=38.0.0"></script>
+<script src="js/objectives.js?v=38.0.0"></script>
+<script src="js/standards.js?v=38.0.0"></script>
+<script src="js/csv.js?v=38.0.0"></script>
+<script src="js/skins.js?v=38.0.0"></script>
 <script>
 /* ---------------- boot / config ---------------- */
 var CFG = window.SUPABASE_CONFIG || {};
@@ -615,7 +615,7 @@ function renderNav(){
 function runTiles(){
   var q='?class='+encodeURIComponent(CUR.id);
   var T=[["PULSE","Live Pulse","pulse.html"+q,"var(--ok)"],["TEAM","Team Battle","battle.html"+q,"var(--accent)"],["VOCAB","Vocab Battle","vocab-battle.html"+q,"var(--accent)"],
-    ["RAID","Boss Raid","raid.html"+q,"var(--bad)"],["BRKT","King of the Pride","bracket.html"+q,"var(--accent)"],["PING","Ping Rush","ping-rush.html"+q,"var(--accent)"],["1V1","Duel Arena","duel.html"+q,"var(--accent)"],["WATCH","Duel Spectator","duel-watch.html"+q,"var(--muted)"],["RALLY","Reward Rally","carnival.html","var(--warn,#ffcf5c)"]];
+    ["RAID","Boss Raid","raid.html"+q,"var(--bad)"],["BRKT","King of the Pride","bracket.html"+q,"var(--accent)"],["PING","Ping Rush","ping-rush.html"+q,"var(--accent)"],["JEOP","Team Jeopardy","team-jeopardy.html"+q,"var(--accent)"],["1V1","Duel Arena","duel.html"+q,"var(--accent)"],["WATCH","Duel Spectator","duel-watch.html"+q,"var(--muted)"],["RALLY","Reward Rally","carnival.html","var(--warn,#ffcf5c)"]];
   return '<div class="card" style="padding:16px;margin-bottom:18px;background:var(--bg);">'+
     '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px;"><div style="font-size:15px;font-weight:700;color:var(--bright);">Run class</div>'+
     '<div style="font-size:12px;color:var(--dim);">Opens in a new tab for the projector</div>'+
@@ -626,7 +626,7 @@ var JUMP=[], JSEL=0;
 function jumpItems(){
   var o=NAV_FLAT().map(function(x){ return {name:x.name,group:x.group,go:x.tab?"setTab('"+x.tab+"')":x.act}; });
   var q='?class='+encodeURIComponent(CUR.id);
-  [["Live Pulse","pulse.html"],["Team Battle","battle.html"],["Vocab Battle","vocab-battle.html"],["Boss Raid","raid.html"],["King of the Pride","bracket.html"],["Ping Rush","ping-rush.html"],["Duel Arena","duel.html"],["Duel Spectator","duel-watch.html"]].forEach(function(x){ o.push({name:x[0],group:"RUN CLASS",go:"window.open('"+x[1]+q+"','_blank')"}); });
+  [["Live Pulse","pulse.html"],["Team Battle","battle.html"],["Vocab Battle","vocab-battle.html"],["Boss Raid","raid.html"],["King of the Pride","bracket.html"],["Ping Rush","ping-rush.html"],["Team Jeopardy","team-jeopardy.html"],["Duel Arena","duel.html"],["Duel Spectator","duel-watch.html"]].forEach(function(x){ o.push({name:x[0],group:"RUN CLASS",go:"window.open('"+x[1]+q+"','_blank')"}); });
   o.push({name:"Reasey's Reward Rally",group:"RUN CLASS",go:"window.open('carnival.html','_blank')"},{name:"End all duels",group:"RUN CLASS",go:"endAllDuels()"});
   [["Directory","window.open('directory.html','_blank')"],["Teacher Resources","location.href='teacher_cyber_tools/'"],["Install Check","window.open('install-check.html','_blank')"]].forEach(function(x){ o.push({name:x[0],group:"RESOURCES",go:x[1]}); });
   (ROSTER||[]).forEach(function(s){ var nm=s.google_name||s.name||s.email||""; o.push({name:(s.handle||"?")+(nm?" \u00b7 "+nm:""),group:"STUDENT",go:"openStudent('"+s.id+"')"}); });
@@ -668,6 +668,7 @@ function launchMenus(){
       it('raid.html'+q,'Boss Raid','Whole class vs the course guide')+
       it('bracket.html'+q,'King of the Pride','Knockout bracket, seeded by XP')+
       it('ping-rush.html'+q,'Ping Rush','Whole class, same question, speed scores')+
+      it('team-jeopardy.html'+q,'Team Jeopardy','Squads pick clues, everyone answers')+
       it('duel.html'+q,'Duel Arena','Projector quiz duel')+
       it('duel-watch.html'+q,'Duel Spectator','Every live student duel')+
       '<div class="sep"></div>'+
@@ -4446,10 +4447,11 @@ function adCard(){
     '<a class="btn" target="_blank" rel="noopener" href="duel-watch.html?class='+encodeURIComponent(CUR.id)+'">Duel spectator \u2197</a>'+
     '<a class="btn" target="_blank" rel="noopener" href="bracket.html?class='+encodeURIComponent(CUR.id)+'">King of the Pride \u2197</a>'+
     '<a class="btn" target="_blank" rel="noopener" href="ping-rush.html?class='+encodeURIComponent(CUR.id)+'">Ping Rush \u2197</a>'+
+    '<a class="btn" target="_blank" rel="noopener" href="team-jeopardy.html?class='+encodeURIComponent(CUR.id)+'">Team Jeopardy \u2197</a>'+
     '<a class="btn" target="_blank" rel="noopener" href="raid.html?class='+encodeURIComponent(CUR.id)+'">Boss raid \u2197</a></span></div>'+bgCard()+
     '<div class="card" style="padding:16px 18px;margin-bottom:20px;">'+
     slider(!!AD.data.on,"toggleDuels()","Student flag duels",
-      "Students start a Flag Duel (up to 6 players, 2/5/10 min) or a Vocab Duel (1v1, or a 3\u20134 player brawl) from the arena and share a 4-letter code. Winner +10 XP, every finisher +5. Turning this off cancels open Flag Duel lobbies and blocks new duels of both kinds.","var(--amber)")+
+      "Students start a Flag Duel (up to 6 players, 2/5/10 min) or a Vocab Duel (1v1, or a 3\u20134 player brawl) from the arena and share a 4-letter code. Winner +200 XP (brawl: 1st 200 / 2nd 150 / 3rd 100, MVP +100), everyone else who finishes +5. Turning this off cancels open Flag Duel lobbies and blocks new duels of both kinds.","var(--amber)")+
     '<div style="display:flex;align-items:center;gap:10px;margin-top:14px;"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);flex:1;">LIVE DUELS \u00b7 '+live.length+'</div>'+
       '<button class="btn sm" onclick="adLoad()">Refresh</button>'+(live.length?'<button class="btn sm" onclick="endAllDuels()">End all duels</button>':'')+'</div>'+
     (live.length?live.map(row).join(''):'<div style="font-size:13px;color:var(--dim);padding:8px 0;">No duels running.</div>')+
