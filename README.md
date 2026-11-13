@@ -1,87 +1,177 @@
-# SFHS Daily Staff Hub
+# Cybersecurity & CS Classroom Site
 
-**Live site:** [sfdailyhub.vercel.app](https://sfdailyhub.vercel.app)
-**Office page:** [sfdailyhub.vercel.app/#office](https://sfdailyhub.vercel.app/#office) (office and admin accounts only)
+**Version 36.0.0** — see `CHANGELOG.md`.
 
-The Daily Staff Hub is one page that shows South Fayette High School staff what they need to know about today: the schedule, their coverage, field trips, testing, announcements and events. It replaces the morning emails and spreadsheets that staff piece this information together from now.
+Static, no-build HTML site for five courses: AP Computer Science Principles (`apcsp/`),
+Cybersecurity 1 (`cyber1/`), AP Cybersecurity 2 (`cyber2/`), Cybersecurity 3 (`cyber3/`),
+and a Web3/Blockchain elective (`web3/`).
+Root `index.html` is the course picker (homepage).
 
-Staff sign in with their South Fayette Google account and see only the information that applies to them. The main office runs everything from one Google Sheet. There is no new software to buy or install.
+## Setup
 
----
+No build step — plain HTML/CSS/JS. To run locally, serve the folder with any static
+server (e.g. `npx serve .` or the VS Code "Live Server" extension) and open `index.html`.
+Opening files directly via `file://` mostly works too, except features that `fetch()`
+data (schedules, news) need to be served over http(s).
 
-## Highlights
+**GitHub Pages:** push this folder's contents to the repo root of the Pages branch —
+`index.html` at the repo root must be the real homepage (not a simulator or other page).
 
-**For teachers**
-- **One page each morning.** Today's bell schedule with the current period highlighted, A/B day, coverage, announcements, testing, field trips, early dismissals and tonight's events.
-- **Personal coverage.** Teachers see only the periods they are covering, with the time, room and who they are covering. "Find my name" searches the whole coverage board.
-- **Coverage emails at 7:00 AM.** A teacher pulled from a duty, Engagement or SAP period gets one email listing the period, time, assignment and room or duty post. A **Got it ✓** button lets the office know they saw it.
-- **Field trips.** Teachers see which of their students are out and when. Students can be searched by name.
-- **Flex Day Testing.** Search a student or a teacher to see each testing location.
-- **Chill Room.** The week's status, today's announcement, the coordinator and the room, kept up to date by the Chill Room coordinator.
-- **Works on phones.** On small screens, the page switches to a stacked layout with collapsible sections.
+**Optional Supabase backend** (login gating, XP/score logging, teacher reports):
+see `SUPABASE-SETUP.md` and the SQL files in `supabase/`. The site works without it —
+Supabase-backed features (auth, saved progress) just no-op if `supabase-config.js`
+isn't filled in.
 
-**For the main office**
-- **One Google Sheet runs the hub.** Changes made in the sheet show on the hub at the next refresh.
-- **Coverage tab with safeguards.**
-  - Picking an absent teacher color-codes their day: green for classes, black for duties, blue for prep, red for lunch and purple for co-taught classes.
-  - Picking a full-day sub fills in the teacher's classes and lunch.
-  - Co-taught classes don't need a sub when only one co-teacher is out. The other co-teacher gets an FYI email, and the sub is free that period.
-  - Pulling someone from their prep, lunch or a class asks "Are you sure?" before anything is sent.
-- **Find a coverer sidebar.** Click a period and see who is free, with those covering the least this month listed first. Click a name to assign them.
-- **Printed sub schedules.** One PDF with a page per sub, ready to print in one step. It includes periods, times, rooms, courses and any extra coverage.
-- **Schedule control.**
-  - A/B days, bell times, assembly days and delays come from the sheet.
-  - An Override checkbox handles snow days and same-morning changes.
-  - The Office page can set an override that saves to the sheet for everyone.
-- **Field trip form.** Approved trips are submitted through a Google Form and posted automatically. Each trip gets a Trip ID, its roster is split by student (paste or CSV upload), and the office is emailed.
-- **Home dashboard.** A Home tab with today's numbers, a list of what still needs attention, and links to every tab.
-- **Built-in checks.** An email troubleshooter, a coverage email preview, and an error log of any page problems staff run into.
+## How it's organized
 
-**For administrators**
-- **Highlight posts.** Announcements with Highlight Post checked glow and stay pinned at the top.
-- **Hub banner.** A one-line message at the top of the hub for all staff, set from the Settings tab.
-- **Office page.** Admins and office staff can preview any day and see what every teacher will see.
+- `index.html` — course picker homepage. Each course card has a real `<a target="_blank">`
+  pop-out button (top-right) so the card opens in a new tab even when this page is
+  embedded in a small iframe elsewhere.
+- `buttons/` — all single-button standalone pop-out pages, styled to match each
+  course's colors/gradient, meant to be embedded on their own (e.g. in an LMS page)
+  when the full course card grid doesn't fit:
+  - `open-cyber1.html`, `open-cyber2.html`, `open-cyber3.html`, `open-web3.html`,
+    `open-apcsp.html` — open the course itself.
+  - `docs-cyber1.html`, `docs-cyber2.html`, `docs-cyber3.html` — "Enter the Grid"
+    student-documents buttons linking to each course's Drive folder. AP CSP/Web3
+    versions pending their document links.
+  - `open-button.html` — generic configurable button (`?to=&label=&color=`).
+- `apcsp/`, `cyber1/`, `cyber2/`, `cyber3/`, `web3/` — one folder per course, each with:
+  - `index.html` — course home (schedule, countdowns, quick links, resources)
+  - `syllabus.html`, `vocab.html`, `vocab-data.js`, `news.html`, `profile.html`
+  - `ctf.html` — the course's Capture-the-Flag / challenge arena. All five courses
+    have one, themed per course ("Bug Bounty" in AP CSP, "Block Hunter" in Web3).
+  - `apcsp/packet-intro.js`, `web3/consensus-intro.js` — page-transition intros for
+    the non-cyber courses (cyber pages use `nemesis-intro.js`).
+- `simulators/` — standalone interactive teaching tools (one HTML file each), linked
+  from the course pages' "Simulators" / "Class Links" cards. `simulators/index.html`
+  is the simulators hub/directory.
+- `practice/` — ungraded/graded practice quizzes (no login required), linked from
+  `practice/index.html`. Each quiz has Open Practice (untimed, endless) and Begin
+  Quiz (graded, timed, 10-15 random no-repeat questions) modes. `teacher-guide.html`
+  maps every quiz to AP CSP Units/Big Ideas.
+- `leaderboard.html` — live classroom-display leaderboard (Supabase-backed). Teachers
+  pick a class; students see their own class with their row highlighted and a sticky
+  rank chip. Three modes: **Overall**, **This Week**, and **Hall of Fame** (past weekly
+  top 3). Rank movement arrows (▲/▼/NEW) compare against the first board seen that
+  day on that device. Fullscreen button for projectors; auto-refreshes every 60s.
+- `carnival.html` (served at `./carnival`; formerly `reward-spinner.html`) — teacher-only prize wheel (students see a locked view).
+  Pick a class + student and the prize is sent to their profile when the wheel stops.
+  **EDIT ODDS** lets the teacher reweight or remove prizes (saved per device); sound
+  effects can be toggled off.
+- `duel.html` — head-to-head duel projector page (quick duel or 4/8-player
+  bracket). Students answer on their own device via `duel-client.js`.
+- `pulse.html` — live Class Pulse dashboard: who's active, which flag they're on,
+  who needs help, capture feed.
+- `certificates.html` — printable certificates (module / weekly top 3 / course /
+  duel champion / custom), one landscape page per student.
+- `answers.html` — teacher page for uploading `answers.local.js`.
+- `summit/sru-summit.html` — Cyberspace K-12 Summit field-trip page (Cyber 1 + AP Cyber 2),
+  linked from the announcement card on both course home pages.
+- `install-check.html` — setup + database + course-content check (needs
+  `supabase/install-check.sql`). Start here when something isn't working.
+- `countdown.html` — standalone countdown display.
+- `apcsp/carlow-grade-scale.html`, `cyber1/rmu-grade-scale.html` — dual-credit partner
+  grade-scale reference pages, flagged as differing from South Fayette's own scale.
+- `config.js` — **single source of truth** for editable per-course settings: schedule
+  sheet IDs, exam/task countdown dates, Meet links, resource card links.
+- `ctf-data/<course>.js` — each course's CTF flags, boss questions and frameworks,
+  loaded after `config.js` only by pages that need them (see `CLAUDE.md` for the CTF
+  authoring rules).
+- `ctf.js` — shared CTF engine (challenge rendering, grading, boss gauntlet, badges,
+  ranks, streaks, reward items, loot drops, anti-AI deterrents). Loaded by every
+  course's `ctf.html` and `profile.html`.
+- `teacher.html` — teacher-facing dashboard/reports (Supabase-backed): class summaries,
+  login/attendance report, flag analytics, module/flag locks, course-guide persona and
+  answer-key toggles, Ultimate Flags active/inactive toggle (cyber1 & cyber2), squads,
+  vocab lab, objectives, XP log, enrollment, send rewards (to one student or a whole
+  class) with an item log, settings (teachers, CSV backup export, [ DANGER ] delete
+  all class data).
+- `claude only/answers.local.js` — teacher-only answer key for text-entry flags, uploaded via
+  `answers.html`. **Gitignored — never commit it.**
+- `mane-event/` — Mane Event, a stand-alone live CSV battle / bracket (no sign-in, no database,
+  browser to browser). `/mane` is the short join link; `connection-test.html` checks the
+  school network; `binary-questions.csv` is a ready-made question set.
+- `tools/` — Teacher Tools hub. `rewards/`, `carnival.html`, `reward.html` — reward games.
+- Class battle pages: `vocab-battle.html`, `vocab-duel.html`, `battle.html`, `bracket.html`,
+  `bracket-play.html`, `raid.html`, `arena-duel.html` (+ `waiting-room.js`, `battle-fx.js`,
+  `ko-fx.js`, `binary-pool.js`, `prize-roll.js`, `team-picker.js`).
+- `assets/` — `fonts/` (self-hosted, `fonts.css`), `logo/`, `vendor/` (PeerJS, QR code).
+- `resources.js`, `objectives.js`, `standards.js`, `sync.js`, `auth.js`, `profile.js`,
+  `profile-link.js`, `practice-sync.js`, `vocab-log.js`, `vocab-xp.js`, `welcome.js`,
+  `nemesis-intro.js`, `name-filter.js`, `gate-art.js`, `csv.js`, `cipher.js`,
+  `cosmetics.js` (Coin Shop + leaderboard cosmetics), `duel-client.js` (student duel
+  pad) — shared helper scripts used across course pages.
+- `site.js` — loaded in `<head>` on every page: `SITE_VERSION`, the A11Y panel
+  (reduce motion, high contrast), skip link, focus styles.
+  Script tags carry the release number as a cache tag (`?v=36.0.0`) — when you bump
+  `SITE_VERSION`, bump the tag on every page too.
+- `claude only/` — working files, gitignored, never deployed: `uploads/` (curriculum PDFs, pasted
+  images), `scraps/` (extracted text), `design-system/`, `archive/` (old dashboard versions and
+  old bundled copies of Reward Rally / Teacher Tools), `answers.local.js`, the district data summary.
+- `supabase/` — SQL schema files for the optional backend (run in the order noted in
+  `SUPABASE-SETUP.md`: schema, google-auth, teacher-reports, class-gates, answer-key,
+  attempt-log, class-groups, and the rest). **Re-run order matters**: `multi-domain.sql`
+  and `teachers.sql` must be re-run after any re-run of `google-auth.sql` (it resets
+  `_is_school()`/`_is_teacher()`), and `allowed-emails.sql` must be re-run after any
+  re-run of `multi-domain.sql` (it resets the external-email allowlist). Use
+  `check-installed.sql` to see which files need a re-run.
+- `.github/workflows/weekly-snapshot.yml` — GitHub Action that saves each class's
+  weekly top 3 to the Hall of Fame every Monday (replaces pg_cron, which the Supabase
+  free tier lacks). Needs repo secrets `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`, plus
+  `supabase/weekly-snapshot-auto.sql` installed.
 
----
+## Rewards & items
 
-## How information is protected
+Students earn or receive items that appear in their profile inventory. Timed items
+are activated with a hold-to-confirm button and show a live countdown on the profile
+and in the arena (bottom-left pill). New arrivals show a glowing notification.
 
-- **Sign-in required.** Only South Fayette Google accounts can see staff data, and the script checks every request.
-- **Teachers see only their own coverage.** The full coverage board is limited to accounts listed as office or admin on the Settings tab.
-- **Office page access** is controlled by two rows on the Settings tab: **Office preview emails** and **Admin emails**.
-- **The welcome page** (before sign-in) shows only quotes, general information and a game leaderboard that stores initials only.
-- **Data stays in the district.** Everything lives in the district's Google Sheet. The code repository is private.
+- **Game items:** 2x XP (24h), Streak Freeze, +500 XP bonus
+- **Boss boosts:** Firewall Shield, Overclock, Extra Life
+- **Flag help:** Free Hint, Retry Wipe, Cooldown Skip, Time Freeze
+- **XP multipliers:** Lucky Capture, Pioneer Boost, Squad Surge
+- **Surprise drops:** Mystery Box, Loot Drop (3% chance per capture)
+- **Vouchers** (homework pass, extension, bonus points): redeemed in person with the teacher
 
----
+Sources: Reasey's Reward Rally (carnival.html), the teacher dashboard's Send Rewards tab, and loot drops.
+Backend: `supabase/reward-items.sql`.
 
-## A normal morning
+## Arena mechanics (v2.0)
 
-| Time | What happens |
-|---|---|
-| Before 7:00 | The office enters absences, subs and coverage on the Coverage tab. The sheet flags conflicts as they are entered. |
-| 7:00 | Coverage emails go out automatically. Each teacher is told only once. If something changes later, they get an "Updated" email. |
-| Morning | Office prints sub schedules (**Staff Hub → Print sub schedules**). Staff open the hub. |
-| During the day | Any change in the sheet shows on the hub at the next refresh. |
+- **Combo meter:** consecutive captures with no wrong answer pay ×1.1, ×1.2, ×1.3,
+  ×1.4, then ×1.5 max. One miss resets it.
+- **Bookmarks:** ☆ on any flag, then filter to ★ Saved.
+- **Hint cost preview:** the flag's value now vs. after the hint, before you reveal it.
+- **Coins:** 1 coin per 250 XP (plus teacher bonus coins), spent in the profile
+  Coin Shop on titles, name colors and frames. Never affects XP or rank.
 
----
+## Site-wide conventions
 
-## What runs where
+- **Light/dark theme toggle** on every page, shared through `localStorage['course-theme']`.
+  New pages must include it from the start (see `CLAUDE.md`).
+- **Accessibility preferences** (`course-motion`, `course-contrast`) are shared the
+  same way. New pages get them by loading `site.js` in `<head>`; JS-driven
+  animations should check `window.SITE_REDUCED_MOTION()`.
 
-| Part | Where it lives | Who updates it |
-|---|---|---|
-| The hub page | GitHub → Vercel (`index.html`) | Technology / project lead |
-| Data | Google Sheet (Coverage, Staff, Schedule, Announcements, Calendar, Field Trips, Chill Room, Flex Testing, Settings and more) | Main office, Chill Room coordinator |
-| Automation (emails, forms, sub schedules, data feed) | Apps Script attached to the sheet (`templates/Coverage Emails.gs`) | Project lead |
+## Editing day-to-day content
 
----
+- **Weekly schedule**: each course's `index.html` pulls from a published Google Sheet
+  (CSV export) — edit the sheet, the page updates automatically. Sheet ID/GID live in
+  `config.js` per course.
+- **Countdowns** (exam day, AP Create Task due, etc.): edit the `exam` object in
+  `config.js` per course. The AP CSP Create Task countdown is currently hardcoded as
+  a fallback in `apcsp/index.html` (`const TASK = CFG.createTask || {...}`) — add a
+  `createTask: { name, date, from }` entry to `config.js`'s `apcsp` block to make it
+  editable from there too.
+- **CTF flags / challenges**: edit `ctf-data/<course>.js` only — see `CLAUDE.md` for the full
+  rules (leveled text flags, `answers.local.js` sync, one array per course, etc.).
+  Never edit `ctf.js` to add content.
+- **Quick Links / Class Links / Resources cards**: edit the links directly in each
+  course's `index.html`, or via `resourceCards` in `config.js`.
 
-## Status and next steps
+## License
 
-1. Finish setup in the live sheet: Settings emails, field trip form, Duty Posts locations, Chill Room tab.
-2. Test field trip submission, coverage emails and printed sub schedules end to end.
-3. **Pilot:** office staff and 10 teachers for two weeks.
-4. Roll out to all staff after pilot feedback.
-
----
-
-<sub>Questions: contact the SFHS Main Office.</sub>
+© 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0
+(attribution required, no commercial use) — see `LICENSE.md`. A CC BY-NC badge +
+link appears in the footer of every page.
