@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;800&family=Neuton:wght@400;700&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#f2f3f3;font-family:'Lato',sans-serif;color:#1a1a1a}a{color:#008539}a:hover{color:#006a2d}</style>
+</helmet>
+<div style="max-width:1100px;margin:0 auto;padding:28px 20px 60px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:700 11px 'Lato',sans-serif;letter-spacing:1.6px;color:#008539">STAFF HUB · TEST PAGE</div>
+<h1 style="font:700 32px 'Neuton','Times New Roman',serif;margin:0;color:#000">Game lab</h1>
+<div style="font-size:14px;color:#5c5c5d;max-width:640px;text-wrap:pretty">Try each game before it goes on the sign-in page. Best scores here are saved on this computer only and are not sent anywhere.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.go }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:10px 16px;border-radius:12px;border:1px solid {{ t.bd }};background:{{ t.bg }};cursor:pointer;text-align:left"><span style="font:700 14px 'Lato',sans-serif;color:{{ t.fg }}">{{ t.name }}</span><span style="font:700 10px 'Lato',sans-serif;letter-spacing:1.4px;color:{{ t.sub }}">{{ t.week }}</span></button></sc-for>
+</div>
+<section style="background:#ffffff;border:1px solid #e0e2e2;border-radius:18px;overflow:hidden;display:flex;flex-wrap:wrap">
+<div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;padding:18px 22px 6px">
+<div style="display:flex;align-items:baseline;gap:10px"><div style="font:700 22px 'Neuton','Times New Roman',serif;color:#000000">{{ g.name }}</div><div style="font:700 11px 'Lato',sans-serif;letter-spacing:1.6px;color:#008539">WHILE YOU WAIT</div></div>
+<div style="font-size:13px;color:#5c5c5d">{{ g.short }}</div>
+</div>
+<x-import component-from-global-scope="hub-game" from="./hub-games.js" kind="{{ kind }}" hint-size="100%,320px"></x-import>
+</div>
+<div style="flex:1 1 240px;min-width:0;background:#f7f8f8;border-left:1px solid #e9ebeb;padding:18px 20px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font:700 11px 'Lato',sans-serif;letter-spacing:1.6px;color:#008539">HOW TO PLAY</div>
+<sc-for list="{{ g.how }}" as="h" hint-placeholder-count="3"><div style="font-size:13px;line-height:1.5;color:#1a1a1a;text-wrap:pretty">{{ h }}</div></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:700 11px 'Lato',sans-serif;letter-spacing:1.6px;color:#008539">BEST ON THIS COMPUTER</div>
+<div style="display:flex;align-items:baseline;gap:12px"><div style="font:800 28px 'Lato',sans-serif;color:#000">{{ best }}</div><button onClick="{{ resetBest }}" style="border:0;background:none;padding:0;font:700 12px 'Lato',sans-serif;color:#5c5c5d;text-decoration:underline;cursor:pointer">Reset</button></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:700 11px 'Lato',sans-serif;letter-spacing:1.6px;color:#008539">ON THE HUB</div>
+<div style="font-size:13px;line-height:1.5;color:#5c5c5d;text-wrap:pretty">{{ g.note }}</div>
+</div>
+</div>
+</section>
+<div style="font-size:12px;color:#5c5c5d">Click the game first so it can use your keyboard.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { kind: (() => { try { return localStorage.getItem('sfhub_lab_tab') || 'stack'; } catch (e) { return 'stack'; } })() };
+  componentDidMount() { this._h = () => this.forceUpdate(); document.addEventListener('gameover', this._h); }
+  componentWillUnmount() { document.removeEventListener('gameover', this._h); }
+  games() {
+    return [
+      { id: 'stack', name: 'Lunch Line Stack', week: 'SUGGESTED · WEEK 2', short: 'Tap or Space to drop each tray',
+        how: ['Trays slide back and forth over the lunch counter.', 'Tap, click or press Space to drop one.', 'Any part hanging off the stack falls away, so the trays get narrower.', 'Line one up exactly for a Perfect and keep the full width.'],
+        note: 'Gets faster with every tray. Would use the same scoreboard as Lion Run.' },
+      { id: 'bell', name: 'Bell Dash', week: 'SUGGESTED · WEEK 3', short: 'Match periods to start times',
+        how: ['Tap a period on the left, then its start time on the right.', 'Match all eight before the 30 seconds run out.', 'A wrong match costs 2 seconds.', 'Number keys 1–8 also pick a period.'],
+        note: 'This page uses sample times. On the hub it would use that day’s bell schedule, including custom days.' },
+      { id: 'word', name: 'Lion Word', week: 'SUGGESTED · WEEK 4', short: 'Guess the five-letter school word',
+        how: ['Guess the five-letter school word in six tries.', 'Green: right letter, right spot. Gold: in the word, wrong spot. Gray: not in the word.', 'Type or tap the keyboard, then Enter.'],
+        note: 'On the hub everyone gets the same word each day. Here each new game picks the next word so you can keep testing.' },
+      { id: 'pop', name: 'Pep Rally Pop', week: 'SUGGESTED · WEEK 5', short: 'Tap green and gold balloons',
+        how: ['Balloons rise for 30 seconds.', 'Tap green and gold for 1 point.', 'Red and blue are the other team and cost 3 points.'],
+        note: 'Speeds up as time runs down. Only some months have a fifth week.' },
+      { id: 'maze', name: 'Hallway Maze', week: 'OPTION', short: 'Office to Room 214',
+        how: ['Arrow keys or WASD move one square.', 'On a phone, tap the side you want to go and the lion runs to the next turn.', 'Grab the footballs, notes and books on the way to Room 214.', 'The clock starts on your first move.'],
+        note: 'Same maze for everyone each day. Could replace another week.' },
+      { id: 'hall', name: 'Hall Pass Dash', week: 'NEW OPTION', short: 'Reach the open door before the bell',
+        how: ['Students stream both ways down the hallway.', 'Arrow keys or WASD move one step. On a phone, tap the side you want to go.', 'Reach the green door for +100 and 4 more seconds. A new door opens and the hall gets busier.', 'Bumping a student sends you back and costs 3 seconds.'],
+        note: 'Room number could match the teacher’s own room on the hub.' },
+      { id: 'copier', name: 'Copier Jam', week: 'NEW OPTION', short: 'Tap the jams before the tray',
+        how: ['Sheets feed out of the copier toward the tray.', 'Tap red jammed sheets for 1 point and gold sheets for 2.', 'Tapping a clean white sheet costs 1.', 'Three jams reaching the tray ends the game. It speeds up over time.'],
+        note: 'Space clears the jam closest to the tray if you prefer the keyboard.' },
+      { id: 'bus', name: 'Bus Loop', week: 'NEW OPTION', short: 'Switch the roads to the right stop',
+        how: ['Each bus has a colored stripe that matches one stop.', 'Tap a black switch to flip its arrow. Keys 1, 2 and 3 work too.', 'Buses follow whichever way the switches point when they get there.', 'Three buses at the wrong stop ends the game.'],
+        note: 'Buses come faster the longer you last.' }
+    ];
+  }
+  renderVals() {
+    const list = this.games(), g = list.find(x => x.id === this.state.kind) || list[0];
+    const go = id => () => { try { localStorage.setItem('sfhub_lab_tab', id); } catch (e) {} this.setState({ kind: id }); };
+    let best = 0; try { best = +localStorage.getItem('sfhub_game_' + g.id) || 0; } catch (e) {}
+    return {
+      kind: g.id, g, best,
+      tabs: list.map(x => { const on = x.id === g.id; return { name: x.name, week: x.week, go: go(x.id), bg: on ? '#008539' : '#ffffff', fg: on ? '#ffffff' : '#1a1a1a', sub: on ? '#ffffff' : '#5c5c5d', bd: on ? '#008539' : '#e0e2e2' }; }),
+      resetBest: () => { try { localStorage.removeItem('sfhub_game_' + g.id); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+}
+</script>
+</body>
+</html>
