@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=38.0.0"></script>
+<script src="site.js?v=40.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=38.0.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=38.0.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=40.1.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=40.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Vocab Battle</title>
-<link href="assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=40.1.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--adv:#ff3b3b;--adv2:#ff8080;--advglow:#ff0033;--advtext:var(--adv2);}
 :root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--advtext:var(--bright);}
@@ -46,21 +46,21 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=38.0.0"></script>
-<script src="ctf-data/cyber1.js?v=38.0.0"></script>
-<script src="ctf-data/cyber2.js?v=38.0.0"></script>
-<script src="ctf-data/cyber3.js?v=38.0.0"></script>
-<script src="ctf-data/apcsp.js?v=38.0.0"></script>
-<script src="ctf-data/web3.js?v=38.0.0"></script>
-<script src="supabase-config.js?v=38.0.0"></script>
-<script src="js/auth.js?v=38.0.0"></script>
-<script src="js/battle-fx.js?v=38.0.0"></script>
-<script src="js/ko-fx.js?v=38.0.0"></script>
-<script src="js/battle-bg.js?v=38.0.0"></script>
-<script src="js/team-picker.js?v=38.0.0"></script>
-<script src="js/waiting-room.js?v=38.0.0"></script>
-<script src="js/binary-pool.js?v=38.0.0"></script>
-<script src="js/prize-roll.js?v=38.0.0"></script>
+<script src="config.js?v=40.1.0"></script>
+<script src="ctf-data/cyber1.js?v=40.1.0"></script>
+<script src="ctf-data/cyber2.js?v=40.1.0"></script>
+<script src="ctf-data/cyber3.js?v=40.1.0"></script>
+<script src="ctf-data/apcsp.js?v=40.1.0"></script>
+<script src="ctf-data/web3.js?v=40.1.0"></script>
+<script src="supabase-config.js?v=40.1.0"></script>
+<script src="js/auth.js?v=40.1.0"></script>
+<script src="js/battle-fx.js?v=40.1.0"></script>
+<script src="js/ko-fx.js?v=40.1.0"></script>
+<script src="js/battle-bg.js?v=40.1.0"></script>
+<script src="js/team-picker.js?v=40.1.0"></script>
+<script src="js/waiting-room.js?v=40.1.0"></script>
+<script src="js/binary-pool.js?v=40.1.0"></script>
+<script src="js/prize-roll.js?v=40.1.0"></script>
 <script>
 (function(){
   var AUTH = window.CTF_AUTH, view = document.getElementById("view"), sel = document.getElementById("cls"), FX = window.BATTLE_FX;
@@ -69,6 +69,10 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   var CLASSES = [], CUR = null, SET = null, ST = null, skew = 0, msg = "", busy = false, pick = {}, mins = 15, timer = null, showSetup = false, MODS = {}, qset = "vocab";
   var BIN = window.BINARY_SET;
+  var AG = { cyber1:"CY1_ACRONYMS", cyber2:"CY2_ACRONYMS" }, ACROS = {}, ACRO_M = 98, ACRO_P = { unscramble: 1, decrypt: 1 };   // 40.0: Acronym question set
+  function isAcro(mods){ return (mods || []).map(Number).indexOf(ACRO_M) >= 0; }
+  function acroPool(mods){ var p = []; (mods || []).forEach(function(m){ (ACROS[m] || []).forEach(function(v){ p.push({ t: v.x, d: v.a + " — what does it stand for?", k: "acro" }); }); }); return p; }
+  function acroModes(){ var l = modeList().filter(function(m){ return ACRO_P[m]; }); return l.length ? l : ["unscramble","decrypt"]; }
   var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]], modes = { cipher: true, unscramble: true, decrypt: true, bank: true };
   function nModes(){ return PMODES.filter(function(p){ return modes[p[0]]; }).length; }
   function modeList(){ return PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }); }
@@ -80,7 +84,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function disp(t){ return String(t || "").replace(/\(.*?\)/g, "").split("/")[0].trim(); }
   function mmss(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
   function guide(){ return (((window.COURSE_CONFIG||{})[CUR.course]||{}).ctf)||{}; }
-  function modName(m){ if (+m === 0) return "Binary"; var n = (guide().modules || [])[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
+  function modName(m){ if (+m === 0) return "Binary"; if (+m === ACRO_M) return "Acronyms"; var n = (guide().modules || [])[m-1]; return "Module " + String(m).padStart(2,"0") + (n ? " \u00b7 " + n : ""); }
   function col(t, i){ return (t && t.color) || FALLBACK[i % 4]; }
   function rpc(fn, a){ return AUTH.rpc(fn, a || {}); }
   var WR = window.WROOM ? WROOM.attach({ kind: "vocab", teams: function(){ return SET && window.TEAM_PICK ? TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; })) : null; }, rpc: function(fn, a){ return rpc(fn, a); }, classId: function(){ return CUR && CUR.id; }, demo: false }) : null;
@@ -94,8 +98,15 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   function loadVocab(c){
     return new Promise(function(res){
       if (window[VG[c]]) return res();
-      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=38.0.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = c + "/vocab-data.js?v=40.1.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
     }).then(function(){
+      return new Promise(function(res){
+        if (!AG[c] || window[AG[c]]) return res();
+        var s = document.createElement("script"); s.src = c + "/acronym-data.js?v=40.1.0"; s.onload = s.onerror = function(){ res(); }; document.head.appendChild(s);
+      });
+    }).then(function(){
+      ACROS = {}; (window[AG[c]] || []).forEach(function(v){ (ACROS[v.m] = ACROS[v.m] || []).push(v); });
+      if (qset === "acro" && !AG[c]) qset = "vocab";
       MODS = {}; ((window[VG[c]] || {}).terms || []).forEach(function(t){ var k = norm(disp(t.t)); if (k.length < 3 || k.length > 24) return; (MODS[t.m] = MODS[t.m] || []).push(t); });
     });
   }
@@ -107,11 +118,12 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     teams: function(T, col){ return T.length ? T.map(function(t, i){ return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);"><span style="width:14px;height:14px;border-radius:4px;background:' + esc(col(t,i)) + ';"></span><b style="flex:1;color:var(--bright);">' + esc(t.name) + '</b><span class="mono" style="font-size:12px;color:var(--dim);">' + t.members + ' students</span></div>'; }).join("") : '<div style="color:var(--dim);font-size:14px;">No teams yet.</div>'; } };
   function setupView(){
     var T = SET.teams.filter(function(t){ return t.members > 0; }), un = SET.ungrouped || [];
-    var keys = Object.keys(MODS).map(Number).sort(function(a,b){return a-b;}), selM = keys.filter(function(m){ return pick[m]; });
-    var n = selM.reduce(function(a, m){ return a + MODS[m].length; }, 0), bin = qset === "binary" && BIN;
+    var acro = qset === "acro", SRC = acro ? ACROS : MODS, hasAcro = Object.keys(ACROS).length > 0;
+    var keys = Object.keys(SRC).map(Number).sort(function(a,b){return a-b;}), selM = keys.filter(function(m){ return pick[m]; });
+    var n = selM.reduce(function(a, m){ return a + SRC[m].length; }, 0), bin = qset === "binary" && BIN;
     if (bin) n = 510;
     var TP = window.TEAM_PICK; TP.fetchSets(rpc, CUR.id, paint);
-    var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && n >= 4 && (bin || nModes()) && !busy;
+    var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && n >= 4 && (bin || (acro ? acroModes().length : nModes())) && !busy;
     var teams = TP.teams(T, col, busy) + TP.note(T);
     return (WR ? WR.html() : '') + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;" id="g">' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">TEAMS \u00b7 TICK WHO PLAYS</div>' +
@@ -121,17 +133,18 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;"><span style="font-size:14px;color:var(--bright);font-weight:700;">Randomize teams:</span>' +
           [2,3,4].map(function(k){ return '<button type="button" class="btn ghost vbRand" data-n="' + k + '"' + (busy ? " disabled" : "") + '>' + k + ' teams</button>'; }).join("") + '</div>' + TP.setsBar(busy) + '</div>' +
       '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:12px;">BATTLE OPTIONS</div>' +
-        (BIN ? '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Question set</div>' +
-          '<div role="group" aria-label="Question set" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + [["vocab","Vocab"],["binary","Binary"]].map(function(q){ return '<button type="button" class="chip vbQs" data-q="' + q[0] + '" aria-pressed="' + (qset === q[0]) + '">' + q[1] + '</button>'; }).join("") + '</div>' : '') +
+        (BIN || hasAcro ? '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Question set</div>' +
+          '<div role="group" aria-label="Question set" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + [["vocab","Vocab"]].concat(hasAcro ? [["acro","Acronyms"]] : [], BIN ? [["binary","Binary"]] : []).map(function(q){ return '<button type="button" class="chip vbQs" data-q="' + q[0] + '" aria-pressed="' + (qset === q[0]) + '">' + q[1] + '</button>'; }).join("") + '</div>' : '') +
         (bin ? '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Each fight question is random: 8-bit conversions (decimal \u2192 binary, students type all 8 bits, or binary \u2192 decimal) mixed with binary concepts \u2014 the largest value or number of values for N bits/bytes, even or odd from a partial pattern like ? ? ? 1, the number before or after a binary value, bits \u2194 bytes, and the fewest bits needed for a number. Fresh numbers every battle. No puzzle disguise; students just type the answer.</div>' :
-        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Vocab modules</div>' +
-        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip vbMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + MODS[m].length + '</span></button>'; }).join("") : '<span style="color:var(--dim);">No vocab list found for this course.</span>') + '</div>' +
+        (acro ? '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Students see an acronym (like TCP/IP) and type what it stands for. Spelling counts; spaces, capitals and punctuation don\u2019t.</div>' : '') +
+        '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">' + (acro ? "Acronym modules" : "Vocab modules") + '</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip vbMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + SRC[m].length + '</span></button>'; }).join("") : '<span style="color:var(--dim);">No vocab list found for this course.</span>') + '</div>' +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +
-        '<div role="group" aria-label="Puzzle types" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">' + PMODES.map(function(p){ var on = !!modes[p[0]]; return '<button type="button" class="chip vbPm" data-p="' + p[0] + '" aria-pressed="' + on + '">' + (on ? "\u2713 " : "") + p[1] + '</button>'; }).join("") + '</div>' +
-        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;">Each term uses one of the ticked types at random.' + (nModes() ? '' : ' <b style="color:var(--bad);">Pick at least one.</b>') + '</div>') +
+        '<div role="group" aria-label="Puzzle types" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">' + PMODES.filter(function(p){ return !acro || ACRO_P[p[0]]; }).map(function(p){ var on = !!modes[p[0]]; return '<button type="button" class="chip vbPm" data-p="' + p[0] + '" aria-pressed="' + on + '">' + (on ? "\u2713 " : "") + p[1] + '</button>'; }).join("") + '</div>' +
+        '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;">Each term uses one of the ticked types at random.' + ((acro ? modeList().filter(function(m){ return ACRO_P[m]; }).length : nModes()) ? '' : ' <b style="color:var(--bad);">Pick at least one.</b>') + '</div>') +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Length</div>' +
         '<div role="group" aria-label="Length" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + LENGTHS.map(function(l){ return '<button type="button" class="chip vbMin" data-n="' + l[0] + '" aria-pressed="' + (mins === l[0]) + '">' + l[1] + '</button>'; }).join("") + '</div>' +
-        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vbStart" data-wr-start="Start battle"' + (ready ? "" : " disabled") + '>' + (wrBtn() || "Start battle") + '</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (bin ? "Random binary questions" : n ? n + " terms" : "Pick at least one module") + '</span></div>' +
+        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vbStart" data-wr-start="Start battle"' + (ready ? "" : " disabled") + '>' + (wrBtn() || "Start battle") + '</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (bin ? "Random binary questions" : n ? n + (acro ? " acronyms" : " terms") : "Pick at least one module") + '</span></div>' +
         '<div style="font-size:12px;color:var(--dim);margin-top:10px;line-height:1.6;">Students open <b>Vocab Duel</b> from their arena. Everyone on the page is paired with someone from another team; after each KO they get a new opponent. Each pair gets a different term. Correct = 25% hit, wrong = a third of a hit to yourself. Score = team KOs \u00f7 teammates who fought. XP: every fighter on the 1st / 2nd / 3rd team +200 / +150 / +100, everyone else +5, MVP (most KOs) +100. Starting turns Squads on and ends 1v1 vocab duels in this class.</div></div></div>' +
       (msg ? '<div role="alert" class="mono" style="margin-top:14px;color:var(--bad);font-weight:700;font-size:13px;">' + esc(msg) + '</div>' : '');
   }
@@ -219,6 +232,7 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
       var pm = modeList();
       if (qset === "binary" && BIN) { mods = [BIN.module]; pool = BIN.pool(); pm = BIN.modes; }
+      else if (qset === "acro") { pool = acroPool(mods); pm = acroModes(); mods = mods.concat([ACRO_M]); }
       var groups = TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; }));
       if (WR && WR.needsRoom()) { WR.openRoom(); return; }   // 29.2: class duels always go through the waiting room
       busy = true; msg = ""; paint();
@@ -236,7 +250,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       var os = ST.session, pool = []; if (!confirm("Start a rematch with the same teams, modules and length?")) return;
       (os.modules || []).forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
       if (BIN && BIN.is(os.modules)) pool = BIN.pool();
-      var rpm = BIN && BIN.is(os.modules) ? BIN.modes : (os.modes && os.modes.length ? os.modes : modeList());
+      if (isAcro(os.modules)) pool = acroPool(os.modules);
+      var rpm = BIN && BIN.is(os.modules) ? BIN.modes : (os.modes && os.modes.length ? os.modes : isAcro(os.modules) ? acroModes() : modeList());
       busy = true; rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: os.modules, p_pool: pool, p_minutes: os.minutes || 15, p_modes: rpm, p_groups: ((ST && ST.teams) || os.teams || []).map(function(t){ return t.id; }).filter(Boolean) }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
     };
     var fu = document.getElementById("vbFull"); if (fu) fu.onclick = function(){ FX.fullscreen(document.getElementById("bfxResults")); };

@@ -3,14 +3,14 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=38.0.0"></script>
+<script src="site.js?v=40.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=38.0.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=40.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Team Jeopardy</title>
-<link href="assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=40.1.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--warn:#ffcf5c;--go:#ffcc00;--goText:#1a1200;
   --jb-tile:#00843f;--jb-tileHi:#00a352;--jb-val:#ffffff;--jb-cat:#ffffff;--jb-clue:#00843f;--jb-text:#ffffff;--jb-gap:#ffffff;--jb-used:#005a2c;--jb-font:'Bricolage Grotesque',sans-serif;}
@@ -67,11 +67,11 @@ html[data-motion="reduce"] .ddIn,html[data-motion="reduce"] .pop,html[data-motio
   </div>
   <div id="view" aria-live="polite"><div class="card mono" style="color:var(--dim);">Loading&hellip;</div></div>
 </div>
-<script src="config.js?v=38.0.0"></script>
-<script src="supabase-config.js?v=38.0.0"></script>
-<script src="js/auth.js?v=38.0.0"></script>
-<script src="js/battle-fx.js?v=38.0.0"></script>
-<script src="js/waiting-room.js?v=38.0.0"></script>
+<script src="config.js?v=40.1.0"></script>
+<script src="supabase-config.js?v=40.1.0"></script>
+<script src="js/auth.js?v=40.1.0"></script>
+<script src="js/battle-fx.js?v=40.1.0"></script>
+<script src="js/waiting-room.js?v=40.1.0"></script>
 <script>
 (function(){
   var r0 = document.documentElement, tb = document.getElementById("themeToggle");
@@ -183,7 +183,7 @@ html[data-motion="reduce"] .ddIn,html[data-motion="reduce"] .pop,html[data-motio
   }
 
   /* ---- screens ---- */
-  var JIMG = /(https?:\/\/[^\s"]+?(?:\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?|googleusercontent\.com\/[^\s"]+|drive\.google\.com\/[^\s"]+))/i;
+  var JIMG = /(https?:\/\/(?:[^\s"\/]+\.)?(?:drive\.google\.com|[^\s"\/]*googleusercontent\.com)\/[^\s"]+|https?:\/\/[^\s"]+?\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?)/i;
   function clueHtml(txt){
     var m = String(txt || "").match(JIMG); if (!m) return '<div class="jq">' + esc(txt) + '</div>';
     var u = m[1], id = (u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/) || [])[1];
@@ -209,7 +209,7 @@ html[data-motion="reduce"] .ddIn,html[data-motion="reduce"] .pop,html[data-motio
             '<textarea id="tjCsv" class="in" rows="6" spellcheck="false" aria-label="Board CSV">' + esc(SH.csv) + '</textarea>' +
             '<div style="display:flex;gap:8px;flex-wrap:wrap;"><label class="btn ghost" style="cursor:pointer;">Upload CSV<input type="file" id="tjFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label><a class="btn ghost" href="mane-event/jeopardy-template.csv" download>Template</a></div></div></details>' +
           '<div style="font-size:14px;color:var(--muted);">' + info + '</div>' + prev +
-          '<div style="font-size:12px;color:var(--dim);line-height:1.55;">Answers are typed. Put alternatives with a slash (<span class="mono">DDoS / Distributed denial of service</span>); a part in parentheses is optional. An image or Drive link in a question shows as a picture.</div></div>' +
+          '<div style="font-size:12px;color:var(--dim);line-height:1.55;">Answers are typed. Put alternatives with a slash (<span class="mono">DDoS / Distributed denial of service</span>); a part in parentheses is optional. <b>Images:</b> paste an image link right into the question cell as plain text (a Google Drive file link shared \u201cAnyone with the link\u201d, or an image address ending in .png / .jpg). Don\u2019t use Insert \u2192 Link, =HYPERLINK or Insert \u2192 Image: those don\u2019t come through.</div></div>' +
         '<div class="card" style="display:flex;flex-direction:column;gap:18px;"><div class="mono" style="font-size:12px;letter-spacing:2px;color:var(--go);font-weight:800;">2 \u00b7 GAME</div>' +
           sec("Board theme", chips("theme", [["lion", "Lion Pride (green & white)"], ["classic", "Classic TV"]], OPT.theme)) +
           sec("Time per clue", chips("ctime", [[20, "20 s"], [30, "30 s"], [45, "45 s"], [60, "60 s"]], OPT.ctime), "Ends early once everyone has it right. Wrong answers cost nothing, so students keep trying.") +

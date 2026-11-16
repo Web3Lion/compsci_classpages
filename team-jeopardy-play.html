@@ -3,14 +3,14 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=38.0.0"></script>
+<script src="site.js?v=40.1.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=38.0.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=40.1.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Team Jeopardy</title>
-<link href="assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=40.1.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--accent:#00b3ff;--ok:#3ddc97;--bad:#ff7a85;--go:#ffcc00;--goText:#1a1200;
   --jb-tile:#00843f;--jb-tileHi:#00a352;--jb-val:#ffffff;--jb-cat:#ffffff;--jb-clue:#00843f;--jb-text:#ffffff;--jb-gap:#ffffff;--jb-used:#005a2c;}
@@ -62,7 +62,7 @@ html[data-motion="reduce"] .shake{animation:none;} html[data-motion="reduce"] #t
   var OK = { cyber1: 1, cyber2: 1, cyber3: 1, apcsp: 1, web3: 1 };
   if (!OK[C]) { document.getElementById("view").innerHTML = '<div class="card">Open Team Jeopardy from the Duel Waiting Room on your course home.</div>'; return; }
   document.getElementById("back").href = C + "/index.html";
-  var V = window.SITE_VERSION || "38.0.0", list = ["config.js", "supabase-config.js", "js/auth.js", "js/ko-fx.js"];
+  var V = window.SITE_VERSION || "38.1.0", list = ["config.js", "supabase-config.js", "js/auth.js", "js/ko-fx.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){
@@ -74,7 +74,7 @@ html[data-motion="reduce"] .shake{animation:none;} html[data-motion="reduce"] #t
     function sfx(n){ if (KX) KX.sfx(n); }
     var ST = null, skew = 0, sig = "", timer = null, sending = false, okSeen = -1, picked = false;
     function flash(col, txt){ var o = document.getElementById("tjFlash"); if (o) o.remove(); o = document.createElement("div"); o.id = "tjFlash"; o.setAttribute("aria-hidden", "true"); o.style.background = "color-mix(in srgb, " + col + " 38%, transparent)"; o.textContent = txt || ""; document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 950); }
-    var JIMG = /(https?:\/\/[^\s"]+?(?:\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?|googleusercontent\.com\/[^\s"]+|drive\.google\.com\/[^\s"]+))/i;
+    var JIMG = /(https?:\/\/(?:[^\s"\/]+\.)?(?:drive\.google\.com|[^\s"\/]*googleusercontent\.com)\/[^\s"]+|https?:\/\/[^\s"]+?\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?)/i;
     function clueHtml(txt){
       var m = String(txt || "").match(JIMG); if (!m) return '<div class="jq">' + esc(txt) + '</div>';
       var u = m[1], id = (u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/) || [])[1];
