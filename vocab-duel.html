@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="site.js?v=40.1.0"></script>
+<script src="site.js?v=40.2.0"></script>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=40.1.0">
-<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=40.1.0">
+<link rel="icon" type="image/png" href="assets/logo/icon-site-64.png?v=40.2.0">
+<link rel="apple-touch-icon" href="assets/logo/icon-site-256.png?v=40.2.0">
 <link rel="preconnect" href="https://nbyuwsvtnnpsymmzpkqs.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Vocab Duel</title>
-<link href="assets/fonts/fonts.css?v=40.1.0" rel="stylesheet">
+<link href="assets/fonts/fonts.css?v=40.2.0" rel="stylesheet">
 <style>
 :root{--bg:#0a0e14;--panel:#0b1220;--panel2:#0c1626;--border:#1e3350;--border2:#172436;--border3:#244a6d;--text:#cfe0f3;--bright:#eaf4ff;--muted:#a9bfd6;--dim:#7f9cb8;--faint:#5c7592;--accent:#00b3ff;--accent2:#7dd8ff;--ok:#3ddc97;--bad:#ff7a85;--adv:#ff3b3b;--adv2:#ff8080;--advglow:#ff0033;--arena:#0b0306;--advtext:var(--adv2);}
 :root[data-theme="light"]{--bg:#e9eef5;--panel:#ffffff;--panel2:#f2f6fb;--border:#cdd8e5;--border2:#dde5ef;--border3:#b6c8dc;--text:#26313f;--bright:#0e1622;--muted:#48566a;--dim:#5f7186;--faint:#8394a8;--accent:#0a74d6;--accent2:#075aa8;--ok:#1d7a4c;--bad:#b3261e;--arena:#ffffff;--advtext:var(--bright);}
@@ -54,7 +54,7 @@ html[data-motion="reduce"] .shake{animation:none;}
   var VG = { cyber1:"CY1_VOCAB", cyber2:"CY2_VOCAB", cyber3:"CY3_VOCAB", apcsp:"APCSP_VOCAB", web3:"WEB3_VOCAB" };
   if (!VG[C]) { document.getElementById("view").innerHTML = '<div class="card">Open a Vocab Duel from your course\u2019s CTF arena.</div>'; return; }
   window.CTF_COURSE = C; document.getElementById("back").href = C + "/ctf.html";
-  var V = window.SITE_VERSION || "26.2.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "js/auth.js", "js/battle-fx.js", "js/battle-bg.js", "js/ko-fx.js"];
+  var V = window.SITE_VERSION || "26.2.0", list = ["config.js", "ctf-data/" + C + ".js", C + "/vocab-data.js", "supabase-config.js", "js/auth.js", "js/battle-fx.js", "js/battle-bg.js", "js/ko-fx.js", "js/binary-pool.js"];
   (function next(i){ if (i >= list.length) return boot(); var s = document.createElement("script"); s.src = list[i] + "?v=" + V; s.onload = s.onerror = function(){ next(i + 1); }; document.head.appendChild(s); })(0);
 
   function boot(){
@@ -81,6 +81,7 @@ html[data-motion="reduce"] .shake{animation:none;}
     var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]], modes = { cipher: true, unscramble: true, decrypt: true, bank: true };
   function nModes(){ return PMODES.filter(function(p){ return modes[p[0]]; }).length; }
   function modeList(){ return PMODES.filter(function(p){ return modes[p[0]]; }).map(function(p){ return p[0]; }); }
+    var BIN = (C === "cyber1" || C === "cyber2") ? window.BINARY_SET : null, qset = "vocab";   // 41.0: Binary battle for Cyber 1 / 2
     var FX = window.BATTLE_FX, streak = 0, blood = {}, endFx = {};
 
     function rpc(fn, a){ return AUTH.rpc(fn, Object.assign({ p_student: S.studentId }, a || {})); }
@@ -92,17 +93,22 @@ html[data-motion="reduce"] .shake{animation:none;}
 
     function setupView(){
       var keys = Object.keys(MODS).map(Number).sort(function(a,b){return a-b;}), sel = keys.filter(function(m){ return pick[m]; });
-      var n = sel.reduce(function(a, m){ return a + MODS[m].length; }, 0), blocked = ST.class_live || !ST.duels_on;
+      var n = sel.reduce(function(a, m){ return a + MODS[m].length; }, 0), blocked = ST.class_live || !ST.duels_on, bin = qset === "binary" && BIN;
       return title("Face 1\u20133 classmates. Two players fight one classic duel; 3\u20134 players start a 5-minute brawl of rotating 1v1s where the most KO points wins. Each round shows a definition with the term disguised as a Caesar cipher, scrambled letters, a decrypt board that leaks letters, or a word bank (the host picks which). First to crack it hits for 25%. A wrong guess costs you a third of a hit. Four hits wins. Winner +200 XP, loser +5 for finishing. Brawl: 1st 200 / 2nd 150 / 3rd 100, MVP +100.") +
         (blocked ? '<div class="card" style="border-color:var(--adv);margin-bottom:18px;">' + (ST.class_live ? "A class vocab battle is running. Watch for your next opponent here." : esc(ERR.duels_off)) + '</div>' : '') +
         '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;" id="g">' +
         '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">HOST A DUEL</div>' +
+          (BIN ? '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Battle type</div>' +
+            '<div role="group" aria-label="Battle type" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + [["vocab","Vocab battle"],["binary","Binary battle"]].map(function(q){ return '<button type="button" class="chip vdQs" data-q="' + q[0] + '" aria-pressed="' + (qset === q[0]) + '">' + (qset === q[0] ? "\u2713 " : "") + q[1] + '</button>'; }).join("") + '</div>' : '') +
+          (bin ? '<div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:14px;">Every round is a random binary question: 8-bit conversions (decimal \u2192 binary or binary \u2192 decimal) mixed with concepts like the largest value for N bits, even or odd, bits \u2194 bytes and the fewest bits for a number. Type the answer. Fresh numbers every duel.</div>' +
+            '<div style="padding:12px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);margin-bottom:18px;"><div style="font-weight:700;color:var(--bright);margin-bottom:8px;">Want to practice on your own first?</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><a class="btn ghost" href="practice/binary-conversion.html">Binary Lab</a><a class="btn ghost" href="practice/text-binary.html">Text \u2194 Binary</a></div></div>' +
+            '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vdCreate"' + (busy || blocked ? " disabled" : "") + '>Create binary duel</button><span class="mono" style="font-size:12px;color:var(--dim);">Share the code with 1\u20133 classmates</span></div></div>' :
           '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Modules to draw terms from</div>' +
           '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + keys.map(function(m){ return '<button type="button" class="chip vdMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + MODS[m].length + '</span></button>'; }).join("") + '</div>' +
           '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +
         '<div role="group" aria-label="Puzzle types" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">' + PMODES.map(function(p){ var on = !!modes[p[0]]; return '<button type="button" class="chip vdPm" data-p="' + p[0] + '" aria-pressed="' + on + '">' + (on ? "\u2713 " : "") + p[1] + '</button>'; }).join("") + '</div>' +
         '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;">Each term uses one of the ticked types at random.' + (nModes() ? '' : ' <b style="color:var(--bad);">Pick at least one.</b>') + '</div>' +
-          '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vdCreate"' + (busy || n < 4 || !nModes() || blocked ? " disabled" : "") + '>Create duel</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (sel.length ? n + " terms" : "Pick at least one module") + '</span></div></div>' +
+          '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><button type="button" class="btn" id="vdCreate"' + (busy || n < 4 || !nModes() || blocked ? " disabled" : "") + '>Create duel</button><span class="mono" style="font-size:12px;color:var(--dim);">' + (sel.length ? n + " terms" : "Pick at least one module") + '</span></div></div>') +
         '<div class="card"><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);margin-bottom:10px;">JOIN A DUEL</div>' +
           '<label for="vdCode" style="display:block;font-weight:700;color:var(--bright);margin-bottom:10px;">4-letter code</label>' +
           '<input id="vdCode" class="code" maxlength="4" autocomplete="off" spellcheck="false">' +
@@ -112,7 +118,7 @@ html[data-motion="reduce"] .shake{animation:none;}
       var host = s.host === ST.me, n = (s.players || []).length;
       return title("") + '<div class="card" style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;border-color:var(--adv);">' +
         '<div><div class="mono" style="font-size:11px;letter-spacing:1.5px;color:var(--faint);">DUEL CODE</div><div class="mono" style="font-size:52px;font-weight:800;letter-spacing:10px;color:var(--bright);line-height:1.1;">' + esc(s.code) + '</div>' +
-        '<div class="mono" style="font-size:12px;color:var(--dim);margin-top:4px;">' + (s.modules || []).map(function(m){ return "M" + String(m).padStart(2,"0"); }).join(" \u00b7 ") + '</div></div>' +
+        '<div class="mono" style="font-size:12px;color:var(--dim);margin-top:4px;">' + (s.modules || []).map(function(m){ return +m === 0 ? "BINARY" : +m === 98 ? "ACRONYMS" : "M" + String(m).padStart(2,"0"); }).join(" \u00b7 ") + '</div></div>' +
         '<div style="flex:1;min-width:200px;font-size:14px;color:var(--muted);line-height:1.6;">' + (s.players || []).map(function(p){ return '<b style="color:var(--bright);">' + esc(p.handle) + '</b>'; }).join(" vs ") + ' <span class="mono" style="font-size:12px;color:var(--dim);">(' + n + '/4)</span>' + (n < 2 ? (host ? " \u00b7 share the code (up to 4 players)." : "") : (host ? " \u00b7 ready! " + (n >= 3 ? "Starts a 5-minute brawl." : "Starts a 1v1, or wait for more for a brawl.") : " \u00b7 waiting for the host to start.")) + '</div>' +
         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' + (host ? '<button type="button" class="btn" id="vdStart"' + (busy || n < 2 ? " disabled" : "") + '>Start duel</button>' : '') +
         '<button type="button" class="btn ghost" id="vdLeave">' + (host ? "Cancel" : "Leave") + '</button></div></div>' + alert_();
@@ -261,10 +267,12 @@ html[data-motion="reduce"] .shake{animation:none;}
     function shake(){ var a = document.getElementById("vdArena"); if (!a) return; a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); }
     function bind(){
       view.querySelectorAll(".vdMod").forEach(function(b){ b.onclick = function(){ var m = +b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; draw(true); }; });
+      view.querySelectorAll(".vdQs").forEach(function(b){ b.onclick = function(){ qset = b.getAttribute("data-q"); msg = ""; draw(true); }; });
       view.querySelectorAll(".vdPm").forEach(function(x){ x.onclick = function(){ var p = x.getAttribute("data-p"); modes[p] = !modes[p]; draw(true); }; });
       var cr = document.getElementById("vdCreate"); if (cr) cr.onclick = function(){
         var sel = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number);
         var pool = []; sel.forEach(function(m){ MODS[m].forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
+        if (qset === "binary" && BIN) { dismissed = null; act("ctf_vd_create", { p_modules: [BIN.module], p_pool: BIN.pool(), p_modes: BIN.modes }); return; }
         dismissed = null; act("ctf_vd_create", { p_modules: sel, p_pool: pool, p_modes: modeList() });
       };
       var jn = document.getElementById("vdJoin"), ci = document.getElementById("vdCode");
