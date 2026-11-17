@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=38.0.0"></script>
+<script src="../site.js?v=40.3.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Jeopardy · Mane Event</title>
-<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=38.0.0">
-<link href="../assets/fonts/fonts.css?v=38.0.0" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=40.3.0">
+<link href="../assets/fonts/fonts.css?v=40.3.0" rel="stylesheet">
 <style>
 :root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
   --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
@@ -80,7 +80,7 @@ html[data-motion="reduce"] .dd,html[data-motion="reduce"] #clue.zoom,html[data-m
   </div>
   <div id="view" aria-live="polite"></div>
 </div>
-<script src="../js/ko-fx.js?v=38.0.0"></script>
+<script src="../js/ko-fx.js?v=40.3.0"></script>
 <script>
 if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
   var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -166,7 +166,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
   }
 
   /* ---------- images in a clue ---------- */
-  var IMG = /(https?:\/\/[^\s"]+?(?:\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?|googleusercontent\.com\/[^\s"]+|drive\.google\.com\/[^\s"]+))/i;
+  var IMG = /(https?:\/\/(?:[^\s"\/]+\.)?(?:drive\.google\.com|[^\s"\/]*googleusercontent\.com)\/[^\s"]+|https?:\/\/[^\s"]+?\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?)/i;
   function clueHtml(txt){
     var m = String(txt || "").match(IMG), body = esc(txt || "");
     if (!m) return '<div>' + body + '</div>';
@@ -295,7 +295,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
           '<textarea id="jCsv" class="in" rows="7" spellcheck="false" aria-label="Board CSV" placeholder="Planets,Weather\nThis planet is closest to the Sun.,This instrument measures air pressure.\nMercury,Barometer">' + esc(S.csv) + '</textarea>' +
           '<div style="display:flex;gap:10px;flex-wrap:wrap;"><label class="btn ghost sm" style="cursor:pointer;">Upload CSV<input type="file" id="jFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label><a class="btn ghost sm" href="jeopardy-template.csv" download>Template (CSV)</a><a class="btn ghost sm" href="../tools/index.html#jeopardy-ai">AI question builder</a></div></div>' +
         '<div style="font-size:14px;color:var(--muted);">' + info + '</div>' + prev +
-        '<div style="font-size:13px;color:var(--dim);line-height:1.55;border-top:1px solid var(--border);padding-top:12px;">Same layout as the Jeopardy tab: <b>row 1</b> = category names, then a <b>question row</b> and an <b>answer row</b> for $100, $200, $300\u2026 A label column A is skipped automatically. Put an image link (or a Google Drive file link shared to anyone) in a question cell to show a picture. Nothing is uploaded; the board stays in this browser.</div></div>' +
+        '<div style="font-size:13px;color:var(--dim);line-height:1.55;border-top:1px solid var(--border);padding-top:12px;">Same layout as the Jeopardy tab: <b>row 1</b> = category names, then a <b>question row</b> and an <b>answer row</b> for $100, $200, $300\u2026 A label column A is skipped automatically. <b>Images:</b> paste an image link right into a question cell as plain text (a Google Drive file link shared \u201cAnyone with the link\u201d, or an image address ending in .png / .jpg). Don\u2019t use Insert \u2192 Link, =HYPERLINK or Insert \u2192 Image: those don\u2019t come through. Nothing is uploaded; the board stays in this browser.</div></div>' +
       '<div class="card" style="display:flex;flex-direction:column;gap:20px;"><div class="lbl" style="color:var(--gold);">2 \u00b7 Game</div>' +
         sec("Board theme", chips("theme", [["lion", "Lion Pride (green & white)"], ["classic", "Classic TV"]], S.theme)) +
         sec("Teams", chips("nteams", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"]], S.nteams) +

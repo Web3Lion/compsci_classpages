@@ -11,3 +11,4 @@ free response,Convert 1010 to decimal,10,,,,45
 free response,What is the largest number 4 bits can represent?,15,,,
 free response,What is the name for a fake email that tries to steal your login?,Phishing,,,
 free response,How many different values can 8 bits represent?,256,,,,,yes
+free response,"What image file type is this picture? (Image example: paste a Drive or image link in the question cell.) https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png",PNG,,,,30

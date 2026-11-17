@@ -9,3 +9,4 @@ Firewall,A tool that blocks or allows network traffic based on rules
 Encryption,Scrambling data so only someone with the key can read it
 Byte,A group of 8 bits
 Bit,"The smallest unit of data, a single 0 or 1"
+PNG,"Image file type that supports see-through (transparent) backgrounds. Example picture: https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"
