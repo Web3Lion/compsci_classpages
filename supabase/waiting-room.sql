@@ -2,7 +2,7 @@
 -- ============================================================================
 --  CLASS DUEL WAITING ROOM (v29.0)
 --  The teacher opens a waiting room for a Team Battle, Vocab Battle, Boss
---  Raid or (32.1) Duel Bracket. Students open lobby.html from their course home:
+--  Raid, (32.1) Duel Bracket or (37.0) Ping Rush. Students open lobby.html from their course home:
 --  they see their squad, who else is here, and a 5-second countdown (32.1; was 10)
 --  when the teacher presses Start.
 --  When the battle goes live, every student in the room is sent into it.
@@ -13,7 +13,7 @@
 
 create table if not exists class_lobbies (
   class_id   uuid primary key references classes(id) on delete cascade,
-  kind       text not null check (kind in ('team','vocab','raid','bracket')),
+  kind       text not null check (kind in ('team','vocab','raid','bracket','rush','jeop')),
   status     text not null default 'open' check (status in ('open','counting','started','closed')),
   start_at   timestamptz,
   opened_at  timestamptz not null default now(),
@@ -21,7 +21,7 @@ create table if not exists class_lobbies (
 );
 alter table class_lobbies enable row level security;
 alter table class_lobbies drop constraint if exists class_lobbies_kind_check;
-alter table class_lobbies add constraint class_lobbies_kind_check check (kind in ('team','vocab','raid','bracket'));
+alter table class_lobbies add constraint class_lobbies_kind_check check (kind in ('team','vocab','raid','bracket','rush','jeop'));
 
 create table if not exists lobby_presence (
   class_id   uuid not null references classes(id) on delete cascade,
@@ -51,6 +51,14 @@ begin
   if to_regclass('public.brackets') is not null then
     execute 'select exists (select 1 from brackets where class_id = $1 and status = ''live'')' into v using p_class;
     if v then return 'bracket'; end if;
+  end if;
+  if to_regclass('public.ping_rush') is not null then
+    execute 'select exists (select 1 from ping_rush where class_id = $1 and status = ''live'')' into v using p_class;
+    if v then return 'rush'; end if;
+  end if;
+  if to_regclass('public.tj_games') is not null then
+    execute 'select exists (select 1 from tj_games where class_id = $1 and status = ''live'')' into v using p_class;
+    if v then return 'jeop'; end if;
   end if;
   return null;
 end $$;
@@ -138,7 +146,7 @@ create or replace function ctf_t_lobby_open(p_class uuid, p_kind text)
 returns json language plpgsql security definer set search_path = public as $$
 begin
   if not _is_teacher() then return json_build_object('error','not_teacher'); end if;
-  if p_kind not in ('team','vocab','raid','bracket') then return json_build_object('error','bad_kind'); end if;
+  if p_kind not in ('team','vocab','raid','bracket','rush','jeop') then return json_build_object('error','bad_kind'); end if;
   delete from lobby_presence where class_id = p_class and last_seen < now() - interval '1 minute';
   insert into class_lobbies (class_id, kind, status, start_at, opened_at, updated_at) values (p_class, p_kind, 'open', null, now(), now())
     on conflict (class_id) do update set kind = excluded.kind, status = 'open', start_at = null, opened_at = now(), updated_at = now();

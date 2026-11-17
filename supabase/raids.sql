@@ -11,8 +11,8 @@
 --    Weak point: one random 15 s window, hits do 3×
 --    Enrage: the last 60 s, damage both ways ×2
 --  Hit = 10 dmg. Miss = 4 shield (of 100).
---  Win: everyone who hit the boss +15 XP, top damage (MVP, ties share) +10 more.
---  Loss: everyone who answered at least once +5.
+--  38.0: Win: everyone who hit the boss +200 XP; MVP (top damage, ties share) +100 (win or loss).
+--  Loss: everyone else who answered at least once +5.
 --  Run after vocab-duels.sql (uses its puzzle helpers). Safe to re-run.
 -- ============================================================================
 
@@ -108,14 +108,18 @@ begin
   if p_status = 'cancelled' then return; end if;
   select max(dmg) into v_top from raid_players where raid_id = p_raid;
   for pl in select * from raid_players where raid_id = p_raid and (hits + misses) > 0 loop
+    -- 38.0 XP standard: beating the boss = a team win (200 each who hit it); MVP (most damage) +100
     if p_status = 'won' and pl.dmg > 0 then
       if pl.dmg = v_top then
-        update raid_players set xp = 25, mvp = true where raid_id = p_raid and student_id = pl.student_id;
-        perform _vd_pay(pl.student_id, 25, 'Boss raid win (+15) and MVP (+10)');
+        update raid_players set xp = 300, mvp = true where raid_id = p_raid and student_id = pl.student_id;
+        perform _vd_pay(pl.student_id, 300, 'Boss raid win + MVP');
       else
-        update raid_players set xp = 15 where raid_id = p_raid and student_id = pl.student_id;
-        perform _vd_pay(pl.student_id, 15, 'Boss raid win');
+        update raid_players set xp = 200 where raid_id = p_raid and student_id = pl.student_id;
+        perform _vd_pay(pl.student_id, 200, 'Boss raid win');
       end if;
+    elsif pl.dmg > 0 and pl.dmg = v_top then
+      update raid_players set xp = 105, mvp = true where raid_id = p_raid and student_id = pl.student_id;
+      perform _vd_pay(pl.student_id, 105, 'Boss raid MVP');
     else
       update raid_players set xp = 5 where raid_id = p_raid and student_id = pl.student_id;
       perform _vd_pay(pl.student_id, 5, 'Boss raid played');

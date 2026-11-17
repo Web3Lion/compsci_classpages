@@ -80,7 +80,11 @@ begin
       (48, 'waiting-room.sql', 'Class duel waiting room', exists (select 1 from information_schema.tables where table_schema='public' and table_name='class_lobbies')),
       (49, 'retention.sql', '30-day cleanup of sign-in rejects + typed guesses', exists (select 1 from pg_proc where proname='_purge_old_data')),
       (50, 'backup-export.sql', 'Owner-only CSV backup export (teacher.html Settings)', exists (select 1 from pg_proc where proname='ctf_t_backup_table')),
-      (51, 'lockdown.sql', 'Security lockdown (run last)', exists (select 1 from pg_proc where proname='_lockdown_gaps'))
+      (51, 'no-names.sql', 'Emails only: names blanked + blocked (incl. Supabase Auth)', exists (select 1 from pg_proc where proname='_strip_auth_user_names')),
+      (52, 'class-wipe.sql', 'Danger zone: delete all class data', exists (select 1 from pg_proc where proname='ctf_t_wipe_class')),
+      (53, 'ping-rush.sql', 'Ping Rush (whole-class speed quiz)', exists (select 1 from pg_proc where proname='ctf_t_pr_start')),
+      (54, 'team-jeopardy.sql', 'Team Jeopardy (squads, everyone answers)', exists (select 1 from pg_proc where proname='ctf_t_tj_start')),
+      (55, 'lockdown.sql', 'Security lockdown (run last)', exists (select 1 from pg_proc where proname='_lockdown_gaps'))
     ) as c(step, file, feature, present)
   
     union all
@@ -213,11 +217,11 @@ begin
            else '⚠ RE-RUN vocab-duels.sql and arena-duels.sql' end,
       2, 97
     union all
-    select '—', 'run order', 'vocab-duels.sql must be the 30.2 version (binary conversion battles + brackets)',
-      case when not exists (select 1 from pg_proc where proname='_vd_modes') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_vd_modes' limit 1), 'plain'), 0) > 0 then 'ok' else 'rerun' end,
+    select '—', 'run order', 'vocab-duels.sql must be the 40.0 version (binary + acronym battles)',
+      case when not exists (select 1 from pg_proc where proname='_vd_modes') then 'na' when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_vd_pool' limit 1), 'acro'), 0) > 0 then 'ok' else 'rerun' end,
       case when not exists (select 1 from pg_proc where proname='_vd_modes') then 'vocab-duels.sql not run yet — nothing to check'
-           when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_vd_modes' limit 1), 'plain'), 0) > 0 then '✅ fine — battles and brackets can use the Binary question set'
-           else '⚠ RE-RUN vocab-duels.sql (Binary battles won''t start)' end,
+           when coalesce(strpos((select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' and p.proname='_vd_pool' limit 1), 'acro'), 0) > 0 then '✅ fine — battles can use the Binary and Acronym question sets'
+           else '⚠ RE-RUN vocab-duels.sql (Binary/Acronym battles won''t start or drop long acronyms)' end,
       2, 97
     union all
     select '—', 'security', 'lockdown.sql: every table locked, internal helpers not callable from the browser',

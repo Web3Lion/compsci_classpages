@@ -124,8 +124,8 @@ begin
   select max(points) into v_top from arena_duel_players where duel_id = p_duel and not forfeit;
   for p in select * from arena_duel_players where duel_id = p_duel and not forfeit loop
     if v_top > 0 and p.points = v_top then
-      update arena_duel_players set won = true, xp = 15 where duel_id = p_duel and student_id = p.student_id;
-      perform _ad_pay(p.student_id, 15, 'Flag duel win (+10) and played (+5)');
+      update arena_duel_players set won = true, xp = 200 where duel_id = p_duel and student_id = p.student_id;   -- 38.0 XP standard
+      perform _ad_pay(p.student_id, 200, 'Flag duel win');
     else
       update arena_duel_players set xp = 5 where duel_id = p_duel and student_id = p.student_id;
       perform _ad_pay(p.student_id, 5, 'Flag duel played');

@@ -12,7 +12,7 @@
 --  term itself is never sent to students until it's solved.
 --
 --  1v1 (kind 'duel'): a student picks modules, gets a 4-letter code, one
---  classmate joins, host starts. Winner +10 XP and +5 for playing; loser +5.
+--  classmate joins, host starts. 38.0: winner +200 XP; loser +5.
 --  Forfeit (Leave) = no XP. Uses the class's Student duels switch (duels_on).
 --
 --  Class (kind 'class', teacher only): squads (2–4) battle for 5/10/15/20/45
@@ -168,12 +168,13 @@ end $$;
 
 -- cleans a client-sent term list: {t,d}, 3–24 letters/digits, one per term
 -- 30.2: all-digit terms (binary-conversion answers like "45") may be 1–24 long
+-- 40.0: acronym sets ({t, d, k:'acro'}, t = what it stands for) may be up to 60 letters / 80 chars
 create or replace function _vd_pool(p jsonb) returns jsonb
 language sql immutable as $$
   select coalesce(jsonb_agg(jsonb_build_object('t', t, 'd', d)), '[]'::jsonb) from (
-    select distinct on (_vd_norm(e->>'t')) left(btrim(e->>'t'), 40) as t, left(btrim(e->>'d'), 400) as d
+    select distinct on (_vd_norm(e->>'t')) left(btrim(e->>'t'), case when e->>'k' = 'acro' then 80 else 40 end) as t, left(btrim(e->>'d'), 400) as d
       from jsonb_array_elements(case when jsonb_typeof(p) = 'array' then p else '[]'::jsonb end) e
-     where length(_vd_norm(e->>'t')) between (case when btrim(coalesce(e->>'t','')) ~ '^[0-9]+$' then 1 else 3 end) and 24
+     where length(_vd_norm(e->>'t')) between (case when btrim(coalesce(e->>'t','')) ~ '^[0-9]+$' then 1 else 3 end) and (case when e->>'k' = 'acro' then 60 else 24 end)
        and length(btrim(coalesce(e->>'d',''))) > 0
      limit 600
   ) x;
@@ -255,8 +256,8 @@ begin
   select * into f from vd_fights where session_id = p_session order by created_at desc limit 1;
   for r_pl in select * from vd_players where session_id = p_session and left_at is null loop
     if f.winner = r_pl.student_id then
-      update vd_players set xp = 15, mvp = true where session_id = p_session and student_id = r_pl.student_id;
-      perform _vd_pay(r_pl.student_id, 15, 'Vocab duel win (+10) and played (+5)');
+      update vd_players set xp = 200, mvp = true where session_id = p_session and student_id = r_pl.student_id;
+      perform _vd_pay(r_pl.student_id, 200, 'Vocab duel win');
     elsif f.winner is not null then
       update vd_players set xp = 5 where session_id = p_session and student_id = r_pl.student_id;
       perform _vd_pay(r_pl.student_id, 5, 'Vocab duel played');
@@ -289,23 +290,23 @@ begin
   if s.kind = 'duel' and s.ends_at is null then perform _vd_finish_duel(s.id); end if;
 end $$;
 
--- 26.3: 3–4 player brawl (rotating 1v1s on a clock): most KO points wins (+15), everyone who fought +5
+-- 26.3: 3–4 player brawl (rotating 1v1s on a clock).
+-- 38.0 XP standard: places by KO points 1st 200 / 2nd 150 / 3rd 100 (ties share), MVP (most KOs) +100, others who fought 5
 create or replace function _vd_finish_brawl(p_session uuid) returns void
 language plpgsql security definer set search_path = public as $$
-declare v_top int; r_pl record;
+declare v_top int; r_pl record; v_amt int;
 begin
   update vd_sessions set status = 'done', finished_at = now() where id = p_session and status = 'live';
   if not found then return; end if;
   update vd_fights set status = 'done', ended_at = now() where session_id = p_session and status = 'live';
   select max(wins) into v_top from vd_players where session_id = p_session and left_at is null;
-  for r_pl in select * from vd_players where session_id = p_session and left_at is null loop
-    if coalesce(v_top, 0) > 0 and r_pl.wins = v_top then
-      update vd_players set xp = 15, mvp = true where session_id = p_session and student_id = r_pl.student_id;
-      perform _vd_pay(r_pl.student_id, 15, 'Vocab brawl win (+10) and played (+5)');
-    elsif r_pl.fights > 0 then
-      update vd_players set xp = 5 where session_id = p_session and student_id = r_pl.student_id;
-      perform _vd_pay(r_pl.student_id, 5, 'Vocab brawl played');
-    end if;
+  for r_pl in select p.*, case when p.wins > 0 then dense_rank() over (order by p.wins desc) else 99 end as place
+                from vd_players p where p.session_id = p_session and p.left_at is null and p.fights > 0 loop
+    v_amt := case r_pl.place when 1 then 200 when 2 then 150 when 3 then 100 else 5 end
+           + case when coalesce(v_top, 0) > 0 and r_pl.wins = v_top then 100 else 0 end;
+    update vd_players set xp = v_amt, mvp = (coalesce(v_top, 0) > 0 and r_pl.wins = v_top) where session_id = p_session and student_id = r_pl.student_id;
+    perform _vd_pay(r_pl.student_id, v_amt, 'Vocab brawl ' || case when r_pl.place <= 3 then '#' || r_pl.place else 'played' end
+      || case when coalesce(v_top, 0) > 0 and r_pl.wins = v_top then ' + MVP' else '' end);
   end loop;
 end $$;
 
@@ -326,7 +327,7 @@ $$;
 
 create or replace function _vd_finish_class(p_session uuid, p_award boolean) returns void
 language plpgsql security definer set search_path = public as $$
-declare s vd_sessions; v_top numeric; r_pl record;   -- 26.0.2: was "p" (clashed with table alias p)
+declare s vd_sessions; v_top numeric; r_pl record; v_mvp int; v_amt int;   -- 26.0.2: was "p" (clashed with table alias p)
 begin
   select * into s from vd_sessions where id = p_session for update;
   if not found or s.status <> 'live' then return; end if;
@@ -343,16 +344,16 @@ begin
   update vd_players p set mvp = true
    where p.session_id = p_session and p.wins > 0 and p.left_at is null
      and p.wins = (select max(q.wins) from vd_players q where q.session_id = p_session and q.group_id = p.group_id and q.left_at is null);
-  for r_pl in select pl.student_id, coalesce(tm.won,false) as won from vd_players pl
-             left join vd_teams tm on tm.session_id = pl.session_id and tm.group_id = pl.group_id
+  -- 38.0 XP standard: every player on the 1st / 2nd / 3rd team 200 / 150 / 100 (others 5); game MVP (most KOs, ties share) +100
+  select max(wins) into v_mvp from vd_players where session_id = p_session and left_at is null;
+  for r_pl in select pl.student_id, pl.wins, coalesce(x.place, 99) as place from vd_players pl
+              left join (select y.id, dense_rank() over (order by y.avg desc) as place from json_to_recordset(_vd_teams(p_session)) as y(id uuid, avg numeric) where y.avg > 0) x on x.id = pl.group_id
             where pl.session_id = p_session and pl.fights > 0 and pl.left_at is null loop
-    if r_pl.won then
-      update vd_players set xp = 15 where session_id = p_session and student_id = r_pl.student_id;
-      perform _vd_pay(r_pl.student_id, 15, 'Vocab battle win (+10) and played (+5)');
-    else
-      update vd_players set xp = 5 where session_id = p_session and student_id = r_pl.student_id;
-      perform _vd_pay(r_pl.student_id, 5, 'Vocab battle played');
-    end if;
+    v_amt := case r_pl.place when 1 then 200 when 2 then 150 when 3 then 100 else 5 end
+           + case when coalesce(v_mvp, 0) > 0 and r_pl.wins = v_mvp then 100 else 0 end;
+    update vd_players set xp = v_amt where session_id = p_session and student_id = r_pl.student_id;
+    perform _vd_pay(r_pl.student_id, v_amt, 'Vocab battle ' || case when r_pl.place <= 3 then '#' || r_pl.place || ' team' else 'played' end
+      || case when coalesce(v_mvp, 0) > 0 and r_pl.wins = v_mvp then ' + MVP' else '' end);
   end loop;
   update vd_sessions set status = 'done', finished_at = now() where id = p_session;
 end $$;

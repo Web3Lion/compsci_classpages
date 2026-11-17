@@ -210,7 +210,8 @@ begin
       select winner from bracket_matches where bracket_id = p_bracket and side = 'cons' order by round desc limit 1);
   end if;
   for e in select * from bracket_entrants where bracket_id = p_bracket and xp_paid = 0 loop
-    v_amt := case e.place when 'champion' then 25 when 'runner_up' then 15 when 'semi' then 10 when 'cons_champ' then 10 else case when e.played then 5 else 0 end end;
+    -- 38.0 XP standard: 1st 200 / 2nd 150 / 3rd 100 (both semifinal losers are 3rd)
+    v_amt := case e.place when 'champion' then 200 when 'runner_up' then 150 when 'semi' then 100 when 'cons_champ' then 10 else case when e.played then 5 else 0 end end;
     v_lbl := case e.place when 'champion' then 'Bracket champion' when 'runner_up' then 'Bracket runner-up' when 'semi' then 'Bracket semifinalist'
                           when 'cons_champ' then 'Consolation bracket champion' else 'Bracket played' end;
     if v_amt > 0 then

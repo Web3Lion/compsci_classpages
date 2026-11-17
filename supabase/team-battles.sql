@@ -125,7 +125,7 @@ $$;
 
 create or replace function _tb_finish(p_battle uuid, p_award boolean default true) returns void
 language plpgsql security definer set search_path = public as $$
-declare b team_battles; v_top numeric; t record; r_pl record;   -- 26.0.2: loop var renamed (was "p", which clashed with the table alias p below)
+declare b team_battles; v_top numeric; t record; r_pl record; v_mvp int; v_amt int;   -- 26.0.2: loop var renamed (was "p", which clashed with the table alias p below)
 begin
   select * into b from team_battles where id = p_battle for update;
   if not found or b.status <> 'live' then return; end if;
@@ -142,15 +142,21 @@ begin
   update team_battle_players p set mvp = true
    where p.battle_id = p_battle and p.points > 0 and p.left_at is null
      and p.points = (select max(q.points) from team_battle_players q where q.battle_id = p_battle and q.group_id = p.group_id and q.left_at is null);
-  for r_pl in select pl.*, tm.won from team_battle_players pl join team_battle_teams tm on tm.battle_id = pl.battle_id and tm.group_id = pl.group_id
-            where pl.battle_id = p_battle and pl.caps > 0 and pl.left_at is null loop
-    if r_pl.won then
-      update team_battle_players set xp = 15 where battle_id = p_battle and student_id = r_pl.student_id;
-      perform _tb_pay(r_pl.student_id, 15, 'Team battle win (+10) and played (+5)');
-    else
-      update team_battle_players set xp = 5 where battle_id = p_battle and student_id = r_pl.student_id;
-      perform _tb_pay(r_pl.student_id, 5, 'Team battle played');
-    end if;
+  -- 38.0 XP standard: every player on the 1st / 2nd / 3rd team gets 200 / 150 / 100 (others 5);
+  -- the game MVP (most points overall, ties share) gets +100 on top
+  select max(points) into v_mvp from team_battle_players where battle_id = p_battle and left_at is null;
+  for r_pl in select pl.*, x.place from team_battle_players pl
+              join (select y.id, dense_rank() over (order by y.avg desc) as place from json_to_recordset(_tb_teams(p_battle)) as y(id uuid, avg numeric) where y.avg > 0) x on x.id = pl.group_id
+            where pl.battle_id = p_battle and pl.caps > 0 and pl.left_at is null
+            union all
+            select pl.*, 99 from team_battle_players pl
+            where pl.battle_id = p_battle and pl.caps > 0 and pl.left_at is null
+              and pl.group_id not in (select y.id from json_to_recordset(_tb_teams(p_battle)) as y(id uuid, avg numeric) where y.avg > 0) loop
+    v_amt := case r_pl.place when 1 then 200 when 2 then 150 when 3 then 100 else 5 end
+           + case when coalesce(v_mvp, 0) > 0 and r_pl.points = v_mvp then 100 else 0 end;
+    update team_battle_players set xp = v_amt where battle_id = p_battle and student_id = r_pl.student_id;
+    perform _tb_pay(r_pl.student_id, v_amt, 'Team battle ' || case when r_pl.place <= 3 then '#' || r_pl.place || ' team' else 'played' end
+      || case when coalesce(v_mvp, 0) > 0 and r_pl.points = v_mvp then ' + MVP' else '' end);
   end loop;
   update team_battles set status = 'done', finished_at = now() where id = p_battle;
 end $$;
