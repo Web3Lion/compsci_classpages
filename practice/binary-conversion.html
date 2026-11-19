@@ -137,6 +137,7 @@ details summary{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:
       <ol>
         <li><b>Largest number:</b> turn every bit on. 1111 = 8 + 4 + 2 + 1 = <b>15</b>. Shortcut: 2<sup>N</sup> &minus; 1 = 2<sup>4</sup> &minus; 1 = <b>15</b></li>
         <li><b>How many numbers:</b> each bit doubles the options, so N bits give 2<sup>N</sup>. 2<sup>4</sup> = <b>16</b> numbers (0 through 15, counting 0)</li>
+        <li><b>Values and range:</b> N bits give 2<sup>N</sup> values, from 0 up to 2<sup>N</sup> &minus; 1. 4 bits: <b>16</b> values, <b>0 to 15</b>. 8 bits: <b>256</b> values, <b>0 to 255</b></li>
         <li><b>Bits needed for a number:</b> find the smallest N where 2<sup>N</sup> &minus; 1 reaches it. 20 needs <b>5</b> bits: 4 bits stop at 15, 5 bits reach 31 (20 = 10100)</li>
         <li><b>Bits needed for a number of items:</b> find the smallest N where 2<sup>N</sup> is at least that many. 20 items need <b>5</b> bits (2<sup>4</sup> = 16 is too few, 2<sup>5</sup> = 32 is enough)</li>
         <li><b>Bits and bytes:</b> 1 byte = <b>8</b> bits. Multiply bytes by 8 to get bits, divide bits by 8 to get bytes</li>
@@ -220,9 +221,11 @@ function asRun(){
 function rnd(){return 1+Math.floor(Math.random()*255);}
 function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
 function pw(n){return Math.pow(2,n);}
-function capProblem(){
-  var s=['max','count','need','items','bytes'][ri(0,4)], N, X, k, p={type:'cap',sub:s};
-  if(s==='max'){N=ri(2,10);p.ans=pw(N)-1;p.q='What is the largest decimal number a '+N+'-bit binary number can represent?';p.short='largest '+N+'-bit number';
+function capProblem(only){
+  var s=only||['max','count','need','items','bytes','range','range'][ri(0,6)], N, X, k, p={type:'cap',sub:s};
+  if(s==='range'){N=ri(1,10);p.ans=pw(N);p.hi=pw(N)-1;p.q='How many different values can '+N+' bit'+(N>1?'s':'')+' represent, and what is the range? <span style="display:block;font-size:15px;font-weight:500;color:var(--dim);margin-top:6px;">Type the count, then the lowest and highest number. Example for 4 bits: 16, 0 to 15</span>';p.short='values and range for '+N+' bits';
+    p.why='Each bit doubles the options: 2<sup>'+N+'</sup> = <b class="mono">'+p.ans+'</b> values. Counting starts at 0 (<span class="mono">'+'0'.repeat(N)+'</span>), so the highest is 2<sup>'+N+'</sup> &minus; 1 = <b class="mono">'+p.hi+'</b> (<span class="mono">'+'1'.repeat(N)+'</span>). Range: <b class="mono">0 to '+p.hi+'</b>.';}
+  else if(s==='max'){N=ri(2,10);p.ans=pw(N)-1;p.q='What is the largest decimal number a '+N+'-bit binary number can represent?';p.short='largest '+N+'-bit number';
     p.why='Turn all '+N+' bits on: <b class="mono">'+'1'.repeat(N)+'</b>. That equals 2<sup>'+N+'</sup> &minus; 1 = '+pw(N)+' &minus; 1 = <b class="mono">'+p.ans+'</b>.';}
   else if(s==='count'){N=ri(2,10);p.ans=pw(N);p.q='How many different numbers can be represented with '+N+' bits?';p.short='numbers with '+N+' bits';
     p.why='Each bit doubles the options: 2<sup>'+N+'</sup> = <b class="mono">'+p.ans+'</b>. That covers 0 through '+(p.ans-1)+'.';}
@@ -237,20 +240,21 @@ function capProblem(){
 }
 function makeProblem(k,avoid){
   var t=k==='mix'?['d2b','b2d','cap'][ri(0,2)]:k, n, p;
-  if(t==='cap'){do{p=capProblem();}while(avoid&&avoid.indexOf(p.key)>=0);return p;}
+  if(t==='cap'||t==='rng'){do{p=capProblem(t==='rng'?'range':null);}while(avoid&&avoid.indexOf(p.key)>=0);return p;}
   do{n=rnd();}while(avoid&&avoid.indexOf(n)>=0);
   return {type:t,n:n,key:n};
 }
 function promptHtml(p){
-  if(p.type==='cap') return '<div class="meta">BIT CAPACITY</div><div class="target" style="font-size:22px;letter-spacing:0;line-height:1.4;font-family:Inter,sans-serif;">'+p.q+'</div>';
+  if(p.type==='cap') return '<div class="meta">BIT CAPACITY</div><div class="target" style="font-size:22px;letter-spacing:0;line-height:1.4;font-family:Inter,sans-serif;word-break:normal;overflow-wrap:break-word;">'+p.q+'</div>';
   return p.type==='d2b'
     ? '<div class="stem">Convert this decimal number to binary.</div><div class="target">'+p.n+' <small>(base 10)</small></div>'
     : '<div class="stem">Convert this binary number to decimal.</div><div class="target">'+bits8(p.n)+' <small>(base 2)</small></div>';
 }
-function placeholder(p){return p.type==='d2b'?'e.g. 00101101':p.type==='cap'?'e.g. 15':'e.g. 45';}
+function placeholder(p){return p.type==='d2b'?'e.g. 00101101':p.sub==='range'?'e.g. 16, 0 to 15':p.type==='cap'?'e.g. 15':'e.g. 45';}
 function grade(p,raw){
   var v=String(raw).replace(/\s+/g,'');
   if(!v) return null;
+  if(p.sub==='range'){ var nums=(String(raw).match(/\d+/g)||[]).map(Number); return nums.length===3&&nums[0]===p.ans&&nums[1]===0&&nums[2]===p.hi; }
   if(p.type==='d2b'){ if(!/^[01]+$/.test(v)) return false; return parseInt(v,2)===p.n; }
   if(!/^\d+$/.test(v)) return false; return parseInt(v,10)===(p.type==='cap'?p.ans:p.n);
 }
@@ -259,7 +263,7 @@ function steps(p){
   var b=bits8(p.n), on=PV.filter(function(x,i){return b[i]==='1';});
   return '<div class="pv">'+pvHtml(p.n)+'</div><div style="margin-top:8px;">'+on.join(' + ')+' = <b class="mono">'+p.n+'</b> &nbsp;&rarr;&nbsp; <b class="mono">'+b+'</b></div>';
 }
-function answerOf(p){return p.type==='d2b'?bits8(p.n):p.type==='cap'?String(p.ans):String(p.n);}
+function answerOf(p){if(p.sub==='range')return p.ans+' values, 0 to '+p.hi;return p.type==='d2b'?bits8(p.n):p.type==='cap'?String(p.ans):String(p.n);}
 
 /* ---------- start ---------- */
 function renderStart(){
@@ -273,8 +277,8 @@ function beginPractice(){mode='practice';tally={r:0,n:0};nextPractice();}
 function setKind(k){kind=k;nextPractice();}
 function nextPractice(){
   cur=makeProblem(kind,cur?[cur.key]:null);done=false;
-  var seg=[['mix','MIXED'],['d2b','DECIMAL → BINARY'],['b2d','BINARY → DECIMAL'],['cap','BIT CAPACITY']].map(function(s){return '<button class="'+(kind===s[0]?'act':'')+'" onclick="setKind(\''+s[0]+'\')">'+s[1]+'</button>';}).join('');
-  document.getElementById('quizPanel').innerHTML='<div class="progressRow"><span style="color:var(--accent2);">PRACTICE</span><span class="tally">'+tally.r+' / '+tally.n+' correct</span></div><div class="seg">'+seg+'</div>'+promptHtml(cur)+'<div class="ansRow"><input id="ans" class="ansInput" autocomplete="off" inputmode="numeric" placeholder="'+placeholder(cur)+'" onkeydown="if(event.key===\'Enter\'){done?nextPractice():checkPractice();}"><button class="btn pri" id="chk" onclick="checkPractice()">CHECK</button></div><div id="fbSlot"></div><div class="controls"><button class="btn" onclick="renderStart()">DONE PRACTICING</button><button class="btn" onclick="showPracticeAnswer()">SHOW ANSWER</button><button class="btn" id="nextBtn" onclick="nextPractice()">NEW PROBLEM &rarr;</button></div>';
+  var seg=[['mix','MIXED'],['d2b','DECIMAL → BINARY'],['b2d','BINARY → DECIMAL'],['cap','BIT CAPACITY'],['rng','VALUES & RANGE']].map(function(s){return '<button class="'+(kind===s[0]?'act':'')+'" onclick="setKind(\''+s[0]+'\')">'+s[1]+'</button>';}).join('');
+  document.getElementById('quizPanel').innerHTML='<div class="progressRow"><span style="color:var(--accent2);">PRACTICE</span><span class="tally">'+tally.r+' / '+tally.n+' correct</span></div><div class="seg">'+seg+'</div>'+promptHtml(cur)+'<div class="ansRow"><input id="ans" class="ansInput" autocomplete="off" inputmode="'+(cur.sub==='range'?'text':'numeric')+'" placeholder="'+placeholder(cur)+'" onkeydown="if(event.key===\'Enter\'){done?nextPractice():checkPractice();}"><button class="btn pri" id="chk" onclick="checkPractice()">CHECK</button></div><div id="fbSlot"></div><div class="controls"><button class="btn" onclick="renderStart()">DONE PRACTICING</button><button class="btn" onclick="showPracticeAnswer()">SHOW ANSWER</button><button class="btn" id="nextBtn" onclick="nextPractice()">NEW PROBLEM &rarr;</button></div>';
   document.getElementById('ans').focus();
 }
 function checkPractice(){
@@ -309,7 +313,7 @@ function startQuiz(){
 }
 function renderQ(){
   var p=Q[idx];
-  document.getElementById('quizPanel').innerHTML='<div class="progressRow"><span class="nameTag">'+escHtml(studentName)+'</span><span>QUESTION <b style="color:var(--bright);">'+(idx+1)+'</b>/'+Q.length+'</span><div class="progressBar"><div style="width:'+(idx/Q.length*100)+'%;"></div></div></div>'+promptHtml(p)+'<div class="ansRow"><input id="ans" class="ansInput" autocomplete="off" inputmode="numeric" placeholder="'+placeholder(p)+'" onkeydown="if(event.key===\'Enter\')submitQ();"></div><div class="nameErr" id="qErr" style="margin-top:8px;"></div><div class="controls"><button class="btn pri" onclick="submitQ()">'+(idx===Q.length-1?'SUBMIT QUIZ':'NEXT')+' &rarr;</button></div>';
+  document.getElementById('quizPanel').innerHTML='<div class="progressRow"><span class="nameTag">'+escHtml(studentName)+'</span><span>QUESTION <b style="color:var(--bright);">'+(idx+1)+'</b>/'+Q.length+'</span><div class="progressBar"><div style="width:'+(idx/Q.length*100)+'%;"></div></div></div>'+promptHtml(p)+'<div class="ansRow"><input id="ans" class="ansInput" autocomplete="off" inputmode="'+(p.sub==='range'?'text':'numeric')+'" placeholder="'+placeholder(p)+'" onkeydown="if(event.key===\'Enter\')submitQ();"></div><div class="nameErr" id="qErr" style="margin-top:8px;"></div><div class="controls"><button class="btn pri" onclick="submitQ()">'+(idx===Q.length-1?'SUBMIT QUIZ':'NEXT')+' &rarr;</button></div>';
   document.getElementById('ans').focus();
 }
 function submitQ(){
