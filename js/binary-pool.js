@@ -18,7 +18,7 @@
     return b + "-bit";
   }
   function plural(s) { var n = parseInt(s, 10), u = s.indexOf("byte") > 0 ? "byte" : "bit"; return n + " " + u + (n === 1 ? "" : "s"); }
-  function bitsFor(level) { return level === "bytes" ? 8 * rnd(1, 4) : rnd(2, 16); }
+  function bitsFor(level) { return level === "bytes" ? 8 : rnd(2, 10); }   // 40.5: max/count questions stay at 10 bits or less (no calculator)
 
   /* Each maker returns { kind, diff, q, a (typed answer), show (display answer), wrong:[display] } */
   var MAKERS = {
@@ -124,7 +124,7 @@
     label: "Binary",
     pool: function () {
       var p = [], b;
-      for (b = 2; b <= 32; b++) { p.push(MAKERS.max(b)); p.push(MAKERS.count(b)); }
+      for (b = 2; b <= 10; b++) { p.push(MAKERS.max(b)); p.push(MAKERS.count(b)); p.push(MAKERS.max(b)); p.push(MAKERS.count(b)); }
       for (var i = 0; i < 60; i++) p.push(MAKERS.step());
       for (i = 0; i < 6; i++) p.push(MAKERS.parity());
       for (i = 0; i < 20; i++) p.push(MAKERS.bits());
