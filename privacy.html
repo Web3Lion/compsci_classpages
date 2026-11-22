@@ -35,7 +35,7 @@ b{color:var(--text);}
 <div class="wrap">
   <div class="kick">Legal</div>
   <h1>Privacy Policy</h1>
-  <div class="date">Effective October 7, 2026</div>
+  <div class="date">Effective November 21, 2026</div>
 
   <p>This site hosts course pages and the Capture the Flag (CTF) arena for computer science classes taught by Robert Reasey at South Fayette School District. This policy explains what information the site collects when you sign in with Google, how it is used, and how to have it removed.</p>
 
@@ -61,7 +61,17 @@ b{color:var(--text);}
   <p>Email addresses and activity are visible only to teacher accounts on the class dashboard. Other students see only handles and leaderboard scores.</p>
 
   <h2>Where it is stored</h2>
-  <p>Account and class data is stored in a database hosted by Supabase. Sign-in is handled by Google. Pages are served by GitHub Pages; fonts are hosted on the site itself, so loading a page sends nothing to Google Fonts. The Cybersecurity 1 and 2 Day 0 warm-up is a Google Form in the district's Google Workspace. Each of these services processes data under its own privacy policy.</p>
+  <p>Account and class data is stored in a database hosted by Supabase. Sign-in is handled by Google. Pages are served by GitHub Pages (Mane Event may also be served by Vercel); fonts are hosted on the site itself, so loading a page sends nothing to Google Fonts. The Cybersecurity 1 and 2 Day 0 warm-up is a Google Form in the district's Google Workspace. Each of these services processes data under its own privacy policy.</p>
+
+  <h2>Mane Event (live games, no sign-in)</h2>
+  <p>Mane Event is a separate live review game that any teacher may use. It has no sign-in and no database, and it does not use the class accounts described above.</p>
+  <ul>
+    <li><b>Students enter only a 6-letter game code.</b> They get a random lion name (such as "Golden Cub"). The game never asks for a real name, an email address, or a login.</li>
+    <li><b>The teacher's browser runs the game.</b> Questions, answers and scores travel directly between each student's device and the teacher's browser. They are kept only in the teacher's browser, for up to 4 hours so a refreshed page can resume, and are erased when the teacher chooses "Finish &amp; erase". A game with no student activity for 45 minutes closes itself.</li>
+    <li><b>Connection services.</b> To find each other with the code, devices use the free PeerJS connection service, which sees the code and the devices' network addresses but not the game content. If a school or home network blocks a direct connection, the game is passed through an encrypted relay operated by Cloudflare. Neither service stores game content.</li>
+    <li><b>Question images</b> load directly from the link the teacher puts in the question sheet (for example Google Drive).</li>
+  </ul>
+  <p>Teachers should not put student names or other personal information into Mane Event question sheets.</p>
 
   <h2>Guest visitors</h2>
   <p>During demonstrations, the teacher may open a class to guest Google accounts for a limited time. Guests' information is collected the same way and is removed from the class when the session is over or on request.</p>

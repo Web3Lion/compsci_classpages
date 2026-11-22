@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<script src="../site.js?v=40.3.0"></script>
+<script src="../site.js?v=40.4.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Mane Event</title>
-<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=40.3.0">
-<link href="../assets/fonts/fonts.css?v=40.3.0" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/logo/sf-lion-green.png?v=40.4.0">
+<link href="../assets/fonts/fonts.css?v=40.4.0" rel="stylesheet">
 <style>
 :root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--gold2:#e6fff0;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
   --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
@@ -100,21 +100,79 @@ html[data-motion="reduce"] .ddIn{animation:none!important;}
 :root[data-mt="elements"]:not([data-theme="light"]){--t0:#ffab8a;--t1:#a8d8ff;--t2:#f0dfa0;--t3:#fff27a;--t4:#c8fbff;--t5:#e3c4ff;}
 :root[data-mt="elements"][data-theme="light"]{--t0:#c2410c;--t1:#0b5cad;--t2:#6b4f1d;--t3:#8a6a00;--t4:#00798a;--t5:#7a3fb5;}
 </style>
+<style>
+/* 41.0 home: fight-night poster */
+.mh{position:relative;overflow:hidden;border-radius:24px;padding:clamp(22px,4vw,44px);background:var(--panel2);border:2px solid var(--border3);display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(20px,4vw,40px);align-items:center;}
+.mh::before{content:"";position:absolute;inset:-40% -10% auto auto;width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,211,77,.22),transparent 65%);pointer-events:none;}
+@media (max-width:780px){.mh{grid-template-columns:1fr;}}
+.mh-kick{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--gold);display:flex;align-items:center;gap:10px;}
+.mh-kick img{height:30px;background:#fff;border-radius:8px;padding:3px 6px;}
+.mh-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;text-transform:uppercase;font-size:clamp(52px,10vw,112px);line-height:.86;letter-spacing:-1px;margin:14px 0 14px;color:var(--bright);}
+.mh-title em{font-style:normal;color:var(--t0);display:block;}
+.mh-title small{display:block;font-size:.34em;letter-spacing:6px;color:var(--muted);margin-bottom:6px;}
+.mh-tag{font-size:clamp(16px,1.8vw,19px);color:var(--muted);max-width:520px;line-height:1.5;margin:0;text-wrap:pretty;}
+.tix{position:relative;background:#fff;color:#062014;border-radius:18px;padding:24px 22px 22px;transform:rotate(-2deg);box-shadow:0 18px 40px rgba(0,0,0,.28);transition:transform .25s;}
+.tix:focus-within,.tix:hover{transform:rotate(0);}
+.tix::before,.tix::after{content:"";position:absolute;top:58px;width:26px;height:26px;border-radius:50%;background:var(--panel2);}
+.tix::before{left:-13px;} .tix::after{right:-13px;}
+.tix-top{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:800;letter-spacing:3px;color:#00843f;display:flex;justify-content:space-between;padding-bottom:16px;margin-bottom:16px;border-bottom:2px dashed #b7dcc6;}
+.tix h2{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;margin:0 0 12px;color:#062014;}
+.tix .code{background:#f1faf4;color:#062014;border-color:#00934a;max-width:none;}
+.tix .btn{background:#00843f;border-color:#00843f;color:#fff;width:100%;font-size:17px;}
+.tix .err{margin:10px 0 0;color:#b3261e;font-weight:700;}
+.fc-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:38px 0 14px;}
+.fc-head h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;text-transform:uppercase;font-size:clamp(26px,3.6vw,38px);margin:4px 0 0;color:var(--bright);line-height:1;}
+.fc-arw{display:flex;gap:8px;}
+.fc-arw button{width:48px;height:48px;border-radius:50%;border:2px solid var(--border3);background:var(--panel);color:var(--bright);font-size:20px;font-weight:800;cursor:pointer;}
+.fc-arw button:hover{background:var(--btn);color:var(--btnText);}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,300px);gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 4px 20px;scrollbar-width:thin;}
+.gc{position:relative;scroll-snap-align:start;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;background:var(--panel);border:2px solid var(--border3);color:var(--text);text-decoration:none;transition:transform .22s,box-shadow .22s;}
+.gc:hover,.gc:focus-within{transform:translateY(-6px) rotate(-.8deg);box-shadow:0 16px 32px rgba(0,0,0,.25);}
+.gc .art{height:176px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.gc .bout{position:absolute;top:12px;left:12px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:800;letter-spacing:2px;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.35);color:#fff;z-index:2;}
+.gc .body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1;}
+.gc .tg{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--gold);}
+.gc .nm{font-family:'Bricolage Grotesque',sans-serif;font-size:25px;font-weight:800;color:var(--bright);line-height:1.1;}
+.gc .ds{font-size:14px;color:var(--muted);line-height:1.5;margin:0 0 6px;text-wrap:pretty;}
+.gc .btn{margin-top:auto;}
+.a-ko{background:#c4283f;}
+.kohp{display:block;position:absolute;top:44px;height:12px;width:38%;border-radius:6px;background:rgba(0,0,0,.35);overflow:hidden;}
+.kohp span{display:block;width:100%;height:100%;background:#c8ffd9;}
+.kohp.r span{width:22%;background:#ffc2b8;}
+.a-ko .ko{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:84px;color:#fff;transform:rotate(-8deg);text-shadow:5px 5px 0 #5a0c18;margin-top:22px;}
+.gc .a-rush{background:#16213a;display:grid;grid-template-columns:repeat(2,64px);gap:8px;align-content:center;justify-content:center;}
+.a-rush b{height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:22px;color:#fff;}
+.a-rush .pts{position:absolute;right:14px;bottom:14px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;color:#ffd34d;transform:rotate(-6deg);}
+.gc .a-br{background:#e0a400;padding-top:26px;display:grid;grid-template-columns:repeat(3,auto);gap:0 14px;align-items:center;justify-content:center;}
+.a-br .col{display:flex;flex-direction:column;justify-content:space-around;height:112px;}
+.a-br span{display:block;width:58px;height:16px;border-radius:5px;background:#fff6d6;border:2px solid #1a1200;}
+.a-br .k{width:76px;height:34px;border-radius:8px;background:#1a1200;color:#ffd34d;font:800 13px 'JetBrains Mono',monospace;letter-spacing:2px;display:flex;align-items:center;justify-content:center;border:0;}
+.gc .a-jt,.gc .a-jc{display:grid;grid-template-columns:repeat(3,62px);gap:5px;align-content:center;justify-content:center;}
+.a-jt{background:#fff;} .a-jt b{background:#00843f;color:#fff;}
+.a-jc{background:#000;} .a-jc b{background:#060ce9;color:#ffcc00;font-family:'Libre Caslon Text',Georgia,serif;}
+.a-jt b,.a-jc b{height:38px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;text-shadow:2px 2px 0 rgba(0,0,0,.35);}
+.a-jt b.u,.a-jc b.u{opacity:.35;}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;margin-top:22px;}
+.how div{border:2px dashed var(--border3);border-radius:16px;padding:16px 18px;}
+.how b{display:block;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;color:var(--gold);margin-bottom:6px;}
+.how p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;}
+html[data-motion="reduce"] .tix,html[data-motion="reduce"] .gc{transform:none!important;transition:none!important;}
+</style>
 </head>
 <body>
 <button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
 <div class="wrap">
   <div id="hdr" style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:110px;">
-    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=40.3.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
+    <div style="display:flex;align-items:center;gap:12px;"><img src="../assets/logo/sf-lion-green.png?v=40.4.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
     <h1 class="disp" style="margin:0;font-size:clamp(30px,5vw,44px);line-height:1.1;color:var(--bright);">Mane Event</h1>
     <p style="margin:6px 0 0;color:var(--muted);max-width:680px;">Live vocab and review battles. Students join with a code, get a random lion name, and nothing is saved anywhere except the host&rsquo;s own browser.</p>
   </div>
   <div id="view" aria-live="polite"></div>
 </div>
-<script src="../assets/vendor/peerjs.min.js?v=40.3.0"></script>
-<script src="../assets/vendor/qrcode.js?v=40.3.0"></script>
-<script src="../js/ko-fx.js?v=40.3.0"></script>
-<script src="../js/clue-img.js?v=40.3.0"></script>
+<script src="../assets/vendor/peerjs.min.js?v=40.4.0"></script>
+<script src="../assets/vendor/qrcode.js?v=40.4.0"></script>
+<script src="../js/ko-fx.js?v=40.4.0"></script>
+<script src="../js/clue-img.js?v=40.4.0"></script>
 <script>if(!window.CLUE){window.CLUE=function(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};window.CLUE.has=function(){return false;};window.CLUE.strip=function(t){return String(t||"");};}</script>
 <script>
 if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
@@ -128,9 +186,10 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
   var PREFIX = "sf-mane-event-", KEY = "mane-event-host", view = document.getElementById("view"), hdr = document.getElementById("hdr");
   var SHORT = /web3lion\.github\.io$/.test(location.host) ? "web3lion.github.io/compsci_classpages/mane" : location.host + location.pathname.replace(/mane-event\/(index\.html)?$/, "mane");
   /* Cloudflare relay (TURN) for devices the school network won't let connect directly.
-     Paste either the Metered credentials URL (https://<app>.metered.live/api/v1/turn/credentials?apiKey=...)
-     or a Cloudflare Worker URL (claude only/cloudflare-relay-worker.js). Blank = direct only. */
+     Paste ONLY a Cloudflare Worker address (https://<name>.<you>.workers.dev). NEVER a key, token or a URL
+     with ?apiKey= / ?key= / ?token= in it. The page refuses those and the GitHub guard blanks them. Blank = direct only. */
   var RELAY_URL = "";
+  if (/[?&](api_?key|key|token|secret|password)=/i.test(RELAY_URL) || /^[A-Za-z0-9_-]{24,}$/.test(RELAY_URL)) { console.error("Mane Event: RELAY_URL looks like it contains a key. Ignored. Use a Cloudflare Worker address only."); RELAY_URL = ""; }
   var ICE = null, ICE_AT = 0, RELAY_ON = false;
   function iceConfig(){
     if (!RELAY_URL) return Promise.resolve(null);
@@ -257,18 +316,46 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
 
   function saved(){ try { var s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.v === 1 && now() - s.saved < 4 * 3600e3) return s; } catch (e) {} return null; }
 
+  var GAMES_OK = { battle: 1, rush: 1, bracket: 1, jteam: 1 };
   function home(msg){
-    hdr.style.display = "";
+    hdr.style.display = "none";
     var sv = saved();
+    var BOUTS = [
+      ["battle", '<div class="art a-ko"><div class="kohp" style="left:16px;"><span></span></div><div class="kohp r" style="right:16px;"><span></span></div><div class="ko">KO!</div></div>'],
+      ["rush", '<div class="art a-rush"><b style="background:#d6334a;">A</b><b style="background:#1f7ae0;">B</b><b style="background:#e0a400;color:#1a1200;">C</b><b style="background:#1a9e5c;">D</b><div class="pts">+1000</div></div>'],
+      ["bracket", '<div class="art a-br"><div class="col"><span></span><span></span><span></span><span></span></div><div class="col" style="height:84px;"><span></span><span></span></div><div class="k">KING</div></div>'],
+      ["jteam", '<div class="art a-jt"><b>$100</b><b class="u">$100</b><b>$100</b><b>$200</b><b>$200</b><b class="u">$200</b><b>$300</b><b>$300</b><b>$300</b></div>'],
+      ["jeopardy", '<div class="art a-jc"><b>$200</b><b>$200</b><b class="u">$200</b><b>$400</b><b class="u">$400</b><b>$400</b><b>$600</b><b>$600</b><b>$600</b></div>']
+    ];
+    var NAMES = { battle: "Class Battle", rush: "Roar Rush", bracket: "King of the Pride", jteam: "Team Jeopardy", jeopardy: "Classic Jeopardy" };
+    var INFO = {
+      battle: ["TEAMS \u00b7 1V1 KNOCKOUTS", "Rotating 1v1 fights. Four correct answers knock out the opponent. Most KOs per player wins it for the team."],
+      rush: ["WHOLE CLASS \u00b7 SPEED POINTS", "Everyone gets the same question. Faster right answers score more, streaks add a bonus, the leaderboard shuffles after every round."],
+      bracket: ["BRACKET \u00b7 LAST LION STANDING", "Single elimination down to one champion. Knocked-out players keep playing in a rematch pool."],
+      jteam: ["TEAMS \u00b7 EVERYONE ANSWERS", "A team picks the tile, then every student answers it on their device. Team score is the average per player."],
+      jeopardy: ["PROJECTOR \u00b7 YOU KEEP SCORE", "The classic board on the big screen. Daily Doubles, image clues, no student devices needed."]
+    };
     view.innerHTML =
-      (sv ? '<div class="card" style="border:2px solid var(--gold);margin-bottom:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;"><div style="flex:1;min-width:220px;"><b style="color:var(--bright);">Game ' + esc(sv.code) + ' is saved in this browser.</b><div style="color:var(--muted);">' + Object.keys(sv.players).length + ' player' + (Object.keys(sv.players).length === 1 ? '' : 's') + ' \u00b7 resume it and students reconnect on their own.</div></div><button class="btn" id="resume">Resume ' + esc(sv.code) + '</button><button class="btn ghost sm" id="discard">Discard</button></div>' : '') +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;">' +
-        '<div class="card"><div class="lbl" style="color:var(--gold);">Teacher</div><h2 style="margin:6px 0 8px;color:var(--bright);font-size:22px;">Host a game</h2><p style="margin:0 0 16px;color:var(--muted);">Upload your questions, pick a class battle or a bracket, and put the join code on the projector.</p><div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn" id="host">Host a game</button><a class="btn ghost sm" href="connection-test.html">Connection test</a></div></div>' +
-        '<div class="card"><div class="lbl" style="color:var(--gold);">Student</div><h2 style="margin:6px 0 8px;color:var(--bright);font-size:22px;">Join with a code</h2>' +
-          '<div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;"><input class="code" id="code" maxlength="6" autocomplete="off" autocapitalize="characters" aria-label="6-letter code" placeholder="ABCDEF"><button class="btn" id="go">Join</button></div>' +
-          (msg ? '<p role="alert" style="margin:12px 0 0;color:var(--bad);font-weight:700;">' + esc(msg) + '</p>' : '') + '</div>' +
-      '</div>';
-    document.getElementById("host").onclick = function(){ if (sv && !confirm("Start a new game? The saved game " + sv.code + " will be discarded.")) return; try { localStorage.removeItem(KEY); } catch (e) {} host(null); };
+      (sv ? '<div class="card" style="border:2px solid var(--t0);margin-bottom:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;"><div style="flex:1;min-width:220px;"><b style="color:var(--bright);">Game ' + esc(sv.code) + ' is saved in this browser.</b><div style="color:var(--muted);">' + Object.keys(sv.players).length + ' player' + (Object.keys(sv.players).length === 1 ? '' : 's') + ' \u00b7 resume it and students reconnect on their own.</div></div><button class="btn" id="resume">Resume ' + esc(sv.code) + '</button><button class="btn ghost sm" id="discard">Discard</button></div>' : '') +
+      '<section class="mh" aria-label="Mane Event">' +
+        '<div style="position:relative;"><div class="mh-kick"><img src="../assets/logo/sf-lion-green.png?v=40.4.0" alt="">SOUTH FAYETTE LIONS PRESENT</div>' +
+          '<h1 class="mh-title"><small>The</small>Mane<em>Event</em></h1>' +
+          '<p class="mh-tag">Live review battles for any class. Students join with a code, get a random lion name and fight for the crown. Nothing to install, no accounts.</p></div>' +
+        '<div class="tix"><div class="tix-top"><span>ADMIT ONE</span><span>STUDENTS</span></div><h2>Got a code?</h2>' +
+          '<div style="display:flex;flex-direction:column;gap:12px;"><input class="code" id="code" maxlength="6" autocomplete="off" autocapitalize="characters" aria-label="6-letter code" placeholder="ABCDEF"><button class="btn" id="go">Enter the arena \u2192</button></div>' +
+          (msg ? '<p role="alert" class="err">' + esc(msg) + '</p>' : '') + '</div>' +
+      '</section>' +
+      '<div class="fc-head"><div><div class="mh-kick">TEACHERS \u00b7 PICK A GAME TO HOST</div><h2>Tonight\u2019s game card</h2></div><div class="fc-arw"><button type="button" id="fcL" aria-label="Previous games">\u2190</button><button type="button" id="fcR" aria-label="More games">\u2192</button></div></div>' +
+      '<div class="rail" id="rail">' + BOUTS.map(function(b, i){ var k = b[0], inf = INFO[k], hrefJ = k === "jeopardy";
+        return '<article class="gc">' + b[1].replace('<div class="art', '<div class="bout">BOUT 0' + (i + 1) + '</div><div class="art') +
+          '<div class="body"><div class="tg">' + inf[0] + '</div><div class="nm">' + NAMES[k] + '</div><p class="ds">' + inf[1] + '</p>' +
+          (hrefJ ? '<a class="btn" href="jeopardy.html">Open the board</a>' : '<button class="btn" type="button" data-host="' + k + '">Host ' + NAMES[k] + '</button>') + '</div></article>'; }).join("") + '</div>' +
+      '<div class="how"><div><b>01 \u00b7 LOAD QUESTIONS</b><p>Paste a Google Sheet link or upload a CSV. Templates are on the setup screen.</p></div><div><b>02 \u00b7 SHOW THE CODE</b><p>Put the code and QR on the projector. Students join on any phone or laptop.</p></div><div><b>03 \u00b7 LET THEM ROAR</b><p>KOs, streaks and a live leaderboard. Your browser runs the game. <a href="connection-test.html" style="color:var(--gold);">Test your network</a></p></div></div>';
+    function start(k){ if (sv && !confirm("Start a new game? The saved game " + sv.code + " will be discarded.")) return; try { localStorage.removeItem(KEY); } catch (e) {} host(null, k); }
+    view.querySelectorAll("[data-host]").forEach(function(b){ b.onclick = function(){ start(b.getAttribute("data-host")); }; });
+    var rail = document.getElementById("rail");
+    document.getElementById("fcL").onclick = function(){ rail.scrollBy({ left: -320, behavior: "smooth" }); };
+    document.getElementById("fcR").onclick = function(){ rail.scrollBy({ left: 320, behavior: "smooth" }); };
     if (sv) { document.getElementById("resume").onclick = function(){ host(sv); }; document.getElementById("discard").onclick = function(){ try { localStorage.removeItem(KEY); } catch (e) {} home(); }; }
     var inp = document.getElementById("code");
     inp.oninput = function(){ inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 6); };
@@ -280,12 +367,13 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
      HOST — this browser is the game server. State is backed up to
      localStorage so a refresh resumes with the same code.
      ===================================================================== */
-  function host(resume){
+  function host(resume, pick){
     var S = resume || { v: 1, code: "", phase: "setup", saved: now(), fseq: 0,
       setup: { csv: "", theme: "lion", rcount: 10, rtime: 20, rpace: "timed", types: { shift: 1, scramble: 1, reveal: 1, bank: 1 }, mode: "battle", teams: 2, assign: "random", minutes: 10, qtime: 30, format: "bo3" },
       rows: [], players: {}, fights: {}, teamKO: [], feed: [], goAt: 0, endAt: 0, br: null };
-    var HQ = [], lastCd = 0, CONN = {}, LAST = {}, LASTT = {}, peer = null, opened = false, tries = 0, dirty = true, lastDraw = 0, lastSave = 0, wake = null;
+    var HQ = [], lastCd = 0, lastAct = now(), IDLE = 45 * 60000, closed = false, CONN = {}, LAST = {}, LASTT = {}, peer = null, opened = false, tries = 0, dirty = true, lastDraw = 0, lastSave = 0, wake = null;
     if (!S.code) S.code = newCode();
+    if (!resume && pick && GAMES_OK[pick]) { S.setup.mode = pick; S.setup.game = 1; }
     if (S.setup.rcount == null) S.setup.rcount = 10; S.setup.rtime = S.setup.rtime || 20;
     S.setup.theme = THEMES[S.setup.theme] ? S.setup.theme : "lion"; applyTheme(S.setup.theme);
     Object.keys(S.players).forEach(function(id){ S.players[id].up = false; S.players[id].downAt = now(); });
@@ -332,6 +420,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
 
     function onData(conn, d){
       if (!d || typeof d !== "object") return;
+      lastAct = now();
       if (d.k === "route" && conn._pid) { var pr = S.players[conn._pid]; if (pr) { pr.route = d.r === "relay" ? "relay" : "direct"; dirty = true; } return; }
       if (d.k === "join") {
         var tok = String(d.tok || ""); if (!/^[a-z0-9]{8,32}$/i.test(tok)) return;
@@ -586,6 +675,13 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     setInterval(tick, 200);
     function tick(){
       var t = now();
+      if (closed) return;
+      if (peer && !peer.destroyed && t - lastAct > IDLE) {
+        closed = true;   // 41.0: auto-close an abandoned game (no student activity for 45 min) so it can't sit on the relay
+        save(true); peer.destroy();
+        view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;"><b style="color:var(--bright);font-size:20px;">Game ' + esc(S.code) + ' closed after 45 minutes with no activity.</b><p style="color:var(--muted);">Everyone was disconnected. It is saved in this browser for 4 hours.</p><button class="btn" onclick="location.reload()">Reopen it</button></div>';
+        return;
+      }
       if (S.phase === "countdown" && t >= S.goAt) goLive();
       if (S.phase === "live") {
         if (S.setup.mode === "battle" && t >= S.endAt) endGame();
@@ -823,7 +919,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function codeCard(){
       var url = location.origin + location.pathname + "?code=" + S.code, qr = qrcode(0, "H"); qr.addData(url); qr.make();
       return '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">' +
-        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=40.3.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
+        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="../assets/logo/sf-lion-green.png?v=40.4.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
         '<div style="flex:1;min-width:240px;container-type:inline-size;"><div class="lbl">Join code</div>' +
           '<div class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);margin:2px 0 4px;">\u25CF LIVE \u00B7 students can join</div>' +
           '<div class="mono" style="font-size:clamp(32px,min(9vw,13.5cqi),84px);font-weight:800;letter-spacing:.12em;color:var(--gold);line-height:1.05;white-space:nowrap;">' + S.code + '</div>' +
@@ -1145,7 +1241,7 @@ document.getElementById("themeToggle").textContent = document.documentElement.ge
     function retry(msg){
       if (joined) { if (Date.now() - lostAt < 180000) { status("Reconnecting\u2026"); setTimeout(connect, 3000); return; } return end("Couldn\u2019t reconnect. Check with your teacher, then reload this page."); }
       if (++tries < 4) { status("Connecting to " + esc(c) + "\u2026 (try " + (tries + 1) + " of 4)"); setTimeout(connect, 2500); return; }
-      hdr.style.display = ""; home(msg);
+      home(msg);
     }
     function end(msg){ view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;"><b style="color:var(--bright);font-size:20px;">' + esc(msg) + '</b><p style="color:var(--muted);margin-bottom:0;">You can close this tab.</p></div>'; }
     if (PREV) setTimeout(previewStart, 0); else connect();
