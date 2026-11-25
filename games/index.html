@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<!-- © 2026 Robert Reasey, South Fayette School District. Licensed CC BY-NC 4.0 (attribution required, no commercial use). See LICENSE.md. -->
+<html lang="en">
+<head><script>if(/\/games$/.test(location.pathname))location.replace(location.pathname+'/'+location.search+location.hash);</script>
+<script>(function(){try{var t=localStorage.getItem('course-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="site.js?v=40.4.0"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Mane Event</title>
+<link rel="icon" type="image/png" href="assets/logo/sf-lion-green.png?v=40.4.0">
+<link href="assets/fonts/fonts.css?v=40.4.0" rel="stylesheet">
+<style>
+:root{--bg:#006b35;--panel:#005a2c;--panel2:#004d26;--border:#2f8f5c;--border3:#7cc49c;--text:#eafff1;--bright:#ffffff;--muted:#d4f2df;--dim:#b4e2c4;--gold:#ffffff;--gold2:#e6fff0;--btn:#ffffff;--btnText:#005a2c;--ok:#c8ffd9;--warn:#ffe08a;--bad:#ffc2b8;
+  --t0:#ffd34d;--t1:#ffb3b3;--t2:#b9dcff;--t3:#e2ff8f;--t4:#e3c8ff;--t5:#e6e6e6;}
+:root[data-theme="light"]{--bg:#ffffff;--panel:#ffffff;--panel2:#f1faf4;--border:#cfe8d9;--border3:#00934a;--text:#123322;--bright:#062014;--muted:#2c4d3a;--dim:#4a6b58;--gold:#007a3d;--gold2:#00602f;--btn:#007a3d;--btnText:#ffffff;--ok:#007a3d;--warn:#8a5300;--bad:#b3261e;
+  --t0:#8a6300;--t1:#b3261e;--t2:#1f5fa8;--t3:#4f7000;--t4:#6b3fb5;--t5:#4d4d4d;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);line-height:1.5;}
+a{color:var(--gold);} a:hover{color:var(--gold2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+.disp{font-family:'Bricolage Grotesque',sans-serif;}
+.wrap{max-width:1200px;margin:0 auto;padding:24px 20px 60px;}
+.card{border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:22px;}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;}
+.themebtn{position:fixed;top:14px;right:14px;z-index:10000;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 14px;min-height:44px;border-radius:999px;border:1px solid var(--border3);background:var(--panel);color:var(--gold);cursor:pointer;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:800;min-height:52px;padding:12px 22px;border-radius:12px;border:2px solid var(--btn);background:var(--btn);color:var(--btnText);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;}
+.btn:hover{color:var(--btnText);filter:brightness(1.08);}
+.btn.ghost{background:transparent;color:var(--bright);border-color:var(--border3);}
+.btn.sm{min-height:44px;font-size:13px;padding:8px 14px;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;min-height:44px;padding:8px 14px;border-radius:999px;border:2px solid var(--border3);background:transparent;color:var(--text);cursor:pointer;}
+.chip[aria-pressed="true"]{background:var(--btn);border-color:var(--btn);color:var(--btnText);}
+input.code{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;letter-spacing:8px;text-transform:uppercase;text-align:center;width:100%;max-width:300px;min-height:60px;border-radius:12px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);}
+textarea,input.ans{width:100%;border-radius:12px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);font:15px/1.5 'JetBrains Mono',monospace;padding:12px;}
+input.ans{font-size:22px;font-weight:700;min-height:58px;}
+input.ans.bad{border-color:var(--bad);animation:shake .3s;}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){input.ans.bad{animation:none;}}
+.tile{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;min-width:48px;min-height:52px;border-radius:10px;border:2px solid var(--border3);background:var(--panel2);color:var(--bright);cursor:pointer;}
+.tile:disabled{opacity:.3;cursor:default;}
+.bankb{font-size:17px;font-weight:700;min-height:60px;padding:10px 14px;border-radius:12px;border:2px solid var(--border3);background:var(--panel2);color:var(--bright);cursor:pointer;text-align:center;font-family:'Inter',sans-serif;}
+.bankb:hover:not(:disabled){border-color:var(--gold);}
+.bankb:disabled{opacity:.45;cursor:default;}
+.mask{display:inline-flex;align-items:flex-end;justify-content:center;min-width:30px;height:44px;border-bottom:3px solid var(--gold);font:800 26px 'JetBrains Mono',monospace;color:var(--bright);}
+.mask.sp{border-bottom-color:transparent;min-width:16px;}
+.hp{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;height:14px;}
+.hp i{display:block;border-radius:4px;background:var(--border);overflow:hidden;position:relative;}
+.hp i b{position:absolute;inset:0 auto 0 0;background:var(--ok);transition:width .25s;}
+table{width:100%;border-collapse:collapse;font-size:15px;}
+th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--dim);padding:8px;border-bottom:1px solid var(--border3);}
+td{padding:9px 8px;border-bottom:1px solid var(--border);}
+.pchip{font-size:14px;font-weight:700;padding:6px 12px;min-height:40px;border-radius:999px;border:2px solid currentColor;background:transparent;cursor:pointer;font-family:'Inter',sans-serif;}
+@keyframes prPop{0%{transform:scale(1)}35%{transform:scale(1.35)}100%{transform:scale(1)}}
+.prPop{animation:prPop .35s ease;}
+@keyframes prPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+.prPulse{animation:prPulse .5s ease infinite;}
+@keyframes prIntro{0%{opacity:0;transform:translate(-50%,-50%) scale(2.4) rotate(-6deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(.95) rotate(-3deg)}28%{transform:translate(-50%,-50%) scale(1.04) rotate(-3deg)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1) rotate(-3deg)}}
+#prIntro{position:fixed;left:50%;top:42%;z-index:9500;pointer-events:none;text-align:center;font-weight:800;line-height:1;color:var(--gold);text-shadow:0 0 40px rgba(0,0,0,.45),0 6px 0 rgba(0,0,0,.35);animation:prIntro 1.2s cubic-bezier(.2,1.4,.4,1) forwards;font-family:'Bricolage Grotesque',sans-serif;}
+#prIntro b{display:block;font-size:clamp(90px,16vw,200px);letter-spacing:-2px;}
+#prIntro span{display:block;font-family:'JetBrains Mono',monospace;font-size:clamp(18px,2.4vw,28px);letter-spacing:4px;color:var(--bright);margin-bottom:8px;}
+@keyframes prSlide{from{transform:translateY(var(--dy,0))}to{transform:translateY(0)}}
+@keyframes prWin{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1.03)}}
+@keyframes prRise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes cfFall{to{transform:translateY(112vh) rotate(760deg)}}
+.cf{position:fixed;top:-24px;width:10px;height:14px;z-index:9400;pointer-events:none;border-radius:2px;animation:cfFall linear forwards;}
+.bankb[data-o]{display:flex;align-items:center;gap:12px;text-align:left;}
+.bankb .lt{font-family:'JetBrains Mono',monospace;font-size:17px;min-width:36px;height:36px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex:none;}
+.bankb[data-o="0"]{border-color:#d6334a;} .bankb[data-o="0"] .lt{background:#d6334a;color:#fff;}
+.bankb[data-o="1"]{border-color:#1f7ae0;} .bankb[data-o="1"] .lt{background:#1f7ae0;color:#fff;}
+.bankb[data-o="2"]{border-color:#e0a400;} .bankb[data-o="2"] .lt{background:#e0a400;color:#1a1200;}
+.bankb[data-o="3"]{border-color:#1a9e5c;} .bankb[data-o="3"] .lt{background:#1a9e5c;color:#fff;}
+@keyframes sFlash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+#sFlash{position:fixed;inset:0;z-index:9000;pointer-events:none;display:flex;align-items:center;justify-content:center;font:800 clamp(60px,16vw,140px) 'JetBrains Mono',monospace;color:#fff;text-shadow:0 4px 24px rgba(0,0,0,.45);animation:sFlash .9s ease-out forwards;}
+html[data-motion="reduce"] .prAnim,html[data-motion="reduce"] .prPop,html[data-motion="reduce"] .prPulse{animation:none!important;opacity:1!important;transform:none!important;}
+html[data-motion="reduce"] #sFlash{animation-duration:.01s;}
+/* Team Jeopardy board (data-jt = lion | classic) */
+:root{--jb-tile:#00843f;--jb-tileHi:#00a352;--jb-val:#ffffff;--jb-cat:#ffffff;--jb-clue:#00843f;--jb-text:#ffffff;--jb-gap:#ffffff;--jb-used:#005a2c;--jb-font:'Bricolage Grotesque',sans-serif;}
+:root[data-jt="classic"]{--jb-tile:#060ce9;--jb-tileHi:#2a31ff;--jb-val:#ffcc00;--jb-cat:#ffffff;--jb-clue:#060ce9;--jb-text:#ffffff;--jb-gap:#000000;--jb-used:#030766;--jb-font:'Libre Caslon Text',Georgia,serif;}
+.jboard{display:grid;gap:6px;padding:6px;background:var(--jb-gap);border-radius:14px;}
+.jcat,.jtile{display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;}
+.jcat{background:var(--jb-tile);color:var(--jb-cat);font:800 clamp(12px,1.5vw,22px)/1.15 var(--jb-font);text-transform:uppercase;padding:10px 6px;min-height:70px;text-wrap:balance;text-shadow:2px 2px 0 rgba(0,0,0,.35);}
+.jtile{background:var(--jb-tile);color:var(--jb-val);font:800 clamp(22px,3.2vw,48px)/1 var(--jb-font);min-height:clamp(54px,9vh,96px);border:0;cursor:pointer;text-shadow:3px 3px 0 rgba(0,0,0,.45);transition:transform .12s,background .12s;}
+.jtile:hover:not(:disabled),.jtile:focus-visible{background:var(--jb-tileHi);transform:scale(1.03);outline:3px solid var(--jb-val);outline-offset:-3px;}
+.jtile:disabled{background:var(--jb-used);color:transparent;text-shadow:none;cursor:default;}
+.jclue{background:var(--jb-clue);color:var(--jb-text);border-radius:16px;padding:clamp(18px,3vw,36px);display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center;}
+.jclue .jq{font:700 clamp(26px,3.8vw,58px)/1.2 var(--jb-font);text-transform:uppercase;text-wrap:balance;text-shadow:3px 3px 0 rgba(0,0,0,.4);white-space:pre-line;}
+.jclue img{max-width:min(100%,820px);max-height:42vh;border-radius:12px;background:#fff;}
+.jclue .ja{font:800 clamp(28px,4vw,60px)/1.15 var(--jb-font);color:var(--jb-val);text-transform:uppercase;text-shadow:3px 3px 0 rgba(0,0,0,.4);}
+.jw{display:inline-flex;gap:5px;margin:0 9px 8px;}
+.jw i{display:inline-flex;align-items:flex-end;justify-content:center;width:clamp(18px,2.2vw,30px);height:clamp(28px,3.4vw,44px);border-bottom:3px solid currentColor;font:800 clamp(18px,2.4vw,32px) 'JetBrains Mono',monospace;font-style:normal;}
+@keyframes ddIn{0%{transform:scale(.2) rotate(-20deg);opacity:0}60%{transform:scale(1.12) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.ddIn{animation:ddIn .9s cubic-bezier(.2,1.4,.4,1) both;}
+html[data-motion="reduce"] .ddIn{animation:none!important;}
+</style>
+<style>
+/* team themes: page always stays Lion Pride green/white; only team colours change */
+:root[data-mt="academy"]:not([data-theme="light"]){--t0:#9dff57;--t1:#ff6ec7;--t2:#5ec8ff;--t3:#ffb347;--t4:#c99bff;--t5:#47f0e0;}
+:root[data-mt="academy"][data-theme="light"]{--t0:#2e8a00;--t1:#c2127a;--t2:#0b6fd1;--t3:#d45f00;--t4:#7a35d1;--t5:#00877d;}
+:root[data-mt="arcade"]:not([data-theme="light"]){--t0:#ff9ad8;--t1:#a8dcff;--t2:#e2ff8f;--t3:#ffc08a;--t4:#dcc4ff;--t5:#9ffff5;}
+:root[data-mt="arcade"][data-theme="light"]{--t0:#b0127a;--t1:#0b5fa8;--t2:#3f7200;--t3:#a84c00;--t4:#6b3fb5;--t5:#007a75;}
+:root[data-mt="elements"]:not([data-theme="light"]){--t0:#ffab8a;--t1:#a8d8ff;--t2:#f0dfa0;--t3:#fff27a;--t4:#c8fbff;--t5:#e3c4ff;}
+:root[data-mt="elements"][data-theme="light"]{--t0:#c2410c;--t1:#0b5cad;--t2:#6b4f1d;--t3:#8a6a00;--t4:#00798a;--t5:#7a3fb5;}
+</style>
+<style>
+/* 41.0 home: fight-night poster */
+.mh{position:relative;overflow:hidden;border-radius:24px;padding:clamp(22px,4vw,44px);background:var(--panel2);border:2px solid var(--border3);display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(20px,4vw,40px);align-items:center;}
+.mh::before{content:"";position:absolute;inset:-40% -10% auto auto;width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,211,77,.22),transparent 65%);pointer-events:none;}
+@media (max-width:780px){.mh{grid-template-columns:1fr;}}
+.mh-kick{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--gold);display:flex;align-items:center;gap:10px;}
+.mh-kick img{height:30px;background:#fff;border-radius:8px;padding:3px 6px;}
+.mh-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;text-transform:uppercase;font-size:clamp(52px,10vw,112px);line-height:.86;letter-spacing:-1px;margin:14px 0 14px;color:var(--bright);}
+.mh-title em{font-style:normal;color:var(--t0);display:block;}
+.mh-title small{display:block;font-size:.34em;letter-spacing:6px;color:var(--muted);margin-bottom:6px;}
+.mh-tag{font-size:clamp(16px,1.8vw,19px);color:var(--muted);max-width:520px;line-height:1.5;margin:0;text-wrap:pretty;}
+.tix{position:relative;background:#fff;color:#062014;border-radius:18px;padding:24px 22px 22px;transform:rotate(-2deg);box-shadow:0 18px 40px rgba(0,0,0,.28);transition:transform .25s;}
+.tix:focus-within,.tix:hover{transform:rotate(0);}
+.tix::before,.tix::after{content:"";position:absolute;top:58px;width:26px;height:26px;border-radius:50%;background:var(--panel2);}
+.tix::before{left:-13px;} .tix::after{right:-13px;}
+.tix-top{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:800;letter-spacing:3px;color:#00843f;display:flex;justify-content:space-between;padding-bottom:16px;margin-bottom:16px;border-bottom:2px dashed #b7dcc6;}
+.tix h2{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;margin:0 0 12px;color:#062014;}
+.tix .code{background:#f1faf4;color:#062014;border-color:#00934a;max-width:none;}
+.tix .btn{background:#00843f;border-color:#00843f;color:#fff;width:100%;font-size:17px;}
+.tix .err{margin:10px 0 0;color:#b3261e;font-weight:700;}
+.fc-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:38px 0 14px;}
+.fc-head h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;text-transform:uppercase;font-size:clamp(26px,3.6vw,38px);margin:4px 0 0;color:var(--bright);line-height:1;}
+.fc-arw{display:flex;gap:8px;}
+.fc-arw button{width:48px;height:48px;border-radius:50%;border:2px solid var(--border3);background:var(--panel);color:var(--bright);font-size:20px;font-weight:800;cursor:pointer;}
+.fc-arw button:hover{background:var(--btn);color:var(--btnText);}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,300px);gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 4px 20px;scrollbar-width:thin;}
+.gc{position:relative;scroll-snap-align:start;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;background:var(--panel);border:2px solid var(--border3);color:var(--text);text-decoration:none;transition:transform .22s,box-shadow .22s;}
+.gc:hover,.gc:focus-within{transform:translateY(-6px) rotate(-.8deg);box-shadow:0 16px 32px rgba(0,0,0,.25);}
+.gc .art{height:176px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.gc .bout{position:absolute;top:12px;left:12px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:800;letter-spacing:2px;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.35);color:#fff;z-index:2;}
+.gc .body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1;}
+.gc .tg{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--gold);}
+.gc .nm{font-family:'Bricolage Grotesque',sans-serif;font-size:25px;font-weight:800;color:var(--bright);line-height:1.1;}
+.gc .ds{font-size:14px;color:var(--muted);line-height:1.5;margin:0 0 6px;text-wrap:pretty;}
+.gc .btn{margin-top:auto;}
+.a-ko{background:#c4283f;}
+.kohp{display:block;position:absolute;top:44px;height:12px;width:38%;border-radius:6px;background:rgba(0,0,0,.35);overflow:hidden;}
+.kohp span{display:block;width:100%;height:100%;background:#c8ffd9;}
+.kohp.r span{width:22%;background:#ffc2b8;}
+.a-ko .ko{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:84px;color:#fff;transform:rotate(-8deg);text-shadow:5px 5px 0 #5a0c18;margin-top:22px;}
+.gc .a-rush{background:#16213a;display:grid;grid-template-columns:repeat(2,64px);gap:8px;align-content:center;justify-content:center;}
+.a-rush b{height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:22px;color:#fff;}
+.a-rush .pts{position:absolute;right:14px;bottom:14px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;color:#ffd34d;transform:rotate(-6deg);}
+.gc .a-br{background:#e0a400;padding-top:26px;display:grid;grid-template-columns:repeat(3,auto);gap:0 14px;align-items:center;justify-content:center;}
+.a-br .col{display:flex;flex-direction:column;justify-content:space-around;height:112px;}
+.a-br span{display:block;width:58px;height:16px;border-radius:5px;background:#fff6d6;border:2px solid #1a1200;}
+.a-br .k{width:76px;height:34px;border-radius:8px;background:#1a1200;color:#ffd34d;font:800 13px 'JetBrains Mono',monospace;letter-spacing:2px;display:flex;align-items:center;justify-content:center;border:0;}
+.gc .a-jt,.gc .a-jc{display:grid;grid-template-columns:repeat(3,62px);gap:5px;align-content:center;justify-content:center;}
+.a-jt{background:#fff;} .a-jt b{background:#00843f;color:#fff;}
+.a-jc{background:#000;} .a-jc b{background:#060ce9;color:#ffcc00;font-family:'Libre Caslon Text',Georgia,serif;}
+.a-jt b,.a-jc b{height:38px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;text-shadow:2px 2px 0 rgba(0,0,0,.35);}
+.a-jt b.u,.a-jc b.u{opacity:.35;}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;margin-top:22px;}
+.how div{border:2px dashed var(--border3);border-radius:16px;padding:16px 18px;}
+.how b{display:block;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;color:var(--gold);margin-bottom:6px;}
+.how p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;}
+html[data-motion="reduce"] .tix,html[data-motion="reduce"] .gc{transform:none!important;transition:none!important;}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="themebtn" onclick="__toggleTheme()">LIGHT</button>
+<div class="wrap">
+  <div id="hdr" style="display:flex;flex-direction:column;gap:4px;margin:4px 0 20px;padding-right:110px;">
+    <div style="display:flex;align-items:center;gap:12px;"><img src="assets/logo/sf-lion-green.png?v=40.4.0" alt="" style="height:40px;background:#fff;border-radius:10px;padding:4px 8px;"><div class="mono" style="font-size:12px;letter-spacing:3px;color:var(--gold);">SOUTH FAYETTE LIONS</div></div>
+    <h1 class="disp" style="margin:0;font-size:clamp(30px,5vw,44px);line-height:1.1;color:var(--bright);">Mane Event</h1>
+    <p style="margin:6px 0 0;color:var(--muted);max-width:680px;">Live vocab and review battles. Students join with a code, get a random lion name, and nothing is saved anywhere except the host&rsquo;s own browser.</p>
+  </div>
+  <div id="view" aria-live="polite"></div>
+</div>
+<script src="assets/vendor/peerjs.min.js?v=40.4.0"></script>
+<script src="assets/vendor/qrcode.js?v=40.4.0"></script>
+<script src="js/ko-fx.js?v=40.4.0"></script>
+<script src="js/clue-img.js?v=40.4.0"></script>
+<script>if(!window.CLUE){window.CLUE=function(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};window.CLUE.has=function(){return false;};window.CLUE.strip=function(t){return String(t||"");};}</script>
+<script>
+if (typeof window.__toggleTheme !== "function") window.__toggleTheme = function(){
+  var r = document.documentElement, t = r.getAttribute("data-theme") === "light" ? "dark" : "light";
+  r.setAttribute("data-theme", t); try { localStorage.setItem("course-theme", t); } catch (e) {}
+  document.getElementById("themeToggle").textContent = t === "light" ? "DARK" : "LIGHT";
+};
+document.getElementById("themeToggle").textContent = document.documentElement.getAttribute("data-theme") === "light" ? "DARK" : "LIGHT";
+
+(function(){
+  var PREFIX = "sf-mane-event-", KEY = "mane-event-host", view = document.getElementById("view"), hdr = document.getElementById("hdr");
+  var SHORT = location.host + location.pathname.replace(/\/(index\.html)?$/, "");   // stand-alone site: the join address is wherever this page lives
+  /* Cloudflare relay (TURN) for devices the school network won't let connect directly.
+     Paste ONLY a Cloudflare Worker address (https://<name>.<you>.workers.dev). NEVER a key, token or a URL
+     with ?apiKey= / ?key= / ?token= in it. The page refuses those and the GitHub guard blanks them. Blank = direct only. */
+  var RELAY_URL = "";
+  if (/[?&](api_?key|key|token|secret|password)=/i.test(RELAY_URL) || /^[A-Za-z0-9_-]{24,}$/.test(RELAY_URL)) { console.error("Mane Event: RELAY_URL looks like it contains a key. Ignored. Use a Cloudflare Worker address only."); RELAY_URL = ""; }
+  var ICE = null, ICE_AT = 0, RELAY_ON = false;
+  function iceConfig(){
+    if (!RELAY_URL) return Promise.resolve(null);
+    if (ICE && Date.now() - ICE_AT < 3 * 3600e3) return Promise.resolve(ICE);
+    var done = false;
+    return Promise.race([
+      fetch(RELAY_URL, { cache: "no-store" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ done = true; var list = Array.isArray(j) ? j : j && j.iceServers; if (list && list.length) { ICE = list; ICE_AT = Date.now(); RELAY_ON = true; return ICE; } return null; }).catch(function(){ return null; }),
+      new Promise(function(res){ setTimeout(function(){ if (!done) res(ICE); }, 5000); })
+    ]);
+  }
+  function peerOpts(ice){ return { debug: 0, config: { iceServers: [{ urls: "stun:stun.cloudflare.com:3478" }, { urls: "stun:stun.l.google.com:19302" }].concat(ice || []) } }; }
+  var LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+  var ADJ = ["Roaring","Golden","Mighty","Brave","Swift","Royal","Fierce","Clever","Bold","Noble","Savanna","Sunlit","Maned","Prowling","Pouncing","Proud"];
+  var NOUN = ["Neuron","Byte","Photon","Proton","Atom","Comet","Pixel","Quark","Vector","Circuit","Galaxy","Fossil","Magnet","Prism","Nebula","Cipher","Helix","Orbit","Ion","Electron","Molecule","Crystal","Laser","Rocket","Quasar","Gene","Isotope","Kernel","Packet","Router"];
+  var THEMES = {
+    academy:  { name: "Academy",    teams: ["Biology","Chemistry","Physics","Algebra","History","Literature"] },
+    lion:     { name: "Lion Pride", teams: ["Gold Pride","Crimson Pride","Azure Pride","Lime Pride","Violet Pride","Silver Pride"] },
+    arcade:   { name: "Arcade",     teams: ["Neon Pink","Electric Blue","Laser Lime","Solar Orange","Ultra Violet","Cyber Cyan"] },
+    elements: { name: "Elements",   teams: ["Fire","Water","Earth","Lightning","Ice","Plasma"] }
+  };
+  var MT = "lion";
+  function teamNames(){ return (THEMES[MT] || THEMES.lion).teams; }
+  function applyTheme(t){ MT = THEMES[t] ? t : "lion"; document.documentElement.setAttribute("data-mt", MT); }
+  var TYPES = [["shift","Shift"],["scramble","Scramble"],["reveal","Reveal"],["bank","Word bank"]];
+  var HP = 12, HIT = 3, MISS = 1;   // 4 correct answers = knockout; a wrong answer costs a third of a hit
+  var MINS = [5,10,15,20,30], QT = [[0,"No limit"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]];
+  var FORMATS = [["sd","Sudden death (5 questions)"],["bo3","Best of 3"],["bo5","Best of 5"]];
+
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+  function norm(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  function disp(a){ var d = String(a || "").replace(/\([^)]*\)/g, "").split("/")[0].trim(); return d || String(a || "").trim(); }
+  function alts(a){ var o = [norm(a), norm(disp(a))]; String(a || "").split("/").forEach(function(x){ o.push(norm(x.replace(/\([^)]*\)/g, ""))); }); return o.filter(Boolean); }
+  function ansText(r){ return r.k === "v" ? disp(r.a) : String(r.a || "").trim(); }
+  function isRight(r, txt){ var n = norm(txt); if (!n) return false; return r.k === "mc" ? n === norm(r.a) : alts(r.a).indexOf(n) >= 0; }
+  function rnd(n){ return Math.random() * n | 0; }
+  /* Jeopardy sheet: row 1 = categories, then a question row + answer row per value; a label column A is skipped */
+  function parseBoard(text){
+    var rows = parseCells(text).filter(function(r){ return r.some(function(x){ return x; }); });
+    if (rows.length < 3) return null;
+    var a = rows.map(function(r){ return r[0] || ""; }), lab = 0;
+    a.slice(0, 7).forEach(function(x){ if (/^(categor|\$?\d{2,4}|q(uestion)?\b|a(nswer)?\b|clue|value|points?)/i.test(x) || /\b(q|a|question|answer)$/i.test(x)) lab++; });
+    if (lab >= 2 || (a[0] === "" && rows[0].length > 1)) rows = rows.map(function(r){ return r.slice(1); });
+    var cats = rows[0].map(function(x){ return x.replace(/\s*\n\s*/g, " "); }), n = 0;
+    cats.forEach(function(c, i){ if (c) n = i + 1; }); n = Math.min(n, 8); if (n < 1) return null; cats = cats.slice(0, n);
+    var levels = [];
+    for (var r = 1; r < rows.length && levels.length < 10; r += 2) {
+      var qr = rows[r] || [], ar = rows[r + 1] || [];
+      if (!qr.some(function(x){ return x; })) continue;
+      levels.push(cats.map(function(_, c){ return { q: (qr[c] || "").slice(0, 500), a: (ar[c] || "").replace(/\s*\n\s*/g, " ").slice(0, 160) }; }));
+    }
+    var clues = 0; levels.forEach(function(Lv){ Lv.forEach(function(x){ if (x.q && x.a) clues++; }); });
+    return levels.length ? { cats: cats, levels: levels, clues: clues } : null;
+  }
+  function parseCells(text){
+    var t = String(text || "").replace(/^\uFEFF/, ""), tab = t.indexOf("\t") >= 0 && t.indexOf(",") < 0, rows = [], row = [], f = "", q = false;
+    for (var i = 0; i < t.length; i++) { var c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"' && f === "") q = true; else if (c === (tab ? "\t" : ",")) { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; } else f += c; }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows.map(function(r){ return r.map(function(x){ return String(x).replace(/\r\n?/g, "\n").trim(); }); });
+  }
+  var JIMG = /(https?:\/\/(?:[^\s"\/]+\.)?(?:drive\.google\.com|[^\s"\/]*googleusercontent\.com)\/[^\s"]+|https?:\/\/[^\s"]+?\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s"]*)?)/i;
+  function jClue(txt){
+    var m = String(txt || "").match(JIMG); if (!m) return '<div class="jq">' + esc(txt) + '</div>';
+    var u = m[1], id = (u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/) || [])[1];
+    if (id) u = "https://drive.google.com/thumbnail?id=" + id + "&sz=w1600";
+    var rest = String(txt).replace(m[1], "").trim();
+    return (rest ? '<div class="jq">' + esc(rest) + '</div>' : '') + '<img src="' + esc(u) + '" alt="Clue image">';
+  }
+  function jMask(a){ return disp(a).split(/\s+/).filter(Boolean).map(function(w){ return '<span class="jw">' + w.split("").map(function(ch){ return '<i>' + (/[a-z0-9]/i.test(ch) ? '' : esc(ch)) + '</i>'; }).join("") + '</span>'; }).join(""); }
+  function jRight(a, txt){ var n = norm(txt); if (!n) return false; var ok = alts(a); String(a || "").replace(/\(([^)]*)\)/g, function(_, x){ ok.push(norm(x)); }); return ok.indexOf(n) >= 0; }
+  function shuffle(a){ for (var i = a.length - 1; i > 0; i--) { var j = rnd(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function now(){ return Date.now(); }
+  function tc(i){ return "var(--t" + (i || 0) + ")"; }
+  function device(){ var u = navigator.userAgent; return /CrOS/.test(u) ? "Chromebook" : /iPad|Tablet/.test(u) ? "Tablet" : /Android|iPhone|Mobile/.test(u) ? "Phone" : "Laptop / desktop"; }
+  function hpBar(hp, col){ var h = "", bg = col ? 'background:' + col + ';' : ''; for (var j = 0; j < 4; j++) { var w = Math.max(0, Math.min(3, hp - 3 * j)) / 3 * 100; h += '<i><b style="width:' + w + '%;' + bg + '"></b></i>'; } return '<div class="hp" aria-label="' + Math.ceil(hp / 3) + ' of 4 hits left">' + h + '</div>'; }
+  function clock(ms){ var s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ":" + ("0" + s % 60).slice(-2); }
+
+  /* ---------- CSV ---------- */
+  function parseRows(text){
+    var t = String(text || "").replace(/^\uFEFF/, ""), tab = t.indexOf("\t") >= 0, rows = [], row = [], f = "", q = false;
+    for (var i = 0; i < t.length; i++) {
+      var c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"' && f === "") q = true;
+      else if (c === (tab ? "\t" : ",")) { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; }
+      else f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    rows = rows.map(function(r){ return r.map(function(x){ return x.replace(/\r\n?/g, "\n").split("\n").map(function(l){ return l.trim(); }).join("\n").replace(/\n{3,}/g, "\n\n").trim(); }); }).filter(function(r){ return r.filter(Boolean).length >= 2; });
+    var fmt = "vt", hdr = rows.length ? rows[0].map(norm) : [];
+    if (hdr.length >= 3 && /^(type|questiontype|qtype|kind)$/.test(hdr[0])) { fmt = "qa"; rows.shift(); }
+    else if (hdr.length >= 2 && /^(term|name|word|vocab|vocabulary)/.test(hdr[0]) && /definition|meaning/.test(hdr[1])) { fmt = "vt"; rows.shift(); }
+    else if (hdr.length >= 2 && hdr[0].length < 20 && /definition|meaning|question|prompt|clue/.test(hdr[0]) && /term|answer|word|name/.test(hdr[hdr.length - 1])) { fmt = "dt"; rows.shift(); }
+    else if (rows.length && /^(mc|fr|multiplechoice|freeresponse|shortanswer|multiple|free)$/.test(hdr[0])) fmt = "qa";
+    else if (rows.length) { var a0 = 0, a1 = 0; rows.forEach(function(r){ a0 += (r[0] || "").length; a1 += (r[r.length - 1] || "").length; }); fmt = a0 <= a1 ? "vt" : "dt"; }
+    var tcol = -1; hdr.forEach(function(h, i){ if (tcol < 0 && i > 0 && /^(time|seconds|secs|sec|timelimit|timer|time(s|sec|seconds)?)$/.test(h)) tcol = i; });
+    if (tcol < 0 && fmt === "qa") tcol = 6;
+    var dcol = -1; hdr.forEach(function(h, i){ if (dcol < 0 && i > 0 && /^(double|x2|doublepoints|bonus)$/.test(h)) dcol = i; });
+    if (dcol < 0 && fmt === "qa") dcol = 7;
+    var out = [], seen = {};
+    rows.forEach(function(r){
+      var qq, aa, k = "v", d = null, tt = 0, dd = false;
+      if (dcol >= 0) { dd = /^(1|true|yes|y|x2|2|double)$/i.test(String(r[dcol] || "").trim()); r = r.slice(); r[dcol] = ""; }
+      if (tcol >= 0) { var tv = parseInt(String(r[tcol] || "").replace(/[^0-9]/g, ""), 10); if (tv >= 5 && tv <= 300) tt = tv; r = r.slice(); r[tcol] = ""; }
+      if (fmt === "qa") {
+        var ty = norm(r[0]); qq = r[1] || ""; aa = r[2] || ""; d = r.slice(3, 6).map(function(x){ return (x || "").replace(/\s*\n\s*/g, " ").slice(0, 160); }).filter(Boolean);
+        k = /^(vocab|vocabulary|term|v|word)$/.test(ty) ? "v" : /^(fr|free|short|open|text|typed|written)/.test(ty) ? "fr" : /^(mc|multi|choice)/.test(ty) ? "mc" : d.length ? "mc" : "fr";
+        if (k !== "mc") d = null;
+      } else if (fmt === "vt") { aa = r[0] || ""; qq = r.slice(1).filter(Boolean).join(", "); }
+      else { r = r.filter(function(x, i){ return x || i === 0; }); aa = r[r.length - 1]; qq = r.slice(0, -1).join(", "); }
+      qq = qq.slice(0, 400); aa = aa.replace(/\s*\n\s*/g, " ").slice(0, k === "v" ? 80 : 160);
+      var key = norm(qq) + "|" + norm(aa);
+      if (!norm(qq) || !norm(aa) || seen[key] || out.length >= 500) return;
+      seen[key] = 1; var o = { q: qq, a: aa, k: k }; if (d) o.d = d; if (tt) o.t = tt; if (dd) o.x2 = 1; out.push(o);
+    });
+    return out;
+  }
+
+  /* ---------- start ---------- */
+  var q0 = new URLSearchParams(location.search), qcode = (q0.get("code") || "").toUpperCase().replace(/[^A-Z]/g, "");
+  if (q0.get("preview")) join("PREVIEW", true); else if (qcode.length === 6) join(qcode); else home();
+
+  function saved(){ try { var s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.v === 1 && now() - s.saved < 4 * 3600e3) return s; } catch (e) {} return null; }
+
+  var GAMES_OK = { battle: 1, rush: 1, bracket: 1, jteam: 1 };
+  function home(msg){
+    hdr.style.display = "none";
+    var sv = saved();
+    var BOUTS = [
+      ["battle", '<div class="art a-ko"><div class="kohp" style="left:16px;"><span></span></div><div class="kohp r" style="right:16px;"><span></span></div><div class="ko">KO!</div></div>'],
+      ["rush", '<div class="art a-rush"><b style="background:#d6334a;">A</b><b style="background:#1f7ae0;">B</b><b style="background:#e0a400;color:#1a1200;">C</b><b style="background:#1a9e5c;">D</b><div class="pts">+1000</div></div>'],
+      ["bracket", '<div class="art a-br"><div class="col"><span></span><span></span><span></span><span></span></div><div class="col" style="height:84px;"><span></span><span></span></div><div class="k">KING</div></div>'],
+      ["jteam", '<div class="art a-jt"><b>$100</b><b class="u">$100</b><b>$100</b><b>$200</b><b>$200</b><b class="u">$200</b><b>$300</b><b>$300</b><b>$300</b></div>'],
+      ["jeopardy", '<div class="art a-jc"><b>$200</b><b>$200</b><b class="u">$200</b><b>$400</b><b class="u">$400</b><b>$400</b><b>$600</b><b>$600</b><b>$600</b></div>']
+    ];
+    var NAMES = { battle: "Class Battle", rush: "Roar Rush", bracket: "King of the Pride", jteam: "Team Jeopardy", jeopardy: "Classic Jeopardy" };
+    var INFO = {
+      battle: ["TEAMS \u00b7 1V1 KNOCKOUTS", "Rotating 1v1 fights. Four correct answers knock out the opponent. Most KOs per player wins it for the team."],
+      rush: ["WHOLE CLASS \u00b7 SPEED POINTS", "Everyone gets the same question. Faster right answers score more, streaks add a bonus, the leaderboard shuffles after every round."],
+      bracket: ["BRACKET \u00b7 LAST LION STANDING", "Single elimination down to one champion. Knocked-out players keep playing in a rematch pool."],
+      jteam: ["TEAMS \u00b7 EVERYONE ANSWERS", "A team picks the tile, then every student answers it on their device. Team score is the average per player."],
+      jeopardy: ["PROJECTOR \u00b7 YOU KEEP SCORE", "The classic board on the big screen. Daily Doubles, image clues, no student devices needed."]
+    };
+    view.innerHTML =
+      (sv ? '<div class="card" style="border:2px solid var(--t0);margin-bottom:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;"><div style="flex:1;min-width:220px;"><b style="color:var(--bright);">Game ' + esc(sv.code) + ' is saved in this browser.</b><div style="color:var(--muted);">' + Object.keys(sv.players).length + ' player' + (Object.keys(sv.players).length === 1 ? '' : 's') + ' \u00b7 resume it and students reconnect on their own.</div></div><button class="btn" id="resume">Resume ' + esc(sv.code) + '</button><button class="btn ghost sm" id="discard">Discard</button></div>' : '') +
+      '<section class="mh" aria-label="Mane Event">' +
+        '<div style="position:relative;"><div class="mh-kick"><img src="assets/logo/sf-lion-green.png?v=40.4.0" alt="">SOUTH FAYETTE LIONS PRESENT</div>' +
+          '<h1 class="mh-title"><small>The</small>Mane<em>Event</em></h1>' +
+          '<p class="mh-tag">Live review battles for any class. Students join with a code, get a random lion name and fight for the crown. Nothing to install, no accounts.</p></div>' +
+        '<div class="tix"><div class="tix-top"><span>ADMIT ONE</span><span>STUDENTS</span></div><h2>Got a code?</h2>' +
+          '<div style="display:flex;flex-direction:column;gap:12px;"><input class="code" id="code" maxlength="6" autocomplete="off" autocapitalize="characters" aria-label="6-letter code" placeholder="ABCDEF"><button class="btn" id="go">Enter the arena \u2192</button></div>' +
+          (msg ? '<p role="alert" class="err">' + esc(msg) + '</p>' : '') + '</div>' +
+      '</section>' +
+      '<div class="fc-head"><div><div class="mh-kick">TEACHERS \u00b7 PICK A GAME TO HOST</div><h2>Tonight\u2019s game card</h2></div><div class="fc-arw"><button type="button" id="fcL" aria-label="Previous games">\u2190</button><button type="button" id="fcR" aria-label="More games">\u2192</button></div></div>' +
+      '<div class="rail" id="rail">' + BOUTS.map(function(b, i){ var k = b[0], inf = INFO[k], hrefJ = k === "jeopardy";
+        return '<article class="gc">' + b[1].replace('<div class="art', '<div class="bout">BOUT 0' + (i + 1) + '</div><div class="art') +
+          '<div class="body"><div class="tg">' + inf[0] + '</div><div class="nm">' + NAMES[k] + '</div><p class="ds">' + inf[1] + '</p>' +
+          (hrefJ ? '<a class="btn" href="jeopardy.html">Open the board</a>' : '<button class="btn" type="button" data-host="' + k + '">Host ' + NAMES[k] + '</button>') + '</div></article>'; }).join("") + '</div>' +
+      '<div class="how"><div><b>01 \u00b7 LOAD QUESTIONS</b><p>Paste a Google Sheet link or upload a CSV. Templates are on the setup screen.</p></div><div><b>02 \u00b7 SHOW THE CODE</b><p>Put the code and QR on the projector. Students join on any phone or laptop.</p></div><div><b>03 \u00b7 LET THEM ROAR</b><p>KOs, streaks and a live leaderboard. Your browser runs the game. <a href="connection-test.html" style="color:var(--gold);">Test your network</a></p></div></div>';
+    function start(k){ if (sv && !confirm("Start a new game? The saved game " + sv.code + " will be discarded.")) return; try { localStorage.removeItem(KEY); } catch (e) {} host(null, k); }
+    view.querySelectorAll("[data-host]").forEach(function(b){ b.onclick = function(){ start(b.getAttribute("data-host")); }; });
+    var rail = document.getElementById("rail");
+    document.getElementById("fcL").onclick = function(){ rail.scrollBy({ left: -320, behavior: "smooth" }); };
+    document.getElementById("fcR").onclick = function(){ rail.scrollBy({ left: 320, behavior: "smooth" }); };
+    if (sv) { document.getElementById("resume").onclick = function(){ host(sv); }; document.getElementById("discard").onclick = function(){ try { localStorage.removeItem(KEY); } catch (e) {} home(); }; }
+    var inp = document.getElementById("code");
+    inp.oninput = function(){ inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 6); };
+    document.getElementById("go").onclick = function(){ if (inp.value.length === 6) join(inp.value); else inp.focus(); };
+    inp.onkeydown = function(e){ if (e.key === "Enter") document.getElementById("go").click(); };
+  }
+
+  /* =====================================================================
+     HOST — this browser is the game server. State is backed up to
+     localStorage so a refresh resumes with the same code.
+     ===================================================================== */
+  function host(resume, pick){
+    var S = resume || { v: 1, code: "", phase: "setup", saved: now(), fseq: 0,
+      setup: { csv: "", theme: "academy", rcount: 10, rtime: 20, rpace: "timed", types: { shift: 1, scramble: 1, reveal: 1, bank: 1 }, mode: "battle", teams: 2, assign: "random", minutes: 10, qtime: 30, format: "bo3" },
+      rows: [], players: {}, fights: {}, teamKO: [], feed: [], goAt: 0, endAt: 0, br: null };
+    var HQ = [], lastCd = 0, lastAct = now(), IDLE = 45 * 60000, closed = false, CONN = {}, LAST = {}, LASTT = {}, peer = null, opened = false, tries = 0, dirty = true, lastDraw = 0, lastSave = 0, wake = null;
+    if (!S.code) S.code = newCode();
+    S.banned = S.banned || {}; S.locked = !!S.locked; var PO = false;   // 41.0: lock joins + kicked devices stay out
+    if (!resume && pick && GAMES_OK[pick]) { S.setup.mode = pick; S.setup.game = 1; }
+    if (S.setup.rcount == null) S.setup.rcount = 10; S.setup.rtime = S.setup.rtime || 20;
+    S.setup.theme = THEMES[S.setup.theme] ? S.setup.theme : "lion"; applyTheme(S.setup.theme);
+    Object.keys(S.players).forEach(function(id){ S.players[id].up = false; S.players[id].downAt = now(); });
+    Object.keys(S.fights).forEach(function(id){ var f = S.fights[id]; f.pause = 0; if (!f.between) newPrompt(f); });
+    hdr.style.display = "none";
+    view.innerHTML = '<div class="card mono" style="color:var(--dim);">Opening the den\u2026</div>';
+    function newCode(){ var c = ""; for (var i = 0; i < 6; i++) c += LETTERS[rnd(LETTERS.length)]; return c; }
+
+    function connect(){ iceConfig().then(connectWith); }
+    function connectWith(ice){
+      peer = new Peer(PREFIX + S.code, peerOpts(ice));
+      var p0 = peer, hang = setTimeout(function(){ if (opened || p0 !== peer || p0.open) return;   // the connection server never answered (blocked or slow network): say so instead of waiting forever
+        view.innerHTML = '<div class="card"><b style="color:var(--bad);">The connection server is not answering.</b><p style="color:var(--muted);">Waited 15 seconds. The school network or a browser extension may be blocking it. Open the connection test page to check, or try again.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="location.reload()">Try again</button><a class="btn ghost" href="connection-test.html">Connection test</a></div></div>'; }, 15000);
+      peer.on("open", function(){ clearTimeout(hang); if (!opened) { opened = true; dirty = true; } live(true); });
+      peer.on("disconnected", function(){ live(false); setTimeout(function(){ if (!peer.destroyed && peer.disconnected) peer.reconnect(); }, 1000); });
+      peer.on("error", function(e){
+        if (e.type === "unavailable-id") {
+          if (opened) return;
+          peer.destroy();
+          if (resume && ++tries < 15) { view.innerHTML = '<div class="card mono" style="color:var(--dim);">Reclaiming code ' + esc(S.code) + '\u2026 (' + tries + ')</div>'; setTimeout(connect, 2000); return; }
+          S.code = newCode(); connect(); return;
+        }
+        if (opened) { live(false); return; }
+        view.innerHTML = '<div class="card"><b style="color:var(--bad);">Couldn\u2019t reach the connection server.</b><p style="color:var(--muted);">' + esc(e.type || e.message) + '. The school network may block it. Try the connection test page.</p><button class="btn ghost" onclick="location.reload()">Try again</button></div>';
+      });
+      peer.on("connection", function(conn){
+        conn.on("data", function(d){ try { onData(conn, d); } catch (err) { console.error(err); } });
+        conn.on("close", function(){ var id = conn._pid; if (id && CONN[id] === conn) { delete CONN[id]; var p = S.players[id]; if (p) { p.up = false; p.downAt = now(); } dirty = true; } });
+      });
+    }
+    connect();
+    setInterval(function(){ if (peer && !peer.destroyed && peer.disconnected) peer.reconnect(); }, 5000);
+    function live(ok){ var el = document.getElementById("live"); if (el) { el.textContent = ok ? (S.locked ? "\u25CF LOCKED \u00B7 no new players (players already in can reconnect)" : "\u25CF LIVE \u00B7 students can join") + (RELAY_ON ? " \u00B7 relay on" : "") : "\u25CF RECONNECTING\u2026 keep this tab open"; el.style.color = ok ? "var(--ok)" : "var(--warn)"; } }
+    window.addEventListener("beforeunload", function(e){ if (S.phase !== "setup" && S.phase !== "done") { save(true); e.preventDefault(); e.returnValue = ""; } });
+
+    function save(force){ if (!force && now() - lastSave < 1000) return; lastSave = now(); S.saved = now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+    function send(id, o){ var c = CONN[id]; if (c && c.open) try { c.send(o); } catch (e) {} }
+    function list(){ return Object.keys(S.players).map(function(k){ return S.players[k]; }); }
+    function upList(){ return list().filter(function(p){ return p.up && !p.left; }); }
+    function pickName(){ var used = {}; list().forEach(function(p){ used[p.name] = 1; }); for (var i = 0; i < 300; i++) { var n = ADJ[rnd(ADJ.length)] + " " + NOUN[rnd(NOUN.length)]; if (!used[n]) return n; } return "Lion " + (list().length + 1); }
+    function TM(){ return S.setup.mode === "battle" || S.setup.mode === "jteam"; }
+    function teamSizes(){ var z = []; for (var i = 0; i < S.setup.teams; i++) z.push(0); list().forEach(function(p){ if (p.team != null && p.team < S.setup.teams) z[p.team]++; }); return z; }
+    function smallest(){ var z = teamSizes(), b = 0; z.forEach(function(n, i){ if (n < z[b]) b = i; }); return b; }
+    function feed(txt, team){ S.feed.unshift({ txt: txt, team: team }); S.feed = S.feed.slice(0, 8); }
+    function need(){ return S.setup.format === "bo5" ? 3 : S.setup.format === "bo3" ? 2 : 1; }
+
+    function onData(conn, d){
+      if (!d || typeof d !== "object") return;
+      lastAct = now();
+      if (d.k === "route" && conn._pid) { var pr = S.players[conn._pid]; if (pr) { pr.route = d.r === "relay" ? "relay" : "direct"; dirty = true; } return; }
+      if (d.k === "join") {
+        var tok = String(d.tok || ""); if (!/^[a-z0-9]{8,32}$/i.test(tok)) return;
+        if (S.banned[tok]) { try { conn.send({ k: "kicked" }); } catch (e) {} return; }
+        var p = S.players[tok];
+        if (!p) {
+          if (S.locked) { try { conn.send({ k: "locked" }); } catch (e) {} return; }
+          if (list().length >= 80) { try { conn.send({ k: "full" }); } catch (e) {} return; }
+          p = S.players[tok] = { id: tok, name: pickName(), team: null, ko: 0, out: false, rest: 0, fid: null, last: null, msg: "", dev: "" };
+          if (TM()) { p.team = smallest(); if (S.phase === "countdown" || S.phase === "live") feed(p.name + " joined " + teamNames()[p.team], p.team); }
+          else if (S.phase === "countdown" || S.phase === "live") { p.out = true; p.late = true; }
+        }
+        if (TM() && (p.team == null || p.team >= S.setup.teams)) p.team = smallest();
+        p.left = false; p.up = true; p.dev = String(d.dev || "").slice(0, 30); conn._pid = tok; CONN[tok] = conn; LAST[tok] = "";
+        try { conn.send({ k: "hi" }); } catch (e) {}
+        dirty = true; return;
+      }
+      if (d.k === "ans" && conn._pid) { if (S.setup.mode === "rush") rushAnswer(conn._pid, d); else if (S.setup.mode === "jteam") jpAnswer(conn._pid, d); else answer(conn._pid, d); }
+      if (d.k === "jpick" && conn._pid) jpPick(conn._pid, String(d.key || ""));
+      if (d.k === "forfeit" && conn._pid) forfeit(conn._pid, d.n);
+      if (d.k === "leave" && conn._pid) { leave(conn._pid); try { conn.close(); } catch (e) {} }
+    }
+    /* forfeit: battle/pool = the opponent gets the KO; bracket match = the whole match */
+    function forfeit(id, n){
+      var f = fightOf(id); if (!f || (n != null && n !== f.n && !f.between)) return;
+      var i = f.p.indexOf(id), P = S.players[id], W = S.players[f.p[1 - i]]; if (i < 0) return;
+      if (f.kind === "match") { var m = S.br.m[f.mid]; endFight(f); m.ff = 1; finishMatch(m, 1 - i); return; }
+      f.ff = 1; gameOver(f, 1 - i);
+    }
+    /* leave: forfeit anything live, settle a waiting bracket match, then drop out of pairing */
+    function leave(id){
+      var p = S.players[id]; if (!p) return;
+      if (S.phase === "setup" || S.phase === "lobby" || S.phase === "done") { delete S.players[id]; delete CONN[id]; dirty = true; return; }
+      if (p.fid) forfeit(id, null);
+      if (S.br && !p.out) Object.keys(S.br.m).forEach(function(k){ var m = S.br.m[k], j = m.p.indexOf(id); if (!m.winner && j >= 0 && m.p[1 - j]) { m.ff = 1; finishMatch(m, 1 - j); } });
+      p.left = true; if (S.setup.mode === "bracket") p.out = true; p.up = false; p.downAt = now(); delete CONN[id];
+      dirty = true;
+    }
+
+    /* ----- fights ----- */
+    function fightOf(id){ var p = S.players[id]; return p && p.fid ? S.fights[p.fid] : null; }
+    function allowed(d){
+      var L = norm(d).length, ok = [];
+      TYPES.forEach(function(t){
+        if (!S.setup.types[t[0]]) return;
+        if (t[0] === "bank") { if (S.distinct >= 4) ok.push("bank"); return; }
+        if (L < 3 || L > 24) return;
+        if (t[0] === "shift" && !/[a-z]/i.test(d)) return;
+        ok.push(t[0]);
+      });
+      return ok;
+    }
+    function newPrompt(f){
+      var R = S.rows, i = 0;
+      for (var k = 0; k < 30; k++) { i = rnd(R.length); if (f.used.indexOf(i) < 0) break; }
+      f.used.push(i); if (f.used.length > Math.min(R.length - 1, 40)) f.used.shift();
+      var r = R[i], d = ansText(r), ok = r.k === "v" ? allowed(d) : [];
+      f.row = i; f.n++; f.mc = r.k === "mc"; f.mode = f.mc ? "bank" : r.k === "fr" ? "outline" : ok.length ? ok[rnd(ok.length)] : "type"; f.pz = ""; f.opts = null; f.rev = []; f.shift = 0; f.len = norm(d).length;
+      if (f.mode === "outline") f.pz = d.split("").map(function(ch){ return /[a-z0-9]/i.test(ch) ? "_" : ch; }).join("");
+      if (f.mode === "shift") { f.shift = 1 + rnd(5); f.pz = d.toUpperCase().replace(/[A-Z]/g, function(c){ return String.fromCharCode((c.charCodeAt(0) - 65 + f.shift) % 26 + 65); }); }
+      if (f.mode === "scramble") { var L = d.toUpperCase().replace(/[^A-Z0-9]/g, "").split(""), orig = L.join(""); for (var j = 0; j < 6; j++) { shuffle(L); if (L.join("") !== orig) break; } f.pz = L.join(""); }
+      if (f.mode === "bank") {
+        var seen = {}, o = [d]; seen[norm(d)] = 1;
+        if (f.mc) (r.d || []).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
+        if (!f.mc || o.length < 2) shuffle(R.filter(function(x){ return f.mc ? x.k !== "v" : x.k === "v"; }).map(ansText)).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
+        f.opts = shuffle(o);
+      }
+      var t = now(); f.t0 = t; f.next = t + 6000; f.endsAt = S.setup.qtime ? t + S.setup.qtime * 1000 : 0; f.lock = [0, 0]; f.pause = 0; f.last = null; dirty = true;
+    }
+    function mask(f){ var d = ansText(S.rows[f.row]); return d.split("").map(function(ch, j){ return /[a-z0-9]/i.test(ch) && f.rev.indexOf(j) < 0 ? "_" : ch; }).join(""); }
+    function startFight(a, b, kind, mid){
+      var id = "f" + (++S.fseq), f = { id: id, p: [a, b], kind: kind, mid: mid || null, hp: [HP, HP], n: 0, used: [], lock: [0, 0], tries: [0, 0],
+        sd: kind === "match" && S.setup.format === "sd", q: 0, pts: [0, 0], pause: 0, between: 0, down: 0 };
+      S.fights[id] = f; S.players[a].fid = id; S.players[b].fid = id; newPrompt(f); return f;
+    }
+    function endFight(f){ delete S.fights[f.id]; f.p.forEach(function(id){ var p = S.players[id]; if (p && p.fid === f.id) p.fid = null; }); dirty = true; }
+    function settle(f, w){ f.last = { a: ansText(S.rows[f.row]), by: w }; f.pause = now() + 1800; if (f.sd) f.q++; dirty = true; }
+    function answer(id, d){
+      var f = fightOf(id); if (!f || d.n !== f.n || f.pause || f.between) return;
+      var i = f.p.indexOf(id), t = now(); if (i < 0 || f.lock[i] || t - f.tries[i] < 500) return;
+      f.tries[i] = t;
+      var ok = isRight(S.rows[f.row], String(d.a || "").slice(0, 160));
+      if (ok) { if (f.sd) f.pts[i]++; else f.hp[1 - i] = Math.max(0, f.hp[1 - i] - HIT); settle(f, i); return; }
+      send(id, { k: "bad" });
+      if (f.sd) f.lock[i] = 1;
+      else { f.hp[i] = Math.max(0, f.hp[i] - MISS); if (f.mode === "bank") f.lock[i] = 1; if (f.hp[i] <= 0) { settle(f, null); return; } }
+      if (f.lock[0] && f.lock[1]) settle(f, null);
+      dirty = true;
+    }
+    function afterPause(f){
+      if (f.sd) { if (f.q >= 5 && f.pts[0] !== f.pts[1]) return gameOver(f, f.pts[0] > f.pts[1] ? 0 : 1); return newPrompt(f); }
+      if (f.hp[0] <= 0 || f.hp[1] <= 0) return gameOver(f, f.hp[0] <= 0 ? 1 : 0);
+      newPrompt(f);
+    }
+    function gameOver(f, w){
+      var W = S.players[f.p[w]], L = S.players[f.p[1 - w]], t = now();
+      S.kseq = (S.kseq || 0) + 1; W.kev = { n: S.kseq, won: 1, opp: L.name, sd: f.sd ? 1 : 0 }; L.kev = { n: S.kseq, won: 0, opp: W.name, sd: f.sd ? 1 : 0 };
+      HQ.push({ name: L.name, sub: W.name + (f.sd ? " wins" : " lands the KO"), color: S.setup.mode === "battle" && W.team != null ? tc(W.team) : "#00934a", big: f.sd ? "WIN!" : "K.O.!", final: f.kind === "match" });
+      if (f.kind === "match") {
+        var m = S.br.m[f.mid]; m.wins[w]++;
+        if (m.wins[w] >= need()) { endFight(f); finishMatch(m, w); return; }
+        f.between = t + 3500; f.gameMsg = W.name + " wins game " + (m.wins[0] + m.wins[1]); dirty = true; return;
+      }
+      endFight(f);
+      W.rest = L.rest = t + 2500; W.last = L.id; L.last = W.id;
+      W.msg = f.ff ? L.name + " forfeited. KO to you!" : "KO! You beat " + L.name + "."; L.msg = f.ff ? "You forfeited. " + W.name + " gets the KO." : W.name + " got the KO. Next opponent coming up.";
+      if (f.kind === "battle") { W.ko++; S.teamKO[W.team] = (S.teamKO[W.team] || 0) + 1; feed(W.name + " KO\u2019d " + L.name, W.team); }
+    }
+
+    /* ----- bracket ----- */
+    function roundName(r){ var R = S.br.R, left = R - r; return left === 1 ? "Final" : left === 2 ? "Semifinal" : left === 3 ? "Quarterfinal" : "Round of " + Math.pow(2, left); }
+    function buildBracket(ids){
+      shuffle(ids);
+      var size = 2; while (size < ids.length) size *= 2;
+      var R = Math.log2(size), m = {};
+      for (var r = 0; r < R; r++) for (var s = 0; s < size >> (r + 1); s++) m[r + ":" + s] = { k: r + ":" + s, r: r, s: s, p: [null, null], wins: [0, 0], winner: null, wait: 0 };
+      for (var s2 = 0; s2 < size / 2; s2++) m["0:" + s2].p = [ids[s2] || null, ids[size - 1 - s2] || null];
+      S.br = { R: R, size: size, m: m, champ: null, second: null };
+      for (var s3 = 0; s3 < size / 2; s3++) { var mm = m["0:" + s3]; if (mm.p[0] && !mm.p[1]) { mm.winner = mm.p[0]; mm.bye = true; advance(mm); } }
+    }
+    function advance(m){
+      if (m.r === S.br.R - 1) { S.br.champ = m.winner; S.br.second = m.p[0] === m.winner ? m.p[1] : m.p[0]; endGame(); return; }
+      S.br.m[(m.r + 1) + ":" + (m.s >> 1)].p[m.s & 1] = m.winner;
+    }
+    function finishMatch(m, w){
+      var t = now(), Wp = S.players[m.p[w]], Lp = S.players[m.p[1 - w]];
+      m.winner = Wp.id; Lp.out = true; Lp.outR = m.r; Lp.rest = Wp.rest = t + 3500; Lp.last = Wp.id;
+      Lp.msg = (m.ff ? "You forfeited to " + Wp.name + "." : "Eliminated by " + Wp.name + ".") + " You\u2019re in the rematch pool now, so keep playing!";
+      Wp.msg = (m.ff ? Lp.name + " forfeited. " : "") + (m.r === S.br.R - 1 ? "KING OF THE PRIDE!" : "You win the match! On to the " + roundName(m.r + 1) + ".");
+      feed(Wp.name + (m.ff ? " advances (" + Lp.name + " forfeited)" : " beat " + Lp.name) + " \u00b7 " + roundName(m.r), null); m.ff = 0;
+      dirty = true; advance(m);
+    }
+
+    /* ----- phases ----- */
+    /* ----- Roar Rush: everyone answers the same question; faster correct answers score more ----- */
+    function rushT(){ var R0 = S.rush, r = R0 && R0.f && S.rows[R0.f.row]; return ((r && r.t) || S.setup.rtime || 20) * 1000; }
+    function rushPace(){ return S.setup.rpace || "timed"; }
+    function rushStart(){
+      var R0 = S.rush; newPrompt(R0.f); R0.x2 = !!(S.rows[R0.f.row] && S.rows[R0.f.row].x2) || !!R0.nx2; R0.nx2 = false; R0.f.t0 = now(); R0.f.endsAt = rushPace() === "teacher" ? 0 : now() + rushT(); R0.f.next = now() + Math.max(2500, rushT() / 8);
+      R0.qi++; R0.phase = "q"; R0.ans = {}; R0.revealAt = 0; dirty = true; save(true); showIntro(R0.qi, R0.x2);
+    }
+    function rushAnswer(id, d){
+      var R0 = S.rush, f = R0 && R0.f, p = S.players[id], t = now(); if (!f || R0.phase !== "q" || d.n !== f.n || !p) return;
+      var A = R0.ans[id] || (R0.ans[id] = { ok: 0, lock: 0, tries: 0, last: 0 });
+      if (A.ok || A.lock || t - A.last < 400) return; A.last = t; A.tries++; if (A.tries === 1) { hostPing(); POPN = true; }
+      if (isRight(S.rows[f.row], String(d.a || "").slice(0, 160))) {
+        p.streak = (p.streak || 0) + 1;
+        A.ok = 1; A.pts = Math.round(500 + 500 * Math.max(0, rushT() - (t - (f.t0 || t))) / rushT()) + (p.streak >= 3 ? 100 : 0); if (R0.x2) A.pts *= 2; A.at = t;
+        p.score = (p.score || 0) + A.pts;
+      } else { send(id, { k: "bad" }); if (f.mode === "bank") A.lock = 1; }
+      dirty = true;
+    }
+    function rushIn(){ return upList(); }
+    function rushTick(t){
+      var R0 = S.rush, f = R0.f;
+      if (R0.phase === "reveal" && rushPace() === "auto" && R0.revealAt && t - R0.revealAt >= 8000) { if (R0.qi >= R0.total) endGame(); else rushStart(); return; }
+      if (R0.phase !== "q") return;
+      var ps = rushIn(), done = rushPace() !== "teacher" && ps.length && ps.every(function(p){ var A = R0.ans[p.id]; return A && (A.ok || A.lock); });
+      if ((f.endsAt && t >= f.endsAt) || done) return rushReveal();
+      if (f.mode === "reveal" && t >= f.next) {
+        var dd = ansText(S.rows[f.row]), hid = [];
+        dd.split("").forEach(function(ch, j){ if (/[a-z0-9]/i.test(ch) && f.rev.indexOf(j) < 0) hid.push(j); });
+        if (hid.length > 1) { f.rev.push(hid[rnd(hid.length)]); dirty = true; }
+        f.next = t + Math.max(2500, rushT() / 8);
+      }
+    }
+    function rushReveal(){
+      var R0 = S.rush; R0.phase = "reveal"; R0.revealAt = now();
+      list().forEach(function(p){ var A = R0.ans[p.id]; p.lastPts = A && A.ok ? A.pts : 0; if (!(A && A.ok)) p.streak = 0; });
+      rushBoard().forEach(function(p, i){ p.dl = p.prevRank ? p.prevRank - (i + 1) : 0; p.prevRank = i + 1; });
+      KS("horn"); dirty = true; save(true);
+    }
+    function rushBoard(){ return list().filter(function(p){ return !p.left || p.score; }).sort(function(a, b){ return (b.score || 0) - (a.score || 0); }); }
+    function rushPlace(id){ return rushBoard().map(function(p){ return p.id; }).indexOf(id) + 1; }
+    /* ----- Team Jeopardy: a team picks a tile, everyone answers, correct players earn the value for their team ----- */
+    function jVal(li){ return (li + 1) * 100 * (S.setup.jmult || 1); }
+    function jLeft(){ var J = S.jp, n = 0; J.b.levels.forEach(function(Lv, li){ Lv.forEach(function(x, c){ if (x.q && x.a && !J.used[li + ":" + c]) n++; }); }); return n; }
+    function jMembers(i){ return list().filter(function(p){ return p.team === i && (!p.left || p.jcash); }); }
+    function jTeams(){ var out = []; for (var i = 0; i < S.setup.teams; i++) { var m = jMembers(i); if (!m.length) continue; var cash = 0; m.forEach(function(p){ cash += p.jcash || 0; }); out.push({ i: i, n: m.length, cash: cash, avg: Math.round(cash / m.length) }); }
+      return out.sort(function(a, b){ return b.avg - a.avg || b.cash - a.cash; }); }
+    function jNextPicker(){ var J = S.jp; for (var k = 1; k <= S.setup.teams; k++) { var i = (J.pick + k) % S.setup.teams; if (upList().some(function(p){ return p.team === i; })) return i; } return J.pick; }
+    function jStartPick(){ var J = S.jp; J.phase = "pick"; J.pickEnds = now() + 15000; J.seq++; dirty = true; save(true); }
+    function jOpen(key){
+      var J = S.jp, p = key.split(":"), li = +p[0], c = +p[1], x = J.b.levels[li] && J.b.levels[li][c];
+      if (J.phase !== "pick" || !x || !x.q || !x.a || J.used[key]) return;
+      J.used[key] = 1; J.key = key; J.li = li; J.c = c; J.n++; J.phase = "q"; J.ans = {}; J.dd = J.dds.indexOf(key) >= 0;
+      J.endsAt = now() + (S.setup.jtime || 30) * 1000; KS(J.dd ? "win" : "hit"); dirty = true; save(true);
+    }
+    function jpPick(id, key){ var p = S.players[id], J = S.jp; if (!p || !J || J.phase !== "pick" || p.team !== J.pick) return; jOpen(key); }
+    function jpAnswer(id, d){
+      var J = S.jp, p = S.players[id], t = now(); if (!J || J.phase !== "q" || d.n !== J.n || !p || p.team == null) return;
+      var A = J.ans[id] || (J.ans[id] = { ok: 0, tries: 0, last: 0 }); if (A.ok || t - A.last < 400) return; A.last = t; A.tries++;
+      if (A.tries === 1) { hostPing(); POPN = true; }
+      var x = J.b.levels[J.li][J.c];
+      if (jRight(x.a, String(d.a || "").slice(0, 160))) { A.ok = 1; A.pts = jVal(J.li) * (J.dd && p.team === J.pick ? 2 : 1); p.jcash = (p.jcash || 0) + A.pts; }
+      else send(id, { k: "bad" });
+      dirty = true;
+    }
+    function jReveal(){
+      var J = S.jp; J.phase = "rev"; J.revAt = now();
+      var ranks = jTeams(); ranks.forEach(function(tm, r){ J.dl[tm.i] = J.prev[tm.i] ? J.prev[tm.i] - (r + 1) : 0; J.prev[tm.i] = r + 1; });
+      KS("horn"); dirty = true; save(true);
+    }
+    function jTick(t){
+      var J = S.jp; if (!J) return;
+      if (J.phase === "pick") {
+        var pk = J.pick; if (!upList().some(function(p){ return p.team === pk; })) { J.pick = jNextPicker(); }
+        if (t >= J.pickEnds) { var open = []; J.b.levels.forEach(function(Lv, li){ Lv.forEach(function(x, c){ if (x.q && x.a && !J.used[li + ":" + c]) open.push(li + ":" + c); }); }); if (open.length) jOpen(open[rnd(open.length)]); else endGame(); }
+      } else if (J.phase === "q") {
+        var ps = upList().filter(function(p){ return p.team != null; }), done = ps.length && ps.every(function(p){ var A = J.ans[p.id]; return A && A.ok; });
+        if (t >= J.endsAt || done) jReveal();
+      } else if (J.phase === "rev" && t - J.revAt >= 9000) jAfter();
+    }
+    function jAfter(){ var J = S.jp; if (!jLeft()) return endGame(); J.pick = jNextPicker(); jStartPick(); }
+    function startGame(){
+      var t = now(); S.phase = "countdown"; S.goAt = t + 5000; S.feed = []; S.fights = {}; S.br = null;
+      list().forEach(function(p){ p.jcash = 0; p.score = 0; p.lastPts = 0; p.streak = 0; p.prevRank = 0; p.dl = 0; p.ko = 0; p.out = false; p.outR = null; p.rest = 0; p.fid = null; p.last = null; p.late = false; });
+      dirty = true; save(true);
+    }
+    function goLive(){
+      var t = now(); S.phase = "live";
+      if (S.setup.mode === "battle") { S.endAt = t + S.setup.minutes * 60000; S.teamKO = teamSizes().map(function(){ return 0; }); }
+      else if (S.setup.mode === "jteam") {
+        var jb = parseBoard(S.setup.csv), cells = [];
+        jb.levels.forEach(function(Lv, li){ Lv.forEach(function(x, c){ if (x.q && x.a && (li > 0 || jb.levels.length < 3)) cells.push(li + ":" + c); }); });
+        S.jp = { b: jb, used: {}, dds: shuffle(cells).slice(0, S.setup.jdd == null ? 1 : S.setup.jdd), pick: -1, seq: 0, n: 0, phase: "pick", ans: {}, prev: {}, dl: {} };
+        S.jp.pick = jNextPicker(); jStartPick();
+      }
+      else if (S.setup.mode === "rush") { S.rush = { f: { used: [], n: 0, lock: [0, 0] }, qi: 0, total: S.setup.rcount === 0 ? S.rows.length : Math.min(S.setup.rcount || 10, S.rows.length), phase: "q", ans: {} }; rushStart(); }
+      else { var ids = upList().map(function(p){ return p.id; }); list().forEach(function(p){ if (!p.up) { p.out = true; p.late = true; } }); buildBracket(ids); }
+      lastCd = 0; KS("horn");
+      try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function(w){ wake = w; }).catch(function(){}); } catch (e) {}
+      dirty = true; save(true);
+    }
+    function endGame(){
+      Object.keys(S.fights).forEach(function(k){ endFight(S.fights[k]); });
+      S.phase = "done"; S.doneAt = now(); dirty = true; save(true); if (S.setup.mode === "rush" || S.setup.mode === "jteam") podiumFx(); else KS("win"); if (window.KO_FX) KO_FX.music(false);
+      try { if (wake) wake.release(); } catch (e) {}
+    }
+    function standings(){
+      var z = teamSizes();
+      return z.map(function(n, i){ var ko = S.teamKO[i] || 0; return { i: i, n: n, ko: ko, score: n ? ko / n : 0 }; }).filter(function(t){ return t.n > 0; })
+        .sort(function(a, b){ return b.score - a.score || b.ko - a.ko; });
+    }
+    function placeOf(id){
+      var b = S.br; if (!b) return null;
+      if (b.champ === id) return "1st"; if (b.second === id) return "2nd";
+      var p = S.players[id]; if (p.late) return "Joined late";
+      if (p.outR === b.R - 2) return "3rd";
+      return p.outR != null ? "Out in the " + roundName(p.outR) : "";
+    }
+
+    /* ----- tick ----- */
+    setInterval(tick, 200);
+    function tick(){
+      var t = now();
+      if (closed) return;
+      if (peer && !peer.destroyed && t - lastAct > IDLE) {
+        closed = true;   // 41.0: auto-close an abandoned game (no student activity for 45 min) so it can't sit on the relay
+        save(true); peer.destroy();
+        view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;"><b style="color:var(--bright);font-size:20px;">Game ' + esc(S.code) + ' closed after 45 minutes with no activity.</b><p style="color:var(--muted);">Everyone was disconnected. It is saved in this browser for 4 hours.</p><button class="btn" onclick="location.reload()">Reopen it</button></div>';
+        return;
+      }
+      if (S.phase === "countdown" && t >= S.goAt) goLive();
+      if (S.phase === "live") {
+        if (S.setup.mode === "battle" && t >= S.endAt) endGame();
+        Object.keys(S.fights).forEach(function(k){
+          var f = S.fights[k]; if (!f) return;
+          var downI = f.p.map(function(id){ return !S.players[id].up; });
+          if (downI[0] || downI[1]) {
+            if (!f.down) f.down = t;
+            var lim = f.kind === "match" ? 30000 : 10000;
+            if (t - f.down > lim) {
+              if (f.kind === "match" && downI[0] !== downI[1]) { var m = S.br.m[f.mid]; endFight(f); finishMatch(m, downI[0] ? 1 : 0); return; }
+              if (f.kind !== "match") { endFight(f); f.p.forEach(function(id){ var p = S.players[id]; if (p.up) { p.rest = t + 1000; p.msg = "Your opponent disconnected. Finding a new one\u2026"; } }); return; }
+            }
+          } else f.down = 0;
+          if (f.between) { if (t >= f.between) { f.between = 0; f.hp = [HP, HP]; f.pts = [0, 0]; f.q = 0; newPrompt(f); } return; }
+          if (f.pause) { if (t >= f.pause) { f.pause = 0; afterPause(f); } return; }
+          if (f.endsAt && t >= f.endsAt) { settle(f, null); return; }
+          if (f.mode === "reveal" && t >= f.next) {
+            var d = ansText(S.rows[f.row]), hid = [];
+            d.split("").forEach(function(ch, j){ if (/[a-z0-9]/i.test(ch) && f.rev.indexOf(j) < 0) hid.push(j); });
+            if (hid.length > 1) { f.rev.push(hid[rnd(hid.length)]); dirty = true; }
+            f.next = t + 3000;
+          }
+        });
+        if (S.phase === "live") { if (S.setup.mode === "rush") rushTick(t); else if (S.setup.mode === "jteam") jTick(t); else pair(t); }
+      }
+      music();
+      pushAll(t);
+      if (dirty) save(false);
+      if (dirty && t - lastDraw > 350) { dirty = false; lastDraw = t; draw(); }
+      else tickText(t);
+    }
+    function freeBy(t, fn){ return upList().filter(function(p){ return !p.fid && p.rest <= t && fn(p); }).sort(function(a, b){ return a.rest - b.rest; }); }
+    function greedy(free, okPair){
+      var used = {};
+      free.forEach(function(a, i){
+        if (used[a.id]) return;
+        var b = null;
+        for (var pass = 0; pass < 2 && !b; pass++) for (var j = i + 1; j < free.length; j++) { var c = free[j]; if (used[c.id] || !okPair(a, c)) continue; if (pass === 0 && (a.last === c.id || c.last === a.id) ) continue; b = c; break; }
+        if (b) { used[a.id] = used[b.id] = 1; startFight(a.id, b.id, a.out ? "pool" : "battle"); }
+      });
+    }
+    function pair(t){
+      if (S.setup.mode === "battle") { greedy(freeBy(t, function(p){ return p.team != null; }), function(a, b){ return a.team !== b.team; }); return; }
+      Object.keys(S.br.m).forEach(function(k){
+        var m = S.br.m[k]; if (m.winner || !m.p[0] || !m.p[1]) return;
+        var A = S.players[m.p[0]], B = S.players[m.p[1]];
+        if (A.fid && S.fights[A.fid] && S.fights[A.fid].mid === k) return;
+        if (A.up && B.up) { m.wait = 0; if (!A.fid && !B.fid && A.rest <= t && B.rest <= t) startFight(A.id, B.id, "match", k); return; }
+        if (A.up !== B.up) { if (!m.wait) m.wait = t; if (t - m.wait > 30000) finishMatch(m, A.up ? 0 : 1); }
+      });
+      if (S.phase === "live") greedy(freeBy(t, function(p){ return p.out; }), function(){ return true; });
+    }
+
+    /* ----- what each student sees ----- */
+    function viewFor(id, t){
+      var p = S.players[id], v = { s: "", name: p.name, team: p.team, tn: p.team != null && TM() ? teamNames()[p.team] : null, mode: S.setup.mode, T: {} };
+      v.kev = p.kev || null; v.th = S.setup.theme;
+      if (S.phase === "setup" || S.phase === "lobby") { v.s = "lobby"; return v; }
+      if (S.phase === "countdown") { v.s = "cd"; v.T.left = S.goAt - t; return v; }
+      if (S.phase === "done") {
+        v.s = "done";
+        if (S.setup.mode === "jteam") { var jt = jTeams(); v.win = jt.length ? teamNames()[jt[0].i] : ""; v.place = jt.map(function(x){ return x.i; }).indexOf(p.team) + 1; v.cash = p.jcash || 0; v.jt = S.setup.jtheme; }
+        else if (S.setup.mode === "rush") { v.place = rushPlace(id); v.of = rushBoard().length; v.score = p.score || 0; v.champ = (rushBoard()[0] || {}).name || ""; }
+        else if (S.setup.mode === "battle") { var st = standings(); v.win = st.length ? teamNames()[st[0].i] : ""; v.place = st.map(function(x){ return x.i; }).indexOf(p.team) + 1; v.ko = p.ko; }
+        else { v.champ = S.br && S.br.champ ? S.players[S.br.champ].name : ""; v.place = placeOf(id); }
+        return v;
+      }
+      v.ko = p.ko;
+      if (S.setup.mode === "jteam" && S.jp) {
+        var J = S.jp, jts = jTeams(), mt = jts.filter(function(x){ return x.i === p.team; })[0];
+        v.jt = S.setup.jtheme; v.cash = p.jcash || 0; v.tavg = mt ? mt.avg : 0; v.trank = mt ? jts.indexOf(mt) + 1 : 0; v.tof = jts.length; v.pickT = teamNames()[J.pick]; v.pickC = J.pick;
+        if (J.phase === "pick") {
+          v.s = "jpick"; v.mine = p.team === J.pick; v.T.left = J.pickEnds - t; v.T.full = 15000;
+          if (v.mine) v.board = { cats: J.b.cats, rows: J.b.levels.map(function(Lv, li){ return Lv.map(function(x, c){ return x.q && x.a && !J.used[li + ":" + c] ? jVal(li) : 0; }); }) };
+        } else {
+          var x = J.b.levels[J.li][J.c], A = J.ans[id] || {};
+          v.cat = J.b.cats[J.c]; v.val = jVal(J.li); v.dd = !!J.dd; v.ok = !!A.ok; v.pts = A.pts || 0; v.f = { n: J.n };
+          if (J.phase === "q") { v.s = "jq"; v.q = x.q; v.mask = jMask(x.a); v.T.left = J.endsAt - t; v.T.full = (S.setup.jtime || 30) * 1000; }
+          else { v.s = "jr"; v.a = x.a; }
+        }
+        return v;
+      }
+      if (S.setup.mode === "rush" && S.rush) {
+        var R0 = S.rush, rf = R0.f, A = R0.ans[id] || {};
+        v.score = p.score || 0; v.place = rushPlace(id); v.of = rushBoard().length; v.qi = R0.qi; v.total = R0.total;
+        if (R0.phase === "q") {
+          v.s = "rushq"; v.ok = !!A.ok; v.pts = A.pts || 0; v.streak = p.streak || 0; v.x2 = !!R0.x2;
+          if (!A.ok) { v.f = { n: rf.n, kind: "rush", q: S.rows[rf.row].q, m: rf.mode, mc: !!rf.mc, len: rf.len, lock: !!A.lock, pz: rf.mode === "reveal" ? mask(rf) : rf.pz }; if (rf.shift) v.f.k = rf.shift; if (rf.opts) v.f.opts = rf.opts; }
+          if (rf.endsAt) { v.T.left = rf.endsAt - t; v.T.full = rushT(); }
+        } else { v.s = "rushr"; v.ok = !!A.ok; v.pts = A.pts || 0; v.a = ansText(S.rows[rf.row]); v.streak = p.streak || 0; var bb = rushBoard(), pi = bb.indexOf(p); v.gap = pi > 0 ? (bb[pi - 1].score || 0) - (p.score || 0) : 0; }
+        return v;
+      }
+      var f = fightOf(id);
+      if (f) {
+        var i = f.p.indexOf(id), o = 1 - i, op = S.players[f.p[o]], F = { n: f.n, opp: op.name, ot: op.team, kind: f.kind, hp: [f.hp[i], f.hp[o]] };
+        if (f.sd) F.sd = { q: f.q, me: f.pts[i], op: f.pts[o] };
+        if (f.kind === "match") { var m = S.br.m[f.mid]; F.wins = [m.wins[i], m.wins[o]]; F.need = need(); F.round = roundName(m.r); }
+        if (f.between) { F.between = f.gameMsg; v.T.left = f.between - t; }
+        else if (f.pause) { F.q = S.rows[f.row].q; F.last = { a: f.last.a, by: f.last.by == null ? "" : f.last.by === i ? "me" : "opp" }; }
+        else {
+          F.q = S.rows[f.row].q; F.m = f.mode; F.mc = !!f.mc; F.len = f.len; F.lock = !!f.lock[i];
+          F.pz = f.mode === "reveal" ? mask(f) : f.pz; if (f.shift) F.k = f.shift; if (f.opts) F.opts = f.opts;
+          if (f.endsAt) { v.T.left = f.endsAt - t; v.T.full = S.setup.qtime * 1000; }
+        }
+        v.s = "fight"; v.f = F; return v;
+      }
+      if (p.rest > t) { v.s = "rest"; v.msg = p.msg; return v; }
+      if (S.setup.mode === "bracket") { v.s = p.out ? "pool" : "wait"; v.late = !!p.late; if (!p.out) v.msg = "Waiting for your next opponent\u2026"; return v; }
+      v.s = "wait"; v.msg = "Finding an opponent\u2026"; return v;
+    }
+    function pushAll(t){
+      Object.keys(CONN).forEach(function(id){
+        if (!S.players[id]) return;
+        var v = viewFor(id, t), T = v.T; delete v.T;
+        var sig = JSON.stringify(v);
+        if (sig !== LAST[id] || t - (LASTT[id] || 0) > 3000) { LAST[id] = sig; LASTT[id] = t; v.T = T; send(id, { k: "v", v: v }); }
+      });
+    }
+
+    /* ----- projector screen ----- */
+    view.addEventListener("click", function(e){
+      var b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
+      var a = b.getAttribute("data-act"), val = b.getAttribute("data-v"), st = S.setup;
+      if (a === "type") st.types[val] = st.types[val] ? 0 : 1;
+      else if (a === "game") { st.mode = val; st.game = 1; }
+      else if (a === "game0") st.game = 0;
+      else if (a === "sheet") { importSheet(); return; }
+      else if (a === "theme") { st.theme = val; applyTheme(val); }
+      else if (a === "teams") { st.teams = +val; list().forEach(function(p){ if (p.team != null && p.team >= st.teams) p.team = null; }); list().forEach(function(p){ if (p.team == null && TM()) p.team = smallest(); }); }
+      else if (a === "assign") st.assign = val;
+      else if (a === "minutes") st.minutes = +val;
+      else if (a === "qtime") st.qtime = +val;
+      else if (a === "format") st.format = val;
+      else if (a === "lobby" && st.mode === "jteam") {
+        var jb0 = parseBoard(st.csv); if (!jb0 || !jb0.clues) return;
+        list().forEach(function(p){ if (p.team == null || p.team >= st.teams) p.team = smallest(); }); if (st.assign === "random") deal();
+        S.phase = "lobby"; save(true);
+      }
+      else if (a === "lobby") {
+        S.rows = parseRows(st.csv); var seen = {}; S.rows.forEach(function(r){ if (r.k === "v") seen[norm(disp(r.a))] = 1; }); S.distinct = Object.keys(seen).length;
+        if (S.rows.length < 4) return;
+        if (TM()) { list().forEach(function(p){ if (p.team == null || p.team >= st.teams) p.team = smallest(); }); if (st.assign === "random") deal(); }
+        else list().forEach(function(p){ p.team = null; });
+        S.phase = "lobby"; save(true);
+      }
+      else if (a === "setup") S.phase = "setup";
+      else if (a === "shuffle") deal();
+      else if (a === "pteam") { var p = S.players[val]; if (p) p.team = ((p.team || 0) + 1) % st.teams; }
+      else if (a === "lock") { S.locked = !S.locked; save(true); live(true); }
+      else if (a === "ppanel") PO = !PO;
+      else if (a === "kick") { var pk = S.players[val]; if (pk && confirm("Remove " + pk.name + "? They can\u2019t rejoin this game from that device." + (S.phase === "live" ? " Anything they are playing counts as a forfeit." : ""))) { S.banned[val] = 1; send(val, { k: "kicked" }); var kc = CONN[val]; leave(val); if (S.phase !== "live" && S.phase !== "countdown") delete S.players[val]; if (kc) { try { kc.close(); } catch (er) {} } } }
+      else if (a === "start") startGame();
+      else if (a === "snd") { if (window.KO_FX) KO_FX.setSound(!KO_FX.soundOn()); }
+      else if (a === "mus") { if (window.KO_FX) KO_FX.setMusic(!KO_FX.musicOn()); }
+      else if (a === "rnext") { if (S.rush && S.rush.phase === "reveal") { if (S.rush.qi >= S.rush.total) endGame(); else rushStart(); } }
+      else if (a === "rx2") { if (S.rush) S.rush.nx2 = !S.rush.nx2; }
+      else if (a === "rnow") { if (S.rush && S.rush.phase === "q") rushReveal(); }
+      else if (a === "rcount") st.rcount = +val;
+      else if (a === "rtime") st.rtime = +val;
+      else if (a === "jtime") st.jtime = +val;
+      else if (a === "jdd") st.jdd = +val;
+      else if (a === "jmult") st.jmult = +val;
+      else if (a === "jtheme") st.jtheme = val;
+      else if (a === "jtile") { if (S.jp && S.jp.phase === "pick") jOpen(val); }
+      else if (a === "jnow") { if (S.jp && S.jp.phase === "q") jReveal(); }
+      else if (a === "jnext") { if (S.jp && S.jp.phase === "rev") jAfter(); }
+      else if (a === "rpace") st.rpace = val;
+      else if (a === "end") { if (!confirm("End the game now?")) return; if (S.setup.mode === "bracket" && S.br) S.br.ended = true; endGame(); }
+      else if (a === "again") { S.phase = "lobby"; S.br = null; S.feed = []; list().forEach(function(p){ if (!p.up) delete S.players[p.id]; }); save(true); }
+      else if (a === "finish") { if (!confirm("Close the game and erase it from this browser?")) return; try { localStorage.removeItem(KEY); } catch (er) {} Object.keys(CONN).forEach(function(id){ send(id, { k: "closed" }); }); setTimeout(function(){ peer.destroy(); location.href = location.pathname; }, 400); return; }
+      dirty = true; draw();
+    });
+    view.addEventListener("input", function(e){
+      if (e.target.id === "csv") { S.setup.csv = e.target.value.slice(0, 200000); csvInfo(); save(false); }
+      if (e.target.id === "sheetUrl") { S.setup.sheet = e.target.value.slice(0, 500); save(false); }
+    });
+    view.addEventListener("change", function(e){
+      if (e.target.id === "csvFile" && e.target.files[0]) { var rd = new FileReader(); rd.onload = function(){ S.setup.csv = String(rd.result).slice(0, 200000); draw(); save(true); }; rd.readAsText(e.target.files[0]); }
+    });
+    function deal(){
+      var n = S.setup.teams, z = [], i; for (i = 0; i < n; i++) z.push(0);
+      shuffle(upList().slice()).forEach(function(p){ var b = 0; for (var j = 1; j < n; j++) if (z[j] < z[b]) b = j; p.team = b; z[b]++; });
+      list().forEach(function(p){ if (!p.up && (p.team == null || p.team >= n)) { var b = 0; for (var j = 1; j < n; j++) if (z[j] < z[b]) b = j; p.team = b; z[b]++; } });
+    }
+    var DRAG = null;
+    function moveTo(id, team){ var p = S.players[id]; if (!p || team == null || isNaN(team) || team >= S.setup.teams || p.team === team) return; p.team = team; dirty = true; save(true); draw(); }
+    view.addEventListener("dragstart", function(e){ var c = e.target.closest && e.target.closest("[data-drag]"); if (!c) return; DRAG = c.getAttribute("data-drag"); try { e.dataTransfer.setData("text/plain", DRAG); e.dataTransfer.effectAllowed = "move"; } catch (er) {} c.style.opacity = ".4"; });
+    view.addEventListener("dragend", function(e){ var c = e.target.closest && e.target.closest("[data-drag]"); if (c) c.style.opacity = ""; DRAG = null; view.querySelectorAll("[data-drop]").forEach(function(b){ b.style.background = ""; }); });
+    view.addEventListener("dragover", function(e){ var b = e.target.closest && e.target.closest("[data-drop]"); if (!b || !DRAG) return; e.preventDefault(); try { e.dataTransfer.dropEffect = "move"; } catch (er) {} view.querySelectorAll("[data-drop]").forEach(function(x){ x.style.background = x === b ? "var(--panel2)" : ""; }); });
+    view.addEventListener("drop", function(e){ var b = e.target.closest && e.target.closest("[data-drop]"); if (!b || !DRAG) return; e.preventDefault(); var id = DRAG; DRAG = null; moveTo(id, +b.getAttribute("data-drop")); });
+    var SHEETMSG = "", SHEETCOL = "var(--dim)";
+    function sheetUrls(u){
+      u = String(u || "").trim(); var g = (u.match(/[#&?]gid=(\d+)/) || [])[1], m = u.match(/\/spreadsheets\/d\/e\/([\w-]+)/);
+      if (m) return ["https://docs.google.com/spreadsheets/d/e/" + m[1] + "/pub?output=csv" + (g ? "&gid=" + g : "")];
+      m = u.match(/\/spreadsheets\/d\/([\w-]+)/); if (!m) return null;
+      var o2 = ["https://docs.google.com/spreadsheets/d/" + m[1] + "/export?format=csv&gid=" + (g || "0"), "https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&gid=" + (g || "0")];
+      if (S.setup.mode === "jteam" && !g) o2.unshift("https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&sheet=Jeopardy");
+      return o2;
+    }
+    async function importSheet(){
+      var inp = document.getElementById("sheetUrl"), st = S.setup; st.sheet = inp ? inp.value.trim() : st.sheet;
+      var urls = sheetUrls(st.sheet);
+      if (!urls) { SHEETMSG = "That doesn\u2019t look like a Google Sheets link. Copy it from the address bar of the sheet."; SHEETCOL = "var(--bad)"; draw(); return; }
+      SHEETMSG = "Loading the sheet\u2026"; SHEETCOL = "var(--dim)"; draw();
+      for (var i = 0; i < urls.length; i++) {
+        try {
+          var r = await fetch(urls[i], { cache: "no-store" }), txt = r.ok ? await r.text() : "";
+          if (txt && !/^\s*<(!doctype|html)/i.test(txt)) {
+            var jbI = st.mode === "jteam" ? parseBoard(txt) : null, n = st.mode === "jteam" ? (jbI ? jbI.clues : 0) : parseRows(txt).length;
+            if (n) { st.csv = txt.slice(0, 200000); SHEETMSG = "Imported " + (jbI ? jbI.cats.length + " categories \u00b7 " + n + " clue" : n + " question") + (n === 1 ? "" : "s") + " from the sheet. Change the sheet and press Import again to refresh."; SHEETCOL = "var(--ok)"; save(true); draw(); return; }
+          }
+        } catch (e) {}
+      }
+      SHEETMSG = "Couldn\u2019t read the sheet. In Google Sheets click Share \u2192 General access \u2192 Anyone with the link (Viewer), then press Import again."; SHEETCOL = "var(--bad)"; draw();
+    }
+    function csvInfo(){
+      if (S.setup.mode === "jteam") { var je = document.getElementById("csvInfo"), jg = document.querySelector('[data-act="lobby"]'), jb = parseBoard(S.setup.csv);
+        if (je) je.innerHTML = jb && jb.clues ? '<b style="color:var(--ok);">' + jb.cats.length + ' categories \u00b7 ' + jb.levels.length + ' rows \u00b7 ' + jb.clues + ' clues ready.</b>' : (S.setup.csv.trim() ? '<b style="color:var(--bad);">Couldn\u2019t find a board.</b> Row 1 = categories, then a question row and an answer row for each value.' : 'Import your Jeopardy sheet, upload a CSV, or paste below.');
+        if (jg) jg.disabled = !(jb && jb.clues); return; }
+      var el = document.getElementById("csvInfo"), go = document.querySelector('[data-act="lobby"]'), rs = parseRows(S.setup.csv), n = rs.length, c = { v: 0, mc: 0, fr: 0 };
+      rs.forEach(function(r){ c[r.k]++; });
+      var parts = []; if (c.v) parts.push(c.v + " vocab"); if (c.mc) parts.push(c.mc + " multiple choice"); if (c.fr) parts.push(c.fr + " free response");
+      if (el) el.innerHTML = n ? '<b style="color:var(--ok);">' + n + ' question' + (n === 1 ? '' : 's') + ' ready</b> \u00b7 ' + parts.join(" \u00b7 ") + (n < 4 ? ' <b style="color:var(--bad);">Add at least 4.</b>' : '') : 'Import a Google Sheet, upload a CSV, or paste rows below.';
+      if (go) go.disabled = n < 4;
+    }
+    function chips(act, opts, cur){ return '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + opts.map(function(o){ return '<button type="button" class="chip" data-act="' + act + '" data-v="' + o[0] + '" aria-pressed="' + (String(cur) === String(o[0])) + '">' + esc(o[1]) + '</button>'; }).join("") + '</div>'; }
+    function sec(title, body, note){ return '<div style="display:flex;flex-direction:column;gap:10px;"><div style="font-weight:700;color:var(--bright);">' + title + '</div>' + body + (note ? '<div style="font-size:13px;color:var(--dim);">' + note + '</div>' : '') + '</div>'; }
+    var QRMINI = { code: "", svg: "" };
+    function miniJoin(){
+      if (QRMINI.code !== S.code) { var q = qrcode(0, "M"); q.addData(location.origin + location.pathname + "?code=" + S.code); q.make(); QRMINI = { code: S.code, svg: q.createSvgTag({ cellSize: 3, margin: 0, scalable: false }) }; }
+      return '<div style="display:flex;gap:12px;align-items:center;border:1px solid var(--border3);border-radius:12px;padding:8px 12px;background:var(--panel);">' +
+        '<div style="background:#fff;padding:6px;border-radius:8px;line-height:0;">' + QRMINI.svg + '</div>' +
+        '<div><div class="lbl" style="font-size:11px;">Late? Join at</div><div class="mono" style="font-size:13px;font-weight:700;color:var(--bright);word-break:break-all;">' + esc(SHORT) + '</div>' +
+        '<div class="mono" style="font-size:30px;font-weight:800;letter-spacing:5px;color:var(--gold);line-height:1.1;">' + S.code + '</div></div></div>';
+    }
+    function pPanel(){
+      var ps = list().filter(function(p){ return !p.left; }).sort(function(a, b){ return a.name < b.name ? -1 : 1; });
+      return '<div style="position:fixed;left:16px;bottom:16px;z-index:9300;display:flex;flex-direction:column;align-items:flex-start;gap:8px;max-width:calc(100vw - 32px);">' +
+        (PO ? '<div class="card" role="dialog" aria-label="Players" style="width:min(380px,calc(100vw - 32px));max-height:56vh;overflow:auto;padding:16px;box-shadow:0 14px 34px rgba(0,0,0,.35);">' +
+          '<div style="font-weight:800;color:var(--bright);margin-bottom:4px;">Players \u00b7 ' + ps.length + '</div>' +
+          '<div style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.45;">' + (S.locked ? 'Locked: new devices can\u2019t join. Players already in can still reconnect.' : 'Open: anyone with the code can join.') + ' Removed players can\u2019t rejoin this game from that device.</div>' +
+          (ps.length ? ps.map(function(p){ var col = TM() && p.team != null ? tc(p.team) : 'var(--bright)';
+            return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border);"><span style="flex:1;min-width:0;font-weight:700;color:' + col + ';' + (p.up ? '' : 'opacity:.5;') + '">' + esc(p.name) + (p.up ? '' : ' \u00b7 away') + '</span><button type="button" class="btn ghost sm" data-act="kick" data-v="' + esc(p.id) + '" style="min-height:40px;padding:6px 12px;">Remove</button></div>'; }).join('') : '<div style="color:var(--dim);">No players yet.</div>') +
+        '</div>' : '') +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn sm" data-act="ppanel" aria-expanded="' + PO + '">' + (PO ? 'Close' : 'Players \u00b7 ' + ps.length) + '</button>' +
+        '<button type="button" class="btn ' + (S.locked ? '' : 'ghost ') + 'sm" data-act="lock" aria-pressed="' + S.locked + '">' + (S.locked ? 'Locked \u2014 unlock' : 'Lock joins') + '</button></div></div>';
+    }
+    function codeCard(){
+      var url = location.origin + location.pathname + "?code=" + S.code, qr = qrcode(0, "H"); qr.addData(url); qr.make();
+      return '<div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">' +
+        '<div style="background:#fff;padding:12px;border-radius:12px;line-height:0;position:relative;">' + qr.createSvgTag({ cellSize: 7, margin: 0, scalable: false }) + '<img src="assets/logo/sf-lion-green.png?v=40.4.0" alt="" style="position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);background:#fff;padding:4px 5px;border-radius:8px;"></div>' +
+        '<div style="flex:1;min-width:240px;container-type:inline-size;"><div class="lbl">Join code</div>' +
+          '<div class="mono" id="live" style="font-size:13px;font-weight:800;color:' + (S.locked ? 'var(--warn)' : 'var(--ok)') + ';margin:2px 0 4px;">' + (S.locked ? '\u25CF LOCKED \u00B7 no new players' : '\u25CF LIVE \u00B7 students can join') + '</div>' +
+          '<div class="mono" style="font-size:clamp(32px,min(9vw,13.5cqi),84px);font-weight:800;letter-spacing:.12em;color:var(--gold);line-height:1.05;white-space:nowrap;">' + S.code + '</div>' +
+          '<div style="color:var(--muted);margin-top:6px;">Go to</div><div class="mono" style="font-size:clamp(18px,2.6vw,26px);font-weight:800;color:var(--bright);word-break:break-all;">' + esc(SHORT) + '</div><div style="color:var(--muted);margin-top:2px;">and type the code, or scan the QR code.</div></div></div>';
+    }
+    var lastJT = -1;
+    function tickText(t){
+      var jT = document.getElementById("hJT"), jB = document.getElementById("hJB"), J = S.jp;
+      if (jT && J && S.phase === "live" && S.setup.mode === "jteam") { var jl = Math.max(0, (J.phase === "pick" ? J.pickEnds : J.endsAt) - t), js = Math.ceil(jl / 1000); jT.textContent = js;
+        if (J.phase === "q") { var jf = jl / ((S.setup.jtime || 30) * 1000); if (jB) jB.style.width = (jf * 100) + "%"; if (js <= 5 && js > 0) { jT.classList.add("prPulse"); if (js !== lastJT) KS("tick"); } else jT.classList.remove("prPulse"); }
+        lastJT = js; }
+      var rt = document.getElementById("hRushT"), rb = document.getElementById("hRushB");
+      if (rt && S.rush && S.rush.phase === "q" && S.rush.f.endsAt) { var lf = Math.max(0, S.rush.f.endsAt - t); var fr = lf / rushT(), col = fr > .5 ? "var(--gold)" : fr > .25 ? "var(--warn)" : "var(--bad)"; rt.style.color = col; if (rb) rb.style.background = col; if (lf > 0 && lf <= 5000) rt.classList.add("prPulse"); else rt.classList.remove("prPulse"); rt.textContent = Math.ceil(lf / 1000); if (rb) rb.style.width = (lf / rushT() * 100) + "%"; }
+      var a = document.getElementById("hTimer"); if (a && S.phase === "live" && S.setup.mode === "battle") a.textContent = clock(S.endAt - t);
+      var c = document.getElementById("hCd"); if (c) { var cn = Math.max(1, Math.ceil((S.goAt - t) / 1000)); if (cn !== lastCd) { lastCd = cn; KS("tick"); } c.textContent = cn; }
+      var n = document.getElementById("hCount"); if (n) n.textContent = upList().length;
+    }
+    function KS(n){ if (window.KO_FX) KO_FX.sfx(n); }
+    var LC = ["#d6334a", "#1f7ae0", "#e0a400", "#1a9e5c"], LT = ["#ffffff", "#ffffff", "#1a1200", "#ffffff"], POPN = false, HAC = null, PINGN = 0;
+    function hRM(){ return document.documentElement.getAttribute("data-motion") === "reduce"; }
+    function hSnd(){ return !window.KO_FX || KO_FX.soundOn(); }
+    function hac(){ try { if (!HAC) HAC = new (window.AudioContext || window.webkitAudioContext)(); if (HAC.state === "suspended") HAC.resume(); } catch (e) { return null; } return HAC; }
+    function blip(f, d, vol, when, type){ var a = hac(); if (!a || !hSnd()) return; var t0 = a.currentTime + (when || 0), o = a.createOscillator(), g = a.createGain(); o.type = type || "sine"; o.frequency.setValueAtTime(f, t0); o.frequency.exponentialRampToValueAtTime(f * 1.5, t0 + d * .6); g.gain.setValueAtTime(vol || .12, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + d); o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + d + .02); }
+    function hostPing(){ blip(880 * Math.pow(2, (PINGN++ % 12) / 12), .16, .11); }
+    function showIntro(qi, x2){
+      blip(660, .12, .12, 0, "square"); blip(990, .2, .12, .1, "square");
+      if (hRM()) return; var o = document.getElementById("prIntro"); if (o) o.remove();
+      o = document.createElement("div"); o.id = "prIntro"; o.setAttribute("aria-hidden", "true"); o.innerHTML = "<span>QUESTION " + qi + (x2 ? " \u00b7 \u00d72" : "") + "</span><b>" + (x2 ? "DOUBLE!" : "ROAR!") + "</b>";
+      document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 1250);
+    }
+    function confetti(){
+      if (hRM()) return; var C = ["#ffffff", "#ffd34d", "#00934a", "#7cc49c", "#ffb3b3"];
+      for (var i = 0; i < 90; i++) { var c = document.createElement("i"); c.className = "cf"; c.style.left = (Math.random() * 100) + "vw"; c.style.background = C[i % C.length];
+        c.style.animationDuration = (2.2 + Math.random() * 1.8) + "s"; c.style.animationDelay = (Math.random() * .6) + "s"; document.body.appendChild(c); (function(x){ setTimeout(function(){ x.remove(); }, 4800); })(c); }
+    }
+    function podiumFx(){
+      for (var i = 0; i < 16; i++) (function(k){ setTimeout(function(){ blip(140 + k * 6, .07, .09, 0, "triangle"); }, k * (150 - k * 6)); })(i);
+      setTimeout(function(){ confetti(); KS("win"); }, 2700);
+    }
+    function music(){ if (!window.KO_FX) return; var rr = S.rush, rl = S.phase === "live" && S.setup.mode === "rush" && rr && rr.phase === "q" && rr.f && rr.f.endsAt ? rr.f.endsAt - now() : -1;
+      KO_FX.music(S.phase === "live", rl > 0 && rl <= 5000 ? 2 : S.phase === "live" && S.setup.mode === "battle" && S.endAt - now() < 60000); }
+    function flushKO(){
+      if (!window.KO_FX) { HQ = []; return; }
+      var q = HQ.splice(0, 3); HQ = [];
+      q.forEach(function(e, i){ setTimeout(function(){ KO_FX.blast({ name: e.name, label: "KNOCKED OUT", sub: e.sub, color: e.color, big: e.big, small: i > 0 && !e.final }); }, i * 600); });
+    }
+    function sndBtns(){ if (!window.KO_FX) return ""; return '<button class="btn ghost sm" data-act="snd" aria-pressed="' + KO_FX.soundOn() + '">' + (KO_FX.soundOn() ? "SOUND ON" : "SOUND OFF") + '</button><button class="btn ghost sm" data-act="mus" aria-pressed="' + KO_FX.musicOn() + '">' + (KO_FX.musicOn() ? "MUSIC ON" : "MUSIC OFF") + '</button>'; }
+    function draw(){
+      if (!opened) return;
+      var t = now(), h = "";
+      document.documentElement.setAttribute("data-jt", S.setup.jtheme === "classic" ? "classic" : "lion");
+      if (S.phase === "setup") h = drawSetup();
+      else if (S.phase === "lobby") h = drawLobby();
+      else if (S.phase === "countdown") h = '<div class="card" style="text-align:center;padding:60px 20px;"><div class="lbl">Get ready</div><div class="disp" id="hCd" style="font-size:clamp(120px,22vw,240px);font-weight:800;color:var(--gold);line-height:1;">5</div><div style="color:var(--muted);font-size:20px;">' + upList().length + ' player' + (upList().length === 1 ? '' : 's') + '</div></div>';
+      else if (S.phase === "live" && S.setup.mode === "jteam") h = drawJp(t);
+      else if (S.phase === "live") h = S.setup.mode === "battle" ? drawBattle(t) : S.setup.mode === "rush" ? drawRush(t) : drawBracket(t);
+      else h = drawDone();
+      if (S.phase === "lobby" || S.phase === "countdown" || S.phase === "live") h += pPanel();
+      view.innerHTML = h; tickText(t); if (POPN) { POPN = false; var hc = document.getElementById("hCnt"); if (hc) { hc.classList.remove("prPop"); void hc.offsetWidth; hc.classList.add("prPop"); } } if (S.phase === "setup") csvInfo(); flushKO();
+    }
+    var GAMES = {
+      battle: { name: "Class Battle", tag: "Teams \u00b7 1v1 knockouts", d: "Teams fight rotating 1v1s until the clock runs out. 4 correct answers knock out the opponent. Team score = KOs per player.", t: "v" },
+      rush: { name: "Roar Rush", tag: "Whole class at once \u00b7 points for speed", d: "Everyone answers the same question at the same time. Faster correct answers score more (500\u20131,000, +100 for 3 in a row). The leaderboard shows after each question.", t: "qa" },
+      bracket: { name: "King of the Pride", tag: "Bracket \u00b7 last lion standing", d: "Single-elimination bracket. Knocked-out players drop into a rematch pool and keep playing.", t: "any" },
+      jteam: { name: "Team Jeopardy", tag: "Teams \u00b7 everyone answers", d: "A team picks a tile on their devices; then every student answers it. Each correct player adds the value to their team. Team score = average $ per player, so team size doesn\u2019t matter.", t: "jp" },
+      jeopardy: { name: "Classic Jeopardy", tag: "Projector \u00b7 you score", d: "A category board run from your Jeopardy spreadsheet. Teams pick a clue, you award points with one click. Daily Doubles, image clues, two themes. No student devices needed.", t: "jp", href: "jeopardy.html" }
+    };
+    function drawSetup(){
+      var st = S.setup, G = GAMES[st.mode] || GAMES.battle;
+      if (!st.game) return '<div class="card" style="display:flex;flex-direction:column;gap:16px;margin-top:56px;"><div class="lbl" style="color:var(--gold);">1 \u00b7 Pick a game</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;">' + ["battle", "rush", "bracket", "jteam", "jeopardy"].map(function(k){ var g = GAMES[k];
+          return (g.href ? '<a href="' + g.href + '" ' : '<button type="button" data-act="game" data-v="' + k + '" ') + ' style="text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;padding:20px;border-radius:16px;border:2px solid var(--border3);background:var(--panel2);color:var(--text);font:inherit;text-decoration:none;">' +
+            '<span class="mono" style="font-size:12px;letter-spacing:1.5px;color:var(--gold);">' + esc(g.tag.toUpperCase()) + '</span><span class="disp" style="font-size:26px;font-weight:800;color:var(--bright);">' + esc(g.name) + '</span>' +
+            '<span style="font-size:14px;color:var(--muted);line-height:1.5;">' + esc(g.d) + '</span>' +
+            '<span class="mono" style="font-size:12px;color:var(--dim);margin-top:auto;">' + (g.t === "jp" ? "Uses your Jeopardy sheet (categories + Q/A rows)" : g.t === "v" ? "Best with a vocab sheet" : g.t === "qa" ? "Best with a Q&amp;A sheet" : "Works with vocab or Q&amp;A sheets") + '</span>' + (g.href ? '</a>' : '</button>'); }).join("") + '</div></div>';
+      var fmtV = '<div><b style="color:var(--bright);">Vocab sheet</b> \u00b7 columns <span class="mono">Term, Definition</span>. Students see the definition and answer with the term, using the hints you pick. An image link in the definition cell shows as a picture.</div>';
+      var fmtQ = '<div><b style="color:var(--bright);">Q&amp;A sheet</b> \u00b7 columns <span class="mono">Type, Question, Answer, Distractor 1, Distractor 2, Distractor 3</span>. Type is <i>multiple choice</i> (answer + distractors shown as buttons) or <i>free response</i> (typed; leave distractors blank)' + (G.t === "qa" ? '' : ', or <i>vocab</i> to mix in vocab rows (definition in Question, term in Answer)') + '.</div><div><b>Images:</b> paste an image link right into the question cell as plain text (a Google Drive file link shared \u201cAnyone with the link\u201d, or an image address ending in .png / .jpg). Don\u2019t use Insert \u2192 Link, =HYPERLINK or Insert \u2192 Image: those don\u2019t come through.</div>';
+      var JP = G.t === "jp", fmtJ = '<div><b style="color:var(--bright);">Jeopardy sheet</b> \u00b7 the same layout as the Jeopardy tab: <b>row 1</b> = category names, then a <b>question row</b> and an <b>answer row</b> for $100, $200, $300\u2026 A label column A is skipped. Put alternatives in an answer with a slash (<span class="mono">DDoS / Distributed denial of service</span>); a part in parentheses is optional. <b>Images:</b> paste an image link right into a question cell as plain text (a Google Drive file link shared \u201cAnyone with the link\u201d, or an image address ending in .png / .jpg). Don\u2019t use Insert \u2192 Link, =HYPERLINK or Insert \u2192 Image: those don\u2019t come through.</div>';
+      var tplV = '<a class="btn sm" href="https://docs.google.com/spreadsheets/d/1ky3V8EVssXV9c9ydqhRaj63SNg9WWAyLJRfEU8ZljWk/copy" target="_blank" rel="noopener">Copy Vocab example Google Sheet</a>', tplQ = '<a class="btn sm" href="https://docs.google.com/spreadsheets/d/1F5DqSS874nako3xW3_iSnybiOjIW-nWk4UtNcWwlKdM/copy" target="_blank" rel="noopener">Copy Q&amp;A example Google Sheet</a>';
+      return '<div class="card" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:16px 200px 16px 20px;"><div style="flex:1;min-width:220px;"><div class="lbl">Game</div><div class="disp" style="font-size:24px;font-weight:800;color:var(--bright);">' + esc(G.name) + ' <span class="mono" style="font-size:13px;font-weight:600;color:var(--dim);">' + esc(G.tag) + '</span></div></div><button type="button" class="btn ghost sm" data-act="game0">Change game</button></div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;">' +
+        '<div class="card" style="display:flex;flex-direction:column;gap:14px;"><div class="lbl" style="color:var(--gold);">2 \u00b7 Questions</div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;"><div style="font-weight:700;color:var(--bright);">Start from a Google Sheet</div><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">' + (JP ? '<a class="btn sm" href="https://docs.google.com/spreadsheets/d/1FYf9p36P4kdP-7TqvSir_75GJHBieQ2hrcSSsDYm68w/copy" target="_blank" rel="noopener">Copy Jeopardy example Google Sheet</a>' : G.t === "qa" ? tplQ : '') + (JP || G.t === "qa" ? '<button type="button" class="btn ghost sm" data-aihelp="' + (JP ? 'jp' : 'qa') + '">\u2728 Make questions with AI</button>' : '') + '</div>' +
+            (JP || G.t === "qa" ? '' : '<div style="font-size:14px;color:var(--muted);line-height:1.45;">This game works with any of these three kinds of Google Sheet. Pick one and copy its example.</div>' +
+              '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px;">' +
+              [["VOCAB ONLY", "Two columns. Students see the definition and type the term.", "Term | Definition<br>Sun | The star at the center of our solar system", "1ky3V8EVssXV9c9ydqhRaj63SNg9WWAyLJRfEU8ZljWk", "vocab"],
+               ["Q&amp;A ONLY", "Multiple choice and free response questions.", "Type | Question | Answer | Distractor 1\u20133<br>multiple choice | How many days are in a week? | 7 | 5 | 6 | 10", "1F5DqSS874nako3xW3_iSnybiOjIW-nWk4UtNcWwlKdM", "qa"],
+               ["MIX OF VOCAB + Q&amp;A", "The Q&amp;A layout. Write <b>vocab</b> in the Type column for vocab rows: definition in Question, term in Answer.", "Type | Question | Answer<br>vocab | The first meal of the day | Breakfast<br>free response | What is 10 + 5? | 15", "1PSwSVaT5bxnWH95OCV2aIs_tQ6UPItzrfo0MA-vU2Ug", "mix"]].map(function(x){
+                return '<div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:2px solid var(--border3);border-radius:12px;background:var(--panel2);"><div class="lbl" style="color:var(--gold);">' + x[0] + '</div><div style="font-size:13px;color:var(--text);line-height:1.45;">' + x[1] + '</div><div class="mono" style="font-size:11px;line-height:1.5;color:var(--muted);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px;overflow-wrap:anywhere;">' + x[2] + '</div><div style="display:flex;flex-direction:column;gap:6px;margin-top:auto;"><a class="btn sm" href="https://docs.google.com/spreadsheets/d/' + x[3] + '/copy" target="_blank" rel="noopener">Copy example Google Sheet</a><button type="button" class="btn ghost sm" data-aihelp="' + x[4] + '">\u2728 Make with AI</button></div></div>';
+              }).join("") + '</div>') + '</div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;"><label for="sheetUrl" style="font-weight:700;color:var(--bright);">Google Sheet link</label>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="sheetUrl" type="url" value="' + esc(st.sheet || "") + '" placeholder="https://docs.google.com/spreadsheets/d/\u2026" autocomplete="off" spellcheck="false" style="flex:1;min-width:220px;min-height:44px;border-radius:12px;border:2px solid var(--border3);background:var(--bg);color:var(--bright);font:14px monospace;padding:8px 12px;"><button type="button" class="btn sm" data-act="sheet">Import</button></div>' +
+            (SHEETMSG ? '<div style="font-size:13px;font-weight:700;color:' + SHEETCOL + ';">' + esc(SHEETMSG) + '</div>' : '<div role="note" style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--gold);border-radius:10px;background:var(--panel2);"><span aria-hidden="true" style="flex:none;width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--btnText);display:flex;align-items:center;justify-content:center;font:900 14px/1 Inter,sans-serif;">!</span><div style="font-size:14px;line-height:1.45;color:var(--text);"><b style="color:var(--bright);">Before you import, share the Google Sheet with everyone.</b><br>In Google Sheets: <b style="color:var(--bright);">Share \u2192 General access \u2192 Anyone with the link \u00b7 Viewer</b>. Sheets shared only with South Fayette won\u2019t load. The tab in the link is the one imported.</div></div>') + '</div>' +
+          '<details' + (st.csv ? ' open' : '') + ' style="border-top:1px solid var(--border);padding-top:12px;"><summary style="cursor:pointer;font-size:14px;font-weight:700;color:var(--muted);min-height:32px;">Other ways: paste or upload a CSV</summary><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">' +
+          '<textarea id="csv" rows="8" spellcheck="false" aria-label="Questions CSV" placeholder="' + (JP ? 'Category,Animals,Colors\n$100 Q,This animal says moo.,The color of the sky on a clear day.\n$100 A,Cow,Blue' : G.t === "qa" ? 'Type,Question,Answer,Distractor 1,Distractor 2,Distractor 3\nmultiple choice,How many days are in a week?,7,5,6,10' : 'Term,Definition\nSun,The star at the center of our solar system') + '">' + esc(st.csv) + '</textarea>' +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><label class="btn ghost sm" style="cursor:pointer;">Upload CSV<input type="file" id="csvFile" accept=".csv,.tsv,.txt,text/csv" style="display:none;"></label><a class="btn ghost sm" href="' + (JP ? 'jeopardy' : G.t === 'qa' ? 'qa' : 'vocab') + '-template.csv" download>CSV template</a></div></div></details>' +
+          '<div id="csvInfo" style="font-size:14px;color:var(--muted);"></div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border);padding-top:12px;">' + (JP ? fmtJ : G.t === "qa" ? fmtQ + fmtV : fmtV + fmtQ) +
+            '<div style="color:var(--dim);">Questions stay in this browser and are never uploaded.</div></div></div>' +
+        '<div class="card" style="display:flex;flex-direction:column;gap:20px;"><div class="lbl" style="color:var(--gold);">3 \u00b7 Options</div>' +
+          (TM() ? sec("Team theme", chips("theme", Object.keys(THEMES).map(function(k){ return [k, THEMES[k].name]; }), st.theme) +
+            '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + teamNames().map(function(nm, i){ return '<span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;border:2px solid ' + tc(i) + ';color:' + tc(i) + ';' + (i >= st.teams ? 'opacity:.35;' : '') + '">' + esc(nm) + '</span>'; }).join("") + '</div>',
+            "Sets the team names and colours. Students see the same teams.") : '') +
+          (JP ? "" : sec("Vocab hints", '<div role="group" style="display:flex;flex-wrap:wrap;gap:8px;">' + TYPES.map(function(x){ return '<button type="button" class="chip" data-act="type" data-v="' + x[0] + '" aria-pressed="' + !!st.types[x[0]] + '">' + x[1] + '</button>'; }).join("") + '</div>',
+            "For vocab rows, each question uses one ticked hint at random. <b>Shift</b>: letters moved forward in the alphabet. <b>Scramble</b>: letters mixed up. <b>Reveal</b>: blanks that fill in over time. <b>Word bank</b>: pick from 4 terms. Untick all and students type the term with no hint. Q&amp;A rows ignore this: multiple choice shows its own choices and free response is typed.")) +
+          (st.mode === "rush"
+            ? sec("Questions", chips("rcount", [[10,"10"],[15,"15"],[20,"20"],[30,"30"],[0,"ALL questions"]], st.rcount == null ? 10 : st.rcount), st.rcount === 0 ? "Plays every question in the file, in random order. Press <b>End now</b> whenever you\u2019re ready to stop; the podium shows the scores so far." : "") + sec("Pace", chips("rpace", [["timed","Timed"],["teacher","Teacher-paced"],["auto","Auto-advance"]], st.rpace || "timed"), (st.rpace || "timed") === "teacher" ? "No timer. Students answer until you press <b>Show answer</b>, then <b>Next</b> when the class is done discussing. Faster answers still score more." : (st.rpace || "timed") === "auto" ? "Each question ends on its timer (or when everyone answers); the next one starts 8 seconds after the answer shows." : "Each question ends on its timer or when everyone answers. You press <b>Next</b> after the leaderboard, so you can stop and discuss.") + sec("Time per question", chips("rtime", [[10,"10 s"],[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.rtime || 20), "Used when a row has no time. Add a <b>Time</b> column (seconds, 5\u2013300) to your sheet to give each question its own time, and a <b>Double</b> column (yes) to make a question worth \u00d72." + ((st.rpace || "timed") === "teacher" ? " In Teacher-paced mode it only sets how fast an answer has to be for full points." : ""))
+            : JP
+            ? sec("Teams", chips("teams", [[2,"2"],[3,"3"],[4,"4"],[5,"5"],[6,"6"]], st.teams)) + sec("Team assignment", chips("assign", [["random","Random"],["manual","I\u2019ll assign"]], st.assign)) +
+              sec("Board theme", chips("jtheme", [["lion","Lion Pride (green & white)"],["classic","Classic TV"]], st.jtheme || "lion")) +
+              sec("Time per clue", chips("jtime", [[20,"20 s"],[30,"30 s"],[45,"45 s"],[60,"60 s"]], st.jtime || 30), "Ends early once everyone has it right. Wrong answers cost nothing, so everyone keeps trying.") +
+              sec("Daily Doubles", chips("jdd", [[0,"None"],[1,"1"],[2,"2"]], st.jdd == null ? 1 : st.jdd), "Hidden at random (never in the top row). Everyone still answers; the picking team\u2019s correct players earn double.") +
+              sec("Values", chips("jmult", [[1,"$100\u2013$500"],[2,"$200\u2013$1,000"]], st.jmult || 1))
+            : st.mode === "battle"
+            ? sec("Teams", chips("teams", [[2,"2"],[3,"3"],[4,"4"],[5,"5"],[6,"6"]], st.teams)) + sec("Team assignment", chips("assign", [["random","Random"],["manual","I\u2019ll assign"]], st.assign)) + sec("Length", chips("minutes", MINS.map(function(m){ return [m, m + " min"]; }), st.minutes))
+            : sec("Match format", chips("format", FORMATS, st.format), st.format === "sd" ? "5 questions, most correct wins. Ties go to overtime: next point wins." : "Each game is a 4-hit knockout. First to " + need() + " games wins the match.")) +
+          (st.mode === "rush" || JP ? "" : sec("Time per question", chips("qtime", QT, st.qtime))) +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><button class="btn" data-act="lobby" disabled>Open lobby \u2192</button>' + (JP ? '' : '<a class="btn ghost sm" href="?preview=1" target="_blank" rel="noopener">Preview as a student \u2197</a>') + '</div></div>' +
+      '</div>';
+    }
+    function pchip(p, clickable){
+      var col = TM() ? tc(p.team) : "var(--gold)";
+      return '<span style="display:inline-flex;gap:2px;align-items:center;' + (clickable ? 'cursor:grab;' : '') + '"' + (clickable ? ' draggable="true" data-drag="' + esc(p.id) + '"' : '') + '><button type="button" class="pchip" ' + (clickable ? 'draggable="true" data-act="pteam" data-v="' + esc(p.id) + '" title="Drag to another team, or click to move to the next team"' : 'disabled style="cursor:default;"') + ' style="color:' + col + ';' + (p.up ? '' : 'opacity:.45;') + '">' + esc(p.name) + (p.up ? '' : ' \u00b7 away') + '</button>' +
+        '<button type="button" data-act="kick" data-v="' + esc(p.id) + '" aria-label="Remove ' + esc(p.name) + '" style="background:none;border:0;color:var(--dim);cursor:pointer;min-width:32px;min-height:40px;font-size:16px;">\u00d7</button></span>';
+    }
+    function routeNote(){
+      var ups = upList(), rl = ups.filter(function(p){ return p.route === "relay"; }).length, dr = ups.filter(function(p){ return p.route === "direct"; }).length;
+      if (!ups.length) return RELAY_ON ? ' <span class="mono" style="font-size:13px;font-weight:600;color:var(--dim);">\u00b7 relay ready</span>' : '';
+      return ' <span class="mono" style="font-size:13px;font-weight:600;color:var(--dim);">\u00b7 ' + dr + ' direct \u00b7 ' + rl + ' relayed' + (RELAY_ON ? '' : ' \u00b7 relay off') + '</span>';
+    }
+    function drawLobby(){
+      var st = S.setup, ps = list().filter(function(p){ return !p.left; }), ups = upList(), z = teamSizes();
+      var upTeams = {}; ups.forEach(function(p){ if (p.team != null) upTeams[p.team] = 1; });
+      var ready = st.mode === "rush" || st.mode === "jteam" ? ups.length >= 1 : ups.length >= 2 && (!TM() || Object.keys(upTeams).length >= 2);
+      var summary = (st.mode === "jteam" ? (function(){ var jb = parseBoard(st.csv) || { cats: [], clues: 0 }; return "Team Jeopardy \u00b7 " + st.teams + " teams \u00b7 " + jb.cats.length + " categories \u00b7 " + jb.clues + " clues \u00b7 " + (st.jtime || 30) + " s per clue"; })() : st.mode === "rush" ? "Roar Rush \u00b7 " + (st.rcount === 0 ? "all " + S.rows.length : Math.min(st.rcount || 10, S.rows.length)) + " questions \u00b7 " + ((st.rpace || "timed") === "teacher" ? "teacher-paced" : (st.rtime || 20) + " s each" + ((st.rpace || "timed") === "auto" ? " \u00b7 auto-advance" : "")) : st.mode === "battle" ? "Class Battle \u00b7 " + st.teams + " teams \u00b7 " + st.minutes + " min" : "King of the Pride \u00b7 " + FORMATS.filter(function(f){ return f[0] === st.format; })[0][1]) + (st.mode === "rush" || st.mode === "jteam" ? "" : " \u00b7 " + S.rows.length + " questions \u00b7 " + (st.qtime ? st.qtime + " s per question" : "no time limit"));
+      var players = TM()
+        ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">' + z.map(function(n, i){ return '<div data-drop="' + i + '" aria-label="' + teamNames()[i] + ' drop zone" style="min-height:96px;transition:background .15s;border:2px solid ' + tc(i) + ';border-radius:14px;padding:12px;"><div style="font-weight:800;color:' + tc(i) + ';margin-bottom:8px;">' + teamNames()[i] + ' \u00b7 ' + n + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.filter(function(p){ return p.team === i; }).map(function(p){ return pchip(p, true); }).join("") + '</div></div>'; }).join("") + '</div>'
+        : '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + ps.map(function(p){ return pchip(p, false); }).join("") + '</div>';
+      return codeCard() +
+        '<div class="card" style="margin-top:16px;display:flex;flex-direction:column;gap:14px;">' +
+          '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><h2 style="margin:0;color:var(--bright);font-size:22px;flex:1;min-width:200px;"><span id="hCount">' + ups.length + '</span> player' + (ups.length === 1 ? '' : 's') + ' in the den' + routeNote() + '</h2>' +
+            (TM() ? '<button class="btn ghost sm" data-act="shuffle">Shuffle teams</button>' : '') + sndBtns() + '<a class="btn ghost sm" href="?preview=1" target="_blank" rel="noopener">Preview \u2197</a><button class="btn ghost sm" data-act="setup">\u2190 Back to setup</button>' +
+            '<button class="btn" data-act="start"' + (ready ? '' : ' disabled') + '>Start (5 s countdown)</button></div>' +
+          '<div class="mono" style="font-size:13px;color:var(--dim);">' + esc(summary) + (TM() ? ' \u00b7 drag a name to another team (or click it) \u00b7 Shuffle uses online players only' : '') + '</div>' +
+          (ps.length ? players : '<p style="margin:0;color:var(--dim);">Waiting for the first lion\u2026</p>') +
+          (!ready && ups.length ? '<div style="color:var(--warn);font-size:14px;">' + (ups.length < 2 ? "Need at least 2 players." : "Need players on at least 2 teams.") + '</div>' : '') +
+        '</div>';
+    }
+    function fightBox(f, big){
+      var A = S.players[f.p[0]], B = S.players[f.p[1]], bat = S.setup.mode === "battle" && f.kind === "battle";
+      function side(P, i){ var col = bat ? tc(P.team) : tc(i ? 1 : 2); return '<div style="min-width:0;"><div style="font-weight:800;color:' + (bat ? tc(P.team) : "var(--bright)") + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(P.name) + (P.left ? ' \u00b7 left' : P.up ? '' : ' \u00b7 away') + '</div>' + (f.sd ? '<div class="mono" style="font-weight:800;color:var(--gold);">' + f.pts[i] + ' pts</div>' : hpBar(f.hp[i], col)) + '</div>'; }
+      return '<div style="border:1px solid var(--border3);border-radius:12px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;background:var(--panel2);">' + side(A, 0) + '<div class="mono" style="font-size:12px;color:var(--dim);text-align:center;">' + (f.sd ? 'Q' + Math.min(f.q + 1, 99) : 'VS') + '</div>' + side(B, 1) + '</div>';
+    }
+    function drawBattle(t){
+      var st = standings(), fs = Object.keys(S.fights).map(function(k){ return S.fights[k]; }), waiting = upList().filter(function(p){ return !p.fid; }).length;
+      var top = list().filter(function(p){ return p.ko; }).sort(function(a, b){ return b.ko - a.ko; }).slice(0, 5);
+      return '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">Class Battle \u00b7 code ' + S.code + '</div><div class="mono" id="hTimer" style="font-size:clamp(44px,8vw,72px);font-weight:800;color:var(--gold);line-height:1;">' + clock(S.endAt - t) + '</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;margin-bottom:16px;">' + st.map(function(x, r){ return '<div class="card" style="border:2px solid ' + tc(x.i) + ';padding:16px;"><div class="mono" style="font-size:12px;color:var(--dim);">#' + (r + 1) + '</div><div style="font-weight:800;color:' + tc(x.i) + ';font-size:18px;">' + teamNames()[x.i] + '</div><div class="mono" style="font-size:34px;font-weight:800;color:var(--bright);">' + x.score.toFixed(2) + '</div><div style="font-size:13px;color:var(--muted);">' + x.ko + ' KO' + (x.ko === 1 ? '' : 's') + ' \u00b7 ' + x.n + ' player' + (x.n === 1 ? '' : 's') + '</div></div>'; }).join("") + '</div>' +
+        '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;" class="bgrid">' +
+          '<div class="card"><div class="lbl" style="margin-bottom:10px;">Live fights \u00b7 ' + fs.length + (waiting ? ' \u00b7 ' + waiting + ' waiting' : '') + '</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:10px;">' + (fs.length ? fs.map(function(f){ return fightBox(f); }).join("") : '<p style="margin:0;color:var(--dim);">Pairing players\u2026</p>') + '</div></div>' +
+          '<div class="card"><div class="lbl" style="margin-bottom:10px;">Knockouts</div>' + (S.feed.length ? S.feed.map(function(x){ return '<div style="padding:6px 0;border-bottom:1px solid var(--border);color:' + tc(x.team) + ';font-weight:700;">' + esc(x.txt) + '</div>'; }).join("") : '<p style="margin:0;color:var(--dim);">No KOs yet.</p>') +
+            (top.length ? '<div class="lbl" style="margin:18px 0 8px;">Top lions</div>' + top.map(function(p){ return '<div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;"><span style="color:' + tc(p.team) + ';font-weight:700;">' + esc(p.name) + '</span><span class="mono">' + p.ko + '</span></div>'; }).join("") : '') + '</div>' +
+        '</div>';
+    }
+    function matchBox(m){
+      var b = S.br, f = null;
+      Object.keys(S.fights).forEach(function(k){ if (S.fights[k].mid === m.k) f = S.fights[k]; });
+      function nm(i){ var id = m.p[i]; if (!id) return '<span style="color:var(--dim);">' + (m.r === 0 ? 'bye' : '\u2014') + '</span>'; var P = S.players[id]; return '<span style="font-weight:' + (m.winner === id ? 800 : 600) + ';color:' + (m.winner && m.winner !== id ? 'var(--dim)' : 'var(--bright)') + ';' + (m.winner && m.winner !== id ? 'text-decoration:line-through;' : '') + '">' + esc(P.name) + (P.left ? ' \u00b7 left' : P.up ? '' : ' \u00b7 away') + '</span>'; }
+      function sc(i){ return b && S.setup.format !== "sd" && !m.bye ? '<span class="mono" style="color:var(--gold);font-weight:800;">' + m.wins[i] + '</span>' : (S.setup.format === "sd" && f ? '<span class="mono" style="color:var(--gold);font-weight:800;">' + f.pts[i] + '</span>' : ''); }
+      return '<div style="border:' + (f ? '2px solid var(--gold)' : '1px solid var(--border3)') + ';border-radius:10px;padding:8px 10px;background:var(--panel2);display:flex;flex-direction:column;gap:4px;font-size:14px;">' +
+        '<div style="display:flex;justify-content:space-between;gap:8px;">' + nm(0) + sc(0) + '</div><div style="display:flex;justify-content:space-between;gap:8px;">' + nm(1) + sc(1) + '</div>' +
+        (f && !f.sd ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' + hpBar(f.hp[0], tc(2)) + hpBar(f.hp[1], tc(1)) + '</div>' : '') + '</div>';
+    }
+    function drawBracket(t){
+      var b = S.br, cols = "";
+      for (var r = 0; r < b.R; r++) { var ms = []; for (var s = 0; s < b.size >> (r + 1); s++) ms.push(b.m[r + ":" + s]); cols += '<div style="display:flex;flex-direction:column;justify-content:space-around;gap:10px;min-width:190px;"><div class="lbl" style="text-align:center;">' + roundName(r) + '</div>' + ms.map(matchBox).join("") + '</div>'; }
+      var pool = list().filter(function(p){ return p.out && p.up; }), pf = Object.keys(S.fights).filter(function(k){ return S.fights[k].kind === "pool"; }).length;
+      return '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">King of the Pride \u00b7 code ' + S.code + '</div><div class="disp" style="font-size:clamp(28px,4vw,40px);font-weight:800;color:var(--gold);line-height:1.1;">' + esc(FORMATS.filter(function(f){ return f[0] === S.setup.format; })[0][1]) + '</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>' +
+        '<div class="card" style="overflow-x:auto;"><div style="display:flex;gap:18px;min-width:min-content;">' + cols + '</div></div>' +
+        '<div class="card" style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;"><div style="flex:1;min-width:240px;"><div class="lbl">Rematch pool</div><div style="color:var(--muted);">' + pool.length + ' eliminated players still playing \u00b7 ' + pf + ' pool fights live. Pool games don\u2019t change the bracket.</div></div>' +
+          (S.feed.length ? '<div style="flex:1;min-width:240px;">' + S.feed.slice(0, 4).map(function(x){ return '<div style="font-size:14px;color:var(--bright);">' + esc(x.txt) + '</div>'; }).join("") + '</div>' : '') + '</div>';
+    }
+    function boardRows(ps, withLast){
+      return ps.map(function(p, i){ var dl = withLast ? (p.dl || 0) : 0, sk = withLast && p.lastPts ? (p.streak || 0) : 0;
+        return '<div class="prAnim" style="display:grid;grid-template-columns:44px minmax(0,1fr) auto' + (withLast ? ' 70px' : '') + ';gap:10px;align-items:center;padding:8px 12px;border-radius:10px;background:' + (i < 3 ? 'var(--panel2)' : 'transparent') + ';border:' + (i === 0 && withLast ? '2px solid var(--gold);box-shadow:0 0 26px -8px var(--gold)' : '1px solid ' + (i < 3 ? 'var(--border3)' : 'var(--border)')) + ';' + (dl ? '--dy:' + (dl * 54) + 'px;animation:prSlide .8s cubic-bezier(.2,.8,.2,1) both;' : '') + '">' +
+        '<span class="mono" style="font-weight:800;color:' + (i < 3 ? 'var(--gold)' : 'var(--dim)') + ';font-size:18px;">' + (i + 1) + '</span>' +
+        '<span style="font-weight:700;color:var(--bright);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(p.name) + (p.left ? ' <span style="color:var(--dim);font-weight:500;">\u00b7 left</span>' : '') +
+          (dl ? ' <span class="mono" style="font-size:13px;font-weight:800;color:' + (dl > 0 ? 'var(--ok)' : 'var(--bad)') + ';">' + (dl > 0 ? '\u25b2' : '\u25bc') + Math.abs(dl) + '</span>' : '') +
+          (sk >= 3 ? ' <span class="mono" style="font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--warn);color:#2a1d00;">' + sk + '\u00d7 STREAK</span>' : '') + '</span>' +
+        '<span class="mono" style="font-weight:800;color:var(--bright);font-size:18px;">' + (p.score || 0).toLocaleString() + '</span>' +
+        (withLast ? '<span class="mono" style="font-size:14px;color:' + (p.lastPts ? 'var(--ok)' : 'var(--dim)') + ';text-align:right;">' + (p.lastPts ? '+' + p.lastPts : '\u2014') + '</span>' : '') + '</div>'; }).join("");
+    }
+    function drawRush(t){
+      var R0 = S.rush, f = R0.f, row = S.rows[f.row], ps = rushIn(), got = ps.filter(function(p){ var A = R0.ans[p.id]; return A && A.ok; }).length, tried = ps.filter(function(p){ return R0.ans[p.id]; }).length;
+      var head = '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-right:200px;"><div><div class="lbl">Roar Rush \u00b7 code ' + S.code + '</div><div class="disp" style="font-size:clamp(28px,4vw,40px);font-weight:800;color:var(--gold);line-height:1.1;">Question ' + R0.qi + ' of ' + R0.total + '</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>';
+      if (R0.phase === "q") {
+        var pz = "";
+        if (f.mode === "shift") pz = '<div class="mono" style="font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:6px;color:var(--gold);">' + esc(f.pz) + '</div><div class="mono" style="color:var(--muted);">SHIFT \u00b7 move each letter back ' + f.shift + '</div>';
+        else if (f.mode === "scramble") pz = '<div class="mono" style="font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:10px;color:var(--gold);">' + esc(f.pz) + '</div><div class="mono" style="color:var(--muted);">SCRAMBLE \u00b7 unscramble the letters</div>';
+        else if (f.mode === "outline") pz = '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">' + f.pz.split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask" style="min-width:44px;height:64px;font-size:40px;">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div><div class="mono" style="color:var(--muted);">FREE RESPONSE \u00b7 type the answer</div>';
+        else if (f.mode === "reveal") pz = '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">' + mask(f).split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask" style="min-width:44px;height:64px;font-size:40px;">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div><div class="mono" style="color:var(--muted);">REVEAL \u00b7 letters fill in over time</div>';
+        else if (f.mode === "bank") pz = '<div style="display:grid;grid-template-columns:repeat(' + ((f.opts || []).length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:12px;width:100%;">' + f.opts.map(function(o, i){ return '<div class="bankb" style="cursor:default;font-size:24px;min-height:80px;display:flex;align-items:center;gap:14px;text-align:left;border-color:' + LC[i] + ';"><span class="mono" style="font-size:22px;font-weight:800;min-width:44px;height:44px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none;background:' + LC[i] + ';color:' + LT[i] + ';">' + "ABCD"[i] + '</span><span>' + esc(o) + '</span></div>'; }).join("") + '</div>';
+        return head + '<div class="card" style="padding:28px;display:flex;flex-direction:column;gap:22px;align-items:center;text-align:center;">' +
+          (R0.x2 ? '<div class="mono" style="font-size:20px;font-weight:800;letter-spacing:3px;padding:8px 18px;border-radius:999px;background:var(--warn);color:#2a1d00;">DOUBLE POINTS \u00d72</div>' : '') +
+          (f.endsAt ? '' : '<div class="mono" style="font-size:16px;color:var(--muted);">TEACHER-PACED \u00b7 press Show answer when the class is ready</div>') + '<div style="display:' + (f.endsAt ? 'flex' : 'none') + ';align-items:center;gap:14px;width:100%;"><div style="flex:1;height:10px;border-radius:5px;background:var(--border);overflow:hidden;"><div id="hRushB" style="height:100%;background:var(--gold);width:100%;"></div></div><span class="mono" id="hRushT" style="font-size:34px;font-weight:800;color:var(--gold);min-width:56px;text-align:right;"></span></div>' +
+          '<div style="font-size:clamp(28px,4.2vw,48px);font-weight:800;color:var(--bright);line-height:1.25;text-wrap:balance;max-width:1000px;white-space:pre-line;' + (/\n/.test(row.q) ? 'text-align:left;' : '') + '">' + CLUE(row.q, "40vh") + '</div>' + pz +
+          '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span style="display:inline-flex;align-items:baseline;gap:8px;"><span id="hCnt" class="mono" style="display:inline-block;font-size:48px;font-weight:800;color:var(--gold);line-height:1;">' + tried + '</span><span class="mono" style="font-size:20px;color:var(--muted);">/ ' + ps.length + ' locked in</span></span><button class="btn ghost sm" data-act="rnow">Show answer now</button></div></div>';
+      }
+      var top = rushBoard().slice(0, 10), last = R0.qi >= R0.total;
+      return head + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;" class="bgrid">' +
+        '<div class="card" style="padding:26px;display:flex;flex-direction:column;gap:14px;"><div class="lbl">Answer</div><div class="disp" style="font-size:clamp(34px,5vw,60px);font-weight:800;color:var(--gold);line-height:1.1;word-break:break-word;">' + esc(ansText(row)) + '</div>' +
+          (f.mode === "bank" && f.opts ? '<div style="display:grid;grid-template-columns:repeat(' + (f.opts.length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:8px;">' + f.opts.map(function(o, i){ var ok = norm(o) === norm(ansText(row));
+            return '<div class="prAnim" style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:2px solid ' + (ok ? 'var(--ok)' : 'var(--border)') + ';background:var(--panel2);' + (ok ? 'box-shadow:0 0 24px -6px var(--ok);animation:prWin .6s ease both;' : 'opacity:.35;') + '"><span class="mono" style="font-weight:800;min-width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:none;background:' + LC[i] + ';color:' + LT[i] + ';">' + "ABCD"[i] + '</span><span style="font-weight:700;color:var(--bright);">' + esc(o) + '</span>' + (ok ? '<span class="mono" style="margin-left:auto;font-size:13px;color:var(--ok);">\u2713</span>' : '') + '</div>'; }).join("") + '</div>' : '') +
+          '<div style="color:var(--muted);font-size:18px;text-wrap:pretty;white-space:pre-line;">' + CLUE(row.q, "22vh") + '</div><div class="mono" style="font-size:22px;color:var(--bright);margin-top:6px;">' + got + ' of ' + ps.length + ' got it</div>' +
+          '<div style="margin-top:auto;padding-top:10px;"><button class="btn" data-act="rnext">' + (last ? "Final results \u2192" : "Next question \u2192") + '</button>' + (rushPace() === "auto" ? '<span class="mono" style="margin-left:12px;font-size:14px;color:var(--dim);">auto in 8 s</span>' : '') + (!last ? '<button class="btn ghost sm" data-act="rx2" aria-pressed="' + !!R0.nx2 + '" style="margin-left:10px;">' + (R0.nx2 ? 'Next is DOUBLE \u2713' : 'Make next \u00d72') + '</button>' : '') + '</div></div>' +
+        '<div class="card" style="padding:20px;"><div class="lbl" style="margin-bottom:10px;">Leaderboard</div><div style="display:flex;flex-direction:column;gap:6px;">' + (top.length ? boardRows(top, true) : '<p style="color:var(--dim);margin:0;">No players yet.</p>') + '</div></div></div>';
+    }
+    function jScores(){
+      var J = S.jp, ts = jTeams();
+      return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">' + ts.map(function(x, r){ var dl = J && J.phase === "rev" ? (J.dl[x.i] || 0) : 0, pk = J && J.pick === x.i && J.phase !== "rev";
+        return '<div class="prAnim" style="flex:1;min-width:150px;border-radius:14px;padding:12px 14px;background:var(--panel);border:3px solid ' + tc(x.i) + ';' + (pk ? 'box-shadow:0 0 24px -6px ' + tc(x.i) + ';' : '') + (dl ? '--dy:' + (dl * 30) + 'px;animation:prSlide .8s cubic-bezier(.2,.8,.2,1) both;' : '') + '">' +
+          '<div style="display:flex;gap:8px;align-items:baseline;"><span class="mono" style="color:var(--dim);font-weight:800;">#' + (r + 1) + '</span><b style="flex:1;color:' + tc(x.i) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(teamNames()[x.i]) + '</b>' + (dl ? '<span class="mono" style="font-size:13px;font-weight:800;color:' + (dl > 0 ? 'var(--ok)' : 'var(--bad)') + ';">' + (dl > 0 ? '\u25b2' : '\u25bc') + Math.abs(dl) + '</span>' : '') + (pk ? '<span class="mono" style="font-size:11px;font-weight:800;color:' + tc(x.i) + ';">PICKING</span>' : '') + '</div>' +
+          '<div class="mono" style="font-size:clamp(26px,2.8vw,38px);font-weight:800;color:var(--bright);line-height:1.1;">$' + x.avg.toLocaleString() + '</div><div class="mono" style="font-size:12px;color:var(--dim);">per player \u00b7 ' + x.n + ' player' + (x.n === 1 ? '' : 's') + ' \u00b7 $' + x.cash.toLocaleString() + ' total</div></div>'; }).join("") + '</div>';
+    }
+    function drawJp(t){
+      var J = S.jp, b = J.b, head = '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:200px;"><div><div class="lbl">Team Jeopardy \u00b7 code ' + S.code + '</div><div class="disp" style="font-size:clamp(24px,3.4vw,36px);font-weight:800;color:var(--gold);line-height:1.1;">' + jLeft() + ' of ' + b.clues + ' clues left</div></div>' + miniJoin() + '<div style="flex:1;"></div><span class="mono" id="live" style="font-size:13px;font-weight:800;color:var(--ok);">\u25CF LIVE</span>' + sndBtns() + '<button class="btn ghost sm" data-act="end">End now</button></div>';
+      if (J.phase === "pick") {
+        return head + '<div class="card" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px;border:3px solid ' + tc(J.pick) + ';"><div class="disp" style="flex:1;font-size:clamp(24px,3vw,38px);font-weight:800;color:' + tc(J.pick) + ';">' + esc(teamNames()[J.pick]) + ' picks!</div><span style="color:var(--muted);">First tap on a ' + esc(teamNames()[J.pick]) + ' device counts \u00b7 random pick in</span><span id="hJT" class="mono" style="font-size:34px;font-weight:800;color:var(--bright);min-width:48px;text-align:right;"></span></div>' +
+          '<div class="jboard" style="grid-template-columns:repeat(' + b.cats.length + ',minmax(0,1fr));">' + b.cats.map(function(c){ return '<div class="jcat">' + esc(c) + '</div>'; }).join("") +
+          b.levels.map(function(Lv, li){ return Lv.map(function(x, c){ var k = li + ":" + c, off = !x.q || !x.a || J.used[k]; return '<button type="button" class="jtile" data-act="jtile" data-v="' + k + '"' + (off ? ' disabled aria-label="Used"' : ' aria-label="' + esc(b.cats[c]) + ' for $' + jVal(li) + '"') + '>$' + jVal(li) + '</button>'; }).join(""); }).join("") + '</div>' + jScores();
+      }
+      var x = b.levels[J.li][J.c], ps = upList().filter(function(p){ return p.team != null; }), got = ps.filter(function(p){ var A = J.ans[p.id]; return A && A.ok; }).length;
+      var cap = '<div class="mono" style="font-size:clamp(14px,1.6vw,20px);letter-spacing:2px;font-weight:800;">' + esc(b.cats[J.c].toUpperCase()) + ' \u00b7 $' + jVal(J.li) + '</div>' +
+        (J.dd ? '<div class="disp ddIn" style="font-size:clamp(34px,5vw,64px);font-weight:800;color:var(--jb-val);line-height:1;">DAILY DOUBLE!</div><div class="mono" style="font-size:16px;">' + esc(teamNames()[J.pick]) + ' earns \u00d72 \u00b7 everyone answers</div>' : '');
+      if (J.phase === "q") return head + '<div class="jclue">' + cap +
+          '<div style="display:flex;align-items:center;gap:14px;width:100%;"><div style="flex:1;height:10px;border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden;"><div id="hJB" style="height:100%;width:100%;background:var(--jb-val);"></div></div><span id="hJT" class="mono" style="display:inline-block;font-size:34px;font-weight:800;color:var(--jb-val);min-width:56px;text-align:right;"></span></div>' +
+          jClue(x.q) + '<div aria-hidden="true">' + jMask(x.a) + '</div>' +
+          '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><span style="display:inline-flex;align-items:baseline;gap:8px;"><span id="hCnt" class="mono" style="display:inline-block;font-size:48px;font-weight:800;line-height:1;">' + Object.keys(J.ans).length + '</span><span class="mono" style="font-size:18px;">/ ' + ps.length + ' answered</span></span><button class="btn ghost sm" data-act="jnow" style="color:var(--jb-text);border-color:var(--jb-text);">Show answer now</button></div></div>' + jScores();
+      var per = []; for (var i = 0; i < S.setup.teams; i++) { var tp = ps.filter(function(p){ return p.team === i; }); if (!tp.length) continue; var ok = tp.filter(function(p){ var A = J.ans[p.id]; return A && A.ok; }).length; per.push({ i: i, ok: ok, n: tp.length }); }
+      return head + '<div class="jclue">' + cap + jClue(x.q) + '<div class="ja">' + esc(x.a) + '</div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:760px;">' + per.map(function(r){ var pc = Math.round(r.ok / r.n * 100); return '<div style="display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 120px;gap:10px;align-items:center;text-align:left;"><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(teamNames()[r.i]) + '</b><div style="height:16px;border-radius:8px;background:rgba(0,0,0,.3);overflow:hidden;"><div style="height:100%;width:' + pc + '%;background:' + tc(r.i) + ';"></div></div><span class="mono" style="font-weight:800;">' + r.ok + '/' + r.n + ' \u00b7 ' + pc + '%</span></div>'; }).join("") + '</div>' +
+          '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;"><span class="mono" style="font-size:18px;">' + got + ' of ' + ps.length + ' got it</span><button class="btn" data-act="jnext" style="background:var(--jb-text);border-color:var(--jb-text);color:var(--jb-clue);">' + (jLeft() ? 'Next pick \u2192' : 'Final results \u2192') + '</button><span class="mono" style="font-size:14px;">auto in 9 s</span></div></div>' + jScores();
+    }
+    function drawDone(){
+      var body;
+      if (S.setup.mode === "jteam" && S.jp) {
+        var jt = jTeams(), pod = jt.slice(0, 3), H = [150, 110, 80], order = [1, 0, 2], mvp = list().filter(function(p){ return p.jcash; }).sort(function(a, b){ return (b.jcash || 0) - (a.jcash || 0); }).slice(0, 3);
+        body = '<div class="lbl">Team Jeopardy \u00b7 final results</div>' +
+          '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:18px 0 22px;flex-wrap:wrap;">' + order.filter(function(i){ return pod[i]; }).map(function(i){ var x = pod[i];
+            return '<div class="prAnim" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:160px;opacity:0;animation:prRise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.6, 1.4, .4][i] + 's;"><div style="font-weight:800;color:' + tc(x.i) + ';font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(teamNames()[x.i]) + '</div><div class="mono" style="color:var(--bright);font-weight:800;">$' + x.avg.toLocaleString() + ' per player</div><div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : 'var(--btn)') + ';border:3px solid ' + tc(x.i) + ';display:flex;justify-content:center;padding-top:10px;"><span class="disp" style="font-size:40px;font-weight:800;color:' + (i ? 'var(--gold)' : 'var(--btnText)') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' +
+          (mvp.length ? '<div class="prAnim" style="opacity:0;animation:prRise .6s ease forwards;animation-delay:3.4s;"><div class="lbl" style="margin-bottom:8px;">Top earners</div><div style="display:flex;gap:10px;flex-wrap:wrap;">' + mvp.map(function(p, i){ return '<div style="padding:10px 14px;border-radius:12px;border:2px solid ' + tc(p.team) + ';background:var(--panel2);"><span class="mono" style="color:var(--dim);">' + (i + 1) + '</span> <b style="color:' + tc(p.team) + ';">' + esc(p.name) + '</b> <span class="mono" style="color:var(--bright);">$' + (p.jcash || 0).toLocaleString() + '</span></div>'; }).join("") + '</div></div>' : '');
+      } else
+      if (S.setup.mode === "rush") {
+        var B = rushBoard(), pod = B.slice(0, 3), H = [150, 110, 80], order = [1, 0, 2];
+        body = '<div class="lbl">Roar Rush \u00b7 final results</div>' +
+          (pod.length ? '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;margin:18px 0 26px;flex-wrap:wrap;">' + order.filter(function(i){ return pod[i]; }).map(function(i){ var p = pod[i]; return '<div class="prAnim" style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:150px;opacity:0;animation:prRise .7s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:' + [2.6, 1.4, .4][i] + 's;"><div style="font-weight:800;color:var(--bright);font-size:' + (i ? 20 : 28) + 'px;text-align:center;">' + esc(p.name) + '</div><div class="mono" style="color:var(--muted);">' + (p.score || 0).toLocaleString() + ' pts</div><div style="width:100%;height:' + H[i] + 'px;border-radius:12px 12px 0 0;background:' + (i ? 'var(--panel2)' : 'var(--btn)') + ';border:2px solid var(--gold);display:flex;align-items:flex-start;justify-content:center;padding-top:10px;"><span class="disp" style="font-size:40px;font-weight:800;color:' + (i ? 'var(--gold)' : 'var(--btnText)') + ';">' + (i + 1) + '</span></div></div>'; }).join("") + '</div>' : '') +
+          '<div class="prAnim" style="display:flex;flex-direction:column;gap:6px;max-width:720px;opacity:0;animation:prRise .6s ease forwards;animation-delay:3.4s;">' + boardRows(B.slice(0, 30), false) + '</div>';
+      } else
+      if (S.setup.mode === "battle") {
+        var st = standings(), top = list().filter(function(p){ return p.ko; }).sort(function(a, b){ return b.ko - a.ko; }).slice(0, 5);
+        body = (st.length ? '<div class="disp" style="font-size:clamp(40px,7vw,72px);font-weight:800;color:' + tc(st[0].i) + ';line-height:1.05;">' + teamNames()[st[0].i] + ' wins!</div>' : '') +
+          '<table style="margin-top:18px;"><thead><tr><th>#</th><th>TEAM</th><th>SCORE</th><th>KOS</th><th>PLAYERS</th></tr></thead><tbody>' + st.map(function(x, r){ return '<tr><td class="mono">' + (r + 1) + '</td><td style="font-weight:800;color:' + tc(x.i) + ';">' + teamNames()[x.i] + '</td><td class="mono">' + x.score.toFixed(2) + '</td><td class="mono">' + x.ko + '</td><td class="mono">' + x.n + '</td></tr>'; }).join("") + '</tbody></table>' +
+          (top.length ? '<div class="lbl" style="margin:20px 0 8px;">Top lions</div>' + top.map(function(p, i){ return '<div style="display:flex;gap:10px;padding:4px 0;"><span class="mono" style="color:var(--dim);">' + (i + 1) + '</span><span style="flex:1;color:' + tc(p.team) + ';font-weight:700;">' + esc(p.name) + '</span><span class="mono">' + p.ko + ' KOs</span></div>'; }).join("") : '');
+      } else {
+        var b = S.br || {}, c = b.champ && S.players[b.champ], s2 = b.second && S.players[b.second];
+        var thirds = list().filter(function(p){ return b.R && p.outR === b.R - 2 && !p.late; });
+        body = c ? '<div class="lbl">King of the Pride</div><div class="disp" style="font-size:clamp(40px,7vw,72px);font-weight:800;color:var(--gold);line-height:1.05;">' + esc(c.name) + '</div>' +
+            (s2 ? '<div style="margin-top:12px;font-size:20px;color:var(--bright);"><b>2nd</b> \u00b7 ' + esc(s2.name) + '</div>' : '') +
+            (thirds.length ? '<div style="margin-top:4px;font-size:18px;color:var(--muted);"><b>3rd</b> \u00b7 ' + thirds.map(function(p){ return esc(p.name); }).join(" & ") + '</div>' : '')
+          : '<div class="disp" style="font-size:40px;font-weight:800;color:var(--bright);">Bracket ended early</div>';
+      }
+      return '<div class="card" style="padding:32px;">' + body +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:28px;"><button class="btn" data-act="again">Play again</button><button class="btn ghost" data-act="setup">Change questions or mode</button><button class="btn ghost" data-act="finish">Finish &amp; erase</button></div>' +
+        '<div style="font-size:13px;color:var(--dim);margin-top:10px;">Play again keeps the same code and players. Finish &amp; erase closes the game and removes it from this browser.</div></div>';
+    }
+  }
+
+  /* =====================================================================
+     STUDENT
+     ===================================================================== */
+  function join(c, PREV){
+    hdr.style.display = "none";
+    var tk = "mane-tok-" + c, tok;
+    try { if (localStorage.getItem("mane-ban-" + c)) { view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;"><b style="color:var(--bright);font-size:20px;">Your teacher removed you from this game.</b></div>'; return; } } catch (e) {}
+    try { tok = localStorage.getItem(tk); } catch (e) {}
+    if (!tok) { tok = ""; for (var i = 0; i < 20; i++) tok += "abcdefghijklmnopqrstuvwxyz0123456789"[rnd(36)]; try { localStorage.setItem(tk, tok); } catch (e) {} }
+    var PREVP = 0, RDL = 0, lastRR = -1;
+    function sFlash(col, txt){ var o = document.getElementById("sFlash"); if (o) o.remove(); o = document.createElement("div"); o.id = "sFlash"; o.setAttribute("aria-hidden", "true"); o.style.background = "color-mix(in srgb, " + col + " 38%, transparent)"; o.textContent = txt || ""; document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 950); }
+    document.addEventListener("keydown", function(e){
+      if (!V || !V.f || V.f.m !== "bank" || V.f.lock || V.s === "rushr") return;
+      if (e.ctrlKey || e.metaKey || e.altKey || (e.target && /INPUT|TEXTAREA/.test(e.target.tagName))) return;
+      var i = "abcd".indexOf(String(e.key || "").toLowerCase()); if (i < 0) return;
+      var b = view.querySelector('.bankb[data-o="' + i + '"]'); if (b && !b.disabled) { e.preventDefault(); b.click(); }
+    });
+    var V = null, T = {}, got = 0, conn = null, joined = false, tries = 0, lostAt = 0, used = [], curN = -1, cdTimer = null, sending = false, lastKev = null, lastSettled = -1;
+    function status(msg){ view.innerHTML = '<div class="card mono" style="color:var(--dim);">' + msg + '</div>'; }
+    status("Connecting to " + esc(c) + "\u2026");
+    var ROUTE = "";
+    function checkRoute(c2){
+      try { c2.peerConnection.getStats().then(function(st){
+        var pair = null, loc = {}, rem = {};
+        st.forEach(function(x){ if (x.type === "candidate-pair" && x.state === "succeeded" && (x.nominated || x.selected) && !pair) pair = x; if (x.type === "local-candidate") loc[x.id] = x; if (x.type === "remote-candidate") rem[x.id] = x; });
+        if (!pair) return;
+        var lt = (loc[pair.localCandidateId] || {}).candidateType, rt = (rem[pair.remoteCandidateId] || {}).candidateType;
+        ROUTE = lt === "relay" || rt === "relay" ? "relay" : "direct";
+        try { c2.send({ k: "route", r: ROUTE }); } catch (e) {}
+        render();
+      }).catch(function(){}); } catch (e) {}
+    }
+    function connect(){ iceConfig().then(connectWith); }
+    function connectWith(ice){
+      var peer = new Peer(peerOpts(ice)), done = false;
+      var fail = setTimeout(function(){ if (!done) { peer.destroy(); retry("Couldn\u2019t connect in 20 seconds."); } }, 20000);
+      peer.on("error", function(e){ if (done) return; clearTimeout(fail); peer.destroy(); retry(e.type === "peer-unavailable" ? "No game found with code " + c + ". Check the code on the projector." : "Connection problem: " + (e.type || e.message) + "."); });
+      peer.on("open", function(){
+        conn = peer.connect(PREFIX + c, { reliable: true });
+        conn.on("open", function(){ done = true; clearTimeout(fail); joined = true; tries = 0; lostAt = 0; conn.send({ k: "join", tok: tok, dev: device() }); var c2 = conn; setTimeout(function(){ checkRoute(c2); }, 1500); });
+        conn.on("data", function(d){
+          if (!d) return;
+          if (d.k === "v") { V = d.v; T = d.v.T || {}; got = performance.now(); render(); }
+          if (d.k === "bad") bad();
+          if (d.k === "full") { done = true; peer.destroy(); end("This game is full (80 players)."); }
+          if (d.k === "kicked") { done = true; joined = false; peer.destroy(); try { localStorage.setItem("mane-ban-" + c, "1"); } catch (e) {} end("Your teacher removed you from the game."); }
+          if (d.k === "locked") { done = true; peer.destroy(); end("This game is locked. Ask your teacher to unlock it so you can join."); }
+          if (d.k === "closed") { done = true; joined = false; peer.destroy(); try { localStorage.removeItem(tk); } catch (e) {} end("Your teacher closed the game. Thanks for playing!"); }
+        });
+        conn.on("close", function(){ if (!joined) return; peer.destroy(); lostAt = lostAt || Date.now(); status("Lost connection. Reconnecting\u2026 (your teacher\u2019s page may be reloading)"); setTimeout(connect, 2000); });
+      });
+    }
+    function retry(msg){
+      if (joined) { if (Date.now() - lostAt < 180000) { status("Reconnecting\u2026"); setTimeout(connect, 3000); return; } return end("Couldn\u2019t reconnect. Check with your teacher, then reload this page."); }
+      if (++tries < 4) { status("Connecting to " + esc(c) + "\u2026 (try " + (tries + 1) + " of 4)"); setTimeout(connect, 2500); return; }
+      home(msg);
+    }
+    function end(msg){ view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;"><b style="color:var(--bright);font-size:20px;">' + esc(msg) + '</b><p style="color:var(--muted);margin-bottom:0;">You can close this tab.</p></div>'; }
+    if (PREV) setTimeout(previewStart, 0); else connect();
+    setInterval(function(){
+      var el = document.getElementById("sLeft"), bar = document.getElementById("sBar"), left = T.left != null ? T.left - (performance.now() - got) : null;
+      if (el && left != null) el.textContent = V && V.s === "cd" ? Math.max(1, Math.ceil(left / 1000)) : Math.max(0, Math.ceil(left / 1000)) + " s";
+      if (bar && left != null && T.full) bar.style.width = Math.max(0, left / T.full * 100) + "%";
+    }, 200);
+
+    function bad(){ if (window.KO_FX) KO_FX.sfx("miss"); sFlash("var(--bad)", ""); var a = document.getElementById("sAns"); if (!a) return; a.classList.remove("bad"); void a.offsetWidth; a.classList.add("bad"); a.value = ""; used = []; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); a.focus(); }
+    function forfeitNow(){
+      if (!V || !V.f || !conn || !conn.open) return;
+      var F = V.f, msg = F.kind === "match" ? "Forfeit the whole match? " + F.opp + " advances and you drop into the rematch pool." : "Forfeit this fight? " + F.opp + " gets the KO.";
+      if (confirm(msg)) conn.send({ k: "forfeit", n: F.n });
+    }
+    function leaveNow(){
+      if (!conn || !conn.open) return;
+      var live = V && V.s !== "lobby" && V.s !== "done";
+      if (!confirm(live ? "Leave the game? " + (V.mode === "bracket" ? "You\u2019ll be out of the bracket." : "Anything you\u2019re playing counts as a forfeit.") : "Leave the game?")) return;
+      joined = false; try { conn.send({ k: "leave" }); } catch (e) {}
+      try { localStorage.removeItem(tk); } catch (e) {}
+      setTimeout(function(){ try { conn.close(); } catch (e) {} }, 300);
+      end("You left the game.");
+    }
+    /* ----- teacher preview: reads the host tab's saved game from this browser, nothing is sent ----- */
+    var PV = { i: 0, force: "", show: false, msg: "", ok: false, rows: [], st: null, n: 0 };
+    function previewLoad(){
+      var sv = saved(); if (!sv) { PV.rows = []; return; }
+      PV.st = sv.setup; PV.rows = parseRows(sv.setup.csv); applyTheme(sv.setup.theme);
+      if (PV.i >= PV.rows.length) PV.i = 0;
+    }
+    function previewMake(){
+      var r = PV.rows[PV.i], st = PV.st, d = ansText(r), mode, F;
+      var vd = {}; PV.rows.forEach(function(x){ if (x.k === "v") vd[norm(disp(x.a))] = 1; });
+      if (r.k === "mc") mode = "bank"; else if (r.k === "fr") mode = "outline";
+      else {
+        var L = norm(d).length, ok = TYPES.map(function(t){ return t[0]; }).filter(function(t){
+          if (t === "bank") return Object.keys(vd).length >= 4; if (L < 3 || L > 24) return false; return t !== "shift" || /[a-z]/i.test(d); });
+        var ticked = ok.filter(function(t){ return st.types[t]; });
+        mode = PV.force ? (PV.force === "type" || ok.indexOf(PV.force) >= 0 ? PV.force : "type") : ticked.length ? ticked[rnd(ticked.length)] : "type";
+      }
+      F = { n: ++PV.n, kind: "rush", q: r.q, m: mode, mc: r.k === "mc", len: norm(d).length, lock: false, pz: "", rev: [] };
+      if (mode === "outline" || mode === "reveal") F.pz = d.split("").map(function(ch){ return /[a-z0-9]/i.test(ch) ? "_" : ch; }).join("");
+      if (mode === "shift") { F.k = 1 + rnd(5); F.pz = d.toUpperCase().replace(/[A-Z]/g, function(ch){ return String.fromCharCode((ch.charCodeAt(0) - 65 + F.k) % 26 + 65); }); }
+      if (mode === "scramble") { var Ls = d.toUpperCase().replace(/[^A-Z0-9]/g, "").split(""), orig = Ls.join(""); for (var j = 0; j < 6; j++) { shuffle(Ls); if (Ls.join("") !== orig) break; } F.pz = Ls.join(""); }
+      if (mode === "bank") {
+        var seen = {}, o = [d]; seen[norm(d)] = 1;
+        if (F.mc) (r.d || []).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
+        if (!F.mc || o.length < 2) shuffle(PV.rows.filter(function(x){ return F.mc ? x.k !== "v" : x.k === "v"; }).map(ansText)).forEach(function(x){ if (o.length < 4 && !seen[norm(x)]) { seen[norm(x)] = 1; o.push(x); } });
+        F.opts = shuffle(o);
+      }
+      PV.msg = ""; PV.ok = false; PV.show = false; curN = -1;
+      V = { s: "fight", name: "Teacher preview", tn: null, mode: st.mode, f: F }; T = {};
+    }
+    function previewDraw(){
+      var keepEl = document.getElementById("sAns"), keep = keepEl && keepEl.value;
+      if (!PV.rows.length) { view.innerHTML = '<div class="card" style="text-align:center;padding:34px 22px;margin-top:56px;"><b style="color:var(--bright);font-size:20px;">No questions to preview yet.</b><p style="color:var(--muted);margin-bottom:0;">In your host tab, load questions on the setup screen. This preview updates on its own.</p></div>'; return; }
+      var r = PV.rows[PV.i], F = V.f, isV = r.k === "v";
+      var hint = isV ? '<div role="group" aria-label="Hint type" style="display:flex;flex-wrap:wrap;gap:6px;">' + [["","Random"]].concat(TYPES, [["type","Typed"]]).map(function(t){ return '<button type="button" class="chip" data-pv="force" data-v="' + t[0] + '" aria-pressed="' + (PV.force === t[0]) + '" style="min-height:40px;padding:4px 12px;font-size:12px;">' + t[1] + '</button>'; }).join("") + '</div>' : '<div class="mono" style="font-size:12px;color:var(--dim);">' + (r.k === "mc" ? "Multiple choice row" : "Free response row") + '</div>';
+      var bar = '<div class="card" style="margin-bottom:16px;padding:14px 200px 14px 18px;display:flex;flex-direction:column;gap:10px;border:2px dashed var(--border3);">' +
+        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><span class="mono" style="font-size:12px;letter-spacing:2px;color:var(--gold);">TEACHER PREVIEW</span><span style="font-size:13px;color:var(--dim);">What students see. Not connected; nothing is sent or scored.</span></div>' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button type="button" class="btn ghost sm" data-pv="prev">\u2190 Prev</button><span class="mono" style="font-size:14px;color:var(--bright);min-width:90px;text-align:center;">' + (PV.i + 1) + ' of ' + PV.rows.length + '</span><button type="button" class="btn ghost sm" data-pv="next">Next \u2192</button><button type="button" class="btn ghost sm" data-pv="rand">Random</button><button type="button" class="btn ghost sm" data-pv="show">' + (PV.show ? "Hide answer" : "Show answer") + '</button></div>' +
+        hint + (PV.show ? '<div style="font-size:15px;color:var(--muted);">Answer: <b style="color:var(--gold);">' + esc(ansText(r)) + '</b></div>' : '') + '</div>';
+      var body = PV.ok ? '<div class="card" style="text-align:center;padding:30px 20px;border:2px solid var(--ok);"><div class="disp" style="font-size:clamp(28px,5vw,40px);font-weight:800;color:var(--ok);">Correct!</div><div style="color:var(--muted);margin-top:8px;">' + esc(ansText(r)) + '</div><div style="margin-top:16px;"><button type="button" class="btn" data-pv="next">Next question \u2192</button></div></div>'
+        : puzzleCard(F) + (PV.msg ? '<div role="alert" style="margin-top:10px;font-weight:700;color:var(--bad);">' + esc(PV.msg) + '</div>' : '');
+      view.innerHTML = bar + body;
+      var a = document.getElementById("sAns"); if (a) { if (keep && !PV.ok) a.value = keep; a.focus(); }
+      wire();
+    }
+    function previewCheck(text){
+      var r = PV.rows[PV.i];
+      if (isRight(r, text)) { PV.ok = true; if (window.KO_FX) KO_FX.sfx("hit"); }
+      else { PV.msg = "Not quite. Try again."; if (window.KO_FX) KO_FX.sfx("miss"); var a = document.getElementById("sAns"); if (a) a.value = ""; }
+      previewDraw();
+    }
+    function previewStart(){
+      document.title = "Mane Event \u00b7 Teacher preview";
+      previewLoad(); if (PV.rows.length) previewMake(); previewDraw();
+      view.addEventListener("click", function(e){
+        var b = e.target.closest && e.target.closest("[data-pv]"); if (!b) return;
+        var a = b.getAttribute("data-pv"), n = PV.rows.length; if (!n) return;
+        if (a === "next") PV.i = (PV.i + 1) % n; else if (a === "prev") PV.i = (PV.i - 1 + n) % n; else if (a === "rand") PV.i = rnd(n);
+        else if (a === "force") PV.force = b.getAttribute("data-v"); else if (a === "show") { PV.show = !PV.show; previewDraw(); return; }
+        previewMake(); previewDraw();
+      });
+      window.addEventListener("storage", function(e){ if (e.key !== KEY) return; var had = PV.rows.length, oldCsv = PV.st && PV.st.csv; previewLoad(); if (!had || !PV.st || PV.st.csv !== oldCsv) { if (PV.rows.length) previewMake(); previewDraw(); } });
+      setInterval(function(){
+        if (!V || !V.f || V.f.m !== "reveal" || PV.ok) return;
+        var hid = []; V.f.pz.split("").forEach(function(ch, j){ if (ch === "_") hid.push(j); });
+        if (hid.length > 1) { var j = hid[rnd(hid.length)], d = ansText(PV.rows[PV.i]); V.f.pz = V.f.pz.slice(0, j) + d[j] + V.f.pz.slice(j + 1); previewDraw(); }
+      }, 3000);
+    }
+    function jView(){
+      if (V.jt) document.documentElement.setAttribute("data-jt", V.jt === "classic" ? "classic" : "lion");
+      var bar = '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;height:6px;border-radius:3px;background:rgba(0,0,0,.3);overflow:hidden;"><div id="sBar" style="height:100%;background:var(--jb-val);width:100%;"></div></div><span class="mono" id="sLeft" style="font-size:13px;min-width:40px;text-align:right;"></span></div>';
+      var tline = '<div class="mono" style="font-size:13px;color:var(--dim);margin-bottom:10px;">Team Jeopardy \u00b7 your team $' + (V.tavg || 0).toLocaleString() + ' per player \u00b7 #' + V.trank + ' of ' + V.tof + ' \u00b7 you\u2019ve earned $' + (V.cash || 0).toLocaleString() + '</div>';
+      if (V.s === "jpick") {
+        if (!V.mine || !V.board) return tline + big(esc(V.pickT) + " is picking\u2026", "Get ready to answer. Everyone answers every clue.", tc(V.pickC));
+        return tline + '<div class="card" style="display:flex;flex-direction:column;gap:12px;border:3px solid ' + tc(V.pickC) + ';"><div class="disp" style="font-size:26px;font-weight:800;color:' + tc(V.pickC) + ';">Your team picks!</div><div style="color:var(--muted);">First tap on your team counts.</div>' + bar.replace("var(--jb-val)", tc(V.pickC)) +
+          '<div class="jboard" style="grid-template-columns:repeat(' + V.board.cats.length + ',minmax(0,1fr));">' + V.board.cats.map(function(c){ return '<div class="jcat" style="min-height:44px;font-size:11px;padding:4px;">' + esc(c) + '</div>'; }).join("") +
+          V.board.rows.map(function(r, li){ return r.map(function(v, c){ return '<button type="button" class="jtile" data-jk="' + li + ':' + c + '" style="min-height:48px;font-size:18px;"' + (v ? ' aria-label="' + esc(V.board.cats[c]) + ' for $' + v + '"' : ' disabled aria-label="Used"') + '>$' + (v || 0) + '</button>'; }).join(""); }).join("") + '</div></div>';
+      }
+      var cap = '<div class="mono" style="font-size:13px;letter-spacing:2px;font-weight:800;">' + esc(String(V.cat || "").toUpperCase()) + ' \u00b7 $' + V.val + '</div>' + (V.dd ? '<div class="mono" style="font-size:13px;font-weight:800;padding:5px 12px;border-radius:999px;background:var(--jb-val);color:var(--jb-clue);">DAILY DOUBLE \u00b7 ' + (V.pickC === V.team ? "your team earns \u00d72" : esc(V.pickT) + " earns \u00d72") + '</div>' : '');
+      if (V.s === "jr") return tline + big(V.ok ? "Correct! +$" + V.pts : "The answer was " + esc(V.a), "Your team: <b style=\"color:var(--bright);\">$" + (V.tavg || 0).toLocaleString() + "</b> per player \u00b7 #" + V.trank + " of " + V.tof + ".", V.ok ? "var(--ok)" : "var(--gold)");
+      if (V.ok) return tline + big("Locked in! +$" + V.pts, "Waiting for the others\u2026", "var(--ok)");
+      return tline + '<div class="jclue" style="gap:14px;">' + cap + bar + jClue(V.q).replace('class="jq"', 'class="jq" style="font-size:clamp(20px,5vw,34px);"') + '<div aria-label="Answer length">' + V.mask + '</div>' +
+        '<form id="sForm" style="display:flex;gap:10px;flex-wrap:wrap;width:100%;"><input class="ans" id="sAns" data-n="' + V.f.n + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" placeholder="Type the answer" style="flex:1;min-width:200px;"><button class="btn" type="submit" style="background:var(--jb-text);border-color:var(--jb-text);color:var(--jb-clue);">Answer</button></form>' +
+        '<div class="mono" style="font-size:12px;">Wrong answers cost nothing \u00b7 keep trying</div></div>';
+    }
+    function submit(text){ if (PREV) return previewCheck(text); if (!V || !V.f || !conn || !conn.open) return; conn.send({ k: "ans", n: V.f.n, a: text }); }
+    function me(){ return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-right:200px;">' + (ROUTE ? '<span class="mono" style="font-size:11px;letter-spacing:1px;color:var(--dim);" title="How this device is connected">\u25CF ' + (ROUTE === "relay" ? "RELAY" : "DIRECT") + '</span>' : '') + '<span class="lbl">You are</span><b style="color:' + (V.tn ? tc(V.team) : "var(--gold)") + ';font-size:18px;">' + esc(V.name) + '</b>' + (V.tn ? '<span class="mono" style="font-size:13px;color:' + tc(V.team) + ';">' + esc(V.tn) + '</span>' : '') + (V.mode === "rush" && V.score != null ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.score.toLocaleString() + ' pts</span>' : V.ko ? '<span class="mono" style="font-size:13px;color:var(--dim);margin-left:auto;">' + V.ko + ' KO' + (V.ko === 1 ? '' : 's') + '</span>' : '') + '<button type="button" id="sLeave" class="chip" style="min-height:40px;padding:4px 12px;font-size:12px;' + (V.ko ? '' : 'margin-left:auto;') + '">LEAVE GAME</button>' + (window.KO_FX ? '<button type="button" id="sSnd" class="chip" aria-pressed="' + KO_FX.soundOn() + '" style="min-height:40px;padding:4px 12px;font-size:12px;">' + (KO_FX.soundOn() ? 'SOUND ON' : 'SOUND OFF') + '</button>' : '') + '</div>'; }
+    function big(title, sub, col){ return '<div class="card" style="text-align:center;padding:40px 22px;border:2px solid ' + (col || "var(--gold)") + ';"><div class="disp" style="font-size:clamp(28px,6vw,46px);font-weight:800;color:' + (col || "var(--gold)") + ';line-height:1.15;">' + title + '</div>' + (sub ? '<p style="color:var(--muted);font-size:17px;margin:14px 0 0;">' + sub + '</p>' : '') + '</div>'; }
+    function render(){
+      if (!V) return;
+      if (V.th && V.th !== MT) applyTheme(V.th);
+      if (window.KO_FX) {
+        if (V.kev && lastKev !== null && V.kev.n !== lastKev) {
+          var kv = V.kev, kel = document.getElementById(kv.won ? "sOppC" : "sMeC");
+          KO_FX.blast({ el: kel, name: kv.won ? kv.opp : V.name, big: kv.sd ? (kv.won ? "WIN!" : "LOST") : "K.O.!", color: kv.won ? "#00934a" : "#d93a2b",
+            sub: kv.sd ? (kv.won ? "You beat " + kv.opp : kv.opp + " wins") : kv.won ? "You knocked out " + kv.opp : kv.opp + " got the KO", say: kv.sd ? (kv.won ? "You win!" : "Match over") : "K. O.!" });
+        }
+        if (V.s === "jq" && V.ok && lastSettled !== "j" + V.f.n) { lastSettled = "j" + V.f.n; KO_FX.sfx("hit"); sFlash("var(--ok)", "+$" + V.pts); }
+        if (V.s === "rushq" && V.ok && lastSettled !== "r" + V.qi) { lastSettled = "r" + V.qi; KO_FX.sfx("hit"); sFlash("var(--ok)", "+" + V.pts); }
+        if (V.f && V.f.last && V.f.n !== lastSettled) { lastSettled = V.f.n; if (V.f.last.by === "me") KO_FX.sfx("hit"); }
+      }
+      lastKev = V.kev ? V.kev.n : (lastKev === null ? 0 : lastKev);
+      var prevA = document.getElementById("sAns"), keep = prevA && V.f && +prevA.getAttribute("data-n") === V.f.n && !V.f.last && !V.f.between ? prevA.value : null, hadFocus = prevA && document.activeElement === prevA;
+      if (V.f && V.f.n !== curN) { curN = V.f.n; used = []; keep = null; }
+      var h = "";
+      if (V.s === "lobby") h = big("You\u2019re in!", "Your name is <b style=\"color:var(--bright);\">" + esc(V.name) + "</b>" + (V.tn ? " on <b style=\"color:" + tc(V.team) + ";\">" + esc(V.tn) + "</b>" : "") + ". Wait for your teacher to start.", V.tn ? tc(V.team) : null);
+      else if (V.s === "cd") h = '<div class="card" style="text-align:center;padding:40px 22px;"><div class="lbl">Get ready</div><div class="disp" id="sLeft" style="font-size:clamp(100px,30vw,200px);font-weight:800;color:var(--gold);line-height:1;">5</div></div>';
+      else if (V.s === "wait") h = big(esc(V.msg), V.mode === "battle" ? "Stay on this page. You\u2019ll be matched with someone from another team." : "Stay on this page.");
+      else if (V.s === "rest") h = big(esc(V.msg), "");
+      else if (V.s === "pool") h = big("Rematch pool", (V.late ? "The bracket started before you joined, " : "You\u2019re out of the bracket, ") + "but you can keep playing for fun. Waiting for another player\u2026");
+      else if (V.s === "done") {
+        if (V.mode === "jteam") h = big(esc(V.win) + " wins!", "Your team finished <b style=\"color:var(--bright);\">#" + V.place + "</b>. You earned <b style=\"color:var(--bright);\">$" + (V.cash || 0).toLocaleString() + "</b> for your team. Nice work, " + esc(V.name) + ".");
+        else if (V.mode === "rush") h = big(V.place === 1 ? "You won!" : esc(V.champ) + " wins!", "You finished <b style=\"color:var(--bright);\">#" + V.place + "</b> of " + V.of + " with <b style=\"color:var(--bright);\">" + (V.score || 0).toLocaleString() + "</b> points.");
+        else if (V.mode === "battle") h = big(esc(V.win) + " wins!", "Your team finished <b style=\"color:var(--bright);\">#" + V.place + "</b>. You scored <b style=\"color:var(--bright);\">" + V.ko + "</b> KO" + (V.ko === 1 ? "" : "s") + ". Nice work, " + esc(V.name) + ".");
+        else h = big(V.champ ? esc(V.champ) + " is King of the Pride!" : "The bracket is over.", V.place ? "You: <b style=\"color:var(--bright);\">" + esc(V.place) + "</b>" : "");
+      }
+      else if (V.s === "fight") h = fightView(V.f);
+      else if (V.s === "jpick" || V.s === "jq" || V.s === "jr") h = jView();
+      else if (V.s === "rushq") {
+        var rh = '<div class="mono" style="font-size:13px;color:var(--dim);margin-bottom:10px;">Roar Rush \u00b7 question ' + V.qi + ' of ' + V.total + ' \u00b7 #' + V.place + ' of ' + V.of + (V.streak >= 2 ? ' <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--warn);color:#2a1d00;">STREAK \u00d7' + V.streak + (V.streak >= 3 ? ' \u00b7 +100' : '') + '</span>' : '') + '</div>';
+        if (V.x2) rh += '<div class="mono" style="display:inline-block;font-size:13px;font-weight:800;letter-spacing:2px;padding:5px 12px;border-radius:999px;background:var(--warn);color:#2a1d00;margin-bottom:10px;">DOUBLE POINTS \u00d72</div>';
+        if (V.ok) h = rh + big("Locked in! +" + V.pts, "Nice and fast. Waiting for the others\u2026", "var(--ok)");
+        else if (V.f && V.f.lock && V.f.m === "bank") h = rh + big("Not that one", "Wait for the answer.", "var(--bad)");
+        else if (V.f) h = rh + puzzleCard(V.f);
+      }
+      else if (V.s === "rushr" && lastRR !== V.qi) { lastRR = V.qi; RDL = PREVP ? PREVP - V.place : 0; PREVP = V.place; }
+      if (V.s === "rushr") h = big(V.ok ? "Correct! +" + V.pts : "The answer was " + esc(V.a), "You\u2019re <b style=\"color:var(--bright);\">#" + V.place + "</b> of " + V.of + " with <b style=\"color:var(--bright);\">" + V.score.toLocaleString() + "</b> points." + (RDL > 0 ? " <b style=\"color:var(--ok);\">\u25b2 up " + RDL + "!</b>" : RDL < 0 ? " <b style=\"color:var(--bad);\">\u25bc down " + (-RDL) + "</b>" : "") + (V.gap > 0 ? " <b style=\"color:var(--bright);\">" + V.gap.toLocaleString() + " pts behind #" + (V.place - 1) + "</b>" : V.place === 1 && V.score > 0 ? " <b style=\"color:var(--ok);\">You\u2019re in the lead!</b>" : "") + (V.ok && V.streak >= 3 ? " " + V.streak + " in a row!" : "") + (V.ok ? "" : " Get the next one!"), V.ok ? "var(--ok)" : "var(--gold)");
+      view.innerHTML = me() + h;
+      var a = document.getElementById("sAns");
+      if (a) { if (keep != null) a.value = keep; if (hadFocus || keep == null) a.focus(); used.forEach(function(i){ var b = view.querySelector('.tile[data-i="' + i + '"]'); if (b) b.disabled = true; }); }
+      wire();
+    }
+    function fightView(F){
+      var bat = V.mode === "battle" && F.kind === "battle";
+      var head = '<div class="card" style="padding:16px;margin-bottom:12px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center;">' +
+        '<div id="sMeC" style="min-width:0;padding:6px;border-radius:10px;"><div style="font-weight:800;color:var(--bright);">You</div>' + (F.sd ? '<div class="mono" style="font-size:24px;font-weight:800;color:var(--gold);">' + F.sd.me + '</div>' : hpBar(F.hp[0], bat && V.team != null ? tc(V.team) : tc(2))) + '</div>' +
+        '<div class="mono" style="font-size:12px;color:var(--dim);text-align:center;">' + (F.sd ? 'Q ' + Math.min(F.sd.q + 1, 99) + (F.sd.q >= 5 ? '<br>OVERTIME' : ' of 5') : 'VS') + '</div>' +
+        '<div id="sOppC" style="min-width:0;text-align:right;padding:6px;border-radius:10px;"><div style="font-weight:800;color:' + (bat ? tc(F.ot) : "var(--bright)") + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(F.opp) + '</div>' + (F.sd ? '<div class="mono" style="font-size:24px;font-weight:800;color:var(--gold);">' + F.sd.op + '</div>' : hpBar(F.hp[1], bat ? tc(F.ot) : tc(1))) + '</div></div>' +
+        (F.round ? '<div class="mono" style="font-size:13px;color:var(--dim);margin:-4px 0 12px;">' + esc(F.round) + (F.need > 1 ? ' \u00b7 games ' + F.wins[0] + '\u2013' + F.wins[1] + ' \u00b7 first to ' + F.need : '') + '</div>' : F.kind === "pool" ? '<div class="mono" style="font-size:13px;color:var(--dim);margin:-4px 0 12px;">Rematch pool \u00b7 just for fun</div>' : '');
+      if (F.between) return head + big(esc(F.between), 'Next game in <span id="sLeft">3 s</span>');
+      if (F.last) {
+        var who = F.last.by === "me" ? ["You got it!", "var(--ok)"] : F.last.by === "opp" ? [esc(F.opp) + " got it", "var(--bad)"] : ["Nobody got it", "var(--warn)"];
+        return head + '<div class="card" style="text-align:center;padding:26px 20px;"><div class="disp" style="font-size:clamp(26px,5vw,38px);font-weight:800;color:' + who[1] + ';">' + who[0] + '</div><div style="color:var(--muted);margin-top:10px;white-space:pre-line;">' + CLUE(F.q, "22vh") + '</div><div class="lbl" style="margin-top:14px;">Answer</div><div class="disp" style="font-size:clamp(26px,5vw,40px);font-weight:800;color:var(--bright);">' + esc(F.last.a) + '</div></div>';
+      }
+      return head + puzzleCard(F);
+    }
+    function puzzleCard(F){
+      var pz = "", note = "";
+      if (F.m === "shift") { pz = '<div class="mono" style="font-size:clamp(26px,6vw,42px);font-weight:800;letter-spacing:4px;color:var(--gold);word-break:break-word;">' + esc(F.pz) + '</div>'; note = "SHIFT \u00b7 move each letter back <b style=\"color:var(--bright);\">" + F.k + "</b> (" + String.fromCharCode(65 + F.k) + "\u2192A)"; }
+      else if (F.m === "scramble") { pz = '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + F.pz.split("").map(function(ch, i){ return '<button type="button" class="tile" data-i="' + i + '" aria-label="Letter ' + esc(ch) + '">' + esc(ch) + '</button>'; }).join("") + '</div>'; note = "SCRAMBLE \u00b7 tap the letters in order, or type the answer"; }
+      else if (F.m === "reveal") { pz = '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + F.pz.split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div>'; note = "REVEAL \u00b7 letters fill in over time \u00b7 type the answer"; }
+      else if (F.m === "outline") { var wc = F.pz.split(/\s+/).filter(function(w){ return /_/.test(w); }).length, lc = (F.pz.match(/_/g) || []).length;
+        pz = '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + F.pz.split("").map(function(ch){ return ch === " " ? '<span class="mask sp"></span>' : '<span class="mask">' + (ch === "_" ? "" : esc(ch)) + '</span>'; }).join("") + '</div>';
+        note = "FREE RESPONSE \u00b7 " + lc + " character" + (lc === 1 ? "" : "s") + (wc > 1 ? " \u00b7 " + wc + " words" : "") + " \u00b7 type the answer"; }
+      else if (F.m === "bank") { pz = '<div style="display:grid;grid-template-columns:repeat(' + ((F.opts || []).length === 3 ? 3 : 2) + ',minmax(0,1fr));gap:8px;">' + F.opts.map(function(o, i){ return '<button type="button" class="bankb" data-o="' + i + '" data-t="' + esc(o) + '"' + (F.lock ? ' disabled' : '') + '><b class="lt">' + "ABCD"[i] + '</b><span>' + esc(o) + '</span></button>'; }).join("") + '</div>'; note = F.lock ? "Wrong pick. Wait for the next question." : (F.mc ? "MULTIPLE CHOICE" : "WORD BANK") + " \u00b7 tap or press A\u2013D" + (F.kind === "rush" ? "" : " \u00b7 a wrong pick costs a third of a hit"); }
+      else note = "Type the answer";
+      var form = F.m === "bank" ? "" : '<form id="sForm" style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;"><input class="ans" id="sAns" data-n="' + F.n + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer" style="flex:1;min-width:200px;"' + (F.lock ? ' disabled placeholder="Locked for this question"' : ' placeholder="Answer"') + '><button class="btn" type="submit"' + (F.lock ? ' disabled' : '') + '>Strike</button>' + (F.m === "scramble" ? '<button class="btn ghost sm" type="button" id="sClr">Clear</button>' : '') + '</form>';
+      return '<div class="card" style="display:flex;flex-direction:column;gap:14px;">' +
+        (T.left != null ? '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;height:6px;border-radius:3px;background:var(--border);overflow:hidden;"><div id="sBar" style="height:100%;background:var(--gold);width:100%;"></div></div><span class="mono" id="sLeft" style="font-size:13px;color:var(--dim);min-width:40px;text-align:right;"></span></div>' : '') +
+        '<div style="font-size:clamp(19px,3.4vw,26px);font-weight:700;color:var(--bright);line-height:1.35;text-wrap:pretty;white-space:pre-line;">' + CLUE(F.q, "32vh") + '</div>' +
+        pz + '<div class="mono" style="font-size:13px;color:var(--muted);">' + note + '</div>' + form +
+        (F.kind === "rush" ? '</div>' : '<div style="display:flex;justify-content:flex-end;"><button type="button" id="sFF" class="btn ghost sm" style="border-color:var(--bad);color:var(--bad);">' + (F.kind === "match" ? "Forfeit match" : "Forfeit") + '</button></div></div>');
+    }
+    function wire(){
+      var f = document.getElementById("sForm"), a = document.getElementById("sAns"), sn = document.getElementById("sSnd");
+      if (sn) sn.onclick = function(){ KO_FX.setSound(!KO_FX.soundOn()); render(); };
+      var lv = document.getElementById("sLeave"); if (lv) lv.onclick = leaveNow;
+      var fb = document.getElementById("sFF"); if (fb) fb.onclick = forfeitNow;
+      if (f) f.onsubmit = function(e){ e.preventDefault(); if (a && a.value.trim()) submit(a.value); };
+      view.querySelectorAll("[data-jk]").forEach(function(b){ b.onclick = function(){ if (conn && conn.open) { conn.send({ k: "jpick", key: b.getAttribute("data-jk") }); view.querySelectorAll("[data-jk]").forEach(function(x){ x.disabled = true; }); } }; });
+      view.querySelectorAll(".bankb").forEach(function(b){ b.onclick = function(){ submit(b.getAttribute("data-t") || b.textContent); }; });
+      view.querySelectorAll(".tile").forEach(function(b){ b.onclick = function(){ if (!a) return; a.value += b.textContent; b.disabled = true; used.push(b.getAttribute("data-i")); if (V.f && norm(a.value).length >= V.f.len) submit(a.value); }; });
+      var cl = document.getElementById("sClr"); if (cl) cl.onclick = function(){ if (a) { a.value = ""; a.focus(); } used = []; view.querySelectorAll(".tile").forEach(function(b){ b.disabled = false; }); };
+    }
+  }
+})();
+</script>
+<style>@media (max-width:820px){.bgrid{grid-template-columns:minmax(0,1fr)!important;}}</style>
+
+<script>
+(function(){
+  var FMT = {
+    qa: { name: "Q&A game", hdr: "Type,Question,Answer,Distractor 1,Distractor 2,Distractor 3,Time,Double",
+      rules: "- Header row, exactly: Type | Question | Answer | Distractor 1 | Distractor 2 | Distractor 3 | Time | Double\n- Type is either: multiple choice  OR  free response\n- multiple choice: put the correct answer in Answer and three wrong but believable answers in Distractor 1-3\n- free response: a short answer a student would type (one word, number or short phrase). Leave the distractor columns empty\n- Time is optional seconds for that question (15, 30, 45 or 60). Leave empty for the default\n- Double is optional: write yes for a double-points question (use on at most 2 rows)\n- For a question with choices A/B/C, write them on one line: Which one is a fruit? A) Carrot  B) Apple  C) Potato\n- Example row: multiple choice | How many days are in a week? | 7 | 5 | 6 | 10 | 15 |" },
+    vocab: { name: "Vocab game", hdr: "Term,Definition",
+      rules: "- Header row, exactly: Term | Definition\n- Term is the word or short phrase students must produce (keep it to 1-3 words, no punctuation)\n- Definition is a clear one-sentence clue that does not contain the term itself\n- Example row: Sun | The star at the center of our solar system" },
+    mix: { name: "Mixed vocab + Q&A game", hdr: "Type,Question,Answer,Distractor 1,Distractor 2,Distractor 3,Time,Double",
+      rules: "- Header row, exactly: Type | Question | Answer | Distractor 1 | Distractor 2 | Distractor 3 | Time | Double\n- Type is one of: vocab  OR  multiple choice  OR  free response\n- About half the rows should be vocab, the rest a mix of multiple choice and free response\n- vocab: put a one-sentence definition in Question (it must not contain the term) and the term (1-3 words) in Answer. Leave the distractor columns empty\n- multiple choice: correct answer in Answer and three wrong but believable answers in Distractor 1-3\n- free response: a short answer a student would type. Leave the distractor columns empty\n- Time and Double are optional (seconds; yes for double points on at most 2 rows)\n- Example rows: vocab | The first meal of the day | Breakfast   then   multiple choice | How many days are in a week? | 7 | 5 | 6 | 10" },
+    jp: { name: "Jeopardy board", hdr: "Category,Cat 1,Cat 2,Cat 3,Cat 4,Cat 5", fixed: true,
+      rules: "- Make a 5x5 Jeopardy board: 5 categories, 5 point values each\n- Header row: Category | <category 1> | <category 2> | <category 3> | <category 4> | <category 5>\n- Then exactly 10 more rows in this order: $100 Q, $100 A, $200 Q, $200 A, $300 Q, $300 A, $400 Q, $400 A, $500 Q, $500 A\n- The first cell of each row is that label (for example $100 Q); the next 5 cells are the clue (Q rows) or the answer (A rows) for each category\n- Clues get harder as the dollar value goes up\n- Example rows: $100 Q | This animal says moo. | ...   then   $100 A | Cow | ..." }
+  };
+  var o = null;
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]; }); }
+  function val(id){ var e = o.querySelector("#ai_" + id); return e ? String(e.value || "").trim() : ""; }
+  function build(){
+    var g = val("game") || "qa", F = FMT[g], n = val("count") || "20", mix = val("mix");
+    var lines = [
+      "You are helping a teacher at South Fayette High School make questions for a classroom review game.",
+      "",
+      "Class: " + (val("class") || "[class name]"),
+      "Grade level: " + (val("grade") || "[grade]"),
+      "Topic / unit: " + (val("topic") || "[topic]"),
+      val("std") ? "Standards or learning targets: " + val("std") : "",
+      "Difficulty: " + (val("diff") || "mixed"),
+      F.fixed ? "Make one full 5x5 board (25 clues)." : "Number of rows: " + n,
+      g === "qa" ? "Question types: " + (mix || "mix of multiple choice and free response") : "",
+      val("notes") ? "Other notes: " + val("notes") : "",
+      val("source") ? "\nBase every question on this material only:\n\"\"\"\n" + val("source") + "\n\"\"\"" : "",
+      "",
+      "FORMAT RULES for the " + F.name + " (follow exactly):",
+      F.rules,
+      "- Output ONLY one table with these exact column headers in the first row. No title, no notes, no numbering",
+      "- Keep each cell on one line (no line breaks inside a cell). Leave unused cells empty",
+      "- Language and reading level must fit the grade level above. Check every answer for accuracy",
+      "",
+      "After the table, add one line: \"Click Export to Sheets below this table.\""
+    ];
+    return lines.filter(function(x, i, a){ return x !== "" || (a[i-1] !== ""); }).join("\n");
+  }
+  function upd(){ var p = o.querySelector("#ai_out"); p.value = build(); var g = val("game"); o.querySelector("#ai_cnt").style.display = g === "jp" ? "none" : ""; o.querySelector("#ai_mixw").style.display = g === "qa" ? "" : "none"; }
+  function field(id, label, html){ return '<label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:700;color:var(--bright);"' + (id ? ' id="' + id + '"' : '') + '>' + label + html + '</label>'; }
+  var IN = 'style="font:15px Inter,sans-serif;padding:10px 12px;min-height:44px;border-radius:10px;border:2px solid var(--border3);background:var(--panel2);color:var(--text);width:100%;box-sizing:border-box;"';
+  function sel(id, opts, d){ return '<select id="ai_' + id + '" ' + IN + '>' + opts.map(function(x){ var v = Array.isArray(x) ? x[0] : x, l = Array.isArray(x) ? x[1] : x; return '<option value="' + esc(v) + '"' + (v === d ? ' selected' : '') + '>' + esc(l) + '</option>'; }).join("") + '</select>'; }
+  function open(g){
+    close(); o = document.createElement("div");
+    o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", "Make questions with AI");
+    o.style.cssText = "position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.62);display:flex;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow:auto;";
+    o.innerHTML = '<div class="card" style="width:min(860px,100%);display:flex;flex-direction:column;gap:18px;box-shadow:0 20px 50px rgba(0,0,0,.45);border-top:5px solid var(--gold);">' +
+      '<div style="display:flex;align-items:flex-start;gap:12px;"><div style="flex:1;min-width:0;"><div class="lbl">AI QUESTION HELPER</div><h2 style="margin:6px 0 4px;font-family:\'Bricolage Grotesque\',sans-serif;font-size:28px;color:var(--bright);">Make questions with Gemini</h2><div style="font-size:15px;color:var(--muted);line-height:1.5;">Fill in what you know, copy the prompt, and paste it into Gemini. Gemini builds a table you send straight to Google Sheets, then you import that Google Sheet here.</div></div><button type="button" data-aiclose class="btn ghost sm" aria-label="Close">\u2715</button></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">' +
+        field("", "Game type", sel("game", [["qa","Q&A only (multiple choice / free response)"],["vocab","Vocab only (term + definition)"],["mix","Mix of vocab + Q&A"],["jp","Jeopardy board (5\u00d75)"]], g)) +
+        field("", "Grade level", sel("grade", ["9th grade","10th grade","11th grade","12th grade","Mixed 9\u201312","Middle school"], "9th grade")) +
+        field("", "Class", '<input id="ai_class" ' + IN + ' placeholder="e.g. Biology, Algebra I, AP US History">') +
+        field("", "Topic or unit", '<input id="ai_topic" ' + IN + ' placeholder="e.g. Cell organelles, Unit 3">') +
+        field("", "Difficulty", sel("diff", [["mixed","Mixed (easy to hard)"],["mostly easy, for a first review","Easier"],["on grade level","On level"],["challenging, honors/AP level","Challenging"]], "mixed")) +
+        field("ai_cnt", "How many rows", sel("count", ["10","15","20","25","30","40"], "20")) +
+        field("ai_mixw", "Question types", sel("mix", [["","Mix of both"],["all multiple choice","All multiple choice"],["all free response","All free response"]], "")) +
+        field("", "Standards / targets (optional)", '<input id="ai_std" ' + IN + ' placeholder="e.g. PA Core CC.2.2.HS.D.1">') +
+      '</div>' +
+      field("", "Other notes (optional)", '<input id="ai_notes" ' + IN + ' placeholder="e.g. include vocabulary from chapter 4, avoid trick questions">') +
+      field("", "Paste your notes, a study guide or reading (optional)", '<textarea id="ai_source" rows="3" ' + IN.replace('min-height:44px;', 'min-height:80px;resize:vertical;') + ' placeholder="Gemini will only use this material when it\u2019s here."></textarea>') +
+      '<div style="display:flex;flex-direction:column;gap:8px;"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span class="lbl" style="flex:1;">YOUR PROMPT</span><button type="button" data-aicopy class="btn sm">Copy prompt</button><a class="btn ghost sm" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini \u2197</a></div>' +
+      '<textarea id="ai_out" readonly rows="10" ' + IN.replace('min-height:44px;', 'min-height:200px;font-family:\'JetBrains Mono\',monospace;font-size:13px;line-height:1.5;') + '></textarea></div>' +
+      '<ol style="margin:0;padding-left:22px;font-size:15px;line-height:1.6;color:var(--text);">' +
+        '<li><b>Copy prompt</b>, then <b>Open Gemini</b> (signed in with your southfayette.org account). Paste the prompt and press Enter.</li>' +
+        '<li>Read every question and answer. AI makes mistakes. Ask Gemini to fix anything (\u201cmake #4 easier\u201d).</li>' +
+        '<li>Under Gemini\u2019s table, click <b>Export to Sheets</b>, then <b>Open Sheets</b>. A new Google Sheet opens with your questions, header row in row 1.' +
+          '<div style="font-size:14px;color:var(--muted);margin-top:4px;">No Export button? Drag to select the whole table in Gemini, copy (Ctrl+C), open a new Google Sheet (<b>sheets.new</b>), click cell <b>A1</b> and paste (Ctrl+V). Each column lands in its own column.</div></li>' +
+        '<li>In the Google Sheet, check row 1 matches the headers in the prompt and there are no blank rows at the top.</li>' +
+        '<li>Click <b>Share</b> \u2192 <b>General access</b> \u2192 <b>Anyone with the link \u00b7 Viewer</b> \u2192 <b>Copy link</b>.</li>' +
+        '<li>Back here, paste the link in the <b>Google Sheet link</b> box and click <b>Import</b>.</li>' +
+      '</ol></div>';
+    document.body.appendChild(o); upd();
+    o.addEventListener("input", upd); o.addEventListener("change", upd);
+    o.addEventListener("click", function(e){
+      if (e.target === o || e.target.closest("[data-aiclose]")) return close();
+      var c = e.target.closest("[data-aicopy]"); if (c) { var ta = o.querySelector("#ai_out"), done = function(){ c.textContent = "Copied \u2713"; setTimeout(function(){ if (c.isConnected) c.textContent = "Copy prompt"; }, 1800); };
+        if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(done, function(){ ta.select(); document.execCommand("copy"); done(); }); else { ta.select(); document.execCommand("copy"); done(); } }
+    });
+    setTimeout(function(){ var f = o.querySelector("#ai_class"); if (f) f.focus(); }, 30);
+  }
+  function close(){ if (o) { o.remove(); o = null; } }
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && o) close(); });
+  document.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("[data-aihelp]"); if (b) { e.preventDefault(); open(b.getAttribute("data-aihelp")); } });
+  window.openAIHelper = open;
+})();
+</script>
+</body>
+</html>
