@@ -71,7 +71,11 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
   var BIN = window.BINARY_SET;
   var AG = { cyber1:"CY1_ACRONYMS", cyber2:"CY2_ACRONYMS" }, ACROS = {}, ACRO_M = 98, ACRO_P = { unscramble: 1, decrypt: 1 };   // 40.0: Acronym question set
   function isAcro(mods){ return (mods || []).map(Number).indexOf(ACRO_M) >= 0; }
-  function acroPool(mods){ var p = []; (mods || []).forEach(function(m){ (ACROS[m] || []).forEach(function(v){ p.push({ t: v.x, d: v.a + " — what does it stand for?", k: "acro" }); }); }); return p; }
+  function acroPool(mods){ var p = [], one = (mods || []).length === 1; (mods || []).forEach(function(m){ (ACROS[m] || []).forEach(function(v){ if (keepT(v, one)) p.push({ t: v.x, d: v.a + " — what does it stand for?", k: "acro" }); }); }); return p; }
+  var skip = {}, lastPool = null;   // 41.1: one unit picked → teacher can untick terms (skip[key] = left out)
+  function tKey(t){ return t.a ? "a:" + t.a : "v:" + disp(t.t); }
+  function tLabel(t){ return t.a ? t.a + " \u2014 " + t.x : disp(t.t); }
+  function keepT(t, one){ return !one || !skip[tKey(t)]; }
   function acroModes(){ var l = modeList().filter(function(m){ return ACRO_P[m]; }); return l.length ? l : ["unscramble","decrypt"]; }
   var PMODES = [["cipher","Cipher"],["unscramble","Scramble"],["decrypt","Decrypt"],["bank","Word bank"]], modes = { cipher: true, unscramble: true, decrypt: true, bank: true };
   function nModes(){ return PMODES.filter(function(p){ return modes[p[0]]; }).length; }
@@ -120,7 +124,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     var T = SET.teams.filter(function(t){ return t.members > 0; }), un = SET.ungrouped || [];
     var acro = qset === "acro", SRC = acro ? ACROS : MODS, hasAcro = Object.keys(ACROS).length > 0;
     var keys = Object.keys(SRC).map(Number).sort(function(a,b){return a-b;}), selM = keys.filter(function(m){ return pick[m]; });
-    var n = selM.reduce(function(a, m){ return a + SRC[m].length; }, 0), bin = qset === "binary" && BIN;
+    var bin = qset === "binary" && BIN, one = selM.length === 1 && !bin, oneL = one ? SRC[selM[0]] : [];
+    var n = one ? oneL.filter(function(t){ return keepT(t, true); }).length : selM.reduce(function(a, m){ return a + SRC[m].length; }, 0);
     if (bin) n = 510;
     var TP = window.TEAM_PICK; TP.fetchSets(rpc, CUR.id, paint);
     var ch = TP.chosen(T), ready = ch.length >= 2 && ch.length <= 4 && n >= 4 && (bin || (acro ? acroModes().length : nModes())) && !busy;
@@ -139,6 +144,12 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
         (acro ? '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Students see an acronym (like TCP/IP) and type what it stands for. Spelling counts; spaces, capitals and punctuation don\u2019t.</div>' : '') +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">' + (acro ? "Acronym modules" : "Vocab modules") + '</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + (keys.length ? keys.map(function(m){ return '<button type="button" class="chip vbMod" data-m="' + m + '" aria-pressed="' + !!pick[m] + '">' + esc(modName(m)) + ' <span style="color:var(--dim);font-weight:500;">\u00b7 ' + SRC[m].length + '</span></button>'; }).join("") : '<span style="color:var(--dim);">No vocab list found for this course.</span>') + '</div>' +
+        (one ? '<div style="margin:-6px 0 18px;padding:12px 14px;border:1px solid var(--border2);border-radius:10px;">' +
+          '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;"><b style="color:var(--bright);">' + (acro ? "Acronyms" : "Terms") + ' in this battle</b><span class="mono" style="font-size:12px;color:var(--dim);">' + n + ' of ' + oneL.length + ' \u00b7 need at least 4</span><span style="flex:1;"></span>' +
+          '<button type="button" class="btn ghost sm vbTAll" data-v="1">All</button><button type="button" class="btn ghost sm vbTAll" data-v="0">None</button></div>' +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:2px 14px;max-height:260px;overflow:auto;">' +
+          oneL.map(function(t){ var k = tKey(t); return '<label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:14px;color:var(--text);line-height:1.35;"><input type="checkbox" class="vbT" data-k="' + esc(k) + '"' + (skip[k] ? '' : ' checked') + ' style="width:18px;height:18px;margin-top:1px;flex:none;accent-color:var(--accent);"><span>' + esc(tLabel(t)) + '</span></label>'; }).join("") +
+          '</div></div>' : '') +
         '<div style="font-weight:700;color:var(--bright);margin-bottom:10px;">Puzzle types</div>' +
         '<div role="group" aria-label="Puzzle types" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">' + PMODES.filter(function(p){ return !acro || ACRO_P[p[0]]; }).map(function(p){ var on = !!modes[p[0]]; return '<button type="button" class="chip vbPm" data-p="' + p[0] + '" aria-pressed="' + on + '">' + (on ? "\u2713 " : "") + p[1] + '</button>'; }).join("") + '</div>' +
         '<div style="font-size:12px;color:var(--dim);margin-bottom:18px;">Each term uses one of the ticked types at random.' + ((acro ? modeList().filter(function(m){ return ACRO_P[m]; }).length : nModes()) ? '' : ' <b style="color:var(--bad);">Pick at least one.</b>') + '</div>') +
@@ -217,8 +228,10 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
     if (WR) WR.bind(view);
     var pz = document.getElementById("vbPrize"); if (pz) pz.onclick = function(){ prizeList(ST.session).then(function(L){ if (!PRIZE_ROLL.open(L)) { msg = "Every prize for this battle has been rolled."; paint(); } }); };
     if (window.TEAM_PICK) TEAM_PICK.bind(view, { rpc: rpc, reload: load, repaint: paint, err: function(m){ msg = m; paint(); } });
-    view.querySelectorAll(".vbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; msg = ""; paint(); }; });
-    view.querySelectorAll(".vbQs").forEach(function(b){ b.onclick = function(){ qset = b.getAttribute("data-q"); msg = ""; paint(); }; });
+    view.querySelectorAll(".vbMod").forEach(function(b){ b.onclick = function(){ var m = b.getAttribute("data-m"); pick[m] = !pick[m]; skip = {}; msg = ""; paint(); }; });
+    view.querySelectorAll(".vbT").forEach(function(x){ x.onchange = function(){ var k = x.getAttribute("data-k"); if (x.checked) delete skip[k]; else skip[k] = 1; paint(); }; });
+    view.querySelectorAll(".vbTAll").forEach(function(b){ b.onclick = function(){ var on = b.getAttribute("data-v") === "1", src = qset === "acro" ? ACROS : MODS; skip = {}; if (!on) Object.keys(pick).filter(function(m){ return pick[m]; }).forEach(function(m){ (src[m] || []).forEach(function(t){ skip[tKey(t)] = 1; }); }); paint(); }; });
+    view.querySelectorAll(".vbQs").forEach(function(b){ b.onclick = function(){ qset = b.getAttribute("data-q"); skip = {}; msg = ""; paint(); }; });
     view.querySelectorAll(".vbPm").forEach(function(x){ x.onclick = function(){ var p = x.getAttribute("data-p"); modes[p] = !modes[p]; paint(); }; });
     view.querySelectorAll(".vbMin").forEach(function(b){ b.onclick = function(){ mins = +b.getAttribute("data-n"); paint(); }; });
     view.querySelectorAll(".vbRand").forEach(function(b){ b.onclick = function(){
@@ -228,11 +241,12 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       rpc("ctf_t_tb_randomize", { p_class: CUR.id, p_n: n }).then(function(r){ busy = false; if (!r || r.error) msg = r && r.error === "battle_live" ? "A team battle is running, so teams can\u2019t change right now." : "Couldn\u2019t randomize."; load(); }).catch(function(e){ busy = false; msg = "Randomize needs supabase/team-battles.sql."; paint(); });
     }; });
     var s = document.getElementById("vbStart"); if (s) s.onclick = function(){
-      var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), pool = [];
-      mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
+      var mods = Object.keys(pick).filter(function(m){ return pick[m]; }).map(Number), pool = [], one = mods.length === 1;
+      mods.forEach(function(m){ (MODS[m] || []).forEach(function(t){ if (keepT(t, one)) pool.push({ t: disp(t.t), d: t.d }); }); });
       var pm = modeList();
       if (qset === "binary" && BIN) { mods = [BIN.module]; pool = BIN.pool(); pm = BIN.modes; }
       else if (qset === "acro") { pool = acroPool(mods); pm = acroModes(); mods = mods.concat([ACRO_M]); }
+      lastPool = qset === "binary" ? null : { mods: mods.join(","), pool: pool };
       var groups = TEAM_PICK.chosen(SET.teams.filter(function(t){ return t.members > 0; }));
       if (WR && WR.needsRoom()) { WR.openRoom(); return; }   // 29.2: class duels always go through the waiting room
       busy = true; msg = ""; paint();
@@ -250,7 +264,8 @@ select{font:inherit;font-size:15px;min-height:44px;padding:8px 12px;border-radiu
       var os = ST.session, pool = []; if (!confirm("Start a rematch with the same teams, modules and length?")) return;
       (os.modules || []).forEach(function(m){ (MODS[m] || []).forEach(function(t){ pool.push({ t: disp(t.t), d: t.d }); }); });
       if (BIN && BIN.is(os.modules)) pool = BIN.pool();
-      if (isAcro(os.modules)) pool = acroPool(os.modules);
+      if (isAcro(os.modules)) pool = acroPool((os.modules || []).filter(function(m){ return +m !== ACRO_M; }));
+      if (lastPool && lastPool.mods === (os.modules || []).join(",")) pool = lastPool.pool;   // 41.1: rematch keeps the hand-picked terms
       var rpm = BIN && BIN.is(os.modules) ? BIN.modes : (os.modes && os.modes.length ? os.modes : isAcro(os.modules) ? acroModes() : modeList());
       busy = true; rpc("ctf_t_vd_start", { p_class: CUR.id, p_modules: os.modules, p_pool: pool, p_minutes: os.minutes || 15, p_modes: rpm, p_groups: ((ST && ST.teams) || os.teams || []).map(function(t){ return t.id; }).filter(Boolean) }).then(function(r){ busy = false; if (!r || r.error) { msg = ERR[r && r.error] || "Couldn’t start (" + ((r && r.error) || "error") + ")."; showSetup = true; paint(); return; } showSetup = false; load(); }).catch(fail);
     };
